@@ -23,18 +23,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
+import org.apache.stratos.messaging.event.tenant.SubscriptionDomainsAddedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant subscribed message processor for updating a tenant in tenant manager and
- * triggering tenant subscribed event listeners.
+ * Tenant subscribed message processor for removing domains from tenant subscriptions.
  */
-public class TenantSubscribedMessageProcessor extends MessageProcessor {
+public class SubscriptionDomainsRemovedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(TenantSubscribedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(SubscriptionDomainsRemovedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -45,14 +45,14 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (TenantSubscribedEvent.class.getName().equals(type)) {
+        if (SubscriptionDomainsAddedEvent.class.getName().equals(type)) {
             // Return if tenant manager has not initialized
             if(!TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            TenantSubscribedEvent event = (TenantSubscribedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
+            SubscriptionDomainsAddedEvent event = (SubscriptionDomainsAddedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
@@ -63,10 +63,16 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                Subscription subscription = new Subscription(event.getServiceName(), event.getClusterIds(), event.getDomains());
-                tenant.addSubscription(subscription);
+                Subscription subscription = tenant.getSubscription(event.getServiceName());
+                if(subscription == null) {
+                    if(log.isWarnEnabled()) {
+                        log.warn(String.format("Subscription not found: [tenant-id] %d", event.getTenantId()));
+                    }
+                    return false;
+                }
+                subscription.removeDomains(event.getDomains());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant subscribed to service: [tenant-id] %d [tenant-domain] %s [service] %s [domains] %s",
+                    log.info(String.format("Domains removed from tenant subscription: [tenant-id] %d [tenant-domain] %s [service] %s [domains] %s",
                              tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName(), event.getDomains()));
                 }
 

@@ -17,30 +17,22 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
+package org.apache.stratos.messaging.domain.tenant;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
- * This event is fired when a tenant is un-subscribed from a service.
+ * Tenant's service subscription.
  */
-public class TenantUnSubscribedEvent extends TenantEvent implements Serializable {
-    private static final long serialVersionUID = -4023221432696893312L;
-
-    private final int tenantId;
+public class Subscription {
     private final String serviceName;
     private final Set<String> clusterIds;
+    private final Set<String> domains;
 
-    public TenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
-        this.tenantId = tenantId;
+    public Subscription(String serviceName, Set<String> clusterIds, Set<String> domains) {
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
-    }
-
-    public int getTenantId() {
-        return tenantId;
+        this.domains = (domains != null) ? domains : new HashSet<String>();
     }
 
     public String getServiceName() {
@@ -49,5 +41,25 @@ public class TenantUnSubscribedEvent extends TenantEvent implements Serializable
 
     public Set<String> getClusterIds() {
         return Collections.unmodifiableSet(clusterIds);
+    }
+
+    public void addDomain(String domain) {
+        domains.add(domain);
+    }
+
+    public void addDomains(Set<String> domains) {
+        domains.addAll(domains);
+    }
+
+    public void removeDomain(String domain) {
+        domains.remove(domain);
+    }
+
+    public void removeDomains(Set<String> domains) {
+        domains.removeAll(domains);
+    }
+
+    public Set<String> getDomains() {
+        return Collections.unmodifiableSet(domains);
     }
 }

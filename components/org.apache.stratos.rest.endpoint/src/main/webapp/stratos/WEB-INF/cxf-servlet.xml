@@ -68,6 +68,7 @@
                 <value>hostNames</value>
                 <value>portMappings</value>
                 <value>volumes</value>
+                <value>domains</value>
             </list>
         </property>
     </bean>
