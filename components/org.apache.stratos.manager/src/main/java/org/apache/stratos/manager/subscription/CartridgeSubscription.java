@@ -34,7 +34,7 @@ import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.*;
 
 public abstract class CartridgeSubscription implements Serializable {
 
@@ -58,7 +58,7 @@ public abstract class CartridgeSubscription implements Serializable {
     //private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
     private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
-
+    private Set<String> domains;
     
     /**
      * Constructor
@@ -79,6 +79,7 @@ public abstract class CartridgeSubscription implements Serializable {
         //this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         //this.connectedSubscriptionAliases = new ArrayList<String>();
         this.setSubscriptionTenancyBehaviour(subscriptionTenancyBehaviour);
+        this.domains = new HashSet<String>();
     }
 
     /**
@@ -102,7 +103,7 @@ public abstract class CartridgeSubscription implements Serializable {
      * @throws org.apache.stratos.manager.exception.RepositoryTransportException
      */
     public void createSubscription (Subscriber subscriber, String alias, String autoscalingPolicy,
-                                    String deploymentPolicyName, Repository repository)
+                                    String deploymentPolicyName, Repository repository, Set<String> domains)
             throws ADCException, PolicyException, UnregisteredCartridgeException, InvalidCartridgeAliasException,
             DuplicateCartridgeAliasException, RepositoryRequiredException, AlreadySubscribedException,
             RepositoryCredentialsRequiredException, InvalidRepositoryException, RepositoryTransportException {
@@ -112,9 +113,26 @@ public abstract class CartridgeSubscription implements Serializable {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+        addDomains(domains);
 
         setPayloadData(getSubscriptionTenancyBehaviour().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
                 getSubscriptionKey(), getCustomPayloadEntries()));
+    }
+
+    public void addDomains(Set<String> domains) {
+        domains.addAll(domains);
+    }
+
+    public void removeDomain(String domain) {
+        domains.remove(domain);
+    }
+
+    public void removeDomains(Set<String> domains) {
+        domains.removeAll(domains);
+    }
+
+    public Set<String> getDomains() {
+        return Collections.unmodifiableSet(domains);
     }
 
     /**
@@ -387,7 +405,7 @@ public abstract class CartridgeSubscription implements Serializable {
                ", alias=" + alias + ", autoscalingPolicyName=" + autoscalingPolicyName +
                ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
                ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
-               payloadData + ", cluster=" + cluster + "]";
+               payloadData + ", cluster=" + cluster + "]" + ", domains=" + domains.toString();
     }
 
     public String getLbClusterId() {

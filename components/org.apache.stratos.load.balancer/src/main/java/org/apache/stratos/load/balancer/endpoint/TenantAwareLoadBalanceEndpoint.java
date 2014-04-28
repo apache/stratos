@@ -213,13 +213,14 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             String url = extractUrl(synCtx);
             int tenantId = scanUrlForTenantId(url);
             if (tenantExists(tenantId)) {
+                // Tenant found, find member from hostname and tenant id
                 member = requestDelegator.findNextMemberFromTenantId(targetHost, tenantId);
             } else {
-                // Multi-tenant cluster not found, try single tenant
+                // Tenant id not found in URL, find member from host name
                 member = requestDelegator.findNextMemberFromHostName(targetHost);
             }
         } else {
-            // Find next member from single tenant cluster map
+            // Find next member from host name
             member = requestDelegator.findNextMemberFromHostName(targetHost);
         }
 

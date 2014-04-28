@@ -39,7 +39,9 @@ public class MultiTenantClusterMap {
     public Cluster getCluster(String hostName, int tenantId) {
         Map<Integer, Cluster> clusterMap = getClusters(hostName);
         if (clusterMap != null) {
-            return clusterMap.get(tenantId);
+            if(clusterMap.containsKey(tenantId)) {
+                return clusterMap.get(tenantId);
+            }
         }
         return null;
     }
@@ -62,5 +64,14 @@ public class MultiTenantClusterMap {
 
     public void clear() {
         concurrentHashMap.clear();
+    }
+
+    public void removeCluster(String hostName, int tenantId) {
+        Map<Integer, Cluster> clusterMap = getClusters(hostName);
+        if(clusterMap != null) {
+            if(clusterMap.containsKey(tenantId)) {
+                clusterMap.remove(tenantId);
+            }
+        }
     }
 }

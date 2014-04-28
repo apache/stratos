@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.processor.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -62,10 +63,11 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                tenant.addServiceSubscription(event.getServiceName());
+                Subscription subscription = new Subscription(event.getServiceName(), event.getClusterIds(), event.getDomains());
+                tenant.addSubscription(subscription);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant subscribed to service: [tenant-id] %d [tenant-domain] %s [service] %s",
-                             tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName()));
+                    log.info(String.format("Tenant subscribed to service: [tenant-id] %d [tenant-domain] %s [service] %s [domains] %s",
+                             tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName(), event.getDomains()));
                 }
 
                 // Notify event listeners
