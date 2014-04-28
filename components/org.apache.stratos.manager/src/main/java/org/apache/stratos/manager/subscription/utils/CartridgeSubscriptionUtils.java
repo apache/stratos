@@ -44,8 +44,6 @@ import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
@@ -155,16 +153,12 @@ public class CartridgeSubscriptionUtils {
 
     static class TenantSubscribedEventPublisher implements Runnable {
     	
-    	private int tenantId;
-    	private String serviceName;
-        private Set<String> clusterIds;
-        private Set<String> domains;
+    	int tenantId;
+    	String serviceName;
 
-        public TenantSubscribedEventPublisher(int tenantId, String service, Set<String> clusterIds, Set<String> domains) {
+    	public TenantSubscribedEventPublisher(int tenantId, String service) {
     		this.tenantId = tenantId;
     		this.serviceName = service;
-            this.clusterIds = clusterIds;
-            this.domains = domains;
 		}
 		@Override
 		public void run() {
@@ -172,7 +166,7 @@ public class CartridgeSubscriptionUtils {
 				if(log.isInfoEnabled()) {
 					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
 				}
-				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds, domains);
+				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
 				EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
 				eventPublisher.publish(subscribedEvent);
 			} catch (Exception e) {
@@ -184,7 +178,7 @@ public class CartridgeSubscriptionUtils {
 		}
     	
     }
-    public static void publishTenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public static void publishTenantSubscribedEvent(int tenantId, String serviceName) {
     	
     	
     	Executor exec = new Executor() {
@@ -194,15 +188,15 @@ public class CartridgeSubscriptionUtils {
 			}
 		};
 		
-		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds, domains));
+		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName));
     }
 
-    public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
+    public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
             }
-            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName, clusterIds);
+            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
             EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
             eventPublisher.publish(event);
         } catch (Exception e) {

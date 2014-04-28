@@ -62,7 +62,7 @@ public class TenantUnSubscribedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                tenant.removeSubscription(event.getServiceName());
+                tenant.removeServiceSubscription(event.getServiceName());
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Tenant un-subscribed from service: [tenant-id] %d [tenant-domain] %s [service] %s",
                             tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName()));

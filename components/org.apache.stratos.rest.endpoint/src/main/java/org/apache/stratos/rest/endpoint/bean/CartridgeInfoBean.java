@@ -19,8 +19,6 @@
 package org.apache.stratos.rest.endpoint.bean;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
 
 @XmlRootElement
 public class CartridgeInfoBean {
@@ -40,11 +38,6 @@ public class CartridgeInfoBean {
     private String size;
     private boolean removeOnTermination;
     private String serviceGroup;
-    private List<String> domains;
-
-    public CartridgeInfoBean() {
-        this.domains = new ArrayList<String>();
-    }
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -165,8 +158,5 @@ public class CartridgeInfoBean {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-
-    public List<String> getDomains() { return domains; }
-
-    public void setDomains(List<String> domains) { this.domains = domains; }
+    
 }

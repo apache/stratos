@@ -52,7 +52,8 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
-import org.apache.stratos.rest.endpoint.bean.*;
+import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -991,7 +992,6 @@ public class ServiceUtils {
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
         subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
-        subscriptionData.addDomains(new HashSet<String>(cartridgeInfoBean.getDomains()));
         
         if (cartridgeInfoBean.isPersistanceRequired()) {
             // Add persistence related properties to PersistenceContext
@@ -1187,44 +1187,4 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
-    public static StratosAdminResponse addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
-                                                              String subscriptionAlias, List<String> domains) throws RestAPIException {
-        try {
-            int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            cartridgeSubsciptionManager.addSubscriptionDomains(tenantId, subscriptionAlias, domains);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RestAPIException(e.getMessage(), e);
-        }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully added domains to cartridge subscription");
-        return stratosAdminResponse;
-    }
-
-    public static List<String> getSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
-                                                      String subscriptionAlias) throws RestAPIException {
-        try {
-            int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            return cartridgeSubsciptionManager.getSubscriptionDomains(tenantId, subscriptionAlias);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RestAPIException(e.getMessage(), e);
-        }
-    }
-
-    public static StratosAdminResponse removeSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
-                                                                 String subscriptionAlias, List<String> domains) throws RestAPIException {
-        try {
-            int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            cartridgeSubsciptionManager.removeSubscriptionDomains(tenantId, subscriptionAlias, domains);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new RestAPIException(e.getMessage(), e);
-        }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully removed domains from cartridge subscription");
-        return stratosAdminResponse;
-    }
 }

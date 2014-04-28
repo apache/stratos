@@ -32,13 +32,13 @@ public class Tenant implements Serializable{
 
     private int tenantId;
     private String tenantDomain;
-    // Map<ServiceName, Subscription>
-    private Map<String, Subscription> serviceNameSubscriptionMap;
+    // Map<ServiceName, Subscribed>
+    private Map<String, Boolean> serviceNameMap;
 
     public Tenant(int tenantId, String tenantDomain) {
         this.tenantId = tenantId;
         this.tenantDomain = tenantDomain;
-        this.serviceNameSubscriptionMap = new HashMap<String, Subscription>();
+        this.serviceNameMap = new HashMap<String, Boolean>();
     }
 
     public int getTenantId() {
@@ -53,26 +53,19 @@ public class Tenant implements Serializable{
         this.tenantDomain = tenantDomain;
     }
 
-    public Subscription getSubscription(String serviceName) {
-        if(serviceNameSubscriptionMap.containsKey(serviceName)) {
-            return serviceNameSubscriptionMap.get(serviceName);
-        }
-        return null;
+    public Collection<String> getServiceSubscriptions() {
+        return serviceNameMap.keySet();
     }
 
-    public Collection<Subscription> getSubscriptions() {
-        return serviceNameSubscriptionMap.values();
+    public boolean isServiceSubscribed(String serviceName) {
+        return serviceNameMap.containsKey(serviceName);
     }
 
-    public boolean isSubscribed(String serviceName) {
-        return serviceNameSubscriptionMap.containsKey(serviceName);
+    public void addServiceSubscription(String serviceName) {
+        serviceNameMap.put(serviceName, true);
     }
 
-    public void addSubscription(Subscription subscription) {
-        serviceNameSubscriptionMap.put(subscription.getServiceName(), subscription);
-    }
-
-    public void removeSubscription(String serviceName) {
-        serviceNameSubscriptionMap.remove(serviceName);
+    public void removeServiceSubscription(String serviceName) {
+        serviceNameMap.remove(serviceName);
     }
 }

@@ -515,7 +515,7 @@ public class LoadBalancerConfiguration {
                         }
 
                         // Add cluster to load balancer context
-                        LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
+                        LoadBalancerContextUtil.addClusterToLbContext(cluster);
                     }
                 }
             }

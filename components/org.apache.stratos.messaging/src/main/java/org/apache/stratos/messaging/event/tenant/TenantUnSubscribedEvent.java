@@ -20,8 +20,6 @@
 package org.apache.stratos.messaging.event.tenant;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * This event is fired when a tenant is un-subscribed from a service.
@@ -31,12 +29,10 @@ public class TenantUnSubscribedEvent extends TenantEvent implements Serializable
 
     private final int tenantId;
     private final String serviceName;
-    private final Set<String> clusterIds;
 
-    public TenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
+    public TenantUnSubscribedEvent(int tenantId, String serviceName) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
     }
 
     public int getTenantId() {
@@ -45,9 +41,5 @@ public class TenantUnSubscribedEvent extends TenantEvent implements Serializable
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
     }
 }

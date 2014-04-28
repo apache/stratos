@@ -59,7 +59,7 @@ public class LoadBalancerContext {
     // Map<ClusterId, Cluster>
     // Keep track of all clusters
     private ClusterIdClusterMap clusterIdClusterMap;
-    // Map<Host/Domain-Name, Cluster>
+    // Map<HostName, Cluster>
     // Keep tack of all clusters
     private HostNameClusterMap hostNameClusterMap;
     // Map<HostName, Map<TenantId, Cluster>>
@@ -183,6 +183,6 @@ public class LoadBalancerContext {
     }
 
     public MultiTenantClusterMap getMultiTenantClusterMap() {
-       return multiTenantClusterMap;
+        return multiTenantClusterMap;
     }
 }

@@ -20,7 +20,6 @@
 package org.apache.stratos.messaging.event.tenant;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
  * This event is fired when a tenant is subscribed to a service.
@@ -30,14 +29,10 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
 
     private final int tenantId;
     private final String serviceName;
-    private final Set<String> clusterIds;
-    private final Set<String> domains;
 
-    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public TenantSubscribedEvent(int tenantId, String serviceName) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
-        this.domains = (domains != null) ? domains : new HashSet<String>();
     }
 
     public int getTenantId() {
@@ -46,13 +41,5 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
 
     public String getServiceName() {
         return serviceName;
-    }
-
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
-    }
-
-    public Set<String> getDomains() {
-        return Collections.unmodifiableSet(domains);
     }
 }

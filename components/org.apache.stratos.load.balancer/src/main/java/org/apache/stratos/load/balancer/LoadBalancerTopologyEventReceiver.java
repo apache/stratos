@@ -84,7 +84,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     for (Service service : TopologyManager.getTopology().getServices()) {
                         for (Cluster cluster : service.getClusters()) {
                             if (clusterHasActiveMembers(cluster)) {
-                                LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
+                                LoadBalancerContextUtil.addClusterToLbContext(cluster);
                             } else {
                                 if (log.isDebugEnabled()) {
                                     log.debug("Cluster does not have any active members");
@@ -128,7 +128,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     if (service != null) {
                         Cluster cluster = service.getCluster(memberActivatedEvent.getClusterId());
                         if (cluster != null) {
-                            LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
+                            LoadBalancerContextUtil.addClusterToLbContext(cluster);
                         } else {
                             if (log.isErrorEnabled()) {
                                 log.error(String.format("Cluster not found in topology: [service] %s [cluster] %s",
@@ -157,7 +157,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
                     Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(clusterRemovedEvent.getClusterId());
                     if (cluster != null) {
-                        LoadBalancerContextUtil.removeClusterAgainstHostNames(cluster.getClusterId());
+                        LoadBalancerContextUtil.removeClusterFromLbContext(cluster.getClusterId());
                     } else {
                         if (log.isWarnEnabled()) {
                             log.warn(String.format("Cluster not found in load balancer context: [service] %s [cluster] %s",
@@ -182,7 +182,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     Service service = TopologyManager.getTopology().getService(serviceRemovedEvent.getServiceName());
                     if (service != null) {
                         for (Cluster cluster : service.getClusters()) {
-                            LoadBalancerContextUtil.removeClusterAgainstHostNames(cluster.getClusterId());
+                            LoadBalancerContextUtil.removeClusterFromLbContext(cluster.getClusterId());
                         }
                     } else {
                         if (log.isWarnEnabled()) {
