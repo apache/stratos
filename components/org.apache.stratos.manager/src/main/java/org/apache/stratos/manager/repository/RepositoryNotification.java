@@ -57,7 +57,7 @@ public class RepositoryNotification {
 		if (cartridgeSubscription.getRepository() != null) {
 			InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
 			publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
-					String.valueOf(cartridgeSubscription.getCluster().getId()),
+					cartridgeSubscription.getCluster().getClusterDomain(),
 					String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
 
 			if (log.isDebugEnabled()) {
