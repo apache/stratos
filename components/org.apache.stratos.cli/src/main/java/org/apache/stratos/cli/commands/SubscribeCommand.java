@@ -199,14 +199,46 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         logger.trace("Remove on termination option is passed");
 
                     }
-                    removeOnTermination = true;
+
+                    String optionValue = commandLine.getOptionValue(CliConstants.REMOVE_ON_TERMINATION_OPTION);
+                    if (optionValue.equals("true")) {
+                        removeOnTermination = true;
+                    }
+                    else if (optionValue.equals("false")) {
+                        removeOnTermination = false;
+                    }
+                    else {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Invalid remove on termination option value");
+
+                        }
+                        System.out.println("Invalid remove on termination option value.");
+                        context.getStratosApplication().printUsage(getName());
+                        return CliConstants.BAD_ARGS_CODE;
+                    }
                 }
                 if (commandLine.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Persistance volume option is passed");
 
                     }
-                    persistanceMapping = true;
+
+                    String optionValue = commandLine.getOptionValue(CliConstants.PERSISTANCE_VOLUME_OPTION);
+                    if (optionValue.equals("true")) {
+                        persistanceMapping = true;
+                    }
+                    else if (optionValue.equals("false")) {
+                        persistanceMapping = false;
+                    }
+                    else {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Invalid persistance mapping option value");
+
+                        }
+                        System.out.println("Invalid persistance mapping option value.");
+                        context.getStratosApplication().printUsage(getName());
+                        return CliConstants.BAD_ARGS_CODE;
+                    }
                 }
 				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
