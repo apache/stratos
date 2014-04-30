@@ -203,14 +203,11 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     String optionValue = commandLine.getOptionValue(CliConstants.REMOVE_ON_TERMINATION_OPTION);
                     if (optionValue.equals("true")) {
                         removeOnTermination = true;
-                    }
-                    else if (optionValue.equals("false")) {
+                    } else if (optionValue.equals("false")) {
                         removeOnTermination = false;
-                    }
-                    else {
+                    } else {
                         if (logger.isTraceEnabled()) {
                             logger.trace("Invalid remove on termination option value");
-
                         }
                         System.out.println("Invalid remove on termination option value.");
                         context.getStratosApplication().printUsage(getName());
@@ -226,14 +223,11 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     String optionValue = commandLine.getOptionValue(CliConstants.PERSISTANCE_VOLUME_OPTION);
                     if (optionValue.equals("true")) {
                         persistanceMapping = true;
-                    }
-                    else if (optionValue.equals("false")) {
+                    } else if (optionValue.equals("false")) {
                         persistanceMapping = false;
-                    }
-                    else {
+                    } else {
                         if (logger.isTraceEnabled()) {
                             logger.trace("Invalid persistance mapping option value");
-
                         }
                         System.out.println("Invalid persistance mapping option value.");
                         context.getStratosApplication().printUsage(getName());
