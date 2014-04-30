@@ -180,6 +180,9 @@
                 <xs:element name="commitsEnabled" type="xs:boolean" minOccurs="0" maxOccurs="1" nillable="false"/>
                 <xs:element name="autoscalePolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="deploymentPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="persistanceRequired" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="size" type="xs:int" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="removeOnTermination" type="xs:boolean" minOccurs="0" maxOccurs="1" nillable="false"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
