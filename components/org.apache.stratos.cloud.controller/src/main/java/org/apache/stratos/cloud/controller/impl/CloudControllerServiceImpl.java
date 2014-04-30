@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
@@ -222,7 +222,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws
         UnregisteredCartridgeException, InvalidIaasProviderException {
-    	
+
     	if(log.isDebugEnabled()) {
     		log.debug("CloudControllerServiceImpl:startInstance");
     	}
@@ -347,11 +347,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if(ctxt.isVolumeRequired()) {
             	if (ctxt.getVolumes() != null) {
             		for (Volume volume : ctxt.getVolumes()) {
-						
+
             			if (volume.getId() == null) {
             				// create a new volume
             				createVolumeAndSetInClusterContext(volume, iaasProvider);
-            			} 
+            			}
 					}
             	}
             }
@@ -381,7 +381,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(log.isDebugEnabled()) {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
-                
+
                 // attach volumes
 			if (ctxt.isVolumeRequired()) {
 				// remove region prefix
@@ -397,7 +397,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						} catch (Exception e) {
 							// continue without throwing an exception, since
 							// there is an instance already running
-							log.error("Attaching Volume to Instance [ "
+							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
 									+ instanceId + " ] failed!", e);
 						}
 					}
@@ -781,7 +781,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
 		if (clusterCtxt.getVolumes() != null) {
 			for (Volume volume : clusterCtxt.getVolumes()) {
-				
 				try {
 					String volumeId = volume.getId();
 					if (volumeId == null) {
@@ -885,18 +884,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         	Persistence persistenceData = cartridge.getPersistence();
         	
         	if(persistenceData != null) {
-        		Volume[] volumes = persistenceData.getVolumes();
+        		Volume[] cartridge_volumes = persistenceData.getVolumes();
         		
         		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
-        		property = props.getProperty(Constants.VOLUME_SIZE);
-        		
-        		for (Volume volume : volumes) {
-        			int volumeSize = property != null ? Integer.parseInt(property) : volume.getSize();
-        			boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
-        			volume.setSize(volumeSize);
-        			volume.setRemoveOntermination(shouldDeleteVolume);
+        		String property_volume_zize = props.getProperty(Constants.VOLUME_SIZE);
+
+                List<Volume> cluster_volume_list = new LinkedList<Volume>();
+
+        		for (Volume volume : cartridge_volumes) {
+        			int volumeSize = StringUtils.isNotEmpty(property_volume_zize) ? Integer.parseInt(property_volume_zize) : volume.getSize();
+        			boolean shouldDeleteVolume = StringUtils.isNotEmpty(property) ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
+
+                    Volume volume_cluster = new Volume();
+                    volume_cluster.setSize(volumeSize);
+                    volume_cluster.setRemoveOntermination(shouldDeleteVolume);
+                    volume_cluster.setDevice(volume.getDevice());
+                    volume_cluster.setIaasType(volume.getIaasType());
+                    volume_cluster.setMappingPath(volume.getMappingPath());
+                    cluster_volume_list.add(volume_cluster);
 				}
-        		ctxt.setVolumes(volumes);
+        		ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));
         	} else {
         		// if we cannot find necessary data, we would not consider 
         		// this as a volume required instance.
@@ -1024,14 +1031,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                          for (Volume volume : ctxt.getVolumes()) {
                             if(volume.getId() != null) {
                                 String iaasType = volume.getIaasType();
-                                Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                 if(iaas != null) {
                                     try {
-                                    // delete the volume
-                                    iaas.deleteVolume(volume.getId());
+                                    // delete the volumes if remove on unsubscription is true.
+                                    if(volume.isRemoveOntermination())
+                                    {
+                                        iaas.deleteVolume(volume.getId());
+                                        volume.setId(null);
+                                    }
                                     } catch(Exception ignore) {
-                                        if(log.isDebugEnabled()) {
-                                            log.debug(ignore);
+                                        if(log.isErrorEnabled()) {
+                                            log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
                                         }
                                     }
                                 }
