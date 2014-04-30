@@ -241,6 +241,15 @@ public class StratosTestAdmin {
 
     }
 
+    @GET
+    @Path("/service/{serviceType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceDefinitionBean getService(@PathParam("serviceType") String serviceType)throws RestAPIException {
+
+        return MockContext.getInstance().getServiceType(serviceType);
+    }
 
     @POST
     @Path("/cartridge/definition/")
