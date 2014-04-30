@@ -296,7 +296,9 @@ public class CloudControllerUtil {
         if (properties != null && properties.getProperties() != null) {
 
             for (org.apache.stratos.cloud.controller.pojo.Property property : properties.getProperties()) {
-                javaProps.put(property.getName(), property.getValue());
+                if(property.getValue() != null){
+                    javaProps.put(property.getName(), property.getValue());
+                }
             }
 
         }
