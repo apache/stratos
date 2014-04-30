@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="tenantInfoBean">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="admin" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="firstname" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="lastname" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="adminPassword" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="tenantDomain" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="email" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="active" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    
     <xs:element name="partition">
         <xs:complexType>
             <xs:sequence>
@@ -13,8 +27,6 @@
                         </xs:all>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="partitionMin" type="xs:int" minOccurs="1" maxOccurs="1" nillable="false"/>
-                <xs:element name="partitionMax" type="xs:int" minOccurs="1" maxOccurs="1" nillable="false"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -94,11 +106,18 @@
                             <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                             <xs:element name="imageId" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                             <xs:element name="maxInstanceLimit" type="xs:int" minOccurs="1" maxOccurs="1" nillable="false"/>
-                            <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
+                            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:all>
                                         <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                                         <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="networkInterfaces" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="networkUuid" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                                     </xs:all>
                                 </xs:complexType>
                             </xs:element>
@@ -120,6 +139,23 @@
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
+                <xs:element name="persistence" minOccurs="0" maxOccurs="1" nillable="true">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="isRequired" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
+                            <xs:element name="volume" minOccurs="1" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="device" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                        <xs:element name="mappingPath" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                        <xs:element name="size" type="xs:int" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                        <xs:element name="removeOnTermination" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
                 <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:all>
@@ -132,13 +168,44 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="cartridgeInfoBean">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="cartridgeType" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="alias" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="repoURL" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="privateRepo" type="xs:boolean" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="repoUsername" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="repoPassword" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="commitsEnabled" type="xs:boolean" minOccurs="0" maxOccurs="1" nillable="false"/>
+                <xs:element name="autoscalePolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="deploymentPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="serviceDefinitionBean">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="serviceName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="cartridgeType" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="deploymentPolicyName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="autoscalingPolicyName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="clusterDomain" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="clusterSubDomain" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="tenantRange" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="thresholdValues">
         <xs:all>
             <xs:element name="average" type="xs:int" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="gradient" type="xs:float" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="secondDerivative" type="xs:float" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="scaleDownMarginOfGradient" type="xs:float" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="scaleDownMarginOfSecondDerivative" type="xs:float" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="gradient" type="xs:float" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="secondDerivative" type="xs:float" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="scaleDownMarginOfGradient" type="xs:float" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="scaleDownMarginOfSecondDerivative" type="xs:float" minOccurs="0" maxOccurs="1"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>
