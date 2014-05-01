@@ -20,9 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.stratos.messaging.domain.topology.Port;
 
@@ -38,7 +36,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-    private Map<String, Port> portMap;
+    private Map<Integer, Port> portMap;
     private String memberIp;
 
     public MemberActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
@@ -47,7 +45,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
-    	this.portMap = new HashMap<String, Port>();
+    	this.portMap = new HashMap<Integer, Port>();
     }
     
     public String getServiceName() {
@@ -69,29 +67,25 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     public String getMemberId() {
         return memberId;
     }
-    
-    public Collection<Port> getPorts() {
-        return portMap.values();
+
+    public Map<Integer, Port> getPorts() {
+        return Collections.unmodifiableMap(portMap);
     }
 
     public void addPort(Port port) {
-        this.portMap.put(port.getProtocol(), port);
+        this.portMap.put(port.getProxy(), port);
+    }
+
+    public void addPorts(Map<Integer, Port> portSet) {
+        this.portMap.putAll(portSet);
     }
 
     public void removePort(Port port) {
-        this.portMap.remove(port.getProtocol());
-    }
-
-    public void removePort(String portName) {
-        this.portMap.remove(portName);
+        this.portMap.remove(port.getProxy());
     }
 
     public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getProtocol());
-    }
-
-    public Port getPort(String portName) {
-        return this.portMap.get(portName);
+        return this.portMap.containsKey(port.getProxy());
     }
 
 	public String getMemberIp() {

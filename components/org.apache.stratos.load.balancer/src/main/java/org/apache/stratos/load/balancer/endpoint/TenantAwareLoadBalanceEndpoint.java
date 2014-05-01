@@ -59,7 +59,7 @@ import java.util.regex.Pattern;
 
 
 public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints.LoadbalanceEndpoint implements Serializable {
-    private static final String PORT_MAPPING_PREFIX = "port.mapping.";
+    private static final long serialVersionUID = -6612900240087164008L;
 
     /* Request delegator identifies the next member */
     private RequestDelegator requestDelegator;
@@ -199,59 +199,111 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     }
 
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
-        String targetHost = extractTargetHost(synCtx);
-        if (!requestDelegator.isTargetHostValid(targetHost)) {
-            throwSynapseException(synCtx, 404, String.format("Unknown host name %s", targetHost));
-        }
-
-        Member member = null;
-        if (LoadBalancerConfiguration.getInstance().isMultiTenancyEnabled()) {
-            // Try to find next member from multi-tenant cluster map
-            if (log.isDebugEnabled()) {
-                log.debug("Multi-tenancy enabled, scanning URL for tenant...");
+        try {
+            String targetHost = extractTargetHost(synCtx);
+            if (!requestDelegator.isTargetHostValid(targetHost)) {
+                throwSynapseException(synCtx, 404, String.format("Unknown host name %s", targetHost));
             }
-            String url = extractUrl(synCtx);
-            int tenantId = scanUrlForTenantId(url);
-            if (tenantExists(tenantId)) {
-                // Tenant found, find member from hostname and tenant id
-                member = requestDelegator.findNextMemberFromTenantId(targetHost, tenantId);
+
+            Member member = null;
+            if (LoadBalancerConfiguration.getInstance().isMultiTenancyEnabled()) {
+                // Try to find next member from multi-tenant cluster map
+                if (log.isDebugEnabled()) {
+                    log.debug("Multi-tenancy enabled, scanning URL for tenant...");
+                }
+                String url = extractUrl(synCtx);
+                int tenantId = scanUrlForTenantId(url);
+                if (tenantExists(tenantId)) {
+                    // Tenant found, find member from hostname and tenant id
+                    member = requestDelegator.findNextMemberFromTenantId(targetHost, tenantId);
+                } else {
+                    // Tenant id not found in URL, find member from host name
+                    member = requestDelegator.findNextMemberFromHostName(targetHost);
+                }
             } else {
-                // Tenant id not found in URL, find member from host name
+                // Find next member from host name
                 member = requestDelegator.findNextMemberFromHostName(targetHost);
             }
-        } else {
-            // Find next member from host name
-            member = requestDelegator.findNextMemberFromHostName(targetHost);
+
+            if (member == null)
+                return null;
+
+            // Find mapping outgoing port for incoming port
+            int incomingPort = findIncomingPort(synCtx);
+            Port outgoingPort = findOutgoingPort(member, incomingPort);
+            if (outgoingPort == null) {
+                if (log.isErrorEnabled()) {
+                    log.error(String.format("Could not find port for proxy port %d in member %s", incomingPort,
+                            member.getMemberId()));
+                }
+                throwSynapseException(synCtx, 500, "Internal server error");
+            }
+
+            // Create Axi2 member object
+            org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(
+                    getMemberIp(synCtx, member), outgoingPort.getValue());
+            axis2Member.setDomain(member.getClusterId());
+            axis2Member.setActive(member.isActive());
+
+            // Set cluster id and partition id in message context
+            axis2Member.getProperties().setProperty(Constants.CLUSTER_ID, member.getClusterId());
+            return axis2Member;
         }
-
-        if (member == null)
-            return null;
-
-        // Create Axi2 member object
-        String transport = extractTransport(synCtx);
-        Port transportPort = member.getPort(transport);
-        if (transportPort == null) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Port not found for transport %s in member %s", transport, member.getMemberId()));
+        catch (Exception e) {
+            if(log.isErrorEnabled()) {
+                log.error("Could not find a member to serve the request");
             }
             throwSynapseException(synCtx, 500, "Internal server error");
         }
-
-        int memberPort = transportPort.getValue();
-        org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(getMemberIp(synCtx, member), memberPort);
-        axis2Member.setDomain(member.getClusterId());
-        Port httpPort = member.getPort("http");
-        if (httpPort != null)
-            axis2Member.setHttpPort(httpPort.getValue());
-        Port httpsPort = member.getPort("https");
-        if (httpsPort != null)
-            axis2Member.setHttpsPort(httpsPort.getValue());
-        axis2Member.setActive(member.isActive());
-        // Set cluster id and partition id in message context
-        axis2Member.getProperties().setProperty(Constants.CLUSTER_ID, member.getClusterId());
-        return axis2Member;
+        return null;
     }
 
+    /***
+     * Find incoming port from request URL.
+     * @param synCtx
+     * @return
+     * @throws MalformedURLException
+     */
+    private int findIncomingPort(MessageContext synCtx) throws MalformedURLException {
+        try {
+            URL url = new URL(extractUrl(synCtx));
+            if(log.isDebugEnabled()) {
+                log.debug("Incoming request port found: " + url.getPort());
+            }
+            return url.getPort();
+        }
+        catch (MalformedURLException e) {
+            if(log.isErrorEnabled()) {
+                log.error("Could not extract port from incoming request", e);
+            }
+            throw e;
+        }
+    }
+
+    /***
+     * Find mapping outgoing port for incoming port.
+     * @param member
+     * @param incomingPort
+     * @return
+     * @throws MalformedURLException
+     */
+    private Port findOutgoingPort(Member member, int incomingPort) throws MalformedURLException {
+        if((member != null) && (member.getPorts() != null)) {
+            Port outgoingPort = member.getPort(incomingPort);
+            if(log.isDebugEnabled()) {
+                log.debug("Outgoing request port found: " + outgoingPort.getValue());
+            }
+            return outgoingPort;
+        }
+        return null;
+    }
+
+    /***
+     * Get members private or public ip according to load balancer configuration.
+     * @param synCtx
+     * @param member
+     * @return
+     */
     private String getMemberIp(MessageContext synCtx, Member member) {
         if(LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
             if(LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
@@ -361,28 +413,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         return hostName;
     }
 
-    private int extractPort(MessageContext synCtx, String transport) {
-        org.apache.axis2.context.MessageContext msgCtx =
-                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
-
-        Map headerMap = (Map) msgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
-        int port = -1;
-        if (headerMap != null) {
-            String hostHeader = (String) headerMap.get(HTTP.TARGET_HOST);
-            int index = hostHeader.indexOf(':');
-            if (index != -1) {
-                port = Integer.parseInt(hostHeader.trim().substring(index + 1));
-            } else {
-                if ("http".equals(transport)) {
-                    port = 80;
-                } else if ("https".equals(transport)) {
-                    port = 443;
-                }
-            }
-        }
-        return port;
-    }
-
     private String extractTransport(MessageContext synCtx) {
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         return axis2MessageContext.getTransportIn().getName();
@@ -416,8 +446,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private EndpointReference getEndpointReferenceAfterURLRewrite(org.apache.axis2.clustering.Member currentMember,
                                                                   String transport,
-                                                                  String address,
-                                                                  int incomingPort) {
+                                                                  String address) {
 
         if (transport.startsWith("https")) {
             transport = "https";
@@ -435,25 +464,14 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                     String _address = address.indexOf("?") > 0 ? address.substring(address.indexOf("?"), address.length()) : "";
                     address = new URL(address).getPath() + _address;
                 } catch (MalformedURLException e) {
-                    String msg = "URL " + address + " is malformed";
+                    String msg = String.format("URL is malformed: %s", address);
                     log.error(msg, e);
                     throw new SynapseException(msg, e);
                 }
             }
 
-            int port;
-            Properties memberProperties = currentMember.getProperties();
-            String mappedPort = memberProperties.getProperty(PORT_MAPPING_PREFIX + incomingPort);
-            if (mappedPort != null) {
-                port = Integer.parseInt(mappedPort);
-            } else if (transport.startsWith("https")) {
-                port = currentMember.getHttpsPort();
-            } else {
-                port = currentMember.getHttpPort();
-            }
-
-            String remoteHost = memberProperties.getProperty("remoteHost");
-            String hostName = (remoteHost == null) ? currentMember.getHostName() : remoteHost;
+            String hostName = currentMember.getHostName();
+            int port = currentMember.getPort();
             return new EndpointReference(transport + "://" + hostName +
                     ":" + port + address);
         } else {
@@ -509,8 +527,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         String transport = axis2MsgCtx.getTransportIn().getName();
         String address = synCtx.getTo().getAddress();
-        int incomingPort = extractPort(synCtx, transport);
-        EndpointReference to = getEndpointReferenceAfterURLRewrite(currentMember, transport, address, incomingPort);
+        EndpointReference to = getEndpointReferenceAfterURLRewrite(currentMember, transport, address);
         synCtx.setTo(to);
 
         Endpoint endpoint = getEndpoint(to, currentMember, synCtx);

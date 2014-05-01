@@ -34,14 +34,14 @@ public class Service implements Serializable{
     private final ServiceType serviceType;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterIdClusterMap;
-    private Map<String, Port> portMap;
+    private Map<Integer, Port> portMap;
     private Properties properties;
 
     public Service(String serviceName, ServiceType serviceType) {
         this.serviceName = serviceName;
         this.serviceType = serviceType;
         this.clusterIdClusterMap = new HashMap<String, Cluster>();
-        this.portMap = new HashMap<String, Port>();
+        this.portMap = new HashMap<Integer, Port>();
     }
 
     public String getServiceName() {
@@ -76,36 +76,32 @@ public class Service implements Serializable{
         return this.clusterIdClusterMap.get(clusterId);
     }
 
-    public Collection<Port> getPorts() {
-        return portMap.values();
+    public Map<Integer, Port> getPorts() {
+        return Collections.unmodifiableMap(portMap);
+    }
+
+    public Port getPort(int proxy) {
+        if(portMap.containsKey(proxy)) {
+            return portMap.get(proxy);
+        }
+        return null;
     }
 
     public void addPort(Port port) {
-        this.portMap.put(port.getProtocol(), port);
+        this.portMap.put(port.getProxy(), port);
     }
 
-    public void addPorts(Collection<Port> ports) {
-        for(Port port: ports) {
-            addPort(port);
-        }
+    public void addPorts(Map<Integer, Port> portSet) {
+        this.portMap.putAll(portSet);
     }
 
     public void removePort(Port port) {
-        this.portMap.remove(port.getProtocol());
-    }
-
-    public void removePort(String protocol) {
-        this.portMap.remove(protocol);
+        this.portMap.remove(port.getProxy());
     }
 
     public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getProtocol());
+        return this.portMap.containsKey(port.getProxy());
     }
-
-    public Port getPort(String protocol) {
-        return this.portMap.get(protocol);
-    }
-
     public Properties getProperties() {
         return properties;
     }

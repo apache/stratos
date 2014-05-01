@@ -24,10 +24,7 @@ import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Defines a member node in a cluster.
@@ -42,12 +39,11 @@ public class Member implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-    
+    @XmlJavaTypeAdapter(MapAdapter.class)
+    private final Map<Integer, Port> portMap;
     private String memberPublicIp;
     private MemberStatus status;
     private String memberIp;
-    @XmlJavaTypeAdapter(MapAdapter.class)
-    private final Map<String, Port> portMap;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String lbClusterId;
@@ -58,7 +54,7 @@ public class Member implements Serializable {
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
-        this.portMap = new HashMap<String, Port>();
+        this.portMap = new HashMap<Integer, Port>();
     }
 
     public String getServiceName() {
@@ -85,34 +81,31 @@ public class Member implements Serializable {
         return (this.status == MemberStatus.Activated);
     }
 
-    public Collection<Port> getPorts() {
-        return portMap.values();
+    public Port getPort(int proxy) {
+        if(portMap.containsKey(proxy)) {
+            return portMap.get(proxy);
+        }
+        return null;
+    }
+
+    public Map<Integer, Port> getPorts() {
+        return Collections.unmodifiableMap(portMap);
     }
 
     public void addPort(Port port) {
-        this.portMap.put(port.getProtocol(), port);
+        this.portMap.put(port.getProxy(), port);
     }
 
-    public void addPorts(Collection<Port> ports) {
-        for(Port port: ports) {
-            addPort(port);
-        }
+    public void addPorts(Map<Integer, Port> portMap) {
+        this.portMap.putAll(portMap);
     }
 
     public void removePort(Port port) {
-        this.portMap.remove(port.getProtocol());
-    }
-
-    public void removePort(String protocol) {
-        this.portMap.remove(protocol);
+        this.portMap.remove(port.getProxy());
     }
 
     public boolean portExists(Port port) {
-        return this.portMap.containsKey(port.getProtocol());
-    }
-
-    public Port getPort(String protocol) {
-        return this.portMap.get(protocol);
+        return this.portMap.containsKey(port.getProxy());
     }
 
     public Properties getProperties() {
@@ -123,37 +116,37 @@ public class Member implements Serializable {
         this.properties = properties;
     }
 
-	public String getMemberIp() {
-	    return memberIp;
+    public String getMemberIp() {
+        return memberIp;
     }
 
-	public void setMemberIp(String memberIp) {
-	    this.memberIp = memberIp;
+    public void setMemberIp(String memberIp) {
+        this.memberIp = memberIp;
     }
 
     public String getPartitionId() {
         return partitionId;
     }
 
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
-    }
-
     public String getLbClusterId() {
         return lbClusterId;
+    }
+
+    public void setLbClusterId(String lbClusterId) {
+        this.lbClusterId = lbClusterId;
     }
 
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
 
-	public String getMemberPublicIp() {
-		return memberPublicIp;
-	}
+    public String getMemberPublicIp() {
+        return memberPublicIp;
+    }
 
-	public void setMemberPublicIp(String memberPublicIp) {
-		this.memberPublicIp = memberPublicIp;
-	}
-    
+    public void setMemberPublicIp(String memberPublicIp) {
+        this.memberPublicIp = memberPublicIp;
+    }
+
 }
 
