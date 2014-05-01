@@ -233,7 +233,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             Port outgoingPort = findOutgoingPort(member, incomingPort);
             if (outgoingPort == null) {
                 if (log.isErrorEnabled()) {
-                    log.error(String.format("Could not find port for proxy port %d in member %s", incomingPort,
+                    log.error(String.format("Could not find the port for proxy port %d in member %s", incomingPort,
                             member.getMemberId()));
                 }
                 throwSynapseException(synCtx, 500, "Internal server error");
@@ -265,19 +265,29 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @throws MalformedURLException
      */
     private int findIncomingPort(MessageContext synCtx) throws MalformedURLException {
+        org.apache.axis2.context.MessageContext msgCtx =
+                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         try {
-            URL url = new URL(extractUrl(synCtx));
-            if(log.isDebugEnabled()) {
-                log.debug("Incoming request port found: " + url.getPort());
+            Map headerMap = (Map) msgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
+            if (headerMap != null) {
+                String hostHeader = (String) headerMap.get(HTTP.TARGET_HOST);
+                int index = hostHeader.indexOf(':');
+                if (index != -1) {
+                    int port = Integer.parseInt(hostHeader.trim().substring(index + 1));
+                    if (log.isDebugEnabled()) {
+                        log.debug("Incoming request port found: " + port);
+                    }
+                    return port;
+                }
             }
-            return url.getPort();
         }
-        catch (MalformedURLException e) {
+        catch (Exception e) {
             if(log.isErrorEnabled()) {
-                log.error("Could not extract port from incoming request", e);
+                log.error("Could not find incoming request port");
             }
-            throw e;
+            throwSynapseException(synCtx, 500, "Internal server error");
         }
+        return -1;
     }
 
     /***
@@ -290,10 +300,12 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private Port findOutgoingPort(Member member, int incomingPort) throws MalformedURLException {
         if((member != null) && (member.getPorts() != null)) {
             Port outgoingPort = member.getPort(incomingPort);
-            if(log.isDebugEnabled()) {
-                log.debug("Outgoing request port found: " + outgoingPort.getValue());
+            if(outgoingPort != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Outgoing request port found: " + outgoingPort.getValue());
+                }
+                return outgoingPort;
             }
-            return outgoingPort;
         }
         return null;
     }
