@@ -34,6 +34,7 @@ public class Service implements Serializable{
     private final ServiceType serviceType;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterIdClusterMap;
+    // Key: Port.proxy
     private Map<Integer, Port> portMap;
     private Properties properties;
 
@@ -76,8 +77,8 @@ public class Service implements Serializable{
         return this.clusterIdClusterMap.get(clusterId);
     }
 
-    public Map<Integer, Port> getPorts() {
-        return Collections.unmodifiableMap(portMap);
+    public Collection<Port> getPorts() {
+        return Collections.unmodifiableCollection(portMap.values());
     }
 
     public Port getPort(int proxy) {
@@ -91,8 +92,10 @@ public class Service implements Serializable{
         this.portMap.put(port.getProxy(), port);
     }
 
-    public void addPorts(Map<Integer, Port> portSet) {
-        this.portMap.putAll(portSet);
+    public void addPorts(Collection<Port> ports) {
+        for(Port port : ports) {
+            addPort(port);
+        }
     }
 
     public void removePort(Port port) {
@@ -102,6 +105,7 @@ public class Service implements Serializable{
     public boolean portExists(Port port) {
         return this.portMap.containsKey(port.getProxy());
     }
+
     public Properties getProperties() {
         return properties;
     }

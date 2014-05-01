@@ -39,6 +39,7 @@ public class Member implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    // Key: Port.proxy
     @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<Integer, Port> portMap;
     private String memberPublicIp;
@@ -81,6 +82,10 @@ public class Member implements Serializable {
         return (this.status == MemberStatus.Activated);
     }
 
+    public Collection<Port> getPorts() {
+        return Collections.unmodifiableCollection(portMap.values());
+    }
+
     public Port getPort(int proxy) {
         if(portMap.containsKey(proxy)) {
             return portMap.get(proxy);
@@ -88,16 +93,14 @@ public class Member implements Serializable {
         return null;
     }
 
-    public Map<Integer, Port> getPorts() {
-        return Collections.unmodifiableMap(portMap);
-    }
-
     public void addPort(Port port) {
         this.portMap.put(port.getProxy(), port);
     }
 
-    public void addPorts(Map<Integer, Port> portMap) {
-        this.portMap.putAll(portMap);
+    public void addPorts(Collection<Port> ports) {
+        for(Port port : ports) {
+            addPort(port);
+        }
     }
 
     public void removePort(Port port) {

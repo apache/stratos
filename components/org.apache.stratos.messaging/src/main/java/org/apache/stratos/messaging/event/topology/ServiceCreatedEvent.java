@@ -34,6 +34,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
 
     private final String serviceName;
     private final ServiceType serviceType;
+    // Key: Port.proxy
     private final Map<Integer, Port> portMap;
     private Properties properties;
 
@@ -51,16 +52,25 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
         return serviceType;
     }
 
-    public Map<Integer, Port> getPorts() {
-        return Collections.unmodifiableMap(portMap);
+    public Collection<Port> getPorts() {
+        return Collections.unmodifiableCollection(portMap.values());
+    }
+
+    public Port getPort(int proxy) {
+        if(portMap.containsKey(proxy)) {
+            return portMap.get(proxy);
+        }
+        return null;
     }
 
     public void addPort(Port port) {
         this.portMap.put(port.getProxy(), port);
     }
 
-    public void addPorts(Map<Integer, Port> portSet) {
-        this.portMap.putAll(portSet);
+    public void addPorts(Collection<Port> ports) {
+        for(Port port : ports) {
+            addPort(port);
+        }
     }
 
     public void removePort(Port port) {
