@@ -317,7 +317,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         if ((member != null) && (member.getPorts() != null)) {
             Port outgoingPort = member.getPort(incomingPort);
             if (outgoingPort != null) {
-                if (!transport.equals(outgoingPort.getProtocol())) {
+                if (!transport.startsWith(outgoingPort.getProtocol())) {
                     if (log.isErrorEnabled()) {
                         String message = String.format("Transport %s is not valid for port %d", transport, incomingPort);
                         if (log.isErrorEnabled()) {
