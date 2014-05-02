@@ -77,25 +77,30 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
     private void addEventListeners() {
         // Listen to topology events that affect clusters
         topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+            private boolean initialized;
+
             @Override
             protected void onEvent(Event event) {
-                try {
-                    TopologyManager.acquireReadLock();
-                    for (Service service : TopologyManager.getTopology().getServices()) {
-                        for (Cluster cluster : service.getClusters()) {
-                            if (clusterHasActiveMembers(cluster)) {
-                                LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
-                            } else {
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Cluster does not have any active members");
+                if(!initialized) {
+                    try {
+                        TopologyManager.acquireReadLock();
+                        for (Service service : TopologyManager.getTopology().getServices()) {
+                            for (Cluster cluster : service.getClusters()) {
+                                if (clusterHasActiveMembers(cluster)) {
+                                    LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
+                                } else {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Cluster does not have any active members");
+                                    }
                                 }
                             }
                         }
+                        initialized = true;
+                    } catch (Exception e) {
+                        log.error("Error processing event", e);
+                    } finally {
+                        TopologyManager.releaseReadLock();
                     }
-                } catch (Exception e) {
-                    log.error("Error processing event", e);
-                } finally {
-                    TopologyManager.releaseReadLock();
                 }
             }
 

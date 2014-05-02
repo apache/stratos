@@ -50,26 +50,31 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
 
     private void addEventListeners() {
         tenantEventReceiver.addEventListener(new CompleteTenantEventListener() {
+            private boolean initialized;
+
             @Override
             protected void onEvent(Event event) {
-                CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
-                if (log.isDebugEnabled()) {
-                    log.debug("Complete tenant event received");
-                }
-                for (Tenant tenant : completeTenantEvent.getTenants()) {
-                    for (Subscription subscription : tenant.getSubscriptions()) {
-                        if (isMultiTenantService(subscription.getServiceName())) {
-                            LoadBalancerContextUtil.addClustersAgainstHostNamesAndTenantIds(
-                                    subscription.getServiceName(),
-                                    tenant.getTenantId(),
-                                    subscription.getClusterIds());
-                        }
-
-                        LoadBalancerContextUtil.addClustersAgainstDomains(
-                                subscription.getServiceName(),
-                                subscription.getClusterIds(),
-                                subscription.getDomains());
+                if (!initialized) {
+                    CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Complete tenant event received");
                     }
+                    for (Tenant tenant : completeTenantEvent.getTenants()) {
+                        for (Subscription subscription : tenant.getSubscriptions()) {
+                            if (isMultiTenantService(subscription.getServiceName())) {
+                                LoadBalancerContextUtil.addClustersAgainstHostNamesAndTenantIds(
+                                        subscription.getServiceName(),
+                                        tenant.getTenantId(),
+                                        subscription.getClusterIds());
+                            }
+
+                            LoadBalancerContextUtil.addClustersAgainstDomains(
+                                    subscription.getServiceName(),
+                                    subscription.getClusterIds(),
+                                    subscription.getDomains());
+                        }
+                    }
+                    initialized = true;
                 }
             }
         });
