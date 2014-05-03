@@ -5,7 +5,8 @@
 Welcome to the Apache Stratos CLI.
 
 The command line interface (CLI) is a powerful tool that clients can use
-to communicate with Stratos services. 
+to communicate with Stratos services. The CLI distribution only includes one
+jar file containing all dependent java libraries.
 
 The tenant can use the CLI tool on two separate modes if needed, which 
 are namely single command line mode and interactive mode. 
