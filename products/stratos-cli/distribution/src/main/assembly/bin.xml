@@ -47,22 +47,24 @@
                 <include>stratos.bat</include>
             </includes>
         </fileSet>
-	<fileSet>
-            <directory>../</directory>
+        <fileSet>
+            <directory>${project.basedir}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
+                <include>DISCLAIMER</include>
+                <include>INSTALL.txt</include>
                 <include>README.txt</include>
             </includes>
         </fileSet>
     </fileSets>
     <files>
-  	<file>
+        <file>
             <source>src/main/notice/NOTICE</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
-	 <file>
+        <file>
             <source>src/main/license/LICENSE</source>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <filtered>true</filtered>

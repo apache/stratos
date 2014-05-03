@@ -1,15 +1,37 @@
-Apache Stratos Controller
------------------------
+================================================================================
+                                Apache Stratos
+================================================================================
 
-Welcome to the Apache Stratos Controller
+Welcome to the Apache Stratos distribution. This distribution includes Stratos Manager, Auto-scaler,
+Complex Event Processor and Cloud Contoller components. In single-JVM mode all four components could be run
+in single product and in multiple-JVM mode Stratos Manager, Auto-Scaler and Cloud Controller could be run using
+this distribution with carbon profiles and Complex Event Processor needs to be run separately.
 
-The Stratos Controller (SC) mainly consists of the graphical user interface (GUI) and The Artifact Distribution 
-Coordinator that is responsible for the distribution of artifacts has been embedded into the Stratos Controller. 
+Stratos Manager (SM)
+--------------------
+Stratos Manager includes a comprehensive RESTful API for integration with external PaaS management interfaces for all
+DevOps and user interaction.
 
-The Stratos Controller also defines the autoscaling policies that are defined for the Cartridges. 
+Auto-scaler
+-----------
+Auto-scaler is responsible for the elasticity of all components of the system. It contains an embedded rule engine to
+take fast and accurate decisions.
 
-For more information about Stratos Controller, please refer WSO2 Stratos Wiki Docs:
-http://docs.wso2.org/wiki/display/Stratos200/WSO2+Stratos+Documentation
+Complex Event Processor (CEP)
+-----------------------------
+Complex Event Processor does temporal (i.e., time-based) queries to analyze all the event streams that are being sent to
+it and sends summarized information to the Auto-scaler. The event processing engine is an event aggregator/accumulator,
+which takes lots of events and produces messages that Auto-scaler uses to make elasticity decisions in a more granular manner.
+
+Cloud Controller (CC)
+---------------------
+Cloud Controller sends instructions via jClouds to the IaaS to create or destroy instances. It also listens to messages
+from instances and updates the routing topology periodically. Topology updates fire messages on a topic that the LBs listen to.
+
+
+Please refer below link for more information:
+https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Architecture
+
 
 Crypto Notice
 =============
@@ -40,3 +62,7 @@ Crypto Notice
    Apache WSS4J     : http://ws.apache.org/wss4j/
    Apache Santuario : http://santuario.apache.org/
    Bouncycastle     : http://www.bouncycastle.org/
+
+
+Thank you for using Apache Stratos!
+The Stratos Team

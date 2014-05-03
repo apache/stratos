@@ -1,8 +1,10 @@
-Installing  Apache Stratos Controller (SC) 1.0.1
-===============================================
+================================================================================
+                         Apache Stratos Installation
+================================================================================
 
 Standalone Mode
 ===============
+
 1. The directory containing this INSTALL file will be the root and it will be
    treated as Carbon home directory and let it be CARBON_HOME.
 
@@ -59,3 +61,7 @@ System Requirements
      level in Internet Explorer 6.x and the default medium security setting with
      IE does not allow sufficient level of JS or ActiveX enablement for the
      management console to run.
+
+
+Please refer below link for more information:
+https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Installation+Guide

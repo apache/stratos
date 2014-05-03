@@ -1,0 +1,29 @@
+================================================================================
+                   Apache Stratos Cartridge Agent Installation
+================================================================================
+
+
+1. Extract the zip file and go to the extracted directory.
+
+2. Update the following configuration parameters in bin/stratos.sh file.
+
+properties="-Dmb.ip=MB-IP
+            -Dmb.port=MB-PORT
+            -Dlisten.address=localhost
+            -Dthrift.receiver.ip=CEP-IP
+            -Dthrift.receiver.port=CEP-PORT
+            -Dparam.file.path=${script_path}/../payload/launch-params
+            -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
+            -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD
+            -Denable.data.publisher=ENABLE-DATA-PUBLISHER
+            -Dmonitoring.server.ip=MONITORING-SERVER-IP
+       	    -Dmonitoring.server.port=MONITORING-SERVER-PORT
+       	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
+       	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
+       	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD"
+
+3. Run bin/stratos.sh file.
+
+
+Please refer following link for more information:
+https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Installation+Guide

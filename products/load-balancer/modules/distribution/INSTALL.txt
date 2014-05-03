@@ -1,7 +1,8 @@
-Installing Apache Stratos Load Balancer (LB) 2.0.5
-==================================================
+================================================================================
+                   Apache Stratos Load Balancer Installation
+================================================================================
 
-Apache Stratos LB 2.0.5 can be run as a light-weight software load balancer in
+Apache Stratos Load Balancer can be run as a light-weight software load balancer in
 stand-alone mode, that can be configured to balance the load across the services nodes.
 
 Standalone Mode
@@ -52,4 +53,10 @@ System Requirements
 1. Minimum memory - 1.5GB
 2. Processor      - Pentium 800MHz or equivalent at minimum
 3. Java SE Development Kit 1.6.0_24 or higher
+
+
+Please refer following link for more information:
+https://cwiki.apache.org/confluence/display/STRATOS/4.0.0+Installation+Guide
+
+
 

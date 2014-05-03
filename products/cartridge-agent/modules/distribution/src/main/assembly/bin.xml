@@ -75,6 +75,8 @@
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
+                <include>DISCLAIMER</include>
+                <include>INSTALL*</include>
                 <include>README*</include>
                 <include>LICENSE*</include>
                 <include>NOTICE*</include>
