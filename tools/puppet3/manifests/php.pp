@@ -15,18 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[main]
-logdir=/var/log/puppet
-vardir=/var/lib/puppet
-ssldir=/var/lib/puppet/ssl
-rundir=/var/run/puppet
-factpath=$vardir/lib/facter
-templatedir=$confdir/templates
+# php cartridge node
+node /php/ inherits base {
+  $docroot = "/var/www/"
+  $syslog="/var/log/apache2/error.log"
+  $samlalias="/var/www/"
 
-[master]
-# These are needed when the puppetmaster is run by passenger
-# and can safely be removed if webrick is used.
-ssl_client_header = SSL_CLIENT_S_DN 
-ssl_client_verify_header = SSL_CLIENT_VERIFY
-manifest = $confdir/manifests
-
+  require java
+  class {'agent':
+    type => 'php',
+  }
+  class {'php':}
+  
+  #install stratos_base before java before php before agent
+  Class['stratos_base'] -> Class['java'] -> Class['php'] ~> Class['agent']
+}
