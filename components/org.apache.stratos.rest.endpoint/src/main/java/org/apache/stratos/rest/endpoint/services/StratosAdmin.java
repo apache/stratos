@@ -1040,14 +1040,23 @@ public class StratosAdmin extends AbstractAdmin {
         return (String[]) ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray();
     }
 
+    @GET
+    @Path("/cartridge/subscription/domain/{domainName}/is-valid")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public String isSubscriptionDomainValid(@PathParam("domainName") String domainName) throws RestAPIException {
+
+        return ServiceUtils.isSubscriptionDomainValid(domainName);
+    }
+
     @DELETE
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/")
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public StratosAdminResponse removeSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                                           @PathParam("subscriptionAlias") String subscriptionAlias,
-                                                          SubscriptionDomainRequest request) throws RestAPIException {
+                                                          @PathParam("domainName") String domainName) throws RestAPIException {
 
-        return ServiceUtils.removeSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request.getDomains());
+        return ServiceUtils.removeSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
     }
 }

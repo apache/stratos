@@ -1213,11 +1213,20 @@ public class ServiceUtils {
         }
     }
 
-    public static StratosAdminResponse removeSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
-                                                                 String subscriptionAlias, List<String> domains) throws RestAPIException {
+    public static String isSubscriptionDomainValid(String domain) throws RestAPIException {
+        try {
+            return String.valueOf(cartridgeSubsciptionManager.isSubscriptionDomainValid(domain));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+    }
+
+    public static StratosAdminResponse removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+                                                                String subscriptionAlias, String domain) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            cartridgeSubsciptionManager.removeSubscriptionDomains(tenantId, subscriptionAlias, domains);
+            cartridgeSubsciptionManager.removeSubscriptionDomain(tenantId, subscriptionAlias, domain);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
