@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>messaging-features</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-incubating</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
