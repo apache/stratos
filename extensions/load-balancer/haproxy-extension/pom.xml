@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-load-balancer-extensions</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-incubating</version>
     </parent>
 
     <artifactId>apache-stratos-haproxy-extension</artifactId>
