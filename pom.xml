@@ -455,6 +455,8 @@
                         <configuration>
                             <excludes>
                                 <exclude>${project.build.directory}/**/*</exclude>
+                                <exclude>**/.gitignore</exclude>
+                                <exclude>**/.git/**/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -498,6 +500,13 @@
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
+                            <configuration>
+                                <excludes>
+                                    <exclude>${project.build.directory}/**/*</exclude>
+                                    <exclude>**/.gitignore</exclude>
+                                    <exclude>**/.git/**/*</exclude>
+                                </excludes>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
