@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>cloud-controller-feature</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-incubating</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -76,17 +76,17 @@
          <dependency>
            <groupId>org.apache.stratos</groupId>
            <artifactId>ec2</artifactId>
-           <version>4.0.0-SNAPSHOT</version>
+           <version>4.0.0-incubating</version>
          </dependency>
          <dependency>
            <groupId>org.apache.stratos</groupId>
            <artifactId>aws-ec2</artifactId>
-           <version>4.0.0-SNAPSHOT</version>
+           <version>4.0.0-incubating</version>
          </dependency>
          <dependency>
            <groupId>org.apache.stratos</groupId>
            <artifactId>openstack-nova</artifactId>
-           <version>4.0.0-SNAPSHOT</version>
+           <version>4.0.0-incubating</version>
          </dependency>
          
          <dependency>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>vcloud</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.0.0-incubating</version>
         </dependency>
          <dependency>
            <groupId>com.google.code.gson</groupId>
