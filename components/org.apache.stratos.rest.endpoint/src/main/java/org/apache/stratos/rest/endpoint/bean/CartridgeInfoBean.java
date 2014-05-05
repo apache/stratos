@@ -40,10 +40,8 @@ public class CartridgeInfoBean {
     private String size;
     private boolean removeOnTermination;
     private String serviceGroup;
-    private List<String> domains;
 
     public CartridgeInfoBean() {
-        this.domains = new ArrayList<String>();
     }
 
     public String getCartridgeType() {
@@ -165,8 +163,4 @@ public class CartridgeInfoBean {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-
-    public List<String> getDomains() { return domains; }
-
-    public void setDomains(List<String> domains) { this.domains = domains; }
 }

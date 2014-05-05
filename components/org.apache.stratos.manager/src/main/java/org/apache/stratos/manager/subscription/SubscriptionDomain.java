@@ -17,18 +17,19 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+package org.apache.stratos.manager.subscription;
 
 /**
- * Defines subscription domain post request.
+ * Subscription domain definition.
  */
-@XmlRootElement(name = "subscriptionDomainRequest")
-public class SubscriptionDomainRequest {
-    private String domainName;
-    private String applicationAlias;
+public class SubscriptionDomain {
+    private final String domainName;
+    private final String applicationAlias;
+
+    public SubscriptionDomain(String domainName, String applicationAlias) {
+        this.domainName = domainName;
+        this.applicationAlias = applicationAlias;
+    }
 
     public String getDomainName() {
         return domainName;
@@ -38,11 +39,8 @@ public class SubscriptionDomainRequest {
         return applicationAlias;
     }
 
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
-    }
-
-    public void setApplicationAlias(String applicationAlias) {
-        this.applicationAlias = applicationAlias;
+    @Override
+    public String toString() {
+        return String.format("[domain-name] %s [application-alias] %s", getDomainName(), getApplicationAlias());
     }
 }

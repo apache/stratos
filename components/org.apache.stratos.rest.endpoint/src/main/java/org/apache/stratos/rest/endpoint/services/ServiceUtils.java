@@ -991,7 +991,6 @@ public class ServiceUtils {
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
         subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
-        subscriptionData.addDomains(new HashSet<String>(cartridgeInfoBean.getDomains()));
         
         if (cartridgeInfoBean.isPersistanceRequired()) {
             // Add persistence related properties to PersistenceContext
@@ -1187,11 +1186,11 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
-    public static StratosAdminResponse addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
-                                                              String subscriptionAlias, List<String> domains) throws RestAPIException {
+    public static StratosAdminResponse addSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+                                                              String subscriptionAlias, String domainName, String applicationAlias) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            cartridgeSubsciptionManager.addSubscriptionDomains(tenantId, subscriptionAlias, domains);
+            cartridgeSubsciptionManager.addSubscriptionDomain(tenantId, subscriptionAlias, domainName, applicationAlias);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);

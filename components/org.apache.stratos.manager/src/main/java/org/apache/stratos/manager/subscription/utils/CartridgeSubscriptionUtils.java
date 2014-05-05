@@ -158,13 +158,11 @@ public class CartridgeSubscriptionUtils {
     	private int tenantId;
     	private String serviceName;
         private Set<String> clusterIds;
-        private Set<String> domains;
 
-        public TenantSubscribedEventPublisher(int tenantId, String service, Set<String> clusterIds, Set<String> domains) {
+        public TenantSubscribedEventPublisher(int tenantId, String service, Set<String> clusterIds) {
     		this.tenantId = tenantId;
     		this.serviceName = service;
             this.clusterIds = clusterIds;
-            this.domains = domains;
 		}
 		@Override
 		public void run() {
@@ -172,7 +170,7 @@ public class CartridgeSubscriptionUtils {
 				if(log.isInfoEnabled()) {
 					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
 				}
-				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds, domains);
+				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds);
 				EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
 				eventPublisher.publish(subscribedEvent);
 			} catch (Exception e) {
@@ -184,7 +182,7 @@ public class CartridgeSubscriptionUtils {
 		}
     	
     }
-    public static void publishTenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public static void publishTenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
     	
     	
     	Executor exec = new Executor() {
@@ -194,7 +192,7 @@ public class CartridgeSubscriptionUtils {
 			}
 		};
 		
-		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds, domains));
+		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds));
     }
 
     public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {

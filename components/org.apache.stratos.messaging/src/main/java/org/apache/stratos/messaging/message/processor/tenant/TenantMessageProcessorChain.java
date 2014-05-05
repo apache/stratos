@@ -37,8 +37,8 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
     private TenantSubscribedMessageProcessor tenantSubscribedMessageProcessor;
     private TenantUnSubscribedMessageProcessor tenantUnSubscribedMessageProcessor;
-    private SubscriptionDomainsAddedMessageProcessor subscriptionDomainsAddedMessageProcessor;
-    private SubscriptionDomainsRemovedMessageProcessor subscriptionDomainsRemovedMessageProcessor;
+    private SubscriptionDomainAddedMessageProcessor subscriptionDomainAddedMessageProcessor;
+    private SubscriptionDomainRemovedMessageProcessor subscriptionDomainRemovedMessageProcessor;
 
     public void initialize() {
         // Add tenant event processors
@@ -60,11 +60,11 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
         tenantUnSubscribedMessageProcessor = new TenantUnSubscribedMessageProcessor();
         add(tenantUnSubscribedMessageProcessor);
 
-        subscriptionDomainsAddedMessageProcessor = new SubscriptionDomainsAddedMessageProcessor();
-        add(subscriptionDomainsAddedMessageProcessor);
+        subscriptionDomainAddedMessageProcessor = new SubscriptionDomainAddedMessageProcessor();
+        add(subscriptionDomainAddedMessageProcessor);
 
-        subscriptionDomainsRemovedMessageProcessor = new SubscriptionDomainsRemovedMessageProcessor();
-        add(subscriptionDomainsRemovedMessageProcessor);
+        subscriptionDomainRemovedMessageProcessor = new SubscriptionDomainRemovedMessageProcessor();
+        add(subscriptionDomainRemovedMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Tenant message processor chain initialized");
@@ -85,9 +85,9 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
         } else if (eventListener instanceof TenantUnSubscribedEventListener) {
             tenantUnSubscribedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof SubscriptionDomainsAddedEventListener) {
-            subscriptionDomainsAddedMessageProcessor.addEventListener(eventListener);
+            subscriptionDomainAddedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof SubscriptionDomainsRemovedEventListener) {
-            subscriptionDomainsRemovedMessageProcessor.addEventListener(eventListener);
+            subscriptionDomainRemovedMessageProcessor.addEventListener(eventListener);
         }
         else {
             throw new RuntimeException("Unknown event listener");

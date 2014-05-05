@@ -31,13 +31,11 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
     private final int tenantId;
     private final String serviceName;
     private final Set<String> clusterIds;
-    private final Set<String> domains;
 
-    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
-        this.domains = (domains != null) ? domains : new HashSet<String>();
     }
 
     public int getTenantId() {
@@ -50,9 +48,5 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
 
     public Set<String> getClusterIds() {
         return Collections.unmodifiableSet(clusterIds);
-    }
-
-    public Set<String> getDomains() {
-        return Collections.unmodifiableSet(domains);
     }
 }

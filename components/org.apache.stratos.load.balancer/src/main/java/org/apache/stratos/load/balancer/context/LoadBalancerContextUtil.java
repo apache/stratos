@@ -19,9 +19,11 @@
 
 package org.apache.stratos.load.balancer.context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
+import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -171,13 +173,13 @@ public class LoadBalancerContextUtil {
     }
 
     /**
-     * Add clusters against domains for the given service, cluster ids.
+     * Add clusters against domain name for the given service, cluster ids.
      *
      * @param serviceName
      * @param clusterIds
-     * @param domains
+     * @param domainName
      */
-    public static void addClustersAgainstDomains(String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public static void addClustersAgainstDomain(String serviceName, Set<String> clusterIds, String domainName) {
         try {
             TopologyManager.acquireReadLock();
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -191,7 +193,7 @@ public class LoadBalancerContextUtil {
             for (String clusterId : clusterIds) {
                 cluster = service.getCluster(clusterId);
                 if (cluster != null) {
-                    addClusterAgainstDomains(serviceName, cluster, domains);
+                    addClusterAgainstDomain(serviceName, cluster, domainName);
                 } else {
                     if (log.isWarnEnabled()) {
                         log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
@@ -204,13 +206,13 @@ public class LoadBalancerContextUtil {
     }
 
     /**
-     * Remove clusters mapped against domains for the given service, cluster ids.
+     * Remove clusters mapped against domain name for the given service, cluster ids.
      *
      * @param serviceName
      * @param clusterIds
-     * @param domains
+     * @param domainName
      */
-    public static void removeClustersAgainstDomains(String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public static void removeClustersAgainstDomain(String serviceName, Set<String> clusterIds, String domainName) {
         try {
             TopologyManager.acquireReadLock();
 
@@ -226,7 +228,7 @@ public class LoadBalancerContextUtil {
                 cluster = service.getCluster(clusterId);
                 if (cluster != null) {
                     // Remove clusters mapped against domain names
-                    removeClusterAgainstDomains(cluster, domains);
+                    removeClusterAgainstDomain(cluster, domainName);
                 } else {
                     if (log.isWarnEnabled()) {
                         log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
@@ -309,21 +311,19 @@ public class LoadBalancerContextUtil {
      *
      * @param serviceName
      * @param cluster
-     * @param domains
+     * @param domainName
      */
-    private static void addClusterAgainstDomains(String serviceName, Cluster cluster, Set<String> domains) {
+    private static void addClusterAgainstDomain(String serviceName, Cluster cluster, String domainName) {
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Adding cluster to host/domain name -> cluster map against domain names: [service] %s " +
-                    "[domains] %s [cluster] %s", serviceName, domains, cluster.getClusterId()));
+            log.debug(String.format("Adding cluster to host/domain name -> cluster map against domain: [service] %s " +
+                    "[domain-name] %s [cluster] %s", serviceName, domainName, cluster.getClusterId()));
         }
-        if ((domains != null) && (domains.size() > 0)) {
-            for (String domain : domains) {
-                addClusterToHostNameClusterMap(domain, cluster);
+        if (StringUtils.isNotBlank(domainName)) {
+            addClusterToHostNameClusterMap(domainName, cluster);
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster added to host/domain name -> cluster map: [domain-name] %s [cluster] %s",
-                            domain, cluster.getClusterId()));
-                }
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster added to host/domain name -> cluster map: [domain-name] %s [cluster] %s",
+                        domainName, cluster.getClusterId()));
             }
         }
     }
@@ -354,10 +354,12 @@ public class LoadBalancerContextUtil {
                     for (Subscription subscription : tenant.getSubscriptions()) {
                         if (subscription.getServiceName().equals(serviceName)) {
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Removing cluster from host/domain name -> cluster map against domain names: [service] %s " +
-                                        "[tenant-id] %d [domains] %s", serviceName, tenantId, subscription.getDomains()));
+                                log.debug(String.format("Removing cluster from host/domain name -> cluster map: [service] %s " +
+                                        "[tenant-id] %d [domains] %s", serviceName, tenantId, subscription.getSubscriptionDomains()));
                             }
-                            removeClusterAgainstDomains(cluster, subscription.getDomains());
+                            for(SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
+                                removeClusterAgainstDomain(cluster, subscriptionDomain.getDomainName());
+                            }
                         } else {
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Tenant not subscribed to service: %s", serviceName));
@@ -372,13 +374,11 @@ public class LoadBalancerContextUtil {
         }
     }
 
-    private static void removeClusterAgainstDomains(Cluster cluster, Set<String> domains) {
-        for (String domain : domains) {
-            removeClusterFromHostNameClusterMap(domain, cluster);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Cluster removed from host/domain name -> cluster map: [domain-name] %s [cluster] %s",
-                        domain, cluster.getClusterId()));
-            }
+    private static void removeClusterAgainstDomain(Cluster cluster, String domainName) {
+        removeClusterFromHostNameClusterMap(domainName, cluster);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Cluster removed from host/domain name -> cluster map: [domain-name] %s [cluster] %s",
+                    domainName, cluster.getClusterId()));
         }
     }
 

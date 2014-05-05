@@ -1023,11 +1023,11 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                                       @PathParam("subscriptionAlias") String subscriptionAlias,
-                                                       SubscriptionDomainRequest request) throws RestAPIException {
+    public StratosAdminResponse addSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+                                                      @PathParam("subscriptionAlias") String subscriptionAlias,
+                                                      SubscriptionDomainRequest request) throws RestAPIException {
 
-        return ServiceUtils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request.getDomains());
+        return ServiceUtils.addSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, request.getDomainName(), request.getApplicationAlias());
     }
 
     @GET
@@ -1035,7 +1035,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public String[] getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                                       @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
 
         return (String[]) ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray();
     }
@@ -1053,9 +1053,9 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse removeSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
-                                                          @PathParam("domainName") String domainName) throws RestAPIException {
+    public StratosAdminResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+                                                         @PathParam("subscriptionAlias") String subscriptionAlias,
+                                                         @PathParam("domainName") String domainName) throws RestAPIException {
 
         return ServiceUtils.removeSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
     }

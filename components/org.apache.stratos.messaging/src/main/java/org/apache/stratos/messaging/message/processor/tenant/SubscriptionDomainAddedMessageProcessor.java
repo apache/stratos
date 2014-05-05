@@ -22,19 +22,20 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
+import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainsAddedEvent;
+import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant subscribed message processor for removing domains from tenant subscriptions.
+ * Tenant subscribed message processor for adding domains to tenant subscriptions.
  */
-public class SubscriptionDomainsRemovedMessageProcessor extends MessageProcessor {
+public class SubscriptionDomainAddedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(SubscriptionDomainsRemovedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(SubscriptionDomainAddedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -45,14 +46,14 @@ public class SubscriptionDomainsRemovedMessageProcessor extends MessageProcessor
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (SubscriptionDomainsAddedEvent.class.getName().equals(type)) {
+        if (SubscriptionDomainAddedEvent.class.getName().equals(type)) {
             // Return if tenant manager has not initialized
             if(!TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            SubscriptionDomainsAddedEvent event = (SubscriptionDomainsAddedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
+            SubscriptionDomainAddedEvent event = (SubscriptionDomainAddedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
@@ -70,10 +71,11 @@ public class SubscriptionDomainsRemovedMessageProcessor extends MessageProcessor
                     }
                     return false;
                 }
-                subscription.removeDomains(event.getDomains());
+                subscription.addSubscriptionDomain(new SubscriptionDomain(event.getDomainName(), event.getApplicationAlias()));
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Domains removed from tenant subscription: [tenant-id] %d [tenant-domain] %s [service] %s [domains] %s",
-                             tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName(), event.getDomains()));
+                    log.info(String.format("Domain added to tenant subscription: [tenant-id] %d [tenant-domain] %s " +
+                            "[service] %s [domain-name] %s [application-alias] %s", tenant.getTenantId(),
+                            tenant.getTenantDomain(), event.getServiceName(), event.getDomainName(), event.getApplicationAlias()));
                 }
 
                 // Notify event listeners

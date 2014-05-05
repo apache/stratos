@@ -25,21 +25,21 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * This event is fired when domains are added to a tenant subscription.
+ * This event is fired when domains are removed from a tenant subscription.
  */
-public class SubscriptionDomainsAddedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 3457484382856403382L;
+public class SubscriptionDomainRemovedEvent extends Event implements Serializable {
+    private static final long serialVersionUID = -8837521344795740210L;
 
     private final int tenantId;
     private final String serviceName;
     private final Set<String> clusterIds;
-    private final Set<String> domains;
+    private final String domainName;
 
-    public SubscriptionDomainsAddedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public SubscriptionDomainRemovedEvent(int tenantId, String serviceName, Set<String> clusterIds, String domainName) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
-        this.domains = (domains != null) ? domains : new HashSet<String>();
+        this.domainName = domainName;
     }
 
     public int getTenantId() {
@@ -54,7 +54,7 @@ public class SubscriptionDomainsAddedEvent extends Event implements Serializable
         return Collections.unmodifiableSet(clusterIds);
     }
 
-    public Set<String> getDomains() {
-        return Collections.unmodifiableSet(domains);
+    public String getDomainName() {
+        return domainName;
     }
 }

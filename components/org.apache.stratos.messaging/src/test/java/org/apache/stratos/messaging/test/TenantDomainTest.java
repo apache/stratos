@@ -36,7 +36,7 @@ public class TenantDomainTest {
     @Test
     public void testSubscriptionModel() {
         Tenant tenant = new Tenant(1, "domain.org");
-        Subscription subscription = new Subscription("subscription1", new HashSet<String>(), new HashSet<String>());
+        Subscription subscription = new Subscription("subscription1", new HashSet<String>());
         tenant.addSubscription(subscription);
         Assert.assertTrue("Subscription not added", tenant.isSubscribed("subscription1"));
         tenant.removeSubscription("subscription1");

@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
@@ -75,8 +76,10 @@ public class TenantSynzhronizerTask implements Task {
                                     carbonTenant.getId(), carbonTenant.getDomain(), cartridgeSubscription.getType()));
                         }
                         Subscription subscription = new Subscription(cartridgeSubscription.getType(),
-                                new HashSet<String>(cartridgeSubscription.getCluster().getId()),
-                                cartridgeSubscription.getDomains());
+                                new HashSet<String>(cartridgeSubscription.getCluster().getId()));
+                        for(SubscriptionDomain subscriptionDomain : cartridgeSubscription.getSubscriptionDomains()) {
+                            subscription.addSubscriptionDomain(subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationAlias());
+                        }
                         tenant.addSubscription(subscription);
                     }
                 }

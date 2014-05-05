@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
+import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
@@ -68,10 +69,12 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                                         subscription.getClusterIds());
                             }
 
-                            LoadBalancerContextUtil.addClustersAgainstDomains(
-                                    subscription.getServiceName(),
-                                    subscription.getClusterIds(),
-                                    subscription.getDomains());
+                            for (SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
+                                LoadBalancerContextUtil.addClustersAgainstDomain(
+                                        subscription.getServiceName(),
+                                        subscription.getClusterIds(),
+                                        subscriptionDomain.getDomainName());
+                            }
                         }
                     }
                     initialized = true;
@@ -95,11 +98,6 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                             tenantSubscribedEvent.getTenantId(),
                             tenantSubscribedEvent.getClusterIds());
                 }
-
-                LoadBalancerContextUtil.addClustersAgainstDomains(
-                        tenantSubscribedEvent.getServiceName(),
-                        tenantSubscribedEvent.getClusterIds(),
-                        tenantSubscribedEvent.getDomains());
             }
         });
         tenantEventReceiver.addEventListener(new TenantUnSubscribedEventListener() {
@@ -130,37 +128,38 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
         tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                SubscriptionDomainsAddedEvent subscriptionDomainsAddedEvent = (SubscriptionDomainsAddedEvent) event;
+                SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent) event;
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant subscription domains added event received: [tenant-id] %d " +
-                            "[service] %s [cluster-ids] %s [domains] %s",
-                            subscriptionDomainsAddedEvent.getTenantId(),
-                            subscriptionDomainsAddedEvent.getServiceName(),
-                            subscriptionDomainsAddedEvent.getClusterIds(),
-                            subscriptionDomainsAddedEvent.getDomains()));
+                    log.debug(String.format("Tenant subscription domain added event received: [tenant-id] %d " +
+                            "[service] %s [cluster-ids] %s [domain-name] %s",
+                            subscriptionDomainAddedEvent.getTenantId(),
+                            subscriptionDomainAddedEvent.getServiceName(),
+                            subscriptionDomainAddedEvent.getClusterIds(),
+                            subscriptionDomainAddedEvent.getDomainName()));
                 }
-                LoadBalancerContextUtil.addClustersAgainstDomains(
-                        subscriptionDomainsAddedEvent.getServiceName(),
-                        subscriptionDomainsAddedEvent.getClusterIds(),
-                        subscriptionDomainsAddedEvent.getDomains());
+
+                LoadBalancerContextUtil.addClustersAgainstDomain(
+                        subscriptionDomainAddedEvent.getServiceName(),
+                        subscriptionDomainAddedEvent.getClusterIds(),
+                        subscriptionDomainAddedEvent.getDomainName());
             }
         });
         tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                SubscriptionDomainsRemovedEvent subscriptionDomainsRemovedEvent = (SubscriptionDomainsRemovedEvent) event;
+                SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent) event;
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant subscription domains removed event received: [tenant-id] %d " +
-                            "[service] %s [cluster-ids] %s [domains] %s",
-                            subscriptionDomainsRemovedEvent.getTenantId(),
-                            subscriptionDomainsRemovedEvent.getServiceName(),
-                            subscriptionDomainsRemovedEvent.getClusterIds(),
-                            subscriptionDomainsRemovedEvent.getDomains()));
+                    log.debug(String.format("Tenant subscription domain removed event received: [tenant-id] %d " +
+                            "[service] %s [cluster-ids] %s [domain-name] %s",
+                            subscriptionDomainRemovedEvent.getTenantId(),
+                            subscriptionDomainRemovedEvent.getServiceName(),
+                            subscriptionDomainRemovedEvent.getClusterIds(),
+                            subscriptionDomainRemovedEvent.getDomainName()));
                 }
-                LoadBalancerContextUtil.removeClustersAgainstDomains(
-                        subscriptionDomainsRemovedEvent.getServiceName(),
-                        subscriptionDomainsRemovedEvent.getClusterIds(),
-                        subscriptionDomainsRemovedEvent.getDomains());
+                LoadBalancerContextUtil.removeClustersAgainstDomain(
+                        subscriptionDomainRemovedEvent.getServiceName(),
+                        subscriptionDomainRemovedEvent.getClusterIds(),
+                        subscriptionDomainRemovedEvent.getDomainName());
             }
         });
     }
