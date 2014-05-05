@@ -29,7 +29,7 @@
             <directory>../../../components/org.apache.stratos.cli/target</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
-                <include>org.apache.stratos.cli-${pom.version}-Tool.jar</include>
+                <include>org.apache.stratos.cli-${pom.version}.jar</include>
             </includes>
         </fileSet>
         <fileSet>
