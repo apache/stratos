@@ -1,26 +1,4 @@
-<?xml version='1.0'?>
-<!--
-
- Licensed to the Apache Software Foundation (ASF) under one
- or more contributor license agreements.  See the NOTICE file
- distributed with this work for additional information
- regarding copyright ownership.  The ASF licenses this file
- to you under the Apache License, Version 2.0 (the
- "License"); you may not use this file except in compliance
- with the License.  You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing,
- software distributed under the License is distributed on an
- "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- KIND, either express or implied.  See the License for the
- specific language governing permissions and limitations
- under the License.
-
--->
-
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax28="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax214="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax28="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax214="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:documentation>AutoScalerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
@@ -40,9 +18,25 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax213="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://policy.deployment.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:complexType name="Properties">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"></xs:element>
+                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax213="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://policy.deployment.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
             <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"></xs:import>
@@ -326,8 +320,8 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax29="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"></xs:import>
+        <xs:schema xmlns:ax29="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="PartitionGroup">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
@@ -347,41 +341,32 @@
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax214:LoadAverage"></xs:element>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax214:MemoryConsumption"></xs:element>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax214:RequestsInFlight"></xs:element>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax214:LoadAverageThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax214:MemoryConsumptionThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax214:RequestsInFlightThresholds"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="LoadAverage">
+            <xs:complexType name="LoadAverageThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="average" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="gradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfGradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfSecondDerivative" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="secondDerivative" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="MemoryConsumption">
+            <xs:complexType name="MemoryConsumptionThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="average" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="gradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfGradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfSecondDerivative" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="secondDerivative" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="RequestsInFlight">
+            <xs:complexType name="RequestsInFlightThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="average" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="gradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfGradient" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="scaleDownMarginOfSecondDerivative" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="secondDerivative" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax27="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"></xs:import>
+        <xs:schema xmlns:ax27="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
@@ -391,24 +376,8 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="Properties">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"></xs:element>
-                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Property">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax26="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"></xs:import>
+        <xs:schema xmlns:ax26="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="Partition">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
@@ -1165,22 +1134,22 @@
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://10.128.181.194:9766/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"></soap:address>
+            <soap:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://10.128.181.194:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"></soap:address>
+            <soap:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://10.128.181.194:9446/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"></soap12:address>
+            <soap12:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://10.128.181.194:9766/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"></soap12:address>
+            <soap12:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://10.128.181.194:9766/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"></http:address>
+            <http:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"></http:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://10.128.181.194:9446/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"></http:address>
+            <http:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"></http:address>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
