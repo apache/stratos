@@ -21,9 +21,7 @@
 
 
 class php () {
-  $packages = [
-    'nano',
-    'zip',
+  $packages = [    
     'build-essential',
     'mysql-client',
     'apache2',
@@ -34,9 +32,7 @@ class php () {
     'php5-mysql',
     'php-db',
     'php-pear',
-    'php5-curl',
-    'curl',
-    'wget',
+    'php5-curl',    
     'php5-ldap',
     'php5-adodb',
     'mailutils',

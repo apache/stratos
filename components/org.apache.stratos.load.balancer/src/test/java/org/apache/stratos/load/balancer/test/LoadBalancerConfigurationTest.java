@@ -131,11 +131,11 @@ public class LoadBalancerConfigurationTest {
             Assert.assertNotNull(String.format("%s, member not found: [member] %s", validationError, memberId), m1);
             Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getMemberIp());
 
-            String portName = "http";
-            Port m1Http = m1.getPort(portName);
-            Assert.assertNotNull(String.format("%s, port not found: [member] %s [port] %s", validationError, memberId, portName), m1Http);
-            Assert.assertEquals(String.format("%s, port value not valid: [member] %s [port] %s", validationError, memberId, portName), 8080, m1Http.getValue());
-            Assert.assertEquals(String.format("%s, port proxy not valid: [member] %s [port] %s", validationError, memberId, portName), 80, m1Http.getProxy());
+            int proxyPort = 80;
+            Port m1Http = m1.getPort(proxyPort);
+            Assert.assertNotNull(String.format("%s, port not found: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), m1Http);
+            Assert.assertEquals(String.format("%s, port value not valid: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), 8080, m1Http.getValue());
+            Assert.assertEquals(String.format("%s, port proxy not valid: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), 80, m1Http.getProxy());
 
         } finally {
             TopologyManager.releaseReadLock();

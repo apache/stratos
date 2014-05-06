@@ -563,7 +563,6 @@ For :   wsdl4j.wso2:wsdl4j:1.6.2.wso2v4
 For :   org.slf4j:slf4j-api:1.7.5
 	org.slf4j:slf4j-log4j12:1.7.5
 
- Copyright (c) 2004-2013 QOS.ch
  All rights reserved.
 
  Permission is hereby granted, free  of charge, to any person obtaining

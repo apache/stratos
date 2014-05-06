@@ -33,6 +33,8 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String ARTIFACTS_UPDATED_SH = "artifacts-updated.sh";
     public static final String CLEAN_UP_SH = "clean.sh";
     public static final String MOUNT_VOLUMES_SH = "mount_volumes.sh";
+    public static final String SUBSCRIPTION_DOMAIN_ADDED_SH = "subscription-domain-added.sh";
+    public static final String SUBSCRIPTION_DOMAIN_REMOVED_SH = "subscription-domain-removed.sh";
 	
 	public static final String CARTRIDGE_KEY = "CARTRIDGE_KEY";
 	public static final String APP_PATH = "APP_PATH";

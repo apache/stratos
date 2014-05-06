@@ -117,19 +117,45 @@ public class ExtensionUtils {
     This will execute the volume mounting script which format and mount the
     persistance volumes.
      */
-    public static void executeVolumeMountExtension(String persistanceMappingsPayload) {
+    public static void executeVolumeMountExtension(String persistenceMappingsPayload) {
         try {
             if(log.isDebugEnabled()) {
-                    log.debug("Executing volume mounting extension");
+                    log.debug(String.format("Executing volume mounting extension: [payload] %s", persistenceMappingsPayload));
             }
             String command = prepareCommand(CartridgeAgentConstants.MOUNT_VOLUMES_SH);
             //String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
             // add payload file path as argument so inside the script we can source
             // it  to get the env variables set by the startup script
-            CommandUtils.executeCommand(command + " " + persistanceMappingsPayload);
+            CommandUtils.executeCommand(command + " " + persistenceMappingsPayload);
         }
         catch (Exception e) {
                 log.error("Could not execute volume mounting extension", e);
+        }
+    }
+
+    public static void executeSubscriptionDomainAddedExtension(String domain, String applicationAlias) {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug("Executing subscription domain added extension: [domain] %s [application-alias] %s");
+            }
+            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SH + " " + domain + " " + applicationAlias);
+            CommandUtils.executeCommand(command);
+        }
+        catch (Exception e) {
+            log.error("Could not execute subscription domain added extension", e);
+        }
+    }
+
+    public static void executeSubscriptionDomainRemovedExtension(String domain) {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug("Executing subscription domain removed extension: [domain] %s");
+            }
+            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SH + " " + domain);
+            CommandUtils.executeCommand(command);
+        }
+        catch (Exception e) {
+            log.error("Could not execute subscription domain removed extension", e);
         }
     }
 }

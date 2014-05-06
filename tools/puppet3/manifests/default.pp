@@ -15,4 +15,10 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import "nodes"
+# default (base) cartridge node
+node /default/ inherits base {
+  require java
+  class {'agent':}
+
+  Class['stratos_base'] -> Class['java'] ~> Class['agent']
+}

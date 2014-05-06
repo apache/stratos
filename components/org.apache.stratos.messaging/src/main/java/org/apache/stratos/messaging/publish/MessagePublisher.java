@@ -54,7 +54,7 @@ public abstract class MessagePublisher {
 	 * @param messageObj
 	 *            POJO to be published.
 	 */
-	public abstract void publish(Object messageObj);
+	public abstract void publish(Object messageObj, boolean retry);
 
 	/**
 	 * This operation get triggered when a message is ready to be published.
@@ -67,5 +67,5 @@ public abstract class MessagePublisher {
 	 * @param headers
 	 *            properties to be set as message headers.
 	 */
-	public abstract void publish(Object messageObj, Properties headers);
+	public abstract void publish(Object messageObj, Properties headers, boolean retry);
 }

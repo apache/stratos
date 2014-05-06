@@ -360,6 +360,10 @@ public class MockContext {
         return serviceDefinitionMap.values().toArray(new ServiceDefinitionBean[0]);
     }
 
+    public ServiceDefinitionBean getServiceType(String serviceType) throws RestAPIException{
+        return serviceDefinitionMap.get(serviceType);
+    }
+
     public Partition[] getPartitions(String deploymentPolicyId, String partitionGroupId) throws RestAPIException{
         if(!deploymentPolicyMap.containsKey(deploymentPolicyId)){
             throw new RestAPIException("There is no deployment policy with id: " + deploymentPolicyId);

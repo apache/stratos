@@ -53,29 +53,44 @@ public class TopicSubscriber implements Runnable {
 	public TopicSubscriber(String aTopicName) {
 		topicName = aTopicName;
 		connector = new TopicConnector();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic subscriber connector created: [topic] %s", topicName));
+        }
 	}
 
 	private void doSubscribe() throws Exception, JMSException {
-		if (topicSession != null && topicSubscriber != null) {
-			return;
-		}
-		
-		if (topicSession == null) {
-			// initialize a TopicConnector
-			connector.init(topicName);
-			// get a session
-			topicSession = connector.newSession();
-		}
-		
-		Topic topic = connector.getTopic();
-		if (topic == null) {
-			// if topic doesn't exist, create it.
-			topic = topicSession.createTopic(topicName);
-		}
-		topicSubscriber = topicSession.createSubscriber(topic);
-		topicSubscriber.setMessageListener(messageListener);
+		// Initialize a topic connection
+		connector.init(topicName);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic subscriber connector initialized: [topic] %s", topicName));
+        }
+        // Create new session
+        topicSession = createSession(connector);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic subscriber session created: [topic] %s", topicName));
+        }
+        // Create a new subscriber
+        createSubscriber(topicSession);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Topic subscriber created: [topic] %s", topicName));
+        }
         subscribed = true;
 	}
+
+    private void createSubscriber(TopicSession topicSession) throws JMSException {
+        Topic topic = connector.getTopic();
+        if (topic == null) {
+            // if topic doesn't exist, create it.
+            topic = topicSession.createTopic(topicName);
+        }
+        topicSubscriber = topicSession.createSubscriber(topic);
+        topicSubscriber.setMessageListener(messageListener);
+    }
+
+    private TopicSession createSession(TopicConnector topicConnector) throws Exception {
+        // Create a new session
+        return topicConnector.newSession();
+    }
 
 	/**
 	 * @param messageListener
@@ -100,32 +115,52 @@ public class TopicSubscriber implements Runnable {
 			try {
 				doSubscribe();
 			} catch (Exception e) {
+                subscribed = false;
 				log.error("Error while subscribing to the topic: " + topicName, e);
 			} finally {
-				// start the health checker
-                healthChecker = new TopicHealthChecker(topicName);
-			    Thread healthCheckerThread = new Thread(healthChecker);
-				healthCheckerThread.start();
-				try {
-					// waits till the thread finishes.
-					healthCheckerThread.join();
-				} catch (InterruptedException ignore) {
-				}
-				// health checker failed
-				// closes all sessions/connections
-				try {
-                    subscribed = false;
-					if (topicSubscriber != null) {
-						topicSubscriber.close();
-					}
-					if (topicSession != null) {
-						topicSession.close();
-					}
-					if (connector != null) {
-						connector.close();
-					}
-				} catch (JMSException ignore) {
-				}
+                if(subscribed) {
+                    // start the health checker if subscribed
+                    healthChecker = new TopicHealthChecker(topicName);
+                    Thread healthCheckerThread = new Thread(healthChecker);
+                    healthCheckerThread.start();
+                    try {
+                        // waits till the thread finishes.
+                        healthCheckerThread.join();
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+                else {
+				    // subscription failed
+                    if(log.isInfoEnabled()) {
+                        log.info("Will try to subscribe again in 30 sec");
+                    }
+                    try {
+                        Thread.sleep(30000);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
+                // closes all sessions/connections
+                try {
+                    if (topicSubscriber != null) {
+                        topicSubscriber.close();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Topic subscriber closed: [topic] %s", topicName));
+                        }
+                    }
+                    if (topicSession != null) {
+                        topicSession.close();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Topic subscriber session closed: [topic] %s", topicName));
+                        }
+                    }
+                    if (connector != null) {
+                        connector.close();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Topic subscriber connector closed: [topic] %s", topicName));
+                        }
+                    }
+                } catch (JMSException ignore) {
+                }
 			}
 		}
 	}

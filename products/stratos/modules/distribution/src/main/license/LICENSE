@@ -701,7 +701,8 @@ jsch_0.1.49.wso2v1.jar,5
 stax2-api-3.1.1.jar,
 stringtemplate-3.2.1.jar,
 tcpmon-1.0.jar,
-xstream-1.4.1.jar
+xstream-1.4.1.jar,
+dhtmlHistory.js
 
 Copyright (c) 2010 Terence Parr
 All rights reserved.
@@ -1044,12 +1045,9 @@ jquery-ui-1.10.3.custom.min.js,
 jquery.validate.min.js,
 jquery-1.10.1.min.js,
 jquery.blockUI-1.33.js,
-dhtmlHistory.js, 
 Scriptaculous-1.7.0
 
 The MIT License (MIT)
-
-Copyright (c) 2004-2013 QOS.ch
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

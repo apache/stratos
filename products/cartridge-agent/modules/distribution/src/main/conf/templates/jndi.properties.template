@@ -20,6 +20,6 @@
 # Please use loadbalancer.conf for updating mb-ip, mb-port and templates/jndi.properties.template
 # file for updating other configurations.
 #
-connectionfactoryName=topicConnectionfactory
-connectionfactory.topicConnectionfactory=amqp://admin:admin@carbon/carbon?brokerlist='tcp://$mb_ip:$mb_port'
-java.naming.factory.initial=org.wso2.andes.jndi.PropertiesFileInitialContextFactory
+connectionfactoryName=TopicConnectionFactory
+connectionfactory.topicConnectionfactory=tcp://$mb_ip:$mb_port
+java.naming.factory.initial=org.apache.activemq.jndi.ActiveMQInitialContextFactory

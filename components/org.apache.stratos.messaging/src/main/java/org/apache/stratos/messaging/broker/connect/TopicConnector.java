@@ -67,7 +67,6 @@ public class TopicConnector {
         }
         topicConnection = connFactory.createTopicConnection();
         topicConnection.start();
-
     }
 
     /**
