@@ -67,7 +67,9 @@
     }
     jsonRequest.autoscalePolicy = autoscalePolicy;
     jsonRequest.deploymentPolicy = deploymentPolicy;
-    jsonRequest.size = size;
+    if (size != null && size != ""){
+        jsonRequest.size = size;
+    }
     jsonRequest.persistanceRequired = persistencerequired;
     jsonRequest.commitsEnabled = commitsEnabled;
     jsonRequest.removeOnTermination = removeontermination;
