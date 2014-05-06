@@ -196,8 +196,6 @@
                         </Import-Package>
 						<Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
 						<DynamicImport-Package>*</DynamicImport-Package>
-						<!--<Axis2Deployer>AutoscalerPolicyDeployer</Axis2Deployer>
-						<Axis2Deployer>DeploymentPolicyDeployer</Axis2Deployer>-->
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 					</instructions>
