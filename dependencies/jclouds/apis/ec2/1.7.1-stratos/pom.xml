@@ -26,7 +26,7 @@
   </parent>
   <groupId>org.apache.stratos</groupId>
   <artifactId>ec2</artifactId>
-  <version>1.7.1-stratos</version>
+  <version>4.0.1-SNAPSHOT</version>
   <name>jclouds ec2 api</name>
   <description>jclouds components to access an implementation of EC2</description>
   <packaging>bundle</packaging>
@@ -138,7 +138,7 @@
   </profiles>
 
   <scm>
-    <tag>4.0.0-incubating-rc3</tag>
+    <tag>4.0.0-incubating-rc2</tag>
   </scm>
 </project>
 

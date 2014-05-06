@@ -27,7 +27,7 @@
   </parent>
   <groupId>org.apache.stratos</groupId>
   <artifactId>aws-ec2</artifactId>
-  <version>1.7.1-stratos</version>
+  <version>4.0.1-SNAPSHOT</version>
   <name>jclouds Amazon EC2 provider</name>
   <description>EC2 implementation targeted to Amazon Web Services</description>
   <packaging>bundle</packaging>
@@ -61,12 +61,12 @@
     <dependency>
       <groupId>org.apache.stratos</groupId>
       <artifactId>ec2</artifactId>
-      <version>1.7.1-stratos</version>
+      <version>4.0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.stratos</groupId>
       <artifactId>ec2</artifactId>
-      <version>1.7.1-stratos</version>
+      <version>4.0.1-SNAPSHOT</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -150,7 +150,7 @@
   </profiles>
 
   <scm>
-    <tag>4.0.0-incubating-rc3</tag>
+    <tag>4.0.0-incubating-rc2</tag>
   </scm>
 </project>
 
