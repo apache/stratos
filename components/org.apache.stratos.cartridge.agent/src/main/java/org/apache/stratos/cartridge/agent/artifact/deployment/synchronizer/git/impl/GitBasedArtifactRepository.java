@@ -433,24 +433,24 @@ public class GitBasedArtifactRepository {
         }*/
 
         if (log.isDebugEnabled()) {
-            log.debug("Artifact checkout done by thread " + Thread.currentThread().getName() + " - " +
+            log.debug("Artifact checkout will be done by thread " + Thread.currentThread().getName() + " - " +
                 Thread.currentThread().getId());
         }
 
     	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
     	
     	// if context for tenant is not initialized
-    	if(tenantToRepoContextMap.get(tenantId) == null)
+    	if(tenantToRepoContextMap.get(tenantId) == null) {
 	    	initGitContext(repositoryInformation);
+    	}
     	
-        
 		RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
-        if(gitRepoCtx == null) { //to handle super tenant scenario
-           // if(log.isDebugEnabled())
-                log.info("No git repository context information found for deployment synchronizer");
+		
+		if (gitRepoCtx == null) { // to handle super tenant scenario
+			log.info("No git repository context information found for deployment synchronizer");
 
-            return true;
-        }
+			return true;
+		}
 
         synchronized (gitRepoCtx) {
             if(!gitRepoCtx.cloneExists())
