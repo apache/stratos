@@ -386,7 +386,7 @@ public class LaunchSpecification {
    /**
     * The IAM Instance Profile (IIP) associated with the instance.
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public Optional<IAMInstanceProfileRequest> getIAMInstanceProfile() {
       return iamInstanceProfile;
    }
@@ -510,7 +510,7 @@ public class LaunchSpecification {
             + ", iamInstanceProfile=" + iamInstanceProfile.orNull() + "]";
    }
 
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public static class IAMInstanceProfileRequest {
 
       public static IAMInstanceProfileRequest forArn(String arn) {
