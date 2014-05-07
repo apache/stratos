@@ -202,6 +202,15 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="subscriptionDomainRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="domainName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="applicationContext" minOccurs="0" maxOccurs="1" nillable="true"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="thresholdValues">
         <xs:all>
             <xs:element name="average" type="xs:int" minOccurs="1" maxOccurs="1"/>
