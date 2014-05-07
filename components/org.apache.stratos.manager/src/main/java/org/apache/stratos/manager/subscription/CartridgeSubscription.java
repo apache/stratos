@@ -136,6 +136,10 @@ public abstract class CartridgeSubscription implements Serializable {
     public boolean subscriptionDomainExists(String domainName) {
         return subscriptionDomainMap.containsKey(domainName);
     }
+    
+    public SubscriptionDomain getSubscriptionDomain(String domainName) {
+        return subscriptionDomainMap.get(domainName);
+    }
 
     public Collection<SubscriptionDomain> getSubscriptionDomains() {
         return Collections.unmodifiableCollection(subscriptionDomainMap.values());

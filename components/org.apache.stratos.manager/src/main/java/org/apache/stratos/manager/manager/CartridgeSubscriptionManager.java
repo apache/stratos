@@ -448,7 +448,7 @@ public class CartridgeSubscriptionManager {
         eventPublisher.publish(event);
     }
 
-    public List<String> getSubscriptionDomains(int tenantId, String subscriptionAlias)
+    public List<SubscriptionDomain> getSubscriptionDomains(int tenantId, String subscriptionAlias)
             throws ADCException {
 
         try {
@@ -456,13 +456,28 @@ public class CartridgeSubscriptionManager {
             if(cartridgeSubscription == null) {
                 throw new ADCException("Cartridge subscription not found");
             }
-            List<String> domainNames = new ArrayList<String>();
-            for(SubscriptionDomain subscriptionDomain : cartridgeSubscription.getSubscriptionDomains()) {
-                domainNames.add(subscriptionDomain.getDomainName());
-            }
-            return domainNames;
+            
+            return (List<SubscriptionDomain>) cartridgeSubscription.getSubscriptionDomains();
         } catch (Exception e) {
             String errorMsg = "Could not get domains of cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public SubscriptionDomain getSubscriptionDomain(int tenantId, String subscriptionAlias, String domain)
+            throws ADCException {
+
+        try {
+            CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+            if(cartridgeSubscription == null) {
+                throw new ADCException("Cartridge subscription not found");
+            }
+            
+            return cartridgeSubscription.getSubscriptionDomain(domain);
+        } catch (Exception e) {
+            String errorMsg = "Could not check [domain] "+domain+" against cartridge subscription: [tenant-id] " 
+            					+ tenantId + " [subscription-alias] " + subscriptionAlias;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
