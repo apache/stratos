@@ -34,6 +34,7 @@ import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPub
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
+import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
@@ -47,6 +48,7 @@ import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsAddedEven
 import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsRemovedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -173,17 +175,37 @@ public class CartridgeAgent implements Runnable {
         tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent)event;
-                ExtensionUtils.executeSubscriptionDomainAddedExtension(subscriptionDomainAddedEvent.getDomainName(),
-                        subscriptionDomainAddedEvent.getApplicationContext());
+                try {
+                    SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent) event;
+                    ExtensionUtils.executeSubscriptionDomainAddedExtension(
+                            subscriptionDomainAddedEvent.getTenantId(),
+                            findTenantDomain(subscriptionDomainAddedEvent.getTenantId()),
+                            subscriptionDomainAddedEvent.getDomainName(),
+                            subscriptionDomainAddedEvent.getApplicationContext());
+                }
+                catch (Exception e) {
+                    if(log.isErrorEnabled()) {
+                        log.error("Could not process subscription domain added event", e);
+                    }
+                }
             }
         });
 
         tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent)event;
-                ExtensionUtils.executeSubscriptionDomainRemovedExtension(subscriptionDomainRemovedEvent.getDomainName());
+                try {
+                    SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent) event;
+                    ExtensionUtils.executeSubscriptionDomainRemovedExtension(
+                            subscriptionDomainRemovedEvent.getTenantId(),
+                            findTenantDomain(subscriptionDomainRemovedEvent.getTenantId()),
+                            subscriptionDomainRemovedEvent.getDomainName());
+                }
+                catch (Exception e) {
+                    if(log.isErrorEnabled()) {
+                        log.error("Could not process subscription domain removed event", e);
+                    }
+                }
             }
         });
 
@@ -202,6 +224,20 @@ public class CartridgeAgent implements Runnable {
             }
         }
 	}
+
+    private String findTenantDomain(int tenantId) {
+        try {
+            TenantManager.acquireReadLock();
+            Tenant tenant = TenantManager.getInstance().getTenant(tenantId);
+            if(tenant == null) {
+                throw new RuntimeException(String.format("Tenant could not be found: [tenant-id] %d", tenantId));
+            }
+            return tenant.getTenantDomain();
+        }
+        finally {
+            TenantManager.releaseReadLock();
+        }
+    }
 
 	protected void validateRequiredSystemProperties() {
 		String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
