@@ -27,6 +27,7 @@ import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -1034,19 +1035,20 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public String[] getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
+    public SubscriptionDomain[] getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
 
-        return (String[]) ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray();
+        return ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray(new SubscriptionDomain[0]);
     }
 
     @GET
-    @Path("/cartridge/subscription/domain/{domainName}/is-valid")
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public String isSubscriptionDomainValid(@PathParam("domainName") String domainName) throws RestAPIException {
+    public SubscriptionDomain getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+            @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
 
-        return ServiceUtils.isSubscriptionDomainValid(domainName);
+        return ServiceUtils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
     }
 
     @DELETE
