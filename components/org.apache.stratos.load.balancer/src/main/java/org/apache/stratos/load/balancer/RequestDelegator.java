@@ -60,6 +60,11 @@ public class RequestDelegator {
             }
             return member;
         }
+        else {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Could not find a cluster for hostname %s", hostName));
+            }
+        }
         return null;
     }
 
@@ -78,6 +83,11 @@ public class RequestDelegator {
                 }
             }
             return member;
+        }
+        else {
+            if(log.isWarnEnabled()) {
+                log.warn(String.format("Could not find a cluster for hostname %s and tenant-id %d", hostName, tenantId));
+            }
         }
         return null;
     }
