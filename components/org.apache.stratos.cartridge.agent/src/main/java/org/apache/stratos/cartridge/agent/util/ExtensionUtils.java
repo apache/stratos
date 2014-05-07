@@ -133,12 +133,12 @@ public class ExtensionUtils {
         }
     }
 
-    public static void executeSubscriptionDomainAddedExtension(String domain, String applicationAlias) {
+    public static void executeSubscriptionDomainAddedExtension(String domain, String applicationContext) {
         try {
             if(log.isDebugEnabled()) {
-                log.debug("Executing subscription domain added extension: [domain] %s [application-alias] %s");
+                log.debug("Executing subscription domain added extension: [domain] %s [application-context] %s");
             }
-            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SH + " " + domain + " " + applicationAlias);
+            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SH + " " + domain + " " + applicationContext);
             CommandUtils.executeCommand(command);
         }
         catch (Exception e) {

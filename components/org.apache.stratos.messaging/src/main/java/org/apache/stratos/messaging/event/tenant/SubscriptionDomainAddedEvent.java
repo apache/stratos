@@ -34,15 +34,15 @@ public class SubscriptionDomainAddedEvent extends Event implements Serializable 
     private final String serviceName;
     private final Set<String> clusterIds;
     private final String domainName;
-    private final String applicationAlias;
+    private final String applicationContext;
 
     public SubscriptionDomainAddedEvent(int tenantId, String serviceName, Set<String> clusterIds, String domainName,
-                                        String applicationAlias) {
+                                        String applicationContext) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
         this.domainName = domainName;
-        this.applicationAlias = applicationAlias;
+        this.applicationContext = applicationContext;
     }
 
     public int getTenantId() {
@@ -61,7 +61,7 @@ public class SubscriptionDomainAddedEvent extends Event implements Serializable 
         return domainName;
     }
 
-    public String getApplicationAlias() {
-        return applicationAlias;
+    public String getApplicationContext() {
+        return applicationContext;
     }
 }

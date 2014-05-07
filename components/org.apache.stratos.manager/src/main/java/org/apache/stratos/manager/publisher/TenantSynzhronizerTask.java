@@ -78,7 +78,7 @@ public class TenantSynzhronizerTask implements Task {
                         Subscription subscription = new Subscription(cartridgeSubscription.getType(),
                                 new HashSet<String>(cartridgeSubscription.getCluster().getId()));
                         for(SubscriptionDomain subscriptionDomain : cartridgeSubscription.getSubscriptionDomains()) {
-                            subscription.addSubscriptionDomain(subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationAlias());
+                            subscription.addSubscriptionDomain(subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationContext());
                         }
                         tenant.addSubscription(subscription);
                     }

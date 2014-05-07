@@ -24,23 +24,23 @@ package org.apache.stratos.manager.subscription;
  */
 public class SubscriptionDomain {
     private final String domainName;
-    private final String applicationAlias;
+    private final String applicationContext;
 
-    public SubscriptionDomain(String domainName, String applicationAlias) {
+    public SubscriptionDomain(String domainName, String applicationContext) {
         this.domainName = domainName;
-        this.applicationAlias = applicationAlias;
+        this.applicationContext = applicationContext;
     }
 
     public String getDomainName() {
         return domainName;
     }
 
-    public String getApplicationAlias() {
-        return applicationAlias;
+    public String getApplicationContext() {
+        return applicationContext;
     }
 
     @Override
     public String toString() {
-        return String.format("[domain-name] %s [application-alias] %s", getDomainName(), getApplicationAlias());
+        return String.format("[domain-name] %s [application-context] %s", getDomainName(), getApplicationContext());
     }
 }

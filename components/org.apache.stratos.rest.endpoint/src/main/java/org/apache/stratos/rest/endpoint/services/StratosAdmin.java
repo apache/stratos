@@ -1027,7 +1027,7 @@ public class StratosAdmin extends AbstractAdmin {
                                                       @PathParam("subscriptionAlias") String subscriptionAlias,
                                                       SubscriptionDomainRequest request) throws RestAPIException {
 
-        return ServiceUtils.addSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, request.getDomainName(), request.getApplicationAlias());
+        return ServiceUtils.addSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, request.getDomainName(), request.getApplicationContext());
     }
 
     @GET

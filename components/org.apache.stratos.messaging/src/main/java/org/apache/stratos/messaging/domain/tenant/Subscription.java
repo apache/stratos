@@ -52,8 +52,8 @@ public class Subscription {
         subscriptionDomainMap.put(subscriptionDomain.getDomainName(), subscriptionDomain);
     }
 
-    public void addSubscriptionDomain(String domainName, String applicationAlias) {
-        addSubscriptionDomain(new SubscriptionDomain(domainName, applicationAlias));
+    public void addSubscriptionDomain(String domainName, String applicationContext) {
+        addSubscriptionDomain(new SubscriptionDomain(domainName, applicationContext));
     }
 
     public void removeSubscriptionDomain(String domainName) {

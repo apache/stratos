@@ -175,7 +175,7 @@ public class CartridgeAgent implements Runnable {
             protected void onEvent(Event event) {
                 SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent)event;
                 ExtensionUtils.executeSubscriptionDomainAddedExtension(subscriptionDomainAddedEvent.getDomainName(),
-                        subscriptionDomainAddedEvent.getApplicationAlias());
+                        subscriptionDomainAddedEvent.getApplicationContext());
             }
         });
 

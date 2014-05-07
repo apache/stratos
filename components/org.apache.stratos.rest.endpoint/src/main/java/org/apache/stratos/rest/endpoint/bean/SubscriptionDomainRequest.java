@@ -28,21 +28,21 @@ import java.util.List;
 @XmlRootElement(name = "subscriptionDomainRequest")
 public class SubscriptionDomainRequest {
     private String domainName;
-    private String applicationAlias;
+    private String applicationContext;
 
     public String getDomainName() {
         return domainName;
     }
 
-    public String getApplicationAlias() {
-        return applicationAlias;
+    public String getApplicationContext() {
+        return applicationContext;
     }
 
     public void setDomainName(String domainName) {
         this.domainName = domainName;
     }
 
-    public void setApplicationAlias(String applicationAlias) {
-        this.applicationAlias = applicationAlias;
+    public void setApplicationContext(String applicationContext) {
+        this.applicationContext = applicationContext;
     }
 }

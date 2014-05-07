@@ -387,7 +387,7 @@ public class CartridgeSubscriptionManager {
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
     }
 
-    public void addSubscriptionDomain(int tenantId, String subscriptionAlias, String domainName, String applicationAlias)
+    public void addSubscriptionDomain(int tenantId, String subscriptionAlias, String domainName, String applicationContext)
             throws ADCException {
 
         CartridgeSubscription cartridgeSubscription;
@@ -401,22 +401,22 @@ public class CartridgeSubscriptionManager {
                     throw new ADCException(String.format("Domain name %s already registered", domainName));
                 }
 
-            cartridgeSubscription.addSubscriptionDomain(new SubscriptionDomain(domainName, applicationAlias));
+            cartridgeSubscription.addSubscriptionDomain(new SubscriptionDomain(domainName, applicationContext));
             new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);
         } catch (PersistenceManagerException e) {
             String errorMsg = "Could not add domain to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
-            " [domain-name] " + domainName + " [application-alias] " + applicationAlias;
+            " [domain-name] " + domainName + " [application-context] " + applicationContext;
             log.error(errorMsg);
             throw new ADCException(errorMsg, e);
         }
 
         log.info("Successfully added domains to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
-                " [domain-name] " + domainName + " [application-alias] " +applicationAlias);
+                " [domain-name] " + domainName + " [application-context] " +applicationContext);
 
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
         SubscriptionDomainAddedEvent event = new SubscriptionDomainAddedEvent(tenantId, cartridgeSubscription.getType(),
                 new HashSet<String>(cartridgeSubscription.getCluster().getId()),
-                domainName, applicationAlias);
+                domainName, applicationContext);
         eventPublisher.publish(event);
     }
 

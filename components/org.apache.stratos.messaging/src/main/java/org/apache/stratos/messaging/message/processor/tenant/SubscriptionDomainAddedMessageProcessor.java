@@ -71,11 +71,11 @@ public class SubscriptionDomainAddedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                subscription.addSubscriptionDomain(new SubscriptionDomain(event.getDomainName(), event.getApplicationAlias()));
+                subscription.addSubscriptionDomain(new SubscriptionDomain(event.getDomainName(), event.getApplicationContext()));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Domain added to tenant subscription: [tenant-id] %d [tenant-domain] %s " +
-                            "[service] %s [domain-name] %s [application-alias] %s", tenant.getTenantId(),
-                            tenant.getTenantDomain(), event.getServiceName(), event.getDomainName(), event.getApplicationAlias()));
+                            "[service] %s [domain-name] %s [application-context] %s", tenant.getTenantId(),
+                            tenant.getTenantDomain(), event.getServiceName(), event.getDomainName(), event.getApplicationContext()));
                 }
 
                 // Notify event listeners

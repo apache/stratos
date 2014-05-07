@@ -1186,10 +1186,10 @@ public class ServiceUtils {
     }
 
     public static StratosAdminResponse addSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
-                                                             String subscriptionAlias, String domainName, String applicationAlias) throws RestAPIException {
+                                                             String subscriptionAlias, String domainName, String applicationContext) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
-            cartridgeSubsciptionManager.addSubscriptionDomain(tenantId, subscriptionAlias, domainName, applicationAlias);
+            cartridgeSubsciptionManager.addSubscriptionDomain(tenantId, subscriptionAlias, domainName, applicationContext);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
