@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.rest.endpoint.mock;
 
-import org.apache.catalina.tribes.membership.McastService;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -30,14 +30,17 @@ import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
+import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.services.ServiceUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -474,6 +477,46 @@ public class StratosTestAdmin {
         return MockContext.getInstance().getDeploymentPoliciesForCartridgeType(cartridgeType);
     }
 
+    @POST
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public StratosAdminResponse addSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+                                                      @PathParam("subscriptionAlias") String subscriptionAlias,
+                                                      SubscriptionDomainRequest request) throws RestAPIException {
 
+        return MockContext.getInstance().addSubscriptionDomain(2, subscriptionAlias, request.getDomainName(), request.getApplicationContext());
+    }
+
+    @GET
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public SubscriptionDomain[] getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
+                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+
+        return MockContext.getInstance().getSubscriptionDomains(2, subscriptionAlias).toArray(new SubscriptionDomain[0]);
+    }
+
+    @GET
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/{domainName}")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public SubscriptionDomain getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+            @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
+
+        return MockContext.getInstance().getSubscriptionDomain(2, cartridgeType, subscriptionAlias, domainName);
+    }
+
+    @DELETE
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domain/{domainName}")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public StratosAdminResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+                                                         @PathParam("subscriptionAlias") String subscriptionAlias,
+                                                         @PathParam("domainName") String domainName) throws RestAPIException {
+
+        return MockContext.getInstance().removeSubscriptionDomain(2, subscriptionAlias, domainName);
+    }
 
 }
