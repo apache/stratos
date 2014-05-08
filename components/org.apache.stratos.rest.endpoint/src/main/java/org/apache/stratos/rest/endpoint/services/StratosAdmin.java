@@ -1025,31 +1025,41 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                                      @PathParam("subscriptionAlias") String subscriptionAlias,
-                                                      SubscriptionDomainRequest request) throws RestAPIException {
+    public Response addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
+                                           @PathParam("subscriptionAlias") String subscriptionAlias,
+                                           SubscriptionDomainRequest request) throws RestAPIException {
 
-        return ServiceUtils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request);
+        StratosAdminResponse stratosAdminResponse = ServiceUtils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request);
+        return Response.ok().entity(stratosAdminResponse).build();
     }
 
     @GET
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public SubscriptionDomainBean[] getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
+    public Response getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+        SubscriptionDomainBean[] subscriptionDomainBean = ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray(new SubscriptionDomainBean[0]);
 
-        return ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray(new SubscriptionDomainBean[0]);
+        if(subscriptionDomainBean.length == 0){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }else{
+            return Response.ok().entity(subscriptionDomainBean).build();
+        }
     }
 
     @GET
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public SubscriptionDomainBean getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
-            @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
-
-        return ServiceUtils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
+    public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+                                          @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
+        SubscriptionDomainBean subscriptionDomainBean = ServiceUtils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
+        if(subscriptionDomainBean.domainName == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }else{
+            return Response.ok().entity(subscriptionDomainBean).build();
+        }
     }
 
     @DELETE
@@ -1059,7 +1069,6 @@ public class StratosAdmin extends AbstractAdmin {
     public StratosAdminResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
                                                          @PathParam("domainName") String domainName) throws RestAPIException {
-
         return ServiceUtils.removeSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
     }
 }

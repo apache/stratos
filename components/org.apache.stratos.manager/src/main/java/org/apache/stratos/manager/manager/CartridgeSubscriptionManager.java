@@ -21,6 +21,7 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.openjpa.util.java$util$ArrayList$proxy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
@@ -457,7 +458,8 @@ public class CartridgeSubscriptionManager {
                 throw new ADCException("Cartridge subscription not found");
             }
             
-            return (List<SubscriptionDomain>) cartridgeSubscription.getSubscriptionDomains();
+            //return (List<SubscriptionDomain>) cartridgeSubscription.getSubscriptionDomains();
+            return new ArrayList<SubscriptionDomain>(cartridgeSubscription.getSubscriptionDomains());
         } catch (Exception e) {
             String errorMsg = "Could not get domains of cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias;
             log.error(errorMsg);

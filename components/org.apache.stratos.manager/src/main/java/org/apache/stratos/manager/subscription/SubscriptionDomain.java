@@ -19,10 +19,12 @@
 
 package org.apache.stratos.manager.subscription;
 
+import java.io.Serializable;
+
 /**
  * Subscription domain definition.
  */
-public class SubscriptionDomain {
+public class SubscriptionDomain implements Serializable{
     private final String domainName;
     private final String applicationContext;
 
