@@ -25,13 +25,12 @@ import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant subscribed message processor for adding domains to tenant subscriptions.
+ * Subscription domain added message processor for adding domains to tenant subscriptions.
  */
 public class SubscriptionDomainAddedMessageProcessor extends MessageProcessor {
 
@@ -53,7 +52,7 @@ public class SubscriptionDomainAddedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            SubscriptionDomainAddedEvent event = (SubscriptionDomainAddedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
+            SubscriptionDomainAddedEvent event = (SubscriptionDomainAddedEvent) Util.jsonToObject(message, SubscriptionDomainAddedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
