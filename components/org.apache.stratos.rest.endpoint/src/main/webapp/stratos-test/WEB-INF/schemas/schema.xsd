@@ -205,11 +205,17 @@
     <xs:element name="subscriptionDomainRequest">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="domainName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                <xs:element name="applicationContext" minOccurs="0" maxOccurs="1" nillable="true"/>
+                <xs:element name="domains" type="subscriptionDomain" minOccurs="1" maxOccurs="unbounded" nillable="false"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+
+    <xs:complexType name="subscriptionDomain">
+        <xs:all>
+		<xs:element name="domainName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="applicationContext" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+        </xs:all>
+    </xs:complexType>
 
     <xs:complexType name="thresholdValues">
         <xs:all>

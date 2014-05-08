@@ -19,30 +19,17 @@
 
 package org.apache.stratos.rest.endpoint.bean;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 
 /**
  * Defines subscription domain post request.
  */
-@XmlRootElement(name = "subscriptionDomainRequest")
+@XmlRootElement
 public class SubscriptionDomainRequest {
-    private String domainName;
-    private String applicationContext;
+    public List<SubscriptionDomainBean> domains;
 
-    public String getDomainName() {
-        return domainName;
-    }
-
-    public String getApplicationContext() {
-        return applicationContext;
-    }
-
-    public void setDomainName(String domainName) {
-        this.domainName = domainName;
-    }
-
-    public void setApplicationContext(String applicationContext) {
-        this.applicationContext = applicationContext;
-    }
 }
