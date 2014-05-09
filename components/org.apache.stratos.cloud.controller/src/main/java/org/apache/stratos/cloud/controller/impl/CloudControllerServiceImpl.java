@@ -111,7 +111,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
     InvalidIaasProviderException {
-
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
             log.error(msg);
@@ -423,7 +422,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		Iaas iaas = iaasProvider.getIaas();
 		
 		int sizeGB = volume.getSize();
-		String volumeId = iaas.createVolume(sizeGB);
+		String snapshotId =  volume.getSnapshotId();
+		String volumeId = iaas.createVolume(sizeGB, snapshotId);
 		volume.setId(volumeId);
 		volume.setIaasType(iaasProvider.getType());
 	}

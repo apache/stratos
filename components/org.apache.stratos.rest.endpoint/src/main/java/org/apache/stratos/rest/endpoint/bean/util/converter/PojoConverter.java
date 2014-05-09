@@ -159,6 +159,7 @@ public class PojoConverter {
             volume.setDevice(volumeBean[i].device);
             volume.setRemoveOntermination(volumeBean[i].removeOnTermination);
             volume.setMappingPath(volumeBean[i].mappingPath);
+            volume.setSnapshotId(volumeBean[i].snapshotId);
             volumes[i] = volume;
         }
         persistence.setVolumes(volumes);

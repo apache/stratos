@@ -231,7 +231,7 @@ public class VCloudIaas extends Iaas {
     }
 
 	@Override
-	public String createVolume(int sizeGB) {
+	public String createVolume(int sizeGB, String snapshotId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

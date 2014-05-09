@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -43,6 +44,7 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.ec2.options.CreateSnapshotOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
@@ -53,6 +55,7 @@ import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
+import org.jclouds.openstack.nova.v2_0.domain.VolumeSnapshot;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
 import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
@@ -61,6 +64,7 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
+import org.jclouds.openstack.nova.v2_0.options.CreateVolumeSnapshotOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
@@ -515,7 +519,7 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
 	@Override
-	public String createVolume(int sizeGB) {
+	public String createVolume(int sizeGB, String snapshotId) {
 		IaasProvider iaasInfo = getIaasProvider();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
@@ -529,15 +533,28 @@ public class OpenstackNovaIaas extends Iaas {
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
+        
+        Volume volume;
+        if(StringUtils.isEmpty(snapshotId)){
+        	if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone);
+        	}
+        	volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
+        }else{
+        	if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
+        	}
+        	System.out.println(("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId));
+        	volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone).snapshotId(snapshotId));
+        }
         if (volume == null) {
 			log.fatal("Volume creation was unsuccessful. [region] : " + region+" [zone] : " + zone
 					+ " of Iaas : " + iaasInfo);
 			return null;
-		}
+		}        
 		
 		log.info("Successfully created a new volume [id]: "+volume.getId()
-				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo);
+				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo + " [Volume ID]" + volume.getId());
 		return volume.getId();
 	}
 
@@ -559,8 +576,7 @@ public class OpenstackNovaIaas extends Iaas {
 		
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
-        VolumeAttachment attachment = api.attachVolumeToServerAsDevice(volumeId, instanceId, device);
-        
+        VolumeAttachment attachment = api.attachVolumeToServerAsDevice(volumeId, instanceId, device);    
         if (attachment == null) {
 			log.fatal("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
 					+" was unsuccessful. [region] : " + region
