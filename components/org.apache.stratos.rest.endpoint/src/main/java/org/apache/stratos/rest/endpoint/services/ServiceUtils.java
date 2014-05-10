@@ -964,23 +964,9 @@ public class ServiceUtils {
     public static CartridgeSubscription getCartridgeSubscription(String alias, ConfigurationContext configurationContext) {
         return cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.getTenantId(configurationContext), alias);
     }
-
-    static SubscriptionInfo subscribeToCartridge(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername,
-                                                 String tenantDomain) throws RestAPIException {
-
-        try {
-            return subscribe(cartridgeInfoBean, configurationContext, tenantUsername, tenantDomain);
-
-        } catch (Exception e) {
-            throw new RestAPIException(e.getMessage(), e);
-        }
-    }
-
-    private static SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain)
-            throws ADCException, PolicyException, UnregisteredCartridgeException,
-            InvalidCartridgeAliasException, DuplicateCartridgeAliasException, RepositoryRequiredException,
-            AlreadySubscribedException, RepositoryCredentialsRequiredException, InvalidRepositoryException,
-            RepositoryTransportException, RestAPIException {
+  
+    static SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean, ConfigurationContext configurationContext, String tenantUsername, String tenantDomain) 
+    		throws RestAPIException{
 
         SubscriptionData subscriptionData = new SubscriptionData();
         subscriptionData.setCartridgeType(cartridgeInfoBean.getCartridgeType());
@@ -1007,8 +993,14 @@ public class ServiceUtils {
         }
 
         //subscribe
-        return cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
-
+        SubscriptionInfo subscriptionInfo = null;
+        try{
+        	subscriptionInfo = cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
+        }catch(Exception e){
+        	throw new RestAPIException(e.getMessage(), e);
+        }
+        
+        return subscriptionInfo;
     }
 
     public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster(String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
