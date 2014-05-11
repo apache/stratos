@@ -1,0 +1,18 @@
+{
+  "request" : {
+    "url" : "/stratos/admin/cookie",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body_cookie.json",
+    "headers" : {
+      "Set-Cookie" : "JSESSIONID=BD425955D0F64102B3C67B39D0C946F0; Path=/stratos/; Secure; HttpOnly",
+      "Date" : "Fri, 09 May 2014 05:40:05 GMT",
+      "WWW-Authenticate" : "Basic",
+      "Content-Type" : "application/json",
+      "Content-Length" : "62",
+      "Server" : "WSO2 Carbon Server"
+    }
+  }
+}

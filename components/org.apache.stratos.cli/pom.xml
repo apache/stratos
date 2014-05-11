@@ -34,6 +34,7 @@
 	
 	<properties>
 		<slf4j.version>1.7.6</slf4j.version>
+		<wiremock.version>1.46</wiremock.version>
 	</properties>
 
 	<dependencies>
@@ -119,7 +120,7 @@
 					<descriptors>
 						<descriptor>src/main/assembly/src.xml</descriptor>
 					</descriptors>
-                    <appendAssemblyId>false</appendAssemblyId>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -131,7 +132,122 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>  
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-dependency-plugin</artifactId> 
+				<version>2.7</version> 
+				<executions>
+					<execution> 
+						<id>copy</id> 
+						<phase>pre-integration-test</phase>
+						<goals> 
+							<goal>copy</goal>
+						</goals> 
+						<configuration> 
+							<artifactItems>
+								<!-- Copy the CLI --> 
+								<artifactItem> 
+									<groupId>${project.groupId}</groupId> 
+									<artifactId>${project.artifactId}</artifactId> 
+									<version>${project.version}</version> 
+									<type>jar</type> 
+									<overWrite>true</overWrite> 
+									<outputDirectory>${maven.output.build.path}</outputDirectory> 
+								</artifactItem> 
+							</artifactItems> 
+							<artifactItems> 
+								<artifactItem> 
+									<groupId>com.github.tomakehurst</groupId> 
+									<artifactId>wiremock</artifactId> 
+									<version>${wiremock.version}</version> 
+									<classifier>standalone</classifier> 
+									<type>jar</type> 
+									<overWrite>true</overWrite> 
+									<outputDirectory>${maven.output.build.path}</outputDirectory> 
+								</artifactItem> 
+							</artifactItems> 
+						</configuration> 
+					</execution> 
+				</executions> 
+			</plugin> 
 		</plugins>
 	</build>
 
+	<profiles>
+		<!-- Integration testing the CLI -->
+		<profile>
+			<id>cli-test</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3</version>
+						<executions>
+							<execution>
+								<configuration>
+									<executable>python</executable>
+									<workingDirectory>src/test/python</workingDirectory>
+									<!-- tests common to both interactive and non-interactive use cases -->
+									<arguments>
+										<argument>test_common.py</argument>
+									</arguments>
+									<environmentVariables>
+										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
+										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+									</environmentVariables>
+								</configuration>
+								<id>python-test-common</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+							<execution>
+								<configuration>
+									<executable>python</executable>
+									<workingDirectory>src/test/python</workingDirectory>
+									<!-- interactive use cases -->
+									<arguments>
+										<argument>test_interactive.py</argument>
+									</arguments>
+									<environmentVariables>
+										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
+										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+									</environmentVariables>
+								</configuration>
+								<id>python-test-interactive</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+							<execution>
+								<configuration>
+									<executable>python</executable>
+									<workingDirectory>src/test/python</workingDirectory>
+									<!-- non-interactive use cases -->
+									<arguments>
+										<argument>test_noninteractive.py</argument>
+									</arguments>
+									<environmentVariables>
+										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
+										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+									</environmentVariables>
+								</configuration>
+								<id>python-test-noninteractive</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
