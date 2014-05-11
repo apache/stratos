@@ -279,7 +279,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 					allCommandOptions.addOption((Option) o);
 				}
 				
-				commandLine = parser.parse(allCommandOptions, args);
+				commandLine = parser.parse(options, args, true);
 				remainingArgs = commandLine.getArgs();
 				if (remainingArgs != null && remainingArgs.length > 0) {
 					// Get command action
