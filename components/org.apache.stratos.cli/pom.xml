@@ -180,6 +180,30 @@
 			<build>
 				<plugins>
 					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.7</version>
+						<executions>
+							<execution>
+								<phase>pre-integration-test</phase>
+								<configuration>
+									<tasks>
+										<mkdir dir="${project.build.directory}/downloads/"/>
+										<get src="https://pypi.python.org/packages/source/p/pexpect/pexpect-3.2.tar.gz" 
+											dest="${project.build.directory}/downloads/"
+											verbose="true"/>
+										<gunzip src="${project.build.directory}/downloads/pexpect-3.2.tar.gz" 
+											dest="${project.build.directory}/downloads/pexpect-3.2.tar"/>
+										<untar src="${project.build.directory}/downloads/pexpect-3.2.tar" 
+											dest="${project.build.directory}/"/>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+ 								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>exec-maven-plugin</artifactId>
 						<version>1.3</version>
@@ -193,7 +217,7 @@
 										<argument>test_common.py</argument>
 									</arguments>
 									<environmentVariables>
-										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
 									</environmentVariables>
@@ -213,7 +237,7 @@
 										<argument>test_interactive.py</argument>
 									</arguments>
 									<environmentVariables>
-										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
 									</environmentVariables>
@@ -233,7 +257,7 @@
 										<argument>test_noninteractive.py</argument>
 									</arguments>
 									<environmentVariables>
-										<PYTHONPATH>../../main/python:$PYTHONPATH</PYTHONPATH>
+										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
 									</environmentVariables>
