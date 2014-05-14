@@ -1,0 +1,19 @@
+{
+  "request" : {
+    "url" : "/stratos/admin/tenant",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalTo" : "{\"admin\":\"tenant1\",\"firstname\":\"John\",\"lastname\":\"Doe\",\"adminPassword\":\"secret\",\"tenantDomain\":\"tenant.com\",\"email\":\"john@tenant.com\",\"active\":false,\"tenantId\":0}"
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body_tenant_create.json",
+    "headers" : {
+      "Date" : "Fri, 09 May 2014 05:40:12 GMT",
+      "Content-Type" : "application/json",
+      "Transfer-Encoding" : "chunked",
+      "Server" : "WSO2 Carbon Server"
+    }
+  }
+}

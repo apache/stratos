@@ -1,0 +1,16 @@
+{
+  "request" : {
+    "url" : "/stratos/admin/tenant/list",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body_tenant_list.json",
+    "headers" : {
+      "Date" : "Fri, 09 May 2014 05:45:15 GMT",
+      "Content-Type" : "application/json",
+      "Transfer-Encoding" : "chunked",
+      "Server" : "WSO2 Carbon Server"
+    }
+  }
+}
