@@ -4,7 +4,9 @@
 
 The CLI integration tests can be run from maven using:
 
+```
 mvn -P cli-test integration-test
+```
 
 You will need python installed and be running a unix like operating system
 
@@ -14,6 +16,7 @@ Run 'mvn -P cli-test integration-test' to download the test dependencies.
 
 Set the environment variables CLI_JAR, PYTHONPATH and WIREMOCK_JAR. For example:
 
+```
 # the stratos CLI_JAR
 export CLI_JAR=~/incubator-stratos/components/org.apache.stratos.cli/target/org.apache.stratos.cli-4.0.0-SNAPSHOT.jar
 
@@ -22,6 +25,7 @@ export PYTHONPATH=$PYTHONPATH:~/incubator-stratos/components/org.apache.stratos.
 
 # the wiremock application
 export WIREMOCK_JAR=~/incubator-stratos/components/org.apache.stratos.cli/target/dependency/wiremock-1.46-standalone.jar
+```
 
 The tests are split into three areas:
 
@@ -31,7 +35,9 @@ The tests are split into three areas:
 
 After setting the above environment variables, the tests can be executed like this:
 
+```
 ./test_common.py
+```
 
 The tests have class methods that start wiremock at the start of the tests (setUpClass) and stop it at the end of the test (tearDownClass).
 
