@@ -4,4 +4,4 @@ Run CLI integration tests with:
 
 ```mvn -P cli-test integration-test```
 
-You will need python ane pexpect installed.
+You will need python installed.
