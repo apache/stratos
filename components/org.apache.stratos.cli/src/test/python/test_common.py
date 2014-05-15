@@ -65,17 +65,17 @@ class TestCommon(unittest.TestCase):
         child.expect (pexpect.EOF)
 
     def test_error_if_context_path_is_provided_in_stratos_url(self):
-        os.environ["STRATOS_URL"] = "https://localhost:9443/somecontext/" # context path
+        os.environ["STRATOS_URL"] = "https://localhost:1234/somecontext/" # context path
         child = pexpect.spawn(TestCommon.cli_cmd)
-        child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost:9443/somecontext/"')
+        child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost:1234/somecontext/"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)
 
     def test_error_if_non_https_scheme_is_provided_in_stratos_url(self):
-        os.environ["STRATOS_URL"] = "http://localhost:9443" # http scheme
+        os.environ["STRATOS_URL"] = "http://localhost:1234" # http scheme
         child = pexpect.spawn(TestCommon.cli_cmd)
-        child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "http://localhost:9443"')
+        child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "http://localhost:1234"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
         child.expect (pexpect.EOF)

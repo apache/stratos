@@ -220,6 +220,8 @@
 										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+										<WIREMOCK_HTTP_PORT>8080</WIREMOCK_HTTP_PORT>
+										<WIREMOCK_HTTPS_PORT>9443</WIREMOCK_HTTPS_PORT>
 									</environmentVariables>
 								</configuration>
 								<id>python-test-common</id>
@@ -240,6 +242,8 @@
 										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+										<WIREMOCK_HTTP_PORT>8080</WIREMOCK_HTTP_PORT>
+										<WIREMOCK_HTTPS_PORT>9443</WIREMOCK_HTTPS_PORT>
 									</environmentVariables>
 								</configuration>
 								<id>python-test-interactive</id>
@@ -260,6 +264,8 @@
 										<PYTHONPATH>../../main/python:${project.build.directory}/pexpect-3.2:$PYTHONPATH</PYTHONPATH>
 										<CLI_JAR>${project.build.directory}/${project.build.finalName}.jar</CLI_JAR>
 										<WIREMOCK_JAR>${project.build.directory}/dependency/wiremock-${wiremock.version}-standalone.jar</WIREMOCK_JAR>
+										<WIREMOCK_HTTP_PORT>8080</WIREMOCK_HTTP_PORT>
+										<WIREMOCK_HTTPS_PORT>9443</WIREMOCK_HTTPS_PORT>
 									</environmentVariables>
 								</configuration>
 								<id>python-test-noninteractive</id>

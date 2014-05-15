@@ -29,11 +29,22 @@ import base64
 
 class WiremockClient():
 
-    reset_url = 'http://localhost:8080/__admin/mappings/reset'
+    HTTP_PORT = os.environ["WIREMOCK_HTTP_PORT"]
 
-    find_url = 'http://localhost:8080/__admin/requests/find'
+    HTTPS_PORT = os.environ["WIREMOCK_HTTPS_PORT"]
 
-    count_url = 'http://localhost:8080/__admin/requests/count'
+    WIREMOCK_JAR = os.environ["WIREMOCK_JAR"]
+
+    if 'WIREMOCK_OPTS' in os.environ: 
+       WIREMOCK_OPTS = os.environ["WIREMOCK_OPTS"]
+    else:
+       WIREMOCK_OPTS = ""
+
+    reset_url = 'http://localhost:' + HTTP_PORT + '/__admin/mappings/reset'
+
+    find_url = 'http://localhost:' + HTTP_PORT + '/__admin/requests/find'
+
+    count_url = 'http://localhost:' + HTTP_PORT + '/__admin/requests/count'
 
     cookies_req_json = '{ "method": "GET", "url": "/stratos/admin/cookie" }'
 
@@ -43,7 +54,7 @@ class WiremockClient():
 
     tenant_deactivate_req_json = '{ "method": "POST", "url": "/stratos/admin/tenant/deactivate/tenant.com" }'
 
-    wiremock = "java -jar " + os.environ["WIREMOCK_JAR"] + " --https-port 9443"
+    wiremock = "java -jar " + WIREMOCK_JAR + " --port " + HTTP_PORT + " --https-port " + HTTPS_PORT + " " + WIREMOCK_OPTS
 
     def start(self):
         # execute wiremock and return handle so it can be torn down
