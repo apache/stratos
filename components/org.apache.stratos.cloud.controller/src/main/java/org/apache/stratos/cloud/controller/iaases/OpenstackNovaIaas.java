@@ -539,7 +539,6 @@ public class OpenstackNovaIaas extends Iaas {
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        
         Volume volume;
         if(StringUtils.isEmpty(snapshotId)){
         	if(log.isDebugEnabled()){
@@ -550,7 +549,6 @@ public class OpenstackNovaIaas extends Iaas {
         	if(log.isDebugEnabled()){
         		log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
         	}
-        	System.out.println(("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId));
         	volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone).snapshotId(snapshotId));
         }
         if (volume == null) {
@@ -558,7 +556,7 @@ public class OpenstackNovaIaas extends Iaas {
 					+ " of Iaas : " + iaasInfo);
 			return null;
 		}        
-		
+
 		log.info("Successfully created a new volume [id]: "+volume.getId()
 				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo + " [Volume ID]" + volume.getId());
 		return volume.getId();
@@ -579,10 +577,41 @@ public class OpenstackNovaIaas extends Iaas {
 					+" of Iaas : "+iaasInfo);
 			return null;
 		}
-		
+
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
-        VolumeAttachment attachment = api.attachVolumeToServerAsDevice(volumeId, instanceId, device);    
+
+        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+
+        Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+
+        if(log.isDebugEnabled()){
+            log.debug("Volume " + volumeId + " is in state " + volumeStatus);
+        }
+
+        if(!(volumeStatus == Volume.Status.AVAILABLE || volumeStatus == Volume.Status.CREATING)){
+            log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeStatus));
+            return null;
+        }
+
+        /* Coming here means @volumeStatus is VAILABLE  or CREATING. waiting till it becomes AVAILABLE. */
+        while(volumeStatus != Volume.Status.AVAILABLE){
+            try {
+                // TODO Use a proper mechanism to wait till volume becomes available.
+                Thread.sleep(100);
+                volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+                if(log.isDebugEnabled()){
+                    log.debug("Volume " + volumeId + " is still NOT in AVAILABLE. Current State=" + volumeStatus);
+                }
+            } catch (InterruptedException e) {
+                // Ignoring the exception
+            }
+        }
+        if(log.isDebugEnabled()){
+            log.debug("Volume " + volumeId + " became  AVAILABLE");
+        }
+
+        VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        VolumeAttachment attachment = volumeAttachmentApi.attachVolumeToServerAsDevice(volumeId, instanceId, device);
         if (attachment == null) {
 			log.fatal("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
 					+" was unsuccessful. [region] : " + region
@@ -650,4 +679,7 @@ public class OpenstackNovaIaas extends Iaas {
         return device;
     }
 
+    private Volume.Status getVolumeStatus(VolumeApi volumeApi, String volumeId){
+        return volumeApi.get(volumeId).getStatus();
+    }
 }
