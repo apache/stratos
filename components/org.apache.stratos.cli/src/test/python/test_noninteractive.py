@@ -33,6 +33,8 @@ class TestNonInteractive(unittest.TestCase):
 
     cli_cmd = "java -jar " + os.environ["CLI_JAR"]
 
+    WIREMOCK_HTTPS_PORT = os.environ["WIREMOCK_HTTPS_PORT"]
+
     @classmethod
     def setUpClass(cls):
         TestNonInteractive.wiremock = WiremockClient()
@@ -44,7 +46,7 @@ class TestNonInteractive(unittest.TestCase):
 
     def setUp(self):
         # set default STRATOS_URL
-        os.environ["STRATOS_URL"] = "https://localhost:9443" 
+        os.environ["STRATOS_URL"] = "https://localhost:" + TestNonInteractive.WIREMOCK_HTTPS_PORT
         # ensure other env vars not set
         if 'STRATOS_USERNAME' in os.environ: del os.environ["STRATOS_USERNAME"] # unset env var
         if 'STRATOS_PASSWORD' in os.environ: del os.environ["STRATOS_PASSWORD"] # unset env var

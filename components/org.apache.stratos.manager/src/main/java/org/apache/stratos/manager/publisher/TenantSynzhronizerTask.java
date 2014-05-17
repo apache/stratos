@@ -75,8 +75,9 @@ public class TenantSynzhronizerTask implements Task {
                             log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
                                     carbonTenant.getId(), carbonTenant.getDomain(), cartridgeSubscription.getType()));
                         }
-                        Subscription subscription = new Subscription(cartridgeSubscription.getType(),
-                                new HashSet<String>(cartridgeSubscription.getCluster().getId()));
+                        HashSet<String> clusterIds = new HashSet<String>();
+                        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+                        Subscription subscription = new Subscription(cartridgeSubscription.getType(), clusterIds);
                         for(SubscriptionDomain subscriptionDomain : cartridgeSubscription.getSubscriptionDomains()) {
                             subscription.addSubscriptionDomain(subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationContext());
                         }

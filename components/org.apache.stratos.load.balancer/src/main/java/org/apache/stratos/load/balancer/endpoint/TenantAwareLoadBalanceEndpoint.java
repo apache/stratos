@@ -78,6 +78,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     /* Sessions time out interval */
     private long sessionTimeout = -1;
+    
+    private final static Pattern LAST_INT_PATTERN = Pattern.compile("[^0-9]+([0-9]+)$");
 
     @Override
     public void init(SynapseEnvironment synapseEnvironment) {
@@ -154,8 +156,17 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private void setupLoadBalancerContextProperties(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember) {
         String lbHostName = extractTargetHost(synCtx);
         org.apache.axis2.context.MessageContext axis2MsgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
-        TransportInDescription httpTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("http");
-        TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn("https");
+        
+        String httpTransportName = "http", httpsTransportName = "https";
+        String transportId = getTransportId(extractIncomingTransport(synCtx));
+               
+		if (transportId != null) {
+			httpsTransportName = httpsTransportName.concat(transportId);
+			httpTransportName = httpTransportName.concat(transportId);
+		}
+        
+        TransportInDescription httpTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn(httpTransportName);
+        TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn(httpsTransportName);
         String lbHttpPort = (String) httpTransportIn.getParameter("port").getValue();
         String lbHttpsPort = (String) httpsTransportIn.getParameter("port").getValue();
         String clusterId = currentMember.getProperties().getProperty(Constants.CLUSTER_ID);
@@ -165,6 +176,16 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         synCtx.setProperty(Constants.LB_HTTPS_PORT, lbHttpsPort);
         synCtx.setProperty(Constants.CLUSTER_ID, clusterId);
     }
+    
+	protected String getTransportId(String incomingTransportName) {
+		// pattern match and find the transport id.
+		Matcher matcher = LAST_INT_PATTERN.matcher(incomingTransportName);
+		if (matcher.find()) {
+			return matcher.group(1);
+		}
+
+		return null;
+	}
 
 
     /**
@@ -505,6 +526,11 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private String extractTransport(MessageContext synCtx) {
         org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         return axis2MessageContext.getTransportIn().getName();
+    }
+    
+    private String extractIncomingTransport(MessageContext synCtx) {
+        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
+        return axis2MessageContext.getIncomingTransportName();
     }
 
     /**
