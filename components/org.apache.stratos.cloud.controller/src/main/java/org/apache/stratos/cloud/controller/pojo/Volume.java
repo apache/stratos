@@ -30,6 +30,7 @@ public class Volume implements Serializable {
     private String mappingPath;
     private String iaasType;
     private String snapshotId;
+    private String volumeId;
 
     public String toString () {
         return "Persistence Required: " + ", Size: " + getSize() + ", device: " + getDevice() +
@@ -52,9 +53,7 @@ public class Volume implements Serializable {
         this.device = device;
     }
 
-    public boolean isRemoveOntermination() {
-        return removeOntermination;
-    }
+    public boolean isRemoveOntermination() {return removeOntermination;}
 
     public void setRemoveOntermination(boolean removeOntermination) {
         this.removeOntermination = removeOntermination;
@@ -116,4 +115,12 @@ public class Volume implements Serializable {
 	public void setSnapshotId(String snapshotId) {
 		this.snapshotId = snapshotId;
 	}
+
+    public String getVolumeId() {
+        return volumeId;
+    }
+
+    public void setVolumeId(String volumeId) {
+        this.volumeId = volumeId;
+    }
 }

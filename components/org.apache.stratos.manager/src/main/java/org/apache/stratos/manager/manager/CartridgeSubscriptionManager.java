@@ -606,7 +606,7 @@ public class CartridgeSubscriptionManager {
 
         Properties persistenceMappingProperties = new Properties();
         persistenceMappingProperties.setProperties(new Property[]{persistenceCtxt.getPersistanceRequiredProperty(), persistenceCtxt.getSizeProperty(),
-                persistenceCtxt.getDeleteOnTerminationProperty()});
+                persistenceCtxt.getDeleteOnTerminationProperty(), persistenceCtxt.getVolumeIdProperty()});
 
         return persistenceMappingProperties;
     }

@@ -78,6 +78,7 @@ public class ServiceUtils {
     public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
+    public static final String VOLUME_ID = "volume.id";
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
@@ -989,6 +990,9 @@ public class ServiceUtils {
             persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
             persistenceContext.setSizeProperty(VOLUME_SIZE, cartridgeInfoBean.getSize());
             persistenceContext.setDeleteOnTerminationProperty(SHOULD_DELETE_VOLUME, String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
+            if(cartridgeInfoBean.getVolumeId() != null) {
+                persistenceContext.setVolumeIdProperty(VOLUME_ID, String.valueOf(cartridgeInfoBean.getVolumeId()));
+            }
             subscriptionData.setPersistanceCtxt(persistenceContext);
         }
 

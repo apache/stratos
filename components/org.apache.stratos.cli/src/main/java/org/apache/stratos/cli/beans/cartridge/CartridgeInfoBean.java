@@ -31,7 +31,7 @@ public class CartridgeInfoBean {
     private String autoscalePolicy;
     private String deploymentPolicy;
     private String size;
-
+    private String volumeId;
     boolean privateRepo;
     private boolean removeOnTermination;
     private boolean persistanceRequired;
@@ -140,6 +140,12 @@ public class CartridgeInfoBean {
 	public void setCommitsEnabled(boolean commitsEnabled) {
 		this.commitsEnabled = commitsEnabled;
 	}
-    
-    
+
+    public String getVolumeId() {
+        return volumeId;
+    }
+
+    public void setVolumeId(String volumeId) {
+        this.volumeId = volumeId;
+    }
 }

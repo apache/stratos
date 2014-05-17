@@ -38,6 +38,7 @@ public class CartridgeInfoBean {
 
     private boolean persistanceRequired;
     private String size;
+    private String volumeId;
     private boolean removeOnTermination;
     private String serviceGroup;
 
@@ -163,4 +164,8 @@ public class CartridgeInfoBean {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
+
+    public String getVolumeId() {return volumeId;}
+
+    public void setVolumeId(String volumeId) {this.volumeId = volumeId;}
 }

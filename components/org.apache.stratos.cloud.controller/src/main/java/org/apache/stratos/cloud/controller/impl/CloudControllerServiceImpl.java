@@ -417,18 +417,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void createVolumeAndSetInClusterContext(Volume volume,
 			IaasProvider iaasProvider) {
-
 		// iaas cannot be null at this state #startInstance method
 		Iaas iaas = iaasProvider.getIaas();
-		
 		int sizeGB = volume.getSize();
 		String snapshotId =  volume.getSnapshotId();
-		String volumeId = iaas.createVolume(sizeGB, snapshotId);
-		volume.setId(volumeId);
+        if(StringUtils.isNotEmpty(volume.getVolumeId())){
+            // volumeID is specified, so not creating additional volumes
+            if(log.isDebugEnabled()){
+                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
+            }
+            volume.setId(volume.getVolumeId());
+        }else{
+            String volumeId = iaas.createVolume(sizeGB, snapshotId);
+            volume.setId(volumeId);
+        }
+        
 		volume.setIaasType(iaasProvider.getType());
 	}
 
-	private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
+
+    private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
 		StringBuilder persistencePayload = new StringBuilder();
 		if(isPersistenceMappingAvailable(cartridge)){
 			for(Volume volume : cartridge.getPersistence().getVolumes()){
@@ -888,12 +896,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         		
         		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
         		String property_volume_zize = props.getProperty(Constants.VOLUME_SIZE);
+                String property_volume_id = props.getProperty(Constants.VOLUME_ID);
 
                 List<Volume> cluster_volume_list = new LinkedList<Volume>();
 
         		for (Volume volume : cartridge_volumes) {
         			int volumeSize = StringUtils.isNotEmpty(property_volume_zize) ? Integer.parseInt(property_volume_zize) : volume.getSize();
         			boolean shouldDeleteVolume = StringUtils.isNotEmpty(property) ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
+                    String volumeID = StringUtils.isNotEmpty(property_volume_id) ? property_volume_id : volume.getVolumeId();
 
                     Volume volume_cluster = new Volume();
                     volume_cluster.setSize(volumeSize);
@@ -901,6 +911,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     volume_cluster.setDevice(volume.getDevice());
                     volume_cluster.setIaasType(volume.getIaasType());
                     volume_cluster.setMappingPath(volume.getMappingPath());
+                    volume_cluster.setVolumeId(volumeID);
                     cluster_volume_list.add(volume_cluster);
 				}
         		ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));

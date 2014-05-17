@@ -30,11 +30,13 @@ public class PersistenceContext {
     private Property persistanceRequiredProperty;
     private Property sizeProperty;
     private Property deleteOnTerminationProperty;
+    private Property volumeIdProperty;
 
     public PersistenceContext () {
         persistanceRequiredProperty = new Property();
         sizeProperty = new Property();
         deleteOnTerminationProperty = new Property();
+        volumeIdProperty = new Property();
     }
 
 
@@ -63,5 +65,14 @@ public class PersistenceContext {
     public void setDeleteOnTerminationProperty(String propertyName, String propertyValue) {
         this.deleteOnTerminationProperty.setName(propertyName);
         this.deleteOnTerminationProperty.setValue(propertyValue);
+    }
+
+    public Property getVolumeIdProperty() {
+        return volumeIdProperty;
+    }
+
+    public void setVolumeIdProperty(String propertyName, String propertyValue) {
+        this.volumeIdProperty.setName(propertyName);
+        this.volumeIdProperty.setValue(propertyValue);
     }
 }

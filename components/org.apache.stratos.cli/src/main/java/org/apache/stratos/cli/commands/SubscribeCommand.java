@@ -75,6 +75,10 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         size.setArgName("volume-size");
         options.addOption(size);
 
+        Option volumeId = new Option(CliConstants.VOLUME_ID_OPTION, CliConstants.VOLUME_ID_LONG_OPTION, true, "Volume-id");
+        volumeId.setArgName("volume-id");
+        options.addOption(volumeId);
+
         Option persistance = new Option(CliConstants.PERSISTANCE_VOLUME_OPTION, CliConstants.PERSISTANCE_VOLUME_LONG_OPTION,
                 true, "Persistance-volume");
         persistance.setArgName("persistance-volume");
@@ -133,6 +137,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             String depPolicy = null;
 			String repoURL = null, username = "", password = "";
             String size = null;
+            String volumeID = null;
 
             boolean removeOnTermination = false;
 			boolean privateRepo = false;
@@ -194,6 +199,16 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     }
                     size = commandLine.getOptionValue(CliConstants.VOLUME_SIZE_OPTION);
                 }
+
+                if (commandLine.hasOption(CliConstants.VOLUME_ID_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Volume id option is passed");
+
+                    }
+                    volumeID = commandLine.getOptionValue(CliConstants.VOLUME_ID_OPTION);
+                }
+
+
                 if (commandLine.hasOption(CliConstants.REMOVE_ON_TERMINATION_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Remove on termination option is passed");
@@ -277,7 +292,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
                 		password, asPolicy, depPolicy, size, removeOnTermination,
-                        persistanceMapping, commitsEnabled);
+                        persistanceMapping, commitsEnabled, volumeID);
 
 				return CliConstants.SUCCESSFUL_CODE;
 
