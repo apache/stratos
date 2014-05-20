@@ -142,6 +142,7 @@ public final class CloudControllerConstants {
     public static final String INSTANCE_TOPIC = "instance-status";
     // pre define a floating ip
     public static final String FLOATING_IP_PROPERTY = "floatingIp";
+    public static final String DEFAULT_FLOATING_IP_POOL = "defaultFloatingIpPool";
     
     
     /**
