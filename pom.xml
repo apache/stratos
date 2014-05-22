@@ -74,7 +74,7 @@
         <connection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</developerConnection>
         <url>https://git-wip-us.apache.org/repos/asf?p=incubator-stratos.git</url>
-        <tag>4.0.0-incubating-rc2</tag>
+        <tag>4.0.0-rc2</tag>
     </scm>
 
     <modules>

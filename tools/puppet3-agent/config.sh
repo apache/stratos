@@ -88,7 +88,7 @@ if [[ $answer = y ]] ; then
 	ARGS=("-n${NODEID}" "-d${DOMAIN}" "-s${PUPPET_IP}")
 	${ECHO} "\nRunning puppet installation with arguments: ${ARGS[@]}"
 	/root/bin/puppetinstall/puppetinstall "${ARGS[@]}"
-        ${RM} /mnt/apache-stratos-cartridge-agent-4.0.0-incubating/wso2carbon.lck
+        ${RM} /mnt/apache-stratos-cartridge-agent-4.0.0/wso2carbon.lck
 	${GREP} -q '/root/bin/init.sh > /tmp/puppet_log' /etc/rc.local || ${SED} -i 's/exit 0$/\/root\/bin\/init.sh \> \/tmp\/puppet_log\nexit 0/' /etc/rc.local
 	${RM} -rf /tmp/*
 	${RM} -rf /var/lib/puppet/ssl/*

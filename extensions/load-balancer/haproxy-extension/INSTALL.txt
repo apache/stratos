@@ -1,5 +1,5 @@
 ================================================================================
-           Installing Apache Stratos HAProxy Extension 4.0.0-incubating
+           Installing Apache Stratos HAProxy Extension 4.0.0
 ================================================================================
 
 
@@ -8,7 +8,7 @@ below steps to proceed with the installation:
 
 1. Download and extract HAProxy binary distribution to a desired location: <haproxy-home>.
 
-2. Extract apache-stratos-haproxy-extension-4.0.0-incubating-bin.zip to a desired location: <haproxy-extension-home>.
+2. Extract apache-stratos-haproxy-extension-4.0.0.zip to a desired location: <haproxy-extension-home>.
 
 3. Open <haproxy-extension-home>/bin/haproxy-extension.sh file in a text editor and update following system properties:
 
