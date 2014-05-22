@@ -93,9 +93,9 @@ public class CloudControllerServiceClient {
 	}
 
 	public boolean register(String clusterId, String cartridgeType,
-	                        String payload, String tenantRange,
+                            String payload, String tenantRange,
                             String hostName, Properties properties,
-                            String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException, 
+                            String autoscalorPolicyName, String deploymentPolicyName, Persistence persistence) throws RemoteException,
                             CloudControllerServiceUnregisteredCartridgeExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
@@ -106,6 +106,7 @@ public class CloudControllerServiceClient {
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
         registrant.setDeploymentPolicyName(deploymentPolicyName);
+        registrant.setPersistence(persistence);
 		return stub.registerService(registrant);
 
 	}

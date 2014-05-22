@@ -19,6 +19,7 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
@@ -147,7 +148,7 @@ public class PojoConverter {
         return iaasConfigsArray;
     }
 
-    private static Persistence getPersistence(PersistenceBean persistenceBean) {
+     public static Persistence getPersistence(PersistenceBean persistenceBean) {
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
@@ -155,12 +156,17 @@ public class PojoConverter {
         Volume[] volumes = new Volume[persistenceBean.volume.size()];
         for (int i = 0 ; i < volumes.length ; i++) {
             Volume volume = new Volume();
-            volume.setSize(Integer.parseInt(volumeBean[i].size));
+            volume.setId(volumeBean[i].id);
+            volume.setVolumeId(volumeBean[i].volumeId);
+            if(StringUtils.isEmpty(volume.getVolumeId())){
+                volume.setSize(Integer.parseInt(volumeBean[i].size));
+            }
+
             volume.setDevice(volumeBean[i].device);
             volume.setRemoveOntermination(volumeBean[i].removeOnTermination);
             volume.setMappingPath(volumeBean[i].mappingPath);
             volume.setSnapshotId(volumeBean[i].snapshotId);
-            volume.setVolumeId(volumeBean[i].volumeId);
+
             volumes[i] = volume;
         }
         persistence.setVolumes(volumes);

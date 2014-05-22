@@ -21,6 +21,7 @@ package org.apache.stratos.manager.behaviour;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -114,7 +115,7 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
         return payloadData;
     }
 
-    public void register(CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName, String deploymentPolicyName, Properties properties) throws ADCException, UnregisteredCartridgeException {
+    public void register(CartridgeInfo cartridgeInfo, Cluster cluster, PayloadData payloadData, String autoscalePolicyName, String deploymentPolicyName, Properties properties, Persistence persistence) throws ADCException, UnregisteredCartridgeException {
     	if(payloadData != null) {
         log.info("Payload: " + payloadData.getCompletePayloadData().toString());
     	}else {
@@ -129,7 +130,8 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
                 cluster.getHostName(),
                 autoscalePolicyName,
                 deploymentPolicyName,
-                properties);
+                properties,
+                persistence);
     }
 
     public void remove(String clusterId, String alias) throws ADCException, NotSubscribedException {

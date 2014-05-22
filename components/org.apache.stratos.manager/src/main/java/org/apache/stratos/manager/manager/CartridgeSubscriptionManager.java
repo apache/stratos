@@ -23,10 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.openjpa.util.java$util$ArrayList$proxy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
@@ -168,11 +166,11 @@ public class CartridgeSubscriptionManager {
         	if(log.isDebugEnabled()) {
         		log.debug(" Registering LB Cartridge subscription ");
         	}
-            registerCartridgeSubscription(lbCartridgeSubscription, lbCartridgeSubscriptionProperties);
+            registerCartridgeSubscription(lbCartridgeSubscription, lbCartridgeSubscriptionProperties, subscriptionData.getPersistence());
         }
 
         // register service cartridge subscription
-        return registerCartridgeSubscription(serviceCartridgeSubscription, serviceCartridgeSubscriptionProperties);
+        return registerCartridgeSubscription(serviceCartridgeSubscription, serviceCartridgeSubscriptionProperties, subscriptionData.getPersistence());
     }
 
     private boolean activeInstancesAvailable(SubscriptionData subscriptionData) {
@@ -356,14 +354,15 @@ public class CartridgeSubscriptionManager {
      *
      * @param cartridgeSubscription CartridgeSubscription subscription
      *
+     * @param persistence
      * @return SubscriptionInfo object populated with relevant information
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    private SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription, Properties properties)
+    private SubscriptionInfo registerCartridgeSubscription(CartridgeSubscription cartridgeSubscription, Properties properties, Persistence persistence)
             throws ADCException, UnregisteredCartridgeException {
 
-        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(properties);
+        CartridgeSubscriptionInfo cartridgeSubscriptionInfo = cartridgeSubscription.registerSubscription(properties, persistence);
 
         //set status as 'SUBSCRIBED'
         cartridgeSubscription.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);

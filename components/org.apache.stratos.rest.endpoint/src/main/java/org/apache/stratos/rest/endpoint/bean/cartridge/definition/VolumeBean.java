@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class VolumeBean {
 
+    public String id;
+
     public String size;
 
     public String device;

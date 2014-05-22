@@ -42,7 +42,6 @@ import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
-import org.apache.stratos.manager.subscription.PersistenceContext;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
@@ -60,11 +59,13 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -984,6 +985,10 @@ public class ServiceUtils {
         subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
 
+        PersistenceBean persistenceBean = cartridgeInfoBean.getPersistence();
+        subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
+
+        /*
         if (cartridgeInfoBean.isPersistanceRequired()) {
             // Add persistence related properties to PersistenceContext
             PersistenceContext persistenceContext = new PersistenceContext();
@@ -995,7 +1000,7 @@ public class ServiceUtils {
             }
             subscriptionData.setPersistanceCtxt(persistenceContext);
         }
-
+        */
         //subscribe
         SubscriptionInfo subscriptionInfo = null;
         try{

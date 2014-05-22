@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +36,8 @@ public class CartridgeInfoBean {
     String dataCartridgeType;
     String dataCartridgeAlias;
     boolean commitsEnabled;
-
-    private boolean persistanceRequired;
-    private String size;
-    private String volumeId;
-    private boolean removeOnTermination;
     private String serviceGroup;
+    private PersistenceBean persistence;
 
     public CartridgeInfoBean() {
     }
@@ -125,31 +122,7 @@ public class CartridgeInfoBean {
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public boolean isPersistanceRequired() {
-        return persistanceRequired;
-    }
-
-    public void setPersistanceRequired(boolean persistanceRequired) {
-        this.persistanceRequired = persistanceRequired;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
-    public boolean isRemoveOnTermination() {
-        return removeOnTermination;
-    }
-
-    public void setRemoveOnTermination(boolean removeOnTermination) {
-        this.removeOnTermination = removeOnTermination;
-    }
-
-	public boolean isCommitsEnabled() {
+    public boolean isCommitsEnabled() {
 		return commitsEnabled;
 	}
 
@@ -165,7 +138,11 @@ public class CartridgeInfoBean {
 		this.serviceGroup = serviceGroup;
 	}
 
-    public String getVolumeId() {return volumeId;}
+    public PersistenceBean getPersistence() {
+        return persistence;
+    }
 
-    public void setVolumeId(String volumeId) {this.volumeId = volumeId;}
+    public void setPersistence(PersistenceBean persistence) {
+        this.persistence = persistence;
+    }
 }

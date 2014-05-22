@@ -81,7 +81,7 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
     public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {
 
-        register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(), properties);
+        register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(), properties, null);
     }
 
     public void undeploy () throws ADCException, NotSubscribedException {

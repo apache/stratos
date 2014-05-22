@@ -859,7 +859,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
         ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
-				payload, hostName, props, isLb);
+				payload, hostName, props, isLb, registrant.getPersistence());
 
 
 		dataHolder.addClusterContext(ctxt);
@@ -873,8 +873,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	private ClusterContext buildClusterContext(Cartridge cartridge,
-			String clusterId, String payload, String hostName,
-			Properties props, boolean isLb) {
+                                               String clusterId, String payload, String hostName,
+                                               Properties props, boolean isLb, Persistence persistence) {
 
 
 		// initialize ClusterContext
@@ -884,16 +884,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		String property;
 		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
 		long timeout = property != null ? Long.parseLong(property) : 30000;
-		
-		property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
-        boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
-        
-        if(isVolumeRequired) {
+
+        boolean persistanceRequired = false;
+        if(persistence != null){
+              persistanceRequired = persistence.isPersistanceRequired();
+        }
+
+        if(persistanceRequired){
+            ctxt.setVolumes(persistence.getVolumes());
+            ctxt.setVolumeRequired(true);
+        }else{
+            ctxt.setVolumeRequired(false);
+        }
+        /*
+        if(persistanceRequired) {
         	Persistence persistenceData = cartridge.getPersistence();
-        	
+
         	if(persistenceData != null) {
         		Volume[] cartridge_volumes = persistenceData.getVolumes();
-        		
+
+
+                Volume[] volumestoCreate = overideVolumes(cartridge_volumes, persistence.getVolumes());
         		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
         		String property_volume_zize = props.getProperty(Constants.VOLUME_SIZE);
                 String property_volume_id = props.getProperty(Constants.VOLUME_ID);
@@ -914,21 +925,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     volume_cluster.setVolumeId(volumeID);
                     cluster_volume_list.add(volume_cluster);
 				}
-        		ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));
+        		//ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));
+                ctxt.setVolumes(persistence.getVolumes());
+                ctxt.setVolumeRequired(true);
         	} else {
         		// if we cannot find necessary data, we would not consider 
         		// this as a volume required instance.
-        		isVolumeRequired = false;
-        	}
-        	
-        	ctxt.setVolumeRequired(isVolumeRequired);
+        		//isVolumeRequired = false;
+                ctxt.setVolumeRequired(false);
+       	}
+
+        	//ctxt.setVolumeRequired(isVolumeRequired);
         }
-        
+        */
 	    ctxt.setTimeoutInMillis(timeout);
 		return ctxt;
 	}
 
-	@Override
+    @Override
 	public String[] getRegisteredCartridges() {
 		// get the list of cartridges registered
 		List<Cartridge> cartridges = dataHolder

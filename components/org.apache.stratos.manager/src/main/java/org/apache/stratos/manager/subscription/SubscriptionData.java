@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.manager.subscription;
 
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.util.Collections;
@@ -46,6 +47,7 @@ public class SubscriptionData {
     private boolean isCommitsEnabled;
     private String serviceGroup;
     private Set<String> domains;
+    private Persistence persistence;
 
     public SubscriptionData() {
         this.domains = new HashSet<String>();
@@ -194,4 +196,13 @@ public class SubscriptionData {
     public Set<String> getDomains() {
         return Collections.unmodifiableSet(domains);
     }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+     public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+     }
+
 }
