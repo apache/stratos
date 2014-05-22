@@ -256,7 +256,13 @@ public class OpenstackNovaIaas extends Iaas {
 
 		// if no unassigned IP is available, we'll try to allocate an IP.
 		if (ip == null || ip.isEmpty()) {
-			FloatingIP allocatedFloatingIP = floatingIp.create();
+			String defaultFloatingIpPool = iaasInfo.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
+			FloatingIP allocatedFloatingIP;
+			if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
+				allocatedFloatingIP = floatingIp.create();
+			} else {
+				allocatedFloatingIP = floatingIp.allocateFromPool(defaultFloatingIpPool);
+			}
 			if (allocatedFloatingIP == null) {
 				String msg = "Failed to allocate an IP address.";
 				log.error(msg);
