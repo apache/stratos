@@ -990,6 +990,7 @@ public class ServiceUtils {
 
         /*
         if (cartridgeInfoBean.isPersistanceRequired()) {
+        if (cartridgeInfoBean.getPersistence() != null) {
             // Add persistence related properties to PersistenceContext
             PersistenceContext persistenceContext = new PersistenceContext();
             persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
