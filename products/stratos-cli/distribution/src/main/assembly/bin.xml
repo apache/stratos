@@ -51,7 +51,6 @@
             <directory>${project.basedir}</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
             <includes>
-                <include>DISCLAIMER</include>
                 <include>INSTALL.txt</include>
                 <include>README.txt</include>
             </includes>

@@ -295,12 +295,6 @@
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>${project.basedir}/DISCLAIMER</source>
-            <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
-            <filtered>true</filtered>
-            <fileMode>644</fileMode>
-        </file>
-        <file>
             <source>${project.basedir}/README.txt</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}</outputDirectory>
             <filtered>true</filtered>
