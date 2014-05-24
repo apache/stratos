@@ -298,7 +298,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Iaas iaas = iaasProvider.getIaas();
             if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge, iaas).toString());
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
             }
             
             if (log.isDebugEnabled()) {
@@ -436,10 +436,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 
-    private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
+    private StringBuilder getPersistencePayload(ClusterContext ctx, Iaas iaas) {
 		StringBuilder persistencePayload = new StringBuilder();
-		if(isPersistenceMappingAvailable(cartridge)){
-			for(Volume volume : cartridge.getPersistence().getVolumes()){
+		if(isPersistenceMappingAvailable(ctx)){
+			for(Volume volume : ctx.getVolumes()){
 				if(log.isDebugEnabled()){
 					log.debug("Adding persistence mapping " + volume.toString());
 				}
@@ -457,8 +457,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		return persistencePayload;
 	}
 
-	private boolean isPersistenceMappingAvailable(Cartridge cartridge) {
-		return cartridge.getPersistence() != null && cartridge.getPersistence().isPersistanceRequired();
+	private boolean isPersistenceMappingAvailable(ClusterContext ctx) {
+		return ctx.getVolumes() != null && ctx.isVolumeRequired();
 	}
 
 	private void addToPayload(StringBuilder payload, String name, String value) {
