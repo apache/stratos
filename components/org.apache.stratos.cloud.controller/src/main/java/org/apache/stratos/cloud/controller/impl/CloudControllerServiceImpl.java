@@ -297,9 +297,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "PARTITION_ID", partitionId);
 
             Iaas iaas = iaasProvider.getIaas();
-            if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
-            }
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
@@ -354,7 +351,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					}
             	}
             }
-            
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
+            }
             NodeMetadata node;
 
 //            create and start a node
@@ -446,14 +446,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
                 }
+                
 				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
 				persistencePayload.append("|");
+                persistencePayload.append(volume.getId());
+                persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
 			}
 		}
         if(log.isDebugEnabled()){
             log.debug("Persistence payload is" + persistencePayload.toString());
         }
+        System.out.println("****** " + persistencePayload);
 		return persistencePayload;
 	}
 

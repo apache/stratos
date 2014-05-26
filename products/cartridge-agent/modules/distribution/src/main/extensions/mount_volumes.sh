@@ -76,11 +76,10 @@ IFS='|' read -ra ADDR <<< "${PERSISTENCE_MAPPING}"
 echo "${ADDR[@]}" | tee -a $log
 
 for i in "${!ADDR[@]}"; do
-        # expected PERSISTANCE_MAPPING format is device1|mountPoint1|device2|mountpoint2...
-        # so that even indexes are devices and odd indexes are mount points..
-        if (( $i  % 2 == 0 ))
+        # expected PERSISTANCE_MAPPING format is device1|volumeID1|mountPoint1|device2|volumeID2|mountpoint2...
+        if (( $i  % 3 == 0 ))
         then
-           mount_volume ${ADDR[$i]} ${ADDR[$i + 1]}
+           mount_volume ${ADDR[$i1]} ${ADDR[$i + 2]}
         fi
 done
 
