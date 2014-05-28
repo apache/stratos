@@ -46,7 +46,7 @@ var render = function (theme, data, meta, require) {
                             class_name:"btn-default",
                             class_icon: 'icons-arrow-left'
                         },
-                        has_help:true,
+                        has_help:false,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }
@@ -82,7 +82,7 @@ var render = function (theme, data, meta, require) {
                             name: 'Subscribe to Cartridge',
                             class_name: 'btn-important'
                         },
-                        has_help: true,
+                        has_help:false,
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }
