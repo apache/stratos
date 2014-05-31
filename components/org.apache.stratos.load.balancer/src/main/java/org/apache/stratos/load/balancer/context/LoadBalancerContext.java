@@ -62,6 +62,8 @@ public class LoadBalancerContext {
     // Map<Host/Domain-Name, Cluster>
     // Keep tack of all clusters
     private HostNameClusterMap hostNameClusterMap;
+    // Map<Host/Domain-Name, AppContext>
+    private HostNameAppContextMap hostNameAppContextMap;
     // Map<HostName, Map<TenantId, Cluster>>
     // Keep track of multi-tenant service clusters
     private MultiTenantClusterMap multiTenantClusterMap;
@@ -72,6 +74,7 @@ public class LoadBalancerContext {
         clusterIdClusterContextMap = new ClusterIdClusterContextMap();
         clusterIdClusterMap = new ClusterIdClusterMap();
         hostNameClusterMap = new HostNameClusterMap();
+        hostNameAppContextMap = new HostNameAppContextMap();
         multiTenantClusterMap = new MultiTenantClusterMap();
     }
 
@@ -180,6 +183,10 @@ public class LoadBalancerContext {
 
     public HostNameClusterMap getHostNameClusterMap() {
         return hostNameClusterMap;
+    }
+
+    public HostNameAppContextMap getHostNameAppContextMap() {
+        return hostNameAppContextMap;
     }
 
     public MultiTenantClusterMap getMultiTenantClusterMap() {

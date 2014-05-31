@@ -357,7 +357,7 @@ public class LoadBalancerContextUtil {
                                 log.debug(String.format("Removing cluster from host/domain name -> cluster map: [service] %s " +
                                         "[tenant-id] %d [domains] %s", serviceName, tenantId, subscription.getSubscriptionDomains()));
                             }
-                            for(SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
+                            for (SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
                                 removeClusterAgainstDomain(cluster, subscriptionDomain.getDomainName());
                             }
                         } else {
@@ -422,6 +422,59 @@ public class LoadBalancerContextUtil {
             LoadBalancerContext.getInstance().getMultiTenantClusterMap().addClusters(hostName, clusterMap);
         } else {
             clusterMap.put(tenantId, cluster);
+        }
+    }
+
+    public static void addAppContextAgainstDomain(String domainName, String appContext) {
+        LoadBalancerContext.getInstance().getHostNameAppContextMap().addAppContext(domainName, appContext);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Application context added against domain name: [domain-name] %s [app-context] %s",
+                    domainName, appContext));
+        }
+    }
+
+    public static void removeAppContextAgainstDomain(String domainName) {
+        LoadBalancerContext.getInstance().getHostNameAppContextMap().removeAppContext(domainName);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Application context removed against domain name: [domain-name] %s",
+                    domainName));
+        }
+    }
+
+    public static void removeAppContextAgainstAllDomains(String serviceName, int tenantId) {
+        try {
+            TenantManager.acquireReadLock();
+            TopologyManager.acquireReadLock();
+
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            if (service == null) {
+                if (log.isErrorEnabled()) {
+                    log.error(String.format("Service not found in topology: [service] %s", serviceName));
+                }
+                return;
+            }
+
+            Tenant tenant = TenantManager.getInstance().getTenant(tenantId);
+            if (tenant != null) {
+                for (Subscription subscription : tenant.getSubscriptions()) {
+                    if (subscription.getServiceName().equals(serviceName)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Removing appContext against domain name: [service] %s " +
+                                    "[tenant-id] %d [domains] %s", serviceName, tenantId, subscription.getSubscriptionDomains()));
+                        }
+                        for (SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
+                            removeAppContextAgainstDomain(subscriptionDomain.getDomainName());
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Tenant not subscribed to service: %s", serviceName));
+                        }
+                    }
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLock();
+            TenantManager.releaseReadLock();
         }
     }
 }

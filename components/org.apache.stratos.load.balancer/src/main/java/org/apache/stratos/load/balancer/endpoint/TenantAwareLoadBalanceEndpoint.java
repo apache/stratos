@@ -560,8 +560,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     }
 
     private EndpointReference getEndpointReferenceAfterURLRewrite(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember,
-                                                                  String transport,
-                                                                  String address) {
+                                                                  String transport) {
         try {
             if (transport.startsWith(Constants.HTTPS)) {
                 transport = Constants.HTTPS;
@@ -573,11 +572,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 throwSynapseException(synCtx, 500, msg);
             }
 
-            // URL Rewrite
+            String address = synCtx.getTo().getAddress();
             if (address.startsWith(Constants.HTTP + "://") || address.startsWith(Constants.HTTPS + "://")) {
+                // Remove protocol, hostname and port found in address
                 try {
-                    String _address = address.indexOf("?") > 0 ? address.substring(address.indexOf("?"), address.length()) : "";
-                    address = new URL(address).getPath() + _address;
+                    URL addressUrl = new URL(address);
+                    address = addressUrl.getPath() + (StringUtils.isNotBlank(addressUrl.getQuery()) ?
+                            "?" + addressUrl.getQuery() : "");
                 } catch (MalformedURLException e) {
                     String msg = String.format("URL is malformed: %s", address);
                     log.error(msg, e);
@@ -585,9 +586,24 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 }
             }
 
-            String hostName = currentMember.getHostName();
-            int port = (transport.startsWith(Constants.HTTPS)) ? currentMember.getHttpsPort() : currentMember.getHttpPort();
-            return new EndpointReference(new URL(transport, hostName, port, address).toString());
+            String hostName = extractTargetHost(synCtx);
+            if (LoadBalancerContext.getInstance().getHostNameAppContextMap().contains(hostName)) {
+                String appContext = LoadBalancerContext.getInstance().getHostNameAppContextMap().getAppContext(hostName);
+                if(StringUtils.isNotBlank(appContext)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Application context found: [domain-name] %s [app-context] %s", hostName, appContext));
+                        log.debug(String.format("Incoming request address: %s", address));
+                    }
+                    address = "/" + cleanURLPath(appContext) + "/" + cleanURLPath(address);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Outgoing request address: %s", address));
+                    }
+                }
+            }
+
+            String memberHostName = currentMember.getHostName();
+            int memberPort = (transport.startsWith(Constants.HTTPS)) ? currentMember.getHttpsPort() : currentMember.getHttpPort();
+            return new EndpointReference(new URL(transport, memberHostName, memberPort, address).toString());
 
         } catch (MalformedURLException e) {
             if (log.isErrorEnabled()) {
@@ -596,6 +612,18 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             throwSynapseException(synCtx, 500, "Internal server error");
             return null;
         }
+    }
+
+    private String cleanURLPath(String path) {
+        if(StringUtils.isNotBlank(path)) {
+            if(path.startsWith("/")) {
+                path = path.replaceFirst("/", "");
+            }
+            if(path.endsWith("/")) {
+                path = path.substring(0, path.length() - 2);
+            }
+        }
+        return path;
     }
 
     /*
@@ -643,8 +671,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         axis2MsgCtx.removeProperty(NhttpConstants.REST_URL_POSTFIX);
 
         String transport = axis2MsgCtx.getTransportIn().getName();
-        String address = synCtx.getTo().getAddress();
-        EndpointReference to = getEndpointReferenceAfterURLRewrite(synCtx, currentMember, transport, address);
+        EndpointReference to = getEndpointReferenceAfterURLRewrite(synCtx, currentMember, transport);
         synCtx.setTo(to);
 
         Endpoint endpoint = getEndpoint(to, currentMember, synCtx);

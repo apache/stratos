@@ -74,6 +74,9 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                                         subscription.getServiceName(),
                                         subscription.getClusterIds(),
                                         subscriptionDomain.getDomainName());
+
+                                LoadBalancerContextUtil.addAppContextAgainstDomain(subscriptionDomain.getDomainName(),
+                                        subscriptionDomain.getApplicationContext());
                             }
                         }
                     }
@@ -123,6 +126,10 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                         tenantUnSubscribedEvent.getServiceName(),
                         tenantUnSubscribedEvent.getTenantId(),
                         tenantUnSubscribedEvent.getClusterIds());
+
+                LoadBalancerContextUtil.removeAppContextAgainstAllDomains(
+                        tenantUnSubscribedEvent.getServiceName(),
+                        tenantUnSubscribedEvent.getTenantId());
             }
         });
         tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
@@ -142,6 +149,10 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                         subscriptionDomainAddedEvent.getServiceName(),
                         subscriptionDomainAddedEvent.getClusterIds(),
                         subscriptionDomainAddedEvent.getDomainName());
+
+                LoadBalancerContextUtil.addAppContextAgainstDomain(
+                        subscriptionDomainAddedEvent.getDomainName(),
+                        subscriptionDomainAddedEvent.getApplicationContext());
             }
         });
         tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
@@ -156,9 +167,13 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
                             subscriptionDomainRemovedEvent.getClusterIds(),
                             subscriptionDomainRemovedEvent.getDomainName()));
                 }
+
                 LoadBalancerContextUtil.removeClustersAgainstDomain(
                         subscriptionDomainRemovedEvent.getServiceName(),
                         subscriptionDomainRemovedEvent.getClusterIds(),
+                        subscriptionDomainRemovedEvent.getDomainName());
+
+                LoadBalancerContextUtil.removeAppContextAgainstDomain(
                         subscriptionDomainRemovedEvent.getDomainName());
             }
         });
