@@ -591,7 +591,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 String appContext = LoadBalancerContext.getInstance().getHostNameAppContextMap().getAppContext(hostName);
                 if(StringUtils.isNotBlank(appContext)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Application context found: [domain-name] %s [app-context] %s", hostName, appContext));
+                        log.debug(String.format("Domain mapping found with application context: [domain-name] %s [app-context] %s", hostName, appContext));
                         log.debug(String.format("Incoming request address: %s", address));
                     }
                     address = "/" + cleanURLPath(appContext) + "/" + cleanURLPath(address);
