@@ -986,8 +986,9 @@ public class ServiceUtils {
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
 
         PersistenceBean persistenceBean = cartridgeInfoBean.getPersistence();
-        subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
-
+        if(persistenceBean != null) {
+            subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
+        }
         /*
         if (cartridgeInfoBean.isPersistanceRequired()) {
         if (cartridgeInfoBean.getPersistence() != null) {
