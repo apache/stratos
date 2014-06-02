@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.rest.endpoint.services;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
@@ -407,7 +408,7 @@ public class StratosAdmin extends AbstractAdmin {
     public Cluster getCluster(@PathParam("clusterId") String clusterId) throws RestAPIException {
     	Cluster cluster = null;
     	if(log.isDebugEnabled()) {
-    		log.debug("Finding the Cluster for [id]: "+clusterId);
+    		log.debug("Finding cluster for [id]: "+clusterId);
     	}
         Cluster[] clusters = ServiceUtils.getClustersForTenant(getConfigContext());
         if(log.isDebugEnabled()) {
@@ -430,9 +431,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public StratosAdminResponse unsubscribe(String alias) throws RestAPIException {
-
         return ServiceUtils.unsubscribe(alias, getTenantDomain());
-
     }
 
     @POST
@@ -1070,5 +1069,31 @@ public class StratosAdmin extends AbstractAdmin {
                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
                                                          @PathParam("domainName") String domainName) throws RestAPIException {
         return ServiceUtils.removeSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
+    }
+
+    @GET
+    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/load-balancer-cluster")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getLoadBalancerCluster(@PathParam("cartridgeType") String cartridgeType,
+                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("GET /cartridge/%s/subscription/%s/load-balancer-cluster", cartridgeType, subscriptionAlias));
+        }
+        Cartridge subscription = ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
+        String lbClusterId = subscription.getLbClusterId();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Load balancer cluster-id found: %s", lbClusterId));
+        }
+        if(StringUtils.isNotBlank(lbClusterId)) {
+            Cluster lbCluster = getCluster(lbClusterId);
+            if(lbCluster != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Load balancer cluster found: %s", lbCluster.toString()));
+                }
+                Response.ok().entity(lbCluster).build();
+            }
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 }
