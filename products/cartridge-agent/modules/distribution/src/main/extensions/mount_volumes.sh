@@ -28,8 +28,8 @@ log=/var/log/apache-stratos/cartridge-agent-extensions.log
 echo -e "Starting mounting volumes" 2>&1 | tee -a $log
 
 # $1  is passed from Cartridge Agent code.
-echo -e "launh param file location $1" | tee -a $log
-#source /opt/apache-stratos-cartridge-agent/launch.params
+echo -e "launch param file location $1" | tee -a $log
+
 PERSISTENCE_MAPPING=$1
 echo -e "Persistance mappings : $PERSISTENCE_MAPPING" 2>&1 | tee -a $log
 
@@ -37,8 +37,29 @@ mount_volume(){
 
         device=$1;
         mount_point=$2;
-        echo "device $device"
-        echo "point  $mount_point"
+	echo -e "device $device" | tee -a $log
+        echo -e "mount point  $mount_point"| tee -a $log
+
+
+        if [  "$mount_point" = "null" ]
+        then
+              echo -e "[ERROR] Mount point can not be null" | tee -a $log
+	      return
+        fi
+
+        if [  "$device" = "null" ]
+        then
+              echo -e "[ERROR] Device can not be null" | tee -a $log
+	      return
+        fi
+
+        device_exist=`sudo fdisk -l $device`;
+        if [ "$device_exist" = "" ]
+        then
+              echo -e "[ERROR] Device $device does not exist in this instance." | tee -a $log
+	      return
+	fi
+
         # check if the volume has a file system
         output=`sudo file -s $device`;
         echo $output | tee -a $log
@@ -59,15 +80,15 @@ mount_volume(){
         if [ ! -d "$mount_point" ]
         then
               echo "creating the  mount point directory $mount_point since it does not exist." | tee -a $log
-              sudo mkdir $mount_point
+              sudo mkdir -p $mount_point
         fi
 
         #mounting the device if it is not already mounted
         if [ ! "$device_mounted" = "" ]
         then
-              echo -e "Device $device is already mounted." | tee -a $log
+              echo -e "[WARNING] Device $device is already mounted." | tee -a $log
         else
-              sudo mount $device $mount_point
+              sudo mount $device $mount_point  2>&1 | tee -a $log
         fi
 
 }
@@ -75,11 +96,22 @@ mount_volume(){
 IFS='|' read -ra ADDR <<< "${PERSISTENCE_MAPPING}"
 echo "${ADDR[@]}" | tee -a $log
 
+echo -e "\n Volumes before mounting...." | tee -a $log
+output=`/bin/lsblk`
+echo -e "\n$output\n" | tee -a $log
+output=`/sbin/blkid`
+echo -e "\n$output\n" | tee -a $log
+
 for i in "${!ADDR[@]}"; do
         # expected PERSISTANCE_MAPPING format is device1|volumeID1|mountPoint1|device2|volumeID2|mountpoint2...
         if (( $i  % 3 == 0 ))
         then
-           mount_volume ${ADDR[$i1]} ${ADDR[$i + 2]}
+           mount_volume ${ADDR[$i]} ${ADDR[$i + 2]}
         fi
 done
 
+echo -e "\n Volumes after mounting...." | tee -a $log
+output=`/bin/lsblk`
+echo -e "\n$output\n" | tee -a $log
+output=`/sbin/blkid`
+echo -e "\n$output\n" | tee -a $log
