@@ -19,6 +19,7 @@
 package org.apache.stratos.rest.endpoint.bean;
 
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,8 @@ public class CartridgeInfoBean {
     boolean commitsEnabled;
     private String serviceGroup;
     private PersistenceBean persistence;
+
+    private List<PropertyBean> property;
 
     public CartridgeInfoBean() {
     }
@@ -144,5 +147,13 @@ public class CartridgeInfoBean {
 
     public void setPersistence(PersistenceBean persistence) {
         this.persistence = persistence;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
     }
 }

@@ -989,6 +989,10 @@ public class ServiceUtils {
         if(persistenceBean != null) {
             subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
         }
+        if(cartridgeInfoBean.getProperty() != null){
+            subscriptionData.setProperties(PojoConverter.getProperties(cartridgeInfoBean.getProperty()));
+        }
+
         /*
         if (cartridgeInfoBean.isPersistanceRequired()) {
         if (cartridgeInfoBean.getPersistence() != null) {
@@ -1079,7 +1083,7 @@ public class ServiceUtils {
             subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
             subscriptionData.setTenantAdminUsername(userName);
             subscriptionData.setRepositoryType("git");
-            //subscriptionData.setProperties(props);
+            //subscriptionData.setPayloadProperties(props);
             subscriptionData.setPrivateRepository(false);
 
             cartridgeSubscription =
@@ -1089,7 +1093,7 @@ public class ServiceUtils {
             cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
 
             Properties lbProperties = new Properties();
-            lbProperties.setProperties(props);
+            lbProperties.setPayloadProperties(props);
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
             
             if(log.isDebugEnabled()) {

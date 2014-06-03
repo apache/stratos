@@ -339,7 +339,12 @@ public class CartridgeSubscriptionManager {
         if(cartridgeSubscription.getPayloadData() != null) {
             cartridgeSubscription.getPayloadData().add(CartridgeConstants.COMMIT_ENABLED, String.valueOf(subscriptionData.isCommitsEnabled()));
         }
-        
+
+        if(subscriptionData.getProperties() != null){
+            for(Property property : subscriptionData.getProperties().getProperties()){
+                cartridgeSubscription.getPayloadData().add(property.getName(), property.getValue());
+            }
+        }
 
         log.info("Tenant [" + subscriptionData.getTenantId() + "] with username [" + subscriptionData.getTenantAdminUsername() +
                 " subscribed to " + "] Cartridge with Alias " + subscriptionData.getCartridgeAlias() + ", Cartridge Type: " +
