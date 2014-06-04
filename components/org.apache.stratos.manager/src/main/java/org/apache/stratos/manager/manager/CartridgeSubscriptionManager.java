@@ -342,7 +342,10 @@ public class CartridgeSubscriptionManager {
 
         if(subscriptionData.getProperties() != null){
             for(Property property : subscriptionData.getProperties().getProperties()){
-                cartridgeSubscription.getPayloadData().add(property.getName(), property.getValue());
+                if (property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+                    String payloadParamName = property.getName();
+                    cartridgeSubscription.getPayloadData().add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
+                }
             }
         }
 
