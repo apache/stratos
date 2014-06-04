@@ -17,7 +17,7 @@
 #  specific language governing permissions and limitations
 #  under the License.
 # ----------------------------------------------------------------------------
-# Main Script for the Apache Stratos (incubating)
+# Main Script for the Apache Stratos
 #
 # Environment Variable Prerequisites
 #
