@@ -1,0 +1,87 @@
+{
+    "ID": "6d35806c1bd2b25cd92bba2d2c2c5169dc2156f53ab45c2b62d76e2d2fee14a9",
+    "Created": "2014-03-22T07:16:45.784120972Z",
+    "Path": "/usr/sbin/sshd",
+    "Args": [
+        "-D"
+    ],
+    "Config": {
+        "Hostname": "6d35806c1bd2",
+        "Domainname": "",
+        "User": "",
+        "Memory": 0,
+        "MemorySwap": 0,
+        "CpuShares": 0,
+        "AttachStdin": false,
+        "AttachStdout": false,
+        "AttachStderr": false,
+        "PortSpecs": null,
+        "ExposedPorts": {
+            "22/tcp": {}
+        },
+        "Tty": false,
+        "OpenStdin": false,
+        "StdinOnce": false,
+        "Env": null,
+        "Cmd": [
+            "/usr/sbin/sshd",
+            "-D"
+        ],
+        "Dns": null,
+        "Image": "jclouds/ubuntu",
+        "Volumes": null,
+        "VolumesFrom": "",
+        "WorkingDir": "",
+        "Entrypoint": null,
+        "NetworkDisabled": false,
+        "OnBuild": null
+    },
+    "State": {
+        "Running": true,
+        "Pid": 7051,
+        "ExitCode": 0,
+        "StartedAt": "2014-03-22T07:16:45.845347434Z",
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "Ghost": false
+    },
+    "Image": "af0f59f1c19eef9471c3b8c8d587c39b8f130560b54f3766931b37d76d5de4b6",
+    "NetworkSettings": {
+        "IPAddress": "172.17.0.2",
+        "IPPrefixLen": 16,
+        "Gateway": "172.17.42.1",
+        "Bridge": "docker0",
+        "PortMapping": null,
+        "Ports": {
+            "22/tcp": [
+                {
+                    "HostIp": "0.0.0.0",
+                    "HostPort": "49231"
+                }
+            ]
+        }
+    },
+    "ResolvConfPath": "/etc/resolv.conf",
+    "HostnamePath": "/mnt/sda1/var/lib/docker/containers/6d35806c1bd2b25cd92bba2d2c2c5169dc2156f53ab45c2b62d76e2d2fee14a9/hostname",
+    "HostsPath": "/mnt/sda1/var/lib/docker/containers/6d35806c1bd2b25cd92bba2d2c2c5169dc2156f53ab45c2b62d76e2d2fee14a9/hosts",
+    "Name": "/hopeful_mclean",
+    "Driver": "aufs",
+    "ExecDriver": "native-0.1",
+    "Volumes": {},
+    "VolumesRW": {},
+    "HostConfig": {
+        "Binds": null,
+        "ContainerIDFile": "",
+        "LxcConf": [],
+        "Privileged": false,
+        "PortBindings": {
+            "22/tcp": [
+                {
+                    "HostIp": "0.0.0.0",
+                    "HostPort": "49231"
+                }
+            ]
+        },
+        "Links": null,
+        "PublishAllPorts": false
+    }
+}

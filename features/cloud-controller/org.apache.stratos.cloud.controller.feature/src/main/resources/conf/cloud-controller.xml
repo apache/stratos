@@ -62,7 +62,7 @@
             		<property name="instanceType" value="m1.large"/>
             		<property name="keyPair" value="nirmal-key"/>
 		</iaasProvider-->
-		<iaasProvider type="openstack" name="openstack specific details">
+		<!-- iaasProvider type="openstack" name="openstack specific details">
             		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
@@ -72,6 +72,12 @@
 			<property name="jclouds.api-version" value="2.0/" />
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
-		</iaasProvider>
+		</iaasProvider -->
+        <iaasProvider type="docker" name="Docker">
+            <className>org.apache.stratos.cloud.controller.iaases.DockerIaas</className>
+            <provider>docker</provider>
+            <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
+            <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>
+        </iaasProvider>
 	</iaasProviders>
 </cloudController>
