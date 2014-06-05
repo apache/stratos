@@ -297,15 +297,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "PARTITION_ID", partitionId);
 
             Iaas iaas = iaasProvider.getIaas();
-            if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
-            }
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
-            // reloading the payload with memberID
-            iaasProvider.setPayload(payload.toString().getBytes());
             
             if (iaas == null) {
                 if(log.isDebugEnabled()) {
@@ -321,8 +316,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
                 
             }
-            
+
+            if(ctxt.isVolumeRequired()) {
+                if (ctxt.getVolumes() != null) {
+                    for (Volume volume : ctxt.getVolumes()) {
+
+                        if (volume.getId() == null) {
+                            // create a new volume
+                            createVolumeAndSetInClusterContext(volume, iaasProvider);
+                        }
+                    }
+                }
+            }
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
+            }
+            iaasProvider.setPayload(payload.toString().getBytes());
             iaas.setDynamicPayload();
+
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
@@ -342,19 +354,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Should have a length between 3-15
             String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
             String group = str.replaceAll("[^a-z0-9-]", "");
-            
-            if(ctxt.isVolumeRequired()) {
-            	if (ctxt.getVolumes() != null) {
-            		for (Volume volume : ctxt.getVolumes()) {
 
-            			if (volume.getId() == null) {
-            				// create a new volume
-            				createVolumeAndSetInClusterContext(volume, iaasProvider);
-            			}
-					}
-            	}
-            }
-            
             NodeMetadata node;
 
 //            create and start a node
@@ -446,14 +446,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
                 }
+                
 				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
 				persistencePayload.append("|");
+                persistencePayload.append(volume.getId());
+                persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
 			}
 		}
         if(log.isDebugEnabled()){
             log.debug("Persistence payload is" + persistencePayload.toString());
         }
+        System.out.println("****** " + persistencePayload);
 		return persistencePayload;
 	}
 

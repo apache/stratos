@@ -19,6 +19,7 @@
 package org.apache.stratos.manager.subscription;
 
 import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.util.Collections;
@@ -42,12 +43,12 @@ public class SubscriptionData {
     private boolean isPrivateRepository;
     private String repositoryUsername;
     private String repositoryPassword;
-    private Property[] properties;
     private PersistenceContext persistanceCtxt;
     private boolean isCommitsEnabled;
     private String serviceGroup;
     private Set<String> domains;
     private Persistence persistence;
+    private Properties properties;
 
     public SubscriptionData() {
         this.domains = new HashSet<String>();
@@ -149,14 +150,6 @@ public class SubscriptionData {
         this.repositoryPassword = repositoryPassword;
     }
 
-    public Property[] getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Property[] properties) {
-        this.properties = properties;
-    }
-
     public PersistenceContext getPersistanceContext() {
         return persistanceCtxt;
     }
@@ -205,4 +198,11 @@ public class SubscriptionData {
         this.persistence = persistence;
      }
 
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

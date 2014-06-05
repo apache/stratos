@@ -174,7 +174,7 @@ public class PojoConverter {
 
     }
 
-    private static Properties getProperties (List<PropertyBean> propertyBeans) {
+    public static Properties getProperties(List<PropertyBean> propertyBeans) {
 
         //convert to an array
         PropertyBean [] propertyBeansArray = new PropertyBean[propertyBeans.size()];

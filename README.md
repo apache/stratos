@@ -1,7 +1,7 @@
-Apache Stratos (incubating)
+Apache Stratos
 ===========================
-Apache Stratos (incubating) is a PaaS framework that supports polyglot environments (e.g., PHP, MySQL) and 
-can be extended to support many more. Apache Stratos (incubating) is also the foundation for multiple flavors of PaaSes, 
+Apache Stratos is a PaaS framework that supports polyglot environments (e.g., PHP, MySQL) and 
+can be extended to support many more. Apache Stratos is also the foundation for multiple flavors of PaaSes, 
 such as Application PaaS (aPaaS), Integration PaaS (iPaaS), or Data PaaS (dPaaS). 
 Stratos is licensed under the Apache License, Version 2.0
 

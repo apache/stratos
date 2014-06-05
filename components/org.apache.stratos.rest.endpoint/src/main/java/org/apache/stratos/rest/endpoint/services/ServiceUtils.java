@@ -986,10 +986,16 @@ public class ServiceUtils {
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
 
         PersistenceBean persistenceBean = cartridgeInfoBean.getPersistence();
-        subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
+        if(persistenceBean != null) {
+            subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
+        }
+        if(cartridgeInfoBean.getProperty() != null){
+            subscriptionData.setProperties(PojoConverter.getProperties(cartridgeInfoBean.getProperty()));
+        }
 
         /*
         if (cartridgeInfoBean.isPersistanceRequired()) {
+        if (cartridgeInfoBean.getPersistence() != null) {
             // Add persistence related properties to PersistenceContext
             PersistenceContext persistenceContext = new PersistenceContext();
             persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
@@ -1077,7 +1083,7 @@ public class ServiceUtils {
             subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
             subscriptionData.setTenantAdminUsername(userName);
             subscriptionData.setRepositoryType("git");
-            //subscriptionData.setProperties(props);
+            //subscriptionData.setPayloadProperties(props);
             subscriptionData.setPrivateRepository(false);
 
             cartridgeSubscription =
@@ -1087,7 +1093,7 @@ public class ServiceUtils {
             cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
 
             Properties lbProperties = new Properties();
-            lbProperties.setProperties(props);
+            lbProperties.setPayloadProperties(props);
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
             
             if(log.isDebugEnabled()) {
@@ -1197,6 +1203,15 @@ public class ServiceUtils {
                                                             		 throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
+
+            for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.domains) {
+                boolean isDomainExists = isSubscriptionDomainExists(configurationContext, cartridgeType, subscriptionAlias, subscriptionDomain.domainName);
+                if (isDomainExists) {
+                    String message = "Subscription domain " + subscriptionDomain.domainName + " exists";
+                    throw new RestAPIException(Status.INTERNAL_SERVER_ERROR, message);
+                }
+            }
+
             for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.domains) {
 				
             	cartridgeSubsciptionManager.addSubscriptionDomain(tenantId, subscriptionAlias, 
@@ -1210,6 +1225,25 @@ public class ServiceUtils {
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully added domains to cartridge subscription");
         return stratosAdminResponse;
+    }
+
+    public static boolean isSubscriptionDomainExists(ConfigurationContext configurationContext, String cartridgeType,
+                                                     String subscriptionAlias, String domain) throws RestAPIException {
+        try {
+            int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
+            SubscriptionDomainBean subscriptionDomain = PojoConverter.populateSubscriptionDomainPojo(cartridgeSubsciptionManager.getSubscriptionDomain(tenantId,
+                    subscriptionAlias, domain));
+
+            if ( subscriptionDomain.domainName != null ) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+
     }
 
     public static List<SubscriptionDomainBean> getSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
