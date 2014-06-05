@@ -37,28 +37,28 @@ mount_volume(){
 
         device=$1;
         mount_point=$2;
-	echo -e "device $device" | tee -a $log
+    echo -e "device $device" | tee -a $log
         echo -e "mount point  $mount_point"| tee -a $log
 
 
         if [  "$mount_point" = "null" ]
         then
               echo -e "[ERROR] Mount point can not be null" | tee -a $log
-	      return
+          return
         fi
 
         if [  "$device" = "null" ]
         then
               echo -e "[ERROR] Device can not be null" | tee -a $log
-	      return
+          return
         fi
 
         device_exist=`sudo fdisk -l $device`;
         if [ "$device_exist" = "" ]
         then
               echo -e "[ERROR] Device $device does not exist in this instance." | tee -a $log
-	      return
-	fi
+          return
+    fi
 
         # check if the volume has a file system
         output=`sudo file -s $device`;
@@ -102,13 +102,56 @@ echo -e "\n$output\n" | tee -a $log
 output=`/sbin/blkid`
 echo -e "\n$output\n" | tee -a $log
 
+totalcount=0
 for i in "${!ADDR[@]}"; do
+        # expected PERSISTANCE_MAPPING format is device1|volumeID1|mountPoint1|device2|volumeID2|mountpoint2...
+        if (( $i  % 3 == 0 ))
+        then
+           devicelist[$totalcount]=${ADDR[$i]}
+           mountpathlist[$totalcount]=${ADDR[$i + 2]}
+           totalcount=$((totalcount+1))
+           lastdevice=${ADDR[$i]}
+        fi
+done
+
+
+device_exist=`sudo fdisk -l $lastdevice`;
+if [ "$device_exist" = "" ]
+then
+# Last device doesn't exist, which means devices are not attached as per the order given in the payload
+# So start mounting from the last available device and come down
+    devlist=`sudo lsblk -n | cut -f 1 -d " "`
+    devcount=`echo ${devlist} | awk '{print NF}'`
+    totalcount=$((totalcount-1))
+        counter=0
+    for ((i=${devcount}-1; totalcount>=0; i--)); do
+        devnum=`expr ${devcount} - ${counter}`
+        currdevice=`echo ${devlist} | cut -d " " -f ${devnum}`
+        fileout=`sudo file -s /dev/${currdevice}`
+        if [[ $fileout == *ROM* ]] || [[ $fileout == *boot* ]] || [[ $fileout == *cloud* ]] || [[ $fileout == *not-regular* ]] || [[ $fileout == *empty* ]] || [[ $fileout == *swap* ]]
+        then
+            # Ignore special files as checked above...
+            counter=`expr ${counter} + 1`
+            continue
+        fi
+        mountpath=${mountpathlist[$totalcount]}
+        totalcount=$((totalcount-1))
+        echo "device is $currdevice"
+        echo "mount path is $mountpath"
+        counter=`expr ${counter} + 1`
+        mount_volume "/dev/${currdevice}" ${mountpath}
+    done
+else
+# Last device exists, which means the volumes are created or few might have been skipped in the first part since the device is already present
+# Mount of rest of the volumes will be fine and contine
+    for i in "${!ADDR[@]}"; do
         # expected PERSISTANCE_MAPPING format is device1|volumeID1|mountPoint1|device2|volumeID2|mountpoint2...
         if (( $i  % 3 == 0 ))
         then
            mount_volume ${ADDR[$i]} ${ADDR[$i + 2]}
         fi
-done
+    done
+fi
 
 echo -e "\n Volumes after mounting...." | tee -a $log
 output=`/bin/lsblk`
