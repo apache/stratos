@@ -578,8 +578,8 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
     private boolean waitForStatus(String volumeId, Volume.Status expectedStatus, int timeoutInMins) throws TimeoutException {
-        long timeout = 1000 * 60 * timeoutInMins;//5mins
-        long t0 = System.currentTimeMillis() + timeout;
+        long timeout = 1000 * 60 * timeoutInMins;
+        long timout = System.currentTimeMillis() + timeout;
 
         IaasProvider iaasInfo = getIaasProvider();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
@@ -600,7 +600,7 @@ public class OpenstackNovaIaas extends Iaas {
                 }
                 Thread.sleep(1000);
                 volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
-                if (System.currentTimeMillis()> t0) {
+                if (System.currentTimeMillis()> timout) {
                     throw new TimeoutException();
                 }
             } catch (InterruptedException e) {
@@ -668,6 +668,13 @@ public class OpenstackNovaIaas extends Iaas {
                 log.error("[Volume ID] " + volumeId + "did not become IN_USE within expected timeout");
             }
         }
+        try {
+            // waiting 5seconds till volumes are actually attached.
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (attachment == null) {
 			log.fatal(String.format("Volume [id]: %s attachment for instance [id]: %s was unsuccessful. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
 			return null;
