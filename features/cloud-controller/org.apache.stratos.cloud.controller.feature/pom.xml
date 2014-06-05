@@ -88,7 +88,16 @@
            <artifactId>openstack-nova</artifactId>
            <version>1.7.1-stratos</version>
          </dependency>
-         
+         <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>docker</artifactId>
+            <version>1.7.1-stratos</version>
+         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.5</version>
+        </dependency>
          <dependency>
            <groupId>org.apache.jclouds.api</groupId>
            <artifactId>openstack-keystone</artifactId>
@@ -232,6 +241,8 @@
                                 <bundleDef>org.apache.stratos:ec2:1.7.1-stratos</bundleDef>
                                 <bundleDef>org.apache.stratos:openstack-nova:1.7.1-stratos</bundleDef>
                                 <bundleDef>org.apache.stratos:vcloud:1.7.1-stratos</bundleDef>
+                                <bundleDef>org.apache.stratos:docker:1.7.1-stratos</bundleDef>
+                                <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
                                 <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
