@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-dependents</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,7 +30,7 @@
     <packaging>bundle</packaging>
     <name>WSO2 Carbon - UI</name>
     <description>org.wso2.carbon.ui patch version for apache stratos</description>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.2.0-stratos</version>
     <url>http://wso2.org</url>
 
     <repositories>
