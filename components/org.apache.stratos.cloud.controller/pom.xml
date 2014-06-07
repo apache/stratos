@@ -187,17 +187,17 @@
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>ec2</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>1.7.1-stratos</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>aws-ec2</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>1.7.1-stratos</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>openstack-nova</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>1.7.1-stratos</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.jclouds.api</groupId>
@@ -212,7 +212,7 @@
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>vcloud</artifactId>
-			<version>4.0.0-SNAPSHOT</version>
+			<version>1.7.1-stratos</version>
 		</dependency>
 
          <dependency>
