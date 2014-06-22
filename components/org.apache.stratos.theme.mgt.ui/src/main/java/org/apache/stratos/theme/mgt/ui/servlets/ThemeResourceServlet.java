@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ThemeResourceSevelet extends HttpServlet {
+public class ThemeResourceServlet extends HttpServlet {
 
-    private static final Log log = LogFactory.getLog(ThemeResourceSevelet.class);
+    private static final Log log = LogFactory.getLog(ThemeResourceServlet.class);
 
     private ServletConfig servletConfig;
 
