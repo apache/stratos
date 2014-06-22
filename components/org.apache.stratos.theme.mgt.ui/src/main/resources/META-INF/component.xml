@@ -63,7 +63,7 @@
             <url-pattern>/registry/themeResourceContent</url-pattern>
             <display-name>Theme Resource Content Servlet</display-name>
 
-            <servlet-class>org.apache.stratos.theme.mgt.ui.servlets.ThemeResourceSevelet</servlet-class>
+            <servlet-class>org.apache.stratos.theme.mgt.ui.servlets.ThemeResourceServlets</servlet-class>
         </servlet>
     </servlets>
 </component>
