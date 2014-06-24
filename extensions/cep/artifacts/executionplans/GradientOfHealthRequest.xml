@@ -28,14 +28,34 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="healthStats2" name="cartridge_agent_health_stats" version="1.0.0"/>
+    <stream as="health_grad_processsor" name="cartridge_agent_health_stats" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[
-  from healthStats2 #window.stratos:faultHandling(1min, member_id) select cluster_id, network_partition_id, member_id, partition_id group by cluster_id, network_partition_id insert into fault_message;
-  from healthStats2 [health_description == 'load_average'] #window.stratos:gradient(1 min, value) select cluster_id, network_partition_id, value as gradient_load_average group by cluster_id, network_partition_id insert into gradient_load_average_stats;
-  from healthStats2 [health_description == 'load_average'] #window.stratos:gradient(1 min, value) select member_id, cluster_id, network_partition_id, value as member_gradient_load_average group by member_id insert into member_gradient_load_average_stats;
-  from healthStats2 [health_description == 'memory_consumption'] #window.stratos:gradient(1 min, value) select member_id, cluster_id, network_partition_id, value as member_gradient_memory_consumption group by member_id insert into member_gradient_memory_consumption_stats;
-  from healthStats2 [health_description == 'memory_consumption'] #window.stratos:gradient(1 min, value) select cluster_id, network_partition_id, value as gradient_memory_consumption group by cluster_id, network_partition_id insert into gradient_memory_consumption_stats;]]></queryExpressions>
+  	from health_grad_processsor 
+  		#window.stratos:faultHandling(1min, member_id) select cluster_id, network_partition_id, member_id, partition_id 
+		group by cluster_id, network_partition_id 
+  		insert into fault_message;
+  	from health_grad_processsor
+  		select cluster_id, network_partition_id, member_id, partition_id, health_description, value, 
+		stratos:concat(cluster_id, '-' , network_partition_id) as health_grad_cluster_network 
+  		insert into health_grad_concatinator;
+  	define partition health_grad_cluster_partition by  health_grad_concatinator.health_grad_cluster_network;
+ 	define partition member_health_grad_cluster_partition by health_grad_processsor.member_id;
+  	from health_grad_concatinator [health_description == 'load_average'] 
+		#window.stratos:gradient(1 min, value) select cluster_id, network_partition_id, value as gradient_load_average 
+		insert into gradient_load_average_stats 
+		partition by health_grad_cluster_partition;
+  	from health_grad_processsor [health_description == 'load_average'] 
+		#window.stratos:gradient(1 min, value) select member_id, cluster_id, network_partition_id, value as member_gradient_load_average 
+		insert into member_gradient_load_average_stats 
+		partition by member_health_grad_cluster_partition;
+  	from health_grad_processsor [health_description == 'memory_consumption'] 
+		#window.stratos:gradient(1 min, value) select member_id, cluster_id, network_partition_id, value as member_gradient_memory_consumption 
+		insert into member_gradient_memory_consumption_stats  partition by member_health_grad_cluster_partition;
+  	from health_grad_concatinator [health_description == 'memory_consumption'] 
+		#window.stratos:gradient(1 min, value) select cluster_id, network_partition_id, value as gradient_memory_consumption 
+		insert into gradient_memory_consumption_stats 
+		partition by health_grad_cluster_partition;]]></queryExpressions>
   <exportedStreams>
     <stream name="gradient_load_average_stats"
       valueOf="gradient_load_average_stats" version="1.0.0"/>
