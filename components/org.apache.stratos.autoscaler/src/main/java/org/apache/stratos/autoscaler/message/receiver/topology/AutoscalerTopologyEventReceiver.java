@@ -22,9 +22,12 @@ package org.apache.stratos.autoscaler.message.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
@@ -285,6 +288,54 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
+        topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
+           @Override
+           protected void onEvent(Event event) {
+               try {
+                   MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent)event;
+                   AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                   AbstractMonitor monitor;
+                   String clusterId = memberReadyToShutdownEvent.getClusterId();
+                   String memberId = memberReadyToShutdownEvent.getMemberId();
+
+                   if(asCtx.monitorExist(clusterId)){
+                       monitor = asCtx.getMonitor(clusterId);
+                   }else if(asCtx.lbMonitorExist(clusterId)){
+                       monitor = asCtx.getLBMonitor(clusterId);
+                   }else{
+                       if(log.isDebugEnabled()){
+                           log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                       }
+                       return;
+                   }
+
+                   NetworkPartitionContext nwPartitionCtxt;
+                   nwPartitionCtxt = monitor.getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
+
+                   // start a new member in the same Partition
+                   String partitionId = monitor.getPartitionOfMember(memberId);
+                   Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
+                   PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+
+
+                   // terminate the shutdown ready member
+                   CloudControllerClient ccClient = CloudControllerClient.getInstance();
+                   ccClient.terminate(memberId);
+
+                   // remove from active member list
+                   partitionCtxt.removeActiveMemberById(memberId);
+
+                   if (log.isInfoEnabled()) {
+                       log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
+                                              memberId, partitionId, clusterId));
+                   }
+               } catch (TerminationException e) {
+                   log.error(e);
+               }
+           }
+
+       });
+
 
         topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
             @Override
@@ -322,6 +373,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
             }
         });
+
 
         topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
             @Override
