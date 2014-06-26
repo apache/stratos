@@ -18,7 +18,12 @@
  */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 @XmlRootElement
 public class CartridgeInfoBean {
@@ -34,10 +39,14 @@ public class CartridgeInfoBean {
     String dataCartridgeAlias;
     boolean commitsEnabled;
 
-    private boolean persistanceRequired;
-    private String size;
-    private boolean removeOnTermination;
     private String serviceGroup;
+
+    private PersistenceBean persistence;
+
+    private List<PropertyBean> property;
+
+    public CartridgeInfoBean() {
+    }
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -119,31 +128,7 @@ public class CartridgeInfoBean {
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public boolean isPersistanceRequired() {
-        return persistanceRequired;
-    }
-
-    public void setPersistanceRequired(boolean persistanceRequired) {
-        this.persistanceRequired = persistanceRequired;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
-    public boolean isRemoveOnTermination() {
-        return removeOnTermination;
-    }
-
-    public void setRemoveOnTermination(boolean removeOnTermination) {
-        this.removeOnTermination = removeOnTermination;
-    }
-
-	public boolean isCommitsEnabled() {
+    public boolean isCommitsEnabled() {
 		return commitsEnabled;
 	}
 
@@ -158,5 +143,20 @@ public class CartridgeInfoBean {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-    
+
+    public PersistenceBean getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(PersistenceBean persistenceBean) {
+        this.persistence = persistenceBean;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
 }

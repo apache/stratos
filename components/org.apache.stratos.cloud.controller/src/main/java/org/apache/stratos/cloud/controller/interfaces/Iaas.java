@@ -141,7 +141,7 @@ public abstract class Iaas {
      * @param sizeGB size of the volume in Giga Bytes.
      * @return Id of the created volume.
      */
-    public abstract String createVolume(int sizeGB);
+    public abstract String createVolume(int sizeGB, String snapshotId);
    
     /**
      * Attach a given volume to an instance at the specified device path.

@@ -28,6 +28,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 /**
  * Defines default topology message processor chain.
  */
+// Grouping
 public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(TopologyMessageProcessorChain.class);
 
@@ -43,6 +44,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberMaintenanceModeProcessor memberMaintenanceModeProcessor;
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
+    private CompositeApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
+    private CompositeApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -82,8 +85,19 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         memberTerminatedMessageProcessor = new MemberTerminatedMessageProcessor();
         add(memberTerminatedMessageProcessor);
 
+        applicationCreatedMessageProcessor = new CompositeApplicationCreatedMessageProcessor();
+        add(applicationCreatedMessageProcessor); 
+        
+        applicationRemovedMessageProcessor = new CompositeApplicationRemovedMessageProcessor();
+        add(applicationRemovedMessageProcessor); 
+        
         if (log.isDebugEnabled()) {
-            log.debug("Topology message processor chain initialized");
+            log.debug("Grouping: added applicationCreatedMessageProcessor, applicationRemovedMessageProcessor: " + 
+            		applicationCreatedMessageProcessor + " / " + applicationRemovedMessageProcessor);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("Topology message processor chain initialized X1");
         }
     }
 
@@ -113,6 +127,17 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             serviceRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof  MemberMaintenanceListener) {
             memberMaintenanceModeProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof  CompositeApplicationCreatedEventListener) {
+        	applicationCreatedMessageProcessor.addEventListener(eventListener);
+        	if (log.isDebugEnabled()) {
+                log.debug("Grouping: added eventlistener to applicationCreatedMessageProcessor: " + eventListener);
+            }
+
+        } else if (eventListener instanceof  CompositeApplicationRemovedEventListener) {
+        	applicationRemovedMessageProcessor.addEventListener(eventListener);
+        	if (log.isDebugEnabled()) {
+                log.debug("Grouping: added eventlistener to applicationCreatedMessageProcessor: " + eventListener);
+            }
 
         } else {
             throw new RuntimeException("Unknown event listener");

@@ -30,6 +30,7 @@ import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
@@ -93,9 +94,9 @@ public class CloudControllerServiceClient {
 	}
 
 	public boolean register(String clusterId, String cartridgeType,
-	                        String payload, String tenantRange,
+                            String payload, String tenantRange,
                             String hostName, Properties properties,
-                            String autoscalorPolicyName, String deploymentPolicyName) throws RemoteException, 
+                            String autoscalorPolicyName, String deploymentPolicyName, Persistence persistence) throws RemoteException,
                             CloudControllerServiceUnregisteredCartridgeExceptionException {		
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
@@ -106,9 +107,27 @@ public class CloudControllerServiceClient {
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
         registrant.setDeploymentPolicyName(deploymentPolicyName);
+        registrant.setPersistence(persistence);
 		return stub.registerService(registrant);
 
 	}
+
+
+	public void deployCompositeApplicationDefinition (CompositeApplicationDefinition compositeApplicationDefinition) 
+			throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException, CloudControllerServiceInvalidIaasProviderExceptionException  
+    		 {
+
+		stub.deployCompositeApplicationDefinition(compositeApplicationDefinition);
+
+	}
+	
+	
+	public void unDeployCompositeApplicationDefinition(String appAlias) throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException, CloudControllerServiceInvalidIaasProviderExceptionException   {
+		stub.unDeployCompositeApplicationDefinition(appAlias);
+    }
+
+
+
 
     @SuppressWarnings("unused")
     private Properties

@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cli.commands;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
     import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,11 +26,6 @@ import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-
-import java.io.File;
-
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
 
 public class ExitCommand implements Command<StratosCommandContext> {
 
@@ -54,7 +50,7 @@ public class ExitCommand implements Command<StratosCommandContext> {
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
 		// Nothing to execute here. This is a special command.
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());

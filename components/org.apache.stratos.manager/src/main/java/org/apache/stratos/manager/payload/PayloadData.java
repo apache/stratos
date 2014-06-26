@@ -20,30 +20,39 @@
 package org.apache.stratos.manager.payload;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public abstract class PayloadData implements Serializable {
 
     private BasicPayloadData basicPayloadData;
-    private StringBuilder completePayloadDataBuilder;
-
+    private Map<String, String> completePayloadMap;
     public PayloadData(BasicPayloadData basicPayloadData) {
 
         this.setBasicPayloadData(basicPayloadData);
-        completePayloadDataBuilder = new StringBuilder(basicPayloadData.getPayloadData());
+        completePayloadMap = new HashMap<String, String>();
     }
 
     public void add (String payloadDataName, String payloadDataValue) {
-
-        if(completePayloadDataBuilder.length() > 0) {
-            completePayloadDataBuilder.append(",");
-        }
-
-        completePayloadDataBuilder.append(payloadDataName + "=" + payloadDataValue);
+        completePayloadMap.put(payloadDataName, payloadDataValue);
     }
 
     public StringBuilder getCompletePayloadData () {
 
-        return completePayloadDataBuilder;
+        //return completePayloadMap;
+        StringBuilder completePayload = new StringBuilder();
+        completePayload.append(basicPayloadData.getPayloadData());
+        Iterator< String > iter = completePayloadMap.keySet().iterator();
+        while(iter.hasNext()) {
+            String key = iter.next();
+            String val = completePayloadMap.get(key);
+            if(completePayload.length() > 0){
+                completePayload.append(",");
+            }
+            completePayload.append(key + "=" + val);
+        }
+        return completePayload;
     }
 
     public BasicPayloadData getBasicPayloadData() {

@@ -50,9 +50,11 @@ import org.drools.runtime.rule.FactHandle;
 
 	protected FactHandle minCheckFactHandle;
 	protected FactHandle scaleCheckFactHandle;
+	protected FactHandle terminateDependencyFactHandle;
 	
 	protected StatefulKnowledgeSession minCheckKnowledgeSession;
 	protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
+	protected StatefulKnowledgeSession terminateDependencyKnowledgeSession;
 	protected boolean isDestroyed;
 	
 	protected String clusterId;
@@ -92,13 +94,14 @@ import org.drools.runtime.rule.FactHandle;
     public void destroy() {
         minCheckKnowledgeSession.dispose();
         scaleCheckKnowledgeSession.dispose();
+        terminateDependencyKnowledgeSession.dispose();
         setDestroyed(true);
         if(log.isDebugEnabled()) {
             log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
         }
     }
-    
-    public boolean isDestroyed() {
+
+	public boolean isDestroyed() {
         return isDestroyed;
     }
 
@@ -177,4 +180,24 @@ import org.drools.runtime.rule.FactHandle;
     public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
         this.minCheckFactHandle = minCheckFactHandle;
     }
+    
+    public StatefulKnowledgeSession getTerminateDependencyKnowledgeSession() {
+		return terminateDependencyKnowledgeSession;
+	}
+
+	public void setTerminateDependencyKnowledgeSession(
+			StatefulKnowledgeSession terminateDependencyKnowledgeSession) {
+		this.terminateDependencyKnowledgeSession = terminateDependencyKnowledgeSession;
+	}
+
+	public FactHandle getTerminateDependencyFactHandle() {
+		return terminateDependencyFactHandle;
+	}
+
+	public void setTerminateDependencyFactHandle(
+			FactHandle terminateDependencyFactHandle) {
+		this.terminateDependencyFactHandle = terminateDependencyFactHandle;
+	}
+
+
 }

@@ -22,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.JsonMessage;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -103,6 +105,12 @@ public class Util {
      */
     public static Object jsonToObject(String json, Class type) {
         return (new JsonMessage(json, type)).getObject();
+    }
+    
+    public static String ObjectToJson(Object obj) {
+    	Gson gson = new Gson();
+    	String result = gson.toJson(obj);
+    	return result;
     }
 
 }

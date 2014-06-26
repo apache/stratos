@@ -46,7 +46,7 @@ public class PartitionCommand implements Command<StratosCommandContext> {
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }

@@ -723,7 +723,7 @@ public class RestCommandLineService {
     public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
                           String password,String asPolicy,
                           String depPolicy, String size, boolean remoOnTermination, boolean persistanceMapping,
-                          boolean enableCommits)
+                          boolean enableCommits, String volumeId)
             throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
@@ -737,6 +737,7 @@ public class RestCommandLineService {
         cartridgeInfoBean.setAutoscalePolicy(null);
         cartridgeInfoBean.setDeploymentPolicy(null);
         cartridgeInfoBean.setSize(size);
+
         cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
         cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
         cartridgeInfoBean.setCommitsEnabled(enableCommits);
@@ -759,6 +760,7 @@ public class RestCommandLineService {
             cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
             cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
             cartridgeInfoBean.setCommitsEnabled(enableCommits);
+            cartridgeInfoBean.setVolumeId(volumeId);
             
             jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
 
@@ -781,7 +783,7 @@ public class RestCommandLineService {
                 return;
             }
 
-            String  subscriptionOutputJSON=  subscriptionOutput.substring(20, subscriptionOutput.length() -1);
+            String  subscriptionOutputJSON = subscriptionOutput.substring(20, subscriptionOutput.length() -1);
             SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutputJSON, SubscriptionInfo.class);
 
             System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);

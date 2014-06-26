@@ -22,6 +22,7 @@ package org.apache.stratos.manager.persistence;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 import java.util.Collection;
 
@@ -46,5 +47,13 @@ public abstract class PersistenceManager {
     public abstract Service getService (String cartridgeType) throws PersistenceManagerException;
 
     public abstract void removeService (String cartridgeType) throws PersistenceManagerException;
+    
+    //Grouping
+    public abstract void persistDeployedCompositeApplication(ConfigCompositeApplication configCompositeApplication)  throws PersistenceManagerException;
+
+    //Grouping
+    public abstract void removeDeployedCompositeApplication(String configCompositeApplicationAlias)  throws PersistenceManagerException;
+
+    public abstract Collection<ConfigCompositeApplication> getDeployedCompositeApplications () throws PersistenceManagerException;
 
 }

@@ -33,6 +33,8 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+import static org.apache.stratos.cli.utils.CommandLineUtils.mergeOptionArrays;
+
 public class SubscribeCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
@@ -74,6 +76,10 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         Option size = new Option(CliConstants.VOLUME_SIZE_OPTION, CliConstants.VOLUME_SIZE_LONG_OPTION, true, "Volume-size");
         size.setArgName("volume-size");
         options.addOption(size);
+
+        Option volumeId = new Option(CliConstants.VOLUME_ID_OPTION, CliConstants.VOLUME_ID_LONG_OPTION, true, "Volume-id");
+        volumeId.setArgName("volume-id");
+        options.addOption(volumeId);
 
         Option persistance = new Option(CliConstants.PERSISTANCE_VOLUME_OPTION, CliConstants.PERSISTANCE_VOLUME_LONG_OPTION,
                 true, "Persistance-volume");
@@ -120,7 +126,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 		return "[Cartridge type] [Cartridge alias]";
 	}
 
-	public int execute(StratosCommandContext context, String[] args) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
@@ -133,6 +139,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             String depPolicy = null;
 			String repoURL = null, username = "", password = "";
             String size = null;
+            String volumeID = null;
 
             boolean removeOnTermination = false;
 			boolean privateRepo = false;
@@ -144,6 +151,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 			try {
 				commandLine = parser.parse(options, args);
 				remainingArgs = commandLine.getArgs();
+				//merge newly discovered options with previously discovered ones.
+				Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 				if (remainingArgs != null && remainingArgs.length == 2) {
 					// Get type
 					type = remainingArgs[0];
@@ -157,70 +166,80 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 					logger.debug("Subscribing to {} cartridge with alias {}", type, alias);
 				}
 
-				//if (commandLine.hasOption(CliConstants.POLICY_OPTION)) {
+				//if (opts.hasOption(CliConstants.POLICY_OPTION)) {
 				//	if (logger.isTraceEnabled()) {
 				//		logger.trace("Policy option is passed");
 				//	}
-				//	policy = commandLine.getOptionValue(CliConstants.POLICY_OPTION);
+				//	policy = opts.getOptionValue(CliConstants.POLICY_OPTION);
 				//}
-                if (commandLine.hasOption(CliConstants.AUTOSCALING_POLICY_OPTION)) {
+                if (opts.hasOption(CliConstants.AUTOSCALING_POLICY_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Autoscaling policy option is passed");
                     }
-                    asPolicy = commandLine.getOptionValue(CliConstants.AUTOSCALING_POLICY_OPTION);
+                    asPolicy = opts.getOption(CliConstants.AUTOSCALING_POLICY_OPTION).getValue();
                 }
-                if (commandLine.hasOption(CliConstants.DEPLOYMENT_POLICY_OPTION)) {
+                if (opts.hasOption(CliConstants.DEPLOYMENT_POLICY_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Deployment policy option is passed");
                     }
-                    depPolicy = commandLine.getOptionValue(CliConstants.DEPLOYMENT_POLICY_OPTION);
+                    depPolicy = opts.getOption(CliConstants.DEPLOYMENT_POLICY_OPTION).getValue();
                 }
-				if (commandLine.hasOption(CliConstants.REPO_URL_OPTION)) {
+				if (opts.hasOption(CliConstants.REPO_URL_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("RepoURL option is passed");
 					}
-					repoURL = commandLine.getOptionValue(CliConstants.REPO_URL_OPTION);
+					repoURL = opts.getOption(CliConstants.REPO_URL_OPTION).getValue();
 				}
-				//if (commandLine.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
+				//if (opts.hasOption(CliConstants.PRIVATE_REPO_OPTION)) {
 				//	if (logger.isTraceEnabled()) {
 				//		logger.trace("privateRepo option is passed");
 				//	}
 				//	privateRepo = true;
 				//}
-                if (commandLine.hasOption(CliConstants.VOLUME_SIZE_OPTION)) {
+                if (opts.hasOption(CliConstants.VOLUME_SIZE_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Volume size option is passed");
 
                     }
-                    size = commandLine.getOptionValue(CliConstants.VOLUME_SIZE_OPTION);
+                    size = opts.getOption(CliConstants.VOLUME_SIZE_OPTION).getValue();
                 }
-                if (commandLine.hasOption(CliConstants.REMOVE_ON_TERMINATION_OPTION)) {
+
+                if (opts.hasOption(CliConstants.VOLUME_ID_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Volume id option is passed");
+
+                    }
+                    volumeID = opts.getOption(CliConstants.VOLUME_ID_OPTION).getValue();
+                }
+
+
+                if (opts.hasOption(CliConstants.REMOVE_ON_TERMINATION_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Remove on termination option is passed");
 
                     }
                     removeOnTermination = true;
                 }
-                if (commandLine.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
+                if (opts.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Persistance volume option is passed");
 
                     }
                     persistanceMapping = true;
                 }
-				if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
+				if (opts.hasOption(CliConstants.USERNAME_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Username option is passed");
 					}
-					username = commandLine.getOptionValue(CliConstants.USERNAME_OPTION);
+					username = opts.getOption(CliConstants.USERNAME_OPTION).getValue();
 				}
-				if (commandLine.hasOption(CliConstants.PASSWORD_OPTION)) {
+				if (opts.hasOption(CliConstants.PASSWORD_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Password option is passed");
 					}
-					password = commandLine.getOptionValue(CliConstants.PASSWORD_OPTION);
+					password = opts.getOption(CliConstants.PASSWORD_OPTION).getValue();
 				}
-				if (commandLine.hasOption(CliConstants.ENABLE_COMMITS_OPTION)) {
+				if (opts.hasOption(CliConstants.ENABLE_COMMITS_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Upstream git commits are enabled");
 					}
@@ -251,7 +270,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 
                 RestCommandLineService.getInstance().subscribe(type, alias, repoURL, privateRepo, username,
                 		password, asPolicy, depPolicy, size, removeOnTermination,
-                        persistanceMapping, commitsEnabled);
+                        persistanceMapping, commitsEnabled, volumeID);
 
 				return CliConstants.SUCCESSFUL_CODE;
 

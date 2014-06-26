@@ -644,6 +644,12 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+        <file>
+            <source>src/main/conf/terminatedependency.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
 		<!-- autoscaler -->
         <file>
             <source>${project.basedir}/INSTALL.txt</source>

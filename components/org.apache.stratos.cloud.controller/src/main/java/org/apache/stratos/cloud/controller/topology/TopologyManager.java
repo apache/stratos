@@ -81,6 +81,8 @@ public class TopologyManager {
                             log.debug("Topology not found in registry, creating new");
                         }
                         topology = new Topology();
+                    } else {
+                    	topology.getConfigCompositeApplication();
                     }
                     if (log.isDebugEnabled()) {
                         log.debug("Topology initialized");

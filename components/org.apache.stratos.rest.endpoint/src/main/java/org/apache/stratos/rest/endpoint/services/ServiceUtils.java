@@ -23,14 +23,19 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
+import org.apache.stratos.manager.application.CompositeApplicationManager;
+import org.apache.stratos.manager.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -48,6 +53,7 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -58,10 +64,15 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigGroup;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 
 import javax.ws.rs.core.Response;
 
@@ -74,6 +85,7 @@ public class ServiceUtils {
     public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
+    public static final String VOLUME_ID = "volume.id";
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
@@ -119,6 +131,197 @@ public class ServiceUtils {
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.type);
         return stratosAdminResponse;
+    }
+    
+    // Grouping
+    /*
+    static StratosAdminResponse deployApplication(CompositeApplicationDefinitionBean applicationDefinitionBean, ConfigurationContext ctxt,
+            String userName, String tenantDomain) throws RestAPIException {
+
+    		log.info("Starting to deploy a application " + applicationDefinitionBean);
+    		
+    		if (log.isDebugEnabled()) {
+    			log.debug("application data id:" + applicationDefinitionBean.applicationId + " /alias: " + 
+    					applicationDefinitionBean.alias);
+    			if (applicationDefinitionBean.components != null) {
+    				log.debug("application config groups size " + applicationDefinitionBean.components.size());
+    				for (ConfigGroup cfg : applicationDefinitionBean.components) {
+    					log.debug("listing application config groups "  + cfg.alias + " /sub " + 
+    				               cfg.subscribables + " /dep " + cfg.dependencies);
+    					if (cfg.dependencies != null) {
+    						log.debug("listing application group dependencies: kill: " +  
+    					               cfg.dependencies.kill_behavior + " / startup: " + 
+    					               cfg.dependencies.startup_order);
+    						if (cfg.dependencies.startup_order != null) {
+    							for (ConfigDependencies.Pair pair :  cfg.dependencies.startup_order) {
+    								log.debug("listing dependencies pairs : " + pair.getKey() + " / " + pair.getValue());
+    							}
+    						}
+    					}
+    				}
+    			} else {
+    				log.debug("no config group in application");
+    			}
+
+    		}
+
+    		// convert to json
+    		String applicationId = applicationDefinitionBean.applicationId;
+    		
+    		if (log.isDebugEnabled()) {
+    			log.debug("publishing application created event " + applicationId);
+    		}
+    		
+    		// convert to domain object - move to ojoConverted
+    		ConfigCompositeApplication app = PojoConverter.convertToCompositeApplication(applicationDefinitionBean);
+    		if (log.isDebugEnabled()) {
+    			log.debug("converted application to CompositeApplication " + app);
+    		}
+    		CompositeApplicationManager manager = new CompositeApplicationManager();
+    		
+    		
+			try {
+				manager.deployCompositeApplication(app);
+			} catch (ADCException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				String message = e.getMessage();
+				log.error(message, e);
+				throw new RestAPIException(message, e);
+			}
+    		
+    		log.info("l [type] " + applicationDefinitionBean);
+    		// deploy to cloud controller
+    		CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+            
+    		
+    		if (log.isDebugEnabled()) {
+    			log.debug("deployeing composite app in cloud controller");
+    		}
+            
+            ServiceUtils.deployCompositeApplicationDefinition(applicationDefinitionBean, ctxt, userName, tenantDomain);
+    		 
+            if (log.isDebugEnabled()) {
+    			log.debug("done deployeing composite app in cloud controller");
+    		}
+
+    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+    		stratosAdminResponse.setMessage("Successfully deployed application definition w" + applicationDefinitionBean);
+    		return stratosAdminResponse;
+    } */
+    
+    static StratosAdminResponse deployCompositeApplicationDefinition (CompositeApplicationDefinitionBean compositeApplicationDefinition, ConfigurationContext ctxt,
+            String userName, String tenantDomain) throws RestAPIException {
+
+            log.info("Starting to deploy composite application definition "+  compositeApplicationDefinition);
+            
+            CompositeApplicationDefinition appConfig = PojoConverter.convertToCompositeApplicationForCC(compositeApplicationDefinition);
+            
+
+            CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+            
+            if (cloudControllerServiceClient != null) {
+    			// call CC
+            	try {
+					cloudControllerServiceClient
+					.deployCompositeApplicationDefinition(appConfig);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					log.error(e.getMessage(), e);
+    				throw new RestAPIException(e.getMessage(), e);
+				} catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					//String message = e.getFaultMessage().getInvalidCompositeApplicationDefinitionException().getMessage();
+					String message = "CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException";
+    				log.error(message, e);
+    				throw new RestAPIException(message, e);
+				} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
+    				log.error(message, e);
+    				throw new RestAPIException(message, e);
+				}
+            	
+                log.info("Successfully composite application to cloud controller");
+                    
+            }
+
+            StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+            stratosAdminResponse.setMessage("Successfully composite application to cloud controller");
+            return stratosAdminResponse;
+        }
+    
+    static StratosAdminResponse unDeployApplication(String configCompositeApplicationAlias, ConfigurationContext ctxt,
+            String userName, String tenantDomain) throws RestAPIException {
+
+    		log.info("Starting to undeploy a composite application definition " + configCompositeApplicationAlias);
+    		
+    		CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+            
+            if (cloudControllerServiceClient != null) {
+            	try {
+            		if (log.isDebugEnabled()) {
+                		log.debug("trying to undeploy composite application definition " + configCompositeApplicationAlias);
+                	}
+					cloudControllerServiceClient.unDeployCompositeApplicationDefinition(configCompositeApplicationAlias);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					String message = "Remote ExceptionException";
+    				log.error(message, e);
+    				throw new RestAPIException(message, e);
+				} catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					String message = "CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException";
+    				log.error(message, e);
+    				throw new RestAPIException(message, e);
+				} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					String message = "CloudControllerServiceInvalidIaasProviderExceptionException";
+    				log.error(message, e);
+    				throw new RestAPIException(message, e);
+				}
+            } else {
+            	if (log.isDebugEnabled()) {
+            		log.debug("cloud controller client is null while trying to undeploy composite application definition");
+            	}
+            }
+    		
+    		log.info("l [type] " + configCompositeApplicationAlias);
+
+    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+    		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
+    		return stratosAdminResponse;
+    }
+    
+    
+    static StratosAdminResponse unDeployApplicationOld(String configCompositeApplicationAlias, ConfigurationContext ctxt,
+            String userName, String tenantDomain) throws RestAPIException {
+
+    		log.info("Starting to undeploy a composite application " + configCompositeApplicationAlias);
+    		
+    		CompositeApplicationManager manager = new CompositeApplicationManager();	
+    		
+			try {
+				manager.unDeployCompositeApplication(configCompositeApplicationAlias);
+			} catch (ADCException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				String message = e.getMessage();
+				log.error(message, e);
+				throw new RestAPIException(message, e);
+			}
+    		
+    		log.info("l [type] " + configCompositeApplicationAlias);
+
+    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+    		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
+    		return stratosAdminResponse;
     }
 
     @SuppressWarnings("unused")
@@ -993,14 +1196,30 @@ public class ServiceUtils {
         subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
         
+
+        PersistenceBean persistenceBean = cartridgeInfoBean.getPersistence();
+        if(persistenceBean != null) {
+            subscriptionData.setPersistence(PojoConverter.getPersistence(persistenceBean));
+        }
+        if(cartridgeInfoBean.getProperty() != null){
+            subscriptionData.setProperties(PojoConverter.getProperties(cartridgeInfoBean.getProperty()));
+        }
+
+        /*
+        if (cartridgeInfoBean.getPersistence() != null) {
+
         if (cartridgeInfoBean.isPersistanceRequired()) {
             // Add persistence related properties to PersistenceContext
             PersistenceContext persistenceContext = new PersistenceContext();
             persistenceContext.setPersistanceRequiredProperty(IS_VOLUME_REQUIRED, String.valueOf(cartridgeInfoBean.isPersistanceRequired()));
             persistenceContext.setSizeProperty(VOLUME_SIZE, cartridgeInfoBean.getSize());
             persistenceContext.setDeleteOnTerminationProperty(SHOULD_DELETE_VOLUME, String.valueOf(cartridgeInfoBean.isRemoveOnTermination()));
+            if(cartridgeInfoBean.getVolumeId() != null) {
+                persistenceContext.setVolumeIdProperty(VOLUME_ID, String.valueOf(cartridgeInfoBean.getVolumeId()));
+            }
             subscriptionData.setPersistanceCtxt(persistenceContext);
         }
+        */
 
         //subscribe
         return cartridgeSubsciptionManager.subscribeToCartridgeWithProperties(subscriptionData);
@@ -1072,6 +1291,7 @@ public class ServiceUtils {
             subscriptionData.setTenantId(ApplicationManagementUtil.getTenantId(configurationContext));
             subscriptionData.setTenantAdminUsername(userName);
             subscriptionData.setRepositoryType("git");
+            //subscriptionData.setPayloadProperties(props);
             //subscriptionData.setProperties(props);
             subscriptionData.setPrivateRepository(false);
 
@@ -1082,6 +1302,7 @@ public class ServiceUtils {
             cartridgeSubscription.getPayloadData().add("LOAD_BALANCED_SERVICE_TYPE", loadBalancedCartridgeType);
 
             Properties lbProperties = new Properties();
+            lbProperties.setPayloadProperties(props);
             lbProperties.setProperties(props);
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
             

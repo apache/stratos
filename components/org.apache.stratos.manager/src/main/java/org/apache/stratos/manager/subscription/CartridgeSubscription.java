@@ -22,6 +22,7 @@ package org.apache.stratos.manager.subscription;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.Cluster;
@@ -134,18 +135,19 @@ public abstract class CartridgeSubscription implements Serializable {
      *
      * @param properties Any additional properties needed
      *
+     * @param persistence
      * @return CartridgeSubscriptionInfo subscription populated with relevant data
      * @throws ADCException
      * @throws UnregisteredCartridgeException
      */
-    public CartridgeSubscriptionInfo registerSubscription(Properties properties)
+    public CartridgeSubscriptionInfo registerSubscription(Properties properties, Persistence persistence)
             throws ADCException, UnregisteredCartridgeException {
 
         // Properties props = new Properties();
         //props.setProperties(getCartridgeInfo().getProperties());
 
         getSubscriptionTenancyBehaviour().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
-                getDeploymentPolicyName(), properties);
+                getDeploymentPolicyName(), properties, persistence);
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

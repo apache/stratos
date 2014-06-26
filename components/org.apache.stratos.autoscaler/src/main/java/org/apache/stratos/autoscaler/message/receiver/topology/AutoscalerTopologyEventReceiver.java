@@ -342,6 +342,32 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //                }
             }
         });
+        
+        // Grouping
+        /*
+        topologyEventReceiver.addEventListener(new CompositeApplicationCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                try {
+                    TopologyManager.acquireReadLock();
+                    
+                    if (log.isDebugEnabled()) {
+                    	log.debug("handling application created event");
+                    }
+
+   
+                } catch (Exception e) {
+                    log.error("Error processing event", e);
+                } finally {
+                    TopologyManager.releaseReadLock();
+                }
+            }
+        });*/
+
+
+
+        
     }
 
     private class LBClusterMonitorAdder implements Runnable {

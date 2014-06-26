@@ -39,6 +39,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
@@ -105,6 +106,75 @@ public class StratosAdmin extends AbstractAdmin {
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
+    
+    @POST
+    @Path("/application/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    // Grouping
+    public StratosAdminResponse deployApplicationDefinition(CompositeApplicationDefinitionBean applicationDefinitionBean)
+            throws RestAPIException {
+
+        /*return ServiceUtils.deployApplication(applicationDefinitionBean, getConfigContext(), getUsername(),
+                                     getTenantDomain());
+                                     */
+    	return ServiceUtils.deployCompositeApplicationDefinition(applicationDefinitionBean, getConfigContext(), getUsername(),
+                                     getTenantDomain());
+
+    }
+    
+    @POST
+    @Path("/application/definition/undeploy")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    // Grouping
+    public StratosAdminResponse unDeployApplicationDefinition(String alias)
+            throws RestAPIException {
+
+        return ServiceUtils.unDeployApplication(alias, getConfigContext(), getUsername(),
+                                     getTenantDomain());
+
+    }
+    
+
+    
+    @DELETE
+    @Path("/application/definition/{applicationAlias}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    // Grouping
+    public StratosAdminResponse unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
+            throws RestAPIException {
+
+        return ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
+                getTenantDomain());
+
+    }
+    
+    
+    
+    /*
+     * Grouping --- fix  API, use this instead of POST to remove application !!!!
+   
+    @DELETE
+    @Path("/cartridge/definition/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public StratosAdminResponse unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+
+        return ServiceUtils.undeployCartridge(cartridgeType);
+    }
+    nnnnnn
+    */
+    
 
     @POST
     @Path("/cartridge/definition/")

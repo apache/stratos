@@ -57,6 +57,11 @@ public class CartridgeAgent implements Runnable {
 
     private boolean terminated;
 
+    // We have an asynchronous activity running to respond to ADC updates. We want to ensure
+    // that no publishInstanceActivatedEvent() call is made *before* the port activation test
+    // has succeeded. This flag controls that.
+    private boolean portsActivated;
+
     @Override
     public void run() {
         if(log.isInfoEnabled()) {
@@ -66,6 +71,7 @@ public class CartridgeAgent implements Runnable {
         validateRequiredSystemProperties();
 
         // Start instance notifier listener thread
+        portsActivated = false;
         subscribeToTopicsAndRegisterListeners();
 
         // Publish instance started event
@@ -77,6 +83,10 @@ public class CartridgeAgent implements Runnable {
         // Wait for all ports to be active
         CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
                 CartridgeAgentConfiguration.getInstance().getPorts());
+        portsActivated = true;
+
+        // Publish instance activated event
+        CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
@@ -84,9 +94,6 @@ public class CartridgeAgent implements Runnable {
             if(log.isInfoEnabled()) {
                 log.info("No artifact repository found");
             }
-
-            // Publish instance activated event
-            CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         } else {
             //Start periodical file checker task
     		if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
@@ -260,7 +267,7 @@ public class CartridgeAgent implements Runnable {
 
             ExtensionUtils.executeArtifactsUpdatedExtension();
 
-            if(!cloneExists){
+            if (!cloneExists && portsActivated) {
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
             }

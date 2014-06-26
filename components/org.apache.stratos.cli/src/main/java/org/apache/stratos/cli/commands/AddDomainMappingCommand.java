@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cli.commands;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class AddDomainMappingCommand implements Command<StratosCommandContext> {
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}

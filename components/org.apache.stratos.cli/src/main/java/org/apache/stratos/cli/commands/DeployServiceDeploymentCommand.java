@@ -31,6 +31,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import static org.apache.stratos.cli.utils.CommandLineUtils.mergeOptionArrays;
+
 public class DeployServiceDeploymentCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(DeployServiceDeploymentCommand.class);
@@ -64,7 +66,7 @@ public class DeployServiceDeploymentCommand implements Command<StratosCommandCon
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -78,16 +80,18 @@ public class DeployServiceDeploymentCommand implements Command<StratosCommandCon
 
             try {
                 commandLine = parser.parse(options, args);
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deploy Service Deployment");
                 }
 
-                if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
+                if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Resource path option is passed");
                     }
-                    resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+                    resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                     deployServiceDeployment = readResource(resourcePath);
                 }
 

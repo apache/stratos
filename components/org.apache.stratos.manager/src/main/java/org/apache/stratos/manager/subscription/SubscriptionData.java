@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.manager.subscription;
 
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 /**
@@ -38,10 +40,11 @@ public class SubscriptionData {
     private boolean isPrivateRepository;
     private String repositoryUsername;
     private String repositoryPassword;
-    private Property[] properties;
     private PersistenceContext persistanceCtxt;
     private boolean isCommitsEnabled;
     private String serviceGroup;
+    private Persistence persistence;
+    private Properties properties;
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -139,14 +142,6 @@ public class SubscriptionData {
         this.repositoryPassword = repositoryPassword;
     }
 
-    public Property[] getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Property[] properties) {
-        this.properties = properties;
-    }
-
     public PersistenceContext getPersistanceContext() {
         return persistanceCtxt;
     }
@@ -170,5 +165,20 @@ public class SubscriptionData {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-    
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

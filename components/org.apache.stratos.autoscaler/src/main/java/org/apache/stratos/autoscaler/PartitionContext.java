@@ -27,10 +27,12 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -385,6 +387,81 @@ public class PartitionContext implements Serializable{
         }
         return false;
     }
+    
+    public  int getAllMemberForTerminationCount () {
+    	int count = activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+		if (log.isDebugEnabled()) {
+    		log.debug("PartitionContext:getAllMemberForTerminationCount:size:" + count);
+    	}
+    	return count;
+    }
+    
+    // Map<String, MemberStatsContext> getMemberStatsContexts().keySet()
+    public  Set<String> getAllMemberForTermination () {
+
+    	List<MemberContext> merged =  new ArrayList<MemberContext>();
+    	
+    	
+    	merged.addAll(activeMembers);
+    	merged.addAll(pendingMembers);
+    	merged.addAll(terminationPendingMembers);
+    	
+    	Set<String> results = new HashSet<String>(merged.size());
+    	
+    	for (MemberContext ctx: merged) {
+    		results.add(ctx.getMemberId());
+    	}
+    	
+
+    	if (log.isDebugEnabled()) {
+    		log.debug("PartitionContext:getAllMemberForTermination:size:" + results.size());
+    	}
+    	
+    	//MemberContext x = new MemberContext();
+    	//x.getMemberId()
+    	
+    	return results;
+    }
+    
+    public boolean checkStartupDependencies (String serviceType, String clusterId) {
+    	if (log.isDebugEnabled()) {
+    		log.debug("checkStartupDependencies for cluster with " + " clusterId: " + clusterId);
+    	}
+       
+       
+       ComplexApplicationContext sgc = new ComplexApplicationContext();
+
+       String aServiceName = clusterId;
+       boolean flag = sgc.checkStartupDependencies(serviceType, aServiceName);
+       if (log.isDebugEnabled()) {
+    	   log.debug("checkStartupDependencies for cluster with " + 
+                       " clusterId: " + clusterId + " serviceType: " + serviceType + 
+                       " flag is :" + flag);
+       }
+
+       return flag;
+       
+    }
+    
+    public boolean checkKillDependencies (String serviceType, String clusterId) {
+    	if (log.isDebugEnabled()) {
+    		log.debug("PartitionContext:checkServiceBootDependencies for cluster with " + " clusterId: " + clusterId + 
+    				"and serviceType " + serviceType);
+    	}
+       
+       ComplexApplicationContext sgc = new ComplexApplicationContext();
+
+       String aServiceName = clusterId;
+       boolean flag = sgc.checkKillDependencies(serviceType, aServiceName);
+       if (log.isDebugEnabled()) {
+    	   log.debug("checkKillDependencies for cluster with " + 
+    			   " clusterId: " + clusterId + " serviceType: " + serviceType + 
+                   " flag is :" + flag);
+       }
+       return flag;
+       
+    }
+    
 
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;

@@ -32,6 +32,7 @@ public class InstanceStartedEvent extends InstanceStatusEvent implements Seriali
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    private String groupId;
 
     public InstanceStartedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -60,4 +61,12 @@ public class InstanceStartedEvent extends InstanceStatusEvent implements Seriali
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+
+	public String getGroupId() {
+		return groupId;
+	}
+	
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 }

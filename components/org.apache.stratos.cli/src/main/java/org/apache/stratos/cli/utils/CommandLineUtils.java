@@ -18,6 +18,9 @@
  */
 package org.apache.stratos.cli.utils;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -91,4 +94,15 @@ public class CommandLineUtils {
 		}
 		return message;
 	}
+
+    public static Options mergeOptionArrays(Option[] a, Option[] b) {
+        Options opts = new Options();
+        for (Option o: a) {
+            opts.addOption(o);
+        }
+        for (Option o: b) {
+            opts.addOption(o);
+        }
+        return opts;
+    }
 }

@@ -18,12 +18,8 @@
  */
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
@@ -76,7 +72,7 @@ public class SubscribedCartridgeInfoCommand implements Command<StratosCommandCon
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}

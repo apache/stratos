@@ -47,9 +47,13 @@ public class ClusterMonitor extends AbstractMonitor{
         this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+        this.terminateDependencyKnowledgeSession = autoscalerRuleEvaluator.getTerminateDependencyStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
         this.autoscalePolicy = autoscalePolicy;
+        if (log.isDebugEnabled()) {
+        	log.debug("ClusterMonitor:autoScalePolicy:" + autoscalePolicy);
+        }
         networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
 
@@ -91,6 +95,8 @@ public class ClusterMonitor extends AbstractMonitor{
 
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
+                minCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
+                minCheckKnowledgeSession.setGlobal("serviceId", serviceId);
                 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
@@ -98,6 +104,24 @@ public class ClusterMonitor extends AbstractMonitor{
 
                 minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
                         , minCheckFactHandle, partitionContext);
+
+            }
+            
+            //terminate dependency per partition
+            // rule terminates all members of a service which is a prerequisites for other services
+            for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
+
+                terminateDependencyKnowledgeSession.setGlobal("clusterId", clusterId);
+                terminateDependencyKnowledgeSession.setGlobal("lbRef", lbReferenceType);
+                terminateDependencyKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
+                terminateDependencyKnowledgeSession.setGlobal("serviceId", serviceId);
+                
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Running terminate dependency for partition %s ", partitionContext.getPartitionId()));
+                }
+
+                terminateDependencyFactHandle = AutoscalerRuleEvaluator.evaluateTerminateDependency(terminateDependencyKnowledgeSession
+                        , terminateDependencyFactHandle, partitionContext);
 
             }
 

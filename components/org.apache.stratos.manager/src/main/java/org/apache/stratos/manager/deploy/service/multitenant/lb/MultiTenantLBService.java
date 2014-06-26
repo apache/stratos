@@ -46,6 +46,6 @@ public class MultiTenantLBService extends Service {
 
         //register the service
         loadBalancerCategory.register(getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(), getDeploymentPolicyName(),
-                properties);
+                properties, null);
     }
 }

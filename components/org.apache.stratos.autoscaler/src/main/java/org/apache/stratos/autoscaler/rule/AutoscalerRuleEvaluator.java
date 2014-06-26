@@ -47,10 +47,12 @@ public class AutoscalerRuleEvaluator {
 	private static final String DRL_FILE_NAME = "mincheck.drl";
 	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
 	private static final String TERMINATE_ALL_DRL_FILE_NAME = "terminateall.drl";
+	private static final String TERMINATE_DEPENDENCY_DRL_FILE_NAME = "terminatedependency.drl";
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
 	private static KnowledgeBase terminateAllKbase;
+	private static KnowledgeBase terminateDependencyKbase;
 
     public AutoscalerRuleEvaluator(){
 
@@ -69,6 +71,12 @@ public class AutoscalerRuleEvaluator {
 
         if (log.isDebugEnabled()) {
             log.debug("Terminate all rule is parsed successfully");
+        }
+        
+        terminateDependencyKbase = readKnowledgeBase(TERMINATE_DEPENDENCY_DRL_FILE_NAME);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Terminate dependency rule is parsed successfully");
         }
     }
 
@@ -124,6 +132,28 @@ public class AutoscalerRuleEvaluator {
         }
         return handle;
     }
+    
+    
+    public static FactHandle evaluateTerminateDependency(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+    	if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check executing for : %s ", obj));
+        }
+        if (handle == null) {
+
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check firing rules for : %s ", ksession));
+        }
+        ksession.fireAllRules();
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check executed for : %s ", obj));
+        }
+        return handle;
+    }
 
 
 
@@ -142,6 +172,12 @@ public class AutoscalerRuleEvaluator {
     public StatefulKnowledgeSession getTerminateAllStatefulSession() {
         StatefulKnowledgeSession ksession;
         ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        ksession.setGlobal("log", RuleLog.getInstance());
+        return ksession;
+    }
+    public StatefulKnowledgeSession getTerminateDependencyStatefulSession() {
+        StatefulKnowledgeSession ksession;
+        ksession = terminateDependencyKbase.newStatefulKnowledgeSession();
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }

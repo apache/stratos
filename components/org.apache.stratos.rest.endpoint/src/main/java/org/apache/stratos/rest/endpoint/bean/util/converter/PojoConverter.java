@@ -19,15 +19,31 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.manager.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigCartridge;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigGroup;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Cartridge;
+import org.apache.stratos.messaging.domain.topology.Composite;
+import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
+import org.apache.stratos.messaging.domain.topology.Dependencies;
+import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.domain.topology.Scalable;
+import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
+import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,18 +161,25 @@ public class PojoConverter {
         return iaasConfigsArray;
     }
 
-    private static Persistence getPersistence(PersistenceBean persistenceBean) {
+    public static Persistence getPersistence(PersistenceBean persistenceBean) {
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
         persistenceBean.volume.toArray(volumeBean);
-        Volume[] volumes = new Volume[persistenceBean.volume.size()];
-        for (int i = 0 ; i < volumes.length ; i++) {
+         Volume[] volumes = new Volume[persistenceBean.volume.size()];
+         for (int i = 0 ; i < volumes.length ; i++) {
             Volume volume = new Volume();
-            volume.setSize(Integer.parseInt(volumeBean[i].size));
+            volume.setId(volumeBean[i].id);
+            volume.setVolumeId(volumeBean[i].volumeId);
+            if(StringUtils.isEmpty(volume.getVolumeId())){
+                volume.setSize(Integer.parseInt(volumeBean[i].size));
+            }
+
             volume.setDevice(volumeBean[i].device);
             volume.setRemoveOntermination(volumeBean[i].removeOnTermination);
             volume.setMappingPath(volumeBean[i].mappingPath);
+            volume.setSnapshotId(volumeBean[i].snapshotId);
+
             volumes[i] = volume;
         }
         persistence.setVolumes(volumes);
@@ -164,7 +187,7 @@ public class PojoConverter {
 
     }
 
-    private static Properties getProperties (List<PropertyBean> propertyBeans) {
+    public static Properties getProperties(List<PropertyBean> propertyBeans) {
 
         //convert to an array
         PropertyBean [] propertyBeansArray = new PropertyBean[propertyBeans.size()];
@@ -636,4 +659,124 @@ public class PojoConverter {
 
         return serviceDefinitionBeans;
     }
+    
+	private static Log log = LogFactory.getLog(PojoConverter.class);
+	
+	
+	public static ConfigCompositeApplication convertToCompositeApplication(CompositeApplicationDefinitionBean appBean) {
+		ConfigCompositeApplication configApp = new ConfigCompositeApplication();
+		
+		configApp.setAlias(appBean.alias);
+		configApp.setApplicationId(appBean.applicationId);
+		
+		List<org.apache.stratos.messaging.domain.topology.ConfigCartridge> configCartridges = 
+				new ArrayList<org.apache.stratos.messaging.domain.topology.ConfigCartridge>();
+		
+		for (ConfigCartridge beanCartridge : appBean.cartridges ) {
+			org.apache.stratos.messaging.domain.topology.ConfigCartridge configCartridge = 
+					new org.apache.stratos.messaging.domain.topology.ConfigCartridge();
+			configCartridge.setAlias(beanCartridge.alias);
+			configCartridges.add(configCartridge);
+		}
+		configApp.setCartridges(configCartridges);
+		
+		// converting groups / components
+		List<org.apache.stratos.messaging.domain.topology.ConfigGroup> configGroups = 
+				new ArrayList<org.apache.stratos.messaging.domain.topology.ConfigGroup>();
+		
+		for (ConfigGroup beanGroup : appBean.components ) {
+			org.apache.stratos.messaging.domain.topology.ConfigGroup configGroup = 
+					new org.apache.stratos.messaging.domain.topology.ConfigGroup();
+			configGroup.setAlias(beanGroup.alias);
+			configGroup.setSubscribables(beanGroup.subscribables);
+			org.apache.stratos.messaging.domain.topology.ConfigDependencies configDep = 
+					new org.apache.stratos.messaging.domain.topology.ConfigDependencies();
+			
+			
+			// convert dependencies
+			configDep.setKill_behavior(beanGroup.dependencies.kill_behavior);
+			List<org.apache.stratos.messaging.domain.topology.ConfigDependencies.Pair> configPairs = 
+					new ArrayList<org.apache.stratos.messaging.domain.topology.ConfigDependencies.Pair>();
+			for (ConfigDependencies.Pair beanPair : beanGroup.dependencies.startup_order) {
+				configPairs.add(new org.apache.stratos.messaging.domain.topology.ConfigDependencies.Pair(beanPair.getKey(), beanPair.getValue()));
+			}
+			configDep.setStartup_order(configPairs);
+			configGroup.setDependencies(configDep);
+			
+			configGroups.add(configGroup);
+		}
+		configApp.setComponents(configGroups);
+		
+		return configApp;
+	}
+	
+	// grouping
+	public static CompositeApplicationDefinition convertToCompositeApplicationForCC (CompositeApplicationDefinitionBean appBean) {
+		CompositeApplicationDefinition configApp = new CompositeApplicationDefinition();
+		
+		configApp.setAlias(appBean.alias);
+		configApp.setApplicationId(appBean.applicationId);
+		
+		
+		
+		List<org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge> configCartridges = 
+				new ArrayList<org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge>();
+		
+		for (ConfigCartridge beanCartridge : appBean.cartridges ) {
+			org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge configCartridge = 
+					new org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge();
+			configCartridge.setAlias(beanCartridge.alias);
+			configCartridges.add(configCartridge);
+		}
+		org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge [] arrayConfigCartridge = 
+				new org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge[configCartridges.size()];
+		arrayConfigCartridge = configCartridges.toArray(arrayConfigCartridge);
+		configApp.setCartridges(arrayConfigCartridge);
+		
+		// converting groups / components
+		List<org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup> configGroups = 
+				new ArrayList<org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup>();
+		
+		for (ConfigGroup beanGroup : appBean.components ) {
+			org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup configGroup = 
+					new org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup();
+			configGroup.setAlias(beanGroup.alias);
+			String [] arraySubscribables = new String[beanGroup.subscribables.size()];
+			arraySubscribables = beanGroup.subscribables.toArray(arraySubscribables);
+			configGroup.setSubscribables(arraySubscribables);
+			org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencies configDep = 
+					new org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencies();
+			
+			
+			// convert dependencies
+			configDep.setKill_behavior(beanGroup.dependencies.kill_behavior);
+			int i = 0;
+			org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencyPair[] configPairs = 
+					new org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencyPair[beanGroup.dependencies.startup_order.size()];
+			
+			for (ConfigDependencies.Pair beanPair : beanGroup.dependencies.startup_order) {
+				//configPairs.add(new org.apache.stratos.messaging.domain.topology.ConfigDependencies.Pair(beanPair.getKey(), beanPair.getValue()));
+				
+				org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencyPair pair = new org.apache.stratos.cloud.controller.stub.pojo.ConfigDependencyPair();
+				pair.setKey(beanPair.getKey());
+				pair.setValue(beanPair.getValue());
+				
+				configPairs[i] = pair;
+				i++;
+			}
+			configDep.setStartup_order(configPairs);
+			configGroup.setDependencies(configDep);
+			
+			configGroups.add(configGroup);
+			
+		}
+		org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup [] configGroupArray  =  
+				new org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup[configGroups.size()];
+		configGroupArray = configGroups.toArray(configGroupArray);
+		configApp.setComponents(configGroupArray);
+		
+		return configApp;
+	}
+    
+    
 }

@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class VolumeBean {
 
+    public String id;
+
     public String size;
 
     public String device;
@@ -30,6 +32,10 @@ public class VolumeBean {
     public boolean removeOnTermination;
 
     public String mappingPath;
+    
+    public String snapshotId;
+
+    public String volumeId;
 
     public String toString () {
         return " [ Persistence Required : " + ", Size: " + size + ", device: " +

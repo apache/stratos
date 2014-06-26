@@ -20,6 +20,8 @@ package org.apache.stratos.manager.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.application.CompositeApplicationManager;
+import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.listener.InstanceStatusListener;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;
@@ -108,6 +110,18 @@ public class ADCManagementServerComponent {
 
             // retrieve persisted CartridgeSubscriptions
             new DataInsertionAndRetrievalManager().cachePersistedSubscriptions();
+            
+            //Grouping
+            /*
+            if (log.isDebugEnabled()) {
+            	log.debug("restoring composite applications ...");
+            }
+            new CompositeApplicationManager().restoreCompositeApplications ();
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("done restoring composite applications ...");
+            }
+            */
 
             //Component activated successfully
             log.info("ADC management server component is activated");

@@ -224,6 +224,9 @@ public class CliConstants {
     public static final String VOLUME_SIZE_OPTION = "v";
     public static final String VOLUME_SIZE_LONG_OPTION = "volume-size";
 
+    public static final String VOLUME_ID_OPTION = "vi";
+    public static final String VOLUME_ID_LONG_OPTION = "volume-id";
+
     public static final String PERSISTANCE_VOLUME_OPTION = "pv";
     public static final String PERSISTANCE_VOLUME_LONG_OPTION = "persistance-volume";
 

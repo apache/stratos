@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -43,6 +44,7 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.ec2.options.CreateSnapshotOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
@@ -53,6 +55,7 @@ import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
+import org.jclouds.openstack.nova.v2_0.domain.VolumeSnapshot;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
 import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
@@ -61,12 +64,14 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
+import org.jclouds.openstack.nova.v2_0.options.CreateVolumeSnapshotOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 @SuppressWarnings("deprecation")
 public class OpenstackNovaIaas extends Iaas {
@@ -252,7 +257,13 @@ public class OpenstackNovaIaas extends Iaas {
 
 		// if no unassigned IP is available, we'll try to allocate an IP.
 		if (ip == null || ip.isEmpty()) {
-			FloatingIP allocatedFloatingIP = floatingIp.create();
+			String defaultFloatingIpPool = iaasInfo.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
+			FloatingIP allocatedFloatingIP;
+			if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
+				allocatedFloatingIP = floatingIp.create();
+			} else {
+				allocatedFloatingIP = floatingIp.allocateFromPool(defaultFloatingIpPool);
+			}
 			if (allocatedFloatingIP == null) {
 				String msg = "Failed to allocate an IP address.";
 				log.error(msg);
@@ -334,7 +345,7 @@ public class OpenstackNovaIaas extends Iaas {
 			}
 			if (ip.equals(fip.getIp())) {
 				if(log.isDebugEnabled()) {
-					log.debug("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:" + fip + " /ip:" + ip);
+					log.debug(String.format("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:%s /ip:%s", fip, ip));
 				}
 				isAvailable = true;
 				break;
@@ -485,8 +496,7 @@ public class OpenstackNovaIaas extends Iaas {
     	IaasProvider iaasInfo = getIaasProvider();
     	
         if (host == null || zone == null || iaasInfo == null) {
-            String msg = "Host or Zone or IaaSProvider is null: host: " + host + " - zone: " +
-                    zone + " - IaaSProvider: " + iaasInfo;
+            String msg = String.format("Host or Zone or IaaSProvider is null: host: %s - zone: %s - IaaSProvider: %s", host, zone, iaasInfo);
             log.error(msg);
             throw new InvalidHostException(msg);
         }
@@ -504,7 +514,7 @@ public class OpenstackNovaIaas extends Iaas {
             }
         }
         
-        String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
+        String msg = String.format("Invalid host: %s in the zone: %s and of the iaas: %s", host, zone, iaasInfo.getType());
         log.error(msg);
         throw new InvalidHostException(msg);
     }
@@ -515,62 +525,166 @@ public class OpenstackNovaIaas extends Iaas {
     }
 
 	@Override
-	public String createVolume(int sizeGB) {
+	public String createVolume(int sizeGB, String snapshotId) {
 		IaasProvider iaasInfo = getIaasProvider();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
 		
         if (region == null || iaasInfo == null) {
-        	log.fatal("Cannot create a new volume in the [region] : "+region
-					+" of Iaas : "+iaasInfo);
+        	log.fatal(String.format("Cannot create a new volume in the [region] : %s of Iaas : %s", region, iaasInfo));
             return null;
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
-        Volume volume = api.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
+        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+        Volume volume;
+        if(StringUtils.isEmpty(snapshotId)){
+        	if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone);
+        	}
+        	volume = volumeApi.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone));
+        }else{
+        	if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
+        	}
+        	volume = volumeApi.create(sizeGB, CreateVolumeOptions.Builder.availabilityZone(zone).snapshotId(snapshotId));
+        }
+
         if (volume == null) {
-			log.fatal("Volume creation was unsuccessful. [region] : " + region+" [zone] : " + zone
-					+ " of Iaas : " + iaasInfo);
-			return null;
-		}
-		
-		log.info("Successfully created a new volume [id]: "+volume.getId()
-				+" in [region] : "+region+" [zone] : "+zone+" of Iaas : "+iaasInfo);
-		return volume.getId();
+            log.fatal(String.format("Volume creation was unsuccessful. [region] : %s [zone] : %s of Iaas : %s", region, zone, iaasInfo));
+            return null;
+        }
+
+        String volumeId = volume.getId();
+        /*
+        Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+
+        if(!(volumeStatus == Volume.Status.AVAILABLE || volumeStatus == Volume.Status.CREATING)){
+            log.error(String.format("Error while creating [volume id] %s. Volume status is %s", volumeId, volumeStatus));
+            return volumeId;
+        }
+        try {
+            if(!waitForStatus(volumeApi, volumeId, Volume.Status.AVAILABLE)){
+                log.error("Volume did not become AVAILABLE. Current status is " + volume.getStatus());
+            }
+        } catch (TimeoutException e) {
+            log.error("[Volume ID] " + volumeId + "did not become AVAILABLE within expected timeout");
+            return volumeId;
+        }
+        */
+		log.info(String.format("Successfully created a new volume [id]: %s in [region] : %s [zone] : %s of Iaas : %s [Volume ID]%s", volume.getId(), region, zone, iaasInfo, volume.getId()));
+		return volumeId;
 	}
 
-	@Override
-	public String attachVolume(String instanceId, String volumeId, String deviceName) {
-		IaasProvider iaasInfo = getIaasProvider();
+    private boolean waitForStatus(String volumeId, Volume.Status expectedStatus, int timeoutInMins) throws TimeoutException {
+        long timeout = 1000 * 60 * timeoutInMins;
+        long timout = System.currentTimeMillis() + timeout;
 
-		ComputeServiceContext context = iaasInfo.getComputeService()
-				.getContext();
-		
-		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-		String device = deviceName == null ? "/dev/vdc" : deviceName;
-		
-		if(region == null) {
-			log.fatal("Cannot attach the volume [id]: "+volumeId+" in the [region] : "+region
-					+" of Iaas : "+iaasInfo);
-			return null;
-		}
-		
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
-        VolumeAttachment attachment = api.attachVolumeToServerAsDevice(volumeId, instanceId, device);
-        
+        IaasProvider iaasInfo = getIaasProvider();
+        String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+        VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+
+        while(volumeStatus != expectedStatus){
+            try {
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Volume %s is still NOT in %s. Current State=%s", volumeId, expectedStatus, volumeStatus));
+                }
+                if(volumeStatus == Volume.Status.ERROR){
+                    log.error("Volume " + volumeId + " is in state ERROR");
+                    return false;
+                }
+                Thread.sleep(1000);
+                volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+                if (System.currentTimeMillis()> timout) {
+                    throw new TimeoutException();
+                }
+            } catch (InterruptedException e) {
+                // Ignoring the exception
+            }
+        }
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Volume %s status became %s", volumeId, expectedStatus));
+        }
+
+        return true;
+    }
+
+    @Override
+	public String attachVolume(String instanceId, String volumeId, String deviceName) {
+        IaasProvider iaasInfo = getIaasProvider();
+
+        if (StringUtils.isEmpty(volumeId)) {
+            log.error("Volume provided to attach can not be null");
+        }
+
+        if (StringUtils.isEmpty(instanceId)) {
+            log.error("Instance provided to attach can not be null");
+        }
+
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+        String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+        String device = deviceName == null ? "/dev/vdc" : deviceName;
+
+        if (region == null) {
+            log.fatal(String.format("Cannot attach the volume [id]: %s in the [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
+            return null;
+        }
+
+        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
+        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+        VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+
+        Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Volume " + volumeId + " is in state " + volumeStatus);
+        }
+
+        if (!(volumeStatus == Volume.Status.AVAILABLE || volumeStatus == Volume.Status.CREATING)) {
+            log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeStatus));
+            return null;
+        }
+
+        boolean volumeBecameAvailable = false, volumeBecameAttached = false;
+        try {
+            volumeBecameAvailable = waitForStatus(volumeId, Volume.Status.AVAILABLE, 5);
+        } catch (TimeoutException e) {
+            log.error("[Volume ID] " + volumeId + "did not become AVAILABLE within expected timeout");
+        }
+
+        VolumeAttachment attachment = null;
+        if (volumeBecameAvailable) {
+            attachment = volumeAttachmentApi.attachVolumeToServerAsDevice(volumeId, instanceId, device);
+
+            try {
+                volumeBecameAttached = waitForStatus(volumeId, Volume.Status.IN_USE, 2);
+            } catch (TimeoutException e) {
+                log.error("[Volume ID] " + volumeId + "did not become IN_USE within expected timeout");
+            }
+        }
+        try {
+            // waiting 5seconds till volumes are actually attached.
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (attachment == null) {
-			log.fatal("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
-					+" was unsuccessful. [region] : " + region
-					+ " of Iaas : " + iaasInfo);
+			log.fatal(String.format("Volume [id]: %s attachment for instance [id]: %s was unsuccessful. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
 			return null;
 		}
-		
-		log.info("Volume [id]: "+volumeId+" attachment for instance [id]: "+instanceId
-				+" was successful [status]: "+"Attaching"+". [region] : " + region
-				+ " of Iaas : " + iaasInfo);
+
+        if(! volumeBecameAttached){
+           log.error(String.format("[Volume ID] %s attachment is called, but not yet became attached", volumeId));
+        }
+
+		log.info(String.format("Volume [id]: %s attachment for instance [id]: %s was successful [status]: Attaching. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
 		return "Attaching";
 	}
 
@@ -584,18 +698,19 @@ public class OpenstackNovaIaas extends Iaas {
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		
 		if(region == null) {
-			log.fatal("Cannot detach the volume [id]: "+volumeId+" from the instance [id]: "+instanceId
-					+" of the [region] : "+region
-					+" of Iaas : "+iaasInfo);
+			log.fatal(String.format("Cannot detach the volume [id]: %s from the instance [id]: %s of the [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
 			return;
 		}
-		
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Starting to detach volume %s from the instance %s", volumeId, instanceId));
+        }
+
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
         if (api.detachVolumeFromServer(volumeId, instanceId)) {
-        	log.info("Detachment of Volume [id]: "+volumeId+" from instance [id]: "+instanceId
-    				+" was successful. [region] : " + region
-    				+ " of Iaas : " + iaasInfo);
+        	log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
+        }else{
+            log.error(String.format("Detachment of Volume [id]: %s from instance [id]: %s was unsuccessful. [volume Status] : %s", volumeId, instanceId, region, iaasInfo));
         }
         
 	}
@@ -610,16 +725,14 @@ public class OpenstackNovaIaas extends Iaas {
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		
 		if(region == null) {
-			log.fatal("Cannot delete the volume [id]: "+volumeId+" of the [region] : "+region
-					+" of Iaas : "+iaasInfo);
+			log.fatal(String.format("Cannot delete the volume [id]: %s of the [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
 			return;
 		}
 		
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
 		VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
         if (api.delete(volumeId)) {
-        	log.info("Deletion of Volume [id]: "+volumeId+" was successful. [region] : " + region
-    				+ " of Iaas : " + iaasInfo);
+        	log.info(String.format("Deletion of Volume [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
         }
 	}
 
@@ -628,4 +741,7 @@ public class OpenstackNovaIaas extends Iaas {
         return device;
     }
 
+    private Volume.Status getVolumeStatus(VolumeApi volumeApi, String volumeId){
+        return volumeApi.get(volumeId).getStatus();
+    }
 }

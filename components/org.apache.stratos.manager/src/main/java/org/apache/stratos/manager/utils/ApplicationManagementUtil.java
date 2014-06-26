@@ -36,6 +36,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
@@ -247,14 +248,14 @@ public class ApplicationManagementUtil {
     
     
     public static void registerService(String cartridgeType, String domain, String subDomain,
-                                        StringBuilder payload, String tenantRange, String hostName,
-                                        String autoscalingPoliyName, String deploymentPolicyName,
-                                        Properties properties)
+                                       StringBuilder payload, String tenantRange, String hostName,
+                                       String autoscalingPoliyName, String deploymentPolicyName,
+                                       Properties properties, Persistence persistence)
             throws ADCException, UnregisteredCartridgeException {
         log.info("Register service..");
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
-                    hostName, properties, autoscalingPoliyName, deploymentPolicyName );
+                    hostName, properties, autoscalingPoliyName, deploymentPolicyName, persistence );
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);

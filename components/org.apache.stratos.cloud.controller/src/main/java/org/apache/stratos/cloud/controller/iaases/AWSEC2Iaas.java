@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -457,7 +458,7 @@ public class AWSEC2Iaas extends Iaas {
     }
 
 	@Override
-	public String createVolume(int sizeGB) {
+	public String createVolume(int sizeGB, String snapshotId) {
 		IaasProvider iaasInfo = getIaasProvider();
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
@@ -474,7 +475,19 @@ public class AWSEC2Iaas extends Iaas {
 		
 		ElasticBlockStoreApi blockStoreApi = context.unwrapApi(AWSEC2Api.class).getElasticBlockStoreApiForRegion(region).get();
 		
-		Volume volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
+		Volume volume;
+		if(StringUtils.isEmpty(snapshotId)){
+			if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone);
+        	}
+			volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
+		}else{
+			if(log.isDebugEnabled()){
+        		log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
+        	}
+			volume = blockStoreApi.createVolumeFromSnapshotInAvailabilityZone(zone, snapshotId);
+		}
+		 
 		
 		if (volume == null) {
 			log.fatal("Volume creation was unsuccessful. [region] : " + region

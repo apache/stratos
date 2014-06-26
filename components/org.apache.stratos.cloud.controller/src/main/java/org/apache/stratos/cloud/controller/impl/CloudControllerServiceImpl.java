@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
@@ -39,6 +39,9 @@ import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
+import org.apache.stratos.cloud.controller.pojo.ConfigDependencies;
+import org.apache.stratos.cloud.controller.pojo.ConfigGroup;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
@@ -89,6 +92,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
 					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
 					currentData.setCartridges(serializedObj.getCartridges());
+                                       currentData.setConfigCompositeApplication(serializedObj.getConfigCompositeApplication());
 
 					if(log.isDebugEnabled()) {
 					    
@@ -107,11 +111,53 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			}
 
 		}
+                // restore compostie application
+		List<ConfigCompositeApplication> apps = restoreConfigCompositeApplication();
+		if (apps == null) {
+			this.dataHolder.setConfigCompositeApplication(new ArrayList<ConfigCompositeApplication>());
+
+		}
 	}
+
+
+    public void deployCompositeApplicationDefinition(CompositeApplicationDefinition compositeApplicationDefinition) throws InvalidCompositeApplicationDefinitionException, 
+    InvalidIaasProviderException {
+    	
+    	String alias = compositeApplicationDefinition.getAlias();
+    	if(log.isDebugEnabled()){
+            log.debug("composite application alias  : " + alias);
+    	}
+    	
+    	ConfigCompositeApplication messConfigApp = TopologyBuilder.convertCompositeApplication(compositeApplicationDefinition);
+        String key = "compositeApplicationAlias"; //app.getAlias()
+        	
+    	
+    	List<ConfigCompositeApplication> data = new ArrayList<ConfigCompositeApplication>();
+    	data.add(messConfigApp);
+    	dataHolder.setConfigCompositeApplication(data);
+        
+        // persist
+        persist();
+    	
+    	if(log.isDebugEnabled()){
+            log.debug("deploying composite application in cloud controller: " + compositeApplicationDefinition);
+        }
+    	
+    	TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
+    }
+    
+    public void unDeployCompositeApplicationDefinition(String appAlias) throws InvalidCompositeApplicationDefinitionException, 
+    InvalidIaasProviderException {
+    	if(log.isDebugEnabled()){
+            log.debug("undeploying composite application in cloud controller, removing all composite apps ");
+            dataHolder.removeAllConfigCompositeApplications();
+            persist();
+            TopologyBuilder.handleCompositeApplicationRemoved(appAlias);
+        }
+    }
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
     InvalidIaasProviderException {
-
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
             log.error(msg);
@@ -216,7 +262,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws
         UnregisteredCartridgeException, InvalidIaasProviderException {
-    	
+
     	if(log.isDebugEnabled()) {
     		log.debug("CloudControllerServiceImpl:startInstance");
     	}
@@ -292,15 +338,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "PARTITION_ID", partitionId);
 
             Iaas iaas = iaasProvider.getIaas();
-            if(ctxt.isVolumeRequired()){
-                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(cartridge, iaas).toString());
-            }
             
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
-            // reloading the payload with memberID
-            iaasProvider.setPayload(payload.toString().getBytes());
             
             if (iaas == null) {
                 if(log.isDebugEnabled()) {
@@ -316,8 +357,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
                 
             }
-            
+
+            if(ctxt.isVolumeRequired()) {
+                if (ctxt.getVolumes() != null) {
+                    for (Volume volume : ctxt.getVolumes()) {
+
+                        if (volume.getId() == null) {
+                            // create a new volume
+                            createVolumeAndSetInClusterContext(volume, iaasProvider);
+                        }
+                    }
+                }
+            }
+
+            if(ctxt.isVolumeRequired()){
+                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
+            }
+            iaasProvider.setPayload(payload.toString().getBytes());
             iaas.setDynamicPayload();
+
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
@@ -337,19 +395,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Should have a length between 3-15
             String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
             String group = str.replaceAll("[^a-z0-9-]", "");
-            
-            if(ctxt.isVolumeRequired()) {
-            	if (ctxt.getVolumes() != null) {
-            		for (Volume volume : ctxt.getVolumes()) {
-						
-            			if (volume.getId() == null) {
-            				// create a new volume
-            				createVolumeAndSetInClusterContext(volume, iaasProvider);
-            			} 
-					}
-            	}
-            }
-            
+
             NodeMetadata node;
 
 //            create and start a node
@@ -375,7 +421,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(log.isDebugEnabled()) {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
-                
+
                 // attach volumes
 			if (ctxt.isVolumeRequired()) {
 				// remove region prefix
@@ -391,7 +437,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						} catch (Exception e) {
 							// continue without throwing an exception, since
 							// there is an instance already running
-							log.error("Attaching Volume to Instance [ "
+							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
 									+ instanceId + " ] failed!", e);
 						}
 					}
@@ -412,39 +458,52 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void createVolumeAndSetInClusterContext(Volume volume,
 			IaasProvider iaasProvider) {
-
 		// iaas cannot be null at this state #startInstance method
 		Iaas iaas = iaasProvider.getIaas();
-		
 		int sizeGB = volume.getSize();
-		String volumeId = iaas.createVolume(sizeGB);
-		volume.setId(volumeId);
+		String snapshotId =  volume.getSnapshotId();
+        if(StringUtils.isNotEmpty(volume.getVolumeId())){
+            // volumeID is specified, so not creating additional volumes
+            if(log.isDebugEnabled()){
+                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
+            }
+            volume.setId(volume.getVolumeId());
+        }else{
+            String volumeId = iaas.createVolume(sizeGB, snapshotId);
+            volume.setId(volumeId);
+        }
+        
 		volume.setIaasType(iaasProvider.getType());
 	}
 
-	private StringBuilder getPersistencePayload(Cartridge cartridge, Iaas iaas) {
+
+    private StringBuilder getPersistencePayload(ClusterContext ctx, Iaas iaas) {
 		StringBuilder persistencePayload = new StringBuilder();
-		if(isPersistenceMappingAvailable(cartridge)){
-			for(Volume volume : cartridge.getPersistence().getVolumes()){
+		if(isPersistenceMappingAvailable(ctx)){
+			for(Volume volume : ctx.getVolumes()){
 				if(log.isDebugEnabled()){
 					log.debug("Adding persistence mapping " + volume.toString());
 				}
                 if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
                 }
+                
 				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
 				persistencePayload.append("|");
+                persistencePayload.append(volume.getId());
+                persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
 			}
 		}
         if(log.isDebugEnabled()){
             log.debug("Persistence payload is" + persistencePayload.toString());
         }
+        System.out.println("****** " + persistencePayload);
 		return persistencePayload;
 	}
 
-	private boolean isPersistenceMappingAvailable(Cartridge cartridge) {
-		return cartridge.getPersistence() != null && cartridge.getPersistence().isPersistanceRequired();
+	private boolean isPersistenceMappingAvailable(ClusterContext ctx) {
+		return ctx.getVolumes() != null && ctx.isVolumeRequired();
 	}
 
 	private void addToPayload(StringBuilder payload, String name, String value) {
@@ -775,7 +834,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
 		if (clusterCtxt.getVolumes() != null) {
 			for (Volume volume : clusterCtxt.getVolumes()) {
-				
 				try {
 					String volumeId = volume.getId();
 					if (volumeId == null) {
@@ -846,7 +904,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
         ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
-				payload, hostName, props, isLb);
+				payload, hostName, props, isLb, registrant.getPersistence());
 
 
 		dataHolder.addClusterContext(ctxt);
@@ -860,8 +918,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	private ClusterContext buildClusterContext(Cartridge cartridge,
-			String clusterId, String payload, String hostName,
-			Properties props, boolean isLb) {
+                                               String clusterId, String payload, String hostName,
+                                               Properties props, boolean isLb, Persistence persistence) {
 
 
 		// initialize ClusterContext
@@ -871,40 +929,65 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		String property;
 		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
 		long timeout = property != null ? Long.parseLong(property) : 30000;
-		
-		property = props.getProperty(Constants.IS_VOLUME_REQUIRED);
-        boolean isVolumeRequired = property != null ? Boolean.parseBoolean(property) : false;
-        
-        if(isVolumeRequired) {
+
+        boolean persistanceRequired = false;
+        if(persistence != null){
+              persistanceRequired = persistence.isPersistanceRequired();
+        }
+
+        if(persistanceRequired){
+            ctxt.setVolumes(persistence.getVolumes());
+            ctxt.setVolumeRequired(true);
+        }else{
+            ctxt.setVolumeRequired(false);
+        }
+        /*
+        if(persistanceRequired) {
         	Persistence persistenceData = cartridge.getPersistence();
-        	
+
         	if(persistenceData != null) {
-        		Volume[] volumes = persistenceData.getVolumes();
-        		
+        		Volume[] cartridge_volumes = persistenceData.getVolumes();
+
+
+                Volume[] volumestoCreate = overideVolumes(cartridge_volumes, persistence.getVolumes());
         		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
-        		property = props.getProperty(Constants.VOLUME_SIZE);
-        		
-        		for (Volume volume : volumes) {
-        			int volumeSize = property != null ? Integer.parseInt(property) : volume.getSize();
-        			boolean shouldDeleteVolume = property != null ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
-        			volume.setSize(volumeSize);
-        			volume.setRemoveOntermination(shouldDeleteVolume);
+        		String property_volume_zize = props.getProperty(Constants.VOLUME_SIZE);
+                String property_volume_id = props.getProperty(Constants.VOLUME_ID);
+
+                List<Volume> cluster_volume_list = new LinkedList<Volume>();
+
+        		for (Volume volume : cartridge_volumes) {
+        			int volumeSize = StringUtils.isNotEmpty(property_volume_zize) ? Integer.parseInt(property_volume_zize) : volume.getSize();
+        			boolean shouldDeleteVolume = StringUtils.isNotEmpty(property) ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
+                    String volumeID = StringUtils.isNotEmpty(property_volume_id) ? property_volume_id : volume.getVolumeId();
+
+                    Volume volume_cluster = new Volume();
+                    volume_cluster.setSize(volumeSize);
+                    volume_cluster.setRemoveOntermination(shouldDeleteVolume);
+                    volume_cluster.setDevice(volume.getDevice());
+                    volume_cluster.setIaasType(volume.getIaasType());
+                    volume_cluster.setMappingPath(volume.getMappingPath());
+                    volume_cluster.setVolumeId(volumeID);
+                    cluster_volume_list.add(volume_cluster);
 				}
-        		ctxt.setVolumes(volumes);
+        		//ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));
+                ctxt.setVolumes(persistence.getVolumes());
+                ctxt.setVolumeRequired(true);
         	} else {
         		// if we cannot find necessary data, we would not consider 
         		// this as a volume required instance.
-        		isVolumeRequired = false;
-        	}
-        	
-        	ctxt.setVolumeRequired(isVolumeRequired);
+        		//isVolumeRequired = false;
+                ctxt.setVolumeRequired(false);
+       	}
+
+        	//ctxt.setVolumeRequired(isVolumeRequired);
         }
-        
+        */
 	    ctxt.setTimeoutInMillis(timeout);
 		return ctxt;
 	}
 
-	@Override
+    @Override
 	public String[] getRegisteredCartridges() {
 		// get the list of cartridges registered
 		List<Cartridge> cartridges = dataHolder
@@ -1018,14 +1101,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                          for (Volume volume : ctxt.getVolumes()) {
                             if(volume.getId() != null) {
                                 String iaasType = volume.getIaasType();
-                                Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                 if(iaas != null) {
                                     try {
-                                    // delete the volume
-                                    iaas.deleteVolume(volume.getId());
+                                    // delete the volumes if remove on unsubscription is true.
+                                    if(volume.isRemoveOntermination())
+                                    {
+                                        iaas.deleteVolume(volume.getId());
+                                        volume.setId(null);
+                                    }
                                     } catch(Exception ignore) {
-                                        if(log.isDebugEnabled()) {
-                                            log.debug(ignore);
+                                        if(log.isErrorEnabled()) {
+                                            log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
                                         }
                                     }
                                 }
@@ -1132,6 +1220,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public ClusterContext getClusterContext (String clusterId) {
 
         return dataHolder.getClusterContext(clusterId);
+    }
+
+    private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
+    	List<ConfigCompositeApplication> apps = this.dataHolder.getConfigCompositeApplication();
+		if (apps == null) {
+			if (log.isDebugEnabled()) {
+				log.debug("composite applications  for cloud controller is null while restoring ");
+			}
+			return apps;
+		}
+    	if (log.isDebugEnabled()) {
+			log.debug("trying to  restore composite applications  for cloud controller " + apps.size());
+		}
+    	for (ConfigCompositeApplication messConfigApp : apps) {
+    		if (log.isDebugEnabled()) {
+    			log.debug(" restoring composite application for cloud controller " + messConfigApp.getAlias());
+    		}
+    		TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
+    	}
+    	
+    	return apps;
     }
 
 }

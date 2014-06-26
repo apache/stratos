@@ -27,6 +27,7 @@ import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.utils.Deserializer;
 import org.apache.stratos.manager.utils.Serializer;
+import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -45,6 +46,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final String ACTIVE_SUBSCRIPTIONS = "/subscriptions/active";
     private static final String INACTIVE_SUBSCRIPTIONS = "/subscriptions/inactive";
     private static final String SERVICES = "/services";
+    private static final String COMPOSITE_APPLICATION = "/composite_applications";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
@@ -216,6 +218,196 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
         return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
     }
+    
+
+    //Grouping
+    public void persistDeployedCompositeApplication (ConfigCompositeApplication configCompositeAapplication) 
+    		throws PersistenceManagerException {
+
+    	if (log.isDebugEnabled()) {
+            log.debug("trying to persiste ConfigCompositeApplication [ " + configCompositeAapplication.getAlias() + " ]");
+        }
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistCompApplication(configCompositeAapplication);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+        	persistCompApplication(configCompositeAapplication);
+        }
+    }
+    
+    // Grouping
+    private void persistCompApplication (ConfigCompositeApplication configCompositeAapplication) throws PersistenceManagerException  {
+
+        // persist Service
+        try {
+            //RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + configCompositeAapplication.getAlias(),
+        	RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + "compositeApplicationAlias",
+        														Serializer.serializeServiceToByteArray(configCompositeAapplication), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted ConfigCompositeApplication successfully: hardcoded [ " + configCompositeAapplication.getAlias() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+    
+    public void removeDeployedCompositeApplication(String configCompositeApplicationAlias)  throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("removing persisted ConfigCompositeApplication : [ " + configCompositeApplicationAlias + " ]");
+                }
+                removeCompApplication(configCompositeApplicationAlias);
+                
+                if (log.isDebugEnabled()) {
+                    log.debug("successfully removed persisted ConfigCompositeApplication : [ " + configCompositeApplicationAlias + " ]");
+                }
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+        	if (log.isDebugEnabled()) {
+                log.debug("removing persisted ConfigCompositeApplication 1 : [ " + configCompositeApplicationAlias + " ]");
+            }
+            removeCompApplication(configCompositeApplicationAlias);
+            
+            if (log.isDebugEnabled()) {
+                log.debug("successfully removed persisted ConfigCompositeApplication 1 : [ " + configCompositeApplicationAlias + " ]");
+            }
+        }
+    }
+
+    
+    public Collection<ConfigCompositeApplication> getDeployedCompositeApplications () throws PersistenceManagerException {;
+    	if (log.isDebugEnabled()) {
+            log.debug("retrieving persisted ConfigCompositeApplication ");
+        }
+    	
+    	int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+                if (log.isDebugEnabled()) {
+                    log.debug("traversing ConfigCompositeApplications ");
+                }
+                return traverseAndGetDeloyedCompositeApplication(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return traverseAndGetDeloyedCompositeApplication(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION);
+        }
+
+    }
+
+
+    public Collection<ConfigCompositeApplication> traverseAndGetDeloyedCompositeApplication (String resourcePath) throws PersistenceManagerException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("traverseAndGetDeloyedCompositeApplication: Root resource path: " + resourcePath);
+        }
+
+        Object resourceObj;
+
+        try {
+            resourceObj = RegistryManager.getInstance().retrieve(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("traversing com apps , retrieving resource: " + resourceObj);
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        Collection<ConfigCompositeApplication> comApps = new ArrayList<ConfigCompositeApplication>();
+
+        if (resourceObj == null) {
+            // there is no resource at the given path
+            return null;
+
+        } else if (resourceObj instanceof String[]) {
+
+            // get the paths for all Service instances
+            String[] compAppResourcePaths = (String[]) resourceObj;
+            if (log.isDebugEnabled()) {
+                for (String retrievedResourcePath : compAppResourcePaths) {
+                    log.debug("Retrieved resource sub-path " + retrievedResourcePath);
+                }
+            }
+
+            // traverse the paths recursively
+            for (String compAppResourcePath : compAppResourcePaths) {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Traversing resource path " + compAppResourcePath);
+                }
+
+                comApps.addAll(traverseAndGetDeloyedCompositeApplication(compAppResourcePath));
+            }
+
+        } else {
+            // De-serialize
+            Object compAppObj;
+
+            try {
+            	compAppObj = Deserializer.deserializeFromByteArray((byte[]) resourceObj);
+
+            } catch (Exception e) {
+                // issue might be de-serializing only this object, therefore log and continue without throwing
+                log.error("Error while de-serializing the object retrieved from "  + resourcePath, e);
+                return null;
+            }
+
+            if (compAppObj != null && compAppObj instanceof ConfigCompositeApplication) {
+
+            	ConfigCompositeApplication deserilizedCompApp = (ConfigCompositeApplication) compAppObj;
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully de-serialized ConfigCompositeApplication: " + deserilizedCompApp.toString());
+                }
+
+                comApps.add(deserilizedCompApp);
+
+            }
+        }
+
+        // remove any nulls
+        comApps.removeAll(Collections.singleton(null));
+        return comApps;
+    }
+
 
     @Override
     public void persistService(Service service) throws PersistenceManagerException {
@@ -440,6 +632,36 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             if (log.isDebugEnabled()) {
                 log.debug("Deleted Service on path " + resourcePath + " successfully");
             }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+    
+    private void removeCompApplication(String alias) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + alias;
+
+        try {
+        	Object obj = RegistryManager.getInstance().retrieve(resourcePath);
+        	if (obj != null) {
+        		if (log.isDebugEnabled()) {
+        			log.debug(" found composite application to remve " + obj + " at resource path " + resourcePath);
+        		}
+        	}
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted composite application on path " + resourcePath + " successfully");
+            }
+            
+    		if (log.isDebugEnabled()) {
+    			obj = RegistryManager.getInstance().retrieve(resourcePath);
+     			if (obj == null) {
+     	   			log.debug(" veriying that composite application is remvoved, obj is null "  + resourcePath);
+    			} else {
+    				log.debug(" unsuccessful removing  composite application  " +  obj + " at resource path " +  resourcePath);
+    			}
+    		}
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);
