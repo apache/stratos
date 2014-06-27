@@ -298,13 +298,12 @@ public class ComplexApplicationContext {
  			StringBuffer buf = new StringBuffer();
  			buf.append("downstreamdependencies list: [ ");
  			
- 			if (downstreamDependencies != null & downstreamDependencies.keySet().size() > 0) {
+ 			if (downstreamDependencies != null && downstreamDependencies.keySet().size() > 0) {
  				Set<String> downstream_keys = downstreamDependencies.keySet();
 	 			for (String c : downstream_keys) {
 	 				String d = downstreamDependencies.get(c);
-	 				buf.append(c + ", in group:  ").append(d);
+	 				buf.append(c + ", in group:  ").append(d).append(" ");
 	 			}
-	 			
 	 			buf.append("] ").append(" serviceId ").append(aServiceId);
  			} else {
  				buf.append(" downstreamDependencies is null ");
@@ -324,11 +323,11 @@ public class ComplexApplicationContext {
  			StringBuffer buf = new StringBuffer();
  			buf.append("upstreamdependencies list: [ ");
  			
- 			if (upstreamDependencies != null & upstreamDependencies.keySet().size() > 0) {
+ 			if (upstreamDependencies != null && upstreamDependencies.keySet().size() > 0) {
  				Set<String> upstream_keys = upstreamDependencies.keySet();
 	 			for (String c : upstream_keys) {
 	 				String d = upstreamDependencies.get(c);
-	 				buf.append(c + ", in group:  ").append(upstreamDependencies.get(d));
+	 				buf.append(c + ", in group:  ").append(upstreamDependencies.get(d)).append(" ");
 	 			}
 	 			
 	 			buf.append("] ").append(" serviceId ").append(aServiceId);
@@ -685,10 +684,10 @@ public class ComplexApplicationContext {
 								log.debug("checking (inactive) cluster state for  " + cluster.getClusterId() + " (in group " + clusterGroup + ")" +
 										" and serviceType " + serviceType + " (in group " + serviceTypeGroup + ")");
 							}
-							// Martin TODO if (hasClusterActiveMember (cluster)) {
+							// TODO if (hasClusterActiveMember (cluster)) {
 							// check group cluster is in 
 							
-							if (clusterGroup != null & clusterGroup.equals(serviceTypeGroup)) {
+							if (clusterGroup != null && clusterGroup.equals(serviceTypeGroup)) {
 								if (hasClusterActiveMember (cluster)) { 
 									hasClusterWithActiveMember = true;
 									if (log.isDebugEnabled()) {
@@ -782,8 +781,8 @@ public class ComplexApplicationContext {
 								log.debug("checking (active) cluster state for  " + cluster.getClusterId() + " (in group " + clusterGroup + ")" +
 										" and serviceType " + serviceType + " (in group " + serviceTypeGroup + ")");
 							}
-							// Martin TODO if (hasClusterActiveMember (cluster)) {
-							if (hasClusterActiveMember (cluster)) { // Martin for test only, replace with hasClusterActiveMember !!!
+							
+							if (clusterGroup != null && clusterGroup.equals(serviceTypeGroup) && hasClusterActiveMember (cluster)) {
 								hasClusterWithActiveMember = true;
 								if (log.isDebugEnabled()) {
 									log.debug("found active cluster for service " + cluster.getClusterId() + " in group " + serviceTypeGroup +
