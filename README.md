@@ -84,9 +84,9 @@ When scaling down, before terminating an instance the Auto-scaler will allow all
 
 Resources
 ---------
-* Project page: http://stratos.incubator.apache.org/ 
+* Project page: http://stratos.apache.org/ 
 * Documentation: https://cwiki.apache.org/confluence/display/STRATOS/Home 
-* Dev group: dev@stratos.incubator.apache.org
+* Dev group: dev@stratos.apache.org
 * Issue Tracker: https://issues.apache.org/jira/browse/stratos 
 * Twitter: http://twitter.com/ApacheStratos
 * Facebook: https://www.facebook.com/apache.stratos
