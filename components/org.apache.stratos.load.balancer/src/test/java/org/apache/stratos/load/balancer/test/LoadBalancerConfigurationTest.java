@@ -18,18 +18,17 @@
  */
 package org.apache.stratos.load.balancer.test;
 
-import java.io.File;
-import java.net.URL;
-
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import java.io.File;
+import java.net.URL;
 
 /**
  * Test sample load balancer configurations.
@@ -85,6 +84,7 @@ public class LoadBalancerConfigurationTest {
             Assert.assertTrue(String.format("%s, multi-tenancy is not true", validationError), configuration.isMultiTenancyEnabled());
             Assert.assertEquals(String.format("%s, tenant-identifier is not valid", validationError), TenantIdentifier.TenantDomain, configuration.getTenantIdentifier());
             Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/([^/]*)/", configuration.getTenantIdentifierRegex());
+            Assert.assertTrue(String.format("%s, rewrite-location-header is not true", validationError), configuration.isReWriteLocationHeader());
         } finally {
             LoadBalancerConfiguration.clear();
         }
@@ -137,6 +137,7 @@ public class LoadBalancerConfigurationTest {
             Assert.assertEquals(String.format("%s, port value not valid: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), 8080, m1Http.getValue());
             Assert.assertEquals(String.format("%s, port proxy not valid: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), 80, m1Http.getProxy());
 
+            Assert.assertFalse(String.format("%s, rewrite-location-header is not false", validationError), LoadBalancerConfiguration.getInstance().isReWriteLocationHeader());
         } finally {
             TopologyManager.releaseReadLock();
             LoadBalancerConfiguration.clear();

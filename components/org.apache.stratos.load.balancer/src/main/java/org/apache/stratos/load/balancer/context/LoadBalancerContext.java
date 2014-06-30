@@ -67,6 +67,9 @@ public class LoadBalancerContext {
     // Map<HostName, Map<TenantId, Cluster>>
     // Keep track of multi-tenant service clusters
     private MultiTenantClusterMap multiTenantClusterMap;
+    // Map<MemberIp, Hostname>
+    // Keep track of cluster hostnames of of all members  against their ip addresses
+    private MemberIpHostnameMap memberIpHostnameMap;
 
     private LoadBalancerContext() {
         tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
@@ -76,6 +79,7 @@ public class LoadBalancerContext {
         hostNameClusterMap = new HostNameClusterMap();
         hostNameAppContextMap = new HostNameAppContextMap();
         multiTenantClusterMap = new MultiTenantClusterMap();
+        memberIpHostnameMap = new MemberIpHostnameMap();
     }
 
     public static LoadBalancerContext getInstance() {
@@ -191,5 +195,9 @@ public class LoadBalancerContext {
 
     public MultiTenantClusterMap getMultiTenantClusterMap() {
        return multiTenantClusterMap;
+    }
+
+    public MemberIpHostnameMap getMemberIpHostnameMap() {
+        return memberIpHostnameMap;
     }
 }
