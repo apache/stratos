@@ -28,11 +28,18 @@
     <property name="siddhi.persistence.snapshot.time.interval.minutes">0</property>
   </siddhiConfiguration>
   <importedStreams>
-    <stream as="lbStats1" name="in_flight_requests" version="1.0.0"/>
+    <stream as="avg_rif_stat" name="in_flight_requests" version="1.0.0"/>
   </importedStreams>
   <queryExpressions><![CDATA[ 
-from lbStats1#window.timeBatch(1 min)
-select cluster_id,network_partition_id, avg(in_flight_request_count) as count group by cluster_id,network_partition_id  insert into average_in_flight_requests;]]></queryExpressions>
+	from avg_rif_stat
+		select cluster_id, network_partition_id, in_flight_request_count, 
+		stratos:concat(cluster_id, '-' , network_partition_id) as avg_rif_cluster_network
+		insert into avg_rif_concat;
+	define partition avg_rif_cluster_partition by  avg_rif_concat.avg_rif_cluster_network;
+	from avg_rif_concat#window.timeBatch(1 min)
+		select cluster_id,network_partition_id, avg(in_flight_request_count) as count 
+		insert into average_in_flight_requests 
+		partition by avg_rif_cluster_partition;]]></queryExpressions>
   <exportedStreams>
     <stream name="average_in_flight_requests"
       valueOf="average_in_flight_requests" version="1.0.0"/>

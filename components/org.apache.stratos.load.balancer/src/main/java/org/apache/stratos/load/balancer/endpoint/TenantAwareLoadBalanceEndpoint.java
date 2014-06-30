@@ -154,7 +154,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @param currentMember
      */
     private void setupLoadBalancerContextProperties(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember) {
-        String lbHostName = extractTargetHost(synCtx);
+        String targetHostname = extractTargetHost(synCtx);
         org.apache.axis2.context.MessageContext axis2MsgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         
         String httpTransportName = "http", httpsTransportName = "https";
@@ -171,7 +171,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         String lbHttpsPort = (String) httpsTransportIn.getParameter("port").getValue();
         String clusterId = currentMember.getProperties().getProperty(Constants.CLUSTER_ID);
 
-        synCtx.setProperty(Constants.LB_HOST_NAME, lbHostName);
+        synCtx.setProperty(Constants.LB_TARGET_HOSTNAME, targetHostname);
         synCtx.setProperty(Constants.LB_HTTP_PORT, lbHttpPort);
         synCtx.setProperty(Constants.LB_HTTPS_PORT, lbHttpsPort);
         synCtx.setProperty(Constants.CLUSTER_ID, clusterId);
