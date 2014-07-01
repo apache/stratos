@@ -1,960 +1,943 @@
-<!--
-  ~ Licensed to the Apache Software Foundation (ASF) under one
-  ~ or more contributor license agreements.  See the NOTICE file
-  ~ distributed with this work for additional information
-  ~ regarding copyright ownership.  The ASF licenses this file
-  ~ to you under the Apache License, Version 2.0 (the
-  ~ "License"); you may not use this file except in compliance
-  ~ with the License.  You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing,
-  ~ software distributed under the License is distributed on an
-  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied.  See the License for the
-  ~ specific language governing permissions and limitations
-  ~ under the License.
-  -->
-
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax220="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax221="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="InvalidPartitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="UnregisteredClusterException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="UnregisteredCartridgeException">
+            <xs:complexType name="InvalidPartitionException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidCartridgeDefinitionException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidIaasProviderException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="UnregisteredCartridgeException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidMemberException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidClusterException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax219="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ax223="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:ax224="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
-            <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:element name="CloudControllerServiceInvalidPartitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax219:InvalidPartitionException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax220:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:element name="CloudControllerServiceUnregisteredClusterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax219:UnregisteredClusterException"/>
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax219:UnregisteredClusterException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="unregisterService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
+            <xs:element name="CloudControllerServiceInvalidPartitionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax219:UnregisteredCartridgeException"/>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax219:InvalidPartitionException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getCartridgeInfo">
+            <xs:element name="validatePartition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax220:Partition"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getCartridgeInfoResponse">
+            <xs:element name="validatePartitionResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:CartridgeInfo"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax219:InvalidCartridgeDefinitionException"/>
+                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax219:InvalidCartridgeDefinitionException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceInvalidIaasProviderException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax219:InvalidIaasProviderException"/>
+                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax219:InvalidIaasProviderException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="deployCartridgeDefinition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax221:CartridgeConfig"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax219:InvalidCartridgeTypeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validateDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax220:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validateDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="undeployCartridgeDefinition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="memberContext" nillable="true" type="ax221:MemberContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstanceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:MemberContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidMemberException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax219:InvalidMemberException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax219:InvalidClusterException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateAllInstances">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getRegisteredCartridges">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getRegisteredCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax221:CartridgeConfig"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getClusterContext">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getClusterContextResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:ClusterContext"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:ClusterContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax219:UnregisteredCartridgeException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:CartridgeInfo"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberContext" nillable="true" type="ax221:MemberContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax221:MemberContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax219:InvalidCartridgeTypeException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validateDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax220:Partition"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="validateDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="undeployCartridgeDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidMemberException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax219:InvalidMemberException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax219:InvalidClusterException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateAllInstances">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRegisteredCartridges">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getRegisteredCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax221:Registrant"/>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax221:Registrant"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="registerServiceResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
         <xs:schema xmlns:ax225="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax221:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax221:Property"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="CartridgeInfo">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax221:AppType"/>
-                    <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="defaultDeploymentPolicy" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax221:LoadbalancerConfig"/>
-                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax221:Persistence"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax221:PortMapping"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax221:Property"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="AppType">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="appSpecificMapping" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="LoadbalancerConfig">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
-                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Persistence">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax221:Volume"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Volume">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="iaasType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="mappingPath" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="removeOntermination" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="size" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="PortMapping">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="port" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="protocol" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="proxyPort" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="CartridgeConfig">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="defaultDeploymentPolicy" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax221:IaasConfig"/>
-                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax221:LoadbalancerConfig"/>
-                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax221:Persistence"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax221:PortMapping"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="defaultDeploymentPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax221:IaasConfig"></xs:element>
+                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax221:LoadbalancerConfig"></xs:element>
+                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax221:Persistence"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax221:PortMapping"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="IaasConfig">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="className" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="credential" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="identity" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="imageId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="maxInstanceLimit" type="xs:int"/>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax221:NetworkInterfaces"/>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="className" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="credential" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="identity" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="imageId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="maxInstanceLimit" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax221:NetworkInterfaces"></xs:element>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterfaces">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax221:NetworkInterface"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax221:NetworkInterface"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterface">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="fixedIp" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="networkUuid" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="portUuid" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="fixedIp" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="networkUuid" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="portUuid" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="MemberContext">
+            <xs:complexType name="LoadbalancerConfig">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="allocatedIpAddress" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="initTime" type="xs:long"/>
-                    <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax220:Partition"/>
-                    <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Persistence">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax221:Volume"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Volume">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="iaasType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="mappingPath" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="removeOntermination" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="size" type="xs:int"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="PortMapping">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="port" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="protocol" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="proxyPort" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ClusterContext">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"/>
-                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax221:Volume"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"></xs:element>
+                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax221:Volume"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CartridgeInfo">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax221:AppType"></xs:element>
+                    <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="defaultDeploymentPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="deploymentDirs" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax221:LoadbalancerConfig"></xs:element>
+                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax221:Persistence"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax221:PortMapping"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax221:Property"></xs:element>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AppType">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="appSpecificMapping" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="MemberContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="allocatedIpAddress" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="initTime" type="xs:long"></xs:element>
+                    <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax220:Partition"></xs:element>
+                    <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"></xs:element>
+					<xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Registrant">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
-                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax222="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="Partition">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
-                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
     <wsdl:message name="validatePartitionRequest">
-        <wsdl:part name="parameters" element="ns:validatePartition"/>
+        <wsdl:part name="parameters" element="ns:validatePartition"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="validatePartitionResponse">
-        <wsdl:part name="parameters" element="ns:validatePartitionResponse"/>
+        <wsdl:part name="parameters" element="ns:validatePartitionResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidPartitionException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidPartitionException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidPartitionException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="validateDeploymentPolicyRequest">
-        <wsdl:part name="parameters" element="ns:validateDeploymentPolicy"/>
+        <wsdl:part name="parameters" element="ns:validateDeploymentPolicy"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="validateDeploymentPolicyResponse">
-        <wsdl:part name="parameters" element="ns:validateDeploymentPolicyResponse"/>
+        <wsdl:part name="parameters" element="ns:validateDeploymentPolicyResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidCartridgeTypeException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeTypeException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeTypeException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
-        <wsdl:part name="parameters" element="ns:terminateInstance"/>
+        <wsdl:part name="parameters" element="ns:terminateInstance"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidMemberException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidMemberException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidMemberException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="registerServiceRequest">
-        <wsdl:part name="parameters" element="ns:registerService"/>
+        <wsdl:part name="parameters" element="ns:registerService"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="registerServiceResponse">
-        <wsdl:part name="parameters" element="ns:registerServiceResponse"/>
+        <wsdl:part name="parameters" element="ns:registerServiceResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceUnregisteredCartridgeException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="deployCartridgeDefinitionRequest">
-        <wsdl:part name="parameters" element="ns:deployCartridgeDefinition"/>
+        <wsdl:part name="parameters" element="ns:deployCartridgeDefinition"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidCartridgeDefinitionException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeDefinitionException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeDefinitionException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getCartridgeInfoRequest">
-        <wsdl:part name="parameters" element="ns:getCartridgeInfo"/>
+        <wsdl:part name="parameters" element="ns:getCartridgeInfo"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getCartridgeInfoResponse">
-        <wsdl:part name="parameters" element="ns:getCartridgeInfoResponse"/>
+        <wsdl:part name="parameters" element="ns:getCartridgeInfoResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="unregisterServiceRequest">
-        <wsdl:part name="parameters" element="ns:unregisterService"/>
+        <wsdl:part name="parameters" element="ns:unregisterService"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceUnregisteredClusterException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredClusterException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredClusterException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="undeployCartridgeDefinitionRequest">
-        <wsdl:part name="parameters" element="ns:undeployCartridgeDefinition"/>
+        <wsdl:part name="parameters" element="ns:undeployCartridgeDefinition"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="terminateAllInstancesRequest">
-        <wsdl:part name="parameters" element="ns:terminateAllInstances"/>
+        <wsdl:part name="parameters" element="ns:terminateAllInstances"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidClusterException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getRegisteredCartridgesRequest">
-        <wsdl:part name="parameters" element="ns:getRegisteredCartridges"/>
+        <wsdl:part name="parameters" element="ns:getRegisteredCartridges"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getRegisteredCartridgesResponse">
-        <wsdl:part name="parameters" element="ns:getRegisteredCartridgesResponse"/>
+        <wsdl:part name="parameters" element="ns:getRegisteredCartridgesResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="startInstanceRequest">
-        <wsdl:part name="parameters" element="ns:startInstance"/>
+        <wsdl:part name="parameters" element="ns:startInstance"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="startInstanceResponse">
-        <wsdl:part name="parameters" element="ns:startInstanceResponse"/>
+        <wsdl:part name="parameters" element="ns:startInstanceResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getClusterContextRequest">
-        <wsdl:part name="parameters" element="ns:getClusterContext"/>
+        <wsdl:part name="parameters" element="ns:getClusterContext"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getClusterContextResponse">
-        <wsdl:part name="parameters" element="ns:getClusterContextResponse"/>
+        <wsdl:part name="parameters" element="ns:getClusterContextResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="validatePartition">
-            <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"/>
-            <wsdl:output message="ns:validatePartitionResponse" wsaw:Action="urn:validatePartitionResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validatePartitionCloudControllerServiceInvalidPartitionException"/>
+            <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"></wsdl:input>
+            <wsdl:output message="ns:validatePartitionResponse" wsaw:Action="urn:validatePartitionResponse"></wsdl:output>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validatePartitionCloudControllerServiceInvalidPartitionException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
-            <wsdl:input message="ns:validateDeploymentPolicyRequest" wsaw:Action="urn:validateDeploymentPolicy"/>
-            <wsdl:output message="ns:validateDeploymentPolicyResponse" wsaw:Action="urn:validateDeploymentPolicyResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidPartitionException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidCartridgeTypeException"/>
+            <wsdl:input message="ns:validateDeploymentPolicyRequest" wsaw:Action="urn:validateDeploymentPolicy"></wsdl:input>
+            <wsdl:output message="ns:validateDeploymentPolicyResponse" wsaw:Action="urn:validateDeploymentPolicyResponse"></wsdl:output>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidPartitionException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidCartridgeTypeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
-            <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidMemberException" name="CloudControllerServiceInvalidMemberException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidMemberException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidCartridgeTypeException"/>
+            <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidMemberException" name="CloudControllerServiceInvalidMemberException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidMemberException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:terminateInstanceCloudControllerServiceInvalidCartridgeTypeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="registerService">
-            <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"/>
-            <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:registerServiceCloudControllerServiceUnregisteredCartridgeException"/>
+            <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"></wsdl:input>
+            <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"></wsdl:output>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:registerServiceCloudControllerServiceUnregisteredCartridgeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
-            <wsdl:input message="ns:deployCartridgeDefinitionRequest" wsaw:Action="urn:deployCartridgeDefinition"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidCartridgeDefinitionException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidIaasProviderException"/>
+            <wsdl:input message="ns:deployCartridgeDefinitionRequest" wsaw:Action="urn:deployCartridgeDefinition"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidCartridgeDefinitionException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
-            <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"/>
-            <wsdl:output message="ns:getCartridgeInfoResponse" wsaw:Action="urn:getCartridgeInfoResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:getCartridgeInfoCloudControllerServiceUnregisteredCartridgeException"/>
+            <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"></wsdl:input>
+            <wsdl:output message="ns:getCartridgeInfoResponse" wsaw:Action="urn:getCartridgeInfoResponse"></wsdl:output>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:getCartridgeInfoCloudControllerServiceUnregisteredCartridgeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
-            <wsdl:input message="ns:unregisterServiceRequest" wsaw:Action="urn:unregisterService"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredClusterException" name="CloudControllerServiceUnregisteredClusterException" wsaw:Action="urn:unregisterServiceCloudControllerServiceUnregisteredClusterException"/>
+            <wsdl:input message="ns:unregisterServiceRequest" wsaw:Action="urn:unregisterService"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredClusterException" name="CloudControllerServiceUnregisteredClusterException" wsaw:Action="urn:unregisterServiceCloudControllerServiceUnregisteredClusterException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="undeployCartridgeDefinition">
-            <wsdl:input message="ns:undeployCartridgeDefinitionRequest" wsaw:Action="urn:undeployCartridgeDefinition"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:undeployCartridgeDefinitionCloudControllerServiceInvalidCartridgeTypeException"/>
+            <wsdl:input message="ns:undeployCartridgeDefinitionRequest" wsaw:Action="urn:undeployCartridgeDefinition"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:undeployCartridgeDefinitionCloudControllerServiceInvalidCartridgeTypeException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
-            <wsdl:input message="ns:terminateAllInstancesRequest" wsaw:Action="urn:terminateAllInstances"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllInstancesCloudControllerServiceInvalidClusterException"/>
+            <wsdl:input message="ns:terminateAllInstancesRequest" wsaw:Action="urn:terminateAllInstances"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllInstancesCloudControllerServiceInvalidClusterException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
-            <wsdl:input message="ns:getRegisteredCartridgesRequest" wsaw:Action="urn:getRegisteredCartridges"/>
-            <wsdl:output message="ns:getRegisteredCartridgesResponse" wsaw:Action="urn:getRegisteredCartridgesResponse"/>
+            <wsdl:input message="ns:getRegisteredCartridgesRequest" wsaw:Action="urn:getRegisteredCartridges"></wsdl:input>
+            <wsdl:output message="ns:getRegisteredCartridgesResponse" wsaw:Action="urn:getRegisteredCartridgesResponse"></wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
-            <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"/>
-            <wsdl:output message="ns:startInstanceResponse" wsaw:Action="urn:startInstanceResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startInstanceCloudControllerServiceUnregisteredCartridgeException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstanceCloudControllerServiceInvalidIaasProviderException"/>
+            <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"></wsdl:input>
+            <wsdl:output message="ns:startInstanceResponse" wsaw:Action="urn:startInstanceResponse"></wsdl:output>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startInstanceCloudControllerServiceUnregisteredCartridgeException"></wsdl:fault>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstanceCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getClusterContext">
-            <wsdl:input message="ns:getClusterContextRequest" wsaw:Action="urn:getClusterContext"/>
-            <wsdl:output message="ns:getClusterContextResponse" wsaw:Action="urn:getClusterContextResponse"/>
+            <wsdl:input message="ns:getClusterContextRequest" wsaw:Action="urn:getClusterContext"></wsdl:input>
+            <wsdl:output message="ns:getClusterContextResponse" wsaw:Action="urn:getClusterContextResponse"></wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
-        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
         <wsdl:operation name="validatePartition">
-            <soap:operation soapAction="urn:validatePartition" style="document"/>
+            <soap:operation soapAction="urn:validatePartition" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
-            <soap:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
+            <soap:operation soapAction="urn:validateDeploymentPolicy" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidPartitionException"></soap:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
-            <soap:operation soapAction="urn:terminateInstance" style="document"/>
+            <soap:operation soapAction="urn:terminateInstance" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidMemberException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidMemberException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidMemberException"></soap:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="registerService">
-            <soap:operation soapAction="urn:registerService" style="document"/>
+            <soap:operation soapAction="urn:registerService" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
-            <soap:operation soapAction="urn:deployCartridgeDefinition" style="document"/>
+            <soap:operation soapAction="urn:deployCartridgeDefinition" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"></soap:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
-            <soap:operation soapAction="urn:getCartridgeInfo" style="document"/>
+            <soap:operation soapAction="urn:getCartridgeInfo" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
-            <soap:operation soapAction="urn:unregisterService" style="document"/>
+            <soap:operation soapAction="urn:unregisterService" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="undeployCartridgeDefinition">
-            <soap:operation soapAction="urn:undeployCartridgeDefinition" style="document"/>
+            <soap:operation soapAction="urn:undeployCartridgeDefinition" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
-            <soap:operation soapAction="urn:terminateAllInstances" style="document"/>
+            <soap:operation soapAction="urn:terminateAllInstances" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
-            <soap:operation soapAction="urn:getRegisteredCartridges" style="document"/>
+            <soap:operation soapAction="urn:getRegisteredCartridges" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
-            <soap:operation soapAction="urn:startInstance" style="document"/>
+            <soap:operation soapAction="urn:startInstance" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getClusterContext">
-            <soap:operation soapAction="urn:getClusterContext" style="document"/>
+            <soap:operation soapAction="urn:getClusterContext" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
-        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
         <wsdl:operation name="validatePartition">
-            <soap12:operation soapAction="urn:validatePartition" style="document"/>
+            <soap12:operation soapAction="urn:validatePartition" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
-            <soap12:operation soapAction="urn:validateDeploymentPolicy" style="document"/>
+            <soap12:operation soapAction="urn:validateDeploymentPolicy" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidPartitionException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidPartitionException"></soap12:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
-            <soap12:operation soapAction="urn:terminateInstance" style="document"/>
+            <soap12:operation soapAction="urn:terminateInstance" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidMemberException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidMemberException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidMemberException"></soap12:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="registerService">
-            <soap12:operation soapAction="urn:registerService" style="document"/>
+            <soap12:operation soapAction="urn:registerService" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
-            <soap12:operation soapAction="urn:deployCartridgeDefinition" style="document"/>
+            <soap12:operation soapAction="urn:deployCartridgeDefinition" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"></soap12:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
-            <soap12:operation soapAction="urn:getCartridgeInfo" style="document"/>
+            <soap12:operation soapAction="urn:getCartridgeInfo" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
-            <soap12:operation soapAction="urn:unregisterService" style="document"/>
+            <soap12:operation soapAction="urn:unregisterService" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="undeployCartridgeDefinition">
-            <soap12:operation soapAction="urn:undeployCartridgeDefinition" style="document"/>
+            <soap12:operation soapAction="urn:undeployCartridgeDefinition" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
-            <soap12:operation soapAction="urn:terminateAllInstances" style="document"/>
+            <soap12:operation soapAction="urn:terminateAllInstances" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
-            <soap12:operation soapAction="urn:getRegisteredCartridges" style="document"/>
+            <soap12:operation soapAction="urn:getRegisteredCartridges" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
-            <soap12:operation soapAction="urn:startInstance" style="document"/>
+            <soap12:operation soapAction="urn:startInstance" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap12:fault>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getClusterContext">
-            <soap12:operation soapAction="urn:getClusterContext" style="document"/>
+            <soap12:operation soapAction="urn:getClusterContext" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
-        <http:binding verb="POST"/>
+        <http:binding verb="POST"></http:binding>
         <wsdl:operation name="validatePartition">
-            <http:operation location="validatePartition"/>
+            <http:operation location="validatePartition"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
-            <http:operation location="validateDeploymentPolicy"/>
+            <http:operation location="validateDeploymentPolicy"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
-            <http:operation location="terminateInstance"/>
+            <http:operation location="terminateInstance"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="registerService">
-            <http:operation location="registerService"/>
+            <http:operation location="registerService"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
-            <http:operation location="deployCartridgeDefinition"/>
+            <http:operation location="deployCartridgeDefinition"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
-            <http:operation location="getCartridgeInfo"/>
+            <http:operation location="getCartridgeInfo"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
-            <http:operation location="unregisterService"/>
+            <http:operation location="unregisterService"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="undeployCartridgeDefinition">
-            <http:operation location="undeployCartridgeDefinition"/>
+            <http:operation location="undeployCartridgeDefinition"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="terminateAllInstances">
-            <http:operation location="terminateAllInstances"/>
+            <http:operation location="terminateAllInstances"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getRegisteredCartridges">
-            <http:operation location="getRegisteredCartridges"/>
+            <http:operation location="getRegisteredCartridges"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
-            <http:operation location="startInstance"/>
+            <http:operation location="startInstance"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getClusterContext">
-            <http:operation location="getClusterContext"/>
+            <http:operation location="getClusterContext"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.142.198.31:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://10.146.138.213:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.142.198.31:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.146.138.213:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.142.198.31:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://10.146.138.213:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.142.198.31:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.146.138.213:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.142.198.31:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://10.146.138.213:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"></http:address>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.142.198.31:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://10.146.138.213:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"></http:address>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

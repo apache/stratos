@@ -358,8 +358,12 @@ public class PartitionContext implements Serializable{
     public int getNonTerminatedMemberCount() {
         return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
     }
+    
+    public List<MemberContext> getActiveMembers() {
+		return activeMembers;
+	}
 
-    public boolean removeActiveMemberById(String memberId) {
+	public boolean removeActiveMemberById(String memberId) {
         boolean removeActiveMember = false;
         synchronized (activeMembers) {
             Iterator<MemberContext> iterator = activeMembers.listIterator();

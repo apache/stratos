@@ -87,6 +87,7 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
         PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
                 cartridgeInfo.getType(), basicPayloadData);
 
+        boolean isDeploymentParam = false;
         // get the payload parameters defined in the cartridge definition file for this cartridge type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
@@ -97,11 +98,21 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
                 if (property.getName()
                         .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
                     String payloadParamName = property.getName();
-                    payloadData.add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
+                    String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
+                    if("DEPLOYMENT".equals(payloadParamSubstring)) {
+                    	isDeploymentParam = true;
+                    }
+                    payloadData.add(payloadParamSubstring, property.getValue());
                 }
             }
         }
 
+        // DEPLOYMENT payload param must be set because its used by puppet agent 
+        // to generate the hostname. Therefore, if DEPLOYMENT is not set in cartridge properties, 
+        // adding the DEPLOYMENT="default" param
+        if(!isDeploymentParam) {
+        	payloadData.add("DEPLOYMENT", "default");
+        }
         //check if there are any custom payload entries defined
         if (customPayloadEntries != null) {
             //add them to the payload

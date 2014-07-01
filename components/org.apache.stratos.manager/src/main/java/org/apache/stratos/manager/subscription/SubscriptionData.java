@@ -20,6 +20,10 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This holds the data that are gathered at the time of subscription. This is usefull when passing subscription details to the method calls.
  */
@@ -42,6 +46,12 @@ public class SubscriptionData {
     private PersistenceContext persistanceCtxt;
     private boolean isCommitsEnabled;
     private String serviceGroup;
+    private Set<String> domains;
+    private String serviceName;
+    
+    public SubscriptionData() {
+        this.domains = new HashSet<String>();
+    }
 
     public String getCartridgeType() {
         return cartridgeType;
@@ -169,6 +179,30 @@ public class SubscriptionData {
 
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
+	}
+
+    public void addDomains(Set<String> domains) {
+        domains.addAll(domains);
+    }
+
+    public void removeDomain(String domain) {
+        domains.remove(domain);
+    }
+
+    public void removeDomains(Set<String> domains) {
+        domains.removeAll(domains);
+    }
+
+    public Set<String> getDomains() {
+        return Collections.unmodifiableSet(domains);
+    }
+
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
     
 }

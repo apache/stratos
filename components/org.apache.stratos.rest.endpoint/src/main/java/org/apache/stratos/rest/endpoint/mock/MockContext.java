@@ -21,21 +21,29 @@ package org.apache.stratos.rest.endpoint.mock;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
+import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.util.*;
 
+import javax.ws.rs.core.Response.Status;
+
 public class MockContext {
     private static MockContext mockContext = new MockContext(); // singleton
+    private Map<String, List<SubscriptionDomain>> subscriptionAliasToDomainMap = new HashMap<String, List<SubscriptionDomain>>();
+    private Map<Integer, List<String>> tenantIdToAliasesMap = new HashMap<Integer, List<String>>();
     private List<CartridgeDefinitionBean> cartridgeDefinitionBeanList = new LinkedList<CartridgeDefinitionBean>();
     private Map<String,Cartridge> availableSingleTenantCartridges = new HashMap<String,Cartridge>();
     private Map<String,Cartridge> availableMultiTenantCartridges = new HashMap<String,Cartridge>();
@@ -382,5 +390,85 @@ public class MockContext {
     public DeploymentPolicy[] getDeploymentPoliciesForCartridgeType(String cartridgeType) throws RestAPIException{
         return deploymentPolicyMap.values().toArray(new DeploymentPolicy[0]);
     }
+
+	public StratosAdminResponse addSubscriptionDomains(int tenantId, String alias, SubscriptionDomainRequest request) {
+		// populate new alias
+		List<String> aliasList;
+		if(tenantIdToAliasesMap.containsKey(tenantId)) {
+			aliasList = tenantIdToAliasesMap.get(tenantId);
+		} else {
+			aliasList = new ArrayList<String>();
+		}
+		aliasList.add(alias);
+		tenantIdToAliasesMap.put(tenantId, aliasList);
+		
+		// populate domains
+		List<SubscriptionDomain> list;
+		if(subscriptionAliasToDomainMap.containsKey(alias)) {
+			list = subscriptionAliasToDomainMap.get(alias);
+		} else {
+			list = new ArrayList<SubscriptionDomain>();
+		}
+		for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean bean : request.domains) {
+			
+			SubscriptionDomain subscriptionDomain = new SubscriptionDomain(bean.domainName, bean.applicationContext);
+			list.add(subscriptionDomain);
+		}
+		
+		subscriptionAliasToDomainMap.put(alias, list);
+		
+		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully added subscription domain/s.");
+        return stratosAdminResponse;
+	}
+
+	public List<SubscriptionDomainBean> getSubscriptionDomains(int tenantId, String alias) {
+		List<String> tenantAliases = tenantIdToAliasesMap.get(tenantId);
+		if(tenantAliases != null && tenantAliases.contains(alias)) {
+			
+			return PojoConverter.populateSubscriptionDomainPojos(subscriptionAliasToDomainMap.get(alias));
+		}
+        return new ArrayList<SubscriptionDomainBean>();
+	}
+
+	public SubscriptionDomainBean getSubscriptionDomain(int tenantId, String cartridgeType,
+			String subscriptionAlias, String domainName) throws RestAPIException {
+		List<String> tenantAliases = tenantIdToAliasesMap.get(tenantId);
+		if(tenantAliases != null && tenantAliases.contains(subscriptionAlias)) {
+			for (SubscriptionDomain subscriptionDomain : subscriptionAliasToDomainMap.get(subscriptionAlias)) {
+				if(subscriptionDomain.getDomainName().equals(domainName)) {
+					
+					return PojoConverter.populateSubscriptionDomainPojo(subscriptionDomain);
+				}
+			}
+		}
+
+		String message = "Could not find a subscription [domain] " + domainName
+				+ " for Cartridge [type] " + cartridgeType + " and [alias] "
+				+ subscriptionAlias;
+		throw new RestAPIException(Status.NOT_FOUND, message);
+	}
+
+	public StratosAdminResponse removeSubscriptionDomain(int tenantId,
+			String subscriptionAlias, String domainName) {
+		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+		
+		List<String> tenantAliases = tenantIdToAliasesMap.get(tenantId);
+		if(tenantAliases != null && tenantAliases.contains(subscriptionAlias)) {
+			for (Iterator<SubscriptionDomain> iterator = subscriptionAliasToDomainMap.get(subscriptionAlias).iterator(); iterator
+					.hasNext();) {
+				SubscriptionDomain subscriptionDomain = (SubscriptionDomain) iterator.next();
+				if (subscriptionDomain.getDomainName().equals(domainName)) {
+					iterator.remove();
+					stratosAdminResponse.setMessage("Successfully removed the subscription domain: "+domainName);
+				}
+			}
+		} else {
+			
+			stratosAdminResponse.setMessage("Failed to remove the subscription domain: "+domainName);
+		}
+		
+        return stratosAdminResponse;
+	}
 
 }

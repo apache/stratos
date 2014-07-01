@@ -18,6 +18,10 @@
  */
 package org.apache.stratos.rest.endpoint.handlers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
@@ -63,32 +67,45 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
      * @return
      */
     public Response handle(Message message, ClassResourceInfo classResourceInfo) {
+    	// If Mutual SSL is enabled
+        HttpServletRequest request = (HttpServletRequest) message.get("HTTP.REQUEST");
+        Object certObject = request.getAttribute("javax.servlet.request.X509Certificate");
+        
         AuthorizationPolicy policy = (AuthorizationPolicy) message.get(AuthorizationPolicy.class);
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();
 
         //sanity check
-        if ((username == null) || (password == null) || username.equals("")
-                || password.equals("")) {
-            log.error("username or password is seen as null/empty values.");
-            return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                    type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Username/Password cannot be null")).build();
+        if ((username == null) || username.equals("")) {
+            log.error("username is seen as null/empty values.");
+            return Response.status(Response.Status.UNAUTHORIZED)
+                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                           .entity(Utils.buildMessage("Username cannot be null")).build();
+        } else if (certObject == null && ((password == null) || password.equals(""))) {
+            log.error("password is seen as null/empty values.");
+            return Response.status(Response.Status.UNAUTHORIZED)
+                           .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
+                           .entity(Utils.buildMessage("password cannot be null")).build();
         }
+        
         try {
             RealmService realmService = ServiceHolder.getRealmService();
             RegistryService registryService = ServiceHolder.getRegistryService();
             String tenantDomain = MultitenantUtils.getTenantDomain(username);
             int tenantId = realmService.getTenantManager().getTenantId(tenantDomain);
-
-            UserRealm userRealm = AnonymousSessionUtil.getRealmByTenantDomain(registryService, realmService, tenantDomain);
-            if (userRealm == null) {
-                log .error("Invalid domain or unactivated tenant login");
-                // is this the correct HTTP code for this scenario ? (401)
-                return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                        type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Tenant not found")).build();
+            
+            UserRealm userRealm = null;
+            if (certObject == null) {
+                userRealm = AnonymousSessionUtil.getRealmByTenantDomain(registryService, realmService, tenantDomain);
+                if (userRealm == null) {
+                    log .error("Invalid domain or unactivated tenant login");
+                    // is this the correct HTTP code for this scenario ? (401)
+                    return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
+                            type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Tenant not found")).build();
+                }
             }
             username = MultitenantUtils.getTenantAwareUsername(username);
-            if (userRealm.getUserStoreManager().authenticate(username, password)) {  // if authenticated
+            if (certObject != null || userRealm.getUserStoreManager().authenticate(username, password)) {  // if authenticated
 
                 // setting the correct tenant info for downstream code..
                 PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();

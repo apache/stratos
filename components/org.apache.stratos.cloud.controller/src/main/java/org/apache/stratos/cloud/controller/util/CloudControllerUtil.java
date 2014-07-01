@@ -185,6 +185,7 @@ public class CloudControllerUtil {
 		carInfo.setAppTypes(cartridge.getAppTypeMappings()
                                 .toArray(new AppType[cartridge.getAppTypeMappings()
                                                                   .size()]));
+        carInfo.setServiceGroup(cartridge.getServiceGroup());
 		
 		List<Property> propList = new ArrayList<Property>();
         carInfo.setPersistence(cartridge.getPersistence());

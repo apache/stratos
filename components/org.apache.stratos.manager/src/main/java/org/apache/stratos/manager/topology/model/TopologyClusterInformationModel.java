@@ -41,6 +41,7 @@ public class TopologyClusterInformationModel {
     //private Map<Integer, Set<CartridgeTypeContext>> tenantIdToCartridgeTypeContextMap;
     private static TopologyClusterInformationModel topologyClusterInformationModel;
     private Map<String, Cluster> clusterIdToClusterMap;
+    private Map<String, Cluster> serviceNameToClusterMap;
     private DataInsertionAndRetrievalManager dataInsertionNRetrievalMgr;
     private boolean initialized;
 
@@ -51,6 +52,7 @@ public class TopologyClusterInformationModel {
     private TopologyClusterInformationModel() {
         //tenantIdToCartridgeTypeContextMap = new HashMap<Integer, Set<CartridgeTypeContext>>();
         clusterIdToClusterMap = new HashMap<String, Cluster>();
+        serviceNameToClusterMap = new HashMap<String, Cluster>();
         dataInsertionNRetrievalMgr = new DataInsertionAndRetrievalManager();
     }
 
@@ -73,6 +75,7 @@ public class TopologyClusterInformationModel {
     		log.debug(" Adding cluster ["+cluster.getClusterId()+"] ");
     	}
     	clusterIdToClusterMap.put(cluster.getClusterId(), cluster);
+    	serviceNameToClusterMap.put(cluster.getServiceName(), cluster);
     }   
 
     public Cluster getCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
@@ -136,6 +139,22 @@ public class TopologyClusterInformationModel {
     	return clusterSet;
     }
    
+	public Set<Cluster> getClusters(String cartridgeType) {
+
+		Set<Cluster> clusterSet = new HashSet<Cluster>();
+
+		if (log.isDebugEnabled()) {
+			log.info("Finding cluster with service name [" + cartridgeType
+					+ "] ");
+		}
+		Cluster foundCluster = serviceNameToClusterMap.get(cartridgeType);
+		if (foundCluster != null) {
+			clusterSet.add(foundCluster);
+		}
+
+		return clusterSet;
+	}
+	
 //    public void removeCluster (int tenantId, String cartridgeType, String subscriptionAlias) {
 //
 //        Set<CartridgeTypeContext> cartridgeTypeContextSet = null;

@@ -106,9 +106,9 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
 
         if (!serviceLbExists) {
 
-            if(payloadData != null) {
-                log.info("Payload: " + payloadData.getCompletePayloadData().toString());
-            }
+           // if(payloadData != null) {
+              //  log.info("Payload: " + payloadData.getCompletePayloadData().toString());
+           // }
 
             super.register(cartridgeInfo, cluster, payloadData, autoscalePolicyName, deploymentPolicyName, properties);
         }else {

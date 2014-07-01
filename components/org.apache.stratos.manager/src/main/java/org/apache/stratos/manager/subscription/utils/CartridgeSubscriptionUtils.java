@@ -44,6 +44,8 @@ import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
@@ -57,10 +59,11 @@ public class CartridgeSubscriptionUtils {
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setApplicationPath(cartridgeInfo.getBaseDir());
         basicPayloadData.setSubscriptionKey(subscriptionKey);
-        basicPayloadData.setDeployment("default");//currently hard coded to default
+        //basicPayloadData.setDeployment("default");//currently hard coded to default
         basicPayloadData.setMultitenant(String.valueOf(cartridgeInfo.getMultiTenant()));
         basicPayloadData.setPortMappings(createPortMappingPayloadString(cartridgeInfo));
         basicPayloadData.setServiceName(cartridgeInfo.getType());
+        basicPayloadData.setProvider(cartridgeInfo.getProvider());
 
         if(repository != null) {
             basicPayloadData.setGitRepositoryUrl(repository.getUrl());
@@ -95,7 +98,7 @@ public class CartridgeSubscriptionUtils {
         basicPayloadData.setApplicationPath(service.getCartridgeInfo().getBaseDir());
         basicPayloadData.setSubscriptionKey(service.getSubscriptionKey());
         basicPayloadData.setClusterId(service.getClusterId());
-        basicPayloadData.setDeployment("default");//currently hard coded to default
+        //basicPayloadData.setDeployment("default");//currently hard coded to default
         basicPayloadData.setHostName(service.getHostName());
         basicPayloadData.setMultitenant(String.valueOf(service.getCartridgeInfo().getMultiTenant()));
         basicPayloadData.setPortMappings(createPortMappingPayloadString(service.getCartridgeInfo()));
@@ -146,19 +149,19 @@ public class CartridgeSubscriptionUtils {
     }
 
     public static String generateSubscriptionKey() {
-        String key = RandomStringUtils.randomAlphanumeric(16);
-        log.info("Generated key  : " + key); // TODO -- remove the log
-        return key;
+        return RandomStringUtils.randomAlphanumeric(16);
     }
 
     static class TenantSubscribedEventPublisher implements Runnable {
     	
-    	int tenantId;
-    	String serviceName;
+    	private int tenantId;
+    	private String serviceName;
+        private Set<String> clusterIds;
 
-    	public TenantSubscribedEventPublisher(int tenantId, String service) {
+        public TenantSubscribedEventPublisher(int tenantId, String service, Set<String> clusterIds) {
     		this.tenantId = tenantId;
     		this.serviceName = service;
+            this.clusterIds = clusterIds;
 		}
 		@Override
 		public void run() {
@@ -166,7 +169,7 @@ public class CartridgeSubscriptionUtils {
 				if(log.isInfoEnabled()) {
 					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
 				}
-				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName);
+				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds);
 				EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
 				eventPublisher.publish(subscribedEvent);
 			} catch (Exception e) {
@@ -178,7 +181,7 @@ public class CartridgeSubscriptionUtils {
 		}
     	
     }
-    public static void publishTenantSubscribedEvent(int tenantId, String serviceName) {
+    public static void publishTenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
     	
     	
     	Executor exec = new Executor() {
@@ -188,15 +191,15 @@ public class CartridgeSubscriptionUtils {
 			}
 		};
 		
-		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName));
+		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds));
     }
 
-    public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName) {
+    public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
             }
-            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName);
+            TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName, clusterIds);
             EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
             eventPublisher.publish(event);
         } catch (Exception e) {

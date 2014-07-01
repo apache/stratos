@@ -64,6 +64,9 @@ public class Utilities {
 
         try {
             FileUtils.deleteDirectory(existingDir);
+            if(log.isDebugEnabled()) {
+            	log.debug(" Directory [" + existingDir + "] deleted. ");
+            }
 
         } catch (IOException e) {
             log.error("Deletion of existing non-git repository structure failed");

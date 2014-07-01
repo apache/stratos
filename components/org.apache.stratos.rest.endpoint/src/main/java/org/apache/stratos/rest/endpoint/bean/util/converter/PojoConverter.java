@@ -21,12 +21,14 @@ package org.apache.stratos.rest.endpoint.bean.util.converter;
 
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
 import java.util.ArrayList;
@@ -412,6 +414,34 @@ public class PojoConverter {
 
         return partitionBeans;
     }
+    
+	public static List<SubscriptionDomainBean> populateSubscriptionDomainPojos(List<SubscriptionDomain> subscriptionDomains) {
+
+		List<SubscriptionDomainBean> subscriptionDomainBeans = new ArrayList<SubscriptionDomainBean>();
+		
+		if (subscriptionDomains == null) {
+			return subscriptionDomainBeans;
+		}
+		
+		for (SubscriptionDomain subscriptionDomain : subscriptionDomains) {
+			subscriptionDomainBeans.add(populateSubscriptionDomainPojo(subscriptionDomain));
+		}
+
+		return subscriptionDomainBeans;
+	}
+    
+	public static SubscriptionDomainBean populateSubscriptionDomainPojo(SubscriptionDomain subscriptionDomain) {
+
+		SubscriptionDomainBean subscriptionDomainBean = new SubscriptionDomainBean();
+		
+		if (subscriptionDomain == null) {
+			return subscriptionDomainBean;
+		}
+		subscriptionDomainBean.domainName = subscriptionDomain.getDomainName();
+		subscriptionDomainBean.applicationContext = subscriptionDomain.getApplicationContext();
+
+		return subscriptionDomainBean;
+	}
 
     private static List<PropertyBean> getPropertyBeans (Properties properties) {
 
