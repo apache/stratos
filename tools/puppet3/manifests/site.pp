@@ -15,17 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[main]
-#server=puppet
-logdir=/var/log/puppet
-vardir=/var/lib/puppet
-ssldir=/var/lib/puppet/ssl
-rundir=/var/run/puppet
-factpath=$vardir/lib/facter
-templatedir=$confdir/templates
+# import Stratos cartridge nodes definitions
+import 'nodes/base.pp'
+import 'nodes/haproxy.pp'
+import 'nodes/lb.pp'
+import 'nodes/mysql.pp'
+import 'nodes/nodejs.pp'
+import 'nodes/php.pp'
+import 'nodes/ruby.pp'
+import 'nodes/tomcat.pp'
+import 'nodes/wordpress.pp'
 
-[master]
-# These are needed when the puppetmaster is run by passenger
-# and can safely be removed if webrick is used.
-ssl_client_header = SSL_CLIENT_S_DN 
-ssl_client_verify_header = SSL_CLIENT_VERIFY
+# import a single manifest file with node definitions
+import 'nodes.pp'
+
+# import default cartridge definition at the last
+import 'nodes/default.pp'
