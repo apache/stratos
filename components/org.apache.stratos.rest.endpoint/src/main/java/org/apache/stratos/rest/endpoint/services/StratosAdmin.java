@@ -26,6 +26,7 @@ import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
@@ -41,7 +42,6 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefin
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
@@ -199,6 +199,41 @@ public class StratosAdmin extends AbstractAdmin {
     public StratosAdminResponse unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         return ServiceUtils.undeployCartridge(cartridgeType);
+    }
+
+    @POST
+    @Path("/group/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public StratosAdminResponse deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
+            throws RestAPIException {
+
+        return ServiceUtils.deployServiceGroupDefinition(serviceGroupDefinition);
+    }
+
+    @GET
+    @Path("/group/definition/{groupDefinitionName}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public ServiceGroupDefinition dgetServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+            throws RestAPIException {
+
+        return ServiceUtils.getServiceGroupDefinition(groupDefinitionName);
+    }
+
+    @DELETE
+    @Path("/group/definition/{groupDefinitionName}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public StratosAdminResponse undeployServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+            throws RestAPIException {
+
+        return ServiceUtils.undeployServiceGroupDefinition(groupDefinitionName);
     }
 
     @POST

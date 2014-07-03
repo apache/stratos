@@ -20,6 +20,7 @@
 package org.apache.stratos.manager.utils;
 
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.ClusterIdToSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
@@ -122,5 +123,24 @@ public class Serializer {
             bos.close();
         }
 
+    }
+
+    public static byte [] serializeServiceGroupDefinitionToByteArray (ServiceGroupDefinition serviceGroupDefinition)
+            throws  IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(serviceGroupDefinition);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
     }
 }

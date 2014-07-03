@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.utils.Deserializer;
@@ -47,6 +48,8 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final String INACTIVE_SUBSCRIPTIONS = "/subscriptions/inactive";
     private static final String SERVICES = "/services";
     private static final String COMPOSITE_APPLICATION = "/composite_applications";
+    private static final String SERVICE_GROUPING = "/service.grouping";
+    private static final String SERVICE_GROUPING_DEFINITIONS = SERVICE_GROUPING + "/definitions";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
@@ -662,6 +665,76 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     				log.debug(" unsuccessful removing  composite application  " +  obj + " at resource path " +  resourcePath);
     			}
     		}
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public void persistServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws PersistenceManagerException {
+
+        // persist Service Group Definition
+        try {
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" +
+                    serviceGroupDefinition.getName(),
+                    Serializer.serializeServiceGroupDefinitionToByteArray(serviceGroupDefinition), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Service Group Definition successfully: [ " + serviceGroupDefinition.getName() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public ServiceGroupDefinition getServiceGroupDefinition(String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" +
+                    serviceGroupDefinitionName);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object serviceGroupDefinitionObj;
+
+        try {
+            serviceGroupDefinitionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (serviceGroupDefinitionObj instanceof ServiceGroupDefinition) {
+            return (ServiceGroupDefinition) serviceGroupDefinitionObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeServiceGroupDefinition(String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" + serviceGroupDefinitionName;
+
+        try {
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted Service Group Definition on path " + resourcePath + " successfully");
+            }
 
         } catch (RegistryException e) {
             throw new PersistenceManagerException(e);

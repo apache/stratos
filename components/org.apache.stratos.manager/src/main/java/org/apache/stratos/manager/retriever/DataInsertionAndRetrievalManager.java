@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.LookupDataHolder;
 import org.apache.stratos.manager.persistence.PersistenceManager;
 import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
@@ -400,5 +401,18 @@ public class DataInsertionAndRetrievalManager {
         return persistenceManager.getDeployedCompositeApplications();
     }
 
+    public void peristServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws PersistenceManagerException {
 
+        persistenceManager.persistServiceGroupDefinition(serviceGroupDefinition);
+    }
+
+    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        return persistenceManager.getServiceGroupDefinition(serviceGroupDefinitionName);
+    }
+
+    public void removeServiceGroupDefinition (String serviceGroupName) throws PersistenceManagerException {
+
+        persistenceManager.removeServiceGroupDefinition(serviceGroupName);
+    }
 }

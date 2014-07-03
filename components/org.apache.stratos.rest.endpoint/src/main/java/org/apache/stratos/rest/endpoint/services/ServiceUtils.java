@@ -23,7 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
@@ -35,7 +35,6 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.manager.application.CompositeApplicationManager;
-import org.apache.stratos.manager.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -43,17 +42,17 @@ import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
+import org.apache.stratos.manager.grouping.manager.ServiceGroupingManager;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
-import org.apache.stratos.manager.subscription.PersistenceContext;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -67,12 +66,9 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefin
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigGroup;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 
 import javax.ws.rs.core.Response;
 
@@ -89,6 +85,7 @@ public class ServiceUtils {
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
+    private static ServiceGroupingManager serviceGropingManager = new ServiceGroupingManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
     static StratosAdminResponse deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
@@ -1408,4 +1405,51 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
+    static StratosAdminResponse deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
+
+        try {
+            serviceGropingManager.deployServiceGroupDefinition(serviceGroupDefinition);
+
+        } catch (InvalidServiceGroupException e) {
+            throw new RestAPIException(e);
+        } catch (ServiceGroupDefinitioException e) {
+            throw new RestAPIException(e);
+        } catch (ADCException e) {
+            throw new RestAPIException(e);
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            throw new RestAPIException(e);
+        }
+
+        log.info("Successfully deployed the Service Group Definition with name " + serviceGroupDefinition.getName());
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deplpoyed Service Group Definition with name " + serviceGroupDefinition.getName());
+        return stratosAdminResponse;
+    }
+
+    static ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
+
+        try {
+            return serviceGropingManager.getServiceGroupDefinition(serviceGroupDefinitionName);
+
+        } catch (ServiceGroupDefinitioException e) {
+            throw new RestAPIException(e);
+        }
+    }
+
+    static StratosAdminResponse undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
+
+        try {
+            serviceGropingManager.undeployServiceGroupDefinition(serviceGroupDefinitionName);
+
+        } catch (ServiceGroupDefinitioException e) {
+            throw new RestAPIException(e);
+        }
+
+        log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully undeplpoyed Service Group Definition with name " + serviceGroupDefinitionName);
+        return stratosAdminResponse;
+    }
 }
