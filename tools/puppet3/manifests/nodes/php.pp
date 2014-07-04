@@ -17,7 +17,7 @@
 
 # php cartridge node
 node /php/ inherits base {
-  $docroot = "/var/www/"
+  $docroot = "/var/www/www"
   $syslog="/var/log/apache2/error.log"
   $samlalias="/var/www/"
 
