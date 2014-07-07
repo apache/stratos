@@ -218,7 +218,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ServiceGroupDefinition dgetServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+    public ServiceGroupDefinition getServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
 
         return ServiceUtils.getServiceGroupDefinition(groupDefinitionName);
