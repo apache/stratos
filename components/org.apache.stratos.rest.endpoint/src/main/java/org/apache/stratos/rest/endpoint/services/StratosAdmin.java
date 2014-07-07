@@ -24,6 +24,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -106,7 +107,7 @@ public class StratosAdmin extends AbstractAdmin {
         return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
-    
+
     @POST
     @Path("/application/definition/")
     @Produces("application/json")
@@ -124,6 +125,20 @@ public class StratosAdmin extends AbstractAdmin {
                                      getTenantDomain());
 
     }
+
+ /*   @POST
+    @Path("/application/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    // Grouping
+    public StratosAdminResponse deployApplicationDefinition(CompositeAppDefinition compositeAppDefinition)
+            throws RestAPIException {
+
+       return ServiceUtils.deployCompositeApplicationDefintion(compositeAppDefinition);
+    }  */
+
     
     @POST
     @Path("/application/definition/undeploy")

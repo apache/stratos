@@ -22,10 +22,8 @@ package org.apache.stratos.rest.endpoint.bean.util.converter;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.manager.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
@@ -36,13 +34,7 @@ import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.Con
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigGroup;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Cartridge;
-import org.apache.stratos.messaging.domain.topology.Composite;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
-import org.apache.stratos.messaging.domain.topology.Dependencies;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.Scalable;
-import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
