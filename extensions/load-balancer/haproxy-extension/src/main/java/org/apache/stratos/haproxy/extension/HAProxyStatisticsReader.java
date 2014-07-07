@@ -60,9 +60,10 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
                     }
 
                     for (Port port : service.getPorts()) {
-                        frontendId = cluster.getClusterId() + "-proxy-" + port.getProxy();
+                        frontendId = cluster.getClusterId() + "-host-" + HAProxyContext.getInstance().getHAProxyPrivateIp() + "-proxy-" + port.getProxy();
+                        //frontendId = cluster.getClusterId() + "-proxy-" + port.getProxy();
                         backendId = frontendId + "-members";
-
+                        
                         for (Member member : cluster.getMembers()) {
                             // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
                             command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
