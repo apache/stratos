@@ -19,96 +19,39 @@
 
 package org.apache.stratos.manager.grouping.manager;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
-import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.manager.grouping.deployer.DefaultServiceGroupDeployer;
+import org.apache.stratos.manager.grouping.deployer.ServiceGroupDeployer;
 
-import java.rmi.RemoteException;
-import java.util.List;
 
 public class ServiceGroupingManager {
 
-    private static Log log = LogFactory.getLog(ServiceGroupingManager.class);
-
-    private DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr;
+    //private static Log log = LogFactory.getLog(ServiceGroupingManager.class);
+    private ServiceGroupDeployer serviceGroupDeployer;
 
     public ServiceGroupingManager () {
-        dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        serviceGroupDeployer = new DefaultServiceGroupDeployer();
     }
 
     public void deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws InvalidServiceGroupException,
             CloudControllerServiceUnregisteredCartridgeExceptionException, ServiceGroupDefinitioException, ADCException {
 
-
-        // if any cartridges are specified in the group, they should be already deployed
-        if (serviceGroupDefinition.getCartridges() != null) {
-            List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
-
-            CloudControllerServiceClient ccServiceClient = null;
-
-            try {
-                ccServiceClient = CloudControllerServiceClient.getServiceClient();
-
-            } catch (AxisFault axisFault) {
-                throw new ADCException(axisFault);
-            }
-
-            for (String cartridgeType : cartridgeTypes) {
-                try {
-                    if(ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
-                        // cartridge is not deployed, can't continue
-                        throw new InvalidServiceGroupException("No Cartridge Definition found with type " + cartridgeType);
-                    }
-                } catch (RemoteException e) {
-                    throw new ADCException(e);
-                }
-            }
-        }
-
-        // if any sub groups are specified in the group, they should be already deployed
-        if (serviceGroupDefinition.getSubGroups() != null) {
-            List<String> subGroupNames = serviceGroupDefinition.getSubGroups();
-            for (String subGroupName : subGroupNames) {
-                if (getServiceGroupDefinition(subGroupName) == null) {
-                    // sub group not deployed, can't continue
-                    throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
-                }
-            }
-        }
-
-        try {
-            dataInsertionAndRetrievalMgr.peristServiceGroupDefinition(serviceGroupDefinition);
-
-        } catch (PersistenceManagerException e) {
-            throw new InvalidServiceGroupException(e);
-        }
+        serviceGroupDeployer.deployServiceGroupDefinition(serviceGroupDefinition);
     }
 
     public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
 
-        try {
-            return dataInsertionAndRetrievalMgr.getServiceGroupDefinition(serviceGroupDefinitionName);
-
-        } catch (PersistenceManagerException e) {
-            throw new ServiceGroupDefinitioException(e);
-        }
+        return serviceGroupDeployer.getServiceGroupDefinition(serviceGroupDefinitionName);
     }
 
     public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
 
-        try {
-            dataInsertionAndRetrievalMgr.removeServiceGroupDefinition(serviceGroupDefinitionName);
-
-        } catch (PersistenceManagerException e) {
-            throw new ServiceGroupDefinitioException(e);
-        }
+        serviceGroupDeployer.undeployServiceGroupDefinition(serviceGroupDefinitionName);
     }
 }

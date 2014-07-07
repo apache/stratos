@@ -1,6 +1,5 @@
-package org.apache.stratos.manager.application.utils;
+package org.apache.stratos.manager.composite.application.utils;
 
-import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.logging.Log;
@@ -10,7 +9,6 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.topology.CompositeApplicationCreatedEvent;
 import org.apache.stratos.messaging.event.topology.CompositeApplicationRemovedEvent;
 import org.apache.stratos.messaging.util.Constants;
-import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 

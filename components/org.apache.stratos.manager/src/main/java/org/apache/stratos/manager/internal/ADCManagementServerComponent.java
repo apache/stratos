@@ -20,8 +20,6 @@ package org.apache.stratos.manager.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.application.CompositeApplicationManager;
-import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.listener.InstanceStatusListener;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;

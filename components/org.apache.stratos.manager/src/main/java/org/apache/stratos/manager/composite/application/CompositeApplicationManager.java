@@ -1,11 +1,15 @@
-package org.apache.stratos.manager.application;
+package org.apache.stratos.manager.composite.application;
 
 import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.application.utils.ApplicationUtils;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.parser.CompositeApplicationParser;
+import org.apache.stratos.manager.composite.application.parser.DefaultCompositeApplicationParser;
+import org.apache.stratos.manager.composite.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
@@ -15,18 +19,26 @@ public class CompositeApplicationManager {
 	
 	private static Log log = LogFactory.getLog(CompositeApplicationManager.class);
 	
-	public void deployCompositeApplication(ConfigCompositeApplication configCompositeApplication) throws ADCException {
-		if (log.isDebugEnabled()) {
-			log.debug("deploying composite application " + configCompositeApplication.getAlias());
-		}
-		registerCompositeApplication(configCompositeApplication);
-		if (log.isDebugEnabled()) {
-			log.debug("publishing composite application " + configCompositeApplication.getAlias());
-		}
-		ApplicationUtils.publishApplicationCreatedEvent(configCompositeApplication);
-		if (log.isDebugEnabled()) {
-			log.debug("composite application successfully deployed" + configCompositeApplication.getAlias());
-		}
+	public void deployCompositeApplication (CompositeAppDefinition compositeAppDefinition) throws CompositeApplicationDefinitionException {
+//		if (log.isDebugEnabled()) {
+//			log.debug("deploying composite application " + configCompositeApplication.getAlias());
+//		}
+//		registerCompositeApplication(configCompositeApplication);
+//		if (log.isDebugEnabled()) {
+//			log.debug("publishing composite application " + configCompositeApplication.getAlias());
+//		}
+//		ApplicationUtils.publishApplicationCreatedEvent(configCompositeApplication);
+//		if (log.isDebugEnabled()) {
+//			log.debug("composite application successfully deployed" + configCompositeApplication.getAlias());
+//		}
+
+        CompositeApplicationParser compositeAppParser = new DefaultCompositeApplicationParser();
+        compositeAppParser.parse(compositeAppDefinition);
+
+        // TODO: traverse the data structure and create the subscriptions
+
+        log.info("Composite Application [ Id: " + compositeAppDefinition.getApplicationId() + " , alias: "
+                + compositeAppDefinition.getAlias() + " ] deployed successfully");
 	}
 	
 	public void unDeployCompositeApplication(String configApplicationAlias) throws ADCException {

@@ -34,7 +34,8 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.manager.application.CompositeApplicationManager;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -87,6 +88,7 @@ public class ServiceUtils {
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceGroupingManager serviceGropingManager = new ServiceGroupingManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
+    private static CompositeApplicationManager compositeApplicationManager = new CompositeApplicationManager();
 
     static StratosAdminResponse deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
         String userName, String tenantDomain) throws RestAPIException {
@@ -250,6 +252,22 @@ public class ServiceUtils {
             stratosAdminResponse.setMessage("Successfully composite application to cloud controller");
             return stratosAdminResponse;
         }
+
+    static StratosAdminResponse deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition)
+            throws RestAPIException {
+
+        try {
+            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition);
+
+        } catch (CompositeApplicationDefinitionException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+        stratosAdminResponse.setMessage("Successfully deployed Composite Application [ Id: " + compositeAppDefinition.getApplicationId()
+                + " , alias: " + compositeAppDefinition.getAlias() + " ]");
+        return stratosAdminResponse;
+    }
     
     static StratosAdminResponse unDeployApplication(String configCompositeApplicationAlias, ConfigurationContext ctxt,
             String userName, String tenantDomain) throws RestAPIException {
