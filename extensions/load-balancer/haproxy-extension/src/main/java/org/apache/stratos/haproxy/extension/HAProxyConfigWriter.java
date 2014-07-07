@@ -61,6 +61,11 @@ public class HAProxyConfigWriter {
         StringBuilder frontendBackendCollection = new StringBuilder();
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
+
+                if(cluster.getServiceName().equals("haproxy"))
+                    continue;
+
+
                 if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
                     throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
                 }

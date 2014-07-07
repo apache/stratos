@@ -92,12 +92,15 @@ public class LoadBalancerExtension implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 try {
-                    // Configure load balancer
-                    loadBalancer.configure(TopologyManager.getTopology());
 
-                    // Start load balancer
-                    loadBalancer.start();
-                    loadBalancerStarted = true;
+                    if (!loadBalancerStarted) {
+                        // Configure load balancer
+                        loadBalancer.configure(TopologyManager.getTopology());
+
+                        // Start load balancer
+                        loadBalancer.start();
+                        loadBalancerStarted = true;
+                    }
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
                         log.error("Could not start load balancer", e);
