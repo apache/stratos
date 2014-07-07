@@ -18,13 +18,13 @@ Set the environment variables CLI_JAR, PYTHONPATH and WIREMOCK_JAR, WIREMOCK_HTT
 
 ```
 # the stratos CLI_JAR
-export CLI_JAR=~/incubator-stratos/components/org.apache.stratos.cli/target/org.apache.stratos.cli-4.0.0-SNAPSHOT.jar
+export CLI_JAR=~/stratos/components/org.apache.stratos.cli/target/org.apache.stratos.cli-4.0.0-SNAPSHOT.jar
 
 # set the PYTHONPATH to include pexpect
-export PYTHONPATH=$PYTHONPATH:~/incubator-stratos/components/org.apache.stratos.cli/target/pexpect-3.2
+export PYTHONPATH=$PYTHONPATH:~/stratos/components/org.apache.stratos.cli/target/pexpect-3.2
 
 # the wiremock application
-export WIREMOCK_JAR=~/incubator-stratos/components/org.apache.stratos.cli/target/dependency/wiremock-1.46-standalone.jar
+export WIREMOCK_JAR=~/stratos/components/org.apache.stratos.cli/target/dependency/wiremock-1.46-standalone.jar
 
 # wiremock's http port 
 export WIREMOCK_HTTP_PORT=8080

@@ -33,7 +33,7 @@
     <version>4.0.0-SNAPSHOT</version>
     <name>Apache Stratos</name>
     <description>Apache Stratos is an open source polyglot Platform as a Service (PaaS) framework</description>
-    <url>http://stratos.incubator.apache.org</url>
+    <url>http://stratos.apache.org</url>
     <inceptionYear>2012</inceptionYear>
 
     <licenses>
@@ -57,23 +57,23 @@
     <mailingLists>
         <mailingList>
             <name>Developer List</name>
-            <subscribe>dev-subscribe@stratos.incubator.apache.org</subscribe>
-            <unsubscribe>dev-unsubscribe@stratos.incubator.apache.org</unsubscribe>
-            <post>dev@stratos.incubator.apache.org</post>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-dev/</archive>
+            <subscribe>dev-subscribe@stratos.apache.org</subscribe>
+            <unsubscribe>dev-unsubscribe@stratos.apache.org</unsubscribe>
+            <post>dev@stratos.apache.org</post>
+            <archive>http://mail-archives.apache.org/mod_mbox/stratos-dev/</archive>
         </mailingList>
         <mailingList>
             <name>Commits List</name>
-            <subscribe>commits-subscribe@stratos.incubator.apache.org</subscribe>
-            <unsubscribe>commits-unsubscribe@stratos.incubator.apache.org</unsubscribe>
-            <archive>http://mail-archives.apache.org/mod_mbox/incubator-stratos-commits/</archive>
+            <subscribe>commits-subscribe@stratos.apache.org</subscribe>
+            <unsubscribe>commits-unsubscribe@stratos.apache.org</unsubscribe>
+            <archive>http://mail-archives.apache.org/mod_mbox/stratos-commits/</archive>
         </mailingList>
     </mailingLists>
 
     <scm>
-        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</connection>
-        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/incubator-stratos.git</developerConnection>
-        <url>https://git-wip-us.apache.org/repos/asf?p=incubator-stratos.git</url>
+        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</connection>
+        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</developerConnection>
+        <url>https://git-wip-us.apache.org/repos/asf?p=stratos.git</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -434,8 +434,6 @@
                         </goals>
                         <configuration>
                             <resourceBundles>
-                                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1
-                                </resourceBundle>
                                 <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
                             </resourceBundles>
                         </configuration>

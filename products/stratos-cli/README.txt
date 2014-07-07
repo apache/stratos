@@ -97,7 +97,7 @@ or in the JIRA issue tracker. If you are sending an email to the mailing
 list make sure to add the [Apache Stratos] prefix to the subject.
 
 Mailing list subscription:
-    dev-subscribe@stratos.incubator.apache.org
+    dev-subscribe@stratos.apache.org
 
 
 Issue Tracker
