@@ -18,9 +18,9 @@
   -->
 <product xmlns="http://products.wso2.org/carbon">
     <properties>
-       <property name="userforum">http://stratos.incubator.apache.org/community/mailing-lists.html</property>
-       <property name="userguide">http://stratos.incubator.apache.org/index.html</property>
-       <property name="mailinglist">http://stratos.incubator.apache.org/community/mailing-lists.html</property>
+       <property name="userforum">http://stratos.apache.org/community/mailing-lists.html</property>
+       <property name="userguide">http://stratos.apache.org/index.html</property>
+       <property name="mailinglist">http://stratos.apache.org/community/mailing-lists.html</property>
        <property name="issuetracker">https://issues.apache.org/jira/browse/STRATOS</property>
        <property name="webAdminConsoleTitle">Apache Stratos Controller</property>
     </properties>
