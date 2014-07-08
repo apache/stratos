@@ -19,14 +19,15 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed to start the servers.
+# This extension script will be executed when member activated
+# event is received.
 # --------------------------------------------------------------
 #
 
 # Execute error_handler function on script error
 trap 'error_handler ${LINENO} $?' ERR
 
-log=/var/log/apache-stratos/cartridge-agent-extensions-start.servers.log
+log=/var/log/apache-stratos/cartridge-agent-extensions-member.activated.log
 VERBOSE=1
 DATE=`which date` || print_error "date command not found"
 ECHO=`which echo` || print_error "echo command not found"
@@ -85,22 +86,6 @@ function update_hosts_file(){
           || print_error "Failed to update '/etc/hosts' file. "
 	done
 
-	map_to_ip="<%= @stratos_instance_data_map_to_ip %>"
-        arr=$(${ECHO} ${map_to_ip} | tr "," "\n")
-
-        for mapping in $arr
-        do
-
-	  arrr=$(${ECHO} ${mapping} | tr "#" "\n")
-	  map_hostname=${arrr[1]}
-	  ip_to_map=${arrr[0]}
-
-                (${GREP} -q "${map_hostname}" /etc/hosts || (${ECHO} "${ip_to_map}  ${map_hostname} # Additional Mappings" >> /etc/hosts \
-          && print_message "Updated /etc/hosts file with: ${ip_to_map}  ${map_hostname}")) \
-          || print_error "Failed to update '/etc/hosts' file. "
-     done
-
-
 	<%- if @stratos_instance_data_worker_host_name -%>
          worker_hostname="<%= @stratos_instance_data_worker_host_name %>"
  	 (${GREP} -q " ${worker_hostname}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${worker_hostname} # Stratos LB worker private IP" >> /etc/hosts \
@@ -133,14 +118,6 @@ function update_hosts_file(){
           && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${keymanager_hostname}")) \
           || print_error "Failed to update '/etc/hosts' file. "
 
-	elif [[ "${STRATOS_SERVICE_NAME}" = "keymanager" ]] ; then
-                gateway_host_name="<%= @stratos_instance_data_gateway_host_name %>"
-
-                (${GREP} -q "${gateway_host_name}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${gateway_host_name} # Stratos LB instance private IP" >> /etc/hosts \
-          && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${gateway_host_name}")) \
-          || print_error "Failed to update '/etc/hosts' file. "
-
-
         fi	
 }
 
@@ -157,11 +134,14 @@ function backup_file(){
 
 function configure_manager_worker_wka_members(){
 
+        print_message "function  configure_manager_worker_wka_members  ..... "
+
     # generic worker manager seperation :D
     if [[ -z ${STRATOS_WK_MANAGER_MEMBER_COUNT} || ${STRATOS_WK_MANAGER_MEMBER_COUNT} -eq 0 ]] ; then
         print_message "manager WKA member count is zero or unavailable"
     else
         print_message "Configuring manager..."
+        print_message "configure_manager_worker_wka_members STRATOS_WK_MANAGER_MEMBER_COUNT  ${STRATOS_WK_MANAGER_MEMBER_COUNT}  ..... "
         for i in `seq 0 $(( ${STRATOS_WK_MANAGER_MEMBER_COUNT} - 1 ))`
             do
                 member_ip_name="STRATOS_WK_MANAGER_MEMBER_${i}_IP"
@@ -178,6 +158,7 @@ function configure_manager_worker_wka_members(){
          print_message "worker WKA member count is zero or unavailable"
      else
          print_message "Configuring worker..."
+	 print_message "STRATOS_WK_WORKER_MEMBER_COUNT ${STRATOS_WK_WORKER_MEMBER_COUNT}  ..... "
          for i in `seq 0 $(( ${STRATOS_WK_WORKER_MEMBER_COUNT} - 1 ))`
              do
                  member_ip_name="STRATOS_WK_WORKER_MEMBER_${i}_IP"
@@ -211,6 +192,7 @@ function configure_wk_members(){
 	
 
 	if [[ (! -z $STRATOS_SERVICE_GROUP) && "${STRATOS_SERVICE_GROUP}" = "apim" ]] ; then
+	print_message " STRATOS_SERVICE_GROUP_APIM  ${STRATOS_SERVICE_GROUP} ..... "
 		API_MANAGER_XML_FILE=${STRATOS_APP_PATH}/repository/conf/api-manager.xml
 		backup_file ${API_MANAGER_XML_FILE}
 
@@ -236,13 +218,15 @@ function configure_wk_members(){
 			
 		fi
 	elif [[ "${DEPLOYMENT}" = "manager" || "${DEPLOYMENT}" = "worker" ]] ; then
-
+		print_message " Worker / Manager ..... ${DEPLOYMENT} "
 		configure_manager_worker_wka_members
 	else
 		print_message "Configuring ${STRATOS_SERVICE_NAME}..."
+		print_message "STRATOS_WK_MEMBER_COUNT ....... ${STRATOS_WK_MEMBER_COUNT} "
 		for i in `seq 0 $(( ${STRATOS_WK_MEMBER_COUNT} - 1 ))`
-		do		    		
+		do		    				
 	 		member_ip="STRATOS_WK_MEMBER_${i}_IP"
+			print_message " memberip ${member_ip} ....... "
 			if [[ -z ${!member_ip} ]] ; then
 				print_error "WKA is null for STRATOS_WK_MEMBER_${i}_IP"
 			fi
@@ -256,53 +240,64 @@ function configure_wk_members(){
 	fi
 }
 
-# Check if APP_PATH exists
-if [[ ! -d $STRATOS_APP_PATH ]] ; then
-	print_error "APP_PATH is not found at: ${STRATOS_APP_PATH}"
-fi
+function updateWKMembers() {
+   print_message "Update WKA Members...... "
+   # Check if APP_PATH exists
+   print_message "Stratos App path $STRATOS_APP_PATH ...... "
+   if [[ ! -d $STRATOS_APP_PATH ]] ; then
+   	print_error "APP_PATH is not found at: ${STRATOS_APP_PATH}"
+   fi
 
-# Check if product server is already running
-if [[ -f $STRATOS_APP_PATH/wso2carbon.pid ]] ; then
-    PID=`cat $STRATOS_APP_PATH/wso2carbon.pid`
-    if  ${PS} -p $PID > /dev/null ; then
-      ${ECHO} -e `date`": process is already running...skipping start servers"      
-      exit 0
-    fi   
-fi
-
-# Set JAVA_HOME if it is not already set
-if [[ -z $JAVA_HOME ]] ; then
-	print_message "Setting JAVA_HOME to /opt/java"
+   # Set JAVA_HOME if it is not already set
+   if [[ -z $JAVA_HOME ]] ; then
+   	print_message "Setting JAVA_HOME to /opt/java"
 	export JAVA_HOME=/opt/java
-fi
-
-# Check if clustering is enabled for this product
-if [[ -z $STRATOS_CLUSTERING ]] ; then
-   ${ECHO} -e  `date`": starting servers in stand-alone mode..." | tee -a $log
-   if [[ ${VERBOSE} -eq 1 ]]; then
-      printParameters
    fi
 
-else
-   ${ECHO} -e  `date`": starting servers in clustering mode..." | tee -a $log
-   if [[ ${VERBOSE} -eq 1 ]] ; then
-      printParameters
+   print_message "Stopping wso2server.sh ...... " 
+   # Kill Product server
+   $STRATOS_APP_PATH/bin/wso2server.sh stop > /dev/null 2>&1 &
+   sleep 10
+
+   # Check if clustering is enabled for this product
+   if [[ -z $STRATOS_CLUSTERING ]] ; then
+      ${ECHO} -e  `date`": starting servers in stand-alone mode..." | tee -a $log
+      if [[ ${VERBOSE} -eq 1 ]]; then
+         printParameters
+      fi
+
+   else
+      ${ECHO} -e  `date`": starting servers in clustering mode..." | tee -a $log
+      if [[ ${VERBOSE} -eq 1 ]] ; then
+         printParameters
+      fi
+      # Do the WKA configuration to support clustering
+      configure_wk_members
    fi
-   # Do the WKA configuration to support clustering
-   configure_wk_members
+
+   #Backup hosts file
+   backup_file /etc/hosts
+   # Update the /etc/hosts file with LB instance IP
+   update_hosts_file
+
+   # Run start server command
+   verify_file_exists $STRATOS_APP_PATH/bin/wso2server.sh
+   $STRATOS_APP_PATH/bin/wso2server.sh $* > /dev/null 2>&1 &
+   print_message "Executed run command: $STRATOS_APP_PATH/bin/wso2server.sh $*"
+   print_message "WK Members successfully updated."
+}
+
+# -----------------------
+# Execution starts here
+# -----------------------
+
+   print_message " Executing member activated extension "
+   print_message " Stratos UpdateWK_IP  [$STRATOS_UPDATE_WK_IP] "
+# Check if WK Update flag is set
+if [[ $STRATOS_UPDATE_WK_IP = "true" ]]; then
+   print_message " Conditions successful for  [$STRATOS_UPDATE_WK_IP] . Executing updateWKMembers "
+   updateWKMembers   
 fi
 
-<%- if @using_dns == true -%>
-     #Update the DNS mapping
-<%- else -%>
-    # Update the /etc/hosts file with LB instance IP
-    update_hosts_file
-<%- end -%>
-
-
-# Run start server command
-verify_file_exists $STRATOS_APP_PATH/bin/wso2server.sh
-$STRATOS_APP_PATH/bin/wso2server.sh $* > /dev/null 2>&1 &
-print_message "Executed run command: $STRATOS_APP_PATH/bin/wso2server.sh $*"
-${ECHO} -e `date`": start servers extension successfully completed."
-
+${ECHO} -e `date`": member activated extension successfully completed."
+# END

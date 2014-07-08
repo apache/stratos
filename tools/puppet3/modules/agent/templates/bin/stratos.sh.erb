@@ -31,25 +31,47 @@ properties="-Dmb.ip=<%= @mb_ip %>
             -Dthrift.receiver.port=<%= @cep_port %>
             -Djndi.properties.template.file.path=<%= @carbon_home %>/conf/templates/jndi.properties.template
             -Djndi.properties.dir=<%= @carbon_home %>/conf
-            -Dlog4j.properties.file.path=<%= @carbon_home %>/conf/log4j.properties
+            -Dlog4j.configuration=file://<%= @carbon_home %>/conf/log4j.properties
             -Dparam.file.path=<%= @carbon_home %>/payload/launch-params
-            -Dextensions.dir=${script_path}/../extensions
+            -Dextensions.dir=<%= @carbon_home %>/extensions
             -Dcep.stats.publisher.enabled=true
+	    -Dlb.private.ip=<%= @lb_private_ip %>
+	    -Dlb.public.ip=<%= @lb_public_ip %>
             -Djavax.net.ssl.trustStore=<%= @carbon_home %>/security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=<%= @truststore_password %>
-	    -Denable.artifact.update=true
-	    -Dartifact.update.interval=15
-	    -Denable.data.publisher=<%= @enable_log_publisher %>
+	     -Denable.artifact.update=<%= @enable_artifact_update %>
+            -Dauto.commit=<%= @auto_commit %>
+            -Dauto.checkout=<%= @auto_checkout %>
+            -Dartifact.update.interval=15
+            -Denable.data.publisher=<%= @enable_log_publisher %>
             -Dmonitoring.server.ip=<%= @bam_ip %>
             -Dmonitoring.server.port=<%= @bam_port %>
             -Dmonitoring.server.secure.port=<%= @bam_secure_port %>
             -Dmonitoring.server.admin.username=<%= @bam_username %>
             -Dmonitoring.server.admin.password=<%= @bam_password %>
-	    -DAPP_PATH=<%= @docroot %>"
+	    -DAPP_PATH=<%= @docroot %>
+	    -Dsuper.tenant.repository.path=<%= @super_tenant_repository_path %>
+            -Dtenant.repository.path=<%= @tenant_repository_path %>
+	    -Dlog.file.paths=<%= @log_file_paths %>
+            -Dextension.instance.started=<%= @extension_instance_started %>
+            -Dextension.start.servers=<%= @extension_start_servers %>
+            -Dextension.instance.activated=<%= @extension_instance_activated %>
+            -Dextension.artifacts.updated=<%= @extension_artifacts_updated %>
+            -Dextension.clean=<%= @extension_clean %>
+            -Dextension.mount.volumes=<%= @extension_mount_volumes %>
+            -Dextension.member.started=<%= @extension_member_started %>
+            -Dextension.member.activated=<%= @extension_member_activated %>
+	    -Dextension.member.terminated=<%= @extension_member_terminated %>
+	    -Dextension.member.suspended=<%= @extension_member_suspended %>
+            -Dextension.complete.topology=<%= @extension_complete_topology %>
+            -Dextension.complete.tenant=<%= @extension_complete_tenant %>
+            -Dextension.subscription.domain.added=<%= @extension_subscription_domain_added %>
+            -Dextension.subscription.domain.removed=<%= @extension_subscription_domain_removed %>
+            -Dextension.artifacts.copy=<%= @extension_artifacts_copy %>"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
-/opt/java/bin/java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
+<%= @java_home %>/bin/java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cartridge.agent.Main
 
 
