@@ -222,8 +222,7 @@ public class ServiceUtils {
             if (cloudControllerServiceClient != null) {
     			// call CC
             	try {
-					cloudControllerServiceClient
-					.deployCompositeApplicationDefinition(appConfig);
+					cloudControllerServiceClient.deployCompositeApplicationDefinition(appConfig);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -244,12 +243,12 @@ public class ServiceUtils {
     				throw new RestAPIException(message, e);
 				}
             	
-                log.info("Successfully composite application to cloud controller");
+                log.info("Successfully deployed composite application to Cloud Controller");
                     
             }
 
             StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-            stratosAdminResponse.setMessage("Successfully composite application to cloud controller");
+            stratosAdminResponse.setMessage("Successfully deployed composite application to cloud controller");
             return stratosAdminResponse;
         }
 
@@ -307,7 +306,7 @@ public class ServiceUtils {
             	}
             }
     		
-    		log.info("l [type] " + configCompositeApplicationAlias);
+    		log.info(String.format("[type] %s", configCompositeApplicationAlias));
 
     		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
     		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
