@@ -19,15 +19,16 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed once the update artifacts
-# event is received and they are copied to the given path.
+# This extension script will be executed when complete topology 
+# event is received.
 # --------------------------------------------------------------
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Artifacts Updated Event" | tee -a $log
-
-
-<%- if @type == 'php' -%>
-<%= scope.function_template(['agent/extensions/addons/_php.erb']) -%>
-<%- end -%>
+echo `date`": Complete Topology Event: " | tee -a $log
+echo "LB IP: ${STRATOS_LB_IP}" | tee -a $log
+echo "LB PUBLIC IP: $STRATOS_LB_PUBLIC_IP}" | tee -a $log
+echo "STRATOS_PARAM_FILE_PATH: ${STRATOS_PARAM_FILE_PATH}"
+echo "Member List: ${STRATOS_MEMBER_LIST_JSON}" | tee -a $log
+echo "Complete Topology: ${STRATOS_TOPOLOGY_JSON}" | tee -a $log
+echo "Members in LB: ${STRATOS_MEMBERS_IN_LB_JSON}" | tee -a $log

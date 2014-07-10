@@ -19,15 +19,17 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed once the update artifacts
-# event is received and they are copied to the given path.
+# This extension script will be executed when subscription domain
+# added event is received.
 # --------------------------------------------------------------
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo `date`": Artifacts Updated Event" | tee -a $log
-
-
-<%- if @type == 'php' -%>
-<%= scope.function_template(['agent/extensions/addons/_php.erb']) -%>
-<%- end -%>
+OUTPUT=`date`": Subscription Domain Added Event"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_SERVICE_NAME: ${STRATOS_SUBSCRIPTION_SERVICE_NAME},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_DOMAIN_NAME: ${STRATOS_SUBSCRIPTION_DOMAIN_NAME},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_ID: ${STRATOS_SUBSCRIPTION_TENANT_ID},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_DOMAIN: $STRATOS_SUBSCRIPTION_TENANT_DOMAIN},"
+OUTPUT="$OUTPUT APP_PATH: ${APP_PATH},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT: ${STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT}"
+echo $OUTPUT | tee -a $log
