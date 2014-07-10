@@ -21,6 +21,7 @@
  */
 var caramel = require('caramel');
 var error = [];
+var process = require('process');
 var step = request.getParameter('step');
 if(step == null){
     step = 1;
@@ -84,9 +85,11 @@ if(wizard.step == 1){
         step_data = step_data.serviceDefinitionBean;
     }
 }
+var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
     step_data:step_data,
     wizard:wizard,
+    bamInfo:bamInfo,
     error:error
 });
 %>

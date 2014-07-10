@@ -86,6 +86,19 @@ var engine = require('caramel').engine('handlebars', (function () {
                 return "";
             });
 
+            Handlebars.registerHelper('domain', function(action, options) {
+                if(caramel.meta().session.get("TENANT_DOMAIN") != undefined ) {
+                    return caramel.meta().session.get("TENANT_DOMAIN");
+                }
+                return "";
+            });
+            Handlebars.registerHelper('tenantID', function(action, options) {
+                if(caramel.meta().session.get("TENANT_ID") != undefined ) {
+                    return caramel.meta().session.get("TENANT_ID");
+                }
+                return "";
+            });
+
         }
     }
 }()));

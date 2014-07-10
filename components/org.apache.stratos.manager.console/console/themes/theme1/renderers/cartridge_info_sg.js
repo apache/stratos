@@ -21,39 +21,40 @@
 
 var render = function (theme, data, meta, require) {
     if(data.error.length == 0 ){
-        var log = new Log();
         theme('index', {
             body: [
                 {
-                    partial: 'dashboard',
+                    partial: 'cartridge_info_sg',
                     context: {
-                        title: 'Dashboard',
-                        elbs: stringify(data.elbs),
-                        clusters: stringify(data.clusters)
+                        title:'Cartridges',
+                        cartridges:data.cartridges,
+                        serviceGroup:data.serviceGroup
                     }
                 }
             ],
             header: [
                 {
                     partial: 'header',
-                    context: {
-                        title: 'My Cartridges',
-                        dashboard: true,
-                        button: {
-                            link: '/cartridges.jag',
-                            name: 'Subscribe to Cartridge',
-                            class_name: 'btn-important'
+                    context:{
+                        title:'Cartridges',
+                        my_cartridges:true,
+                        button:{
+                            link:'/',
+                            name:'Back To My Cartridges',
+                            class_name:"btn-default",
+                            class_icon: 'icons-arrow-left'
                         },
-                        has_help: true,
-                        help: 'Dashboard visually represents the network topology. You can click and view details of each node from the user interface.'
+                        bamInfo:data.bamInfo,
+                        has_help:false,
+                        help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }
             ],
-            title: [
+            title:[
                 {
-                    partial: 'title',
-                    context: {
-                        title: "My Cartridges"
+                    partial:'title',
+                    context:{
+                        title:"My Cartridges"
                     }
                 }
             ]

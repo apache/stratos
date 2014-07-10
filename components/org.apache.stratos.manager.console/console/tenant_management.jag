@@ -23,12 +23,15 @@ var log = new Log("console.tenant_management");
 var caramel = require('caramel');
 var error = [];
 var utils = require('/util/utility.jag');
+var process = require('process');
 var tenants =  utils.consoleAppUtil.getTenants();
 if(tenants.Error != undefined){
     error.push(tenants.Error);
 }
+var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
     tenants:tenants,
+    bamInfo:bamInfo,
     error:error
 });
 %>
