@@ -10,8 +10,8 @@ public class CompositeApplicationDefinitionBean {
 	
 	public String applicationId;
 	public String alias;
-	public List<ConfigGroup> components;
-	public List<ConfigCartridge> cartridges;
+	public List<ComponentDefinition> components;
+	public List<CartridgeDefinition> cartridges;
 	
 
 }

@@ -1,14 +1,19 @@
 package org.apache.stratos.rest.endpoint.bean.compositeapplication.definition;
 
+import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
+
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "components")
-public class ConfigGroup {
-	public  String alias;
-	public  List<String> subscribables;
+public class ComponentDefinition {
+    public String group;
+	public String alias;
+	public List<SubscribableInfo> subscribables;
 	public ConfigDependencies dependencies;
+    public String deploymentPolicy;
+    public String autoscalingPolicy;
 	
 	/*
 	public String getAlias() {

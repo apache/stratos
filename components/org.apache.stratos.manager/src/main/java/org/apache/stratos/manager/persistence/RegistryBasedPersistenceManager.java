@@ -228,7 +228,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     		throws PersistenceManagerException {
 
     	if (log.isDebugEnabled()) {
-            log.debug("trying to persiste ConfigCompositeApplication [ " + configCompositeAapplication.getAlias() + " ]");
+            log.debug(String.format("trying to persist ConfigCompositeApplication [ %s ]", configCompositeAapplication.getAlias()));
         }
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {

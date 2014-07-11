@@ -144,7 +144,7 @@ public class ServiceUtils {
     					applicationDefinitionBean.alias);
     			if (applicationDefinitionBean.components != null) {
     				log.debug("application config groups size " + applicationDefinitionBean.components.size());
-    				for (ConfigGroup cfg : applicationDefinitionBean.components) {
+    				for (ComponentDefinition cfg : applicationDefinitionBean.components) {
     					log.debug("listing application config groups "  + cfg.alias + " /sub " + 
     				               cfg.subscribables + " /dep " + cfg.dependencies);
     					if (cfg.dependencies != null) {
@@ -1440,7 +1440,7 @@ public class ServiceUtils {
         log.info("Successfully deployed the Service Group Definition with name " + serviceGroupDefinition.getName());
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deplpoyed Service Group Definition with name " + serviceGroupDefinition.getName());
+        stratosAdminResponse.setMessage("Successfully deployed Service Group Definition with name " + serviceGroupDefinition.getName());
         return stratosAdminResponse;
     }
 

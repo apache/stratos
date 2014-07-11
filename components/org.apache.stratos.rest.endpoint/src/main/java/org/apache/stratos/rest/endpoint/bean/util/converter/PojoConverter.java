@@ -29,10 +29,10 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CartridgeDefinition;
+import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ComponentDefinition;
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigCartridge;
 import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigGroup;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.commons.logging.Log;
@@ -654,7 +654,7 @@ public class PojoConverter {
     
 	private static Log log = LogFactory.getLog(PojoConverter.class);
 	
-	
+	/*
 	public static ConfigCompositeApplication convertToCompositeApplication(CompositeApplicationDefinitionBean appBean) {
 		ConfigCompositeApplication configApp = new ConfigCompositeApplication();
 		
@@ -664,7 +664,7 @@ public class PojoConverter {
 		List<org.apache.stratos.messaging.domain.topology.ConfigCartridge> configCartridges = 
 				new ArrayList<org.apache.stratos.messaging.domain.topology.ConfigCartridge>();
 		
-		for (ConfigCartridge beanCartridge : appBean.cartridges ) {
+		for (CartridgeDefinition beanCartridge : appBean.cartridges ) {
 			org.apache.stratos.messaging.domain.topology.ConfigCartridge configCartridge = 
 					new org.apache.stratos.messaging.domain.topology.ConfigCartridge();
 			configCartridge.setAlias(beanCartridge.alias);
@@ -676,7 +676,7 @@ public class PojoConverter {
 		List<org.apache.stratos.messaging.domain.topology.ConfigGroup> configGroups = 
 				new ArrayList<org.apache.stratos.messaging.domain.topology.ConfigGroup>();
 		
-		for (ConfigGroup beanGroup : appBean.components ) {
+		for (ComponentDefinition beanGroup : appBean.components ) {
 			org.apache.stratos.messaging.domain.topology.ConfigGroup configGroup = 
 					new org.apache.stratos.messaging.domain.topology.ConfigGroup();
 			configGroup.setAlias(beanGroup.alias);
@@ -701,7 +701,7 @@ public class PojoConverter {
 		
 		return configApp;
 	}
-	
+	*/
 	// grouping
 	public static CompositeApplicationDefinition convertToCompositeApplicationForCC (CompositeApplicationDefinitionBean appBean) {
 		CompositeApplicationDefinition configApp = new CompositeApplicationDefinition();
@@ -714,7 +714,7 @@ public class PojoConverter {
 		List<org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge> configCartridges = 
 				new ArrayList<org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge>();
 		
-		for (ConfigCartridge beanCartridge : appBean.cartridges ) {
+		for (CartridgeDefinition beanCartridge : appBean.cartridges ) {
 			org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge configCartridge = 
 					new org.apache.stratos.cloud.controller.stub.pojo.ConfigCartridge();
 			configCartridge.setAlias(beanCartridge.alias);
@@ -729,7 +729,7 @@ public class PojoConverter {
 		List<org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup> configGroups = 
 				new ArrayList<org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup>();
 		
-		for (ConfigGroup beanGroup : appBean.components ) {
+		for (ComponentDefinition beanGroup : appBean.components ) {
 			org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup configGroup = 
 					new org.apache.stratos.cloud.controller.stub.pojo.ConfigGroup();
 			configGroup.setAlias(beanGroup.alias);
