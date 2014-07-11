@@ -19,6 +19,7 @@
 
 package org.apache.stratos.manager.persistence;
 
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -57,6 +58,7 @@ public abstract class PersistenceManager {
     
     //Grouping
     public abstract void persistDeployedCompositeApplication(ConfigCompositeApplication configCompositeApplication)  throws PersistenceManagerException;
+    public abstract void persistCompositeApplication(CompositeAppDefinition compositeApplication)  throws PersistenceManagerException;
 
     //Grouping
     public abstract void removeDeployedCompositeApplication(String configCompositeApplicationAlias)  throws PersistenceManagerException;

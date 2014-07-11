@@ -19,7 +19,7 @@ public class CompositeApplicationManager {
 	
 	private static Log log = LogFactory.getLog(CompositeApplicationManager.class);
 	
-	public void deployCompositeApplication (CompositeAppDefinition compositeAppDefinition) throws CompositeApplicationDefinitionException {
+	public void deployCompositeApplication (CompositeAppDefinition compositeAppDefinition) throws CompositeApplicationDefinitionException, PersistenceManagerException {
 //		if (log.isDebugEnabled()) {
 //			log.debug("deploying composite application " + configCompositeApplication.getAlias());
 //		}
@@ -34,6 +34,9 @@ public class CompositeApplicationManager {
 
         CompositeApplicationParser compositeAppParser = new DefaultCompositeApplicationParser();
         compositeAppParser.parse(compositeAppDefinition);
+        
+        DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
+        mgr.persistCompositeApplication(compositeAppDefinition);
 
         // TODO: traverse the data structure and create the subscriptions
 

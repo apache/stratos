@@ -21,6 +21,7 @@ package org.apache.stratos.manager.persistence;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -249,7 +250,33 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         	persistCompApplication(configCompositeAapplication);
         }
     }
-    
+
+    public void persistCompositeApplication (CompositeAppDefinition configCompositeApplication)
+            throws PersistenceManagerException {
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("trying to persist ConfigCompositeApplication [ %s ]", configCompositeApplication.getAlias()));
+        }
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistCompApplication(configCompositeApplication);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistCompApplication(configCompositeApplication);
+        }
+    }
+
     // Grouping
     private void persistCompApplication (ConfigCompositeApplication configCompositeAapplication) throws PersistenceManagerException  {
 
@@ -258,6 +285,27 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             //RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + configCompositeAapplication.getAlias(),
         	RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + "compositeApplicationAlias",
         														Serializer.serializeServiceToByteArray(configCompositeAapplication), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted ConfigCompositeApplication successfully: hardcoded [ " + configCompositeAapplication.getAlias() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    // Grouping
+    private void persistCompApplication (CompositeAppDefinition configCompositeAapplication) throws PersistenceManagerException  {
+
+        // persist Service
+        try {
+            //RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + configCompositeAapplication.getAlias(),
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + "compositeApplicationAlias",
+                    Serializer.serializeServiceToByteArray(configCompositeAapplication), null);
 
             if (log.isDebugEnabled()) {
                 log.debug("Persisted ConfigCompositeApplication successfully: hardcoded [ " + configCompositeAapplication.getAlias() + " ]");

@@ -19,6 +19,7 @@
 
 package org.apache.stratos.manager.utils;
 
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.ClusterIdToSubscription;
@@ -106,6 +107,27 @@ public class Serializer {
     
     // Grouping
     public static byte[] serializeServiceToByteArray(ConfigCompositeApplication configCompositeApplication)
+            throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(configCompositeApplication);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
+
+    }
+
+    // Grouping
+    public static byte[] serializeServiceToByteArray(CompositeAppDefinition configCompositeApplication)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

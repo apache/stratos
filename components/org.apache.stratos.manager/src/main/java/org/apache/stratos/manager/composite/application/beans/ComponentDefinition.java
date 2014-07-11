@@ -2,9 +2,6 @@ package org.apache.stratos.manager.composite.application.beans;
 
 import java.util.List;
 
-/**
- * Created by udara on 7/11/14.
- */
 public class ComponentDefinition {
     private String group;
     private String alias;

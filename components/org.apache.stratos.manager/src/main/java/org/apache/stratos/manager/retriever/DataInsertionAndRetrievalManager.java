@@ -21,6 +21,7 @@ package org.apache.stratos.manager.retriever;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -369,7 +370,38 @@ public class DataInsertionAndRetrievalManager {
             //LookupDataHolder.getInstance().releaseWriteLock();
         }
     }
-    
+
+    public void persistCompositeApplication (CompositeAppDefinition compositeApplication) throws PersistenceManagerException {
+
+        // get the write lock
+        //LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            // store in LookupDataHolder
+            //ToDo ... add to data holder
+            // LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+
+            try {
+                // store in Persistence Manager
+                persistenceManager.persistCompositeApplication(compositeApplication);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error in persisting CartridgeSubscription in Persistence Manager";
+                log.error(errorMsg, e);
+                // remove from the in memory model since persisting failed
+                /* TODO
+                LookupDataHolder.getInstance().removeSubscription(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getType(),
+                        cartridgeSubscription.getAlias(), cartridgeSubscription.getClusterDomain(),
+                        cartridgeSubscription.getRepository() != null ? cartridgeSubscription.getRepository().getUrl() : null);
+				*/
+                throw e;
+            }
+
+        } finally {
+            // release the write lock
+            //LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
     // Grouping
     
     public void removeCompositeApplication (String configCompositeApplicationAlias) throws PersistenceManagerException {
