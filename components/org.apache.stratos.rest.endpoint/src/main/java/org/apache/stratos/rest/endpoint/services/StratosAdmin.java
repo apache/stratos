@@ -41,7 +41,6 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -108,6 +107,7 @@ public class StratosAdmin extends AbstractAdmin {
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
 
+    /*
     @POST
     @Path("/application/definition/")
     @Produces("application/json")
@@ -118,11 +118,21 @@ public class StratosAdmin extends AbstractAdmin {
     public StratosAdminResponse deployApplicationDefinition(CompositeApplicationDefinitionBean applicationDefinitionBean)
             throws RestAPIException {
 
-        /*return ServiceUtils.deployApplication(applicationDefinitionBean, getConfigContext(), getUsername(),
-                                     getTenantDomain());
-                                     */
     	return ServiceUtils.deployCompositeApplicationDefinition(applicationDefinitionBean, getConfigContext(), getUsername(),
                                      getTenantDomain());
+
+    }
+*/
+    @POST
+    @Path("/application/definition/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    // Grouping
+    public StratosAdminResponse deployApplicationDefinition(CompositeAppDefinition applicationDefinitionBean)
+            throws RestAPIException {
+        return ServiceUtils.deployCompositeApplicationDefintion(applicationDefinitionBean);
 
     }
 

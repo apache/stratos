@@ -66,7 +66,6 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -208,7 +207,7 @@ public class ServiceUtils {
     		stratosAdminResponse.setMessage("Successfully deployed application definition w" + applicationDefinitionBean);
     		return stratosAdminResponse;
     } */
-    
+    /*
     static StratosAdminResponse deployCompositeApplicationDefinition (CompositeApplicationDefinitionBean compositeApplicationDefinition, ConfigurationContext ctxt,
             String userName, String tenantDomain) throws RestAPIException {
 
@@ -251,7 +250,7 @@ public class ServiceUtils {
             stratosAdminResponse.setMessage("Successfully deployed composite application to cloud controller");
             return stratosAdminResponse;
         }
-
+*/
     static StratosAdminResponse deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition)
             throws RestAPIException {
 

@@ -29,10 +29,9 @@ public class CompositeAppDefinition {
 
     private String alias;
 
-    private List<GroupDefinition> groups;
+    private List<ComponentDefinition> components;
 
-    private List<SubscribableInfo> subscribableInfo;
-
+    private List<CartridgeDefinition> cartridges;
 
     public String getApplicationId() {
         return applicationId;
@@ -50,19 +49,19 @@ public class CompositeAppDefinition {
         this.alias = alias;
     }
 
-    public List<GroupDefinition> getGroups() {
-        return groups;
+    public List<ComponentDefinition> getComponents() {
+        return components;
     }
 
-    public void setGroups(List<GroupDefinition> groups) {
-        this.groups = groups;
+    public void setComponents(List<ComponentDefinition> components) {
+        this.components = components;
     }
 
-    public List<SubscribableInfo> getSubscribableInfo() {
-        return subscribableInfo;
+    public List<CartridgeDefinition> getCartridges() {
+        return cartridges;
     }
 
-    public void setSubscribableInfo(List<SubscribableInfo> subscribableInfo) {
-        this.subscribableInfo = subscribableInfo;
+    public void setCartridges(List<CartridgeDefinition> cartridges) {
+        this.cartridges = cartridges;
     }
 }

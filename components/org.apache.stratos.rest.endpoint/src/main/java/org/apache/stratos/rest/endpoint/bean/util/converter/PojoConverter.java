@@ -29,12 +29,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CartridgeDefinition;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ComponentDefinition;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.CompositeApplicationDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.compositeapplication.definition.ConfigDependencies;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
@@ -703,6 +698,7 @@ public class PojoConverter {
 	}
 	*/
 	// grouping
+    /*
 	public static CompositeApplicationDefinition convertToCompositeApplicationForCC (CompositeApplicationDefinitionBean appBean) {
 		CompositeApplicationDefinition configApp = new CompositeApplicationDefinition();
 		
@@ -770,5 +766,5 @@ public class PojoConverter {
 		return configApp;
 	}
     
-    
+    */
 }

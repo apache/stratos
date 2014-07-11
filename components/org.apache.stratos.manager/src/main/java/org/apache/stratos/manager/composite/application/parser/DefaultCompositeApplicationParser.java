@@ -19,11 +19,9 @@
 
 package org.apache.stratos.manager.composite.application.parser;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
-import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
-import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
-import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
+import org.apache.stratos.manager.composite.application.beans.*;
 import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -56,53 +54,48 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
 
         String compositeAppId = compositeAppDefinition.getApplicationId();
+        if(StringUtils.isEmpty(compositeAppId)){
+            throw new CompositeApplicationDefinitionException("Application ID can not be empty");
+        }
         String compositeAppAlias = compositeAppDefinition.getAlias();
 
-        // groups
-        processGroups(compositeAppDefinition.getGroups());
-
-        // get subscription related information
-        if (compositeAppDefinition.getSubscribableInfo() != null) {
-             // get the set (flat structure, not recursive) iterate and fill in..
-        }
+        // components
+        processComponents(compositeAppDefinition.getComponents());
 
         return null;
     }
 
     // TODO: should return the relevant object type to send to CC
-    private void processGroups (List<GroupDefinition> groups) throws CompositeApplicationDefinitionException {
+    private void processComponents(List<ComponentDefinition> components) throws CompositeApplicationDefinitionException {
 
-        if (groups == null) {
+        if (components == null) {
             return;
         }
 
-        for (GroupDefinition group : groups) {
+        for (ComponentDefinition component : components) {
             // process the group definitions
-            String groupName = group.getName();
-            String groupAlias = group.getAlias();
+            String groupName = component.getGroup();
+            String groupAlias = component.getAlias();
 
             // neither group name nor alias can be empty
-            if (groupName == null || groupName.isEmpty()) {
+            if (StringUtils.isEmpty(groupName)) {
                 throw new CompositeApplicationDefinitionException("Group Name is invalid");
             }
-            if (groupAlias == null || groupAlias.isEmpty()) {
+            if (StringUtils.isEmpty(groupAlias)) {
                 throw new CompositeApplicationDefinitionException("Group Alias is invalid");
             }
 
             // check if the group is deployed. if not can't continue
             if (!isGroupDeployed(groupName)) {
-                throw new CompositeApplicationDefinitionException("No Service Group found with name [ " + groupName + " ]");
+                throw new CompositeApplicationDefinitionException(String.format("No Service Group found with name [ %s ]", groupName));
             }
 
             // get group level policy information
-            String groupDepPolicy = group.getDeploymentPolicy();
-            String groupScalePolicy = group.getAutoscalingPolicy();
+            String groupDepPolicy = component.getDeploymentPolicy();
+            String groupScalePolicy = component.getAutoscalingPolicy();
 
             // subscribables
-            processSubscribables(group.getSubscribables());
-
-            // nested groups
-            processGroups(group.getGroups());
+            processSubscribables(component.getSubscribables());
         }
     }
 
@@ -121,13 +114,13 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
     }
 
     // TODO: should return the relevant object type to send to CC
-    private void processSubscribables (List<SubscribableDefinition> subscribables) throws CompositeApplicationDefinitionException {
+    private void processSubscribables (List<SubscribableInfo> subscribables) throws CompositeApplicationDefinitionException {
 
         if (subscribables == null) {
             return;
         }
 
-        for (SubscribableDefinition subscribable : subscribables) {
+        for (SubscribableInfo subscribable : subscribables) {
 
             String cartridgeType = subscribable.getType();
             String subscriptionAlias = subscribable.getAlias();
@@ -139,7 +132,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             if (subscriptionAlias == null || subscriptionAlias.isEmpty()) {
                 throw new CompositeApplicationDefinitionException("Subscription Alias is invalid");
             }
-
+        // TODO should validate if there exist a cartridge with  $cartridgeType
 
         }
     }
