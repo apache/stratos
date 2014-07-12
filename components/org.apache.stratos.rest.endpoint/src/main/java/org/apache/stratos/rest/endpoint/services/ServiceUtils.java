@@ -166,7 +166,7 @@ public class ServiceUtils {
     }
 
 
-    public static StratosAdminResponse deployPartition(Partition partitionBean) throws RestAPIException {
+    public static void deployPartition(Partition partitionBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -188,13 +188,9 @@ public class ServiceUtils {
             }
 
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed partition definition with id " + partitionBean.id);
-        return stratosAdminResponse;
     }
 
-    public static StratosAdminResponse deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
+    public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
 
@@ -218,13 +214,9 @@ public class ServiceUtils {
             }
 
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed autoscaling policy definition with id " + autoscalePolicyBean.getId());
-        return stratosAdminResponse;
     }
 
-    public static StratosAdminResponse deployDeploymentPolicy(
+    public static void deployDeploymentPolicy(
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
@@ -249,10 +241,6 @@ public class ServiceUtils {
             }
 
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed deployment policy definition with type " + deploymentPolicyBean.id);
-        return stratosAdminResponse;
     }
 
     private static CloudControllerServiceClient getCloudControllerServiceClient() throws RestAPIException {
@@ -1104,7 +1092,7 @@ public class ServiceUtils {
         return cartridgeSubscription.getClusterDomain();
     } */
 
-    static StratosAdminResponse unsubscribe(String alias, String tenantDomain) throws RestAPIException {
+    static void unsubscribe(String alias, String tenantDomain) throws RestAPIException {
 
         try {
             cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
@@ -1118,10 +1106,6 @@ public class ServiceUtils {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully terminated the subscription with alias " + alias);
-        return stratosAdminResponse;
     }
 
     /**
@@ -1132,7 +1116,7 @@ public class ServiceUtils {
      * @param clusterDomain
      * @param clusterSubdomain
      */
-    static StratosAdminResponse deployService(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy,
+    static void deployService(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy,
                                               String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) throws RestAPIException {
         log.info("Deploying service..");
         try {
@@ -1143,10 +1127,6 @@ public class ServiceUtils {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed service cluster definition with type " + cartridgeType);
-        return stratosAdminResponse;
     }
 
     static StratosAdminResponse undeployService(String serviceType) throws RestAPIException {
@@ -1178,7 +1158,7 @@ public class ServiceUtils {
         }
     }
 
-    static StratosAdminResponse synchronizeRepository(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
+    static void synchronizeRepository(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
         try {
             RepositoryNotification repoNotification = new RepositoryNotification();
             repoNotification.updateRepository(cartridgeSubscription);
@@ -1187,10 +1167,6 @@ public class ServiceUtils {
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully sent the repository synchronization request for " + cartridgeSubscription.getAlias());
-        return stratosAdminResponse;
     }
 
     public static StratosAdminResponse addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
