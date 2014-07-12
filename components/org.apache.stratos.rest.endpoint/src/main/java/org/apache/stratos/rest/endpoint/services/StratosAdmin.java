@@ -117,11 +117,12 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
+    public Response deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
 
-        return ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
+        ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
                 getTenantDomain());
+        return Response.noContent().build();
 
     }
 

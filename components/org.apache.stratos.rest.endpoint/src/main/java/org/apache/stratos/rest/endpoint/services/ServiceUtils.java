@@ -85,7 +85,7 @@ public class ServiceUtils {
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
-    static StratosAdminResponse deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+    static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                                 String userName, String tenantDomain) throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
@@ -121,10 +121,6 @@ public class ServiceUtils {
             log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
 
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.type);
-        return stratosAdminResponse;
     }
 
     @SuppressWarnings("unused")
