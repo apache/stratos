@@ -143,7 +143,7 @@ public class ServiceUtils {
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
 
-    static StratosAdminResponse undeployCartridge(String cartridgeType) throws RestAPIException {
+    static void undeployCartridge(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -159,10 +159,6 @@ public class ServiceUtils {
             }
 
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully undeployed cartridge definition with type " + cartridgeType);
-        return stratosAdminResponse;
     }
 
 
@@ -654,11 +650,11 @@ public class ServiceUtils {
             throw new RestAPIException(msg, e);
         }
 
-        if (service != null) {
+        if (service == null) {
+            return null;
+        }else{
             return PojoConverter.convertToServiceDefinitionBean(service);
         }
-
-        return new ServiceDefinitionBean();
     }
 
     public static List<Cartridge> getActiveDeployedServiceInformation(ConfigurationContext configurationContext) throws RestAPIException {
@@ -1129,20 +1125,17 @@ public class ServiceUtils {
         }
     }
 
-    static StratosAdminResponse undeployService(String serviceType) throws RestAPIException {
+    static void undeployService(String serviceType) throws RestAPIException, ServiceDoesNotExistException {
 
         try {
             serviceDeploymentManager.undeployService(serviceType);
-
-        } catch (Exception e) {
+        }catch(ServiceDoesNotExistException ex){
+            throw ex;
+        }catch (Exception e) {
             String msg = "Failed to undeploy service cluster definition of type " + serviceType + " Cause: " + e.getMessage();
             log.error(msg, e);
             throw new RestAPIException(msg, e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully undeployed service cluster definition for service type " + serviceType);
-        return stratosAdminResponse;
     }
 
     static void getGitRepositoryNotification(Payload payload) throws RestAPIException {
@@ -1252,8 +1245,8 @@ public class ServiceUtils {
 		}
 	}
 
-    public static StratosAdminResponse removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
-                                                                String subscriptionAlias, String domain) throws RestAPIException {
+    public static void removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+                                                                String subscriptionAlias, String domain) throws RestAPIException, DomainMappingExistsException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
             cartridgeSubsciptionManager.removeSubscriptionDomain(tenantId, subscriptionAlias, domain);
@@ -1261,10 +1254,6 @@ public class ServiceUtils {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully removed domains from cartridge subscription");
-        return stratosAdminResponse;
     }
 
 }

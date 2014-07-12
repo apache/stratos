@@ -105,8 +105,8 @@ public class MockContext {
         while(it.hasNext()){
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(cartridge.getCartridgeType().equals("lb")){
-                availableLbCartridges.put(cartridge.getCartridgeType(),cartridge);
+            if(cartridge.getSubscriptionDomain().equals("lb")){
+                availableLbCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
             }
             it.remove();
         }
@@ -115,8 +115,8 @@ public class MockContext {
         while(it.hasNext()){
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(cartridge.getCartridgeType().equals("lb")){
-                availableLbCartridges.put(cartridge.getCartridgeType(),cartridge);
+            if(cartridge.getSubscriptionDomain().equals("lb")){
+                availableLbCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
             }
             it.remove();
         }
@@ -130,8 +130,8 @@ public class MockContext {
         while(it.hasNext()){
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(!cartridge.getCartridgeType().equals("lb")){
-                availableCartridges.put(cartridge.getCartridgeType(),cartridge);
+            if(!cartridge.getSubscriptionDomain().equals("lb")){
+                availableCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
             }
             it.remove();
         }
@@ -140,8 +140,8 @@ public class MockContext {
         while(it.hasNext()){
             Map.Entry pairs = (Map.Entry)it.next();
             Cartridge cartridge = (Cartridge)pairs.getValue();
-            if(!cartridge.getCartridgeType().equals("lb")){
-                availableCartridges.put(cartridge.getCartridgeType(),cartridge);
+            if(!cartridge.getSubscriptionDomain().equals("lb")){
+                availableCartridges.put(cartridge.getSubscriptionDomain(),cartridge);
             }
             it.remove();
         }

@@ -429,13 +429,13 @@ public class CartridgeSubscriptionManager {
     }
 
     public void removeSubscriptionDomain(int tenantId, String subscriptionAlias, String domainName)
-            throws ADCException {
+            throws ADCException, DomainSubscriptionDoesNotExist {
 
         CartridgeSubscription cartridgeSubscription;
         try {
             cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
             if(cartridgeSubscription == null) {
-                throw new ADCException("Cartridge subscription not found");
+                throw new DomainSubscriptionDoesNotExist("Cartridge subscription not found", domainName);
             }
             cartridgeSubscription.removeSubscriptionDomain(domainName);
             new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);

@@ -432,7 +432,7 @@ public class ServiceDeploymentManager {
         }
     }
 
-    public void undeployService (String type) throws ADCException {
+    public void undeployService (String type) throws ADCException, ServiceDoesNotExistException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
@@ -443,7 +443,7 @@ public class ServiceDeploymentManager {
                 // can't undeploy; there are existing Subscriptions
                 String errorMsg = "Cannot undeploy Service since existing Subscriptions are found";
                 log.error(errorMsg);
-                throw new ADCException(errorMsg);
+                throw new ServiceDoesNotExistException(errorMsg, type);
             }
         }
 

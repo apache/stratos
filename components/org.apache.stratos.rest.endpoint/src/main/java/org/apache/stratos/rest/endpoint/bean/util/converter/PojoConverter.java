@@ -529,8 +529,7 @@ public class PojoConverter {
                                                                            deploymentPolicies) {
         DeploymentPolicy[] deploymentPolicyBeans;
         if(deploymentPolicies == null) {
-            deploymentPolicyBeans = new DeploymentPolicy[0];
-            return deploymentPolicyBeans;
+            return null;
         }
 
         deploymentPolicyBeans = new DeploymentPolicy[deploymentPolicies.length];
