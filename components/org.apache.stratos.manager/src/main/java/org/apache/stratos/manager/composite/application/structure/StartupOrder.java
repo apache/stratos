@@ -17,15 +17,32 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.parser;
+package org.apache.stratos.manager.composite.application.structure;
 
-import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
-import org.apache.stratos.manager.composite.application.tmp.CompositeAppRegistrants;
-import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
+public class StartupOrder {
 
+    private String start;
 
+    private String after;
 
-public interface CompositeApplicationParser {
+    public StartupOrder (String start, String after) {
+        this.start = start;
+        this.after = after;
+    }
 
-    public CompositeAppContext parse (Object obj) throws CompositeApplicationDefinitionException;
+    public String getStart() {
+        return start;
+    }
+
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public String getAfter() {
+        return after;
+    }
+
+    public void setAfter(String after) {
+        this.after = after;
+    }
 }

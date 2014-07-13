@@ -258,11 +258,12 @@ public class ServiceUtils {
             compositeApplicationManager.deployCompositeApplication(compositeAppDefinition);
 
         } catch (CompositeApplicationDefinitionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RestAPIException(e);
         } catch (PersistenceManagerException e) {
-            e.printStackTrace();
+            throw new RestAPIException(e);
         }
-        //TODO send to CC
+
+
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully deployed Composite Application [ Id: " + compositeAppDefinition.getApplicationId()
                 + " , alias: " + compositeAppDefinition.getAlias() + " ]");

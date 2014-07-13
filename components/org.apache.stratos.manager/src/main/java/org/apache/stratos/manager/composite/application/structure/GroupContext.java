@@ -17,12 +17,13 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.beans;
+package org.apache.stratos.manager.composite.application.structure;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
-@XmlRootElement(name = "subscribableInfo")
-public class SubscribableInfo {
+public class GroupContext {
+
+    private String name;
 
     private String alias;
 
@@ -30,13 +31,38 @@ public class SubscribableInfo {
 
     private String autoscalingPolicy;
 
-    private String repoUrl;
+    private List<GroupContext> groupContexts;
 
-    private boolean privateRepo;
+    private List<SubscribableContext> subscribableContexts;
 
-    private String username;
+    private List<StartupOrder> startupOrder;
 
-    private String password;
+    private String killBehaviour;
+
+
+    public List<StartupOrder> getStartupOrder() {
+        return startupOrder;
+    }
+
+    public void setStartupOrder(List<StartupOrder> startupOrder) {
+        this.startupOrder = startupOrder;
+    }
+
+    public String getKillBehaviour() {
+        return killBehaviour;
+    }
+
+    public void setKillBehaviour(String killBehaviour) {
+        this.killBehaviour = killBehaviour;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getAlias() {
         return alias;
@@ -62,35 +88,19 @@ public class SubscribableInfo {
         this.autoscalingPolicy = autoscalingPolicy;
     }
 
-    public String getRepoUrl() {
-        return repoUrl;
+    public List<GroupContext> getGroupContexts() {
+        return groupContexts;
     }
 
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
+    public void setGroupContexts(List<GroupContext> groupContexts) {
+        this.groupContexts = groupContexts;
     }
 
-    public boolean isPrivateRepo() {
-        return privateRepo;
+    public List<SubscribableContext> getSubscribableContexts() {
+        return subscribableContexts;
     }
 
-    public void setPrivateRepo(boolean privateRepo) {
-        this.privateRepo = privateRepo;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setSubscribableContexts(List<SubscribableContext> subscribableContexts) {
+        this.subscribableContexts = subscribableContexts;
     }
 }

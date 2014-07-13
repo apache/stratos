@@ -1,51 +1,41 @@
 package org.apache.stratos.manager.composite.application.beans;
 
+import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
+import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@XmlRootElement(name = "components")
 public class ComponentDefinition {
-    private String group;
-    private String alias;
-    private List<SubscribableInfo> subscribables;
-    private String deploymentPolicy;
-    private String autoscalingPolicy;
 
-    public String getGroup() {
-        return group;
-    }
+    private List<GroupDefinition> groups;
 
-    public void setGroup(String group) {
-        this.group = group;
-    }
+    private List<SubscribableDefinition> subscribables;
 
-    public String getAlias() {
-        return alias;
-    }
+    private DependencyDefinitions dependencies;
 
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public List<SubscribableInfo> getSubscribables() {
+    public List<SubscribableDefinition> getSubscribables() {
         return subscribables;
     }
 
-    public void setSubscribables(List<SubscribableInfo> subscribables) {
+    public void setSubscribables(List<SubscribableDefinition> subscribables) {
         this.subscribables = subscribables;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
+    public List<GroupDefinition> getGroups() {
+        return groups;
     }
 
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
+    public void setGroups(List<GroupDefinition> groups) {
+        this.groups = groups;
     }
 
-    public String getAutoscalingPolicy() {
-        return autoscalingPolicy;
+    public DependencyDefinitions getDependencies() {
+        return dependencies;
     }
 
-    public void setAutoscalingPolicy(String autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
+    public void setDependencies(DependencyDefinitions dependencies) {
+        this.dependencies = dependencies;
     }
 }

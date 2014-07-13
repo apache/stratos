@@ -35,8 +35,8 @@ public class CompositeApplicationManager {
         CompositeApplicationParser compositeAppParser = new DefaultCompositeApplicationParser();
         compositeAppParser.parse(compositeAppDefinition);
         
-        DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-        mgr.persistCompositeApplication(compositeAppDefinition);
+        //DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
+        //mgr.persistCompositeApplication(compositeAppDefinition);
 
         // TODO: traverse the data structure and create the subscriptions
 

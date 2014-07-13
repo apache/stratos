@@ -21,19 +21,12 @@ package org.apache.stratos.manager.composite.application.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement (name = "subscribables")
 public class SubscribableDefinition {
 
     private String type;
 
     private String alias;
-
-    private String deploymentPolicy;
-    private String autoscalingPolicy;
-    private String repoUrl;
-    private boolean isPrivateRepo;
-    private String repoUsername;
-    private String repoPassword;
 
 
     public String getType() {
@@ -52,51 +45,4 @@ public class SubscribableDefinition {
         this.alias = alias;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
-
-    public String getAutoscalingPolicy() {
-        return autoscalingPolicy;
-    }
-
-    public void setAutoscalingPolicy(String autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
-    }
-
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
-    }
-
-    public boolean isPrivateRepo() {
-        return isPrivateRepo;
-    }
-
-    public void setPrivateRepo(boolean isPrivateRepo) {
-        this.isPrivateRepo = isPrivateRepo;
-    }
-
-    public String getRepoUsername() {
-        return repoUsername;
-    }
-
-    public void setRepoUsername(String repoUsername) {
-        this.repoUsername = repoUsername;
-    }
-
-    public String getRepoPassword() {
-        return repoPassword;
-    }
-
-    public void setRepoPassword(String repoPassword) {
-        this.repoPassword = repoPassword;
-    }
 }
