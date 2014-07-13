@@ -17,14 +17,31 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.parser;
+package org.apache.stratos.manager.exception;
 
-import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
-import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
+public class CompositeApplicationException extends Exception {
 
+    private String message;
 
+    public CompositeApplicationException () {
+        super();
+    }
 
-public interface CompositeApplicationParser {
+    public CompositeApplicationException (String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+    }
 
-    public CompositeAppContext parse (Object obj) throws CompositeApplicationDefinitionException;
+    public CompositeApplicationException (String message) {
+        super(message);
+        this.message = message;
+    }
+
+    public CompositeApplicationException (Throwable cause) {
+        super(cause);
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

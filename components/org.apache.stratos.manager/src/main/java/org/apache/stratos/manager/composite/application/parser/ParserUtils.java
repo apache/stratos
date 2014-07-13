@@ -29,7 +29,9 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ParserUtils {
 
@@ -49,9 +51,9 @@ public class ParserUtils {
         return subscribableContext;
     }
 
-    public static List<StartupOrder> convert (List<StartupOrderDefinition> startupOrderDefinitions) {
+    public static Set<StartupOrder> convert (List<StartupOrderDefinition> startupOrderDefinitions) {
 
-        List<StartupOrder> startupOrders = new ArrayList<StartupOrder>();
+        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
         for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
             StartupOrder startupOrder = new StartupOrder(startupOrderDefinition.getStart(), startupOrderDefinition.getAfter());
             startupOrders.add(startupOrder);

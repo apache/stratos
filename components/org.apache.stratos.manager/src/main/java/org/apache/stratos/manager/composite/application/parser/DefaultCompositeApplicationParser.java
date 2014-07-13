@@ -211,12 +211,12 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return compositeAppContext;
     }
 
-    private List<GroupContext> getGroupContexts (List<GroupDefinition> groupDefinitions,
+    private Set<GroupContext> getGroupContexts (List<GroupDefinition> groupDefinitions,
                                                  Map<String, SubscribableInfo> subscribableInformation,
                                                  Map<String, GroupDefinition> definedGroups)
             throws CompositeApplicationDefinitionException {
 
-        List<GroupContext> groupContexts = new ArrayList<GroupContext>();
+        Set<GroupContext> groupContexts = new HashSet<GroupContext>();
 
         for (GroupDefinition group : groupDefinitions) {
             groupContexts.add(getGroupContext(group, subscribableInformation, definedGroups));
@@ -248,7 +248,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
         // get nested groups
         if (group.getSubGroups() != null) {
-            List<GroupContext> nestedGroupContexts = new ArrayList<GroupContext>();
+            Set<GroupContext> nestedGroupContexts = new HashSet<GroupContext>();
             // check sub groups
             for (GroupDefinition subGroup : group.getSubGroups()) {
                 nestedGroupContexts.add(getGroupContext(subGroup, subscribableInformation, definedGroups));
@@ -260,7 +260,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return groupContext;
     }
 
-    private List<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws CompositeApplicationDefinitionException {
+    private Set<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws CompositeApplicationDefinitionException {
 
         ServiceGroupDefinition groupDefinition;
 
@@ -284,14 +284,14 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return null;
     }
 
-    private List<StartupOrder> getStartupOrderForApplicationComponents (List<StartupOrderDefinition> startupOrderDefinitions)
+    private Set<StartupOrder> getStartupOrderForApplicationComponents (List<StartupOrderDefinition> startupOrderDefinitions)
             throws CompositeApplicationDefinitionException {
 
         if (startupOrderDefinitions == null) {
             return null;
         }
 
-        List<StartupOrder> startupOrders = new ArrayList<StartupOrder>();
+        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
         for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
             startupOrders.add(new StartupOrder(startupOrderDefinition.getStart(), startupOrderDefinition.getAfter()));
@@ -323,11 +323,11 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
 
     }
 
-    private List<SubscribableContext> getSubsribableContexts (List<SubscribableDefinition> subscribableDefinitions,
+    private Set<SubscribableContext> getSubsribableContexts (List<SubscribableDefinition> subscribableDefinitions,
                                                               Map<String, SubscribableInfo> subscribableInformation)
             throws CompositeApplicationDefinitionException {
 
-        List<SubscribableContext> subscribableContexts = new ArrayList<SubscribableContext>();
+        Set<SubscribableContext> subscribableContexts = new HashSet<SubscribableContext>();
 
         for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
             // check is there is a related Subscribable Information

@@ -251,15 +251,20 @@ public class ServiceUtils {
             return stratosAdminResponse;
         }
 */
-    static StratosAdminResponse deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition)
+    static StratosAdminResponse deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition, ConfigurationContext ctxt,
+                                                                     String userName, String tenantDomain)
             throws RestAPIException {
 
+        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+
         try {
-            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition);
+            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition, tenantId, tenantDomain, userName);
 
         } catch (CompositeApplicationDefinitionException e) {
             throw new RestAPIException(e);
         } catch (PersistenceManagerException e) {
+            throw new RestAPIException(e);
+        } catch (CompositeApplicationException e) {
             throw new RestAPIException(e);
         }
 

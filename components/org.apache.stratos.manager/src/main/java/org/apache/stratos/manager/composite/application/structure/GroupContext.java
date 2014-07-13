@@ -20,6 +20,7 @@
 package org.apache.stratos.manager.composite.application.structure;
 
 import java.util.List;
+import java.util.Set;
 
 public class GroupContext {
 
@@ -31,20 +32,20 @@ public class GroupContext {
 
     private String autoscalingPolicy;
 
-    private List<GroupContext> groupContexts;
+    private Set<GroupContext> groupContexts;
 
-    private List<SubscribableContext> subscribableContexts;
+    private Set<SubscribableContext> subscribableContexts;
 
-    private List<StartupOrder> startupOrder;
+    private Set<StartupOrder> startupOrder;
 
     private String killBehaviour;
 
 
-    public List<StartupOrder> getStartupOrder() {
+    public Set<StartupOrder> getStartupOrder() {
         return startupOrder;
     }
 
-    public void setStartupOrder(List<StartupOrder> startupOrder) {
+    public void setStartupOrder(Set<StartupOrder> startupOrder) {
         this.startupOrder = startupOrder;
     }
 
@@ -88,19 +89,19 @@ public class GroupContext {
         this.autoscalingPolicy = autoscalingPolicy;
     }
 
-    public List<GroupContext> getGroupContexts() {
+    public Set<GroupContext> getGroupContexts() {
         return groupContexts;
     }
 
-    public void setGroupContexts(List<GroupContext> groupContexts) {
+    public void setGroupContexts(Set<GroupContext> groupContexts) {
         this.groupContexts = groupContexts;
     }
 
-    public List<SubscribableContext> getSubscribableContexts() {
+    public Set<SubscribableContext> getSubscribableContexts() {
         return subscribableContexts;
     }
 
-    public void setSubscribableContexts(List<SubscribableContext> subscribableContexts) {
+    public void setSubscribableContexts(Set<SubscribableContext> subscribableContexts) {
         this.subscribableContexts = subscribableContexts;
     }
 }
