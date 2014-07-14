@@ -36,7 +36,7 @@ import java.net.URL;
  */
 @RunWith(JUnit4.class)
 public class LoadBalancerConfigurationTest {
-    private static String configPath = File.separator + "sample" + File.separator + "configuration";
+    private static String configPath = "/sample/configuration";
 
     /**
      * Test load balancer configuration parser using different configuration files.
@@ -63,7 +63,7 @@ public class LoadBalancerConfigurationTest {
         try {
             String validationError = "Load balancer configuration validation failed";
 
-            URL resourceUrl = this.getClass().getResource(configPath + File.separator + "loadbalancer1.conf");
+            URL resourceUrl = this.getClass().getResource(configPath + "/loadbalancer1.conf");
             File configFile = new File(resourceUrl.getFile());
             System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
             LoadBalancerConfiguration configuration = LoadBalancerConfiguration.getInstance();
@@ -95,7 +95,7 @@ public class LoadBalancerConfigurationTest {
      */
     @Test
     public final void testStaticTopology() {
-        URL resourceUrl = this.getClass().getResource(configPath + File.separator + "loadbalancer2.conf");
+        URL resourceUrl = this.getClass().getResource(configPath + "/loadbalancer2.conf");
         File configFile = new File(resourceUrl.getFile());
 
         System.setProperty("loadbalancer.conf.file", configFile.getAbsolutePath());
