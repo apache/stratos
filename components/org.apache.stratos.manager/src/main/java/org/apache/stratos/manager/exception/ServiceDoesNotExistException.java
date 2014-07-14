@@ -26,16 +26,16 @@ public class ServiceDoesNotExistException extends Exception {
 
 	private final String serviceType;
 
-	public ServiceDoesNotExistException(String message, String cartridgeType, Throwable cause) {
+	public ServiceDoesNotExistException(String message, String serviceType, Throwable cause) {
 		super(message, cause);
 		this.message = message;
-		this.serviceType = cartridgeType;
+		this.serviceType = serviceType;
 	}
 
-	public ServiceDoesNotExistException(String message, String cartridgeType) {
+	public ServiceDoesNotExistException(String message, String serviceType) {
 		super(message);
 		this.message = message;
-		this.serviceType = cartridgeType;
+		this.serviceType = serviceType;
 	}
 
 	public String getMessage() {
