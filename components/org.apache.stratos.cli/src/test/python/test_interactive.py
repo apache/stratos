@@ -55,7 +55,7 @@ class TestInteractive(unittest.TestCase):
         TestInteractive.wiremock.reset()
 
     def test_interactive_mode_username_and_password_sent_to_server(self):
-        child = pexpect.spawn(TestInteractive.cli_cmd)
+        child = pexpect.spawn(TestInteractive.cli_cmd, timeout=10)
         child.expect   ('Username: ')
         child.sendline ('1234')
         child.expect   ('Password: ')

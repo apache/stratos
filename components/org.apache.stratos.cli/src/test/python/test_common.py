@@ -52,13 +52,13 @@ class TestCommon(unittest.TestCase):
 
     def test_error_if_stratos_url_not_set(self):
         if 'STRATOS_URL' in os.environ: del os.environ["STRATOS_URL"]      # unset env var
-        child = pexpect.spawn(TestCommon.cli_cmd)
+        child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('Could not find required "STRATOS_URL" variable in your environment.')
         child.expect (pexpect.EOF)
 
     def test_error_if_port_not_provided_in_stratos_url(self):
         os.environ["STRATOS_URL"] = "https://localhost"  # no port
-        child = pexpect.spawn(TestCommon.cli_cmd)
+        child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
@@ -66,7 +66,7 @@ class TestCommon(unittest.TestCase):
 
     def test_error_if_context_path_is_provided_in_stratos_url(self):
         os.environ["STRATOS_URL"] = "https://localhost:1234/somecontext/" # context path
-        child = pexpect.spawn(TestCommon.cli_cmd)
+        child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "https://localhost:1234/somecontext/"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
@@ -74,7 +74,7 @@ class TestCommon(unittest.TestCase):
 
     def test_error_if_non_https_scheme_is_provided_in_stratos_url(self):
         os.environ["STRATOS_URL"] = "http://localhost:1234" # http scheme
-        child = pexpect.spawn(TestCommon.cli_cmd)
+        child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided "http://localhost:1234"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
@@ -83,7 +83,7 @@ class TestCommon(unittest.TestCase):
     def test_error_if_invalid_format_is_given_for_stratos_url(self):
         # we need to ensure the url is valid and not that it just has 2 colons and 3 or less slashes!
         os.environ["STRATOS_URL"] = ":://"
-        child = pexpect.spawn(TestCommon.cli_cmd)
+        child = pexpect.spawn(TestCommon.cli_cmd, timeout=10)
         child.expect ('The "STRATOS_URL" variable in your environment is not a valid URL. You have provided ":://"')
         child.expect ('Please provide the Stratos Controller URL as follows')
         child.expect ('https://<host>:<port>')
