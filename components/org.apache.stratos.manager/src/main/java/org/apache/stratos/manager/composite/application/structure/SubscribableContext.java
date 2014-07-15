@@ -17,12 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.beans;
+package org.apache.stratos.manager.composite.application.structure;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class SubscribableContext {
 
-@XmlRootElement(name = "subscribableInfo")
-public class SubscribableInfo {
+    private String cartridgeType;
 
     private String alias;
 
@@ -37,6 +36,19 @@ public class SubscribableInfo {
     private String username;
 
     private String password;
+
+    public SubscribableContext (String cartridgeType, String alias) {
+        this.cartridgeType = cartridgeType;
+        this.alias = alias;
+    }
+
+    public String getCartridgeType() {
+        return cartridgeType;
+    }
+
+    public void setCartridgeType(String cartridgeType) {
+        this.cartridgeType = cartridgeType;
+    }
 
     public String getAlias() {
         return alias;

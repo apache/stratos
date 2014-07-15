@@ -17,32 +17,32 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.beans;
+package org.apache.stratos.manager.composite.application.structure;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class StartupOrder {
 
-@XmlRootElement (name = "subscribables")
-public class SubscribableDefinition {
+    private String start;
 
-    private String type;
+    private String after;
 
-    private String alias;
-
-
-    public String getType() {
-        return type;
+    public StartupOrder (String start, String after) {
+        this.start = start;
+        this.after = after;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public String getStart() {
+        return start;
     }
 
-    public String getAlias() {
-        return alias;
+    public void setStart(String start) {
+        this.start = start;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public String getAfter() {
+        return after;
     }
 
+    public void setAfter(String after) {
+        this.after = after;
+    }
 }

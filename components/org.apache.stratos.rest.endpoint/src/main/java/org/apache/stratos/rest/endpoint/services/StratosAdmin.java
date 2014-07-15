@@ -63,7 +63,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,6 +75,8 @@ public class StratosAdmin extends AbstractAdmin {
     private static Log log = LogFactory.getLog(StratosAdmin.class);
     @Context
     HttpServletRequest httpServletRequest;
+    @Context
+    UriInfo uriInfo;
 
     @POST
     @Path("/init")
@@ -130,10 +134,13 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     // Grouping
-    public StratosAdminResponse deployApplicationDefinition(CompositeAppDefinition applicationDefinitionBean)
+    public Response deployApplicationDefinition(CompositeAppDefinition applicationDefinitionBean)
             throws RestAPIException {
-        return ServiceUtils.deployCompositeApplicationDefintion(applicationDefinitionBean);
+         ServiceUtils.deployCompositeApplicationDefintion(applicationDefinitionBean, getConfigContext(),
+                getUsername(), getTenantDomain());
 
+         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
+         return Response.created(url).build();
     }
 
  /*   @POST
@@ -157,12 +164,12 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     // Grouping
-    public StratosAdminResponse unDeployApplicationDefinition(String alias)
+    public Response unDeployApplicationDefinition(String alias)
             throws RestAPIException {
 
-        return ServiceUtils.unDeployApplication(alias, getConfigContext(), getUsername(),
-                                     getTenantDomain());
-
+        ServiceUtils.unDeployApplication(alias, getConfigContext(), getUsername(),
+                getTenantDomain());
+        return Response.noContent().build();
     }
     
 
@@ -174,11 +181,12 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     // Grouping
-    public StratosAdminResponse unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
+    public Response unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
             throws RestAPIException {
 
-        return ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
-                getTenantDomain());
+         ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
+                 getTenantDomain());
+        return Response.noContent().build();
 
     }
     
@@ -232,10 +240,12 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
+    public Response deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
             throws RestAPIException {
 
-        return ServiceUtils.deployServiceGroupDefinition(serviceGroupDefinition);
+        ServiceUtils.deployServiceGroupDefinition(serviceGroupDefinition);
+        URI url =  uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
+        return Response.created(url).build();
     }
 
     @GET
@@ -243,10 +253,10 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ServiceGroupDefinition getServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+    public Response getServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
-
-        return ServiceUtils.getServiceGroupDefinition(groupDefinitionName);
+        Response.ResponseBuilder rb = Response.ok().entity(ServiceUtils.getServiceGroupDefinition(groupDefinitionName));
+        return rb.build();
     }
 
     @DELETE
@@ -255,10 +265,11 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse undeployServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+    public Response undeployServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
 
-        return ServiceUtils.undeployServiceGroupDefinition(groupDefinitionName);
+        ServiceUtils.undeployServiceGroupDefinition(groupDefinitionName);
+        return Response.noContent().build();
     }
 
     @POST

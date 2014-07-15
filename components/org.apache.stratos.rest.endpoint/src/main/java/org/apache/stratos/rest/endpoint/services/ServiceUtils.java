@@ -251,25 +251,25 @@ public class ServiceUtils {
             return stratosAdminResponse;
         }
 */
-    static StratosAdminResponse deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition)
+    static void deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition, ConfigurationContext ctxt,
+                                                                     String userName, String tenantDomain)
             throws RestAPIException {
 
+        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+
         try {
-            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition);
+            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition, tenantId, tenantDomain, userName);
 
         } catch (CompositeApplicationDefinitionException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RestAPIException(e);
         } catch (PersistenceManagerException e) {
-            e.printStackTrace();
+            throw new RestAPIException(e);
+        } catch (CompositeApplicationException e) {
+            throw new RestAPIException(e);
         }
-        //TODO send to CC
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed Composite Application [ Id: " + compositeAppDefinition.getApplicationId()
-                + " , alias: " + compositeAppDefinition.getAlias() + " ]");
-        return stratosAdminResponse;
     }
     
-    static StratosAdminResponse unDeployApplication(String configCompositeApplicationAlias, ConfigurationContext ctxt,
+    static void unDeployApplication(String configCompositeApplicationAlias, ConfigurationContext ctxt,
             String userName, String tenantDomain) throws RestAPIException {
 
     		log.info("Starting to undeploy a composite application definition " + configCompositeApplicationAlias);
@@ -308,10 +308,6 @@ public class ServiceUtils {
             }
     		
     		log.info(String.format("[type] %s", configCompositeApplicationAlias));
-
-    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-    		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
-    		return stratosAdminResponse;
     }
     
     
@@ -1423,7 +1419,7 @@ public class ServiceUtils {
         return stratosAdminResponse;
     }
 
-    static StratosAdminResponse deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
+    static void deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
 
         try {
             serviceGropingManager.deployServiceGroupDefinition(serviceGroupDefinition);
@@ -1439,10 +1435,6 @@ public class ServiceUtils {
         }
 
         log.info("Successfully deployed the Service Group Definition with name " + serviceGroupDefinition.getName());
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully deployed Service Group Definition with name " + serviceGroupDefinition.getName());
-        return stratosAdminResponse;
     }
 
     static ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
@@ -1455,7 +1447,7 @@ public class ServiceUtils {
         }
     }
 
-    static StratosAdminResponse undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
+    static void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
 
         try {
             serviceGropingManager.undeployServiceGroupDefinition(serviceGroupDefinitionName);
@@ -1465,9 +1457,5 @@ public class ServiceUtils {
         }
 
         log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully undeplpoyed Service Group Definition with name " + serviceGroupDefinitionName);
-        return stratosAdminResponse;
     }
 }

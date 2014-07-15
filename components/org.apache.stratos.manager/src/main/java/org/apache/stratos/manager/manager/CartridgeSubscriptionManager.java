@@ -59,6 +59,35 @@ public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
     //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+    public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,
+            InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException,
+            RepositoryRequiredException, RepositoryCredentialsRequiredException, RepositoryTransportException,
+            AlreadySubscribedException, InvalidRepositoryException {
+
+
+        CartridgeSubscriptionUtils.validateCartridgeAlias(subscriptionData.getTenantId(), subscriptionData.getCartridgeType(), subscriptionData.getCartridgeAlias());
+
+        CartridgeInfo cartridgeInfo;
+        try {
+            cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(subscriptionData.getCartridgeType());
+
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String message = subscriptionData.getCartridgeType() + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
+            log.error(message);
+            throw new ADCException(message, e);
+
+        } catch (Exception e) {
+            String message = "Error getting info for " + subscriptionData.getCartridgeType();
+            log.error(message, e);
+            throw new ADCException(message, e);
+        }
+
+        // subscribe to relevant service cartridge
+        CartridgeSubscription serviceCartridgeSubscription = subscribe (subscriptionData, cartridgeInfo, null);
+
+        return serviceCartridgeSubscription;
+    }
     
     public SubscriptionInfo subscribeToCartridgeWithProperties(SubscriptionData subscriptionData)  throws ADCException,
                                                                                             InvalidCartridgeAliasException,

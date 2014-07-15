@@ -19,10 +19,11 @@
 
 package org.apache.stratos.manager.composite.application.beans;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
+@XmlRootElement(name = "groups")
 public class GroupDefinition {
 
     private String name;
@@ -35,7 +36,7 @@ public class GroupDefinition {
 
     private List<SubscribableDefinition> subscribables;
 
-    private List<GroupDefinition> groups;
+    private List<GroupDefinition> subGroups;
 
     public String getName() {
         return name;
@@ -77,11 +78,11 @@ public class GroupDefinition {
         this.subscribables = subscribableDefinitions;
     }
 
-    public List<GroupDefinition> getGroups() {
-        return groups;
+    public List<GroupDefinition> getSubGroups() {
+        return subGroups;
     }
 
-    public void setGroups(List<GroupDefinition> groups) {
-        this.groups = groups;
+    public void setSubGroups(List<GroupDefinition> subGroups) {
+        this.subGroups = subGroups;
     }
 }

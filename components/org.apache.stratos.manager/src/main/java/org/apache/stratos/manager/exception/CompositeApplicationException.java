@@ -17,32 +17,31 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.composite.application.beans;
+package org.apache.stratos.manager.exception;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class CompositeApplicationException extends Exception {
 
-@XmlRootElement (name = "subscribables")
-public class SubscribableDefinition {
+    private String message;
 
-    private String type;
-
-    private String alias;
-
-
-    public String getType() {
-        return type;
+    public CompositeApplicationException () {
+        super();
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public CompositeApplicationException (String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
     }
 
-    public String getAlias() {
-        return alias;
+    public CompositeApplicationException (String message) {
+        super(message);
+        this.message = message;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public CompositeApplicationException (Throwable cause) {
+        super(cause);
     }
 
+    public String getMessage() {
+        return message;
+    }
 }

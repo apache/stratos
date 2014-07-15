@@ -19,11 +19,12 @@
 
 package org.apache.stratos.manager.composite.application.parser;
 
-import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
+import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
 import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
+
 
 
 public interface CompositeApplicationParser {
 
-    public CompositeApplicationDefinition parse (Object obj) throws CompositeApplicationDefinitionException;
+    public CompositeAppContext parse (Object obj) throws CompositeApplicationDefinitionException;
 }
