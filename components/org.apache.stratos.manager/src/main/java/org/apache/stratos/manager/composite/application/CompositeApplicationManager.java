@@ -1,8 +1,6 @@
 package org.apache.stratos.manager.composite.application;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +15,8 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
@@ -37,21 +37,86 @@ public class CompositeApplicationManager {
         
         //DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
         //mgr.persistCompositeApplication(compositeAppDefinition);
-        Set<CartridgeSubscription> cartridgeSubscriptions = new HashSet<CartridgeSubscription>();
+
+        // create the CompositeAppSubscription
+        CompositeAppSubscription compositeAppSubscription = new CompositeAppSubscription(compositeAppContext.getAppId());
+
+        // keep track of all CartridgeSubscriptions, against the alias
+        Map<String, CartridgeSubscription> aliasToCartridgeSubscription = new HashMap<String, CartridgeSubscription>();
+
+        // Keep track of all Group Subscriptions
+        Set<GroupSubscription> groupSubscriptions = new HashSet<GroupSubscription>();
 
         // traverse through the Composite App Structure and create Cartridge Subscriptions
         if(compositeAppContext.getSubscribableContexts() != null) {
-            // Subscription relevant to top level Subscribables
-            cartridgeSubscriptions.addAll(getCartridgeSybscriptionsForSubscribables(compositeAppContext.getSubscribableContexts(),
-                    tenantId, tenantDomain, tenantAdminUsername));
+            // Subscriptions relevant to top level Subscribables
+
+            for (CartridgeSubscription cartridgeSubscription : getCartridgeSybscriptionsForSubscribables(compositeAppContext.getSubscribableContexts(),
+                    tenantId, tenantDomain, tenantAdminUsername)) {
+                aliasToCartridgeSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription);
+            }
+            // get top level cartridge aliases to add to Composite App Subscription
+            compositeAppSubscription.addCartridgeSubscriptionAliases(getCartrigdeSubscriptionAliases(compositeAppContext.getSubscribableContexts()));
         }
 
         if (compositeAppContext.getGroupContexts() != null) {
             // Subscriptions relevant to Groups
-            cartridgeSubscriptions.addAll(getCartridgeSubscriptionForGroups(compositeAppContext.getGroupContexts(), tenantId,
-                    tenantDomain, tenantAdminUsername));
+
+            for (CartridgeSubscription cartridgeSubscription : getCartridgeSubscriptionForGroups(compositeAppContext.getGroupContexts(), tenantId,
+                    tenantDomain, tenantAdminUsername)) {
+                aliasToCartridgeSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription);
+            }
+
+            // set top level group aliases to Composite App Subscription
+            compositeAppSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(compositeAppContext.getGroupContexts()));
+
+            groupSubscriptions.addAll(getGroupSubscriptions(compositeAppContext.getGroupContexts()));
         }
 	}
+
+    private Set<String> getCartrigdeSubscriptionAliases (Set<SubscribableContext> subscribableContexts) throws CompositeApplicationException {
+
+        Set<String> cartridgeSubscriptionAliases = new HashSet<String>();
+        for (SubscribableContext subscribableContext : subscribableContexts) {
+            cartridgeSubscriptionAliases.add(subscribableContext.getAlias());
+        }
+
+        return cartridgeSubscriptionAliases;
+    }
+
+    private Set<GroupSubscription> getGroupSubscriptions (Set<GroupContext> groupContexts) throws CompositeApplicationException {
+
+        Set<GroupSubscription> groupSubscriptions = new HashSet<GroupSubscription>();
+        for (GroupContext groupContext : groupContexts) {
+            // create Group Subscriptions for this Group
+            GroupSubscription groupSubscription = new GroupSubscription(groupContext.getAlias());
+            if (groupContext.getSubscribableContexts() != null) {
+                groupSubscription.addCartridgeSubscriptionAliases(getCartrigdeSubscriptionAliases(groupContext.getSubscribableContexts()));
+            }
+
+            // nested Group
+            if (groupContext.getGroupContexts() != null) {
+                groupSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(groupContext.getGroupContexts()));
+                // need to recurse to get other nested groups, if any
+                getGroupSubscriptions(groupContext.getGroupContexts());
+            }
+
+            groupSubscriptions.add(groupSubscription);
+        }
+
+        return groupSubscriptions;
+    }
+
+    private Set<String> getGroupSubscriptionAliases (Set<GroupContext> groupContexts) throws CompositeApplicationException {
+
+        Set<String> topLevelGroupAliases = new HashSet<String>();
+
+        for (GroupContext topLevelGroupCtxt : groupContexts) {
+            topLevelGroupAliases.add(topLevelGroupCtxt.getAlias());
+        }
+
+        return topLevelGroupAliases;
+    }
 
     private Set<CartridgeSubscription> getCartridgeSubscriptionForGroups (Set<GroupContext> groupContexts,
                                                                           int tenantId, String tenantDomain,

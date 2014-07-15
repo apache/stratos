@@ -19,29 +19,21 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.util.propertyeditor.StringArrayEditor;
-
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class CompositeAppSubscription implements Serializable {
+public class GroupSubscription implements Serializable {
 
-    private static Log log = LogFactory.getLog(CompositeAppSubscription.class);
-
-    private String appId;
+    private String groupAlias;
 
     private Set<String> cartridgeSubscriptionAliases;
 
     private Set<String> groupSubscriptionAliases;
 
-    public CompositeAppSubscription (String appId) {
+    public GroupSubscription (String groupAlias) {
 
-        this.appId = appId;
+        this.groupAlias = groupAlias;
         cartridgeSubscriptionAliases = new HashSet<String>();
         groupSubscriptionAliases = new HashSet<String>();
     }
@@ -54,15 +46,19 @@ public class CompositeAppSubscription implements Serializable {
         cartridgeSubscriptionAliases.add(cartridgeSubscriptionAlias);
     }
 
-    public void addCartridgeSubscriptionAliases (Set<String> cartridgeSubscriptionAliases) {
-        cartridgeSubscriptionAliases.addAll(cartridgeSubscriptionAliases);
-    }
-
     public void addGroupSubscriptionAlias (String groupSubscriptionAlias) {
         groupSubscriptionAliases.add(groupSubscriptionAlias);
     }
 
+    public void addCartridgeSubscriptionAliases (Set<String> cartridgeSubscriptionAliases) {
+        cartridgeSubscriptionAliases.addAll(cartridgeSubscriptionAliases);
+    }
+
     public void addGroupSubscriptionAliases (Set<String> groupSubscriptionAliases) {
-        cartridgeSubscriptionAliases.addAll(groupSubscriptionAliases);
+        groupSubscriptionAliases.addAll(groupSubscriptionAliases);
+    }
+
+    public String getGroupAlias() {
+        return groupAlias;
     }
 }
