@@ -23,6 +23,7 @@ package org.apache.stratos.autoscaler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.CompositeApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 
 import java.util.HashMap;
@@ -44,13 +45,28 @@ public class AutoscalerContext {
             log.error("Rule evaluateMinCheck error", e);
         }
     }
-    
+
     // Map<ClusterId, ClusterMonitor>
     private Map<String, ClusterMonitor> monitors;
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
-	private static class Holder {
+    private Map<String, CompositeApplicationMonitor> appMonitors;
+
+    public Map<String, CompositeApplicationMonitor> getAppMonitors() {
+        return appMonitors;
+    }
+
+    public CompositeApplicationMonitor getAppMonitor(String applicationId) {
+        return appMonitors.get(applicationId);
+    }
+
+    public void setAppMonitors(Map<String, CompositeApplicationMonitor> appMonitors) {
+        this.appMonitors = appMonitors;
+    }
+
+
+    private static class Holder {
 		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
 	}
 
@@ -110,5 +126,22 @@ public class AutoscalerContext {
 
     public void addLbMonitor(LbClusterMonitor monitor) {
         lbMonitors.put(monitor.getClusterId(), monitor);
+    }
+
+    public void addAppMonitor(CompositeApplicationMonitor monitor) {
+        appMonitors.put(monitor.getAppId(), monitor);
+    }
+
+    public CompositeApplicationMonitor removeAppMonitor(String appId) {
+        if(!appMonitorExist(appId)) {
+            log.fatal("LB monitor not found for App id: "+ appId);
+            return null;
+        }
+        log.info("Removed APP monitor [App id]: " + appId);
+        return appMonitors.remove(appId);
+    }
+
+    public boolean appMonitorExist(String appId) {
+        return  appMonitors.containsKey(appId);
     }
 }

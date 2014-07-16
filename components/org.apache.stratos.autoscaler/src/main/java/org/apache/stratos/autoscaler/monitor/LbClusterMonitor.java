@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -28,13 +26,14 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
- *
  */
-public class LbClusterMonitor extends AbstractMonitor{
+public class LbClusterMonitor extends AbstractMonitor {
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
 
@@ -57,12 +56,12 @@ public class LbClusterMonitor extends AbstractMonitor{
 
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running.. "+this.toString());
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
                 monitor();
             } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed. "+this.toString(), e);
+                log.error("Cluster monitor: Monitor failed. " + this.toString(), e);
             }
             try {
                 // TODO make this configurable
@@ -71,27 +70,27 @@ public class LbClusterMonitor extends AbstractMonitor{
             }
         }
     }
-    
+
     private void monitor() {
         // TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
 
             // minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
-                                                                            .values()) {
+                    .values()) {
 
                 if (partitionContext != null) {
                     minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Running minimum check for partition %s ",
-                                                partitionContext.getPartitionId()));
+                                partitionContext.getPartitionId()));
                     }
 
                     minCheckFactHandle =
-                                         AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession,
-                                                                                  minCheckFactHandle,
-                                                                                  partitionContext);
+                            AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession,
+                                    minCheckFactHandle,
+                                    partitionContext);
                     // start only in the first partition context
                     break;
                 }
@@ -99,7 +98,7 @@ public class LbClusterMonitor extends AbstractMonitor{
             }
 
         }
-    }       
+    }
 
     @Override
     public String toString() {
