@@ -21,6 +21,7 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.subscriber.Subscriber;
 import org.jboss.util.propertyeditor.StringArrayEditor;
 
 import java.io.Serializable;
@@ -38,6 +39,8 @@ public class CompositeAppSubscription implements Serializable {
     private Set<String> cartridgeSubscriptionAliases;
 
     private Set<String> groupSubscriptionAliases;
+
+    private Subscriber subscriber;
 
     public CompositeAppSubscription (String appId) {
 
@@ -64,5 +67,17 @@ public class CompositeAppSubscription implements Serializable {
 
     public void addGroupSubscriptionAliases (Set<String> groupSubscriptionAliases) {
         cartridgeSubscriptionAliases.addAll(groupSubscriptionAliases);
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public Subscriber getSubscriber() {
+        return subscriber;
+    }
+
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
     }
 }

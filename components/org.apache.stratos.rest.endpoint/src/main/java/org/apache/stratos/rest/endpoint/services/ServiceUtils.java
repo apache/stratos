@@ -321,29 +321,29 @@ public class ServiceUtils {
     }
     
     
-    static StratosAdminResponse unDeployApplicationOld(String configCompositeApplicationAlias, ConfigurationContext ctxt,
-            String userName, String tenantDomain) throws RestAPIException {
-
-    		log.info("Starting to undeploy a composite application " + configCompositeApplicationAlias);
-    		
-    		CompositeApplicationManager manager = new CompositeApplicationManager();	
-    		
-			try {
-				manager.unDeployCompositeApplication(configCompositeApplicationAlias);
-			} catch (ADCException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				String message = e.getMessage();
-				log.error(message, e);
-				throw new RestAPIException(message, e);
-			}
-    		
-    		log.info("l [type] " + configCompositeApplicationAlias);
-
-    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-    		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
-    		return stratosAdminResponse;
-    }
+//    static StratosAdminResponse unDeployApplicationOld(String configCompositeApplicationAlias, ConfigurationContext ctxt,
+//            String userName, String tenantDomain) throws RestAPIException {
+//
+//    		log.info("Starting to undeploy a composite application " + configCompositeApplicationAlias);
+//
+//    		CompositeApplicationManager manager = new CompositeApplicationManager();
+//
+//			try {
+//				manager.unDeployCompositeApplication(configCompositeApplicationAlias);
+//			} catch (ADCException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//				String message = e.getMessage();
+//				log.error(message, e);
+//				throw new RestAPIException(message, e);
+//			}
+//
+//    		log.info("l [type] " + configCompositeApplicationAlias);
+//
+//    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
+//    		stratosAdminResponse.setMessage("Successfully un-deployed application with alias " + configCompositeApplicationAlias);
+//    		return stratosAdminResponse;
+//    }
 
     @SuppressWarnings("unused")
     private static DeploymentPolicy[] intersection(

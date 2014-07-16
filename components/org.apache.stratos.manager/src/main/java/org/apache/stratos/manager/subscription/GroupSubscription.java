@@ -19,11 +19,15 @@
 
 package org.apache.stratos.manager.subscription;
 
+import org.apache.stratos.manager.subscriber.Subscriber;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GroupSubscription implements Serializable {
+
+    private String name;
 
     private String groupAlias;
 
@@ -31,8 +35,11 @@ public class GroupSubscription implements Serializable {
 
     private Set<String> groupSubscriptionAliases;
 
-    public GroupSubscription (String groupAlias) {
+    private Subscriber subscriber;
 
+    public GroupSubscription (String name, String groupAlias) {
+
+        this.name = name;
         this.groupAlias = groupAlias;
         cartridgeSubscriptionAliases = new HashSet<String>();
         groupSubscriptionAliases = new HashSet<String>();
@@ -60,5 +67,17 @@ public class GroupSubscription implements Serializable {
 
     public String getGroupAlias() {
         return groupAlias;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Subscriber getSubscriber() {
+        return subscriber;
+    }
+
+    public void setSubscriber(Subscriber subscriber) {
+        this.subscriber = subscriber;
     }
 }

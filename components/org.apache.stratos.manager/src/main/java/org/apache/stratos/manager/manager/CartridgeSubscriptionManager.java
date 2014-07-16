@@ -31,9 +31,7 @@ import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.PersistenceContext;
-import org.apache.stratos.manager.subscription.SubscriptionData;
+import org.apache.stratos.manager.subscription.*;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
@@ -59,6 +57,54 @@ public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
     //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+    public GroupSubscription createGroupSubscription (String groupName, String groupAlias, String tenantAdminUsername,
+                                                      String tenantDomain, int tenantId) throws GroupSubscriptionException {
+
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        GroupSubscription groupSubscription;
+
+        try {
+            groupSubscription = dataInsertionAndRetrievalMgr.getGroupSubscription(tenantId, groupName, groupAlias);
+
+        } catch (PersistenceManagerException e) {
+            throw new GroupSubscriptionException(e);
+        }
+
+        if (groupSubscription != null) {
+            // Group Subscription already exists with same Group name and alias
+            throw new GroupSubscriptionException("Group Subscription already exists with name [ " + groupName + " ], alias [ " + groupAlias + " ]");
+        }
+
+        groupSubscription = new GroupSubscription(groupName, groupAlias);
+        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
+        groupSubscription.setSubscriber(subscriber);
+        return groupSubscription;
+    }
+
+    public CompositeAppSubscription createCompositeAppSubscription (String appId, String tenantAdminUsername,
+                                                                    String tenantDomain, int tenantId)  throws CompositeAppSubscriptionException {
+
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        CompositeAppSubscription compositeAppSubscription;
+
+        try {
+            compositeAppSubscription = dataInsertionAndRetrievalMgr.getCompositeAppSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            throw new CompositeAppSubscriptionException(e);
+        }
+
+        if (compositeAppSubscription != null) {
+            // Composite App Subscription already exists with same app id
+            throw new CompositeAppSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
+        }
+
+        compositeAppSubscription = new CompositeAppSubscription(appId);
+        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
+        compositeAppSubscription.setSubscriber(subscriber);
+        return compositeAppSubscription;
+    }
 
     public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,
             InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException,
