@@ -19,16 +19,11 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 
@@ -42,6 +37,7 @@ public class CompositeApplication implements Serializable {
     private String alias;
     private Group top_level;
     private Map<String, Group> all_groups  = null;
+    private List<String> clusterIds;
     private static final Log log = LogFactory.getLog(CompositeApplication.class);
 
     public CompositeApplication() {
@@ -286,5 +282,17 @@ public class CompositeApplication implements Serializable {
 			result = result + top_level.toString();
 		}
         return result;
+    }
+
+    public List<String> getClusterIds() {
+        return clusterIds;
+    }
+
+    public void setClusterIds(List<String> clusterIds) {
+        this.clusterIds = clusterIds;
+    }
+
+    public void addClusterIdToApp(String clusterId) {
+        this.clusterIds.add(clusterId);
     }
 }

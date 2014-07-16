@@ -2,23 +2,9 @@ package org.apache.stratos.messaging.domain.topology.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.ConfigCartridge;
-import org.apache.stratos.messaging.domain.topology.ConfigGroup;
-import org.apache.stratos.messaging.domain.topology.ConfigDependencies;
-import org.apache.stratos.messaging.domain.topology.Cartridge;
-import org.apache.stratos.messaging.domain.topology.Composite;
-import org.apache.stratos.messaging.domain.topology.CompositeApplication;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
-import org.apache.stratos.messaging.domain.topology.Dependencies;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.Scalable;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 
