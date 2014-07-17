@@ -29,6 +29,7 @@ import org.apache.stratos.manager.composite.application.structure.CompositeAppCo
 import org.apache.stratos.manager.composite.application.structure.GroupContext;
 import org.apache.stratos.manager.composite.application.structure.StartupOrder;
 import org.apache.stratos.manager.composite.application.structure.SubscribableContext;
+import org.apache.stratos.manager.composite.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -111,13 +112,13 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
                     }
 
                     // check if group is deployed
-                    if(isGroupDeployed(group.getName())) {
+                    if(!isGroupDeployed(group.getName())) {
                         throw new CompositeApplicationDefinitionException("Group with name " + group.getName() + " not deployed");
                     }
 
                     // check validity of group alias
-                    if (group.getAlias() == null || group.getAlias().isEmpty()) {
-                        throw new CompositeApplicationDefinitionException("Invalid Group alias specified");
+                    if (group.getAlias() == null || group.getAlias().isEmpty() || ApplicationUtils.isAliasValid(group.getAlias())) {
+                        throw new CompositeApplicationDefinitionException("Invalid Group alias specified: [ " + group.getAlias() + " ]");
                     }
 
                     // check if a group is already defined under the same alias
@@ -148,8 +149,9 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
 
             for (SubscribableInfo subscribableInfo : compositeAppDefinition.getSubscribableInfo()) {
 
-                if (subscribableInfo.getAlias() == null || subscribableInfo.getAlias().isEmpty()) {
-                    throw new CompositeApplicationDefinitionException("Invalid alias specified for Subscribable Information Obj");
+                if (subscribableInfo.getAlias() == null || subscribableInfo.getAlias().isEmpty() ||
+                        ApplicationUtils.isAliasValid(subscribableInfo.getAlias())) {
+                    throw new CompositeApplicationDefinitionException("Invalid alias specified for Subscribable Information Obj: [ " + subscribableInfo.getAlias() + " ]");
                 }
 
                 // check if a group is already defined under the same alias
