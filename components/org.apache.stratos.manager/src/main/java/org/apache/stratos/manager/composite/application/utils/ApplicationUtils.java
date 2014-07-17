@@ -104,12 +104,8 @@ public class ApplicationUtils {
 
         String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
         Pattern pattern = Pattern.compile(patternString);
-
-        if (!pattern.matcher(alias).matches()) {
-            return false;
-        }
-
-        return true;
+        
+        return pattern.matcher(alias).matches();
     }
 
 

@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.composite.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
@@ -208,10 +209,8 @@ public class CartridgeSubscriptionUtils {
 
     public static void validateCartridgeAlias (int tenantId, String cartridgeType, String alias) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
 
-        String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
-        Pattern pattern = Pattern.compile(patternString);
-
-        if (!pattern.matcher(alias).matches()) {
+        boolean validAlias = ApplicationUtils.isAliasValid(alias);
+        if (!validAlias) {
             String msg = "The alias " + alias + " can contain only alpha-numeric lowercase characters. Please enter a valid alias.";
             log.error(msg);
             throw new InvalidCartridgeAliasException(msg, tenantId, cartridgeType, alias);
