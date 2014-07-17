@@ -1,10 +1,10 @@
 package org.apache.stratos.messaging.domain.topology;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cartridge implements Subscribable, Scalable {
 	
@@ -13,6 +13,7 @@ public class Cartridge implements Subscribable, Scalable {
 	private Dependencies dependencies;
 	private Subscribable parent;
 	private Group homeGroup;
+    private Cluster cluster;
     private static final Log log = LogFactory.getLog(Cartridge.class);
 
 	public Cartridge(String alias) {
@@ -78,4 +79,11 @@ public class Cartridge implements Subscribable, Scalable {
 		return result;
 	}
 
+    public Cluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
+    }
 }

@@ -1,25 +1,13 @@
 package org.apache.stratos.autoscaler;
 
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.CompositeApplication;
-import org.apache.stratos.messaging.domain.topology.Dependencies;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.util.*;
 
 
 public class ComplexApplicationContext {
@@ -37,7 +25,7 @@ public class ComplexApplicationContext {
     private static final Log log = LogFactory.getLog(ComplexApplicationContext.class);  
 
     // return value of true will bring up new instance (all startup dependencies are up and active)
-    public boolean checkStartupDependencies (String clusterId) {
+    public static boolean checkStartupDependencies (String clusterId) {
     	String serviceType = "undefined";
     	if (log.isDebugEnabled()) {
 			log.debug("checkStartupDependenciesY: serviceType " + serviceType + "  + clusterId "+ clusterId);
@@ -71,7 +59,7 @@ public class ComplexApplicationContext {
     }
     
     
-    public boolean checkServiceDependencies (String serviceType, String clusterId, boolean kill_flag) {
+    public static boolean checkServiceDependencies(String serviceType, String clusterId, boolean kill_flag) {
     	
     	
 		if (log.isDebugEnabled()) {
@@ -134,7 +122,7 @@ public class ComplexApplicationContext {
     	
     }
     
-    public boolean checkServiceDependenciesForServiceType (String serviceType, String clusterId, boolean kill_flag, Group home_group) {
+    public static boolean checkServiceDependenciesForServiceType(String serviceType, String clusterId, boolean kill_flag, Group home_group) {
 		
     	String aServiceId = serviceType;
 		
@@ -146,7 +134,7 @@ public class ComplexApplicationContext {
  		}
 		
 		
-		if (ComplexApplicationContext.isInKillAllTransition(this.getKillInTransitionKey(serviceType, home_group.getAlias()))) {
+		if (ComplexApplicationContext.isInKillAllTransition(getKillInTransitionKey(serviceType, home_group.getAlias()))) {
 			if (log.isDebugEnabled()) {
 				log.debug(" subscribable " + aServiceId + " is inKillAll transition, not spawning a new instance" );
 			}
@@ -183,7 +171,7 @@ public class ComplexApplicationContext {
  		} 
 
 		
-		List<String> in_active_downstreams = this.getServiceSet_StateInActive(downstreamDependencies);	
+		List<String> in_active_downstreams = getServiceSet_StateInActive(downstreamDependencies);
 		if (in_active_downstreams.size() > 0) {
 			if (log.isDebugEnabled()) {
 				log.debug("found inactive downstream dependencies for serviceType " + aServiceId + " returning false");
@@ -496,7 +484,7 @@ public class ComplexApplicationContext {
 	}
 	
     
-	private boolean hasClusterActiveMember (Cluster cluster) {
+	private static boolean hasClusterActiveMember (Cluster cluster) {
 		boolean flag = false;
         if(cluster.isLbCluster()){
         	if (log.isDebugEnabled()) {
@@ -531,7 +519,7 @@ public class ComplexApplicationContext {
 	
 	
  	
-	private String extractAlias (String clusterId) {
+	private static String extractAlias(String clusterId) {
 		String [] s = clusterId.split("\\.");
 		if (log.isDebugEnabled())  {
 			log.debug("clusterId alias is " + clusterId + " size: " + s.length);
@@ -545,7 +533,7 @@ public class ComplexApplicationContext {
 		return s[0];
 	}
 	
-	private String extractClusterGroupFromClusterId (String clusterId) {
+	private static String extractClusterGroupFromClusterId(String clusterId) {
 		String sub1 = extractAlias(clusterId);
 		if (sub1 == null) {
 			return null;
@@ -609,7 +597,7 @@ public class ComplexApplicationContext {
 		
 	}
 	
-	private String getKillInTransitionKey(String serviceTypeAlias, String gr_alias) {
+	private static String getKillInTransitionKey(String serviceTypeAlias, String gr_alias) {
 		return serviceTypeAlias + gr_alias;
 	}
 
@@ -633,7 +621,7 @@ public class ComplexApplicationContext {
 	}
 	
 	
-	private List<String> getServiceSet_StateInActive (Map<String, String> serviceTypesMap) {
+	private static List<String> getServiceSet_StateInActive(Map<String, String> serviceTypesMap) {
 		List<String> result = new ArrayList<String> ();
 		
 		if (log.isDebugEnabled()) {

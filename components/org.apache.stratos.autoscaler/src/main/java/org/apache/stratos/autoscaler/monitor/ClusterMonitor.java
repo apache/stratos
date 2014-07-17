@@ -32,11 +32,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
- *
  */
-public class ClusterMonitor extends AbstractMonitor{
+public class ClusterMonitor extends AbstractMonitor {
 
-    private static final Log log = LogFactory.getLog(ClusterMonitor.class);    
+    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String lbReferenceType;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
@@ -52,11 +51,10 @@ public class ClusterMonitor extends AbstractMonitor{
         this.deploymentPolicy = deploymentPolicy;
         this.autoscalePolicy = autoscalePolicy;
         if (log.isDebugEnabled()) {
-        	log.debug("ClusterMonitor:autoScalePolicy:" + autoscalePolicy);
+            log.debug("ClusterMonitor:autoScalePolicy:" + autoscalePolicy);
         }
         networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
     }
-
 
 
     @Override
@@ -70,12 +68,12 @@ public class ClusterMonitor extends AbstractMonitor{
         }
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running.. "+this.toString());
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
                 monitor();
             } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed."+this.toString(), e);
+                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
             }
             try {
                 // TODO make this configurable
@@ -84,20 +82,20 @@ public class ClusterMonitor extends AbstractMonitor{
             }
         }
     }
-    
+
     private void monitor() {
 //        if(clusterCtxt != null ) {
-            //TODO make this concurrent
+        //TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
 
             //minimum check per partition
-            for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
 
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
                 minCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
                 minCheckKnowledgeSession.setGlobal("serviceId", serviceId);
-                
+
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
                 }
@@ -106,16 +104,16 @@ public class ClusterMonitor extends AbstractMonitor{
                         , minCheckFactHandle, partitionContext);
 
             }
-            
+
             //terminate dependency per partition
             // rule terminates all members of a service which is a prerequisites for other services
-            for(PartitionContext partitionContext: networkPartitionContext.getPartitionCtxts().values()){
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
 
                 terminateDependencyKnowledgeSession.setGlobal("clusterId", clusterId);
                 terminateDependencyKnowledgeSession.setGlobal("lbRef", lbReferenceType);
                 terminateDependencyKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
                 terminateDependencyKnowledgeSession.setGlobal("serviceId", serviceId);
-                
+
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running terminate dependency for partition %s ", partitionContext.getPartitionId()));
                 }
@@ -128,7 +126,7 @@ public class ClusterMonitor extends AbstractMonitor{
             boolean rifReset = networkPartitionContext.isRifReset();
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
-            if(rifReset || memoryConsumptionReset || loadAverageReset){
+            if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
@@ -148,9 +146,9 @@ public class ClusterMonitor extends AbstractMonitor{
                 networkPartitionContext.setRifReset(false);
                 networkPartitionContext.setMemoryConsumptionReset(false);
                 networkPartitionContext.setLoadAverageReset(false);
-            } else if(log.isDebugEnabled()){
-                    log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
-                            "cycle for network partition %s", networkPartitionContext.getId()) );
+            } else if (log.isDebugEnabled()) {
+                log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
+                        "cycle for network partition %s", networkPartitionContext.getId()));
             }
         }
     }
@@ -158,8 +156,8 @@ public class ClusterMonitor extends AbstractMonitor{
     @Override
     public String toString() {
         return "ClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId +
-               ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
-               ", lbReferenceType=" + lbReferenceType + "]";
+                ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
+                ", lbReferenceType=" + lbReferenceType + "]";
     }
 
     public String getLbReferenceType() {

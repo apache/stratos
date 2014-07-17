@@ -19,12 +19,12 @@
 
 package org.apache.stratos.messaging.event.topology;
 
+import org.apache.stratos.messaging.domain.topology.Port;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.stratos.messaging.domain.topology.Port;
 
 /**
  * This event is fired by Cloud Controller when a member has started it's server and
@@ -42,6 +42,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private String memberPublicIp;
     private String memberIp;
     private String groupId;
+    private String applicationId;
 
     public MemberActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -120,4 +121,12 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
+    }
 }
