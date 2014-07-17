@@ -102,6 +102,12 @@ public class CompositeApplicationManager {
             // set top level group aliases to Composite App Subscription
             compositeAppSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(compositeAppContext.getGroupContexts()));
         }
+
+        // TODO: send the Composite App structure to CC
+
+        persistCartridgeSubscriptions(aliasToCartridgeSubscription.values());
+        persistGroupSubscriptions(groupAliasToGroupSubscription.values());
+        persistCompositeAppSubscription(compositeAppSubscription);
 	}
 
     private Set<String> getCartrigdeSubscriptionAliases (Set<SubscribableContext> subscribableContexts) throws CompositeApplicationException {
@@ -250,104 +256,49 @@ public class CompositeApplicationManager {
 
         return groupAliasToGroupSubscription.get(newGroupSubscriptionAlias) != null;
     }
-	
-//	public void unDeployCompositeApplication(String configApplicationAlias) throws ADCException {
-//		if (log.isDebugEnabled()) {
-//			log.debug("undeploying composite application " + configApplicationAlias);
-//		}
-//		// unregister application
-//		unRegisterCompositeApplication(configApplicationAlias);
-//		if (log.isDebugEnabled()) {
-//			log.debug("publishing composite application removed event" + configApplicationAlias);
-//		}
-//		ApplicationUtils.publishApplicationUnDeployEvent(configApplicationAlias);
-//		if (log.isDebugEnabled()) {
-//			log.debug("composite application successfully removed " + configApplicationAlias);
-//		}
-//	}
-	
-//	private void registerCompositeApplication(ConfigCompositeApplication configCompositeApplication) throws ADCException {
-//
-//		try {
-//			if (log.isDebugEnabled()) {
-//				log.debug("registering composite application " + configCompositeApplication.getAlias());
-//			}
-//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-//			mgr.persistCompositeApplication ( configCompositeApplication);
-//
-//			if (log.isDebugEnabled()) {
-//				log.debug("testing to retrieve persisted composite application ");
-//				Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
-//				log.debug("retrieved persisted composite application " + apps.size());
-//				for (ConfigCompositeApplication app : apps) {
-//					log.debug("retrieved persisted composite application " + app.getAlias());
-//				}
-//			}
-//
-//        } catch (PersistenceManagerException e) {
-//            String errorMsg = "Error saving composite application " + configCompositeApplication.getAlias();
-//            log.error(errorMsg);
-//            throw new ADCException(errorMsg, e);
-//        }
-//
-//        log.info("Successfully registered composite application " + configCompositeApplication.getAlias());
-//
-//	}
-	
-//	private void unRegisterCompositeApplication(String configApplicationAlias) throws ADCException {
-//
-//		try {
-//			if (log.isDebugEnabled()) {
-//				log.debug("unregistering composite application " + configApplicationAlias);
-//			}
-//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-//			mgr.removeCompositeApplication(configApplicationAlias);
-//
-//			if (log.isDebugEnabled()) {
-//				log.debug("removed persisted composite application successfully");
-//			}
-//
-//        } catch (PersistenceManagerException e) {
-//            String errorMsg = "Error undeploying composite application " + configApplicationAlias;
-//            log.error(errorMsg);
-//            throw new ADCException(errorMsg, e);
-//        }
-//
-//        log.info("Successfully undeployed composite application " + configApplicationAlias);
-//
-//	}
-	
-//	public void restoreCompositeApplications () throws ADCException {
-//		try {
-//			if (log.isDebugEnabled()) {
-//				log.debug("restoring composite applications " );
-//			}
-//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-//			Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
-//
-//			if (apps == null) {
-//				if (log.isDebugEnabled()) {
-//					log.debug("no composite application configured");
-//				}
-//				return;
-//			}
-//			if (log.isDebugEnabled()) {
-//				log.debug("retrieved persisted composite application " + apps.size());
-//				for (ConfigCompositeApplication app : apps) {
-//					log.debug("retrieved persisted composite application " + app.getAlias());
-//				}
-//			}
-//			// sending application created event to restore in Toplogy
-//			for (ConfigCompositeApplication app : apps) {
-//				log.debug("restoring composite application " + app.getAlias());
-//				ApplicationUtils.publishApplicationCreatedEvent(app);
-//			}
-//
-//        } catch (PersistenceManagerException e) {
-//            String errorMsg = "Error restoring composite application ";
-//            log.error(errorMsg);
-//            throw new ADCException(errorMsg, e);
-//        }
-//	}
+
+    private void persistCartridgeSubscriptions (Collection<CartridgeSubscription> cartridgeSubscriptions) throws CompositeApplicationException {
+
+        if (cartridgeSubscriptions == null) {
+            return;
+        }
+
+        for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+            try {
+                cartridgeSubscriptionManager.persistCartridgeSubscription(cartridgeSubscription);
+
+            } catch (ADCException e) {
+                throw new CompositeApplicationException(e);
+            }
+        }
+    }
+
+    private void persistGroupSubscriptions (Collection<GroupSubscription> groupSubscriptions) throws CompositeApplicationException {
+
+        if (groupSubscriptions == null) {
+            return;
+        }
+
+        for (GroupSubscription groupSubscription : groupSubscriptions) {
+            try {
+                cartridgeSubscriptionManager.persistGroupSubscription(groupSubscription);
+
+            } catch (ADCException e) {
+                throw new CompositeApplicationException(e);
+            }
+        }
+    }
+
+    private void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription) throws CompositeApplicationException {
+
+        if (compositeAppSubscription != null) {
+            try {
+                cartridgeSubscriptionManager.persistCompositeAppSubscription(compositeAppSubscription);
+
+            } catch (ADCException e) {
+                throw new CompositeApplicationException(e);
+            }
+        }
+    }
 
 }

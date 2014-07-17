@@ -127,6 +127,45 @@ public class CartridgeSubscriptionManager {
 
         return serviceCartridgeSubscription;
     }
+
+    public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error saving subscription for tenant " +
+                    cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getType();
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Successful Subscription: " + cartridgeSubscription.toString());
+
+        // Publish tenant subscribed event to message broker
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                cartridgeSubscription.getCartridgeInfo().getType());
+    }
+
+    public void persistGroupSubscription (GroupSubscription groupSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().persistGroupSubscription(groupSubscription);
+
+        } catch (PersistenceManagerException e) {
+            throw new ADCException(e);
+        }
+    }
+
+    public void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().persistCompositeAppSubscription(compositeAppSubscription);
+
+        } catch (PersistenceManagerException e) {
+            throw new ADCException(e);
+        }
+    }
     
     public SubscriptionInfo subscribeToCartridgeWithProperties(SubscriptionData subscriptionData)  throws ADCException,
                                                                                             InvalidCartridgeAliasException,

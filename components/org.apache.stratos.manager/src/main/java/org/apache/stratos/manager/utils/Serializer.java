@@ -24,6 +24,8 @@ import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.ClusterIdToSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 import java.io.ByteArrayOutputStream;
@@ -59,20 +61,34 @@ public class Serializer {
 
     }
 
-    /**
-     * Serialize a ClusterIdToSubscription instance to a byte array.
-     * @param clusterIdToSubscription
-     * @return byte[]
-     * @throws java.io.IOException
-     */
-    public static byte[] serializeClusterIdToSubscriptionToByteArray(ClusterIdToSubscription clusterIdToSubscription)
+    public static byte[] serializeGroupSubscriptionToByteArray (GroupSubscription groupSubscription)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(clusterIdToSubscription);
+            out.writeObject(groupSubscription);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
+
+    }
+
+    public static byte[] serializeCompositeAppSubscriptionToByteArray (CompositeAppSubscription compositeAppSubscription)
+            throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(compositeAppSubscription);
 
             return bos.toByteArray();
 
@@ -93,48 +109,6 @@ public class Serializer {
         try {
             out = new ObjectOutputStream(bos);
             out.writeObject(service);
-
-            return bos.toByteArray();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            bos.close();
-        }
-
-    }
-    
-    // Grouping
-    public static byte[] serializeServiceToByteArray(ConfigCompositeApplication configCompositeApplication)
-            throws IOException {
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(configCompositeApplication);
-
-            return bos.toByteArray();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            bos.close();
-        }
-
-    }
-
-    // Grouping
-    public static byte[] serializeServiceToByteArray(CompositeAppDefinition configCompositeApplication)
-            throws IOException {
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput out = null;
-        try {
-            out = new ObjectOutputStream(bos);
-            out.writeObject(configCompositeApplication);
 
             return bos.toByteArray();
 
