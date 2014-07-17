@@ -40,8 +40,6 @@ public class CompositeAppSubscription implements Serializable {
 
     private Set<String> groupSubscriptionAliases;
 
-    private Subscriber subscriber;
-
     public CompositeAppSubscription (String appId) {
 
         this.appId = appId;
@@ -71,13 +69,5 @@ public class CompositeAppSubscription implements Serializable {
 
     public String getAppId() {
         return appId;
-    }
-
-    public Subscriber getSubscriber() {
-        return subscriber;
-    }
-
-    public void setSubscriber(Subscriber subscriber) {
-        this.subscriber = subscriber;
     }
 }

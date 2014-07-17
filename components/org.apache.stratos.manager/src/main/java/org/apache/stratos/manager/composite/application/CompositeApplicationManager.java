@@ -41,8 +41,7 @@ public class CompositeApplicationManager {
         // create the CompositeAppSubscription
         CompositeAppSubscription compositeAppSubscription;
         try {
-            compositeAppSubscription = cartridgeSubscriptionManager.createCompositeAppSubscription(compositeAppContext.getAppId(),
-                    tenantAdminUsername, tenantDomain, tenantId);
+            compositeAppSubscription = cartridgeSubscriptionManager.createCompositeAppSubscription(compositeAppContext.getAppId(), tenantId);
 
         } catch (CompositeAppSubscriptionException e) {
             throw new CompositeApplicationDefinitionException(e);
@@ -89,8 +88,7 @@ public class CompositeApplicationManager {
             }
 
             // create Group Subscriptions and collect them
-            for (GroupSubscription groupSubscription : getGroupSubscriptions(compositeAppContext.getGroupContexts(),
-                    tenantAdminUsername, tenantDomain, tenantId)) {
+            for (GroupSubscription groupSubscription : getGroupSubscriptions(compositeAppContext.getGroupContexts(), tenantId)) {
 
                 // check if a Group Subscription already exists with this alias for this Composite App
                 if (groupSubscriptionExistsForAlias(groupAliasToGroupSubscription, groupSubscription.getGroupAlias())) {
@@ -116,16 +114,14 @@ public class CompositeApplicationManager {
         return cartridgeSubscriptionAliases;
     }
 
-    private Set<GroupSubscription> getGroupSubscriptions (Set<GroupContext> groupContexts, String tenantAdminUsername,
-                                                          String tenantDomain, int tenantID) throws CompositeApplicationException {
+    private Set<GroupSubscription> getGroupSubscriptions (Set<GroupContext> groupContexts, int tenantID) throws CompositeApplicationException {
 
         Set<GroupSubscription> groupSubscriptions = new HashSet<GroupSubscription>();
         for (GroupContext groupContext : groupContexts) {
             // create Group Subscriptions for this Group
             GroupSubscription groupSubscription;
             try {
-                groupSubscription = cartridgeSubscriptionManager.createGroupSubscription(groupContext.getName(),
-                        groupContext.getAlias(), tenantAdminUsername, tenantDomain, tenantID);
+                groupSubscription = cartridgeSubscriptionManager.createGroupSubscription(groupContext.getName(), groupContext.getAlias(), tenantID);
 
             } catch (GroupSubscriptionException e) {
                 throw new CompositeApplicationException(e);
@@ -138,7 +134,7 @@ public class CompositeApplicationManager {
             if (groupContext.getGroupContexts() != null) {
                 groupSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(groupContext.getGroupContexts()));
                 // need to recurse to get other nested groups, if any
-                getGroupSubscriptions(groupContext.getGroupContexts(),tenantAdminUsername, tenantDomain, tenantID);
+                getGroupSubscriptions(groupContext.getGroupContexts(), tenantID);
             }
 
             groupSubscriptions.add(groupSubscription);

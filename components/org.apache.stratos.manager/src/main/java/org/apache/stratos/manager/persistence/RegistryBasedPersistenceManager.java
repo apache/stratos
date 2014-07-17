@@ -501,7 +501,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             if (log.isDebugEnabled()) {
                 log.debug("Deleted composite application on path " + resourcePath + " successfully");
             }
-            
+
     		if (log.isDebugEnabled()) {
     			obj = RegistryManager.getInstance().retrieve(resourcePath);
      			if (obj == null) {

@@ -58,8 +58,8 @@ public class CartridgeSubscriptionManager {
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
     //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
-    public GroupSubscription createGroupSubscription (String groupName, String groupAlias, String tenantAdminUsername,
-                                                      String tenantDomain, int tenantId) throws GroupSubscriptionException {
+    public GroupSubscription createGroupSubscription (String groupName, String groupAlias, int tenantId)
+            throws GroupSubscriptionException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
         GroupSubscription groupSubscription;
@@ -76,14 +76,10 @@ public class CartridgeSubscriptionManager {
             throw new GroupSubscriptionException("Group Subscription already exists with name [ " + groupName + " ], alias [ " + groupAlias + " ]");
         }
 
-        groupSubscription = new GroupSubscription(groupName, groupAlias);
-        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
-        groupSubscription.setSubscriber(subscriber);
-        return groupSubscription;
+        return new GroupSubscription(groupName, groupAlias);
     }
 
-    public CompositeAppSubscription createCompositeAppSubscription (String appId, String tenantAdminUsername,
-                                                                    String tenantDomain, int tenantId)  throws CompositeAppSubscriptionException {
+    public CompositeAppSubscription createCompositeAppSubscription (String appId, int tenantId)  throws CompositeAppSubscriptionException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
         CompositeAppSubscription compositeAppSubscription;
@@ -100,10 +96,7 @@ public class CartridgeSubscriptionManager {
             throw new CompositeAppSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
         }
 
-        compositeAppSubscription = new CompositeAppSubscription(appId);
-        Subscriber subscriber = new Subscriber(tenantAdminUsername, tenantId, tenantDomain);
-        compositeAppSubscription.setSubscriber(subscriber);
-        return compositeAppSubscription;
+        return new CompositeAppSubscription(appId);
     }
 
     public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,

@@ -35,8 +35,6 @@ public class GroupSubscription implements Serializable {
 
     private Set<String> groupSubscriptionAliases;
 
-    private Subscriber subscriber;
-
     public GroupSubscription (String name, String groupAlias) {
 
         this.name = name;
@@ -71,13 +69,5 @@ public class GroupSubscription implements Serializable {
 
     public String getName() {
         return name;
-    }
-
-    public Subscriber getSubscriber() {
-        return subscriber;
-    }
-
-    public void setSubscriber(Subscriber subscriber) {
-        this.subscriber = subscriber;
     }
 }
