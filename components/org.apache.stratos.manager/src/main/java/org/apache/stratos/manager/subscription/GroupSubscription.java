@@ -19,22 +19,17 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.jboss.util.propertyeditor.StringArrayEditor;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public class CompositeAppSubscription implements Serializable {
+public class GroupSubscription implements Serializable {
 
-    private static Log log = LogFactory.getLog(CompositeAppSubscription.class);
+    private String name;
 
-    private String appId;
+    private String groupAlias;
 
     private Set<String> cartridgeSubscriptionAliases;
 
@@ -42,9 +37,10 @@ public class CompositeAppSubscription implements Serializable {
 
     private Subscriber subscriber;
 
-    public CompositeAppSubscription (String appId) {
+    public GroupSubscription (String name, String groupAlias) {
 
-        this.appId = appId;
+        this.name = name;
+        this.groupAlias = groupAlias;
         cartridgeSubscriptionAliases = new HashSet<String>();
         groupSubscriptionAliases = new HashSet<String>();
     }
@@ -57,20 +53,24 @@ public class CompositeAppSubscription implements Serializable {
         cartridgeSubscriptionAliases.add(cartridgeSubscriptionAlias);
     }
 
-    public void addCartridgeSubscriptionAliases (Set<String> cartridgeSubscriptionAliases) {
-        cartridgeSubscriptionAliases.addAll(cartridgeSubscriptionAliases);
-    }
-
     public void addGroupSubscriptionAlias (String groupSubscriptionAlias) {
         groupSubscriptionAliases.add(groupSubscriptionAlias);
     }
 
-    public void addGroupSubscriptionAliases (Set<String> groupSubscriptionAliases) {
-        cartridgeSubscriptionAliases.addAll(groupSubscriptionAliases);
+    public void addCartridgeSubscriptionAliases (Set<String> cartridgeSubscriptionAliases) {
+        cartridgeSubscriptionAliases.addAll(cartridgeSubscriptionAliases);
     }
 
-    public String getAppId() {
-        return appId;
+    public void addGroupSubscriptionAliases (Set<String> groupSubscriptionAliases) {
+        groupSubscriptionAliases.addAll(groupSubscriptionAliases);
+    }
+
+    public String getGroupAlias() {
+        return groupAlias;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Subscriber getSubscriber() {

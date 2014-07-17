@@ -1,8 +1,6 @@
 package org.apache.stratos.manager.composite.application;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,18 +10,23 @@ import org.apache.stratos.manager.composite.application.parser.DefaultCompositeA
 import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
 import org.apache.stratos.manager.composite.application.structure.GroupContext;
 import org.apache.stratos.manager.composite.application.structure.SubscribableContext;
-import org.apache.stratos.manager.composite.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 //Grouping
 public class CompositeApplicationManager {
 	
 	private static Log log = LogFactory.getLog(CompositeApplicationManager.class);
+
+    CartridgeSubscriptionManager cartridgeSubscriptionManager;
+
+    public CompositeApplicationManager () {
+        cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
+    }
 	
 	public void deployCompositeApplication (CompositeAppDefinition compositeAppDefinition, int tenantId, String tenantDomain,
                                             String tenantAdminUsername) throws CompositeApplicationException, CompositeApplicationDefinitionException,
@@ -34,24 +37,126 @@ public class CompositeApplicationManager {
 
         log.info("Composite Application [ Id: " + compositeAppDefinition.getApplicationId() + " , alias: "
                 + compositeAppDefinition.getAlias() + " ] deployed successfully");
-        
-        //DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-        //mgr.persistCompositeApplication(compositeAppDefinition);
-        Set<CartridgeSubscription> cartridgeSubscriptions = new HashSet<CartridgeSubscription>();
+
+        // create the CompositeAppSubscription
+        CompositeAppSubscription compositeAppSubscription;
+        try {
+            compositeAppSubscription = cartridgeSubscriptionManager.createCompositeAppSubscription(compositeAppContext.getAppId(),
+                    tenantAdminUsername, tenantDomain, tenantId);
+
+        } catch (CompositeAppSubscriptionException e) {
+            throw new CompositeApplicationDefinitionException(e);
+        }
+
+        // keep track of all CartridgeSubscriptions, against the alias
+        Map<String, CartridgeSubscription> aliasToCartridgeSubscription = new HashMap<String, CartridgeSubscription>();
+
+        // Keep track of all Group Subscriptions
+        Map<String, GroupSubscription> groupAliasToGroupSubscription = new HashMap<String, GroupSubscription>();
 
         // traverse through the Composite App Structure and create Cartridge Subscriptions
         if(compositeAppContext.getSubscribableContexts() != null) {
-            // Subscription relevant to top level Subscribables
-            cartridgeSubscriptions.addAll(getCartridgeSybscriptionsForSubscribables(compositeAppContext.getSubscribableContexts(),
-                    tenantId, tenantDomain, tenantAdminUsername));
+            // Subscriptions relevant to top level Subscribables
+
+            for (CartridgeSubscription cartridgeSubscription : getCartridgeSybscriptionsForSubscribables(compositeAppContext.getSubscribableContexts(),
+                    tenantId, tenantDomain, tenantAdminUsername)) {
+
+                // check if a Cartridge Subscription already exists with this alias for this Composite App
+                if (cartridgeSubscriptionExistsForAlias(aliasToCartridgeSubscription, cartridgeSubscription.getAlias())) {
+                    throw new CompositeApplicationException("Cartridge Subscription with alias [ " + cartridgeSubscription.getAlias()
+                            + " ] already exists in Composite Application [ " + compositeAppSubscription.getAppId() + " ]");
+                }
+
+                aliasToCartridgeSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription);
+            }
+            // get top level cartridge aliases to add to Composite App Subscription
+            compositeAppSubscription.addCartridgeSubscriptionAliases(getCartrigdeSubscriptionAliases(compositeAppContext.getSubscribableContexts()));
         }
 
         if (compositeAppContext.getGroupContexts() != null) {
             // Subscriptions relevant to Groups
-            cartridgeSubscriptions.addAll(getCartridgeSubscriptionForGroups(compositeAppContext.getGroupContexts(), tenantId,
-                    tenantDomain, tenantAdminUsername));
+
+            for (CartridgeSubscription cartridgeSubscription : getCartridgeSubscriptionForGroups(compositeAppContext.getGroupContexts(), tenantId,
+                    tenantDomain, tenantAdminUsername)) {
+
+                // check if a Cartridge Subscription already exists with this alias for this Composite App
+                if (cartridgeSubscriptionExistsForAlias(aliasToCartridgeSubscription, cartridgeSubscription.getAlias())) {
+                    throw new CompositeApplicationException("Cartridge Subscription with alias [ " + cartridgeSubscription.getAlias()
+                            + " ] already exists in Composite Application [ " + compositeAppSubscription.getAppId() + " ]");
+                }
+
+                aliasToCartridgeSubscription.put(cartridgeSubscription.getAlias(), cartridgeSubscription);
+            }
+
+            // create Group Subscriptions and collect them
+            for (GroupSubscription groupSubscription : getGroupSubscriptions(compositeAppContext.getGroupContexts(),
+                    tenantAdminUsername, tenantDomain, tenantId)) {
+
+                // check if a Group Subscription already exists with this alias for this Composite App
+                if (groupSubscriptionExistsForAlias(groupAliasToGroupSubscription, groupSubscription.getGroupAlias())) {
+                    throw new CompositeApplicationException("Group Subscription with alias [ " + groupSubscription.getGroupAlias()
+                            + " ] already exists in Composite Application [ " + compositeAppSubscription.getAppId() + " ]");
+                }
+
+                groupAliasToGroupSubscription.put(groupSubscription.getGroupAlias(), groupSubscription);
+            }
+
+            // set top level group aliases to Composite App Subscription
+            compositeAppSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(compositeAppContext.getGroupContexts()));
         }
 	}
+
+    private Set<String> getCartrigdeSubscriptionAliases (Set<SubscribableContext> subscribableContexts) throws CompositeApplicationException {
+
+        Set<String> cartridgeSubscriptionAliases = new HashSet<String>();
+        for (SubscribableContext subscribableContext : subscribableContexts) {
+            cartridgeSubscriptionAliases.add(subscribableContext.getAlias());
+        }
+
+        return cartridgeSubscriptionAliases;
+    }
+
+    private Set<GroupSubscription> getGroupSubscriptions (Set<GroupContext> groupContexts, String tenantAdminUsername,
+                                                          String tenantDomain, int tenantID) throws CompositeApplicationException {
+
+        Set<GroupSubscription> groupSubscriptions = new HashSet<GroupSubscription>();
+        for (GroupContext groupContext : groupContexts) {
+            // create Group Subscriptions for this Group
+            GroupSubscription groupSubscription;
+            try {
+                groupSubscription = cartridgeSubscriptionManager.createGroupSubscription(groupContext.getName(),
+                        groupContext.getAlias(), tenantAdminUsername, tenantDomain, tenantID);
+
+            } catch (GroupSubscriptionException e) {
+                throw new CompositeApplicationException(e);
+            }
+            if (groupContext.getSubscribableContexts() != null) {
+                groupSubscription.addCartridgeSubscriptionAliases(getCartrigdeSubscriptionAliases(groupContext.getSubscribableContexts()));
+            }
+
+            // nested Group
+            if (groupContext.getGroupContexts() != null) {
+                groupSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(groupContext.getGroupContexts()));
+                // need to recurse to get other nested groups, if any
+                getGroupSubscriptions(groupContext.getGroupContexts(),tenantAdminUsername, tenantDomain, tenantID);
+            }
+
+            groupSubscriptions.add(groupSubscription);
+        }
+
+        return groupSubscriptions;
+    }
+
+    private Set<String> getGroupSubscriptionAliases (Set<GroupContext> groupContexts) throws CompositeApplicationException {
+
+        Set<String> topLevelGroupAliases = new HashSet<String>();
+
+        for (GroupContext topLevelGroupCtxt : groupContexts) {
+            topLevelGroupAliases.add(topLevelGroupCtxt.getAlias());
+        }
+
+        return topLevelGroupAliases;
+    }
 
     private Set<CartridgeSubscription> getCartridgeSubscriptionForGroups (Set<GroupContext> groupContexts,
                                                                           int tenantId, String tenantDomain,
@@ -136,104 +241,117 @@ public class CompositeApplicationManager {
         }
 
     }
+
+    private boolean cartridgeSubscriptionExistsForAlias (Map<String, CartridgeSubscription> aliasToCartridgeSubscription,
+                                                                 String newCartridgeSubscriptionAlias) {
+
+        return aliasToCartridgeSubscription.get(newCartridgeSubscriptionAlias) != null;
+    }
+
+
+    private boolean groupSubscriptionExistsForAlias (Map<String, GroupSubscription> groupAliasToGroupSubscription,
+                                                         String newGroupSubscriptionAlias) {
+
+        return groupAliasToGroupSubscription.get(newGroupSubscriptionAlias) != null;
+    }
 	
-	public void unDeployCompositeApplication(String configApplicationAlias) throws ADCException {
-		if (log.isDebugEnabled()) {
-			log.debug("undeploying composite application " + configApplicationAlias);
-		}
-		// unregister application
-		unRegisterCompositeApplication(configApplicationAlias);
-		if (log.isDebugEnabled()) {
-			log.debug("publishing composite application removed event" + configApplicationAlias);
-		}
-		ApplicationUtils.publishApplicationUnDeployEvent(configApplicationAlias);
-		if (log.isDebugEnabled()) {
-			log.debug("composite application successfully removed " + configApplicationAlias);
-		}
-	}
+//	public void unDeployCompositeApplication(String configApplicationAlias) throws ADCException {
+//		if (log.isDebugEnabled()) {
+//			log.debug("undeploying composite application " + configApplicationAlias);
+//		}
+//		// unregister application
+//		unRegisterCompositeApplication(configApplicationAlias);
+//		if (log.isDebugEnabled()) {
+//			log.debug("publishing composite application removed event" + configApplicationAlias);
+//		}
+//		ApplicationUtils.publishApplicationUnDeployEvent(configApplicationAlias);
+//		if (log.isDebugEnabled()) {
+//			log.debug("composite application successfully removed " + configApplicationAlias);
+//		}
+//	}
 	
-	private void registerCompositeApplication(ConfigCompositeApplication configCompositeApplication) throws ADCException {
-		
-		try {
-			if (log.isDebugEnabled()) {
-				log.debug("registering composite application " + configCompositeApplication.getAlias());
-			}
-			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-			mgr.persistCompositeApplication ( configCompositeApplication);
-			
-			if (log.isDebugEnabled()) {
-				log.debug("testing to retrieve persisted composite application ");
-				Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
-				log.debug("retrieved persisted composite application " + apps.size());
-				for (ConfigCompositeApplication app : apps) {
-					log.debug("retrieved persisted composite application " + app.getAlias());
-				}
-			}
-
-        } catch (PersistenceManagerException e) {
-            String errorMsg = "Error saving composite application " + configCompositeApplication.getAlias();
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Successfully registered composite application " + configCompositeApplication.getAlias());
-		
-	}
+//	private void registerCompositeApplication(ConfigCompositeApplication configCompositeApplication) throws ADCException {
+//
+//		try {
+//			if (log.isDebugEnabled()) {
+//				log.debug("registering composite application " + configCompositeApplication.getAlias());
+//			}
+//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
+//			mgr.persistCompositeApplication ( configCompositeApplication);
+//
+//			if (log.isDebugEnabled()) {
+//				log.debug("testing to retrieve persisted composite application ");
+//				Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
+//				log.debug("retrieved persisted composite application " + apps.size());
+//				for (ConfigCompositeApplication app : apps) {
+//					log.debug("retrieved persisted composite application " + app.getAlias());
+//				}
+//			}
+//
+//        } catch (PersistenceManagerException e) {
+//            String errorMsg = "Error saving composite application " + configCompositeApplication.getAlias();
+//            log.error(errorMsg);
+//            throw new ADCException(errorMsg, e);
+//        }
+//
+//        log.info("Successfully registered composite application " + configCompositeApplication.getAlias());
+//
+//	}
 	
-	private void unRegisterCompositeApplication(String configApplicationAlias) throws ADCException {
-		
-		try {
-			if (log.isDebugEnabled()) {
-				log.debug("unregistering composite application " + configApplicationAlias);
-			}
-			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-			mgr.removeCompositeApplication(configApplicationAlias); 
-			
-			if (log.isDebugEnabled()) {
-				log.debug("removed persisted composite application successfully");
-			}
-
-        } catch (PersistenceManagerException e) {
-            String errorMsg = "Error undeploying composite application " + configApplicationAlias;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Successfully undeployed composite application " + configApplicationAlias);
-		
-	}
+//	private void unRegisterCompositeApplication(String configApplicationAlias) throws ADCException {
+//
+//		try {
+//			if (log.isDebugEnabled()) {
+//				log.debug("unregistering composite application " + configApplicationAlias);
+//			}
+//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
+//			mgr.removeCompositeApplication(configApplicationAlias);
+//
+//			if (log.isDebugEnabled()) {
+//				log.debug("removed persisted composite application successfully");
+//			}
+//
+//        } catch (PersistenceManagerException e) {
+//            String errorMsg = "Error undeploying composite application " + configApplicationAlias;
+//            log.error(errorMsg);
+//            throw new ADCException(errorMsg, e);
+//        }
+//
+//        log.info("Successfully undeployed composite application " + configApplicationAlias);
+//
+//	}
 	
-	public void restoreCompositeApplications () throws ADCException {
-		try {
-			if (log.isDebugEnabled()) {
-				log.debug("restoring composite applications " );
-			}
-			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
-			Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
-			
-			if (apps == null) {
-				if (log.isDebugEnabled()) {			
-					log.debug("no composite application configured");
-				}
-				return;
-			}
-			if (log.isDebugEnabled()) {			
-				log.debug("retrieved persisted composite application " + apps.size());
-				for (ConfigCompositeApplication app : apps) {
-					log.debug("retrieved persisted composite application " + app.getAlias());
-				}
-			}
-			// sending application created event to restore in Toplogy
-			for (ConfigCompositeApplication app : apps) {
-				log.debug("restoring composite application " + app.getAlias());
-				ApplicationUtils.publishApplicationCreatedEvent(app);
-			}
-
-        } catch (PersistenceManagerException e) {
-            String errorMsg = "Error restoring composite application ";
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-	}
+//	public void restoreCompositeApplications () throws ADCException {
+//		try {
+//			if (log.isDebugEnabled()) {
+//				log.debug("restoring composite applications " );
+//			}
+//			DataInsertionAndRetrievalManager mgr = new DataInsertionAndRetrievalManager();
+//			Collection<ConfigCompositeApplication> apps = mgr.getCompositeApplications();
+//
+//			if (apps == null) {
+//				if (log.isDebugEnabled()) {
+//					log.debug("no composite application configured");
+//				}
+//				return;
+//			}
+//			if (log.isDebugEnabled()) {
+//				log.debug("retrieved persisted composite application " + apps.size());
+//				for (ConfigCompositeApplication app : apps) {
+//					log.debug("retrieved persisted composite application " + app.getAlias());
+//				}
+//			}
+//			// sending application created event to restore in Toplogy
+//			for (ConfigCompositeApplication app : apps) {
+//				log.debug("restoring composite application " + app.getAlias());
+//				ApplicationUtils.publishApplicationCreatedEvent(app);
+//			}
+//
+//        } catch (PersistenceManagerException e) {
+//            String errorMsg = "Error restoring composite application ";
+//            log.error(errorMsg);
+//            throw new ADCException(errorMsg, e);
+//        }
+//	}
 
 }

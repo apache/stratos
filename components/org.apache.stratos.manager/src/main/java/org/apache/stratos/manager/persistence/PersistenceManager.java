@@ -19,18 +19,27 @@
 
 package org.apache.stratos.manager.persistence;
 
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
+import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 
 import java.util.Collection;
 
 public abstract class PersistenceManager {
 
     public abstract void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription)
+            throws PersistenceManagerException;
+
+    public abstract void persistGroupSubscription (GroupSubscription groupSubscription)
+            throws PersistenceManagerException;
+
+    public abstract GroupSubscription getGroupSubscription (int tenantId, String groupName, String groupAlias)
+                throws PersistenceManagerException;
+
+    public abstract void removeGroupSubscription (int tenantId, String groupName, String groupAlias)
             throws PersistenceManagerException;
 
     public abstract void removeCartridgeSubscription (int tenantId, String type, String alias)
@@ -40,6 +49,15 @@ public abstract class PersistenceManager {
             throws PersistenceManagerException;
 
     public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
+            throws PersistenceManagerException;
+
+    public abstract void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription)
+            throws PersistenceManagerException;
+
+    public abstract CompositeAppSubscription getCompositeAppSubscription (int tenantId, String compositeAppId)
+            throws PersistenceManagerException;
+
+    public abstract void removeCompositeAppSubscription (int tenantId, String compositeAppId)
             throws PersistenceManagerException;
 
     public abstract void persistService (Service service) throws PersistenceManagerException;
@@ -55,14 +73,4 @@ public abstract class PersistenceManager {
     public abstract ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException;
 
     public abstract void removeServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException;
-    
-    //Grouping
-    public abstract void persistDeployedCompositeApplication(ConfigCompositeApplication configCompositeApplication)  throws PersistenceManagerException;
-    public abstract void persistCompositeApplication(CompositeAppDefinition compositeApplication)  throws PersistenceManagerException;
-
-    //Grouping
-    public abstract void removeDeployedCompositeApplication(String configCompositeApplicationAlias)  throws PersistenceManagerException;
-
-    public abstract Collection<ConfigCompositeApplication> getDeployedCompositeApplications () throws PersistenceManagerException;
-
 }
