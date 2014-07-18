@@ -35,6 +35,8 @@ public class CompositeApplicationManager {
         CompositeApplicationParser compositeAppParser = new DefaultCompositeApplicationParser();
         CompositeAppContext compositeAppContext = compositeAppParser.parse(compositeAppDefinition);
 
+        Set<GroupContext> topLevelGroupsContexts = compositeAppContext.getGroupContexts();
+
         log.info("Composite Application [ Id: " + compositeAppDefinition.getApplicationId() + " , alias: "
                 + compositeAppDefinition.getAlias() + " ] deployed successfully");
 

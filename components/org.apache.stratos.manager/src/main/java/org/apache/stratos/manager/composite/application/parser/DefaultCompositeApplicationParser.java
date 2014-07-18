@@ -224,7 +224,51 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             groupContexts.add(getGroupContext(group, subscribableInformation, definedGroups));
         }
 
+        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupContexts);
+        Set<GroupContext> nestedGroupContexts = new HashSet<GroupContext>();
+        getNestedGroupContexts(nestedGroupContexts, groupContexts);
+        filterDuplicatedGroupContexts(groupContexts, nestedGroupContexts);
+
         return groupContexts;
+    }
+
+//    private Set<GroupContext> getTopLevelGroupContexts (Set<GroupContext> groupContexts) {
+//
+//        Set<GroupContext> topLevelGroupContexts = new HashSet<GroupContext>();
+//        for (GroupContext groupContext : groupContexts) {
+//            topLevelGroupContexts.add(groupContext);
+//        }
+//
+//        return topLevelGroupContexts;
+//    }
+
+    private void getNestedGroupContexts (Set<GroupContext> nestedGroupContexts, Set<GroupContext> groupContexts) {
+
+        if (groupContexts != null) {
+            for (GroupContext groupContext : groupContexts) {
+                if (groupContext.getGroupContexts() != null) {
+                    nestedGroupContexts.addAll(groupContext.getGroupContexts());
+                    getNestedGroupContexts(nestedGroupContexts, groupContext.getGroupContexts());
+                }
+            }
+        }
+    }
+
+    private void filterDuplicatedGroupContexts (Set<GroupContext> topLevelGroupContexts, Set<GroupContext> nestedGroupContexts) {
+
+        Iterator<GroupContext> parentIterator = topLevelGroupContexts.iterator();
+        Iterator<GroupContext> nestedIterator = nestedGroupContexts.iterator();
+
+        while (parentIterator.hasNext()) {
+            GroupContext parentGroupCtxt = parentIterator.next();
+            while (nestedIterator.hasNext()) {
+                GroupContext nestedGroupCtxt = nestedIterator.next();
+                if (parentGroupCtxt.getName().equals(nestedGroupCtxt.getName()) &&
+                        parentGroupCtxt.getAlias().equals(nestedGroupCtxt.getAlias())) {
+                    parentIterator.remove();
+                }
+            }
+        }
     }
 
     private GroupContext getGroupContext (GroupDefinition group, Map<String, SubscribableInfo> subscribableInformation,
@@ -238,21 +282,25 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
 
         GroupContext groupContext = new GroupContext();
+
+        groupContext.setName(group.getName());
+        groupContext.setAlias(group.getAlias());
+        groupContext.setAutoscalingPolicy(group.getAutoscalingPolicy());
+        groupContext.setDeploymentPolicy(group.getDeploymentPolicy());
+        groupContext.setStartupOrder(getStartupOrderForGroup(group.getName()));
+        groupContext.setKillBehaviour(getKillbehaviour(group.getName()));
+
         // get group level Subscribables
         if (group.getSubscribables() != null) {
-            groupContext.setName(group.getName());
-            groupContext.setAlias(group.getAlias());
-            groupContext.setAutoscalingPolicy(group.getAutoscalingPolicy());
-            groupContext.setDeploymentPolicy(group.getDeploymentPolicy());
             groupContext.setSubscribableContexts(getSubsribableContexts(group.getSubscribables(), subscribableInformation));
-            groupContext.setStartupOrder(getStartupOrderForGroup(group.getName()));
-            groupContext.setKillBehaviour(getKillbehaviour(group.getName()));
         }
         // get nested groups
         if (group.getSubGroups() != null) {
             Set<GroupContext> nestedGroupContexts = new HashSet<GroupContext>();
             // check sub groups
             for (GroupDefinition subGroup : group.getSubGroups()) {
+                // get the complete Group Definition
+                subGroup = definedGroups.get(subGroup.getAlias());
                 nestedGroupContexts.add(getGroupContext(subGroup, subscribableInformation, definedGroups));
             }
 
