@@ -81,7 +81,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
         // persist
         try {
-            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + CARTRIDGES + ACTIVE_SUBSCRIPTIONS + "/" +
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + CARTRIDGES + "/" +
                     Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()) + "/" +
                     cartridgeSubscription.getType() + "/" +
                     cartridgeSubscription.getAlias(), Serializer.serializeSubscriptionSontextToByteArray(cartridgeSubscription), cartridgeSubscription.getClusterDomain());

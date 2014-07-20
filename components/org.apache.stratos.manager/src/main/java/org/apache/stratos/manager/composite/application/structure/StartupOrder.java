@@ -45,4 +45,22 @@ public class StartupOrder {
     public void setAfter(String after) {
         this.after = after;
     }
+
+    public boolean equals(Object other) {
+
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof StartupOrder)) {
+            return false;
+        }
+
+        StartupOrder that = (StartupOrder)other;
+        return this.start.equals(that.start) && this.after.equals(that.after);
+    }
+
+    public int hashCode () {
+
+        return start.hashCode() + after.hashCode();
+    }
 }

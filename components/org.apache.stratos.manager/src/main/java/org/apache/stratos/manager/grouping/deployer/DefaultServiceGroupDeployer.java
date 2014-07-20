@@ -59,7 +59,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             throw new InvalidServiceGroupException("Service Group definition not found");
         }
 
-        // if any cartridges are specified in the group, they should be already deployed
+//        if any cartridges are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getCartridges() != null) {
             List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
 

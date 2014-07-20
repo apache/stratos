@@ -19,7 +19,6 @@
 
 package org.apache.stratos.manager.composite.application.structure;
 
-import java.util.List;
 import java.util.Set;
 
 public class GroupContext {
@@ -103,5 +102,23 @@ public class GroupContext {
 
     public void setSubscribableContexts(Set<SubscribableContext> subscribableContexts) {
         this.subscribableContexts = subscribableContexts;
+    }
+
+    public boolean equals(Object other) {
+
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof GroupContext)) {
+            return false;
+        }
+
+        GroupContext that = (GroupContext)other;
+        return this.name.equals(that.name) && this.alias.equals(that.alias);
+    }
+
+    public int hashCode () {
+
+        return name.hashCode() + alias.hashCode();
     }
 }

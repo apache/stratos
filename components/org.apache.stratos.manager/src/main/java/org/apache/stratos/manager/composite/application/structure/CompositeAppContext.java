@@ -33,6 +33,10 @@ public class CompositeAppContext {
 
     private String killBehaviour;
 
+    public CompositeAppContext (String appId) {
+        this.appId = appId;
+    }
+
     public String getAppId() {
         return appId;
     }
@@ -71,5 +75,23 @@ public class CompositeAppContext {
 
     public void setKillBehaviour(String killBehaviour) {
         this.killBehaviour = killBehaviour;
+    }
+
+    public boolean equals(Object other) {
+
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof CompositeAppContext)) {
+            return false;
+        }
+
+        CompositeAppContext that = (CompositeAppContext)other;
+        return this.appId.equals(that.appId);
+    }
+
+    public int hashCode () {
+
+        return appId.hashCode();
     }
 }

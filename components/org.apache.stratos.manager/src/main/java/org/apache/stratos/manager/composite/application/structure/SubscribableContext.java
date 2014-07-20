@@ -105,4 +105,22 @@ public class SubscribableContext {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public boolean equals(Object other) {
+
+        if(this == other) {
+            return true;
+        }
+        if(!(other instanceof SubscribableContext)) {
+            return false;
+        }
+
+        SubscribableContext that = (SubscribableContext)other;
+        return this.cartridgeType.equals(that.cartridgeType) && this.alias.equals(that.alias);
+    }
+
+    public int hashCode () {
+
+        return cartridgeType.hashCode() + alias.hashCode();
+    }
 }

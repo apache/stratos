@@ -186,10 +186,10 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
                                                             Map<String, SubscribableInfo> subscribableInformation)
             throws CompositeApplicationDefinitionException {
 
-        CompositeAppContext compositeAppContext = new CompositeAppContext();
+        CompositeAppContext compositeAppContext = new CompositeAppContext(compositeAppDefinition.getApplicationId());
 
-        // get top level Subscribables
         if (compositeAppDefinition.getComponents() != null) {
+            // get top level Subscribables
             if (compositeAppDefinition.getComponents().getSubscribables() != null) {
                 compositeAppContext.setSubscribableContexts(getSubsribableContexts(compositeAppDefinition.getComponents().getSubscribables(),
                         subscribableInformation));
