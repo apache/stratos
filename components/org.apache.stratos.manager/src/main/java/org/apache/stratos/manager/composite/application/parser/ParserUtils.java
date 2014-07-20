@@ -19,16 +19,12 @@
 
 package org.apache.stratos.manager.composite.application.parser;
 
-import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
-import org.apache.stratos.manager.composite.application.structure.GroupContext;
 import org.apache.stratos.manager.composite.application.structure.StartupOrder;
 import org.apache.stratos.manager.composite.application.structure.SubscribableContext;
-import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

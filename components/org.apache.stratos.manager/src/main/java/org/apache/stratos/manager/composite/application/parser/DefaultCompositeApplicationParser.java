@@ -19,8 +19,11 @@
 
 package org.apache.stratos.manager.composite.application.parser;
 
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -36,6 +39,7 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class DefaultCompositeApplicationParser implements CompositeApplicationParser {
@@ -58,7 +62,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
 
         if (compositeAppDefinition == null) {
-            throw new CompositeApplicationDefinitionException("Invlaid Composite Application Defintion");
+            throw new CompositeApplicationDefinitionException("Invalid Composite Application Definition");
         }
 
         if (compositeAppDefinition.getAlias() == null || compositeAppDefinition.getAlias().isEmpty()) {
@@ -89,6 +93,10 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
                 log.debug("Subscribable Information alias: " + subscribableInfoEntry.getKey());
             }
             log.debug(" ]");
+        }
+
+        if (subscribablesInfo == null) {
+            throw new CompositeApplicationDefinitionException("Invalid Composite Application Definition, no Subscribable Information specified");
         }
 
         return buildCompositeAppStructure (compositeAppDefinition, definedGroups, subscribablesInfo);
@@ -263,8 +271,9 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             GroupContext parentGroupCtxt = parentIterator.next();
             while (nestedIterator.hasNext()) {
                 GroupContext nestedGroupCtxt = nestedIterator.next();
-                if (parentGroupCtxt.getName().equals(nestedGroupCtxt.getName()) &&
-                        parentGroupCtxt.getAlias().equals(nestedGroupCtxt.getAlias())) {
+                // if there is an exactly similar nested Group Context and a top level Group Context
+                // it implies that they are duplicates. Should be removed from top level.
+                if (parentGroupCtxt.equals(nestedGroupCtxt)) {
                     parentIterator.remove();
                 }
             }
@@ -387,10 +396,44 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
                         + subscribableDefinition.getAlias());
             }
 
+            // check if Cartridge Type is valid
+            if (subscribableDefinition.getType() == null || subscribableDefinition.getType().isEmpty()) {
+                throw new CompositeApplicationDefinitionException ("Invalid Cartridge Type specified : [ "
+                        + subscribableDefinition.getType() + " ]");
+            }
+
+            // check if a cartridge with relevant type is already deployed. else, can't continue
+            if (!isCartrigdeDeployed(subscribableDefinition.getType())) {
+                throw new CompositeApplicationDefinitionException("No deployed Cartridge found with type [ " + subscribableDefinition.getType() +
+                        " ] for Composite Application");
+            }
+
             subscribableContexts.add(ParserUtils.convert(subscribableDefinition, subscribableInfo));
         }
 
         return subscribableContexts;
+    }
+
+    private boolean isCartrigdeDeployed (String cartridgeType) throws CompositeApplicationDefinitionException {
+
+        CloudControllerServiceClient ccServiceClient;
+
+        try {
+            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+
+        } catch (AxisFault axisFault) {
+            throw new CompositeApplicationDefinitionException(axisFault);
+        }
+
+        try {
+            return ccServiceClient.getCartridgeInfo(cartridgeType) != null;
+
+        } catch (RemoteException e) {
+            throw new CompositeApplicationDefinitionException(e);
+
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            throw new CompositeApplicationDefinitionException(e);
+        }
     }
 
 }
