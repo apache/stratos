@@ -88,7 +88,9 @@ public class CompositeApplicationManager {
             }
 
             // create Group Subscriptions and collect them
-            for (GroupSubscription groupSubscription : getGroupSubscriptions(compositeAppContext.getGroupContexts(), tenantId)) {
+            List<GroupSubscription> groupSubscriptions = new LinkedList<GroupSubscription>();
+            getGroupSubscriptions(compositeAppContext.getGroupContexts(), tenantId, groupSubscriptions);
+            for (GroupSubscription groupSubscription : groupSubscriptions) {
 
                 // check if a Group Subscription already exists with this alias for this Composite App
                 if (groupSubscriptionExistsForAlias(groupAliasToGroupSubscription, groupSubscription.getGroupAlias())) {
@@ -120,9 +122,8 @@ public class CompositeApplicationManager {
         return cartridgeSubscriptionAliases;
     }
 
-    private Set<GroupSubscription> getGroupSubscriptions (Set<GroupContext> groupContexts, int tenantID) throws CompositeApplicationException {
+    private void getGroupSubscriptions(Set<GroupContext> groupContexts, int tenantID, List<GroupSubscription> groupSubscriptions) throws CompositeApplicationException {
 
-        Set<GroupSubscription> groupSubscriptions = new HashSet<GroupSubscription>();
         for (GroupContext groupContext : groupContexts) {
             // create Group Subscriptions for this Group
             GroupSubscription groupSubscription;
@@ -140,13 +141,11 @@ public class CompositeApplicationManager {
             if (groupContext.getGroupContexts() != null) {
                 groupSubscription.addGroupSubscriptionAliases(getGroupSubscriptionAliases(groupContext.getGroupContexts()));
                 // need to recurse to get other nested groups, if any
-                getGroupSubscriptions(groupContext.getGroupContexts(), tenantID);
+                getGroupSubscriptions(groupContext.getGroupContexts(), tenantID, groupSubscriptions);
             }
 
             groupSubscriptions.add(groupSubscription);
         }
-
-        return groupSubscriptions;
     }
 
     private Set<String> getGroupSubscriptionAliases (Set<GroupContext> groupContexts) throws CompositeApplicationException {
