@@ -19,7 +19,7 @@ class agent(
   $version                = '4.0.0',
   $owner                  = 'root',
   $group                  = 'root',
-  $target                 = "/mnt/${server_ip}",
+  $target                 = "/mnt",
   $type                   = 'default',
   $enable_artifact_update = true,
   $auto_commit            = false,
