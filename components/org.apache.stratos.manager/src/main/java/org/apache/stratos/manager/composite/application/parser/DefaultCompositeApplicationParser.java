@@ -264,18 +264,20 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
 
     private void filterDuplicatedGroupContexts (Set<GroupContext> topLevelGroupContexts, Set<GroupContext> nestedGroupContexts) {
 
-        Iterator<GroupContext> parentIterator = topLevelGroupContexts.iterator();
-        Iterator<GroupContext> nestedIterator = nestedGroupContexts.iterator();
+        for (GroupContext nestedGropCtxt : nestedGroupContexts) {
+            filterNestedGroupFromTopLevel(topLevelGroupContexts, nestedGropCtxt);
+        }
+    }
 
+    private void filterNestedGroupFromTopLevel (Set<GroupContext> topLevelGroupContexts, GroupContext nestedGroupCtxt) {
+
+        Iterator<GroupContext> parentIterator = topLevelGroupContexts.iterator();
         while (parentIterator.hasNext()) {
             GroupContext parentGroupCtxt = parentIterator.next();
-            while (nestedIterator.hasNext()) {
-                GroupContext nestedGroupCtxt = nestedIterator.next();
-                // if there is an exactly similar nested Group Context and a top level Group Context
-                // it implies that they are duplicates. Should be removed from top level.
-                if (parentGroupCtxt.equals(nestedGroupCtxt)) {
-                    parentIterator.remove();
-                }
+            // if there is an exactly similar nested Group Context and a top level Group Context
+            // it implies that they are duplicates. Should be removed from top level.
+            if (parentGroupCtxt.equals(nestedGroupCtxt)) {
+                parentIterator.remove();
             }
         }
     }
