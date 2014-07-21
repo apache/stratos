@@ -105,9 +105,8 @@ public class CompositeApplicationManager {
 
         // TODO: send the Composite App structure to CC
 
-        persistCartridgeSubscriptions(aliasToCartridgeSubscription.values());
-        persistGroupSubscriptions(groupAliasToGroupSubscription.values());
-        persistCompositeAppSubscription(compositeAppSubscription);
+        // persist
+        persistSubscriptions(aliasToCartridgeSubscription.values(), groupAliasToGroupSubscription.values(), compositeAppSubscription);
 	}
 
     private Set<String> getCartrigdeSubscriptionAliases (Set<SubscribableContext> subscribableContexts) throws CompositeApplicationException {
@@ -255,6 +254,16 @@ public class CompositeApplicationManager {
                                                          String newGroupSubscriptionAlias) {
 
         return groupAliasToGroupSubscription.get(newGroupSubscriptionAlias) != null;
+    }
+
+    private synchronized void persistSubscriptions(Collection<CartridgeSubscription> cartridgeSubscriptions,
+                                                   Collection<GroupSubscription> groupSubscriptions,
+                                                   CompositeAppSubscription compositeAppSubscription)
+        throws CompositeApplicationException {
+
+        persistCartridgeSubscriptions(cartridgeSubscriptions);
+        persistGroupSubscriptions(groupSubscriptions);
+        persistCompositeAppSubscription(compositeAppSubscription);
     }
 
     private void persistCartridgeSubscriptions (Collection<CartridgeSubscription> cartridgeSubscriptions) throws CompositeApplicationException {
