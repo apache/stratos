@@ -34,9 +34,9 @@ public class SubscribableInfo {
 
     private boolean privateRepo;
 
-    private String username;
+    private String repoUsername;
 
-    private String password;
+    private String repoPassword;
 
     public String getAlias() {
         return alias;
@@ -78,19 +78,19 @@ public class SubscribableInfo {
         this.privateRepo = privateRepo;
     }
 
-    public String getUsername() {
-        return username;
+    public String getRepoUsername() {
+        return repoUsername;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setRepoUsername(String repoUsername) {
+        this.repoUsername = repoUsername;
     }
 
-    public String getPassword() {
-        return password;
+    public String getRepoPassword() {
+        return repoPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setRepoPassword(String repoPassword) {
+        this.repoPassword = repoPassword;
     }
 }

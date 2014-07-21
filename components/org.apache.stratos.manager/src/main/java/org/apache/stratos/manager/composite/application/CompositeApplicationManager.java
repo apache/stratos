@@ -36,7 +36,7 @@ public class CompositeApplicationManager {
         CompositeAppContext compositeAppContext = compositeAppParser.parse(compositeAppDefinition);
 
         log.info("Composite Application [ Id: " + compositeAppDefinition.getApplicationId() + " , alias: "
-                + compositeAppDefinition.getAlias() + " ] deployed successfully");
+                + compositeAppDefinition.getAlias() + " ] parsed successfully");
 
         // create the CompositeAppSubscription
         CompositeAppSubscription compositeAppSubscription;

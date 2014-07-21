@@ -40,8 +40,8 @@ public class ParserUtils {
         if (subscribableInfo.getRepoUrl() != null && !subscribableInfo.getRepoUrl().isEmpty()) {
             subscribableContext.setRepoUrl(subscribableInfo.getRepoUrl());
             subscribableContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
-            subscribableContext.setUsername(subscribableInfo.getUsername());
-            subscribableContext.setPassword(subscribableInfo.getPassword());
+            subscribableContext.setUsername(subscribableInfo.getRepoUsername());
+            subscribableContext.setPassword(subscribableInfo.getRepoPassword());
         }
 
         return subscribableContext;
