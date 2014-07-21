@@ -110,6 +110,7 @@
 		<exclude>*:jboss-transaction-api*</exclude>
 		<exclude>*:wrapper*</exclude>
 		<exclude>*:xom*</exclude>
+		<exclude>slf4j.wso2:slf4j</exclude>
 	    </excludes>
             <outputDirectory>/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
