@@ -64,6 +64,11 @@
             <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+            <version>${wso2carbon.version}</version>
+        </dependency>
+        <dependency>
     		<groupId>com.jamesmurty.utils</groupId>
     		<artifactId>java-xmlbuilder</artifactId>
     		<version>0.6</version>

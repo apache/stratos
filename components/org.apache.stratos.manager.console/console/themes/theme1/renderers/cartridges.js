@@ -28,7 +28,6 @@ var render = function (theme, data, meta, require) {
         var cartridges = data.cartridges.cartridge,cartridges_new =[];
 
 
-
         for (var i = 0; i < cartridges.length; i++) {
             if(cartridges[i].serviceGroup != undefined){
                 if(!cartridges[i].done){
@@ -37,9 +36,10 @@ var render = function (theme, data, meta, require) {
                     var newObj = {};
                     var serviceGroup = cartridges[i].serviceGroup;
                     newObj.serviceGroup = serviceGroup;
+                    newObj.cartridgeType = cartridges[i].cartridgeType;
                     newObj.items = [];
                     newObj.items.push(parse(stringify(cartridges[i])));
-
+                    newObj.version = cartridges[i].version;
                     for (var j = 0; j < cartridges.length; j++) {
                         if(cartridges[j].serviceGroup == serviceGroup && !cartridges[j].done){
                             cartridges[j].done =true;
@@ -106,6 +106,7 @@ var render = function (theme, data, meta, require) {
                             class_name:"btn-default",
                             class_icon: 'icons-arrow-left'
                         },
+                        bamInfo:data.bamInfo,
                         has_help:false,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
@@ -142,7 +143,7 @@ var render = function (theme, data, meta, require) {
                             name: 'Subscribe to Cartridge',
                             class_name: 'btn-important'
                         },
-                        has_help:false,
+                        has_help: true,
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }

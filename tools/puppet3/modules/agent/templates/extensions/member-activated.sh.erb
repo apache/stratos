@@ -1,0 +1,303 @@
+#!/bin/bash
+# --------------------------------------------------------------
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# --------------------------------------------------------------
+# This extension script will be executed when member activated
+# event is received.
+# --------------------------------------------------------------
+#
+
+# Execute error_handler function on script error
+trap 'error_handler ${LINENO} $?' ERR
+
+log=/var/log/apache-stratos/cartridge-agent-extensions-member.activated.log
+VERBOSE=1
+DATE=`which date` || print_error "date command not found"
+ECHO=`which echo` || print_error "echo command not found"
+GREP=`which grep` || print_error "grep command not found"
+PS=`which ps` || print_error "ps command not found"
+SED=`which sed` || print_error "sed command not found"
+
+function printParameters(){
+	${ECHO} -e  "LB IP: ${STRATOS_LB_IP}" | tee -a $log
+	${ECHO} -e  "LB PUBLIC IP: ${STRATOS_LB_PUBLIC_IP}" | tee -a $log
+	${ECHO} -e  "STRATOS_PARAM_FILE_PATH: ${STRATOS_PARAM_FILE_PATH}"
+	${ECHO} -e  "Member List: ${STRATOS_MEMBER_LIST_JSON}" | tee -a $log
+	${ECHO} -e  "Complete Topology: ${STRATOS_TOPOLOGY_JSON}" | tee -a $log
+	${ECHO} -e  "Members in LB: ${STRATOS_MEMBERS_IN_LB_JSON}" | tee -a $log
+	${ECHO} -e  "APP_PATH: ${STRATOS_APP_PATH}" | tee -a $log
+}
+
+function error_handler(){
+        MYSELF="$0"               # equals to script name
+        LASTLINE="$1"            # argument 1: last line of error occurence
+        LASTERR="$2"             # argument 2: error code of last command
+        echo "ERROR in ${MYSELF}: line ${LASTLINE}: exit status of last command: ${LASTERR}"
+	exit 1       
+}
+
+function print_message(){
+	if [ ${VERBOSE} -eq 1 ]; then
+    		${ECHO} -e "[INFO] " $1 | tee -a $log
+	fi    
+}
+
+function print_error(){
+	${ECHO} -e "[Error] " $1 | tee -a $log	
+	exit 1
+}
+
+function verify_file_exists(){
+	if [[ ! -f $1 ]] ; then
+		print_error "File not found: $1"
+	fi
+}
+
+function update_hosts_file(){
+	instance_hostname="<%= @stratos_instance_data_host_name %>"
+	(${GREP} -q "${instance_hostname}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${instance_hostname} # Stratos LB instance private IP" >> /etc/hosts \
+	  && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${instance_hostname}")) \
+	  || print_error "Failed to update '/etc/hosts' file. "
+
+	map_to_lb="<%= @stratos_instance_data_map_to_lb %>"
+        arr=$(${ECHO} ${map_to_lb} | tr "," "\n")
+
+	for map_hostname in $arr
+	do
+ 		(${GREP} -q "${map_hostname}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${map_hostname} # Stratos LB instance private IP" >> /etc/hosts \
+          && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${map_hostname}")) \
+          || print_error "Failed to update '/etc/hosts' file. "
+	done
+
+	<%- if @stratos_instance_data_worker_host_name -%>
+         worker_hostname="<%= @stratos_instance_data_worker_host_name %>"
+ 	 (${GREP} -q " ${worker_hostname}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${worker_hostname} # Stratos LB worker private IP" >> /etc/hosts \
+          && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${worker_hostname}")) \
+          || print_error "Failed to update '/etc/hosts' file. "
+         <%- end -%>
+
+        if [[ "${STRATOS_SERVICE_NAME}" = "apistore" ||  "${STRATOS_SERVICE_NAME}" = "publisher" ]] ; then
+		gateway_host_name="<%= @stratos_instance_data_gateway_host_name %>"
+		gateway_mgt_host_name="<%= @stratos_instance_data_gateway_mgt_host_name %>"
+		keymanager_host_name="<%= @stratos_instance_data_keymanager_host_name %>"
+
+		(${GREP} -q "${gateway_host_name}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${gateway_host_name} # Stratos LB instance private IP" >> /etc/hosts \
+	  && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${gateway_host_name}")) \
+	  || print_error "Failed to update '/etc/hosts' file. "
+
+		(${GREP} -q "${gateway_mgt_host_name}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${gateway_mgt_host_name} # Stratos LB instance private IP" >> /etc/hosts \
+	  && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${gateway_mgt_host_name}")) \
+	  || print_error "Failed to update '/etc/hosts' file. "
+
+
+	  (${GREP} -q "${keymanager_host_name}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${keymanager_host_name} # Stratos LB instance private IP" >> /etc/hosts \
+          && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${keymanager_host_name}")) \
+          || print_error "Failed to update '/etc/hosts' file. "
+
+	 elif [[ "${STRATOS_SERVICE_NAME}" = "gateway" || "${STRATOS_SERVICE_NAME}" = "gatewaymgt" ]] ; then
+                keymanager_hostname="<%= @stratos_instance_data_keymanager_host_name %>"
+
+                (${GREP} -q "${keymanager_hostname}" /etc/hosts || (${ECHO} "${STRATOS_LB_IP}  ${keymanager_hostname} # Stratos LB instance private IP" >> /etc/hosts \
+          && print_message "Updated /etc/hosts file with: ${STRATOS_LB_IP}  ${keymanager_hostname}")) \
+          || print_error "Failed to update '/etc/hosts' file. "
+
+        fi	
+}
+
+function backup_file(){
+    if [[  -f "$1.orig" ]];
+    then
+        print_message "Restoring from the Original template file $1"
+        cp -f "$1.orig" "$1"
+    else
+        print_message "Creating a backup of the file $1"
+        cp -f "$1" "$1.orig"
+    fi
+}
+
+function configure_manager_worker_wka_members(){
+
+        print_message "function  configure_manager_worker_wka_members  ..... "
+
+    # generic worker manager seperation :D
+    if [[ -z ${STRATOS_WK_MANAGER_MEMBER_COUNT} || ${STRATOS_WK_MANAGER_MEMBER_COUNT} -eq 0 ]] ; then
+        print_message "manager WKA member count is zero or unavailable"
+    else
+        print_message "Configuring manager..."
+        print_message "configure_manager_worker_wka_members STRATOS_WK_MANAGER_MEMBER_COUNT  ${STRATOS_WK_MANAGER_MEMBER_COUNT}  ..... "
+        for i in `seq 0 $(( ${STRATOS_WK_MANAGER_MEMBER_COUNT} - 1 ))`
+            do
+                member_ip_name="STRATOS_WK_MANAGER_MEMBER_${i}_IP"
+                member_ip=${member_ip_name}
+                if [[ -z ${member_ip} ]] ; then
+                    print_error "WKA is null for STRATOS_WK_MANAGER_MEMBER_${i}_IP"
+                fi
+                print_message  "$i => ${member_ip}"
+                WKA_XML=$"${WKA_XML}<member><hostName>${!member_ip}</hostName><port>4000</port></member>\n"
+           done
+     fi
+
+     if [[ -z ${STRATOS_WK_WORKER_MEMBER_COUNT} || ${STRATOS_WK_WORKER_MEMBER_COUNT} -eq 0 ]] ; then
+         print_message "worker WKA member count is zero or unavailable"
+     else
+         print_message "Configuring worker..."
+	 print_message "STRATOS_WK_WORKER_MEMBER_COUNT ${STRATOS_WK_WORKER_MEMBER_COUNT}  ..... "
+         for i in `seq 0 $(( ${STRATOS_WK_WORKER_MEMBER_COUNT} - 1 ))`
+             do
+                 member_ip_name="STRATOS_WK_WORKER_MEMBER_${i}_IP"
+                 member_ip=${member_ip_name}
+                 if [[ -z ${member_ip} ]] ; then
+                     print_error "WKA is null for STRATOS_WK_WORKER_MEMBER_${i}_IP"
+                 fi
+                     print_message  "$i => ${member_ip}"
+                     WKA_XML=$"${WKA_XML}<member><hostName>${!member_ip}</hostName><port>4000</port></member>\n"
+             done
+     fi
+
+     print_message "${STRATOS_SERVICE_NAME} WKA_XML => ${WKA_XML}"
+     verify_file_exists ${AXIS2_XML_FILE}
+     ${SED} -i "s%${WKA_LINE}%${WKA_XML}%g" ${AXIS2_XML_FILE} && print_message "gateway WKA configuration successful" || print_error "Failed to configure well known members"
+
+}
+
+
+function configure_wk_members(){
+
+	print_message "Performing clustering configuration for ${STRATOS_SERVICE_NAME}..."
+
+	WKA_XML=""
+        KEYMGR_XML=""
+	WKA_LINE="@WELL_KNOWN_MEMBERS"
+	KEYMGR_LINE="@KEYMANAGER_SERVER_URL"
+
+	AXIS2_XML_FILE=${STRATOS_APP_PATH}/repository/conf/axis2/axis2.xml
+	backup_file ${AXIS2_XML_FILE}
+	
+
+	if [[ (! -z $STRATOS_SERVICE_GROUP) && "${STRATOS_SERVICE_GROUP}" = "apim" ]] ; then
+	print_message " STRATOS_SERVICE_GROUP_APIM  ${STRATOS_SERVICE_GROUP} ..... "
+		API_MANAGER_XML_FILE=${STRATOS_APP_PATH}/repository/conf/api-manager.xml
+		backup_file ${API_MANAGER_XML_FILE}
+
+		if [[ "${STRATOS_SERVICE_NAME}" = "apistore" ||  "${STRATOS_SERVICE_NAME}" = "publisher" ]] ; then
+
+			print_message "Configuring axis2.xml for ${STRATOS_SERVICE_NAME}..."
+			WKA_XML=$"${WKA_XML}<member><hostName>${STRATOS_WK_APISTORE_MEMBER_IP}</hostName><port>4000</port></member>\n"
+			WKA_XML=$"${WKA_XML}<member><hostName>${STRATOS_WK_PUBLISHER_MEMBER_IP}</hostName><port>4000</port></member>\n"
+			print_message "${STRATOS_SERVICE_NAME} WKA_XML => ${WKA_XML}"
+			verify_file_exists ${AXIS2_XML_FILE}
+			${SED} -i "s%${WKA_LINE}%${WKA_XML}%g" ${AXIS2_XML_FILE} && print_message "${STRATOS_SERVICE_NAME} WKA configuration successful" || print_error "Failed to configure well known members"
+
+		elif [[ "${STRATOS_SERVICE_NAME}" = "keymanager" ]] ; then
+
+			print_message "In keymanager...nothing to do"
+
+		elif [[ "${STRATOS_SERVICE_NAME}" = "gateway"  ||  "${STRATOS_SERVICE_NAME}" = "gatewaymgt" ]] ; then
+			
+                        if [[ "${DEPLOYMENT}" = "manager" || "${DEPLOYMENT}" = "worker" ]] ; then
+
+                                configure_manager_worker_wka_members
+                        fi
+			
+		fi
+	elif [[ "${DEPLOYMENT}" = "manager" || "${DEPLOYMENT}" = "worker" ]] ; then
+		print_message " Worker / Manager ..... ${DEPLOYMENT} "
+		configure_manager_worker_wka_members
+	else
+		print_message "Configuring ${STRATOS_SERVICE_NAME}..."
+		print_message "STRATOS_WK_MEMBER_COUNT ....... ${STRATOS_WK_MEMBER_COUNT} "
+		for i in `seq 0 $(( ${STRATOS_WK_MEMBER_COUNT} - 1 ))`
+		do		    				
+	 		member_ip="STRATOS_WK_MEMBER_${i}_IP"
+			print_message " memberip ${member_ip} ....... "
+			if [[ -z ${!member_ip} ]] ; then
+				print_error "WKA is null for STRATOS_WK_MEMBER_${i}_IP"
+			fi
+			print_message  "$i => ${!member_ip}"
+			WKA_XML=$"${WKA_XML}<member><hostName>${!member_ip}</hostName><port>4000</port></member>\n"			
+		done
+
+		print_message "${STRATOS_SERVICE_NAME} WKA_XML => ${WKA_XML}"
+		verify_file_exists ${AXIS2_XML_FILE}
+		${SED} -i "s%${WKA_LINE}%${WKA_XML}%g" ${AXIS2_XML_FILE} && print_message "${STRATOS_SERVICE_NAME} WKA configuration successful" || print_error "Failed to configure well known members"
+	fi
+}
+
+function updateWKMembers() {
+   print_message "Update WKA Members...... "
+   # Check if APP_PATH exists
+   print_message "Stratos App path $STRATOS_APP_PATH ...... "
+   if [[ ! -d $STRATOS_APP_PATH ]] ; then
+   	print_error "APP_PATH is not found at: ${STRATOS_APP_PATH}"
+   fi
+
+   # Set JAVA_HOME if it is not already set
+   if [[ -z $JAVA_HOME ]] ; then
+   	print_message "Setting JAVA_HOME to /opt/java"
+	export JAVA_HOME=/opt/java
+   fi
+
+   print_message "Stopping wso2server.sh ...... " 
+   # Kill Product server
+   $STRATOS_APP_PATH/bin/wso2server.sh stop > /dev/null 2>&1 &
+   sleep 10
+
+   # Check if clustering is enabled for this product
+   if [[ -z $STRATOS_CLUSTERING ]] ; then
+      ${ECHO} -e  `date`": starting servers in stand-alone mode..." | tee -a $log
+      if [[ ${VERBOSE} -eq 1 ]]; then
+         printParameters
+      fi
+
+   else
+      ${ECHO} -e  `date`": starting servers in clustering mode..." | tee -a $log
+      if [[ ${VERBOSE} -eq 1 ]] ; then
+         printParameters
+      fi
+      # Do the WKA configuration to support clustering
+      configure_wk_members
+   fi
+
+   #Backup hosts file
+   backup_file /etc/hosts
+   # Update the /etc/hosts file with LB instance IP
+   update_hosts_file
+
+   # Run start server command
+   verify_file_exists $STRATOS_APP_PATH/bin/wso2server.sh
+   $STRATOS_APP_PATH/bin/wso2server.sh $* > /dev/null 2>&1 &
+   print_message "Executed run command: $STRATOS_APP_PATH/bin/wso2server.sh $*"
+   print_message "WK Members successfully updated."
+}
+
+# -----------------------
+# Execution starts here
+# -----------------------
+
+   print_message " Executing member activated extension "
+   print_message " Stratos UpdateWK_IP  [$STRATOS_UPDATE_WK_IP] "
+# Check if WK Update flag is set
+if [[ $STRATOS_UPDATE_WK_IP = "true" ]]; then
+   print_message " Conditions successful for  [$STRATOS_UPDATE_WK_IP] . Executing updateWKMembers "
+   updateWKMembers   
+fi
+
+${ECHO} -e `date`": member activated extension successfully completed."
+# END

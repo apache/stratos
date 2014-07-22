@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * A utility class for executing shell commands.
@@ -61,6 +62,35 @@ public class CommandUtils {
             throw new RuntimeException("Command execution failed: " + NEW_LINE + errors.toString());
         }
 
+        return output.toString();
+    }
+
+    public static String executeCommand(String command, Map<String, String> envParameters) throws IOException {
+        String line;
+        ProcessBuilder pb = new ProcessBuilder(command);
+        Map<String, String> env = pb.environment();
+        env.putAll(envParameters);
+
+        Process p = pb.start();
+        StringBuilder output = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        while ((line = in.readLine()) != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("output = " + line);
+            }
+            output.append(line).append(NEW_LINE);
+        }
+        StringBuilder errors = new StringBuilder();
+        BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+        while ((line = error.readLine()) != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("error = " + line);
+            }
+            errors.append(line).append(NEW_LINE);
+        }
+        if (errors.length() > 0) {
+            throw new RuntimeException("Command execution failed: " + NEW_LINE + errors.toString());
+        }
         return output.toString();
     }
 }

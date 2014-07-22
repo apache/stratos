@@ -29,6 +29,7 @@ public class Repository implements Serializable {
     private String userName;
     private String password;
     private boolean isPrivateRepository;
+    private boolean commitEnabled;
 
     public String getUserName() {
         return userName;
@@ -74,5 +75,13 @@ public class Repository implements Serializable {
     public String toString() {
         return "Repository [id=" + id + ", url=" + url + ", userName=" + userName +
                ", isPrivateRepository=" + isPrivateRepository + "]";
+    }
+
+    public boolean isCommitEnabled() {
+        return commitEnabled;
+    }
+
+    public void setCommitEnabled(boolean commitEnabled) {
+        this.commitEnabled = commitEnabled;
     }
 }

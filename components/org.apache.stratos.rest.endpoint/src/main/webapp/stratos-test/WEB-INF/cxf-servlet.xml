@@ -31,6 +31,7 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+			<ref bean="throwableExceptionHandler"/>
             <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
                 <property name="dropRootElement" value="true"/>
                 <property name="supportUnwrapped" value="true"/>
@@ -41,4 +42,5 @@
 
     <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
+    <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
 </beans>

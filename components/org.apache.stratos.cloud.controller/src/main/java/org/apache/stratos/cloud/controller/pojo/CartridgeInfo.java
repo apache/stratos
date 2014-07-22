@@ -58,6 +58,8 @@ public class CartridgeInfo {
 
     private Persistence persistence;
 
+    private String serviceGroup;
+
     public CartridgeInfo(){
     	
     }
@@ -205,5 +207,13 @@ public class CartridgeInfo {
 	 */
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
+    }
+
+    public String getServiceGroup() {
+        return serviceGroup;
+    }
+
+    public void setServiceGroup(String serviceGroup) {
+        this.serviceGroup = serviceGroup;
     }
 }

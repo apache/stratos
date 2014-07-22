@@ -25,4 +25,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo "Cleaning the cartridge" | tee -a $log
+echo `date`": Cleaning the cartridge" | tee -a $log

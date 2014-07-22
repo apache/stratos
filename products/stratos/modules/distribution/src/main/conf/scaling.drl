@@ -53,6 +53,8 @@ global java.lang.String lbRef;
 global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
+global java.lang.Boolean isPrimary;
+global java.util.List primaryMembers;
 
 rule "Scaling Rule"
 dialect "mvel"
@@ -109,7 +111,7 @@ dialect "mvel"
             if(partition != null){
                 log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                 log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
-                $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
+                $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef, isPrimary);
             }
         } else if(scaleDown){
 
@@ -126,8 +128,15 @@ dialect "mvel"
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                     partitionContext = $networkPartitionContext.getPartitionCtxt(partition.getId());
 
-                    for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
+					// In partition context member stat context, all the primary members need to be
+					// avoided being selected as the member to terminated
+					
+
+                    for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+					
+						if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
+						
                         LoadAverage loadAverage = memberStatsContext.getLoadAverage();
                         log.debug("[scale-down] " + " [cluster] "
                             + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
@@ -156,6 +165,10 @@ dialect "mvel"
                             selectedMemberStatsContext = memberStatsContext;
                             lowestOverallLoad = overallLoad;
                         }
+                        
+                        							
+					  }
+						
                     }
                     if(selectedMemberStatsContext != null) {
                         log.info("[scale-down] Trying to terminating an instace to scale down!" );

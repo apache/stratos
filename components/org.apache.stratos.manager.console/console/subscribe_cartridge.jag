@@ -23,6 +23,7 @@ var log = new Log("subscribe_cartridge");
 var error = [];
 var caramel = require('caramel');
 var utils = require('/util/utility.jag');
+var process = require('process');
 var type = request.getParameter('cartridgeType');
 var autoScalePolicies = utils.consoleAppUtil.getAutoScalePolicies();
 var deploymentPolicies = utils.consoleAppUtil.getApplicableDeploymentPolicies(type);
@@ -39,12 +40,13 @@ if(autoScalePolicies.Error != undefined ){
     error.push(mtServiceInfo.Error);
 }
 
-
+var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
-        cartridge:cartridge,
-        autoScalePolicies:autoScalePolicies,
-        deploymentPolicies:deploymentPolicies,
-        mtServiceInfo:mtServiceInfo,
-        error:error
+    cartridge:cartridge,
+    autoScalePolicies:autoScalePolicies,
+    deploymentPolicies:deploymentPolicies,
+    mtServiceInfo:mtServiceInfo,
+    bamInfo:bamInfo,
+    error:error
 });
 %>

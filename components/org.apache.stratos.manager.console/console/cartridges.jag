@@ -22,12 +22,15 @@
 var caramel = require('caramel');
 var error = [];
 var utils = require('/util/utility.jag');
+var process = require('process');
 var availableCartridges = utils.consoleAppUtil.getCartridges();
 if(availableCartridges.Error != undefined){
     error.push(availableCartridges.Error);
 }
+var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
     cartridges:availableCartridges,
+    bamInfo:bamInfo,
     error:error
 });
 %>

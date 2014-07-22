@@ -20,6 +20,7 @@
 define agent::start ($target, $owner) {
   exec { "starting_${name}":
     user    => $owner,
+    environment => "JAVA_HOME=$java_home",
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/java/bin/',
     unless  => "test -f ${target}/wso2carbon.lck",
     cwd     => "${target}/bin/",

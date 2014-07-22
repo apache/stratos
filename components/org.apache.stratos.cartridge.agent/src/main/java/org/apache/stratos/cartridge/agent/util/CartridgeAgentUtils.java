@@ -94,7 +94,7 @@ public class CartridgeAgentUtils {
         boolean active = false;
         while (!active) {
             if(log.isInfoEnabled()) {
-                log.info("Waiting for ports to be active: [IP] "+ipAddress+" [Ports] "+ports);
+                log.info("Waiting for ports to be active: [ip] "+ipAddress+" [ports] "+ports);
             }
             active = checkPortsActive(ipAddress,  ports);
             long endTime = System.currentTimeMillis();
@@ -106,6 +106,9 @@ public class CartridgeAgentUtils {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
             }
+        }
+        if(log.isInfoEnabled()) {
+            log.info("Ports activated: [ip] " + ipAddress + " [ports] "+ports);
         }
     }
 

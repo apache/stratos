@@ -26,4 +26,17 @@ public class Constants {
     public static String TAIL_COMMAND = "tail -n 100 -F ";
     public static String MEMBER_ID = "memberId";
     public static String LOG_EVENT = "logEvent";
+    
+    public static String DATE_FORMATTER = "yyyy-MM-dd";
+    public static String DATE_TIME_FORMATTER = "yyyy-MM-dd HH:mm:ss,SSS";
+    public static String TENANT_ID = "tenantID";
+    public static String SERVER_NAME = "serverName";
+    public static String APP_NAME = "appName";
+    public static String LOG_TIME = "logTime";
+    public static String PRIORITY = "priority";
+    public static String MESSAGE = "message";
+    public static String LOGGER = "logger";
+    public static String IP = "ip";  
+    public static String INSTANCE = "instance";
+    public static String STACKTRACE = "stacktrace";
 }

@@ -53,12 +53,6 @@ public class Main {
                 }
             });
 
-            // Configure log4j properties
-            if(log.isDebugEnabled()) {
-                log.debug("Configuring log4j.properties file path");
-            }
-            PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
-
             // Generate jndi.properties file
             JndiConfigurator.configure();
 
@@ -66,25 +60,25 @@ public class Main {
             CartridgeAgentConfiguration.getInstance();
 
             if (args.length >= 1) {
-            	String className = args[0];
-				try {
-					Constructor<?> c = Class.forName(className)
-							.getConstructor();
-					cartridgeAgent = (CartridgeAgent) c.newInstance();
-					log.info("Loaded Cartridge Agent using [class] "+className);
-				} catch (Exception e) {
-					String msg = String.format("Cannot load Cartridge Agent from [class name] %s, "
-							+ "hence using the default agent.", className);
-					log.warn(msg, e);
-				}
+                String className = args[0];
+                try {
+                    Constructor<?> c = Class.forName(className)
+                            .getConstructor();
+                    cartridgeAgent = (CartridgeAgent) c.newInstance();
+                    log.info("Loaded Cartridge Agent using [class] " + className);
+                } catch (Exception e) {
+                    String msg = String.format("Cannot load Cartridge Agent from [class name] %s, "
+                            + "hence using the default agent.", className);
+                    log.warn(msg, e);
+                }
             }
-            
+
             if (cartridgeAgent == null) {
-            	// load default agent
-            	cartridgeAgent = new CartridgeAgent();
-            	if (log.isDebugEnabled()) {
-            		log.debug("Loading default Cartridge Agent.");
-            	}
+                // load default agent
+                cartridgeAgent = new CartridgeAgent();
+                if (log.isDebugEnabled()) {
+                    log.debug("Loading default Cartridge Agent.");
+                }
             }
             // start agent
             Thread thread = new Thread(cartridgeAgent);

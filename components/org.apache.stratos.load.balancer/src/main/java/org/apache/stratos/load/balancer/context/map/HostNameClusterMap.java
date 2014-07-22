@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Host name cluster map for accessing clusters using host name:
+ * Host/domain name cluster map for accessing clusters using host name:
  * Map[HostName, Cluster]
  */
 public class HostNameClusterMap {

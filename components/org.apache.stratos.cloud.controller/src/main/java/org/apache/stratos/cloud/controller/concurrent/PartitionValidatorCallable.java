@@ -44,6 +44,10 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
 
 	@Override
 	public IaasProvider call() throws Exception {
+		
+		if (log.isDebugEnabled()) {
+			log.debug("Partition validation started for "+partition+" of "+cartridge);
+		}
 		String provider = partition.getProvider();
         IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
 

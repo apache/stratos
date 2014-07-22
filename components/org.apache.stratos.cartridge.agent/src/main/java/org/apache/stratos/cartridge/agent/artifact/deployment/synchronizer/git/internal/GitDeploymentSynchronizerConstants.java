@@ -58,4 +58,16 @@ public class GitDeploymentSynchronizerConstants {
     public static final String USERNAME_REGEX = "username:(.*?),";
     public static final String PASSWORD_REGEX = "password:(.*?)}";
 
+    //Git based constants
+    public static final String GIT_REFS_HEADS_MASTER = "refs/heads/master";
+    public static final String REMOTES_ORIGIN_MASTER = "remotes/origin/master";
+    public static final String REMOTE = "remote";
+    public static final String ORIGIN = "origin";
+    public static final String URL = "url";
+    public static final String FETCH = "fetch";
+    public static final String BRANCH = "branch";
+    public static final String MASTER = "master";
+    public static final String MERGE = "merge";
+    public static final String FETCH_LOCATION = "+refs/heads/*:refs/remotes/origin/*";
+
 }

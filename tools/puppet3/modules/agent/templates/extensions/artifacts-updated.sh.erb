@@ -25,7 +25,7 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo "Artifacts updated" | tee -a $log
+echo `date`": Artifacts Updated Event" | tee -a $log
 
 
 <%- if @type == 'php' -%>

@@ -49,8 +49,13 @@ public class CartridgeSubscriptionFactory {
         //TODO: fix the logic properly
         CartridgeSubscription cartridgeSubscription = null;
         if(cartridgeInfo.getMultiTenant()) {
-            cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
-
+            if (cartridgeInfo.getProvider().equals(CartridgeConstants.INTERNAL_REPO_BASED_CARTRIDGE_PROVIDER)) {
+                cartridgeSubscription = new InternalRepoBasedCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
+            } else if (cartridgeInfo.getProvider().equals("application")) {
+                cartridgeSubscription = new ApplicationCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
+            } else {
+                cartridgeSubscription = new FrameworkCartridgeSubscription(cartridgeInfo, subscriptionTenancyBehaviour);
+            }
         } else {
             // TODO: fix properly with cartridgeCategory element
             if(cartridgeInfo.getProvider().equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {

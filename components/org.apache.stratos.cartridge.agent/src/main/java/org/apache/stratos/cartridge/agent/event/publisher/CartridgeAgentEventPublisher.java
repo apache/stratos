@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsNotifier;
-import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -63,7 +62,6 @@ public class CartridgeAgentEventPublisher {
                 log.info("Instance started event published");
             }
 
-            ExtensionUtils.executeInstanceStartedExtension();
         } else {
             if (log.isWarnEnabled()) {
                 log.warn("Instance already started");
@@ -81,7 +79,8 @@ public class CartridgeAgentEventPublisher {
                     CartridgeAgentConfiguration.getInstance().getClusterId(),
                     CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
                     CartridgeAgentConfiguration.getInstance().getPartitionId(),
-                    CartridgeAgentConfiguration.getInstance().getMemberId());
+                    CartridgeAgentConfiguration.getInstance().getMemberId()
+            );
 
             // Event publisher connection will
             EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
@@ -89,8 +88,6 @@ public class CartridgeAgentEventPublisher {
             if (log.isInfoEnabled()) {
                 log.info("Instance activated event published");
             }
-
-            ExtensionUtils.executeInstanceActivatedExtension();
 
             if (log.isInfoEnabled()) {
                 log.info("Starting health statistics notifier");
@@ -108,7 +105,7 @@ public class CartridgeAgentEventPublisher {
         }
     }
 
-     public static void publishInstanceReadyToShutdownEvent() {
+    public static void publishInstanceReadyToShutdownEvent() {
         if (!isReadyToShutdown()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance activated event");
@@ -133,7 +130,7 @@ public class CartridgeAgentEventPublisher {
         }
     }
 
-     public static void publishMaintenanceModeEvent() {
+    public static void publishMaintenanceModeEvent() {
         if (!isMaintenance()) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing instance maintenance mode event");

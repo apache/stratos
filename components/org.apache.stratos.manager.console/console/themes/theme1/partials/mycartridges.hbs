@@ -31,39 +31,36 @@
     <div class="row">
         {{#each mycartridges}}
             {{#if serviceGroup}}
-                <div class="col-md-6">
-                    <div class="box-container">
-                        <div class="row">
+            <div class="col-md-6">
+                <div class="box-container">
+                    <div class="row">
 
-                            <div class="col-lg-12">
-                                {{#unless loadBalancer}}
-                                <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" data-alias="{{cartridgeAlias}}">Un-subscribe <i class=" icons-circle-close"></i></a></div>
-                                {{/unless}}
-                                <div class="container">
-                                    <div class="row">
-                                        <div class="col-lg-push-2 col-lg-10"><a><h3>{{serviceGroup}}</h3></a></div>
-                                    </div>
-                                </div>
+                        <div class="col-lg-3">
 
-                                <div class="container">
-                                {{#each items}}
-                                    <div class="row">
-                                        <div class="col-lg-2">
-                                            <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
-                                        </div>
-                                        <div class="col-lg-10">
-                                            <a href="{{url "/cartridge_info.jag?alias="}}{{cartridgeAlias}}"><h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3></a>
-                                            <div class="cartridge-description">{{description}}</div>
-                                            <div class="cartridge-description">{{repoURL}}  <a class="js_syncRepo" data-value="{{cartridgeAlias}}"><i class="icons-reload"></i></a></div>
-                                        </div>
-                                    </div>
-                                {{/each}}
-                                </div>
+                            <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
+
+                        </div>
+                        <div class="col-lg-9">
+                            {{#unless loadBalancer}}
+                            <div class="un-subscribe-container"><a class="un-subscribe un-subscribe-btn" service-group="{{serviceGroup}}" data-alias="{{cartridgeAlias}}">Un-subscribe <i class=" icons-circle-close"></i></a></div>
+                            {{/unless}}
+
+                            <a  href="{{url "/cartridge_info_sg.jag?"}}serviceGroup={{serviceGroup}}"><h3>{{serviceGroup}}</h3></a>
+
+                            {{#each items}}
+                            <div class="serviceGroup-child-wrapper">
+                                <h3>{{cartridgeAlias}}-<span>({{displayName}} - {{version}})</span></h3>
+                                <div class="cartridge-description">{{description}}</div>
+                                <div class="cartridge-description">{{repoURL}}  <a class="js_syncRepo" data-value="{{cartridgeAlias}}"><i class="icons-reload"></i></a></div>
                             </div>
+                            {{/each}}
                         </div>
                     </div>
                 </div>
-            {{else}}
+            </div>
+
+            {{else}}    <!-- End serviceGroup check if -->
+
                 <div class="col-md-6">
                     <div class="box-container">
                         <div class="row">
@@ -95,6 +92,7 @@
 
 <form method="post" id="cForm" action="{{url "/controllers/cartridgeUnsubscribeSubmit.jag"}}">
         <input type="hidden" name="alias" id="alias" />
+        <input type="hidden" name="serviceGroup" id="serviceGroup" />
 </form>
 <script src="{{url "/themes/theme1/ui/js/popup.js"}}"></script>
 <script src="{{url "/themes/theme1/ui/js/mycartridges.js"}}"></script>

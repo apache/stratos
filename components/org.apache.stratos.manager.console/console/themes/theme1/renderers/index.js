@@ -125,7 +125,8 @@ var render = function (theme, data, meta, require) {
                             name: 'Subscribe to Cartridge',
                             class_name: 'btn-important'
                         },
-                        has_help:false,
+                        bamInfo:data.bamInfo,
+                        has_help: true,
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }
@@ -161,7 +162,7 @@ var render = function (theme, data, meta, require) {
                             name: 'Subscribe to Cartridge',
                             class_name: 'btn-important'
                         },
-                        has_help:false,
+                        has_help: true,
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }

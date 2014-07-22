@@ -28,11 +28,7 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Cartridge agent configuration.
@@ -41,7 +37,7 @@ public class CartridgeAgentConfiguration {
 
     private static final Log log = LogFactory.getLog(CartridgeAgentConfiguration.class);
     private static volatile CartridgeAgentConfiguration instance;
-
+    private final String serviceGroup;
     private final String serviceName;
     private final String clusterId;
     private final String networkPartitionId;
@@ -52,16 +48,32 @@ public class CartridgeAgentConfiguration {
     private final String repoUrl;
     private final List<Integer> ports;
     private final List<String> logFilePaths;
+    private final boolean isCommitsEnabled;
+    private final boolean isCheckoutEnabled;
+    private final String listenAddress;
+    private final String lbClusterId;
+    private final String tenantId;
+    private final String isClustered;
+    private final String minCount;
     private Map<String, String> parameters;
     private boolean isMultitenant;
     private String persistenceMappings;
-    private final boolean isCommitsEnabled;
-    private final String listenAddress;
+    private boolean isInternalRepo;
+    private String isPrimary;
+    private String lbPrivateIp;
+    private String lbPublicIp;
+    private String deployment;
+    private String managerServiceName;
+    private String workerServiceName;
+    private String superTenantRepositoryPath;
+    private String tenantRepositoryPath;
 
     private CartridgeAgentConfiguration() {
-    	parameters = loadParametersFile();
+        parameters = loadParametersFile();
 
         try {
+            serviceGroup = readServiceGroup();
+            isClustered = readClustering();
             serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
             clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
             networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
@@ -73,19 +85,34 @@ public class CartridgeAgentConfiguration {
             ports = readPorts();
             logFilePaths = readLogFilePaths();
             isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
-            persistenceMappings = readPersisenceMapping();
-            isCommitsEnabled = readCommitsEnabled(CartridgeAgentConstants.COMMIT_ENABLED);
-            listenAddress = System.getProperty(CartridgeAgentConstants.LISTEN_ADDRESS);
+            persistenceMappings = readPersistenceMapping();
+            isCommitsEnabled = readCommitParameterValue();
+            isCheckoutEnabled = Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.AUTO_CHECKOUT));
 
+            listenAddress = System.getProperty(CartridgeAgentConstants.LISTEN_ADDRESS);
+            isInternalRepo = readInternalRepo(CartridgeAgentConstants.PROVIDER);
+            tenantId = readParameterValue(CartridgeAgentConstants.TENANT_ID);
+            lbClusterId = readParameterValue(CartridgeAgentConstants.LB_CLUSTER_ID);
+            minCount = readParameterValue(CartridgeAgentConstants.MIN_INSTANCE_COUNT);
+            // not mandatory
+            lbPrivateIp = System.getProperty(CartridgeAgentConstants.LB_PRIVATE_IP);
+            lbPublicIp = System.getProperty(CartridgeAgentConstants.LB_PUBLIC_IP);
+            tenantRepositoryPath =  System.getProperty(CartridgeAgentConstants.TENANT_REPO_PATH);
+            superTenantRepositoryPath = System.getProperty(CartridgeAgentConstants.SUPER_TENANT_REPO_PATH);
+
+            deployment = readDeployment();
+            managerServiceName = readManagerServiceType();
+            workerServiceName = readWorkerServiceType();
+            isPrimary = readIsPrimary();
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
         }
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Cartridge agent configuration initialized");
         }
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("service-name: %s", serviceName));
             log.debug(String.format("cluster-id: %s", clusterId));
             log.debug(String.format("network-partition-id: %s", networkPartitionId));
@@ -95,26 +122,76 @@ public class CartridgeAgentConfiguration {
             log.debug(String.format("app-path: %s", appPath));
             log.debug(String.format("repo-url: %s", repoUrl));
             log.debug(String.format("ports: %s", ports.toString()));
+            log.debug(String.format("lb-private-ip: %s", lbPrivateIp));
+            log.debug(String.format("lb-public-ip: %s", lbPublicIp));
         }
     }
 
-    private boolean readCommitsEnabled(String commitEnabled) {
-    	boolean isCommitEnabled = false;
-    	try {
-    		isCommitEnabled = Boolean.parseBoolean(readParameterValue(commitEnabled));
-		} catch (ParameterNotFoundException e) {
-			// Missing commits enabled flag is not an exception
-			log.error(" Commits enabled payload parameter is not found");
-		}
-		return isCommitEnabled;
-	}
+    private String readDeployment(){
+        if (parameters.containsKey(CartridgeAgentConstants.DEPLOYMENT)) {
+            return parameters.get(CartridgeAgentConstants.DEPLOYMENT);
+        }
+        return null;
+    }
 
-	private boolean readMultitenant(String multitenant) throws ParameterNotFoundException {
-    	String multitenantStringValue = readParameterValue(multitenant);
-    	return Boolean.parseBoolean(multitenantStringValue);
-	}
+    private String readManagerServiceType(){
 
-	/**
+        if (deployment == null) {
+            return null;
+        }
+
+        if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_MANAGER)) {
+            // if this is a manager, manager service type = service name
+            return serviceName;
+
+        } else if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_WORKER)) {
+            // if a worker, need to read the manager service type sent by payload
+            if (parameters.containsKey(CartridgeAgentConstants.MANAGER_SERVICE_TYPE)) {
+                return parameters.get(CartridgeAgentConstants.MANAGER_SERVICE_TYPE);
+            }
+
+        } else if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_DEFAULT)) {
+            // for default deployment, no manager service type
+            return null;
+
+        }
+
+        return null;
+    }
+
+    private String readWorkerServiceType(){
+
+        if (deployment == null) {
+            return null;
+        }
+
+        if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_WORKER)) {
+            // if this is a worker, worker service type = service name
+            return serviceName;
+
+        } else if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_MANAGER)) {
+            // if a manager, need to read the worker service type sent by payload
+            if (parameters.containsKey(CartridgeAgentConstants.WORKER_SERVICE_TYPE)) {
+                return parameters.get(CartridgeAgentConstants.WORKER_SERVICE_TYPE);
+            }
+
+        } else if (getDeployment().equalsIgnoreCase(CartridgeAgentConstants.DEPLOYMENT_DEFAULT)) {
+            // for default deployment, no worker service type
+            return null;
+
+        }
+
+        return null;
+    }
+
+    private String readIsPrimary(){
+        if (parameters.containsKey(CartridgeAgentConstants.CLUSTERING_PRIMARY_KEY)) {
+            return parameters.get(CartridgeAgentConstants.CLUSTERING_PRIMARY_KEY);
+        }
+        return null;
+    }
+
+    /**
      * Get cartridge agent configuration singleton instance.
      *
      * @return
@@ -130,7 +207,40 @@ public class CartridgeAgentConfiguration {
         return instance;
     }
 
-    private String readPersisenceMapping() {
+    private boolean readCommitsEnabled(String commitEnabled) {
+        boolean isCommitEnabled = false;
+        try {
+            isCommitEnabled = Boolean.parseBoolean(readParameterValue(commitEnabled));
+
+        } catch (ParameterNotFoundException e) {
+            // Missing commits enabled flag is not an exception
+            log.error(" Commits enabled payload parameter is not found");
+        }
+        return isCommitEnabled;
+    }
+
+    private boolean readMultitenant(String multitenant) throws ParameterNotFoundException {
+        String multitenantStringValue = readParameterValue(multitenant);
+        return Boolean.parseBoolean(multitenantStringValue);
+    }
+
+    private boolean readInternalRepo(String internalRepo) {
+        String internalRepoStringValue = null;
+        try {
+            internalRepoStringValue = readParameterValue(internalRepo);
+        } catch (ParameterNotFoundException e) {
+            // Missing INTERNAL parameter is not an exception
+            log.info(" INTERNAL payload parameter is not found");
+        }
+
+        if(internalRepoStringValue.equals(CartridgeAgentConstants.INTERNAL)) {
+            return true;
+        } else{
+            return false;
+        }
+    }
+
+    private String readPersistenceMapping() {
         String persistenceMapping = null;
         try {
             persistenceMapping = readParameterValue("PERSISTENCE_MAPPING");
@@ -145,14 +255,14 @@ public class CartridgeAgentConfiguration {
         return persistenceMapping;
     }
 
-    
+
     private Map<String, String> loadParametersFile() {
-    	Map<String, String> parameters = new HashMap<String, String>();
-    	try {
+        Map<String, String> parameters = new HashMap<String, String>();
+        try {
 
             // read launch params
             File file = new File(System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH));
-            if(!file.exists()) {
+            if (!file.exists()) {
                 log.warn(String.format("File not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
                 return parameters;
             }
@@ -161,48 +271,81 @@ public class CartridgeAgentConfiguration {
                 String line = scanner.nextLine();
                 String[] params = line.split(",");
                 for (String string : params) {
-					if (string != null) {
-						String[] var = string.split("=");
-						if (var.length >= 2) {
-							parameters.put(var[0], var[1]);
-						}
-					}
+                    if (string != null) {
+                        String[] var = string.split("=");
+                        if (var.length >= 2) {
+                            parameters.put(var[0], var[1]);
+                        }
+                    }
                 }
             }
             scanner.close();
         } catch (Exception e) {
-        	String message = "Could not read launch parameter file, hence trying to read from System properties.";
-        	log.warn(message, e);
+            String message = "Could not read launch parameter file, hence trying to read from System properties.";
+            log.warn(message, e);
         }
-    	
-    	return parameters;
+
+        return parameters;
     }
 
-	private String readParameterValue(String parameterName) throws ParameterNotFoundException{
+    private String readServiceGroup() {
+        if (parameters.containsKey(CartridgeAgentConstants.SERVICE_GROUP)) {
+            return parameters.get(CartridgeAgentConstants.SERVICE_GROUP);
+        } else {
+            return null;
+        }
+    }
 
-		if (parameters.containsKey(parameterName)) {
-			return parameters.get(parameterName);
-		}
+    private String readClustering() {
+        if (parameters.containsKey(CartridgeAgentConstants.CLUSTERING)) {
+            return parameters.get(CartridgeAgentConstants.CLUSTERING);
+        } else {
+            return null;
+        }
+    }
 
-		if (System.getProperty(parameterName) != null) {
-			return System.getProperty(parameterName);
-		}
+    private String readParameterValue(String parameterName) throws ParameterNotFoundException {
 
-		String message = "Cannot find the value of required parameter: "+parameterName;
-		throw new ParameterNotFoundException(message);
-	}
+        if (parameters.containsKey(parameterName)) {
+            return parameters.get(parameterName);
+        }
+
+        if (System.getProperty(parameterName) != null) {
+            return System.getProperty(parameterName);
+        }
+
+        String message = "Cannot find the value of required parameter: " + parameterName;
+        throw new ParameterNotFoundException(message);
+    }
+
+    private boolean readCommitParameterValue() throws ParameterNotFoundException {
+
+        if (parameters.containsKey(CartridgeAgentConstants.COMMIT_ENABLED)) {
+            return Boolean.parseBoolean(parameters.get(CartridgeAgentConstants.COMMIT_ENABLED));
+        }
+
+        if (System.getProperty(CartridgeAgentConstants.COMMIT_ENABLED) != null) {
+            return Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.COMMIT_ENABLED));
+        }
+
+        if (System.getProperty(CartridgeAgentConstants.AUTO_COMMIT) != null) {
+            return Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.AUTO_COMMIT));
+        }
+        log.info(CartridgeAgentConstants.COMMIT_ENABLED + " is not found and setting it to false");
+        return false;
+    }
 
     private List<Integer> readPorts() throws ParameterNotFoundException {
         List<Integer> ports = new ArrayList<Integer>();
         String portsStr = readParameterValue(CartridgeAgentConstants.PORTS);
         List<String> portsStrList = CartridgeAgentUtils.splitUsingTokenizer(portsStr, "|");
-        for(String port : portsStrList) {
+        for (String port : portsStrList) {
             ports.add(Integer.parseInt(port));
         }
         return ports;
     }
 
-    private List<String> readLogFilePaths () {
+    private List<String> readLogFilePaths() {
 
         String logFileStr = null;
         try {
@@ -258,20 +401,99 @@ public class CartridgeAgentConfiguration {
         return logFilePaths;
     }
 
-	public boolean isMultitenant() {
-		return isMultitenant;
-	}
+    public boolean isMultitenant() {
+        return isMultitenant;
+    }
 
     public String getPersistenceMappings() {
         return persistenceMappings;
     }
 
-	public boolean isCommitsEnabled() {
-		return isCommitsEnabled;
-	}
-
+    public boolean isCommitsEnabled() {
+        return isCommitsEnabled;
+    }
 
     public String getListenAddress() {
         return listenAddress;
+    }
+
+    public boolean isInternalRepo() {
+        return isInternalRepo;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public String getLbClusterId() {
+        return lbClusterId;
+    }
+
+    public String getServiceGroup() {
+        return serviceGroup;
+    }
+
+    public String getIsClustered() {
+        return isClustered;
+    }
+
+    public String getMinCount() {
+        return minCount;
+    }
+
+    public String getIsPrimary() {
+        return isPrimary;
+    }
+
+	public String getLbPublicIp() {
+		return lbPublicIp;
+	}
+
+	public void setLbPublicIp(String lbPublicIp) {
+		this.lbPublicIp = lbPublicIp;
+	}
+
+	public String getLbPrivateIp() {
+		return lbPrivateIp;
+	}
+
+	public void setLbPrivateIp(String lbPrivateIp) {
+		this.lbPrivateIp = lbPrivateIp;
+	}
+
+    public String getDeployment() {
+        return deployment;
+    }
+
+    public void setDeployment(String deployment) {
+        this.deployment = deployment;
+    }
+
+    public String getManagerServiceName() {
+        return managerServiceName;
+    }
+
+    public void setManagerServiceName(String managerServiceName) {
+        this.managerServiceName = managerServiceName;
+    }
+
+    public String getWorkerServiceName() {
+        return workerServiceName;
+    }
+
+    public void setWorkerServiceName(String workerServiceName) {
+        this.workerServiceName = workerServiceName;
+    }
+
+    public String getSuperTenantRepositoryPath() {
+        return superTenantRepositoryPath;
+    }
+
+    public String getTenantRepositoryPath() {
+        return tenantRepositoryPath;
+    }
+
+    public boolean isCheckoutEnabled() {
+        return isCheckoutEnabled;
     }
 }

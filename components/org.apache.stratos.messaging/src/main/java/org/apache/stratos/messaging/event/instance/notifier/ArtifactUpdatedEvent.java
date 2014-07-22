@@ -33,6 +33,7 @@ public class ArtifactUpdatedEvent extends InstanceNotifierEvent implements Seria
     private String repoPassword;
     private String repoURL;
     private String tenantId;
+    private boolean commitEnabled;
 
     public String getClusterId() {
         return clusterId;
@@ -86,5 +87,13 @@ public class ArtifactUpdatedEvent extends InstanceNotifierEvent implements Seria
     public String toString() {
         return String.format("[cluster] %s [repo-url] %s [repo-username] %s [tenant] %s",
                 getClusterId(), getRepoURL(), getRepoUserName(), getTenantId());
+    }
+
+    public boolean isCommitEnabled() {
+        return commitEnabled;
+    }
+
+    public void setCommitEnabled(boolean commitEnabled) {
+        this.commitEnabled = commitEnabled;
     }
 }
