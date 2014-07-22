@@ -1,3 +1,5 @@
+#--------------------------------------------------------------
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -5,28 +7,36 @@
 # to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
-# 
-#   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
 # "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+#
+#--------------------------------------------------------------
 
-[main]
-#server=puppet
-logdir=/var/log/puppet
-vardir=/var/lib/puppet
-ssldir=/var/lib/puppet/ssl
-rundir=/var/run/puppet
-factpath=$vardir/lib/facter
-templatedir=$confdir/templates
+# Jboss copy libraries
 
-[master]
-# These are needed when the puppetmaster is run by passenger
-# and can safely be removed if webrick is used.
-ssl_client_header = SSL_CLIENT_S_DN 
-ssl_client_verify_header = SSL_CLIENT_VERIFY
+define jboss::extra_jars (
+  $product_dir,
+  $destination,
+  $user,
+  $group = 'jboss',
+  $home  = '/home',
+) {
 
+  $jar_file = $title
+
+  file { "${destination}/${jar_file}":
+    ensure  => present,
+    owner   => $user,
+    group   => $group,
+    mode    => '0444',
+    source  => "puppet:///modules/jboss/${jar_file}",
+    require => File[$product_dir],
+  }
+}

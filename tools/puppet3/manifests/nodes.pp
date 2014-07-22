@@ -20,8 +20,8 @@ node 'base' {
   #essential variables
   $package_repo         = 'http://10.4.128.7'
   $local_package_dir    = '/mnt/packs'
-  $mb_ip                = '127.0.0.1'
-  $mb_port              = '61616'
+  $mb_ip                = 'MB_IP'
+  $mb_port              = 'MB_PORT'
   $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
   $cep_ip               = '127.0.0.1'
   $cep_port             = '7611'
@@ -38,8 +38,52 @@ node 'base' {
   $bam_secure_port	= '7711'
   $bam_username		= 'admin'
   $bam_password		= 'admin'
+  $ssl_enabled          = 'false'
+  $ssl_certificate_file = ''
+  $ssl_key_file         = ''
+  $ssl_ca_cert_file     = ''
 
+  $extension_instance_started             = 'instance-started.sh'
+  $extension_start_servers                = 'start-servers.sh'
+  $extension_instance_activated           = 'instance-activated.sh'
+  $extension_artifacts_updated            = 'artifacts-updated.sh'
+  $extension_clean                        = 'clean.sh'
+  $extension_mount_volumes                = 'mount-volumes.sh'
+  $extension_member_started               = 'member-started.sh'
+  $extension_member_activated             = 'member-activated.sh'
+  $extension_member_terminated            = 'member-terminated.sh'
+  $extension_member_suspended             = 'member-suspended.sh'
+  $extension_complete_topology            = 'complete-topology.sh'
+  $extension_complete_tenant              = 'complete-tenant.sh'
+  $extension_subscription_domain_added    = 'subscription-domain-added.sh'
+  $extension_subscription_domain_removed  = 'subscription-domain-removed.sh'
+  $extension_artifacts_copy               = 'artifacts-copy.sh'
+  $extension_tenant_subscribed            = 'tenant-subscribed.sh'
+  $extension_tenant_unsubscribed          = 'tenant-unsubscribed.sh'
+  $agent_log_level = "INFO"
+  $extensions_dir = '${script_path}/../extensions'
+}
 
+# Jboss cartridge node
+node /jboss/ inherits base {
+  $product = 'jboss-as'
+  $version = '7.1.1.Final'
+  $docroot = "/mnt/${product}-${version}/standalone/deployments/"
+  require java
+  class {'jboss': 
+     user       => 'jbossas1',
+     group      => 'jboss',
+     java_home  => $java_home,
+     version    => $version,
+     java_opts  => "-Xms512m -Xmx3000m",
+     extra_jars => ['mysql-connector-java-5.1.29-bin.jar']
+  }
+
+  class {'agent':
+     type => $product
+  }
+
+  Class['jboss'] -> Class['agent']
 }
 
 # php cartridge node

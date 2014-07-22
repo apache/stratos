@@ -15,18 +15,26 @@
 # specific language governing permissions and limitations
 # under the License.
 
-[main]
-#server=puppet
-logdir=/var/log/puppet
-vardir=/var/lib/puppet
-ssldir=/var/lib/puppet/ssl
-rundir=/var/run/puppet
-factpath=$vardir/lib/facter
-templatedir=$confdir/templates
+# Imports the given self-signed SSL certificate to PHP instance
 
-[master]
-# These are needed when the puppetmaster is run by passenger
-# and can safely be removed if webrick is used.
-ssl_client_header = SSL_CLIENT_S_DN 
-ssl_client_verify_header = SSL_CLIENT_VERIFY
+define php::importssl ($ssl_certificate_file, $ssl_key_file) {
 
+   if $ssl_certificate_file and $ssl_key_file{
+        $crt_file = file( $ssl_certificate_file , '/dev/null' )
+        if($crt_file != '') {
+           file { '/etc/ssl/certs/stratos-ssl-cert.pem':
+              content => $crt_file,
+              mode => 600
+           }
+        }
+       
+        $key_file = file( $ssl_key_file , '/dev/null' )
+        if($key_file != '') {
+           file { '/etc/ssl/private/stratos-ssl-key.pem':
+              content => $key_file,
+              mode => 600
+           }
+        }
+
+    }
+}

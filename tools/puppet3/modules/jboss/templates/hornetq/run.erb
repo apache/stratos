@@ -1,0 +1,18 @@
+#!/bin/bash
+# Redirect stderr so everything ends up in the log file
+exec 2>&1
+
+# Announce ourselves
+echo "<%= @product %> start"
+
+# Set environment variables
+export HORNETQ_HOME=$HOME/<%= @product %>-<%= @version %>
+export JAVA_HOME=<%= @java_home %>
+export JAVA_OPTS="<%= @java_opts %>"
+
+# Prefix the final command with exec and ensure it runs in the foreground
+unset LAUNCH_HORNETQ_IN_BACKGROUND
+exec $HORNETQ_HOME/bin/standalone.sh \
+  --properties=$HOME/configuration/hornetq.properties \
+  -b <%= bind_address %> \
+  --server-config=$HOME/configuration/standalone-full-ha.xml 
