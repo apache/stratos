@@ -28,6 +28,7 @@ node 'base' {
   $truststore_password  = 'wso2carbon'
   $java_distribution	= 'jdk-7u51-linux-x64.tar.gz'
   $java_name		= 'jdk1.7.0_51'
+  $java_home            = '/opt/java'
   $member_type_ip       = 'private'
   $lb_httpPort          = '80'
   $lb_httpsPort         = '443'
@@ -69,10 +70,12 @@ node /jboss/ inherits base {
   $product = 'jboss-as'
   $version = '7.1.1.Final'
   $docroot = "/mnt/${product}-${version}/standalone/deployments/"
+  $jboss_user    = 'jbossas1'
+  $jboss_group   = 'jboss'
   require java
   class {'jboss': 
-     user       => 'jbossas1',
-     group      => 'jboss',
+     user       => $jboss_user,
+     group      => $jboss_group,
      java_home  => $java_home,
      version    => $version,
      java_opts  => "-Xms512m -Xmx3000m",
