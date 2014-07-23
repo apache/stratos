@@ -24,7 +24,7 @@ define lb::importssl ($owner, $target, $ssl_certificate_file) {
    $dest_filename = 'stratos-ssl-cert.pem'
    $dest_file_path = "${target_cwd}/${dest_filename}"
 
-   if $ssl_certificate_file {
+   if $ssl_enabled == 'true' and $ssl_certificate_file {
         $crt_file = file( $ssl_certificate_file , '/dev/null' )
         if($crt_file != '') {
           file {  $dest_file_path  :

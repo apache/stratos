@@ -19,7 +19,7 @@
 
 define php::importssl ($ssl_certificate_file, $ssl_key_file) {
 
-   if $ssl_certificate_file and $ssl_key_file{
+   if $ssl_enabled == 'true' and $ssl_certificate_file and $ssl_key_file{
         $crt_file = file( $ssl_certificate_file , '/dev/null' )
         if($crt_file != '') {
            file { '/etc/ssl/certs/stratos-ssl-cert.pem':

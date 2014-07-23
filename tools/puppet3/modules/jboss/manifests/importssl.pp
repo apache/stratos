@@ -30,7 +30,7 @@ define jboss::importssl (
   $java_home            = '/usr/java/latest'
 ){
 
-   if $ssl_certificate_file and $ssl_key_file{
+   if $ssl_enabled == 'true' and $ssl_certificate_file and $ssl_key_file{
         $crt_file = file( $ssl_certificate_file , '/dev/null' )
         if($crt_file != '') {
            file { "${stratos_ssl_cert}" :
