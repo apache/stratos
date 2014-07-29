@@ -35,5 +35,8 @@
 			<port>SM_LISTEN_PORT</port>
             		<clientTimeout>300000</clientTimeout>
 		</stratosManager>
+		<member>
+			<expiryTimeout>900000</expiryTimeout>
+		</member>
 	</autoscaler>
 </configuration>
