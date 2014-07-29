@@ -1,0 +1,161 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+# ----------------------------------------------------------------------------
+
+set -e # Exit on error
+
+export STRATOS_HOME=/opt/apache-stratos
+
+##########################################
+# set defaults when running on single JVM
+##########################################
+
+CC_HOSTNAME=${CC_HOSTNAME:-"127.0.0.1"}
+CC_HTTPS_PORT=${CC_HTTPS_PORT:-"9443"}
+SM_HOSTNAME=${SM_HOSTNAME:-"127.0.0.1"}
+SM_HTTPS_PORT=${SM_HTTPS_PORT:-"9443"}
+AS_HOSTNAME=${AS_HOSTNAME:-"127.0.0.1"}
+AS_HTTPS_PORT=${AS_HTTPS_PORT:-"9443"}
+STRATOS_PROFILE=${STRATOS_PROFILE:-"default"}
+
+###################################
+# Echo settings for debug purposes
+###################################
+
+echo =============================
+echo Environment Variable Settings
+echo =============================
+echo Setting MB_HOSTNAME=$MB_HOSTNAME 
+echo Setting MB_PORT=$MB_PORT
+echo =========================
+echo Cloud Controller Settings
+echo =========================
+echo Setting EC2_ENABLED=$EC2_ENABLED
+echo Setting EC2_IDENTITY=$EC2_IDENTITY
+echo Setting EC2_CREDENTIAL=$EC2_CREDENTIAL
+echo Setting EC2_OWNER_ID=$EC2_OWNER_ID
+echo Setting EC2_AVAILABILITY_ZONE=$EC2_AVAILABILITY_ZONE
+echo Setting EC2_SECURITY_GROUPS=$EC2_SECURITY_GROUPS
+echo Setting EC2_KEYPAIR=$EC2_KEYPAIR
+echo ===================
+echo Autoscaler Settings
+echo ===================
+echo Setting CC_HOSTNAME=$CC_HOSTNAME
+echo Setting CC_HTTPS_PORT=$CC_HTTPS_PORT
+echo Setting SM_HOSTNAME=$SM_HOSTNAME
+echo Setting SM_HTTPS_PORT=$SM_HTTPS_PORT
+echo ===============================
+echo Stratos Manager Puppet Settings
+echo ===============================
+echo Setting PUPPET_IP=$PUPPET_IP
+echo Setting PUPPET_HOSTNAME=$PUPPET_HOSTNAME
+echo Setting PUPPET_ENVIRONMENT=$PUPPET_ENVIRONMENT
+echo =================================
+echo Stratos Manager Database Settings
+echo =================================
+echo Setting USERSTORE_DB_HOSTNAME=$USERSTORE_DB_HOSTNAME
+echo Setting USERSTORE_DB_PORT=$USERSTORE_DB_PORT
+echo Setting USERSTORE_DB_SCHEMA=$USERSTORE_DB_SCHEMA
+echo Setting USERSTORE_DB_USER=$USERSTORE_DB_USER
+echo Setting USERSTORE_DB_PASS=$USERSTORE_DB_PASS
+echo ========================
+echo Stratos Profile Settings
+echo ========================
+echo Setting STRATOS_PROFILE=$STRATOS_PROFILE
+echo =====================================
+echo End of Environment Variables Settings
+echo =====================================
+
+
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
+
+################
+# General setup
+################
+
+sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$MB_HOSTNAME:$MB_PORT@g" $STRATOS_HOME/repository/conf/jndi.properties
+
+###########
+# CC setup
+###########
+
+CLOUD_CONTROLLER_CONFIG_FILE=$STRATOS_HOME/repository/conf/cloud-controller.xml
+
+if [[ $EC2_ENABLED = true ]]; then
+  sed -i "s@EC2_PROVIDER_START@@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_IDENTITY@$EC2_IDENTITY@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_CREDENTIAL@$EC2_CREDENTIAL@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_OWNER_ID@$EC2_OWNER_ID@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_AVAILABILITY_ZONE@$EC2_AVAILABILITY_ZONE@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_SECURITY_GROUPS@$EC2_SECURITY_GROUPS@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_KEYPAIR@$EC2_KEYPAIR_NAME@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@EC2_PROVIDER_END@@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@OPENSTACK_PROVIDER_START@!--@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@OPENSTACK_PROVIDER_END@--@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@VCLOUD_PROVIDER_START@!--@g" $CLOUD_CONTROLLER_CONFIG_FILE
+  sed -i "s@VCLOUD_PROVIDER_END@--@g" $CLOUD_CONTROLLER_CONFIG_FILE
+fi
+
+###########
+# AS setup
+###########
+
+AUTOSCALER_CONFIG_FILE=$STRATOS_HOME/repository/conf/autoscaler.xml
+
+sed -i "s@CC_HOSTNAME@$CC_HOSTNAME@g" $AUTOSCALER_CONFIG_FILE
+sed -i "s@CC_LISTEN_PORT@$CC_HTTPS_PORT@g" $AUTOSCALER_CONFIG_FILE
+sed -i "s@SM_HOSTNAME@$SM_HOSTNAME@g" $AUTOSCALER_CONFIG_FILE
+sed -i "s@SM_LISTEN_PORT@$SM_HTTPS_PORT@g" $AUTOSCALER_CONFIG_FILE
+
+###########
+# SM setup
+###########
+
+CART_PROPS_FILE=$STRATOS_HOME/repository/conf/cartridge-config.properties
+
+sed -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$CC_HOSTNAME:$CC_HTTPS_PORT@g" $CART_PROPS_FILE
+sed -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$AS_HOSTNAME:$AS_HTTPS_PORT@g" $CART_PROPS_FILE
+sed -i "s@PUPPET_IP@$PUPPET_IP@g" $CART_PROPS_FILE
+sed -i "s@PUPPET_HOSTNAME@$PUPPET_HOSTNAME@g" $CART_PROPS_FILE
+sed -i "s@PUPPET_ENV@$PUPPET_ENVIRONMENT@g" $CART_PROPS_FILE
+
+DS_FILE=$STRATOS_HOME/repository/conf/datasources/master-datasources.xml
+
+sed -i "s@USERSTORE_DB_HOSTNAME@$USERSTORE_DB_HOSTNAME@g" $DS_FILE
+sed -i "s@USERSTORE_DB_PORT@$USERSTORE_DB_PORT@g" $DS_FILE
+sed -i "s@USERSTORE_DB_SCHEMA@$USERSTORE_DB_SCHEMA@g" $DS_FILE
+sed -i "s@USERSTORE_DB_USER@$USERSTORE_DB_USER@g" $DS_FILE
+sed -i "s@USERSTORE_DB_PASS@$USERSTORE_DB_PASS@g" $DS_FILE
+
+############
+# CEP setup
+############
+
+JMS_FILE=$STRATOS_HOME/repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+
+sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$MB_HOSTNAME:$MB_PORT@g" $JMS_FILE
+
+
+##############
+# Run Stratos
+##############
+
+$STRATOS_HOME/bin/stratos.sh -Dprofile=$STRATOS_PROFILE
