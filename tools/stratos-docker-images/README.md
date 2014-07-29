@@ -21,5 +21,5 @@ To upload images:
 
 See the example:
 
-`./run-example-ec2.sh`
+`./run-example.sh`
 

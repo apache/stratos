@@ -28,26 +28,31 @@
 # (skip this step if you already have activemq installed)
 #
 
-MB_ID=$(sudo docker run -p=61616:61616 -d apachestratos/activemq); sleep 2s;
+MB_ID=$(sudo docker run -p 61616 -d apachestratos/activemq); sleep 2s;
 MB_IP_ADDR=$(sudo docker inspect $MB_ID | grep IPAddress | cut -d '"' -f 4)
+MB_PORT=$(sudo docker port 61616 $MB_ID)
 
 #
 # Start mysql docker container 
 # (skip this step if you already have mysql already installed that has a Stratos schema)
+# 
+# NOTE: This image does NOT persist data - all data is lost when this image stops.
 #
 
-USERSTORE_ID=$(sudo docker run -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
+USERSTORE_ID=$(sudo docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
 USERSTORE_IP_ADDR=$(sudo docker inspect $USERSTORE_ID | grep IPAddress | cut -d '"' -f 4)
+USERSTORE_PORT=$(sudo docker port 3306 $USERSTORE_ID)
 
 #
 # Start Stratos
 #
 
+# Ensure docker environment variable is clean
 unset docker_env
 
 # Database Settings
 docker_env+=(-e "USERSTORE_DB_HOSTNAME=${USERSTORE_IP_ADDR}")
-docker_env+=(-e "USERSTORE_DB_PORT=3306")
+docker_env+=(-e "USERSTORE_DB_PORT=${USERSTORE_PORT}")
 docker_env+=(-e "USERSTORE_DB_SCHEMA=USERSTORE_DB_SCHEMA")
 docker_env+=(-e "USERSTORE_DB_USER=root")
 docker_env+=(-e "USERSTORE_DB_PASS=password")
@@ -59,7 +64,7 @@ docker_env+=(-e "PUPPET_ENVIRONMENT=none")
 
 # MB Settings
 docker_env+=(-e "MB_HOSTNAME=${MB_IP_ADDR}")
-docker_env+=(-e "MB_PORT=61616")
+docker_env+=(-e "MB_PORT=${MB_PORT}")
 
 # IAAS Settings
 docker_env+=(-e "EC2_ENABLED=true")
@@ -70,6 +75,16 @@ docker_env+=(-e "EC2_OWNER_ID=none")
 docker_env+=(-e "EC2_AVAILABILITY_ZONE=none")
 docker_env+=(-e "EC2_SECURITY_GROUPS=none")
 docker_env+=(-e "EC2_KEYPAIR=none")
+
+docker_env+=(-e "OPENSTACK_ENABLED=false")
+docker_env+=(-e "OPENSTACK_IDENTITY=none")
+docker_env+=(-e "OPENSTACK_CREDENTIAL=none")
+docker_env+=(-e "OPENSTACK_ENDPOINT=none")
+
+docker_env+=(-e "VCLOUD_ENABLED=false")
+docker_env+=(-e "VCLOUD_IDENTITY=none")
+docker_env+=(-e "VCLOUD_CREDENTIAL=none")
+docker_env+=(-e "VCLOUD_ENDPOINT=none")
 
 # Stratos Settings [profile=default|cc|as|sm]
 docker_env+=(-e "STRATOS_PROFILE=default")
