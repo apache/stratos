@@ -29,8 +29,8 @@
 #
 
 MB_ID=$(sudo docker run -p 61616 -d apachestratos/activemq); sleep 2s;
-MB_IP_ADDR=$(sudo docker inspect $MB_ID | grep IPAddress | cut -d '"' -f 4)
-MB_PORT=$(sudo docker port 61616 $MB_ID)
+MB_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $MB_ID)
+MB_PORT=$(sudo docker port $MB_ID 61616 | awk -F':' '{ print $2 }')
 
 #
 # Start mysql docker container 
@@ -40,8 +40,8 @@ MB_PORT=$(sudo docker port 61616 $MB_ID)
 #
 
 USERSTORE_ID=$(sudo docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
-USERSTORE_IP_ADDR=$(sudo docker inspect $USERSTORE_ID | grep IPAddress | cut -d '"' -f 4)
-USERSTORE_PORT=$(sudo docker port 3306 $USERSTORE_ID)
+USERSTORE_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $USERSTORE_ID)
+USERSTORE_PORT=$(sudo docker port $USERSTORE_ID 3306 | awk -F':' '{ print $2 }')
 
 #
 # Start Stratos

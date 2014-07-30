@@ -3,8 +3,6 @@ stratos-docker
 
 docker images for installing stratos
 
-This project is under active development - it is not stable.
-
 ### Building
 
 To build mysql, activemq and stratos images:
@@ -19,7 +17,7 @@ To upload images:
 
 ### Running
 
-See the example:
+Have a look at the example, in particular configuring the IaaS with your settings:
 
 `./run-example.sh`
 
