@@ -26,6 +26,7 @@ import java.util.Map;
 
 import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
+import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
 
 import org.apache.commons.cli.Option;
@@ -51,16 +52,20 @@ public class CommandCompleter implements Completer {
 	private final Completer helpCommandCompleter;
 
 	private final Completer defaultCommandCompleter;
+	
+	private final Completer fileNameCompleter;
 
 	public CommandCompleter(Map<String, Command<StratosCommandContext>> commands) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Creating auto complete for {} commands", commands.size());
 		}
+		fileNameCompleter = new StratosFileNameCompleter();
 		argumentMap = new HashMap<String, Collection<String>>();
 		defaultCommandCompleter = new StringsCompleter(commands.keySet());
 		helpCommandCompleter = new ArgumentCompleter(new StringsCompleter(CliConstants.HELP_ACTION),
 				defaultCommandCompleter);
 		for (String action : commands.keySet()) {
+			
 			Command<StratosCommandContext> command = commands.get(action);
 			Options commandOptions = command.getOptions();
 			if (commandOptions != null) {
@@ -87,6 +92,10 @@ public class CommandCompleter implements Completer {
 
 	@Override
 	public int complete(String buffer, int cursor, List<CharSequence> candidates) {
+			
+		if(buffer.contains(CliConstants.RESOURCE_PATH_LONG_OPTION)) {
+			return fileNameCompleter.complete(buffer, cursor, candidates);
+		}
 		if (logger.isTraceEnabled()) {
 			logger.trace("Buffer: {}, cursor: {}", buffer, cursor);
 			logger.trace("Candidates {}", candidates);
