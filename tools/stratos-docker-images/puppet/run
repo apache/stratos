@@ -1,0 +1,58 @@
+#!/bin/bash
+# ----------------------------------------------------------------------------
+#
+#  Licensed to the Apache Software Foundation (ASF) under one
+#  or more contributor license agreements.  See the NOTICE file
+#  distributed with this work for additional information
+#  regarding copyright ownership.  The ASF licenses this file
+#  to you under the Apache License, Version 2.0 (the
+#  "License"); you may not use this file except in compliance
+#  with the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+#  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+#  KIND, either express or implied.  See the License for the
+#  specific language governing permissions and limitations
+#  under the License.
+#
+# ----------------------------------------------------------------------------
+
+set -e
+
+TIMEZONE=${TIMEZONE:-"Etc/UTC"}
+
+echo =============================
+echo Environment Variable Settings
+echo =============================
+echo Setting DOMAIN=${DOMAIN}
+echo Setting MASTERHOSTNAME=${MASTERHOSTNAME}
+echo Setting TIMEZONE=${TIMEZONE}
+echo Setting MB_HOSTNAME=${MB_HOSTNAME}
+echo Setting MB_PORT=${MB_PORT}
+echo Setting TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}
+echo =============================
+
+echo "${TIMEZONE}" > /etc/timezone
+dpkg-reconfigure --frontend noninteractive tzdata
+
+sed -i 's/START=no/START=yes/' /etc/default/puppetmaster
+echo -e "*.${DOMAIN}" > /etc/puppet/autosign.conf
+sed -i "2i server=${MASTERHOSTNAME}" /etc/puppet/puppet.conf
+sed -i "3i dns_alt_names=${MASTERHOSTNAME}" /etc/puppet/puppet.conf
+
+
+PUPPET_FILE=/etc/puppet/manifests/nodes/base.pp
+
+# TODO java version is hard coded
+sed -i -E "s:(\s*[$]java_name.*=).*$:\1 \"jdk1.7.0_51\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]java_distribution.*=).*$:\1 \"jdk-7u51-linux-x64.tar.gz\":g" $PUPPET_FILE
+
+sed -i -E "s:(\s*[$]local_package_dir.*=).*$:\1 \"/mnt/packs\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]mb_ip.*=).*$:\1 \"$MB_HOSTNAME\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]mb_port.*=).*$:\1 \"$MB_PORT\":g" $PUPPET_FILE
+sed -i -E "s:(\s*[$]truststore_password.*=).*$:\1 \"$TRUSTSTORE_PASSWORD\":g" $PUPPET_FILE
+
+puppet master --no-daemonize --logdest console
