@@ -47,7 +47,7 @@ public class HealthStatisticsNotifier implements Runnable {
 
         /* Find all jars in the current working directory */
         String pluginFileName = System.getProperty("health.stats.reader.plugin");
-        if (pluginFileName != null)
+        if ((pluginFileName != null) && (pluginFileName.length() != 0))
         {
             File pluginFile = new File(pluginFileName);
             if (    (pluginFile != null)
