@@ -176,19 +176,21 @@ public class CartridgeSubscriptionManager {
 
     private boolean activeInstancesAvailable(SubscriptionData subscriptionData) {
       Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(subscriptionData.getCartridgeType());
-      int activeMemberCount = 0;
       if(cluster != null) {
           Collection<Member> members = cluster.getMembers();
           for (Member member : members) {
   			if(member.isActive()) {
-  				activeMemberCount++;
+                if(log.isDebugEnabled()) {
+                    log.debug("Active member found for cluster  [" + cluster +"]");
+                }
+  				return true;
   			}
   		} 
       }
       if(log.isDebugEnabled()) {
-    	  log.debug("Active member count for cluster  [" + cluster +"] is : "+ activeMemberCount);
+    	  log.debug("Active member not found for cluster  [" + cluster +"]");
       }
-	  return activeMemberCount > 0; 	
+	  return false;
 	}
 
 	private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
