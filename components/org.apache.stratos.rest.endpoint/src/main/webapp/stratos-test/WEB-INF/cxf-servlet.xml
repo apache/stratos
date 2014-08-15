@@ -37,6 +37,11 @@
             <ref bean="genericExceptionHandler"/>
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
+			<ref bean="throwableExceptionHandler"/>
+            <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+                <property name="dropRootElement" value="true"/>
+                <property name="supportUnwrapped" value="true"/>
+            </bean>>
             <ref bean="exceptionHandler"/>
         </jaxrs:providers>
     </jaxrs:server>

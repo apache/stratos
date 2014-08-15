@@ -93,6 +93,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                                     if (member.getStatus() == MemberStatus.Activated) {
                                         addMemberIpsToMemberIpHostnameMap(cluster, member);
                                     }
+
                                 }
                             }
                         }

@@ -32,10 +32,10 @@ public class RepositoryFileListener implements Runnable {
         if(log.isDebugEnabled()) {
 		    log.debug("Executing repository file listener");
         }
-		boolean commitStatus = GitBasedArtifactRepository.getInstance().commit();
-        if(log.isDebugEnabled()) {
-		    log.debug("Commit status: " + commitStatus);
-        }
+		//boolean commitStatus = GitBasedArtifactRepository.getInstance().commit();
+        //if(log.isDebugEnabled()) {
+		//    log.debug("Commit status: " + commitStatus);
+       // }
 	}
 
 }

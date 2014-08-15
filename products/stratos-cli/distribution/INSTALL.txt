@@ -1,0 +1,42 @@
+================================================================================
+                        Apache Stratos CLI Installation
+================================================================================
+
+
+1. Extract the zip and go to the extracted directory
+
+Add execute permission to the script in Linux.
+chmod +x ./stratos.sh
+
+2. Export the host and port of the SC as environment variables
+
+Linux:
+export STRATOS_URL=https://stratosmanager.apache.org:9445
+
+Windows:
+set STRATOS_URL=https://stratosmanager.apache.org:9445
+
+3. Run the stratos.sh or stratos.bat as appropriate
+
+4. Export the following environment variables.
+
+Linux: (Add to your bashrc file)
+export JAVA_HOME=/opt/jdk1.6.0_24
+export PATH=$JAVA_HOME/bin:$PATH
+
+Windows: (Set in System Properties)
+set JAVA_HOME=C:\Java\jdk1.6.0_24
+set PATH=%JAVA_HOME%\bin;%PATH%
+
+4. Use the tentant username and password to login
+
+If you wish, you can also export your username and password as environment variables.
+If you export only the username, you will be prompted to enter the password.
+
+Linux:
+export STRATOS_USERNAME=<username>
+export STRATOS_PASSWORD=<password>
+
+Windows:
+set STRATOS_USERNAME=<username>
+set STRATOS_PASSWORD=<password>

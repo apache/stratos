@@ -31,6 +31,7 @@ public class RepositoryInformation {
 	private String repoPath;
 	private String tenantId;
 	private boolean isMultitenant;
+    private boolean commitEnabled;
 	
 	public String getRepoUrl() {
 		return repoUrl;
@@ -68,5 +69,12 @@ public class RepositoryInformation {
 	public void setMultitenant(boolean isMultitenant) {
 		this.isMultitenant = isMultitenant;
 	}
-	
+
+    public boolean isCommitEnabled() {
+        return commitEnabled;
+    }
+
+    public void setCommitEnabled(boolean commitEnabled) {
+        this.commitEnabled = commitEnabled;
+    }
 }

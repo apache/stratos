@@ -83,8 +83,7 @@ public class LoadBalancerConfigurationTest {
             Assert.assertEquals(String.format("%s, network partition id is not valid", validationError), "network-partition-1", configuration.getNetworkPartitionId());
             Assert.assertTrue(String.format("%s, multi-tenancy is not true", validationError), configuration.isMultiTenancyEnabled());
             Assert.assertEquals(String.format("%s, tenant-identifier is not valid", validationError), TenantIdentifier.TenantDomain, configuration.getTenantIdentifier());
-            Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/([^/]*)/", configuration.getTenantIdentifierRegex());
-            Assert.assertTrue(String.format("%s, rewrite-location-header is not true", validationError), configuration.isReWriteLocationHeader());
+            Assert.assertEquals(String.format("%s, tenant-identifier-regex is not valid", validationError), "t/([^/]*)/", configuration.getTenantIdentifierRegexList().get(0));
         } finally {
             LoadBalancerConfiguration.clear();
         }

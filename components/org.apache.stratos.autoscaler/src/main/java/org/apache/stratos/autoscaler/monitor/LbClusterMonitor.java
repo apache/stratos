@@ -27,6 +27,9 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -37,6 +40,7 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 public class LbClusterMonitor extends AbstractMonitor{
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
+    private ClusterStatus status;
 
     public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                             AutoscalePolicy autoscalePolicy) {
@@ -60,13 +64,19 @@ public class LbClusterMonitor extends AbstractMonitor{
                 log.debug("Cluster monitor is running.. "+this.toString());
             }
             try {
-                monitor();
+                if( !ClusterStatus.In_Maintenance.equals(status)) {
+                    monitor();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("LB Cluster monitor is suspended as the cluster is in " +
+                                    ClusterStatus.In_Maintenance + " mode......");
+                    }
+                }
             } catch (Exception e) {
                 log.error("Cluster monitor: Monitor failed. "+this.toString(), e);
             }
             try {
-                // TODO make this configurable
-                Thread.sleep(30000);
+                Thread.sleep(monitorInterval);
             } catch (InterruptedException ignore) {
             }
         }
@@ -82,7 +92,8 @@ public class LbClusterMonitor extends AbstractMonitor{
 
                 if (partitionContext != null) {
                     minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-
+                    minCheckKnowledgeSession.setGlobal("isPrimary", false);
+                    
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Running minimum check for partition %s ",
                                                 partitionContext.getPartitionId()));
@@ -107,4 +118,11 @@ public class LbClusterMonitor extends AbstractMonitor{
     }
 
 
+    public ClusterStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ClusterStatus status) {
+        this.status = status;
+    }
 }

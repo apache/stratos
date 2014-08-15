@@ -74,7 +74,7 @@
         <connection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</connection>
         <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/stratos.git</developerConnection>
         <url>https://git-wip-us.apache.org/repos/asf?p=stratos.git</url>
-        <tag>HEAD</tag>
+        <tag>4.0.0-rc4</tag>
     </scm>
 
     <modules>
@@ -453,6 +453,8 @@
                         <configuration>
                             <excludes>
                                 <exclude>${project.build.directory}/**/*</exclude>
+                                <exclude>**/.gitignore</exclude>
+                                <exclude>**/.git/**/*</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -496,6 +498,13 @@
                             <goals>
                                 <goal>jar-no-fork</goal>
                             </goals>
+                            <configuration>
+                                <excludes>
+                                    <exclude>${project.build.directory}/**/*</exclude>
+                                    <exclude>**/.gitignore</exclude>
+                                    <exclude>**/.git/**/*</exclude>
+                                </excludes>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

@@ -49,6 +49,7 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private String[] accessURLs;
     private PortMapping[] portMappings;
+    private String serviceGroup;
 
     public String getDisplayName() {
         return displayName;
@@ -243,5 +244,13 @@ public class Cartridge implements Comparable<Cartridge> {
 
     public void setLoadBalancer(boolean isLoadBalancer) {
         this.loadBalancer = isLoadBalancer;
+    }
+
+    public String getServiceGroup() {
+        return serviceGroup;
+    }
+
+    public void setServiceGroup(String serviceGroup) {
+        this.serviceGroup = serviceGroup;
     }
 }

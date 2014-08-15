@@ -1,8 +1,8 @@
 ================================================================================
-                        Apache Stratos Load Balancer 4.0.0
+                        Apache Stratos Load Balancer
 ================================================================================
 
-Welcome to the Apache Stratos Load Balancer 4.0.0
+Welcome to the Apache Stratos Load Balancer.
 
 Apache Stratos LB is a lightweight and easy-to-use Open Source Load Balancer
 (LB) available under the Apache Software License v2.0. Apache Stratos LB allows
@@ -10,14 +10,13 @@ administrators to simply configure message load balancing, failover routing,
 and auto scaling. The runtime has been designed to be completely
 asynchronous, non-blocking and streaming based on the Apache Synapse core.
 
-This is based on the revolutionary WSO2 Carbon [Middleware a' la carte]
-framework. All the major features have been developed as pluggable Carbon
-components. Apache Stratos Load Balancer is a compact version doing the load balancing
-features of WSO2 Enterprise Service Bus.
+This is based on the revolutionary WSO2 Carbon [Middleware] framework. All the major
+features have been developed as pluggable Carbon components. Apache Stratos Load Balancer
+is a compact version doing the load balancing features of WSO2 Enterprise Service Bus.
 
 
-Key Features of Apache Stratos LB
-======================================
+Key Features
+============
 
 1. Non-blocking HTTP/S transports based on Apache HttpCore for ultra fast
    execution and support for thousands of connections at high concurrency with
@@ -34,7 +33,7 @@ Key Features of Apache Stratos LB
 7. Administrator friendly - Configurations are simple and easy.
 
 System Requirements
-=======================
+===================
 
 1. Minimum memory - 1.5GB
 2. Processor      - Pentium 800MHz or equivalent at minimum
@@ -142,4 +141,4 @@ Crypto Notice
 
 
 Thank you for using Apache Stratos!
-The Stratos Team.
+The Stratos Team

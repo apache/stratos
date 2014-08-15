@@ -19,6 +19,8 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.*;
@@ -29,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Cartridge implements Serializable{
 
+	private transient static final Log log = LogFactory.getLog(Cartridge.class);
     private static final long serialVersionUID = 6637409027085059072L;
 
 	private String type;
@@ -53,25 +56,25 @@ public class Cartridge implements Serializable{
     
     private LoadbalancerConfig lbConfig;
     
-    private List<PortMapping> portMappings = new ArrayList<PortMapping>();
+    private List<PortMapping> portMappings;
     
     private Persistence persistence;
     
-    private List<AppType> appTypeMappings = new ArrayList<AppType>();
+    private List<AppType> appTypeMappings;
     
     private String serviceGroup;
     
     /**
      * Property map of this Cartridge.
      */
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, String> properties;
     
     /**
      * A Cartridge can have 1..n {@link IaasProvider}s
      */
-    private List<IaasProvider> iaases = new ArrayList<IaasProvider>();
+    private List<IaasProvider> iaases;
     
-    private List<String> deploymentDirs = new ArrayList<String>();
+    private List<String> deploymentDirs;
     
     private IaasProvider lastlyUsedIaas;
     
@@ -79,9 +82,11 @@ public class Cartridge implements Serializable{
      * Key - partition id
      * Value - Corresponding IaasProvider.
      */
-    private Map<String, IaasProvider> partitionToIaasProvider = new ConcurrentHashMap<String, IaasProvider>();
+    private Map<String, IaasProvider> partitionToIaasProvider;
     
-    public Cartridge(){}
+    public Cartridge(){
+    	init();
+    }
     
     public Cartridge(String type, String host, String provider, String version, boolean multiTenant) {
         this.type = type;
@@ -89,6 +94,17 @@ public class Cartridge implements Serializable{
         this.provider = provider;
         this.version = version;
         this.multiTenant = multiTenant;
+        init();
+    }
+    
+    private void init() {
+    	partitionToIaasProvider = new ConcurrentHashMap<String, IaasProvider>();
+    	portMappings = new ArrayList<PortMapping>();
+    	portMappings = new ArrayList<PortMapping>();
+    	appTypeMappings = new ArrayList<AppType>();
+    	properties = new HashMap<String, String>();
+    	iaases = new ArrayList<IaasProvider>();
+    	deploymentDirs = new ArrayList<String>();
     }
 
     public String getType() {
@@ -109,10 +125,18 @@ public class Cartridge implements Serializable{
             IaasProvider value = map.get(key);
             
             partitionToIaasProvider.put(key, value);
+            if(log.isDebugEnabled()) {
+            	log.debug("Partition map updated for the Cartridge: "+this.hashCode()+". "
+            			+ "Current Partition List: "+partitionToIaasProvider.keySet().toString());
+            }
         }
     }
     
     public IaasProvider getIaasProviderOfPartition(String partitionId) {
+    	if(log.isDebugEnabled()) {
+        	log.debug("Retrieving partition: "+partitionId+" for the Cartridge: "+this.hashCode()+". "
+        			+ "Current Partition List: "+partitionToIaasProvider.keySet().toString());
+        }
         return partitionToIaasProvider.get(partitionId);
     }
     
@@ -160,7 +184,19 @@ public class Cartridge implements Serializable{
         return iaases;
     }
 
-    public void setIaases(List<IaasProvider> iaases) {
+    @Override
+	public String toString() {
+		return "Cartridge [type=" + type + ", hostName=" + hostName
+				+ ", provider=" + provider + ", version=" + version
+				+ ", multiTenant=" + multiTenant
+				+ ", defaultAutoscalingPolicy=" + defaultAutoscalingPolicy
+				+ ", defaultDeploymentPolicy=" + defaultDeploymentPolicy
+				+ ", serviceGroup=" + serviceGroup + ", properties="
+				+ properties + ", partitionToIaasProvider="
+				+ partitionToIaasProvider + "]";
+	}
+
+	public void setIaases(List<IaasProvider> iaases) {
         this.iaases = iaases;
     }
     

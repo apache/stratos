@@ -41,5 +41,7 @@
 		<!-->member expiry timeout (time waited till activation) in ms<-->
 		<expiryTimeout>900000</expiryTimeout>
 	    </member>
+	    <!-- monitor task interval -->
+	    <monitorInterval>90000</monitorInterval>
 	</autoscaler>
 </configuration>

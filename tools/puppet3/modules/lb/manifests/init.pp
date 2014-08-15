@@ -29,7 +29,7 @@
 #
 
 class lb (
-  $version            = '4.0.0-SNAPSHOT',
+  $version            = '4.0.0',
   $offset             = 0,
   $tribes_port        = 4000,
   $maintenance_mode   = true,
@@ -48,7 +48,7 @@ class lb (
   $service_templates = [
     'conf/axis2/axis2.xml',
     'conf/loadbalancer.conf',
-    'conf/templates/jndi.properties.template',
+    'conf/templates/jndi.properties.template',    
     ]
 
   tag($service_code)
@@ -85,13 +85,25 @@ class lb (
       require   => Lb::Deploy[$deployment_code];
   }
 
+  lb::importssl  { $deployment_code:
+    owner                 => $owner,
+    target                => $carbon_home,
+    ssl_certificate_file => $ssl_certificate_file,
+    require               => [
+       Lb::Initialize[$deployment_code],
+       Lb::Deploy[$deployment_code],
+       Lb::Push_templates[$service_templates]
+     ]
+  }
+
   lb::start { $deployment_code:
     owner   => $owner,
     target  => $carbon_home,
     require => [
-      Lb::Initialize[$deployment_code],
-      Lb::Deploy[$deployment_code],
-      Lb::Push_templates[$service_templates],
-      ],
-  }
+       Lb::Initialize[$deployment_code],
+       Lb::Deploy[$deployment_code],
+       Lb::Push_templates[$service_templates],
+       Lb::Importssl[$deployment_code]
+     ],
+   }
 }

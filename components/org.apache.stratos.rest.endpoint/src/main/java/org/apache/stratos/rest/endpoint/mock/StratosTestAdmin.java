@@ -499,7 +499,6 @@ public class StratosTestAdmin {
         return MockContext.getInstance().getSubscriptionDomains(2, subscriptionAlias).toArray(new SubscriptionDomainBean[0]);
     }
 
-    @GET
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")

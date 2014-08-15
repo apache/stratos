@@ -297,6 +297,7 @@ exec "$JAVACMD" \
         -Dorg.terracotta.quartz.skipUpdateCheck=true \
         -Djavax.net.ssl.trustStore=$CARBON_HOME/repository/resources/security/client-truststore.jks \
         -Djavax.net.ssl.trustStorePassword=wso2carbon \
+        -Djsse.enableSNIExtension=false \
         org.wso2.carbon.bootstrap.Bootstrap $*
 
 

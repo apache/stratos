@@ -38,11 +38,15 @@ public class CartridgeInfoBean {
     String dataCartridgeAlias;
     boolean commitsEnabled;
     private String serviceGroup;
+
     private PersistenceBean persistence;
 
     private List<PropertyBean> property;
 
+    private List<String> domains;
+
     public CartridgeInfoBean() {
+        this.domains = new ArrayList<String>();
     }
 
     public String getCartridgeType() {
@@ -156,4 +160,9 @@ public class CartridgeInfoBean {
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
     }
+
+    public List<String> getDomains() { return domains; }
+
+    public void setDomains(List<String> domains) { this.domains = domains; }
+
 }

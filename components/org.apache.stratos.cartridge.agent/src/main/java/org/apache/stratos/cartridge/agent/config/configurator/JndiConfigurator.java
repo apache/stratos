@@ -23,8 +23,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
-import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +36,7 @@ public class JndiConfigurator {
     private static final Log log = LogFactory.getLog(JndiConfigurator.class);
 
     public static void configure() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Configuring jndi.properties file");
         }
         generateJndiPropertiesFile();
@@ -46,26 +44,25 @@ public class JndiConfigurator {
 
     private static void generateJndiPropertiesFile() {
         String mbIp = System.getProperty("mb.ip");
-        if(StringUtils.isBlank(mbIp)) {
+        if (StringUtils.isBlank(mbIp)) {
             throw new RuntimeException("System property not found: mb.ip");
         }
         String mbPort = System.getProperty("mb.port");
-        if(StringUtils.isBlank(mbPort)) {
+        if (StringUtils.isBlank(mbPort)) {
             throw new RuntimeException("System property not found: mb.port");
         }
-        String templateFilePath =  System.getProperty("jndi.properties.template.file.path");
-        if(StringUtils.isBlank(templateFilePath)) {
+        String templateFilePath = System.getProperty("jndi.properties.template.file.path");
+        if (StringUtils.isBlank(templateFilePath)) {
             throw new RuntimeException("System property not found: jndi.properties.template.file.path");
         }
         String jndiFileDir = System.getProperty("jndi.properties.dir");
-        if(StringUtils.isBlank(jndiFileDir)) {
+        if (StringUtils.isBlank(jndiFileDir)) {
             throw new RuntimeException("System property not found: jndi.properties.dir");
         }
         String jndiFilePath = null;
-        if(jndiFileDir.endsWith("/")) {
+        if (jndiFileDir.endsWith("/")) {
             jndiFilePath = jndiFileDir + "jndi.properties";
-        }
-        else {
+        } else {
             jndiFilePath = jndiFileDir + "/" + "jndi.properties";
         }
 
@@ -83,7 +80,7 @@ public class JndiConfigurator {
 
             // Write jndi.properties file
             writeFileContent(content, jndiFilePath);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("jndi.properties file written to: %s", jndiFilePath));
             }
         } catch (Exception e) {

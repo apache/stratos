@@ -64,4 +64,6 @@ public class Constants {
     public static final String DEVICE_NAME = "volume.device.name";
 	public static final String GRACEFUL_SHUTDOWN_TIMEOUT = "graceful.shutdown.timeout";
 
+    public static final String IS_PRIMARY = "PRIMARY";
+
 }

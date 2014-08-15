@@ -529,7 +529,7 @@ fi
 if [[ !(-d $stratos_extract_path) ]]; then
     echo "Extracting Apache Stratos"
     unzip -q $stratos_pack_zip -d $stratos_path
-    mv -f $stratos_path/apache-stratos-4.0.0-SNAPSHOT $stratos_extract_path
+    mv -f $stratos_path/apache-stratos-4.0.0 $stratos_extract_path
 fi
 
 if [[ ($profile = "default" && $config_mb = "true") ]]; then

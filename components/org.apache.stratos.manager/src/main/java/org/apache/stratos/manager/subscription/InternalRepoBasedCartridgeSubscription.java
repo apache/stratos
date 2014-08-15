@@ -52,11 +52,23 @@ public class InternalRepoBasedCartridgeSubscription extends CartridgeSubscriptio
 			RepositoryRequiredException,
 			RepositoryCredentialsRequiredException,
 			RepositoryTransportException, InvalidRepositoryException {
+
+        if(log.isDebugEnabled()) {
+            log.debug("Managing internal repo for repo URL: " + repoURL);
+        }
 		
 		Repository repository = null;
 		String defaultRepoUserName = System.getProperty(CartridgeConstants.INTERNAL_GIT_USERNAME);
 		String defaultRepoPassword = System.getProperty(CartridgeConstants.INTERNAL_GIT_PASSWORD);
-		String[] dirArray = null;
+		String[] dirArray = {"test"};
+
+        if (repoURL != null && !repoURL.equalsIgnoreCase("null") && !repoURL.isEmpty()) {
+            repository = new Repository();
+            repository.setUrl(repoURL);
+            repository.setUserName(defaultRepoUserName);
+            repository.setPassword(defaultRepoPassword);
+            return repository;
+        }
 		
 		// Repo URL will be generated inside createInternalRepository method
 		RepositoryInfoBean repoInfoBean = new RepositoryInfoBean(repoURL, getAlias(), getSubscriber().getTenantDomain(),

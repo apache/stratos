@@ -75,7 +75,8 @@ public class CartridgeInstanceDataPublisher {
                 return;
             }
         }
-        Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(serviceName);
+
+        Cartridge cartridge = null;
 
         MemberContext memberContext = FasterLookUpDataHolder.getInstance().getMemberContextOfMemberId(memberId);
         //Construct the data to be published
@@ -135,7 +136,6 @@ public class CartridgeInstanceDataPublisher {
                 log.error(String.format("Could not publish BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()), e);
             }
         }
-
     }
     
     private static void release(){

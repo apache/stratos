@@ -31,12 +31,19 @@ public abstract class LogPublisher extends DataPublisher {
 
     protected String memberId;
     protected String filePath;
+    protected String tenantId;
+    protected String alias;
+    protected Long datetime;
+    protected String serverName;
 
-    public LogPublisher (DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId) {
+    public LogPublisher (DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId, String tenantId, String alias, Long datetime) {
 
         super(dataPublisherConfig, streamDefinition);
         this.filePath = filePath;
         this.memberId = memberId;
+        this.tenantId = tenantId;
+        this.alias = alias;
+        this.datetime = datetime;
     }
 
     public void start () {

@@ -49,6 +49,7 @@ public class SubscriptionData {
     private Set<String> domains;
     private Persistence persistence;
     private Properties properties;
+    private String serviceName;
 
     public SubscriptionData() {
         this.domains = new HashSet<String>();
@@ -205,4 +206,12 @@ public class SubscriptionData {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+	public String getServiceName() {
+		return serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
 }

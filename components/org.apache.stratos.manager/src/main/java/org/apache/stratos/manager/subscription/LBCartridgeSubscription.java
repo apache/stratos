@@ -32,6 +32,8 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 
+import java.util.Set;
+
 public class LBCartridgeSubscription extends CartridgeSubscription {
 
     private LoadBalancerCategory loadBalancerCategory;
@@ -62,24 +64,25 @@ public class LBCartridgeSubscription extends CartridgeSubscription {
         setAutoscalingPolicyName(autoscalingPolicy);
         setDeploymentPolicyName(deploymentPolicyName);
         setRepository(repository);
+        setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
+                getSubscriptionKey(), getCustomPayloadEntries()));
         // If LB subscription is for MT service, payload data should not be set
-        if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {        	
-        	setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
-                    getSubscriptionKey(), getCustomPayloadEntries()));	
-        }        
+//        if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {
+//        	setPayloadData(getLoadBalancerCategory().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
+//                    getSubscriptionKey(), getCustomPayloadEntries()));
+//        }
     }
 
     
     @Override
     public CartridgeSubscriptionInfo registerSubscription(Properties properties, Persistence persistence) throws ADCException, UnregisteredCartridgeException {
-    	if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {
-    		if(log.isDebugEnabled()) {
-    		 log.debug("Loadbalanced service is single tenant.");
-    		}
+    	//if(!loadBalancerCategory.isLoadBalancedServiceMultiTenant()) {
+    		//if(log.isDebugEnabled()) {
+    		 //log.debug("Loadbalanced service is single tenant.");
+    		//}
     		getLoadBalancerCategory().register (getCartridgeInfo(), getCluster(), getPayloadData(), getAutoscalingPolicyName(),
-    	                getDeploymentPolicyName(), properties, persistence);
-    	}
-       
+    	                getDeploymentPolicyName(), properties, null);
+    	//}
 
         return ApplicationManagementUtil.createCartridgeSubscription(getCartridgeInfo(), getAutoscalingPolicyName(),
                 getType(), getAlias(), getSubscriber().getTenantId(), getSubscriber().getTenantDomain(),

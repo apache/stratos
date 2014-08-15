@@ -32,6 +32,10 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.rmi.RemoteException;
 
@@ -75,7 +79,7 @@ public class CloudControllerClient {
      * This will validate the given partitions against the given cartridge type.
      */
     
-    public boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) throws PartitionValidationException{
+    public synchronized boolean validateDeploymentPolicy(String cartridgeType, DeploymentPolicy deploymentPolicy) throws PartitionValidationException{
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Validating partitions of policy via cloud controller: [id] %s", deploymentPolicy.getId()));
@@ -103,7 +107,7 @@ public class CloudControllerClient {
     /*
      * Calls the CC to validate the partition.
      */
-    public boolean validatePartition(Partition partition) throws PartitionValidationException{
+    public synchronized boolean validatePartition(Partition partition) throws PartitionValidationException{
         
         try {
             if(log.isInfoEnabled()) {
@@ -127,7 +131,7 @@ public class CloudControllerClient {
     }
 
     public synchronized MemberContext spawnAnInstance(Partition partition,
-    		String clusterId, String lbClusterId, String networkPartitionId) throws SpawningException {
+    		String clusterId, String lbClusterId, String networkPartitionId, boolean isPrimary, int minMemberCount) throws SpawningException {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: [cluster] %s [partition] %s [lb-cluster] %s [network-partition-id] %s",
@@ -140,7 +144,20 @@ public class CloudControllerClient {
             member.setLbClusterId(lbClusterId);
             member.setInitTime(System.currentTimeMillis());
             member.setNetworkPartitionId(networkPartitionId);
-
+            Properties memberContextProps = new Properties();
+            Property isPrimaryProp = new Property();
+            isPrimaryProp.setName("PRIMARY");
+            isPrimaryProp.setValue(String.valueOf(isPrimary));
+            
+            Property minCountProp = new Property();
+            minCountProp.setName("MIN_COUNT");
+            minCountProp.setValue(String.valueOf(minMemberCount));
+            
+            memberContextProps.addProperties(isPrimaryProp);
+            memberContextProps.addProperties(minCountProp);
+            member.setProperties(memberContextProps);
+            
+            
             long startTime = System.currentTimeMillis();
             MemberContext memberContext = stub.startInstance(member);
             if(log.isDebugEnabled()) {

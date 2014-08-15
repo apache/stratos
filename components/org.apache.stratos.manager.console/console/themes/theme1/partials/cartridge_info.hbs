@@ -98,22 +98,24 @@
 
         {{/if}}
 
-        {{#if lbclusterinfo.member}}
+       {{#each lbclusterinfo}}
+        {{#if member}}
             <div class="data-title">LB Private ip:</div>
             <div>
-                {{#each lbclusterinfo.member}}
+                {{#each member}}
                           {{memberIp}};
                 {{/each}}
              </div>
 
              <div class="data-title">LB Public ip:</div>
             <div>
-                {{#each lbclusterinfo.member}}
+                {{#each member}}
                           {{memberPublicIp}};
                 {{/each}}
              </div>
 
         {{/if}}
+       {{/each}}
 
         <div>
         </div>

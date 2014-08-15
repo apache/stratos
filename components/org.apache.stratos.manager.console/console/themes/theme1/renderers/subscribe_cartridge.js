@@ -34,7 +34,8 @@ var render = function (theme, data, meta, require) {
                         deploymentPolicies:data.deploymentPolicies.deploymentPolicy,
                         mtServiceInfo:data.mtServiceInfo.serviceDefinitionBean,
                         cartridge:cartridge,
-                        cartridgeType:meta.request.getParameter('cartridgeType')
+                        cartridgeType:meta.request.getParameter('cartridgeType'),
+                        serviceGroup:meta.request.getParameter('serviceGroup')
                     }
                 }
             ],
@@ -50,6 +51,7 @@ var render = function (theme, data, meta, require) {
                                     class_name: "btn-default",
                                     class_icon: "icon-arrow-left"
                                 },
+                                bamInfo:data.bamInfo,
                                 has_help:false,
                                 help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                             }

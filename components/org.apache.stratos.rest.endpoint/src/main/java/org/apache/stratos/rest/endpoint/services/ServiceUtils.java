@@ -20,6 +20,7 @@ package org.apache.stratos.rest.endpoint.services;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
@@ -561,6 +562,7 @@ public class ServiceUtils {
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
                     cartridge.setPersistence(cartridgeInfo.getPersistence());
+                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
                     if (cartridgeInfo.getProperties() != null) {
                         for (Property property : cartridgeInfo.getProperties()) {
@@ -704,8 +706,8 @@ public class ServiceUtils {
         return availableMultitenantCartridges;
     }
 
-    static List<Cartridge> getSubscriptions(String cartridgeSearchString, ConfigurationContext configurationContext) throws RestAPIException {
 
+	static List<Cartridge> getSubscriptions (String cartridgeSearchString, String serviceGroup, ConfigurationContext configurationContext) throws RestAPIException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
         if (log.isDebugEnabled()) {
@@ -748,6 +750,10 @@ public class ServiceUtils {
                     // Ignoring the LB cartridges since they are not shown to the user.
                     if (cartridge.isLoadBalancer())
                         continue;
+                    if(StringUtils.isNotEmpty(serviceGroup) && cartridge.getServiceGroup() != null &&
+                    		!cartridge.getServiceGroup().equals(serviceGroup)){
+                        continue;
+                    }
                     cartridges.add(cartridge);
                 }
             } else {
@@ -880,17 +886,18 @@ public class ServiceUtils {
                     }
                 }
             }
-
-            return cartridge;
-
-        } catch (Exception e) {
-            String msg = "Unable to extract the Cartridge from subscription. Cause: " + e.getMessage();
-            log.error(msg);
-            throw new RestAPIException(msg);
-        }
-
-    }
-
+            if(subscription.getCartridgeInfo().getServiceGroup() != null) {
+            	cartridge.setServiceGroup(subscription.getCartridgeInfo().getServiceGroup());
+            }
+			return cartridge;
+			
+		} catch (Exception e) {
+			String msg = "Unable to extract the Cartridge from subscription. Cause: "+e.getMessage();
+			log.error(msg);
+			throw new RestAPIException(msg);
+		}
+		
+	}
     static Pattern getSearchStringPattern(String searchString) {
         if (log.isDebugEnabled()) {
             log.debug("Creating search pattern for " + searchString);
@@ -1041,6 +1048,22 @@ public class ServiceUtils {
         return arrCluster;
 
     }
+    
+	public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForCartridgeType(String cartridgeType) {
+
+		Set<Cluster> clusterSet = TopologyClusterInformationModel
+				.getInstance()
+				.getClusters(cartridgeType);
+		List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters = new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+		for (Cluster cluster : clusterSet) {
+			clusters.add(PojoConverter.populateClusterPojos(cluster));
+		}
+		org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster = new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters
+				.size()];
+		arrCluster = clusters.toArray(arrCluster);
+		return arrCluster;
+
+	}
 
     // return the cluster id for the lb. This is a temp fix.
     /*private static String subscribeToLb(String cartridgeType, String loadBalancedCartridgeType, String lbAlias,
@@ -1162,7 +1185,7 @@ public class ServiceUtils {
         }
     }
 
-    public static StratosAdminResponse addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
+    public static void addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
                                                              String subscriptionAlias, 
                                                              SubscriptionDomainRequest request) 
                                                             		 throws RestAPIException {
@@ -1186,10 +1209,6 @@ public class ServiceUtils {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully added domains to cartridge subscription");
-        return stratosAdminResponse;
     }
 
     public static boolean isSubscriptionDomainExists(ConfigurationContext configurationContext, String cartridgeType,
@@ -1199,7 +1218,7 @@ public class ServiceUtils {
             SubscriptionDomainBean subscriptionDomain = PojoConverter.populateSubscriptionDomainPojo(cartridgeSubsciptionManager.getSubscriptionDomain(tenantId,
                     subscriptionAlias, domain));
 
-            if ( subscriptionDomain.domainName != null ) {
+            if (subscriptionDomain.domainName != null) {
                 return true;
             } else {
                 return false;
@@ -1254,6 +1273,7 @@ public class ServiceUtils {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
+
     }
 
 }

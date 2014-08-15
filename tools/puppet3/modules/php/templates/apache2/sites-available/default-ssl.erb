@@ -24,7 +24,7 @@
 <VirtualHost _default_:443>
 	ServerAdmin webmaster@localhost
 
-	DocumentRoot <%= docroot %>
+	DocumentRoot <%= docroot %>/www/
         Alias /simplesaml <%= samlalias %>
 	<Directory />
 		Options FollowSymLinks
@@ -71,8 +71,13 @@
 	#   /usr/share/doc/apache2.2-common/README.Debian.gz for more info.
 	#   If both key and certificate are stored in the same file, only the
 	#   SSLCertificateFile directive is needed.
-	SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
-	SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+	<%- if (@ssl_enabled == 'true' and @ssl_certificate_file and @ssl_key_file) -%>
+           SSLCertificateFile    /etc/ssl/certs/stratos-ssl-cert.pem
+           SSLCertificateKeyFile /etc/ssl/private/stratos-ssl-key.pem
+        <%- else -%>
+           SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+	   SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+        <%- end -%>
 
 	#   Server Certificate Chain:
 	#   Point SSLCertificateChainFile at a file containing the

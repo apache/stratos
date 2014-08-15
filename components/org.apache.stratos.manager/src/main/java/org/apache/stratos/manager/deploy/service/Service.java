@@ -62,7 +62,7 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
         setClusterId(generateClusterId(null, type));
         //host name is the hostname defined in cartridge definition
-        setHostName(cartridgeInfo.getHostName());
+        setHostName(generateHostName(null, cartridgeInfo.getHostName()));
 
         // create and set PayloadData instance
         setPayloadData(createPayload(cartridgeInfo, subscriptionKey, null, cluster, null, null, null));
@@ -70,13 +70,18 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
     protected String generateClusterId (String alias, String cartridgeType) {
 
-        String clusterId = cartridgeType + cartridgeInfo.getHostName() + ".domain";
+        String clusterId = cartridgeType + "." + cartridgeInfo.getHostName() + ".domain";
         // limit the cartridge alias to 30 characters in length
         if (clusterId.length() > 30) {
             clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
         }
 
         return clusterId;
+    }
+
+    protected String generateHostName (String alias, String cartridgeDefinitionHostName) {
+
+        return cartridgeDefinitionHostName;
     }
 
     public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {

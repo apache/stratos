@@ -124,4 +124,8 @@
       </build>
     </profile>
   </profiles>
+
+  <scm>
+    <tag>4.0.0-rc4</tag>
+  </scm>
 </project>

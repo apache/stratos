@@ -20,12 +20,15 @@ package org.apache.stratos.autoscaler.monitor;
 
 import java.util.Map;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -59,7 +62,23 @@ import org.drools.runtime.rule.FactHandle;
 	protected String serviceId;
 	
 	protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-	
+
+    // time intereval between two runs of the Monitor. Default is 90000ms.
+    protected int monitorInterval;
+
+    public AbstractMonitor() {
+        readConfigurations();
+    }
+
+    private void readConfigurations () {
+
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
+        if (log.isDebugEnabled()) {
+            log.debug("Cluster Monitor task interval: " + getMonitorInterval());
+        }
+    }
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -176,5 +195,9 @@ import org.drools.runtime.rule.FactHandle;
 
     public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
         this.minCheckFactHandle = minCheckFactHandle;
+    }
+
+    public int getMonitorInterval() {
+        return monitorInterval;
     }
 }

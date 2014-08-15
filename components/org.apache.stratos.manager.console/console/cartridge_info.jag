@@ -22,6 +22,7 @@
 var caramel = require('caramel');
 var error = [];
 var utils = require('/util/utility.jag');
+var process = require('process');
  var log = new Log('utility.cartridgeInfo');
 var alias = request.getParameter("alias");
 var lbCluster = {};
@@ -33,21 +34,32 @@ if(cartridgeInfo.Error != undefined){
     if(cartridgeInfo.cartridge == undefined){
         cartridgeInfo.cartridge = cartridgeInfo;
     }
+    /*
     if(cartridgeInfo.cartridge.lbClusterId) {
         lbCluster = utils.consoleAppUtil.getClusterInfo(cartridgeInfo.cartridge.lbClusterId);
         if(lbCluster.Error != undefined){
             error.push(lbCluster.Error);
         }
     }
+    */
+    lbCluster = utils.consoleAppUtil.getLBClusterInfo();
+            if(lbCluster.Error != undefined){
+                error.push(lbCluster.Error);
+    }
+
     var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridge.cartridgeType, alias);
     if(clusterInfo.Error != undefined){
         error.push(clusterInfo.Error);
     }
 }
+
+var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
+
 caramel.render({
     cartridgeInfo:cartridgeInfo,
     lbCluster:lbCluster,
     clusterInfo:clusterInfo,
+    bamInfo:bamInfo,
     error:error
 });
 %>

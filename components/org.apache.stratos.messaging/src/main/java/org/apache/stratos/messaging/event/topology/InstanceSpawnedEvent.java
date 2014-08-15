@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.event.topology;
 
 
 import java.io.Serializable;
+import java.util.Properties;
 
 
 /**
@@ -36,6 +37,8 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     private String lbClusterId;
     private String memberPublicIp;
     private String memberIp;
+    private Properties properties;
+
 
     public InstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -88,5 +91,12 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 	public void setMemberIp(String memberIp) {
 		this.memberIp = memberIp;
 	}
-    
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

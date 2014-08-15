@@ -38,5 +38,11 @@ public final class AutoScalerConstants {
 	public static final String NETWORK_PARTITION_LB_HOLDER_RESOURCE = "/network-partitions";
 	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
 	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
+
+
+    /**
+     * Configs
+     */
+    public static final String AUTOSCALER_MONITOR_INTERVAL = "autoscaler.monitorInterval";
        
 }

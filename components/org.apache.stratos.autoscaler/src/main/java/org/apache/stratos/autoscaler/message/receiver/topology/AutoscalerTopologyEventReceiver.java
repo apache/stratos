@@ -110,16 +110,89 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
         });
 
+        topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent)event;
+                    AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                    AbstractMonitor monitor;
+                    String clusterId = memberReadyToShutdownEvent.getClusterId();
+                    String memberId = memberReadyToShutdownEvent.getMemberId();
+
+                    if(asCtx.monitorExist(clusterId)){
+                        monitor = asCtx.getMonitor(clusterId);
+                    }else if(asCtx.lbMonitorExist(clusterId)){
+                        monitor = asCtx.getLBMonitor(clusterId);
+                    }else{
+                        if(log.isDebugEnabled()){
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                        }
+                        return;
+                    }
+
+                    NetworkPartitionContext nwPartitionCtxt;
+                    nwPartitionCtxt = monitor.getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
+
+                    // start a new member in the same Partition
+                    String partitionId = monitor.getPartitionOfMember(memberId);
+                    Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
+                    PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+
+
+                    // terminate the shutdown ready member
+                    CloudControllerClient ccClient = CloudControllerClient.getInstance();
+                    ccClient.terminate(memberId);
+
+                    // remove from active member list
+                    partitionCtxt.removeActiveMemberById(memberId);
+
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
+                                               memberId, partitionId, clusterId));
+                    }
+                } catch (TerminationException e) {
+                    log.error(e);
+                }
+            }
+
+        });
+
         topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
+                    @Override
+                    protected void onEvent(Event event) {
+                        try {
+                            log.info("Event received: " + event);
+                            ClusterCreatedEvent e = (ClusterCreatedEvent) event;
+                            TopologyManager.acquireReadLock();
+                            Service service = TopologyManager.getTopology().getService(e.getServiceName());
+                            Cluster cluster = service.getCluster(e.getClusterId());
+                            startClusterMonitor(cluster);
+                        } catch (Exception e) {
+                            log.error("Error processing event", e);
+                        } finally {
+                            TopologyManager.releaseReadLock();
+                        }
+                    }
+
+                });
+
+        topologyEventReceiver.addEventListener(new ClusterMaintenanceModeEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
                     log.info("Event received: " + event);
-                    ClusterCreatedEvent e = (ClusterCreatedEvent) event;
+                    ClusterMaintenanceModeEvent e = (ClusterMaintenanceModeEvent) event;
                     TopologyManager.acquireReadLock();
                     Service service = TopologyManager.getTopology().getService(e.getServiceName());
                     Cluster cluster = service.getCluster(e.getClusterId());
-                    startClusterMonitor(cluster);
+                    if(AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
+                        AutoscalerContext.getInstance().getMonitor(e.getClusterId()).setStatus(e.getStatus());
+                    } else if (AutoscalerContext.getInstance().lbMonitorExist((cluster.getClusterId()))) {
+                        AutoscalerContext.getInstance().getLBMonitor(e.getClusterId()).setStatus(e.getStatus());
+                    } else {
+                        log.error("cluster monitor not exists for the cluster: " + cluster.toString());
+                    }
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
@@ -127,7 +200,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
             }
 
-        });
+                });
 
         topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override

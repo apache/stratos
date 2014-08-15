@@ -22,7 +22,11 @@
 <div class="container content-starter">
     <div class="row">
         <div class="col-lg-12">
-            <h1>{{cartridgeType}} {{cartridge.version}} Cartridge</h1>
+            {{#if cartridge.serviceGroup}}
+                <h1>{{serviceGroup}} Service Group</h1>
+            {{else}}
+                <h1>{{cartridgeType}} {{cartridge.version}} Cartridge</h1>
+            {{/if}}
         </div>
     </div>
 </div>
@@ -31,8 +35,15 @@
     <div class="row">
         <div class="col-lg-12">
             <form method="post" role="form" action="{{url "/controllers/cartridgeSubscribeSubmit.jag"}}" id="subscribeCartridgeForm">
+	        {{#if cartridge.serviceGroup}}
+                <input name="serviceGroup" type="hidden" value="{{serviceGroup}}" />
+            {{/if}}
             <div class="form-group">
+            {{#if cartridge.multiTenant}}
+                <label class="required">Subscription Alias:</label>
+	    {{else}}
                 <label class="required">Public URL:</label>
+	    {{/if}}
                 <div class="form-inline">
                     <input name="cartridgeType" type="hidden" value="{{cartridgeType}}"/>
                     <input name="alias"
@@ -42,7 +53,10 @@
                            data-help-x-offset="50"
                            data-help-y-offset="10"
                            placeholder="myphp" />
+		{{#unless cartridge.multiTenant}}
                     <label>.{{cartridge.hostName}}</label>
+                {{/unless}}
+
                 </div>
             </div>
 
@@ -50,23 +64,66 @@
             {{#ifCond cartridge.provider "==" "data"}}
             {{else}}
             {{#ifCond cartridge.provider "==" "application"}}
+                {{#if cartridge.serviceGroup}}
+                     <div class="form-group">
+                             <label class="required">Repo URL:</label>
+                             <div class="form-inline">
+                                 <input name="repoURL"
+                                        type="text"
+                                        class="form-control input-xlarge js-help"
+                                        data-help="Specify a repository URL of the artifacts."
+                                        data-help-x-offset="50"
+                                        data-help-y-offset="10"
+                                        placeholder="https://github.com/test/mytestphp.git" />
+                             </div>
+                     {{#unless cartridge.multiTenant}}
+                    <div class="checkbox">
+                                 <label>
+                                     <input id="commitsEnabled" name="commitsEnabled" type="checkbox" /> Auto Commit
+                                 </label>
+                             </div>
+                             {{/unless}}
+                             <div class="checkbox">
+                                 <label>
+                                     <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
+                                 </label>
+                             </div>
+                         </div>
+                     <div id="credential_container" style="display: none;padding-left:20px;margin-left:20px; background: #efefef;padding-bottom:10px;margin-bottom:10px;">
+                         <h2>Provide Credentials</h2>
+                         <div class="form-group">
+                             <label class="required">Username:</label>
+                             <div class="form-inline">
+                                 <input name="repoUsername" class="required form-control input-xlarge" placeholder="username"/>
+                             </div>
+                         </div>
+                         <div class="form-group">
+                             <label class="required">Password:</label>
+                             <div class="form-inline">
+                                 <input name="repoPassword" type="password" class="required form-control input-xlarge" placeholder="******"/>
+                             </div>
+                         </div>
+                     </div>
+                {{/if}}
             {{else}}
                 <div class="form-group">
                     <label class="required">Repo URL:</label>
                     <div class="form-inline">
                         <input name="repoURL"
                                type="text"
-                               class="required form-control input-xlarge js-help"
+                               class="form-control input-xlarge js-help"
                                data-help="Specify a repository URL of the artifacts."
                                data-help-x-offset="50"
                                data-help-y-offset="10"
                                placeholder="https://github.com/test/mytestphp.git" />
                     </div>
+            {{#unless cartridge.multiTenant}}
 		    <div class="checkbox">
                         <label>
                             <input id="commitsEnabled" name="commitsEnabled" type="checkbox" /> Auto Commit
                         </label>
                     </div>
+                    {{/unless}}
                     <div class="checkbox">
                         <label>
                             <input name="isPublicRepo" type="checkbox" checked="checked" id="public_check" /> This is a public repository
@@ -204,7 +261,7 @@
         var $commitsEnabled = $('#commitsEnabled');
 
         var toggleCredentials = function(){
-            if($public_check.is(':checked') && !$commitsEnabled.is(":checked") ){
+            if($public_check.is(':checked')){
                 $('#credential_container').hide();
             }else{
                 $('#credential_container').show();

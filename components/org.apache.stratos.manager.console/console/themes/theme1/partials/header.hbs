@@ -44,6 +44,7 @@
                         <li {{#if my_cartridges}} class="active" {{/if}}><a href="{{url "/"}}"><i class="icons-default"></i>  <span><br>My Cartridges</span></a></li>
                         {{#isAllowed "configure"}}<li {{#if configure_stratos}} class="active" {{/if}}><a href="{{url "/configure_stratos.jag"}}"><i class="icons-config"></i> <span><br>Configure Stratos</span></a></li>{{/isAllowed}}
                         {{#isAllowed "tenant-mgt"}}<li {{#if tenant_mgt}} class="active" {{/if}}><a href="{{url "/tenant_management.jag"}}"><i class="icons-users"></i> <span><br>Tenant Mgt</span></a></li>{{/isAllowed}}
+                        <!-- <li><a target="_blank" href="https://{{bamInfo.bamip}}:{{bamInfo.bamport}}/bamdashboards/private_paas_metering/index.jsp?tenantId={{#tenantID}}{{/tenantID}}&domain={{#domain}}{{/domain}}"><i class="icons-art-gallery"></i><span><br>Dashboard</span></a></li> -->
                      </ul>
                      <ul class="pull-right">
                      <li class="dropdown">

@@ -24,6 +24,7 @@
     var log = new Log("controller.cartridgeSubscribeSubmit");
     var utils = require('/util/utility.jag');
     var jsonRequest = {};
+    var error = [];
     jsonRequest = {};
     var cartridgeType = request.getParameter('cartridgeType');
     var alias = request.getParameter('alias');
@@ -37,6 +38,7 @@
     var removeontermination = request.getParameter('removeOnUnsubscription');
     var persistencerequired = request.getParameter('persistencerequired');
     var commitsEnabled = request.getParameter('commitsEnabled');
+    var serviceGroup = request.getParameter('serviceGroup');
 
     if(persistencerequired == "on"){
         persistencerequired = true;
@@ -56,7 +58,7 @@
         removeontermination = false;
     }
     // constructing the json request
-    jsonRequest.cartridgeType = cartridgeType;
+ //   jsonRequest.cartridgeType = cartridgeType;
     jsonRequest.alias = alias;
     jsonRequest.repoURL = repoURL;
     jsonRequest.privateRepo = !isPublicRepo;
@@ -74,8 +76,62 @@
     jsonRequest.commitsEnabled = commitsEnabled;
     jsonRequest.removeOnTermination = removeontermination;
 
+    if(serviceGroup != undefined) {
+        var step_data = {};
+        step_data =  utils.consoleAppUtil.getCartridges();
+        if(step_data.Error != undefined){
+                error.push(step_data.Error);
+        } else {
+            if(step_data.Error != undefined){
+                error.push(step_data.Error);
+            } else {
+                step_data = step_data.cartridge;
+                for(var i=0;i<step_data.length;i++) {
+                    if(step_data[i].serviceGroup == undefined ||
+                            step_data[i].serviceGroup == null ||
+                            step_data[i].serviceGroup != serviceGroup) {
+                        step_data.splice(i,1);
+                        i = i - 1;
+                    }
+                }
+                log.debug("Service group data : " + stringify(step_data));
 
-    var result = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
+                var repoUrl = null;
+                for(var i=0;i<step_data.length;i++) {
+                    //subscribe to cartridges separately which falls in the same service group
+                    jsonRequest.alias = alias + i;
+                    jsonRequest.cartridgeType = step_data[i].cartridgeType;
+
+                    // the following is a great dirty hack to share the same repo between gateway workers and gateway managers :(
+                    if (repoUrl != null && repoUrl != undefined) {
+                        log.debug("Setting previously created internal repo URL " + repoUrl);
+                        // if a repoUrl has been returne with previous subscription response, set it to request params
+                        jsonRequest.repoURL = repoUrl;
+                    }
+
+                    var re = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
+                    if(re.Error != undefined){
+                            error.push(step_data.Error);
+                    } else {
+                        log.debug("Request :" + stringify(jsonRequest) + ",  \n Response : " + stringify(re)) ;
+                        // check if the repo Url returned in response is valid. If so, assign it to a variable to use in the next
+                        // subscription call
+                        if(re.subscriptionInfo != undefined && re.subscriptionInfo.repositoryURL != undefined &&
+                                re.subscriptionInfo.repositoryURL != null) {
+                            repoUrl = re.subscriptionInfo.repositoryURL;
+                        }
+                    }
+
+                }
+            }
+        }
+
+    } else {
+	 jsonRequest.cartridgeType = cartridgeType;
+        var result = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
+   }
+
     response.sendRedirect(request.getContextPath() + '/index.jag');
 }());
 %>
+

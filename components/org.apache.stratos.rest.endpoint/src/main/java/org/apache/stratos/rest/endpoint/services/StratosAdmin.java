@@ -30,6 +30,7 @@ import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -43,6 +44,7 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.Deploy
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -88,6 +90,7 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public StratosAdminResponse initialize ()
             throws RestAPIException {
+
 
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully logged in");
@@ -325,7 +328,20 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscribedCartridges() throws RestAPIException {
-        List<Cartridge> cartridgeList = ServiceUtils.getSubscriptions(null, getConfigContext());
+        List<Cartridge> cartridgeList = ServiceUtils.getSubscriptions(null,null, getConfigContext());
+        // Following is very important when working with axis2
+        ResponseBuilder rb = Response.ok();
+        rb.entity(cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]));
+        return rb.build();
+    }
+
+    @GET
+    @Path("/cartridge/list/subscribed/group/{serviceGroup}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
+        List<Cartridge> cartridgeList = ServiceUtils.getSubscriptions(null, serviceGroup, getConfigContext());
         // Following is very important when working with axis2
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridgeList.isEmpty() ? new Cartridge[0] : cartridgeList.toArray(new Cartridge[cartridgeList.size()]));
@@ -406,6 +422,17 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
+        ResponseBuilder rb = Response.ok();
+        rb.entity(ServiceUtils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType));
+        return rb.build();
+    }
+    
+    @GET
+    @Path("/cluster/service/{cartridgeType}/")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getServiceClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         ResponseBuilder rb = Response.ok();
         rb.entity(ServiceUtils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType));
         return rb.build();
@@ -1057,19 +1084,19 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                           @PathParam("subscriptionAlias") String subscriptionAlias,
-                                           SubscriptionDomainRequest request) throws RestAPIException {
 
-        StratosAdminResponse stratosAdminResponse = ServiceUtils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request);
-        return Response.ok().entity(stratosAdminResponse).build();
+                                                       @PathParam("subscriptionAlias") String subscriptionAlias,
+                                                       SubscriptionDomainRequest request) throws RestAPIException {
+        ServiceUtils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request);
+        return Response.noContent().build();
     }
 
     @GET
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
-                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+    public Response getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+
         SubscriptionDomainBean[] subscriptionDomainBean = ServiceUtils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray(new SubscriptionDomainBean[0]);
 
         if(subscriptionDomainBean.length == 0){
@@ -1083,8 +1110,8 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
-                                          @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
+    public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType, @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
+
         SubscriptionDomainBean subscriptionDomainBean = ServiceUtils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
         if(subscriptionDomainBean.domainName == null){
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -1114,15 +1141,15 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getLoadBalancerCluster(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("GET /cartridge/%s/subscription/%s/load-balancer-cluster", cartridgeType, subscriptionAlias));
         }
         Cartridge subscription = ServiceUtils.getSubscription(subscriptionAlias, getConfigContext());
         String lbClusterId = subscription.getLbClusterId();
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Load balancer cluster-id found: %s", lbClusterId));
         }
-        if(StringUtils.isNotBlank(lbClusterId)) {
+        if (StringUtils.isNotBlank(lbClusterId)) {
             Response.fromResponse(getCluster(lbClusterId));
         }
         return Response.status(Response.Status.NOT_FOUND).build();

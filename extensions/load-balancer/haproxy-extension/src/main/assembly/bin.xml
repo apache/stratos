@@ -71,12 +71,13 @@
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
+                <include>DISCLAIMER</include>
                 <include>README*</include>
                 <include>LICENSE*</include>
                 <include>INSTALL*</include>
             </includes>
         </fileSet>
-        <fileSet>
+	<fileSet>
             <directory>${project.basedir}/src/main/license</directory>
             <outputDirectory>/</outputDirectory>
             <fileMode>0600</fileMode>
@@ -90,7 +91,7 @@
     <dependencySets>
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
-            <excludes>
+	    <excludes>
                 <exclude>*:icu4j*</exclude>
                 <exclude>*:jaxen*</exclude>
                 <exclude>*:jboss-transaction-api*</exclude>

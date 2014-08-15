@@ -24,4 +24,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo "Instance started" | tee -a $log
+echo `date`": Instance Started Event: " | tee -a $log

@@ -303,23 +303,20 @@
                                             <i class="icons-help"></i>
                                             Example configuration:
                                             <pre>
-                                            {
-                                                "id": "economyPolicy",
-                                                "loadThresholds": {
-                                                  "requestsInFlight": {
-						    "upperLimit": "80",
-						    "lowerLimit": "20"
-                                                  },
-                                                  "memoryConsumption": {
-						    "upperLimit": "80",
-                                                    "lowerLimit": "20"
-                                                  },
-                                                  "loadAverage": {
-						    "upperLimit": "80",
-                                                    "lowerLimit": "20"
-                                                  }
-                                                }
-                                              }
+                                                  {
+                                                   "id": "autoscale-policy-1",
+                                                   "loadThresholds": {
+                                                     "requestsInFlight": {
+                                                       "average": 50
+                                                     },
+                                                     "memoryConsumption": {
+                                                       "average": 70
+                                                     },
+                                                     "loadAverage": {
+                                                       "average": 100
+                                                     }
+                                                   }
+                                                 }
 
                                             </pre>
                                         </div>

@@ -262,6 +262,7 @@
                     <xs:element minOccurs="0" name="nodeId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax220:Partition"/>
                     <xs:element minOccurs="0" name="privateIpAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"/>
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
@@ -324,6 +325,7 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax221:PortMapping"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax221:Property"/>
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="version" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -923,22 +925,22 @@
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
         <wsdl:port name="CloudControllerServiceHttpSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="http://10.100.0.38:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://192.168.122.1:9763/services/CloudControllerService.CloudControllerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap11Endpoint" binding="ns:CloudControllerServiceSoap11Binding">
-            <soap:address location="https://10.100.0.38:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.122.1:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="http://10.100.0.38:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://192.168.122.1:9763/services/CloudControllerService.CloudControllerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsSoap12Endpoint" binding="ns:CloudControllerServiceSoap12Binding">
-            <soap12:address location="https://10.100.0.38:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://192.168.122.1:9443/services/CloudControllerService.CloudControllerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="http://10.100.0.38:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
+            <http:address location="http://192.168.122.1:9763/services/CloudControllerService.CloudControllerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="CloudControllerServiceHttpsEndpoint" binding="ns:CloudControllerServiceHttpBinding">
-            <http:address location="https://10.100.0.38:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.122.1:9443/services/CloudControllerService.CloudControllerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
