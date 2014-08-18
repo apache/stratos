@@ -29,6 +29,8 @@ import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.i
 import org.apache.stratos.cartridge.agent.artifact.deployment.synchronizer.git.util.Utilities;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
+import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.lib.Ref;
@@ -37,6 +39,7 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.storage.file.FileRepository;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.apache.commons.io.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -244,6 +247,10 @@ public class GitBasedArtifactRepository {
     private RepositoryContext retrieveCachedGitContext(int tenantId) {
 
         return tenantToRepoContextMap.get(tenantId);
+    }
+
+    private void removeGitRepoContext(int tenantId) {
+        tenantToRepoContextMap.remove(tenantId);
     }
 
     /**
@@ -520,6 +527,32 @@ public class GitBasedArtifactRepository {
            }
        }
    }
+
+    public boolean removeRepo(int tenantId) throws IOException {
+        RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
+
+        log.info("git repository deleted for tenant " + gitRepoCtx.getTenantId());
+
+        // Stop the artifact update task
+        gitRepoCtx.getArtifactSyncSchedular().shutdown();
+        // Remove git repo for the tenant
+        FileUtils.deleteDirectory(gitRepoCtx.getLocalRepo().getDirectory());
+        FileUtils.deleteDirectory(new File(gitRepoCtx.getGitLocalRepoPath()));
+
+        removeGitRepoContext(tenantId);
+
+        if (tenantId == -1234) {
+            if (CartridgeAgentConfiguration.getInstance().isMultitenant()) {
+                ExtensionUtils.executeCopyArtifactsExtension(
+                        CartridgeAgentConstants.SUPERTENANT_TEMP_PATH,
+                        CartridgeAgentConfiguration.getInstance().getAppPath() + "/repository/deployment/server/"
+                        );
+            }
+        }
+
+
+        return true;
+    }
 
     private boolean pullAndHandleErrors (RepositoryContext gitRepoCtx) {
 

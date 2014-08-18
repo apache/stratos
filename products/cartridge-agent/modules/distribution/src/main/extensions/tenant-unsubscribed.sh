@@ -25,8 +25,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-if [[ ! -d $2 ]]; then
-   mkdir -p $2
-fi
-cp -rf $1* $2
-echo "Artifacts Copied" | tee -a $log
+echo `date`": Tenant UnSubscribed Event" | tee -a $log

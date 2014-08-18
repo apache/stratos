@@ -25,7 +25,11 @@ import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMembe
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
+
+import java.io.IOException;
 
 public interface ExtensionHandler {
     public void onInstanceStartedEvent();
@@ -61,4 +65,9 @@ public interface ExtensionHandler {
     public void onSubscriptionDomainRemovedEvent(SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent);
 
     public void onCopyArtifactsExtension(String src, String des);
+
+    public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent);
+
+    public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent);
+
 }

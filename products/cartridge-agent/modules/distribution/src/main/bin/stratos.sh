@@ -67,7 +67,9 @@ properties="-Dmb.ip=MB-IP
             -Dextension.complete.tenant=complete-tenant.sh
             -Dextension.subscription.domain.added=subscription-domain-added.sh
             -Dextension.subscription.domain.removed=subscription-domain-removed.sh
-            -Dextension.artifacts.copy=artifacts-copy.sh"
+            -Dextension.artifacts.copy=artifacts-copy.sh
+            -Dextension.tenant.subscribed=tenant-subscribed.sh
+            -Dextension.tenant.unsubscribed=tenant-unsubscribed.sh"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

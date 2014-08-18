@@ -501,6 +501,36 @@ public class ExtensionUtils {
         }
     }
 
+    public static void executeTenantSubscribedExtension(Map<String, String> envParameters) {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Executing tenant subscribed extension");
+            }
+            String script = System.getProperty(CartridgeAgentConstants.TENANT_SUBSCRIBED_SCRIPT);
+            String command = prepareCommand(script);
+            addPayloadParameters(envParameters);
+            cleanProcessParameters(envParameters);
+            String output = CommandUtils.executeCommand(command, envParameters);
+        } catch (Exception e) {
+            log.error("Could not execute tenant subscribed extension", e);
+        }
+    }
+
+    public static void executeTenantUnSubscribedExtension(Map<String, String> envParameters) {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Executing tenant un-subscribed extension");
+            }
+            String script = System.getProperty(CartridgeAgentConstants.TENANT_UNSUBSCRIBED_SCRIPT);
+            String command = prepareCommand(script);
+            addPayloadParameters(envParameters);
+            cleanProcessParameters(envParameters);
+            String output = CommandUtils.executeCommand(command, envParameters);
+        } catch (Exception e) {
+            log.error("Could not execute tenant un-subscribed extension", e);
+        }
+    }
+
     public static boolean isTopologyInitialized() {
         TopologyManager.acquireReadLock();
         boolean active = TopologyManager.getTopology().isInitialized();

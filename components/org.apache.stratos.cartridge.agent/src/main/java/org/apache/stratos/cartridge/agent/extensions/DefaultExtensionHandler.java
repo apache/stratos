@@ -39,12 +39,15 @@ import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMembe
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.andes.util.Serial;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -66,6 +69,13 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             if (log.isDebugEnabled()) {
                 log.debug("Processing instance started event...");
             }
+
+            if (CartridgeAgentConfiguration.getInstance().isMultitenant()) {
+                ExtensionUtils.executeCopyArtifactsExtension(
+                        CartridgeAgentConfiguration.getInstance().getAppPath() + "/repository/deployment/server/",
+                        CartridgeAgentConstants.SUPERTENANT_TEMP_PATH);
+            }
+
             Map<String, String> env = new HashMap<String, String>();
             ExtensionUtils.executeInstanceStartedExtension(env);
         } catch (Exception e) {
@@ -173,15 +183,6 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             } else {
                 log.info("Artifact updating task disabled");
             }
-            
-            // If supert tenant temp app path is available,
-            // copy the artifacts to carbon server's deployment path
-            String src = CartridgeAgentConstants.SUPERTENANT_TEMP_PATH;
-            if (new File(src).exists() && tenantId.equals("-1234")) {
-                ExtensionUtils.executeCopyArtifactsExtension(src,
-    					CartridgeAgentConfiguration.getInstance().getAppPath()+ "/repository/deployment/server/");
-            }
-
         }
     }
 
@@ -987,6 +988,47 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     @Override
     public void onCopyArtifactsExtension(String src, String des) {
         ExtensionUtils.executeCopyArtifactsExtension(src, des);
+    }
+
+    @Override
+    public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent) {
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Tenant subscribed event received: [tenant] %s [service] %s [cluster] %s",
+                            tenantSubscribedEvent.getTenantId(), tenantSubscribedEvent.getServiceName(),
+                            tenantSubscribedEvent.getClusterIds())
+            );
+        }
+
+        if (log.isDebugEnabled()) {
+            String msg = gson.toJson(tenantSubscribedEvent);
+            log.debug("Tenant subscribed event msg:" + msg);
+        }
+        Map<String, String> env = new HashMap<String, String>();
+        ExtensionUtils.executeTenantSubscribedExtension(env);
+    }
+
+    @Override
+    public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent) {
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Tenant unsubscribed event received: [tenant] %s [service] %s [cluster] %s",
+                    tenantUnSubscribedEvent.getTenantId(), tenantUnSubscribedEvent.getServiceName(),
+                    tenantUnSubscribedEvent.getClusterIds()));
+        }
+
+        if (log.isDebugEnabled()) {
+            String msg = gson.toJson(tenantUnSubscribedEvent);
+            log.debug("Tenant unsubscribed event msg:" + msg);
+        }
+
+        try {
+            if (CartridgeAgentConfiguration.getInstance().getServiceName().equals(tenantUnSubscribedEvent.getServiceName())) {
+                GitBasedArtifactRepository.getInstance().removeRepo(tenantUnSubscribedEvent.getTenantId());
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        Map<String, String> env = new HashMap<String, String>();
+        ExtensionUtils.executeTenantUnSubscribedExtension(env);
     }
 
 }

@@ -61,6 +61,8 @@
                 <include>subscription-domain-added.sh</include>
                 <include>subscription-domain-removed.sh</include>
                 <include>artifacts-copy.sh</include>
+                <include>tenant-subscribed.sh</include>
+                <include>tenant-unsubscribed.sh</include>
             </includes>
         </fileSet>
         <fileSet>
