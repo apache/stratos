@@ -66,10 +66,15 @@ public class LocationReWriter extends AbstractMediator {
                     // Check whether the location host is an ip address of a known member
                     String hostname = LoadBalancerContext.getInstance().getMemberIpHostnameMap().get(inLocationUrl.getHost());
                     if (StringUtils.isEmpty(hostname)) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("A hostname not found for ip: [ip-address] %s", inLocationUrl.getHost()));
+                        
+                        if (!LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(inLocationUrl.getHost())) {
+                        	if (log.isDebugEnabled()) {
+                                log.debug(String.format("A hostname not found for ip: [ip-address] %s", inLocationUrl.getHost()));
+                            }
+                        	return;
+                        } else {
+                        	hostname = inLocationUrl.getHost();
                         }
-                        return;
                     }
 
                     if (log.isDebugEnabled()) {
