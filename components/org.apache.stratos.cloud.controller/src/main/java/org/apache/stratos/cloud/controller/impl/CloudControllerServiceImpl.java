@@ -200,6 +200,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Cartridge cartridge = null;
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
             if (dataHolder.getCartridges().remove(cartridge)) {
+            	// invalidate partition validation cache
+            	dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
+            	
+            	if (log.isDebugEnabled()) {
+            		log.debug("Partition cache invalidated for cartridge "+cartridgeType);
+            	}
+            	
                 persist();
                 
                 // sends the service removed event
@@ -1134,6 +1141,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
+    	Map<String, List<String>> validatedCache = dataHolder.getCartridgeTypeToPartitionIds();
+    	List<String> validatedPartitions = new ArrayList<String>();
+    	
+    	if (validatedCache.containsKey(cartridgeType)) {
+    		// cache hit for this cartridge
+    		// get list of partitions
+    		validatedPartitions = validatedCache.get(cartridgeType);
+    		if (log.isDebugEnabled()) {
+    			log.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
+    		}
+    		
+    	}
+    	
         Map<String, IaasProvider> partitionToIaasProviders =
                                                              new ConcurrentHashMap<String, IaasProvider>();
         
@@ -1152,6 +1172,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
 
 		for (Partition partition : partitions) {
+			
+			if (validatedPartitions.contains(partition.getId())) {
+				// partition cache hit
+				continue;
+			}
+			
 			Callable<IaasProvider> worker = new PartitionValidatorCallable(
 					partition, cartridge);
 			Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
@@ -1165,8 +1191,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             try {
             	// add to a temporary Map
             	partitionToIaasProviders.put(partitionId, job.get());
+            	
+            	// add to cache
+            	this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
+            	
 				if (log.isDebugEnabled()) {
-					log.debug("Partition "+partitionId+" added to the map.");
+					log.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
 				}
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
