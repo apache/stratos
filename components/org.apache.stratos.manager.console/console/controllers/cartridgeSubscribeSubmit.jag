@@ -111,7 +111,7 @@
 
                     var re = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
                     if(re.Error != undefined){
-                            error.push(step_data.Error);
+			session.put("errorinbackend", re.Error);                        
                     } else {
                         log.debug("Request :" + stringify(jsonRequest) + ",  \n Response : " + stringify(re)) ;
                         // check if the repo Url returned in response is valid. If so, assign it to a variable to use in the next
@@ -127,8 +127,11 @@
         }
 
     } else {
-	 jsonRequest.cartridgeType = cartridgeType;
+        jsonRequest.cartridgeType = cartridgeType;
         var result = utils.consoleAppUtil.subscribeToCartridge(jsonRequest);
+        if(result.Error != undefined){
+              session.put("errorinbackend", result.Error);
+	}
    }
 
     response.sendRedirect(request.getContextPath() + '/index.jag');

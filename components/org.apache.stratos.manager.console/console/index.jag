@@ -26,6 +26,13 @@ var utils = require('/util/utility.jag');
 var process = require('process');
 
 var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
+
+var errorInSession = session.get("errorinbackend");
+if(errorInSession != undefined) {
+   session.remove("errorinbackend");
+   error.push(errorInSession);
+}
+
 if(subscribedCartridges.Error != undefined){
     error.push(subscribedCartridges.Error);
 }
