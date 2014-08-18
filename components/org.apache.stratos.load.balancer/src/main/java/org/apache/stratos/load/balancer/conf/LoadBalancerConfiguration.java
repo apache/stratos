@@ -51,8 +51,6 @@ public class LoadBalancerConfiguration {
     private long endpointTimeout;
     private long sessionTimeout;
     private boolean cepStatsPublisherEnabled;
-    private String mbIp;
-    private int mbPort;
     private String cepIp;
     private int cepPort;
     private boolean topologyEventListenerEnabled;
@@ -151,22 +149,6 @@ public class LoadBalancerConfiguration {
 
     public void setCepStatsPublisherEnabled(boolean cepStatsPublisherEnabled) {
         this.cepStatsPublisherEnabled = cepStatsPublisherEnabled;
-    }
-
-    public String getMbIp() {
-        return mbIp;
-    }
-
-    public void setMbIp(String mbIp) {
-        this.mbIp = mbIp;
-    }
-
-    public int getMbPort() {
-        return mbPort;
-    }
-
-    public void setMbPort(int mbPort) {
-        this.mbPort = mbPort;
     }
 
     public String getCepIp() {
@@ -366,17 +348,6 @@ public class LoadBalancerConfiguration {
             String multiTenancyEnabled = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MULTI_TENANCY);
             if (StringUtils.isNotBlank(multiTenancyEnabled)) {
                 configuration.setMultiTenancyEnabled(Boolean.parseBoolean(multiTenancyEnabled));
-            }
-
-            // Read mb ip and port
-            if (configuration.isTopologyEventListenerEnabled() || configuration.isMultiTenancyEnabled()) {
-                String mbIp = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_IP);
-                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_IP, mbIp, "loadbalancer");
-                configuration.setMbIp(mbIp);
-
-                String mbPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_PORT);
-                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_PORT, mbPort, "loadbalancer");
-                configuration.setMbPort(Integer.parseInt(mbPort));
             }
 
             // Read topology service filter and topology cluster filter

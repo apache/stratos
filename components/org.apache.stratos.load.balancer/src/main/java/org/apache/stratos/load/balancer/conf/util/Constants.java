@@ -39,8 +39,6 @@ public class Constants {
     public static final String CONF_PROPERTY_SESSION_TIMEOUT = "session-timeout";
     public static final String CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER = "topology-event-listener";
     public static final String CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE = "topology-member-ip-type";
-    public static final String CONF_PROPERTY_MB_IP = "mb-ip";
-    public static final String CONF_PROPERTY_MB_PORT = "mb-port";
     public static final String CONF_PROPERTY_CEP_STATS_PUBLISHER = "cep-stats-publisher";
     public static final String CONF_PROPERTY_CEP_IP = "cep-ip";
     public static final String CONF_PROPERTY_CEP_PORT = "cep-port";

@@ -42,6 +42,14 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>jndi.properties</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/extensions</directory>
             <outputDirectory>/extensions</outputDirectory>
             <fileMode>0755</fileMode>
@@ -63,14 +71,6 @@
                 <include>artifacts-copy.sh</include>
                 <include>tenant-subscribed.sh</include>
                 <include>tenant-unsubscribed.sh</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.basedir}/src/main/conf/templates</directory>
-            <outputDirectory>/conf/templates</outputDirectory>
-            <fileMode>0600</fileMode>
-            <includes>
-                <include>jndi.properties.template</include>
             </includes>
         </fileSet>
         <fileSet>

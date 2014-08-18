@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
-import org.apache.stratos.cartridge.agent.config.configurator.JndiConfigurator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -52,9 +51,6 @@ public class Main {
                     }
                 }
             });
-
-            // Generate jndi.properties file
-            JndiConfigurator.configure();
 
             // Initialize cartridge agent configuration
             CartridgeAgentConfiguration.getInstance();
