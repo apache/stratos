@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.ping.PingEvent;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 
 import javax.jms.JMSException;
 
@@ -51,19 +52,20 @@ public class TopicHealthChecker implements Runnable {
 		TopicConnector testConnector = new TopicConnector();
 		while (!terminated) {
 			try {
-				// Health checker needs to run with the smallest possible time interval
-				// to detect a connection drop. Otherwise the subscriber will not
+
+                // Health checker needs to run with the smallest possible time interval (configurable)
+                // to detect a connection drop. Otherwise the subscriber will not
                 // get reconnected after a connection drop.
-				Thread.sleep(1000);
+				Thread.sleep(Util.getAveragePingInterval());
 				testConnector.init(topicName);
                 // A ping event is published to detect a session timeout
                 EventPublisherPool.getPublisher(Constants.PING_TOPIC).publish(new PingEvent(), false);
 			} catch (Exception e) {
 				// Implies connection is not established
-				// sleep for 30 sec and retry
+				// sleep for configured failover ping interval and retry
 				try {
-					log.error(topicName + " topic health checker is failed and will try to subscribe again in 30 sec");
-					Thread.sleep(30000);
+                    log.error(topicName + " topic health checker is failed and will try to subscribe again in "+Util.getFailoverPingInterval()/1000+" seconds.");
+                    Thread.sleep(Util.getFailoverPingInterval());
 					break;
 				} catch (InterruptedException ignore) {
 				}
