@@ -114,6 +114,12 @@
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
         </dependency>
+       <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.tenant.mgt</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 	<build>
