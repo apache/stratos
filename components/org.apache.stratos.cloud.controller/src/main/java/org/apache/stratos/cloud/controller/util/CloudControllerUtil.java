@@ -45,7 +45,6 @@ import java.util.Properties;
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
 
-    @SuppressWarnings("unchecked")
     public static Cartridge toCartridge(CartridgeConfig config) {
         if (config == null) {
             return null;

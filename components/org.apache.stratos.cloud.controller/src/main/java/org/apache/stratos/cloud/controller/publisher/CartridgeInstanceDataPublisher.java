@@ -21,8 +21,6 @@ package org.apache.stratos.cloud.controller.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -51,7 +49,6 @@ public class CartridgeInstanceDataPublisher {
     private static StreamDefinition streamDefinition;
     private static final String cloudControllerEventStreamVersion = "1.0.0";
 
-    @SuppressWarnings("deprecation")
     public static void publish(String memberId,
                                String partitionId,
                                String networkId,
@@ -76,9 +73,11 @@ public class CartridgeInstanceDataPublisher {
             }
         }
 
-        Cartridge cartridge = null;
 
         MemberContext memberContext = FasterLookUpDataHolder.getInstance().getMemberContextOfMemberId(memberId);
+        String cartridgeType = memberContext.getCartridgeType();
+        Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(cartridgeType);
+        
         //Construct the data to be published
         List<Object> payload = new ArrayList<Object>();
         // Payload values
@@ -88,11 +87,11 @@ public class CartridgeInstanceDataPublisher {
         payload.add(memberContext.getLbClusterId());
         payload.add(partitionId);
         payload.add(networkId);
-        if(cartridge != null) {
-            payload.add(String.valueOf(cartridge.isMultiTenant()));
-        } else {
-            payload.add("");
-        }
+		if (cartridge != null) {
+			payload.add(String.valueOf(cartridge.isMultiTenant()));
+		} else {
+			payload.add("");
+		}
         payload.add(memberContext.getPartition().getProvider());
         payload.add(status);
 

@@ -356,7 +356,6 @@ public class TopologyBuilder {
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
                             throws InvalidMemberException, InvalidCartridgeTypeException {
-        String memberId = instanceReadyToShutdownEvent.getMemberId();
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
         //update the status of the member
@@ -407,7 +406,6 @@ public class TopologyBuilder {
 
      public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
                             throws InvalidMemberException, InvalidCartridgeTypeException {
-        String memberId = instanceMaintenanceModeEvent.getMemberId();
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
         //update the status of the member
