@@ -21,8 +21,7 @@ node 'base' {
   #essential variables
   $package_repo         = 'http://10.4.128.7'
   $local_package_dir    = '/mnt/packs'
-  $mb_ip                = '127.0.0.1'
-  $mb_port              = '61616'
+  $mb_url		= 'tcp://127.0.0.1:61616'
   $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
   $cep_ip               = '127.0.0.1'
   $cep_port             = '7611'

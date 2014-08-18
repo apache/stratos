@@ -24,9 +24,7 @@ echo "Starting cartridge agent..."
 script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-properties="-Dmb.ip=<%= @mb_ip %>
-            -Dmb.port=<%= @mb_port %>
-            -Dlisten.address=localhost
+properties="-Dlisten.address=localhost
             -Dthrift.receiver.ip=<%= @cep_ip %>
             -Dthrift.receiver.port=<%= @cep_port %>
             -Djndi.properties.template.file.path=<%= @carbon_home %>/conf/templates/jndi.properties.template
