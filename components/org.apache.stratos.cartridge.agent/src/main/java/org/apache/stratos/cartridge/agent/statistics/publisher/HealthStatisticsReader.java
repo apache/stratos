@@ -20,12 +20,16 @@
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
 import com.sun.management.OperatingSystemMXBean;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Scanner;
 
 /**
  * Health statistics reader.
@@ -35,9 +39,41 @@ public class HealthStatisticsReader {
     private static final Log log = LogFactory.getLog(HealthStatisticsReader.class);
 
     public static double getMemoryConsumption() {
-    	OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-        double totalMemory = (double)(osBean.getTotalPhysicalMemorySize()/ MB);
-        double usedMemory = (double)((totalMemory - (osBean.getFreePhysicalMemorySize() / MB) ));
+    	double totalMemory = 0, usedMemory = 0;
+    	
+    	if (isWindows()) {
+    		OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+    		totalMemory = (double)(osBean.getTotalPhysicalMemorySize()/ MB);
+    		usedMemory = (double)((totalMemory - (osBean.getFreePhysicalMemorySize() / MB) ));
+    	} else {
+    		String fName = "/proc/meminfo";
+    		try {
+    			FileInputStream f = new FileInputStream(fName);
+
+    			/* $ cat /proc/meminfo
+    			 * MemTotal:        2056964 kB
+    			 * MemFree:           16716 kB
+    			 * Buffers:            9776 kB
+    			 * Cached:           127220 kB
+    			 */
+    			Scanner scanner = new Scanner(f).useDelimiter("\\D+");
+    			try {
+    				long memTotal = scanner.nextLong();
+    				long memFree = scanner.nextLong();
+    				long buffers = scanner.nextLong();
+    				long cached = scanner.nextLong();
+
+    				totalMemory = memTotal;
+    				usedMemory = memTotal - (memFree + buffers + cached);
+    			} catch (Exception ex) {
+    				log.error("Could not calculate memory usage.", ex);
+    			} finally {
+    				scanner.close();
+    			}
+    		} catch (IOException ex) {
+    			log.error("Could not calculate memory usage.", ex);
+    		}
+    	}
         
         if(log.isDebugEnabled()) {
         	log.debug("Calculating memory consumption: [totalMemory] "+totalMemory+" [usedMemory] "+usedMemory);
@@ -68,5 +104,10 @@ public class HealthStatisticsReader {
     public static boolean allPortsActive() {
         return CartridgeAgentUtils.checkPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
                                                     CartridgeAgentConfiguration.getInstance().getPorts());
+    }
+    
+    private static boolean isWindows() {
+        String os = System.getProperty("os.name").toLowerCase();
+        return os.indexOf("win") >= 0;
     }
 }
