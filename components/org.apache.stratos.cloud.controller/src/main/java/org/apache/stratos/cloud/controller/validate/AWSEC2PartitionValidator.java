@@ -99,12 +99,11 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
 			for (Object property : properties.keySet()) {
 				if (property instanceof String) {
 					String key = (String) property;
-					if (!Scope.zone.toString().equals(key)) {
-						updatedIaasProvider.setProperty(key,
-								properties.getProperty(key));
-						if (log.isDebugEnabled()) {
-							log.debug("Added property "+key+ " to the IaasProvider.");
-						}
+					updatedIaasProvider.setProperty(key,
+							properties.getProperty(key));
+					if (log.isDebugEnabled()) {
+						log.debug("Added property " + key
+								+ " to the IaasProvider.");
 					}
 				}
 			}

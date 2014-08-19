@@ -21,9 +21,12 @@ package org.apache.stratos.cloud.controller.validate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas;
+import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 
 import java.util.Properties;
@@ -43,7 +46,34 @@ public class DockerPartitionValidator implements PartitionValidator {
 
     @Override
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
-        log.warn("Not implemented: DockerPartitionValidator.validate()");
-        return iaasProvider;
+    	// in Docker case currently we only update the custom properties passed via Partitions, and
+    	// no validation done as of now.
+    	IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
+    	updateOtherProperties(updatedIaasProvider, properties);
+        return updatedIaasProvider;
     }
+    
+    private void updateOtherProperties(IaasProvider updatedIaasProvider,
+			Properties properties) {
+    	Iaas updatedIaas;
+		try {
+			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+
+			for (Object property : properties.keySet()) {
+				if (property instanceof String) {
+					String key = (String) property;
+					updatedIaasProvider.setProperty(key,
+							properties.getProperty(key));
+					if (log.isDebugEnabled()) {
+						log.debug("Added property " + key
+								+ " to the IaasProvider.");
+					}
+				}
+			}
+			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas.setIaasProvider(updatedIaasProvider);
+		} catch (InvalidIaasProviderException ignore) {
+		}
+    	
+	}
 }
