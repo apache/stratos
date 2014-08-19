@@ -26,7 +26,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Implements a blocking queue for managing instance status event messages.
  */
 public class InstanceStatusEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-    private static volatile InstanceStatusEventMessageQueue instance;
+	private static final long serialVersionUID = 828304342209475302L;
+	private static volatile InstanceStatusEventMessageQueue instance;
 
     private InstanceStatusEventMessageQueue(){
     }

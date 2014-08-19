@@ -44,7 +44,6 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.jclouds.ec2.options.CreateSnapshotOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
 import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
@@ -55,7 +54,6 @@ import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
-import org.jclouds.openstack.nova.v2_0.domain.VolumeSnapshot;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
 import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
@@ -64,7 +62,6 @@ import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
-import org.jclouds.openstack.nova.v2_0.options.CreateVolumeSnapshotOptions;
 import org.jclouds.rest.RestContext;
 
 import java.util.ArrayList;
@@ -314,8 +311,7 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
@@ -407,9 +403,7 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		@SuppressWarnings("deprecation")
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		@SuppressWarnings("deprecation")
 		FloatingIPApi floatingIPApi = nova.getApi()
 				.getFloatingIPExtensionForZone(region).get();
 
@@ -586,7 +580,6 @@ public class OpenstackNovaIaas extends Iaas {
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
-        VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
 
         while(volumeStatus != expectedStatus){

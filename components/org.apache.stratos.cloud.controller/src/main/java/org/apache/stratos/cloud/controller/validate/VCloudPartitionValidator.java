@@ -34,9 +34,11 @@ import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidato
  */
 public class VCloudPartitionValidator implements PartitionValidator {
     
-    private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
     private IaasProvider iaasProvider;
-    private Iaas iaas;
+    @SuppressWarnings("unused")
+	private Iaas iaas;
 
     @Override
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {

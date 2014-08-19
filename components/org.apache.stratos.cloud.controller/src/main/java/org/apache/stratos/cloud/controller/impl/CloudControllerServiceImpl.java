@@ -497,7 +497,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if(log.isDebugEnabled()){
             log.debug("Persistence payload is" + persistencePayload.toString());
         }
-        System.out.println("****** " + persistencePayload);
 		return persistencePayload;
 	}
 
