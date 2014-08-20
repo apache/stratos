@@ -38,7 +38,6 @@ public class NetworkPartitionContext implements Serializable{
 	private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private static final long serialVersionUID = 572769304374110159L;
     private final String id;
-    private boolean scaleDownAllowed = false;
     private int scaleDownWaitCount = 5; //TODO get from a config
     private int scaleDownRequestsCount = 0;
 
@@ -193,7 +192,7 @@ public class NetworkPartitionContext implements Serializable{
 
         final int prime = 31;
         int result = 1;
-        result = 31 * result + ((this.id == null) ? 0 : this.id.hashCode());
+        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
         return result;
 
     }
