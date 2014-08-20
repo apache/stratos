@@ -863,7 +863,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 if (isSessionAffinityBasedLB()) {
                     //We are sending the this message on a new session,
                     // hence we need to remove previous session information
-                    Set pros = synCtx.getPropertyKeySet();
+                    Set<?> pros = synCtx.getPropertyKeySet();
                     if (pros != null) {
                         pros.remove(SynapseConstants.PROP_SAL_CURRENT_SESSION_INFORMATION);
                     }

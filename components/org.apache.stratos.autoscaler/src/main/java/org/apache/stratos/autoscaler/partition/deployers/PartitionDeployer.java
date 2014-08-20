@@ -40,7 +40,8 @@ public class PartitionDeployer extends AbstractDeployer {
 	
 	 private static final Log log = LogFactory.getLog(PartitionDeployer.class);
 	 
-	 private static String fileExt="xml"; //default
+	 @SuppressWarnings("unused")
+	private String extension="xml"; //default
 	 private static String deployDirectory=null;
 
 	@Override
@@ -65,7 +66,7 @@ public class PartitionDeployer extends AbstractDeployer {
 
 	@Override
 	public void setExtension(String ext) {
-		fileExt = ext;
+		extension = ext;
 	}
 	
 	@Override

@@ -61,7 +61,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 		ArrayList<DeploymentPolicy> validPolicies = new ArrayList<DeploymentPolicy>();
 		
 		for(DeploymentPolicy deploymentPolicy : this.getAllDeploymentPolicies()){
-			Partition[] policyPartitions = deploymentPolicy.getAllPartitions();
             try {
                 // call CC API
                 CloudControllerClient.getInstance().validateDeploymentPolicy(cartridgeType, deploymentPolicy);

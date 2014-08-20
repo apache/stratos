@@ -32,8 +32,6 @@ import java.util.Map;
  * This class is there for accumulating cluster details which are not there in Topology
  */
 public class AutoscalerContext {
-    private static volatile AutoscalerContext instance;
-//    Map<String, ClusterContext> clusterContextMap;
 
     private static final Log log = LogFactory.getLog(AutoscalerContext.class);
     private AutoscalerContext() {

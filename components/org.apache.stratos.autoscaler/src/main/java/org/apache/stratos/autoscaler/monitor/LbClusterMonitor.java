@@ -29,8 +29,6 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying

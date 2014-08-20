@@ -22,11 +22,9 @@ package org.apache.stratos.autoscaler.interfaces;
 
 
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;

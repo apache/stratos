@@ -261,8 +261,6 @@ public class LoadBalancerConfiguration {
 
     private static class LoadBalancerConfigurationReader {
 
-        private String property;
-
         public LoadBalancerConfiguration readFromFile() {
             String configFilePath = System.getProperty("loadbalancer.conf.file");
             if (configFilePath == null) {

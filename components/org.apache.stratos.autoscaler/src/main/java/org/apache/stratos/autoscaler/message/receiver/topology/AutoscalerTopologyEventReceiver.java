@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -136,7 +135,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     // start a new member in the same Partition
                     String partitionId = monitor.getPartitionOfMember(memberId);
-                    Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
                     PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
 
@@ -209,7 +207,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     ClusterRemovedEvent e = (ClusterRemovedEvent) event;
                     TopologyManager.acquireReadLock();
 
-                    String serviceName = e.getServiceName();
                     String clusterId = e.getClusterId();
                     String deploymentPolicy = e.getDeploymentPolicy();
 
@@ -387,7 +384,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                    // start a new member in the same Partition
                    String partitionId = monitor.getPartitionOfMember(memberId);
-                   Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
                    PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
 
@@ -568,7 +564,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         }
     }
 
-    private void runTerminateAllRule(AbstractMonitor monitor) {
+    @SuppressWarnings("unused")
+	private void runTerminateAllRule(AbstractMonitor monitor) {
 
         FactHandle terminateAllFactHandle = null;
 

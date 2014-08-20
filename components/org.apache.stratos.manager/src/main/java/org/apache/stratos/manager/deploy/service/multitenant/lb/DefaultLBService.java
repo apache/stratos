@@ -39,7 +39,8 @@ import java.util.Map;
 
 public class DefaultLBService extends LBService {
 
-    private static Log log = LogFactory.getLog(DefaultLBService.class);
+	private static final long serialVersionUID = 8650714821857129052L;
+	private static Log log = LogFactory.getLog(DefaultLBService.class);
     private boolean defaultLBServiceExists = false;
 
     public DefaultLBService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,

@@ -50,7 +50,6 @@ public class PartitionContext implements Serializable{
     private String serviceName;
     private String networkPartitionId;
     private Partition partition;
-//    private int currentActiveMemberCount = 0;
     private int minimumMemberCount = 0;
     private int pendingMembersFailureCount = 0;
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
@@ -66,9 +65,6 @@ public class PartitionContext implements Serializable{
     // members to be terminated
     private List<String> obsoletedMembers;
     
-    // Contains the members that CEP notified as faulty members.
-//    private List<String> faultyMembers;
-    
     // active members
     private List<MemberContext> activeMembers;
 
@@ -77,8 +73,6 @@ public class PartitionContext implements Serializable{
 
     //Keep statistics come from CEP
     private Map<String, MemberStatsContext> memberStatsContexts;
-    private int nonTerminatedMemberCount;
-//    private int totalMemberCount;
 
     // for the use of tests
     public PartitionContext(long memberExpiryTime) {
@@ -96,7 +90,6 @@ public class PartitionContext implements Serializable{
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
         this.obsoletedMembers = new CopyOnWriteArrayList<String>();
-//        this.faultyMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
 
         // check if a different value has been set for expiryTime
@@ -132,19 +125,6 @@ public class PartitionContext implements Serializable{
     public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
     }
-//    public int getTotalMemberCount() {
-//        // live count + pending count
-//        return currentActiveMemberCount + pendingMembers.size();
-//    }
-
-//    public void incrementCurrentActiveMemberCount(int count) {
-//
-//        this.currentActiveMemberCount += count;
-//    }
-    
-//    public void decrementCurrentActiveMemberCount(int count) {
-//        this.currentActiveMemberCount -= count;
-//    }
 
     public int getMinimumMemberCount() {
         return minimumMemberCount;
@@ -263,18 +243,6 @@ public class PartitionContext implements Serializable{
     public boolean removeObsoleteMember(String memberId) {
         return this.obsoletedMembers.remove(memberId);
     }
-//
-//    public void addFaultyMember(String memberId) {
-//        this.faultyMembers.add(memberId);
-//    }
-//
-//    public boolean removeFaultyMember(String memberId) {
-//        return this.faultyMembers.remove(memberId);
-//    }
-//
-//    public List<String> getFaultyMembers() {
-//        return this.faultyMembers;
-//    }
 
     public long getExpiryTime() {
         return expiryTime;

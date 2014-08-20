@@ -494,7 +494,8 @@ public class ServiceDeploymentManager {
         }
     }
 
-    private static Property[] combine (Property[] propertyArray1, Property[] propertyArray2) {
+    @SuppressWarnings("unused")
+	private static Property[] combine (Property[] propertyArray1, Property[] propertyArray2) {
 
         int length = propertyArray1.length + propertyArray2.length;
         Property[] combinedProperties = new Property[length];
