@@ -19,19 +19,16 @@
 
 package org.apache.stratos.manager.deploy.service.multitenant.lb;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
 
 public class LBService extends Service {
 
-    private static Log log = LogFactory.getLog(LBService.class);
+	private static final long serialVersionUID = 7202575406524382777L;
 
     private String loadBalancedServiceType;
 

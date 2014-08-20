@@ -19,14 +19,12 @@
 
 package org.apache.stratos.manager.deploy.service.multitenant;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.manager.deploy.service.Service;
 
 public class MultiTenantService extends Service {
 
-    private static Log log = LogFactory.getLog(MultiTenantService.class);
+	private static final long serialVersionUID = 3038272784193474660L;
 
     public MultiTenantService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
     		String tenantRange) {

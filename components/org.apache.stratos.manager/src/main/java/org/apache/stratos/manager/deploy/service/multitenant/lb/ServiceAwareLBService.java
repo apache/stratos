@@ -41,7 +41,9 @@ import java.util.Map;
 
 public class ServiceAwareLBService extends LBService {
 
-    public ServiceAwareLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
+	private static final long serialVersionUID = -4107281204555031986L;
+
+	public ServiceAwareLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
                                  CartridgeInfo cartridgeInfo, String tenantRange) {
 
         super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);

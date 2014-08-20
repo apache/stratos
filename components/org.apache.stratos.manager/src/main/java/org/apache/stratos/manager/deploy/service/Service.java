@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.deploy.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
@@ -33,7 +31,7 @@ import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 
 public abstract class Service extends CartridgeMgtBehaviour {
 
-    private static Log log = LogFactory.getLog(Service.class);
+	private static final long serialVersionUID = -3261972002698749232L;
 
     private String type;
     private String autoscalingPolicyName;
