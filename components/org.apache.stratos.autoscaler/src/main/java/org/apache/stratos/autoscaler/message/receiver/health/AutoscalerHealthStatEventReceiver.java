@@ -629,7 +629,6 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
         	return null;
         }
-        String clusterId = member.getClusterId();
         AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
         if(null == monitor){
 
@@ -730,7 +729,6 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
             // start a new member in the same Partition
             String partitionId = monitor.getPartitionOfMember(memberId);
-            Partition partition = monitor.getDeploymentPolicy().getPartitionById(partitionId);
             PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
             if(!partitionCtxt.activeMemberExist(memberId)){
