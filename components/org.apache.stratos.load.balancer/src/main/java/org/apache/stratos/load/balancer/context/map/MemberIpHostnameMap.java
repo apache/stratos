@@ -28,7 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Member-ip -> hostname map for maintaining cluster hostnames of all members against their ip addresses.
  */
 public class MemberIpHostnameMap {
-    private static final Log log = LogFactory.getLog(MemberIpHostnameMap.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(MemberIpHostnameMap.class);
 
     private ConcurrentHashMap<String, String> concurrentHashMap;
 

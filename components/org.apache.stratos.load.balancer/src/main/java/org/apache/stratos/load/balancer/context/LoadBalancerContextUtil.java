@@ -248,7 +248,8 @@ public class LoadBalancerContextUtil {
      * @param tenantId
      * @return
      */
-    private static Cluster findCluster(String serviceName, int tenantId) {
+    @SuppressWarnings("unused")
+	private static Cluster findCluster(String serviceName, int tenantId) {
         Service service = TopologyManager.getTopology().getService(serviceName);
         if (service == null) {
             throw new RuntimeException(String.format("Service not found: %s", serviceName));

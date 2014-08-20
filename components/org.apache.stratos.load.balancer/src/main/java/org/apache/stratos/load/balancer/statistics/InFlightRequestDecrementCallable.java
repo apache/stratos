@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 /**
  * In-flight request decrement callable definition.
  */
-public class InFlightRequestDecrementCallable implements Callable {
+public class InFlightRequestDecrementCallable implements Callable<Object> {
     private String clusterId;
 
     public InFlightRequestDecrementCallable(String clusterId) {
