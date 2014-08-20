@@ -35,22 +35,13 @@ SLEEP=`which sleep`
 TR=`which tr`
 HEAD=`which head`
 WGET=`which wget`
-PUPPETD=`which puppet`
-AGENT="agent"
-PUPPETAGENT="${PUPPETD} ${AGENT}"
 
-COMMAND="${PUPPETAGENT} -vt"
 IP=`${IFCONFIG} eth0 | ${GREP} -e "inet addr" | ${AWK} '{print $2}' | ${CUT} -d ':' -f 2`
 LOG=/tmp/puppet-init.log
 
 HOSTSFILE=/etc/hosts
 HOSTNAMEFILE=/etc/hostname
 PUPPETCONF=/etc/puppet/puppet.conf
-
-read_master() {
-	${COMMAND}
-}
-
 
 is_public_ip_assigned() {
 
