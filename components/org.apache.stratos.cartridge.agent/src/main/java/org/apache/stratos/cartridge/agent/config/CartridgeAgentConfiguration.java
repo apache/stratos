@@ -233,7 +233,7 @@ public class CartridgeAgentConfiguration {
             log.info(" INTERNAL payload parameter is not found");
         }
 
-        if(internalRepoStringValue.equals(CartridgeAgentConstants.INTERNAL)) {
+        if(internalRepoStringValue != null && internalRepoStringValue.equals(CartridgeAgentConstants.INTERNAL)) {
             return true;
         } else{
             return false;
