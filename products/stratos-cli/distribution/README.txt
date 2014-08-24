@@ -23,6 +23,10 @@ CLI, with the exception of registering tenants and viewing logs.
 The CLI tool also supports command history and auto-completing features 
 in the interactive mode.
 
+Configuring CLI Tool
+==================================
+Configuration guide can be found at https://cwiki.apache.org/confluence/display/STRATOS/4.1.0+Configuring+CLI+Tool
+
 Help
 ==================================
 usage: stratos [-debug] [-h] [-p <password>] [-trace] [-u <username>]
