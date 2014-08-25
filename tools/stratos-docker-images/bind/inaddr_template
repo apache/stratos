@@ -1,0 +1,13 @@
+$TTL	10 ; 
+; $TTL used for all RRs without explicit TTL value
+$ORIGIN @REV_SUBNET_ADDR@.in-addr.arpa.
+@  1D  IN  SOA ns.@DOMAIN@. hostmaster.@DOMAIN@. (
+			      2002022401 ; serial
+			      10 ; refresh
+			      15 ; retry
+			      10 ; expire
+			      10 ; minimum
+			     )
+
+@REV_SUBNET_ADDR@.in-addr.arpa.  IN  NS     ns.@DOMAIN@. 
+

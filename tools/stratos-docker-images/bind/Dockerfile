@@ -1,4 +1,3 @@
-#!/bin/bash
 # ----------------------------------------------------------------------------
 #
 #  Licensed to the Apache Software Foundation (ASF) under one
@@ -20,22 +19,19 @@
 #
 # ----------------------------------------------------------------------------
 
-set -e
+FROM    ubuntu:14.04
 
-export STRATOS_SOURCE="$(cd ../../; pwd)"
+RUN apt-get update
+RUN apt-get install -y bind9
 
-cd bind
-./docker-build.sh
-cd ..
+COPY zone_template /etc/bind/zone_template
 
-cd mysql
-./docker-build.sh
-cd ..
+# disable reverse address lookups - this may not be possible without ISP delegating the reverse done
+#COPY inaddr_template /etc/bind/inaddr_template
 
-cd activemq
-./docker-build.sh
-cd ..
+EXPOSE 53/udp
 
-cd stratos
-./docker-build.sh
-cd ..
+ADD run /usr/local/bin/run
+RUN chmod +x /usr/local/bin/run
+
+CMD ["/usr/local/bin/run"]

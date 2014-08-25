@@ -20,22 +20,4 @@
 #
 # ----------------------------------------------------------------------------
 
-set -e
-
-export STRATOS_SOURCE="$(cd ../../; pwd)"
-
-cd bind
-./docker-build.sh
-cd ..
-
-cd mysql
-./docker-build.sh
-cd ..
-
-cd activemq
-./docker-build.sh
-cd ..
-
-cd stratos
-./docker-build.sh
-cd ..
+docker build -t=apachestratos/bind .
