@@ -26,7 +26,7 @@ DOMAIN=example.com
 # IP_ADDR is the IP address of the host running the DNS docker image
 IP_ADDR=192.168.56.5
 
-# UPDATE_ADDR_LIST is the list of addresses that can dynamically update the DNS server (see http://www.zytrax.com/books/dns/ch7/address_match_list.html)
+# UPDATE_ADDR_LIST list of addresses that can dynamically update the DNS server # see http://www.zytrax.com/books/dns/ch7/address_match_list.html
 UPDATE_ADDR_LIST=any
 
 

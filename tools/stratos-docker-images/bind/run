@@ -27,32 +27,18 @@ UPDATE_ADDR_LIST=${UPDATE_ADDR_LIST:-none}
 
 export REV_IP_ADDR=$(echo $IP_ADDR | awk -F . '{print $4 "." $3 "." $2 "." $1}')
 
-# disable reverse address lookups - this may not be possible without ISP delegating the reverse done
-#export REV_SUBNET_ADDR=$(echo $SUBNET_ADDR | awk -F . '{print $4 "." $3 "." $2 "." $1}' | sed 's/^\.*//g')
-
 echo =============================
 echo Environment Variable Settings
 echo =============================
 echo Setting DOMAIN=$DOMAIN
 echo Setting IP_ADDR=$IP_ADDR
-#echo Setting REV_IP_ADDR=$REV_IP_ADDR
-#echo Setting SUBNET_ADDR=$SUBNET_ADDR
-#echo Setting REV_SUBNET_ADDR=$REV_SUBNET_ADDR
 echo Setting UPDATE_ADDR_LIST=$UPDATE_ADDR_LIST
 echo =========================
 
 cp /etc/bind/zone_template /var/cache/bind/db.$DOMAIN
 
-# disable reverse address lookup
-#cp /etc/bind/inaddr_template /var/cache/bind/db.$SUBNET_ADDR
-
 sed -i "s/@DOMAIN@/$DOMAIN/g" /var/cache/bind/db.$DOMAIN
 sed -i "s/@IP_ADDR@/$IP_ADDR/g" /var/cache/bind/db.$DOMAIN
-
-# disable reverse address lookup
-#sed -i "s/@REV_IP_ADDR@/$REV_IP_ADDR/g" /var/cache/bind/db.$SUBNET_ADDR
-#sed -i "s/@REV_SUBNET_ADDR@/$REV_SUBNET_ADDR/g" /var/cache/bind/db.$SUBNET_ADDR
-#sed -i "s/@DOMAIN@/$DOMAIN/g" /var/cache/bind/db.$SUBNET_ADDR
 
 cat > /etc/bind/named.conf.local <<EOF
 zone "$DOMAIN" in {
@@ -62,16 +48,7 @@ zone "$DOMAIN" in {
 };
 EOF
 
-# disable reverse address lookup
-#cat >> /etc/bind/named.conf.local <<EOF
-#zone "$REV_SUBNET_ADDR.in-addr.arpa" in {
-#   type master;
-#   notify no;
-#   file "db.$SUBNET_ADDR";
-#};
-#EOF
-
-# server will not start with IPV6 enabled
+# TODO: will server start with IPV6 enabled? 
 #sed -i 's/OPTIONS="-u bind"/OPTIONS="-u bind -4"/g' /etc/default/bind9
 
 exec /usr/sbin/named -u bind -g

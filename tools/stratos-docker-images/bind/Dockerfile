@@ -26,9 +26,6 @@ RUN apt-get install -y bind9
 
 COPY zone_template /etc/bind/zone_template
 
-# disable reverse address lookups - this may not be possible without ISP delegating the reverse done
-#COPY inaddr_template /etc/bind/inaddr_template
-
 EXPOSE 53/udp
 
 ADD run /usr/local/bin/run
