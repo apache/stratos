@@ -28,8 +28,8 @@ wget -N -q -P files/ http://archive.apache.org/dist/activemq/5.9.1/apache-active
 
 wget -N -q -P files/ http://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.29/mysql-connector-java-5.1.29.jar
 
-cp -rf $STRATOS_SOURCE/tools/stratos-installer/ files/
+cp -rf $STRATOS_SOURCE/tools/stratos-installer files/
 
 cp -rf $STRATOS_SOURCE/extensions/ files/
 
-sudo docker build -t=apachestratos/stratos .
+docker build -t=apachestratos/stratos .

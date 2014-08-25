@@ -23,4 +23,4 @@
 #  Server configuration script for Apache Stratos
 # ----------------------------------------------------------------------------
 
-sudo docker build -t=apachestratos/activemq .
+docker build -t=apachestratos/activemq .
