@@ -1,4 +1,3 @@
-#!/bin/bash
 # ----------------------------------------------------------------------------
 #
 #  Licensed to the Apache Software Foundation (ASF) under one
@@ -20,26 +19,33 @@
 #
 # ----------------------------------------------------------------------------
 
-set -e
+FROM ubuntu:14.04
 
-export STRATOS_SOURCE="$(cd ../../; pwd)"
+RUN apt-get update -qq 
+RUN apt-get install -y wget
 
-cd bind
-./docker-build.sh
-cd ..
+RUN wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb
+RUN dpkg -i puppetlabs-release-precise.deb
+RUN apt-get update -qq 
+RUN apt-get install -y puppetmaster
 
-cd puppetmaster
-./docker-build.sh
-cd ..
+RUN mkdir -p /etc/puppet/modules/agent/files
+RUN mkdir -p /etc/puppet/modules/java/files
+RUN mkdir -p /etc/puppet/modules/tomcat/files
 
-cd mysql
-./docker-build.sh
-cd ..
+COPY files/manifests /etc/puppet/manifests
+COPY files/modules /etc/puppet/modules
 
-cd activemq
-./docker-build.sh
-cd ..
+ADD files/jdk-7u51-linux-x64.tar.gz /etc/puppet/modules/java/files/
+ADD files/apache-tomcat-7.0.52.tar.gz /etc/puppet/modules/tomcat/files/
 
-cd stratos
-./docker-build.sh
-cd ..
+ADD files/agentfiles.tgz /tmp/
+
+RUN mv /tmp/apache-stratos-cartridge-agent-*.zip /etc/puppet/modules/agent/files/
+RUN mv /tmp/apache-stratos-load-balancer-*.zip /etc/puppet/modules/agent/files/
+
+ADD run /usr/local/bin/run
+RUN chmod +x /usr/local/bin/run
+
+CMD ["/usr/local/bin/run"]
+

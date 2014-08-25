@@ -20,26 +20,23 @@
 #
 # ----------------------------------------------------------------------------
 
-set -e
+DOMAIN=example.com
+MASTERHOSTNAME=puppet.example.com
 
-export STRATOS_SOURCE="$(cd ../../; pwd)"
+MB_HOSTNAME=
+MB_PORT=
+TRUSTSTORE_PASSWORD=wso2carbon
 
-cd bind
-./docker-build.sh
-cd ..
 
-cd puppetmaster
-./docker-build.sh
-cd ..
+# To run interactively:
+# docker run -i -t -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -p 8140 apachestratos/puppet /bin/bash
 
-cd mysql
-./docker-build.sh
-cd ..
+PUPPET_ID=$(docker run -d --dns=${IP_ADDR} -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -p 8140 apachestratos/puppet)
+PUPPET_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $PUPPET_ID)
+PUPPET_PORT=$(docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
 
-cd activemq
-./docker-build.sh
-cd ..
+# TODO create a docker cartridge 
+# add dns record for cartridge, e.g. cartridge1.$DOMAIN
+# start puppet agent in cartridge to test puppetmaster:
+# puppet agent --server ${MASTERHOSTNAME} --masterport ${PUPPET_PORT} --test --verbose --debug
 
-cd stratos
-./docker-build.sh
-cd ..

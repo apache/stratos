@@ -26,6 +26,10 @@ cd bind
 docker push apachestratos/bind
 cd ..
 
+cd puppetmaster
+docker push apachestratos/puppetmaster
+cd ..
+
 cd mysql
 docker push apachestratos/mysql
 cd ..

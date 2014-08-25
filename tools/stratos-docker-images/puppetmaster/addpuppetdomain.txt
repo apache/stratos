@@ -1,0 +1,5 @@
+server 127.0.0.1
+zone example.com
+prereq nxdomain puppetmaster.example.com.
+update add puppetmaster.example.com. 10  A 192.168.56.10
+send
