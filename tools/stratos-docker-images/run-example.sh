@@ -33,20 +33,6 @@ MB_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $MB_I
 MB_PORT=$(sudo docker port $MB_ID 61616 | awk -F':' '{ print $2 }')
 
 #
-# Start Puppet Container
-#
-
-DOMAIN=stratos.com
-MASTERHOSTNAME=puppet.stratos.com
-MB_HOSTNAME=${MB_IP_ADDR}
-MB_PORT=${MB_PORT}
-TRUSTSTORE_PASSWORD=wso2carbon
-
-PUPPET_ID=$(sudo docker run -d -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -e "MB_HOSTNAME=${MB_HOSTNAME}" -e "MB_PORT=${MB_PORT}" -e "TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}" -p 8140 apachestratos/puppet)
-PUPPET_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $PUPPET_ID)
-PUPPET_PORT=$(sudo docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
-
-#
 # Start mysql docker container 
 # (skip this step if you already have mysql already installed that has a Stratos schema)
 # 
