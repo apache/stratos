@@ -30,6 +30,10 @@ cd puppetmaster
 docker push apachestratos/puppetmaster
 cd ..
 
+cd puppettestnode
+docker push apachestratos/puppettestnode
+cd ..
+
 cd mysql
 docker push apachestratos/mysql
 cd ..

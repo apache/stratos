@@ -32,9 +32,5 @@ EOF
 nsupdate addpuppettestnode.txt
 rm -f addpuppettestnode.txt
 
-export DNS_IP_ADDR=172.17.42.1
-
-echo Setting DNS to $DNS_IP_ADDR
-
-docker run -i -t --dns=$DNS_IP_ADDR -h testnode.$DOMAIN -e "PUPPET_HOST=puppet.$DOMAIN" -e "PUPPET_PORT=$PUPPET_PORT" apachestratos/puppettestnode /bin/bash
+docker run -d=false -i -t --dns=$BIND_IP_ADDR -h testnode.$DOMAIN -e "PUPPET_HOST=puppet.$DOMAIN" -e "PUPPET_PORT=$PUPPET_PORT" apachestratos/puppettestnode
 

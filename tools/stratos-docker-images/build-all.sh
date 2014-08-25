@@ -32,6 +32,10 @@ cd puppetmaster
 ./docker-build.sh
 cd ..
 
+cd puppettestnode
+./docker-build.sh
+cd ..
+
 cd mysql
 ./docker-build.sh
 cd ..
