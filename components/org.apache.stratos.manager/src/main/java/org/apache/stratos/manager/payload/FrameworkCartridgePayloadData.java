@@ -19,9 +19,9 @@
 
 package org.apache.stratos.manager.payload;
 
-public class FramewrokCartridgePayloadData extends PayloadData {
+public class FrameworkCartridgePayloadData extends PayloadData {
 
-    public FramewrokCartridgePayloadData(BasicPayloadData basicPayloadData) {
+    public FrameworkCartridgePayloadData(BasicPayloadData basicPayloadData) {
         super(basicPayloadData);
     }
 }

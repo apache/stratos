@@ -47,7 +47,7 @@ public class PayloadFactory {
         if (cartridgeProvider.equals(CartridgeConstants.DATA_CARTRIDGE_PROVIDER)) {
             payloadData = new DataCartridgePayloadData(basicPayloadData);
         } else {
-            payloadData = new FramewrokCartridgePayloadData(basicPayloadData);
+            payloadData = new FrameworkCartridgePayloadData(basicPayloadData);
         }
 
         if(payloadData == null) {
