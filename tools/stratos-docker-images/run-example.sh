@@ -21,52 +21,88 @@
 # ----------------------------------------------------------------------------
 
 # This script runs activemq, mysql and docker containers
-# change the docker-env environment variables to reflect your environment
+# change the environment variables to reflect your environment
 
-#
-# Start activemq docker container 
-# (skip this step if you already have activemq installed)
-#
+# Set the DOMAIN to the dns domain name you want to use for your Stratos environment
+# The DNS domain name is only used internally by the stratos docker images and should not be exposed publically
+export DOMAIN=example.com
+ 
+# Set the IP_ADDR to the IP address you use to reach the docker host
+export IP_ADDR=192.168.56.5
 
-MB_ID=$(sudo docker run -p 61616 -d apachestratos/activemq); sleep 2s;
-MB_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $MB_ID)
-MB_PORT=$(sudo docker port $MB_ID 61616 | awk -F':' '{ print $2 }')
+########
+# Bind
+########
+ 
+# We need to grant access to hosts or networks to allow DNS records to be added from those hosts
+# See http://www.zytrax.com/books/dns/ch7/address_match_list.html for more info
+export UPDATE_ADDR_LIST=any
+ 
+export BIND_ID=$(docker run -d -p 53:53/udp -e "DOMAIN=$DOMAIN" -e "IP_ADDR=$IP_ADDR" -e "UPDATE_ADDR_LIST=$UPDATE_ADDR_LIST" apachestratos/bind); sleep 2s;
+export BIND_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $BIND_ID)
 
-#
-# Start mysql docker container 
-# (skip this step if you already have mysql already installed that has a Stratos schema)
-# 
-# NOTE: This image does NOT persist data - all data is lost when this image stops.
-#
+###########
+# ActiveMQ
+###########
 
-USERSTORE_ID=$(sudo docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
-USERSTORE_IP_ADDR=$(sudo docker inspect --format '{{ .NetworkSettings.Gateway }}' $USERSTORE_ID)
-USERSTORE_PORT=$(sudo docker port $USERSTORE_ID 3306 | awk -F':' '{ print $2 }')
+export MB_ID=$(docker run -p 61616 -d apachestratos/activemq); sleep 2s;
+export MB_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $MB_ID)
+export MB_PORT=$(docker port $MB_ID 61616 | awk -F':' '{ print $2 }')
 
-#
-# Start Stratos
-#
+###############
+# PuppetMaster
+###############
 
-# Ensure docker environment variable is clean
-unset docker_env
+# Create a file containing instructions for the nsupdate tool
+cat > addpuppetdomain.txt <<EOF
+server 127.0.0.1
+zone $DOMAIN
+prereq nxdomain puppet.$DOMAIN.
+update add puppet.$DOMAIN. 10  A $IP_ADDR
+send
+EOF
+ 
+# Run the nsupdate tool to add puppetmaster to the domain
+nsupdate addpuppetdomain.txt
+rm -f addpuppetdomain.txt
 
+export MASTERHOSTNAME=puppet.$DOMAIN
+export TRUSTSTORE_PASSWORD=wso2carbon
+ 
+export PUPPET_ID=$(docker run -d -h ${MASTERHOSTNAME} --dns=${BIND_IP_ADDR} -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -e "MB_HOSTNAME=${MB_IP_ADDR}" -e "MB_PORT=${MB_PORT}" -e "TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}" -p 8140 apachestratos/puppetmaster); sleep 2s;
+export PUPPET_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $PUPPET_ID)
+export PUPPET_PORT=$(docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
+
+########
+# MySQL
+########
+
+export USERSTORE_ID=$(docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
+export USERSTORE_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $USERSTORE_ID)
+export USERSTORE_PORT=$(docker port $USERSTORE_ID 3306 | awk -F':' '{ print $2 }')
+
+##########
+# Stratos
+##########
+
+unset docker_env # Ensure docker environment variable is clean to start with
+ 
 # Database Settings
 docker_env+=(-e "USERSTORE_DB_HOSTNAME=${USERSTORE_IP_ADDR}")
 docker_env+=(-e "USERSTORE_DB_PORT=${USERSTORE_PORT}")
 docker_env+=(-e "USERSTORE_DB_SCHEMA=USERSTORE_DB_SCHEMA")
 docker_env+=(-e "USERSTORE_DB_USER=root")
 docker_env+=(-e "USERSTORE_DB_PASS=password")
-
+ 
 # Puppet Setings
-docker_env+=(-e "PUPPET_IP=192.168.56.5")
-docker_env+=(-e "PUPPET_HOSTNAME=stratos.com")
+docker_env+=(-e "PUPPET_IP=${IP_ADDR}")
+docker_env+=(-e "PUPPET_HOSTNAME=${DOMAIN}")
 docker_env+=(-e "PUPPET_ENVIRONMENT=none")
-
+ 
 # MB Settings
 docker_env+=(-e "MB_HOSTNAME=${MB_IP_ADDR}")
 docker_env+=(-e "MB_PORT=${MB_PORT}")
 
-# IAAS Settings
 docker_env+=(-e "EC2_ENABLED=true")
 docker_env+=(-e "EC2_IDENTITY=none")
 docker_env+=(-e "EC2_CREDENTIAL=none")
@@ -75,23 +111,20 @@ docker_env+=(-e "EC2_OWNER_ID=none")
 docker_env+=(-e "EC2_AVAILABILITY_ZONE=none")
 docker_env+=(-e "EC2_SECURITY_GROUPS=none")
 docker_env+=(-e "EC2_KEYPAIR=none")
-
+ 
 docker_env+=(-e "OPENSTACK_ENABLED=false")
 docker_env+=(-e "OPENSTACK_IDENTITY=none")
 docker_env+=(-e "OPENSTACK_CREDENTIAL=none")
 docker_env+=(-e "OPENSTACK_ENDPOINT=none")
-
+ 
 docker_env+=(-e "VCLOUD_ENABLED=false")
 docker_env+=(-e "VCLOUD_IDENTITY=none")
 docker_env+=(-e "VCLOUD_CREDENTIAL=none")
 docker_env+=(-e "VCLOUD_ENDPOINT=none")
 
-# Stratos Settings [profile=default|cc|as|sm]
+# Stratos Settings [STRATOS_PROFILE=default|cc|as|sm]
 docker_env+=(-e "STRATOS_PROFILE=default")
 
 # Start Stratos container as daemon
-container_id=$(sudo docker run -d "${docker_env[@]}" -p 9443:9443 apachestratos/stratos)
-sudo docker logs -f $container_id
-
-# Start interactively (requires running /usr/local/bin/run manually)
-# sudo docker run -i -t "${docker_env[@]}" apachestratos/stratos /bin/bash
+STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 apachestratos/stratos)
+sudo docker logs -f $STRATOS_ID
