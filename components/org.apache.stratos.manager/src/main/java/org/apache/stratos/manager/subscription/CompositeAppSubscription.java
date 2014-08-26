@@ -64,7 +64,7 @@ public class CompositeAppSubscription implements Serializable {
     }
 
     public void addGroupSubscriptionAliases (Set<String> groupSubscriptionAliases) {
-        cartridgeSubscriptionAliases.addAll(groupSubscriptionAliases);
+    	groupSubscriptionAliases.addAll(groupSubscriptionAliases);
     }
 
     public String getAppId() {
