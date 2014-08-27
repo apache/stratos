@@ -98,6 +98,7 @@ if [ ! -d /tmp/payload ]; then
 	INSTANCE_HOSTNAME=`sed 's/,/\n/g' launch-params | grep HOSTNAME | cut -d "=" -f 2`
 	PUPPET_IP=`sed 's/,/\n/g' launch-params | grep PUPPET_IP | cut -d "=" -f 2`
 	PUPPET_HOSTNAME=`sed 's/,/\n/g' launch-params | grep PUPPET_HOSTNAME | cut -d "=" -f 2`
+	PUPPET_DNS_AVAILABLE=`sed 's/,/\n/g' launch-params | grep PUPPET_DNS_AVAILABLE | cut -d "=" -f 2`
 	PUPPET_ENV=`sed 's/,/\n/g' launch-params | grep PUPPET_ENV | cut -d "=" -f 2`
 	NODEID="${RANDOMNUMBER}.${DEPLOYMENT}.${SERVICE_NAME}"
 	#essential to have PUPPET_HOSTNAME at the end in order to auto-sign the certs
@@ -110,7 +111,9 @@ if [ ! -d /tmp/payload ]; then
 	HOST="${NODEID}.${DOMAIN}"
 	${HOSTNAME} ${HOST}
 	${ECHO} "${HOST}" > ${HOSTNAMEFILE}
-	${ECHO} "${PUPPET_IP}  ${PUPPET_HOSTNAME}" >> ${HOSTSFILE} 
+	if [ true != $PUPPET_DNS_AVAILABLE ] ; then
+		${ECHO} "${PUPPET_IP}  ${PUPPET_HOSTNAME}" >> ${HOSTSFILE} 
+	fi
 	${ECHO} "127.0.0.1 ${HOST}" >> ${HOSTSFILE}
 	/etc/init.d/hostname start
 
