@@ -21,6 +21,12 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -56,6 +62,7 @@ import org.wso2.carbon.context.CarbonContext;
 import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
 
 import java.util.*;
+
 
 /**
  * Manager class for the purpose of managing CartridgeSubscriptionInfo subscriptions, groupings, etc.
@@ -562,11 +569,8 @@ public class CartridgeSubscriptionManager {
                 }
 
             cartridgeSubscription.addSubscriptionDomain(new SubscriptionDomain(domainName, applicationContext));
-<<<<<<< HEAD
             new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
-=======
-            new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);
->>>>>>> master
+
         } catch (PersistenceManagerException e) {
             String errorMsg = "Could not add domain to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
             " [domain-name] " + domainName + " [application-context] " + applicationContext;
@@ -596,11 +600,8 @@ public class CartridgeSubscriptionManager {
                 throw new DomainSubscriptionDoesNotExist("Cartridge subscription not found", domainName);
             }
             cartridgeSubscription.removeSubscriptionDomain(domainName);
-<<<<<<< HEAD
             new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
-=======
-            new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);
->>>>>>> master
+
         } catch (PersistenceManagerException e) {
             String errorMsg = "Could not remove domain from cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
                     " [domain-name] " + domainName;
