@@ -24,5 +24,4 @@
 connectionfactoryName=TopicConnectionFactory
 connectionfactory.topicConnectionfactory=tcp://$mb_ip:$mb_port
 java.naming.factory.initial=org.apache.activemq.jndi.ActiveMQInitialContextFactory
-=======
->>>>>>> master
+

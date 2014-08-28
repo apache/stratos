@@ -25,20 +25,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
-import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -1174,11 +1171,6 @@ public class ServiceUtils {
         }
 
         /*
-<<<<<<< HEAD
-        if (cartridgeInfoBean.getPersistence() != null) {
-
-=======
->>>>>>> master
         if (cartridgeInfoBean.isPersistanceRequired()) {
         if (cartridgeInfoBean.getPersistence() != null) {
             // Add persistence related properties to PersistenceContext
@@ -1285,10 +1277,6 @@ public class ServiceUtils {
             subscriptionData.setTenantAdminUsername(userName);
             subscriptionData.setRepositoryType("git");
             //subscriptionData.setPayloadProperties(props);
-<<<<<<< HEAD
-            //subscriptionData.setProperties(props);
-=======
->>>>>>> master
             subscriptionData.setPrivateRepository(false);
 
             cartridgeSubscription =
@@ -1299,10 +1287,6 @@ public class ServiceUtils {
 
             Properties lbProperties = new Properties();
             lbProperties.setPayloadProperties(props);
-<<<<<<< HEAD
-            lbProperties.setProperties(props);
-=======
->>>>>>> master
             cartridgeSubsciptionManager.registerCartridgeSubscription(cartridgeSubscription, lbProperties);
             
             if(log.isDebugEnabled()) {

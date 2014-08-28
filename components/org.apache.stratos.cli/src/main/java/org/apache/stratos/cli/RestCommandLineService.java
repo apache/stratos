@@ -904,23 +904,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
-<<<<<<< HEAD
-        cartridgeInfoBean.setCartridgeType(null);
-        cartridgeInfoBean.setAlias(null);
-        cartridgeInfoBean.setRepoURL(null);
-        cartridgeInfoBean.setPrivateRepo(false);
-        cartridgeInfoBean.setRepoUsername(null);
-        cartridgeInfoBean.setRepoPassword(null);
-        cartridgeInfoBean.setAutoscalePolicy(null);
-        cartridgeInfoBean.setDeploymentPolicy(null);
-        cartridgeInfoBean.setSize(size);
 
-        cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
-        cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
-        cartridgeInfoBean.setCommitsEnabled(enableCommits);
-
-=======
->>>>>>> master
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 

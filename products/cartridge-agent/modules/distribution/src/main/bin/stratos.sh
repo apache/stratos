@@ -49,9 +49,6 @@ properties="-Dmb.ip=MB-IP
 	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
 	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
 	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD
-<<<<<<< HEAD
-	    -DAPP_PATH=APP-PATH"
-=======
 	    -Dlog.file.paths=LOG_FILE_PATHS
 	    -DAPP_PATH=APP_PATH
             -Dsuper.tenant.repository.path=/repository/deployment/server/
@@ -73,7 +70,6 @@ properties="-Dmb.ip=MB-IP
             -Dextension.artifacts.copy=artifacts-copy.sh
             -Dextension.tenant.subscribed=tenant-subscribed.sh
             -Dextension.tenant.unsubscribed=tenant-unsubscribed.sh"
->>>>>>> master
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
