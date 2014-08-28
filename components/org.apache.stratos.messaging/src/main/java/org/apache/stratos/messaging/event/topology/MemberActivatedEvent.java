@@ -44,6 +44,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private String memberIp;
     private String groupId;
     private String applicationId;
+    private String memberPublicIp;
 
     public MemberActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -51,9 +52,9 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
-    	this.portMap = new HashMap<Integer, Port>();
+        this.portMap = new HashMap<Integer, Port>();
     }
-    
+
     public String getServiceName() {
         return serviceName;
     }
@@ -104,20 +105,20 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     }
 
     public String getMemberIp() {
-	    return memberIp;
+        return memberIp;
     }
 
-	public void setMemberIp(String memberIp) {
-	    this.memberIp = memberIp;
+    public void setMemberIp(String memberIp) {
+        this.memberIp = memberIp;
     }
 
-	public String getGroupId() {
-		return groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public String getApplicationId() {
         return applicationId;
@@ -125,5 +126,13 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public String getMemberPublicIp() {
+        return memberPublicIp;
+    }
+
+    public void setMemberPublicIp(String memberPublicIp) {
+        this.memberPublicIp = memberPublicIp;
     }
 }
