@@ -45,13 +45,13 @@ import java.util.Map;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-   abstract public class AbstractMonitor implements Runnable{
+abstract public class AbstractMonitor implements Runnable{
 
-	private static final Log log = LogFactory.getLog(AbstractMonitor.class);
-	// Map<NetworkpartitionId, Network Partition Context>
-	protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
-	protected DeploymentPolicy deploymentPolicy;
-	protected AutoscalePolicy autoscalePolicy;
+    private static final Log log = LogFactory.getLog(AbstractMonitor.class);
+    // Map<NetworkpartitionId, Network Partition Context>
+    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
+    protected DeploymentPolicy deploymentPolicy;
+    protected AutoscalePolicy autoscalePolicy;
 
 
     protected FactHandle minCheckFactHandle;
@@ -61,12 +61,12 @@ import java.util.Map;
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
     protected StatefulKnowledgeSession terminateDependencyKnowledgeSession;
-	protected boolean isDestroyed;
-	
-	protected String clusterId;
-	protected String serviceId;
-	
-	protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected boolean isDestroyed;
+
+    protected String clusterId;
+    protected String serviceId;
+
+    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
     // time intereval between two runs of the Monitor. Default is 90000ms.
     protected int monitorInterval;
@@ -84,24 +84,24 @@ import java.util.Map;
         }
     }
 
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	    
-   	public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
-   		log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
-		String networkPartitionId = member.getNetworkPartitionId();
-    	if(networkPartitionCtxts.containsKey(networkPartitionId)) {
-    		log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
-    		return networkPartitionCtxts.get(networkPartitionId);
-    	}
-    	log.info("returning null getNetworkPartitionCtxt");
-   	    return null;
-   	}
-   	
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
+        log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
+        String networkPartitionId = member.getNetworkPartitionId();
+        if(networkPartitionCtxts.containsKey(networkPartitionId)) {
+            log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
+            return networkPartitionCtxts.get(networkPartitionId);
+        }
+        log.info("returning null getNetworkPartitionCtxt");
+        return null;
+    }
+
     public String getPartitionOfMember(String memberId){
         for(Service service: TopologyManager.getTopology().getServices()){
             for(Cluster cluster: service.getClusters()){

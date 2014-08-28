@@ -24,19 +24,18 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-<<<<<<< HEAD
-=======
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
->>>>>>> master
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.monitor.CompositeApplicationMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.CompositeApplication;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
@@ -109,36 +108,36 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
         });
 
-<<<<<<< HEAD
+
         topologyEventReceiver.addEventListener(new CompositeApplicationCreatedEventListener() {
-                    @Override
-                    protected void onEvent(Event event) {
+            @Override
+            protected void onEvent(Event event) {
 
-                        log.info("[ClusterCreatedEventListener] Received: " + event.getClass());
+                log.info("[ClusterCreatedEventListener] Received: " + event.getClass());
 
-                        CompositeApplicationCreatedEvent compositeApplicationCreatedEvent = (CompositeApplicationCreatedEvent) event;
+                CompositeApplicationCreatedEvent compositeApplicationCreatedEvent = (CompositeApplicationCreatedEvent) event;
 
-                        ConfigCompositeApplication configCompositeApplication =
-                                compositeApplicationCreatedEvent.getCompositeApplication();
+                ConfigCompositeApplication configCompositeApplication =
+                        compositeApplicationCreatedEvent.getCompositeApplication();
 
-                        //acquire read lock
-                        TopologyManager.acquireReadLock();
+                //acquire read lock
+                TopologyManager.acquireReadLock();
 
-                        try {
-                            CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-                            CompositeApplication compositeApplication =
-                                    builder.buildCompositeApplication(TopologyManager.getTopology(),
-                                            configCompositeApplication.getAlias());
-                            //start the app monitor
+                try {
+                    CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
+                    CompositeApplication compositeApplication =
+                            builder.buildCompositeApplication(TopologyManager.getTopology(),
+                                    configCompositeApplication.getAlias());
+                    //start the app monitor
 
 
-                        } finally {
-                            //release read lock
-                            TopologyManager.releaseReadLock();
-                        }
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
 
-                    }
-                });
+            }
+        });
 
 //        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
 //            @Override
@@ -158,7 +157,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //            }
 //
 //        });
-=======
+
         topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -197,7 +196,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
-                                               memberId, partitionId, clusterId));
+                                memberId, partitionId, clusterId));
                     }
                 } catch (TerminationException e) {
                     log.error(e);
@@ -206,24 +205,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
         });
 
-        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
-                    @Override
-                    protected void onEvent(Event event) {
-                        try {
-                            log.info("Event received: " + event);
-                            ClusterCreatedEvent e = (ClusterCreatedEvent) event;
-                            TopologyManager.acquireReadLock();
-                            Service service = TopologyManager.getTopology().getService(e.getServiceName());
-                            Cluster cluster = service.getCluster(e.getClusterId());
-                            startClusterMonitor(cluster);
-                        } catch (Exception e) {
-                            log.error("Error processing event", e);
-                        } finally {
-                            TopologyManager.releaseReadLock();
-                        }
-                    }
-
-                });
 
         topologyEventReceiver.addEventListener(new ClusterMaintenanceModeEventListener() {
             @Override
@@ -248,8 +229,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
             }
 
-                });
->>>>>>> master
+        });
+
 
         topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
@@ -424,51 +405,51 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
 
         topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
-           @Override
-           protected void onEvent(Event event) {
-               try {
-                   MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent)event;
-                   AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                   AbstractMonitor monitor;
-                   String clusterId = memberReadyToShutdownEvent.getClusterId();
-                   String memberId = memberReadyToShutdownEvent.getMemberId();
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent)event;
+                    AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                    AbstractMonitor monitor;
+                    String clusterId = memberReadyToShutdownEvent.getClusterId();
+                    String memberId = memberReadyToShutdownEvent.getMemberId();
 
-                   if(asCtx.monitorExist(clusterId)){
-                       monitor = asCtx.getMonitor(clusterId);
-                   }else if(asCtx.lbMonitorExist(clusterId)){
-                       monitor = asCtx.getLBMonitor(clusterId);
-                   }else{
-                       if(log.isDebugEnabled()){
-                           log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                       }
-                       return;
-                   }
+                    if(asCtx.monitorExist(clusterId)){
+                        monitor = asCtx.getMonitor(clusterId);
+                    }else if(asCtx.lbMonitorExist(clusterId)){
+                        monitor = asCtx.getLBMonitor(clusterId);
+                    }else{
+                        if(log.isDebugEnabled()){
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                        }
+                        return;
+                    }
 
-                   NetworkPartitionContext nwPartitionCtxt;
-                   nwPartitionCtxt = monitor.getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
+                    NetworkPartitionContext nwPartitionCtxt;
+                    nwPartitionCtxt = monitor.getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
 
-                   // start a new member in the same Partition
-                   String partitionId = monitor.getPartitionOfMember(memberId);
-                   PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+                    // start a new member in the same Partition
+                    String partitionId = monitor.getPartitionOfMember(memberId);
+                    PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
 
-                   // terminate the shutdown ready member
-                   CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                   ccClient.terminate(memberId);
+                    // terminate the shutdown ready member
+                    CloudControllerClient ccClient = CloudControllerClient.getInstance();
+                    ccClient.terminate(memberId);
 
-                   // remove from active member list
-                   partitionCtxt.removeActiveMemberById(memberId);
+                    // remove from active member list
+                    partitionCtxt.removeActiveMemberById(memberId);
 
-                   if (log.isInfoEnabled()) {
-                       log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
-                                              memberId, partitionId, clusterId));
-                   }
-               } catch (TerminationException e) {
-                   log.error(e);
-               }
-           }
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
+                                memberId, partitionId, clusterId));
+                    }
+                } catch (TerminationException e) {
+                    log.error(e);
+                }
+            }
 
-       });
+        });
 
 
         topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
@@ -532,7 +513,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
 
 
-        
+
     }
 
 //    private class LBClusterMonitorAdder implements Runnable {
@@ -675,7 +656,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //    }
 
     @SuppressWarnings("unused")
-	private void runTerminateAllRule(AbstractMonitor monitor) {
+    private void runTerminateAllRule(AbstractMonitor monitor) {
 
         FactHandle terminateAllFactHandle = null;
 
@@ -725,25 +706,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //    }
 
     protected synchronized void startAppMonitor(CompositeApplication compositeApplication) {
-            Thread th = null;
-            if (AutoscalerContext.getInstance()
-                    .appMonitorExist(
-                            compositeApplication.getAlias())) {
-                th = new Thread(new AppMonitorAdder(
-                        compositeApplication));
+        Thread th = null;
+        if (AutoscalerContext.getInstance()
+                .appMonitorExist(
+                        compositeApplication.getAlias())) {
+            th = new Thread(new AppMonitorAdder(
+                    compositeApplication));
+        }
+        if (th != null) {
+            th.start();
+            try {
+                th.join();
+            } catch (InterruptedException ignore) {
             }
-            if (th != null) {
-                th.start();
-                try {
-                    th.join();
-                } catch (InterruptedException ignore) {
-                }
 
-                if (log.isDebugEnabled()) {
-                    log.debug(String
-                            .format("Composite Application monitor thread has been started successfully: [Composite Application] %s ",
-                                    compositeApplication.getAlias()));
-                }
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Composite Application monitor thread has been started successfully: [Composite Application] %s ",
+                                compositeApplication.getAlias()));
             }
         }
+    }
 }
