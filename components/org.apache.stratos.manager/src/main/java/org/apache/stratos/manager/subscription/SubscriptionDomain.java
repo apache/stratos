@@ -17,37 +17,32 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
+package org.apache.stratos.manager.subscription;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
 
 /**
- * This event is fired when a tenant is un-subscribed from a service.
+ * Subscription domain definition.
  */
-public class TenantUnSubscribedEvent extends TenantEvent implements Serializable {
-    private static final long serialVersionUID = -4023221432696893312L;
+public class SubscriptionDomain implements Serializable{
+    private final String domainName;
+    private final String applicationContext;
 
-    private final int tenantId;
-    private final String serviceName;
-    private final Set<String> clusterIds;
-
-    public TenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
-        this.tenantId = tenantId;
-        this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
+    public SubscriptionDomain(String domainName, String applicationContext) {
+        this.domainName = domainName;
+        this.applicationContext = applicationContext;
     }
 
-    public int getTenantId() {
-        return tenantId;
+    public String getDomainName() {
+        return domainName;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getApplicationContext() {
+        return applicationContext;
     }
 
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
+    @Override
+    public String toString() {
+        return String.format("[domain-name] %s [application-context] %s", getDomainName(), getApplicationContext());
     }
 }

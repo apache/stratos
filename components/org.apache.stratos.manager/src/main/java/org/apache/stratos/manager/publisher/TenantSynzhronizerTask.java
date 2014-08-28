@@ -21,21 +21,22 @@ package org.apache.stratos.manager.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Tenant synchronizer task for publishing complete tenant event periodically
@@ -65,18 +66,38 @@ public class TenantSynzhronizerTask implements Task {
                     log.debug(String.format("Tenant found: [tenant-id] %d [tenant-domain] %s", carbonTenant.getId(), carbonTenant.getDomain()));
                 }
                 tenant = new Tenant(carbonTenant.getId(), carbonTenant.getDomain());
+               
+                if (!org.apache.stratos.messaging.message.receiver.tenant.TenantManager
+                        .getInstance().tenantExists(carbonTenant.getId())) {
+                    // if the tenant is not already there in TenantManager,
+                    // trigger TenantCreatedEvent
+                    TenantInfoBean tenantBean = new TenantInfoBean();
+                    tenantBean.setTenantId(carbonTenant.getId());
+                    tenantBean.setTenantDomain(carbonTenant.getDomain());
+                    TenantMgtUtil.triggerAddTenant(tenantBean);
+                    // add tenant to Tenant Manager
+                    org.apache.stratos.messaging.message.receiver.tenant.TenantManager
+                    .getInstance().addTenant(tenant);
+                }
+               
                 // Add subscriptions
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 //List<CartridgeSubscriptionInfo> cartridgeSubscriptions = PersistenceManager.getSubscriptionsForTenant(tenant.getTenantId());
                 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 Collection<CartridgeSubscription> cartridgeSubscriptions = new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenant.getTenantId());
                 if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
-                    for (CartridgeSubscription subscription : cartridgeSubscriptions) {
+                    for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Tenant subscription found: [tenant-id] %d [tenant-domain] %s [service] %s",
-                                    carbonTenant.getId(), carbonTenant.getDomain(), subscription.getType()));
+                                    carbonTenant.getId(), carbonTenant.getDomain(), cartridgeSubscription.getType()));
                         }
-                        tenant.addServiceSubscription(subscription.getType());
+                        HashSet<String> clusterIds = new HashSet<String>();
+                        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+                        Subscription subscription = new Subscription(cartridgeSubscription.getType(), clusterIds);
+                        for(SubscriptionDomain subscriptionDomain : cartridgeSubscription.getSubscriptionDomains()) {
+                            subscription.addSubscriptionDomain(subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationContext());
+                        }
+                        tenant.addSubscription(subscription);
                     }
                 }
                 tenants.add(tenant);
