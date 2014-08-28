@@ -1,18 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one 
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
- * KIND, either express or implied.  See the License for the 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -85,7 +85,7 @@ public class ClusterMonitor extends AbstractMonitor {
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is suspended as the cluster is in " +
-                                    ClusterStatus.In_Maintenance + " mode......");
+                                ClusterStatus.In_Maintenance + " mode......");
                     }
                 }
             } catch (Exception e) {
@@ -98,10 +98,6 @@ public class ClusterMonitor extends AbstractMonitor {
         }
     }
 
-<<<<<<< HEAD
-    private void monitor() {
-//        if(clusterCtxt != null ) {
-=======
     private boolean isPrimaryMember(MemberContext memberContext){
         Properties props = memberContext.getProperties();
         if (log.isDebugEnabled()) {
@@ -122,8 +118,6 @@ public class ClusterMonitor extends AbstractMonitor {
     }
 
     private void monitor() {
-
->>>>>>> master
         //TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
             // store primary members in the network partition context
@@ -131,13 +125,6 @@ public class ClusterMonitor extends AbstractMonitor {
 
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-<<<<<<< HEAD
-
-                minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
-                minCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-                minCheckKnowledgeSession.setGlobal("serviceId", serviceId);
-=======
                 // store primary members in the partition context
                 List<String> primaryMemberListInPartition = new ArrayList<String>();
                 // get active primary members in this partition context
@@ -156,8 +143,7 @@ public class ClusterMonitor extends AbstractMonitor {
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
                 minCheckKnowledgeSession.setGlobal("isPrimary", hasPrimary);
-                minCheckKnowledgeSession.setGlobal("primaryMemberCount", primaryMemberListInPartition.size());
->>>>>>> master
+
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
@@ -189,16 +175,13 @@ public class ClusterMonitor extends AbstractMonitor {
             boolean rifReset = networkPartitionContext.isRifReset();
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
-<<<<<<< HEAD
-            if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
-=======
             if (log.isDebugEnabled()) {
                 log.debug("flag of rifReset: "  + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
                         + " flag of loadAverageReset" + loadAverageReset);
             }
             if (rifReset || memoryConsumptionReset || loadAverageReset) {
->>>>>>> master
+
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
                 scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
@@ -231,12 +214,8 @@ public class ClusterMonitor extends AbstractMonitor {
     public String toString() {
         return "ClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId +
                 ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
-<<<<<<< HEAD
-                ", lbReferenceType=" + lbReferenceType + "]";
-=======
                 ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
->>>>>>> master
     }
 
     public String getLbReferenceType() {
