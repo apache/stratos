@@ -19,23 +19,30 @@
 
 package org.apache.stratos.messaging.event.tenant;
 
+import org.apache.stratos.messaging.event.Event;
+
 import java.io.Serializable;
 import java.util.*;
 
 /**
- * This event is fired when a tenant is subscribed to a service.
+ * This event is fired when domains are added to a tenant subscription.
  */
-public class TenantSubscribedEvent extends TenantEvent implements Serializable {
-    private static final long serialVersionUID = -4023221432696893312L;
+public class SubscriptionDomainAddedEvent extends Event implements Serializable {
+    private static final long serialVersionUID = 3457484382856403382L;
 
     private final int tenantId;
     private final String serviceName;
     private final Set<String> clusterIds;
+    private final String domainName;
+    private final String applicationContext;
 
-    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
+    public SubscriptionDomainAddedEvent(int tenantId, String serviceName, Set<String> clusterIds, String domainName,
+                                        String applicationContext) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
+        this.domainName = domainName;
+        this.applicationContext = applicationContext;
     }
 
     public int getTenantId() {
@@ -48,5 +55,13 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
 
     public Set<String> getClusterIds() {
         return Collections.unmodifiableSet(clusterIds);
+    }
+
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public String getApplicationContext() {
+        return applicationContext;
     }
 }

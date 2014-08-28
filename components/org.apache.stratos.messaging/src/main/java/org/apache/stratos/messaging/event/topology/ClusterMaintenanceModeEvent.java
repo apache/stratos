@@ -17,36 +17,42 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
+package org.apache.stratos.messaging.event.topology;
+
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 import java.io.Serializable;
-import java.util.*;
 
-/**
- * This event is fired when a tenant is subscribed to a service.
- */
-public class TenantSubscribedEvent extends TenantEvent implements Serializable {
-    private static final long serialVersionUID = -4023221432696893312L;
+public class ClusterMaintenanceModeEvent extends TopologyEvent implements Serializable {
 
-    private final int tenantId;
-    private final String serviceName;
-    private final Set<String> clusterIds;
+	private final String serviceName;
+	private final String clusterId;
+    private ClusterStatus status;
 
-    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
-        this.tenantId = tenantId;
+    public ClusterMaintenanceModeEvent(String serviceName, String clusterId) {
         this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
-    }
-
-    public int getTenantId() {
-        return tenantId;
+        this.clusterId = clusterId;
     }
 
     public String getServiceName() {
         return serviceName;
     }
 
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
+    @Override
+    public String toString() {
+        return "ClusterMaintenanceModeEvent [serviceName=" + serviceName + ", clusterStatus=" +
+                status.toString() + "]";
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public ClusterStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ClusterStatus status) {
+        this.status = status;
     }
 }

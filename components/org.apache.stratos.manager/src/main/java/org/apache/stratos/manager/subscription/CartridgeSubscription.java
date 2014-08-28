@@ -35,7 +35,7 @@ import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.util.*;
 
 public abstract class CartridgeSubscription implements Serializable {
 
@@ -59,7 +59,7 @@ public abstract class CartridgeSubscription implements Serializable {
     //private List<String> connectedSubscriptionAliases;
     private String subscriptionKey;
     private SubscriptionTenancyBehaviour subscriptionTenancyBehaviour;
-
+    private Map<String, SubscriptionDomain> subscriptionDomainMap;
     
     /**
      * Constructor
@@ -80,6 +80,7 @@ public abstract class CartridgeSubscription implements Serializable {
         //this.setSubscriptionStatus(CartridgeConstants.SUBSCRIBED);
         //this.connectedSubscriptionAliases = new ArrayList<String>();
         this.setSubscriptionTenancyBehaviour(subscriptionTenancyBehaviour);
+        this.subscriptionDomainMap = new HashMap<String, SubscriptionDomain>();
     }
 
     /**
@@ -116,6 +117,33 @@ public abstract class CartridgeSubscription implements Serializable {
 
         setPayloadData(getSubscriptionTenancyBehaviour().create(getAlias(), getCluster(), getSubscriber(), getRepository(), getCartridgeInfo(),
                 getSubscriptionKey(), getCustomPayloadEntries()));
+    }
+
+    public void addSubscriptionDomain(SubscriptionDomain subscriptionDomain) {
+        subscriptionDomainMap.put(subscriptionDomain.getDomainName(), subscriptionDomain);
+    }
+
+    public void removeSubscriptionDomain(String domainName) {
+        if(subscriptionDomainExists(domainName)) {
+            subscriptionDomainMap.remove(domainName);
+        }
+        else {
+            if(log.isWarnEnabled()) {
+                log.warn("Subscription domain does not exist: " + domainName);
+            }
+        }
+    }
+
+    public boolean subscriptionDomainExists(String domainName) {
+        return subscriptionDomainMap.containsKey(domainName);
+    }
+    
+    public SubscriptionDomain getSubscriptionDomain(String domainName) {
+        return subscriptionDomainMap.get(domainName);
+    }
+
+    public Collection<SubscriptionDomain> getSubscriptionDomains() {
+        return Collections.unmodifiableCollection(subscriptionDomainMap.values());
     }
 
     /**
@@ -389,7 +417,7 @@ public abstract class CartridgeSubscription implements Serializable {
                ", alias=" + alias + ", autoscalingPolicyName=" + autoscalingPolicyName +
                ", deploymentPolicyName=" + deploymentPolicyName + ", subscriber=" + subscriber +
                ", repository=" + repository + ", cartridgeInfo=" + cartridgeInfo + ", payload=" +
-               payloadData + ", cluster=" + cluster + "]";
+               payloadData + ", cluster=" + cluster + "]" + ", subscriptionDomainMap=" + subscriptionDomainMap.toString();
     }
 
     public String getLbClusterId() {

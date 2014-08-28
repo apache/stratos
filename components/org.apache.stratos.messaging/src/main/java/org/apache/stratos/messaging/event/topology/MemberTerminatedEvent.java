@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * This event is fired by Cloud Controller when a member is terminated.
@@ -34,6 +35,8 @@ public class
     private final String partitionId;
     private final String memberId;
     private String groupId;
+    private Properties properties;
+
 
     public MemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -70,4 +73,11 @@ public class
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 }

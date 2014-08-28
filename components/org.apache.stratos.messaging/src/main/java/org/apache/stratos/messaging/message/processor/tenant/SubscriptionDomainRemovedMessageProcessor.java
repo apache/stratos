@@ -22,20 +22,18 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
-import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
- * Tenant subscribed message processor for updating a tenant in tenant manager and
- * triggering tenant subscribed event listeners.
+ * Subscription domain removed message processor for removing domains from tenant subscriptions.
  */
-public class TenantSubscribedMessageProcessor extends MessageProcessor {
+public class SubscriptionDomainRemovedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(TenantSubscribedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(SubscriptionDomainRemovedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -46,14 +44,14 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (TenantSubscribedEvent.class.getName().equals(type)) {
+        if (SubscriptionDomainRemovedEvent.class.getName().equals(type)) {
             // Return if tenant manager has not initialized
-            if(!TenantManager.getInstance().isInitialized()) {
+            if (!TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            TenantSubscribedEvent event = (TenantSubscribedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
+            SubscriptionDomainRemovedEvent event = (SubscriptionDomainRemovedEvent) Util.jsonToObject(message, SubscriptionDomainRemovedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();
@@ -64,11 +62,20 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
                     }
                     return false;
                 }
-                Subscription subscription = new Subscription(event.getServiceName(), event.getClusterIds());
-                tenant.addSubscription(subscription);
+                Subscription subscription = tenant.getSubscription(event.getServiceName());
+
+                if (subscription == null) {
+                    if (log.isWarnEnabled()) {
+                        log.warn(String.format("Subscription not found: [tenant-id] %d", event.getTenantId()));
+                    }
+                    return false;
+                }
+                subscription.removeSubscriptionDomain(event.getDomainName());
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant subscribed to service: [tenant-id] %d [tenant-domain] %s [service] %s",
-                             tenant.getTenantId(), tenant.getTenantDomain(), event.getServiceName()));
+                    log.info(String.format("Domain removed from tenant subscription: [tenant-id] %d [tenant-domain] %s " +
+                            "[service] %s [domain-name] %s", tenant.getTenantId(), tenant.getTenantDomain(),
+                            event.getServiceName(), event.getDomainName()));
+
                 }
 
                 // Notify event listeners
@@ -80,10 +87,9 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
             }
         }
         else {
-            if(nextProcessor != null) {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process tenant message using available message processors: [type] %s [body] %s", type, message));
             }
         }

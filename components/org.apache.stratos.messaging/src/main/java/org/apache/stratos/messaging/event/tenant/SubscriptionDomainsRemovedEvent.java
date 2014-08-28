@@ -19,23 +19,27 @@
 
 package org.apache.stratos.messaging.event.tenant;
 
+import org.apache.stratos.messaging.event.Event;
+
 import java.io.Serializable;
 import java.util.*;
 
 /**
- * This event is fired when a tenant is subscribed to a service.
+ * This event is fired when domains are removed from a tenant subscription.
  */
-public class TenantSubscribedEvent extends TenantEvent implements Serializable {
-    private static final long serialVersionUID = -4023221432696893312L;
+public class SubscriptionDomainsRemovedEvent extends Event implements Serializable {
+    private static final long serialVersionUID = -8837521344795740210L;
 
     private final int tenantId;
     private final String serviceName;
     private final Set<String> clusterIds;
+    private Set<String> domains;
 
-    public TenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
+    public SubscriptionDomainsRemovedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
         this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterIds = clusterIds;
+        this.domains = (domains != null) ? domains : new HashSet<String>();
     }
 
     public int getTenantId() {
@@ -48,5 +52,9 @@ public class TenantSubscribedEvent extends TenantEvent implements Serializable {
 
     public Set<String> getClusterIds() {
         return Collections.unmodifiableSet(clusterIds);
+    }
+
+    public Set<String> getDomains() {
+        return Collections.unmodifiableSet(domains);
     }
 }

@@ -47,6 +47,7 @@ public class BasicPayloadData implements Serializable {
     private String gitRepositoryUrl;
     private String portMappings;
     private String multitenant;
+    private String provider;
 
     protected StringBuilder payloadBuilder;
 
@@ -74,19 +75,23 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_KEY=" + getSubscriptionKey());
         payloadBuilder.append(",");
-        payloadBuilder.append("DEPLOYMENT=" + getDeployment());
-        payloadBuilder.append(",");
+        //payloadBuilder.append("DEPLOYMENT=" + getDeployment());
+        //payloadBuilder.append(",");
         //payloadBuilder.append("APP_PATH=" + getApplicationPath());
         //payloadBuilder.append(",");
         payloadBuilder.append("REPO_URL=" + getGitRepositoryUrl());
         payloadBuilder.append(",");
         payloadBuilder.append("PORTS=" + getPortMappings());
+        payloadBuilder.append(",");
+        payloadBuilder.append("PROVIDER=" + getProvider());
 
         //Payload Data exposed as system variables
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_IP=" + System.getProperty(CartridgeConstants.PUPPET_IP));
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_HOSTNAME=" + System.getProperty(CartridgeConstants.PUPPET_HOSTNAME));
+        payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty(CartridgeConstants.PUPPET_DNS_AVAILABLE));
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_ENV=" + System.getProperty(CartridgeConstants.PUPPET_ENVIRONMENT));
 
@@ -215,5 +220,13 @@ public class BasicPayloadData implements Serializable {
 
     public void setPuppetEnvironment(String puppetEnvironment) {
         this.puppetEnvironment = puppetEnvironment;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 }

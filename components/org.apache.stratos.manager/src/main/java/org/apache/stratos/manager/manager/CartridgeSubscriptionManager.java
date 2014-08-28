@@ -23,10 +23,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
+import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
@@ -41,14 +44,17 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.RepoPasswordMgtUtil;
+import org.apache.stratos.messaging.broker.publish.EventPublisher;
+import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
+import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.wso2.carbon.context.CarbonContext;
 import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
 
-import java.util.Collection;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Manager class for the purpose of managing CartridgeSubscriptionInfo subscriptions, groupings, etc.
@@ -143,8 +149,10 @@ public class CartridgeSubscriptionManager {
         log.info("Successful Subscription: " + cartridgeSubscription.toString());
 
         // Publish tenant subscribed event to message broker
+        Set<String> clusterIds = new HashSet<String>();
+        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
         CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                cartridgeSubscription.getCartridgeInfo().getType());
+                cartridgeSubscription.getCartridgeInfo().getType(), clusterIds);
     }
 
     public void persistGroupSubscription (GroupSubscription groupSubscription) throws ADCException {
@@ -280,14 +288,17 @@ public class CartridgeSubscriptionManager {
           Collection<Member> members = cluster.getMembers();
           for (Member member : members) {
   			if(member.isActive()) {
-  				activeMemberCount++;
+                if(log.isDebugEnabled()) {
+                    log.debug("Active member found for cluster  [" + cluster +"]");
+                }
+  				return true;
   			}
   		} 
       }
       if(log.isDebugEnabled()) {
-    	  log.debug("Active member count for cluster  [" + cluster +"] is : "+ activeMemberCount);
+    	  log.debug("Active member not found for cluster  [" + cluster +"]");
       }
-	  return activeMemberCount > 0; 	
+	  return false;
 	}
 
 	private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
@@ -299,7 +310,7 @@ public class CartridgeSubscriptionManager {
 
         
         if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
-            // no load balancer subscription requiredgenerateSubscriptionKey
+            // no load balancer subscription required generate SubscriptionKey
             log.info("No LB subscription required for the Subscription with alias: " + subscriptionData.getCartridgeAlias() + ", type: " +
                     subscriptionData.getCartridgeType());
             return null;
@@ -394,25 +405,64 @@ public class CartridgeSubscriptionManager {
         // Create the CartridgeSubscription instance
         CartridgeSubscription cartridgeSubscription = CartridgeSubscriptionFactory.getCartridgeSubscriptionInstance(cartridgeInfo, tenancyBehaviour);
 
-        // Generate and set the key
-        String subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
-        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
         
-        String encryptedRepoPassword;
-        String repositoryPassword = subscriptionData.getRepositoryPassword();
-        if(repositoryPassword != null && !repositoryPassword.isEmpty()) {
-        	encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
-        } else {
-        	encryptedRepoPassword = "";
+        // For MT cartridges subscription key should not be generated for every subscription,
+        // instead use the already generated key at the time of service deployment
+        String subscriptionKey = null;
+        if(cartridgeInfo.getMultiTenant()) {
+        	try {
+				Service service = new DataInsertionAndRetrievalManager().getService(subscriptionData.getCartridgeType());
+				if(service != null) {
+					subscriptionKey = service.getSubscriptionKey();
+				}else {
+					String msg = "Could not find service for cartridge type [" + subscriptionData.getCartridgeType() + "] " ;
+					log.error(msg);				
+					throw new ADCException(msg);
+				}
+			} catch (Exception e) {
+				String msg = "Exception has occurred in get service for cartridge type [" + subscriptionData.getCartridgeType() + "] " ;
+				log.error(msg);				
+				throw new ADCException(msg, e);
+			}
+        }else {
+        	// Generate and set the key
+            subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
         }
+        
+        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
+
+        if(log.isDebugEnabled()) {
+            log.debug("Repository with url: " + subscriptionData.getRepositoryURL() +
+                    " username: " + subscriptionData.getRepositoryUsername() +
+                    " Type: " + subscriptionData.getRepositoryType());
+        }
+        
+        // Create subscriber
+        Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
+        cartridgeSubscription.setSubscriber(subscriber);
+        cartridgeSubscription.setAlias(subscriptionData.getCartridgeAlias());
 
         // Create repository
         Repository repository = cartridgeSubscription.manageRepository(subscriptionData.getRepositoryURL(), subscriptionData.getRepositoryUsername(),
-                encryptedRepoPassword,
+        		subscriptionData.getRepositoryPassword(),
                 subscriptionData.isPrivateRepository());
 
-        // Create subscriber
-        Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
+        // Update repository attributes
+        if(repository != null) {
+        	
+            repository.setCommitEnabled(subscriptionData.isCommitsEnabled());
+            
+            // Encrypt repository password
+            String encryptedRepoPassword;
+            String repositoryPassword = repository.getPassword();
+            if(repositoryPassword != null && !repositoryPassword.isEmpty()) {
+            	encryptedRepoPassword = RepoPasswordMgtUtil.encryptPassword(repositoryPassword, subscriptionKey);
+            } else {
+            	encryptedRepoPassword = "";
+            }
+            repository.setPassword(encryptedRepoPassword);
+            
+        }
 
         // set the LB cluster id relevant to this service cluster
         cartridgeSubscription.setLbClusterId(lbClusterId);
@@ -488,11 +538,153 @@ public class CartridgeSubscriptionManager {
         log.info("Successful Subscription: " + cartridgeSubscription.toString());
 
         // Publish tenant subscribed event to message broker
-        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                cartridgeSubscription.getCartridgeInfo().getType());
+        Set<String> clusterIds = new HashSet<String>();
+        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(), cartridgeSubscription.getCartridgeInfo().getType(), clusterIds);
 
         return ApplicationManagementUtil.
                 createSubscriptionResponse(cartridgeSubscriptionInfo, cartridgeSubscription.getRepository());
+    }
+
+    public void addSubscriptionDomain(int tenantId, String subscriptionAlias, String domainName, String applicationContext)
+            throws ADCException {
+
+        CartridgeSubscription cartridgeSubscription;
+        try {
+            cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+            if(cartridgeSubscription == null) {
+                throw new ADCException("Cartridge subscription not found");
+            }
+
+                if(!isSubscriptionDomainValid(domainName)) {
+                    throw new ADCException(String.format("Domain name %s already registered", domainName));
+                }
+
+            cartridgeSubscription.addSubscriptionDomain(new SubscriptionDomain(domainName, applicationContext));
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Could not add domain to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
+            " [domain-name] " + domainName + " [application-context] " + applicationContext;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Successfully added domains to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
+                " [domain-name] " + domainName + " [application-context] " +applicationContext);
+
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
+
+        Set<String> clusterIds = new HashSet<String>();
+        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+        SubscriptionDomainAddedEvent event = new SubscriptionDomainAddedEvent(tenantId, cartridgeSubscription.getType(),
+                clusterIds, domainName, applicationContext);
+
+        eventPublisher.publish(event);
+    }
+
+    public void removeSubscriptionDomain(int tenantId, String subscriptionAlias, String domainName) throws ADCException, DomainSubscriptionDoesNotExist {
+
+        CartridgeSubscription cartridgeSubscription;
+        try {
+            cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+            if(cartridgeSubscription == null) {
+                throw new DomainSubscriptionDoesNotExist("Cartridge subscription not found", domainName);
+            }
+            cartridgeSubscription.removeSubscriptionDomain(domainName);
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Could not remove domain from cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
+                    " [domain-name] " + domainName;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Successfully removed domain from cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
+                " [domain-name] " + domainName);
+
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
+
+        Set<String> clusterIds = new HashSet<String>();
+        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+        SubscriptionDomainRemovedEvent event = new SubscriptionDomainRemovedEvent(tenantId, cartridgeSubscription.getType(),
+                clusterIds, domainName);
+        eventPublisher.publish(event);
+    }
+
+    public List<SubscriptionDomain> getSubscriptionDomains(int tenantId, String subscriptionAlias)
+            throws ADCException {
+
+        try {
+            CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+            if(cartridgeSubscription == null) {
+                throw new ADCException("Cartridge subscription not found");
+            }
+            
+            //return (List<SubscriptionDomain>) cartridgeSubscription.getSubscriptionDomains();
+            return new ArrayList<SubscriptionDomain>(cartridgeSubscription.getSubscriptionDomains());
+        } catch (Exception e) {
+            String errorMsg = "Could not get domains of cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+    
+    public SubscriptionDomain getSubscriptionDomain(int tenantId, String subscriptionAlias, String domain)
+            throws ADCException {
+
+        try {
+            CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);
+            if(cartridgeSubscription == null) {
+                throw new ADCException("Cartridge subscription not found");
+            }
+            
+            return cartridgeSubscription.getSubscriptionDomain(domain);
+        } catch (Exception e) {
+            String errorMsg = "Could not check [domain] "+domain+" against cartridge subscription: [tenant-id] " 
+            					+ tenantId + " [subscription-alias] " + subscriptionAlias;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+    }
+
+    public boolean isSubscriptionDomainValid(String domainName) throws ADCException {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Validating domain: %s", domainName));
+            }
+            org.wso2.carbon.user.core.tenant.TenantManager tenantManager = DataHolder.getRealmService().getTenantManager();
+            org.wso2.carbon.user.api.Tenant[] tenants = tenantManager.getAllTenants();
+            if((tenants != null) && (tenants.length > 0)) {
+                DataInsertionAndRetrievalManager manager = new DataInsertionAndRetrievalManager();
+                for (org.wso2.carbon.user.api.Tenant tenant : tenants) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Reading subscriptions for tenant: [tenant-id] %d [tenant-domain] %s",
+                                tenant.getId(), tenant.getDomain()));
+                    }
+                    Collection<CartridgeSubscription> subscriptions = manager.getCartridgeSubscriptions(tenant.getId());
+                    if (subscriptions == null) {
+                        continue;
+                    }
+                    for (CartridgeSubscription subscription : subscriptions) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Reading domain names in subscription: [alias] %s [domain-names] %s",
+                                    subscription.getAlias(), subscription.getSubscriptionDomains()));
+                        }
+                        if (subscription.subscriptionDomainExists(domainName)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Domain name %s is valid", domainName));
+            }
+            return true;
+        } catch (Exception e) {
+            String errorMsg = "Could not validate domain:  " + domainName;
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
     }
 
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String type) throws ADCException {
@@ -543,8 +735,12 @@ public class CartridgeSubscriptionManager {
             }
 
             // Publish tenant un-subscribed event to message broker
-            CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
-                    cartridgeSubscription.getCartridgeInfo().getType());
+
+            Set<String> clusterIds = new HashSet<String>();
+            clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+            CartridgeSubscriptionUtils.publishTenantUnSubscribedEvent(
+                    cartridgeSubscription.getSubscriber().getTenantId(),
+                    cartridgeSubscription.getCartridgeInfo().getType(), clusterIds);
             
 			// publishing to the unsubscribed event details to bam
 			CartridgeSubscriptionDataPublisher.publish(cartridgeSubscription

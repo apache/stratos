@@ -33,6 +33,7 @@ public class CartridgeConstants {
     public static final String UNSUBSCRIBED = "UNSUBSCRIBED";
     public static final String PUPPET_IP = "puppet.ip";
     public static final String PUPPET_HOSTNAME = "puppet.hostname";
+    public static final String PUPPET_DNS_AVAILABLE = "puppet.dns.available";
     public static final String PUPPET_ENVIRONMENT = "puppet.environment";
 
 	public static final String SUDO_SH = "sudo sh";
