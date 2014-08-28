@@ -22,16 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-<<<<<<< HEAD
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.CompositeApplicationDefinition;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
-=======
 import org.apache.stratos.cloud.controller.pojo.*;
->>>>>>> master
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -44,11 +41,8 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-<<<<<<< HEAD
 import org.apache.stratos.messaging.util.Util;
-=======
 import org.apache.stratos.messaging.util.Constants;
->>>>>>> master
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +61,8 @@ public class TopologyBuilder {
         Service service;
         Topology topology = TopologyManager.getTopology();
         if (cartridgeList == null) {
-        	log.warn(String.format("Cartridge list is empty"));
-        	return;
+            log.warn(String.format("Cartridge list is empty"));
+            return;
         }
         try {
 
@@ -116,7 +110,7 @@ public class TopologyBuilder {
                     }
                     TopologyEventPublisher.sendServiceRemovedEvent(cartridgeList);
                 } else {
-                	log.warn(String.format("Service %s does not exist..", cartridge.getType()));
+                    log.warn(String.format("Service %s does not exist..", cartridge.getType()));
                 }
             } else {
                 log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
@@ -133,7 +127,7 @@ public class TopologyBuilder {
             String cartridgeType = registrant.getCartridgeType();
             service = topology.getService(cartridgeType);
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-            
+
             Cluster cluster;
             String clusterId = registrant.getClusterId();
             if (service.clusterExists(clusterId)) {
@@ -150,7 +144,7 @@ public class TopologyBuilder {
                 cluster.setLbCluster(isLb);
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
-                                      registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
+                        registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
                 cluster.addHostName(registrant.getHostName());
                 if(service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
@@ -176,16 +170,16 @@ public class TopologyBuilder {
         Service service = topology.getService(ctxt.getCartridgeType());
         String deploymentPolicy;
         if (service == null) {
-        	log.warn(String.format("Service %s does not exist",
+            log.warn(String.format("Service %s does not exist",
                     ctxt.getCartridgeType()));
-        	return;
+            return;
         }
 
         if (!service.clusterExists(ctxt.getClusterId())) {
-        	log.warn(String.format("Cluster %s does not exist for service %s",
+            log.warn(String.format("Cluster %s does not exist for service %s",
                     ctxt.getClusterId(),
                     ctxt.getCartridgeType()));
-        	return;
+            return;
         }
 
         try {
@@ -228,87 +222,87 @@ public class TopologyBuilder {
     }
 
 
-	public static void handleMemberSpawned(String serviceName,
-			String clusterId, String partitionId,
-			String privateIp, String publicIp, MemberContext context) {
-		// adding the new member to the cluster after it is successfully started
-		// in IaaS.
-		Topology topology = TopologyManager.getTopology();
-		Service service = topology.getService(serviceName);
-		Cluster cluster = service.getCluster(clusterId);
-		String memberId = context.getMemberId();
-		String networkPartitionId = context.getNetworkPartitionId();
-		String lbClusterId = context.getLbClusterId();
+    public static void handleMemberSpawned(String serviceName,
+                                           String clusterId, String partitionId,
+                                           String privateIp, String publicIp, MemberContext context) {
+        // adding the new member to the cluster after it is successfully started
+        // in IaaS.
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(serviceName);
+        Cluster cluster = service.getCluster(clusterId);
+        String memberId = context.getMemberId();
+        String networkPartitionId = context.getNetworkPartitionId();
+        String lbClusterId = context.getLbClusterId();
 
-		if (cluster.memberExists(memberId)) {
-			log.warn(String.format("Member %s already exists", memberId));
-			return;
-		}
+        if (cluster.memberExists(memberId)) {
+            log.warn(String.format("Member %s already exists", memberId));
+            return;
+        }
 
-		try {
-			TopologyManager.acquireWriteLock();
-			Member member = new Member(serviceName, clusterId,
-					networkPartitionId, partitionId, memberId);
-			member.setStatus(MemberStatus.Created);
-			member.setMemberIp(privateIp);
-			member.setLbClusterId(lbClusterId);
-			member.setMemberPublicIp(publicIp);
-			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
-			cluster.addMember(member);
-			TopologyManager.updateTopology(topology);
-		} finally {
-			TopologyManager.releaseWriteLock();
-		}
-		
-		TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId,
-				networkPartitionId, partitionId, memberId, lbClusterId,
-				publicIp, privateIp, context);
-	}
-    
+        try {
+            TopologyManager.acquireWriteLock();
+            Member member = new Member(serviceName, clusterId,
+                    networkPartitionId, partitionId, memberId);
+            member.setStatus(MemberStatus.Created);
+            member.setMemberIp(privateIp);
+            member.setLbClusterId(lbClusterId);
+            member.setMemberPublicIp(publicIp);
+            member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
+            cluster.addMember(member);
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId,
+                networkPartitionId, partitionId, memberId, lbClusterId,
+                publicIp, privateIp, context);
+    }
+
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceStartedEvent.getServiceName());
         if (service == null) {
-        	log.warn(String.format("Service %s does not exist",
+            log.warn(String.format("Service %s does not exist",
                     instanceStartedEvent.getServiceName()));
-        	return;
+            return;
         }
         if (!service.clusterExists(instanceStartedEvent.getClusterId())) {
-        	log.warn(String.format("Cluster %s does not exist in service %s",
+            log.warn(String.format("Cluster %s does not exist in service %s",
                     instanceStartedEvent.getClusterId(),
                     instanceStartedEvent.getServiceName()));
-        	return;
+            return;
         }
 
         Member member = service.getCluster(instanceStartedEvent.getClusterId()).
                 getMember(instanceStartedEvent.getMemberId());
         if (member == null) {
-        	log.warn(String.format("Member %s does not exist",
+            log.warn(String.format("Member %s does not exist",
                     instanceStartedEvent.getMemberId()));
-        	return;
+            return;
         }
-        
-      //grouping 
-        
+
+        //grouping
+
         if (log.isDebugEnabled()) {
-				log.debug("checking group id in ToplogyBuilder for member started event");
-		}
-       
+            log.debug("checking group id in ToplogyBuilder for member started event");
+        }
+
         CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
         if (app != null) {
-        	if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder found composite app for " + appAlias);
-        	}
-        	String clusterId = instanceStartedEvent.getClusterId();
-        	String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
-    		instanceStartedEvent.setGroupId(groupAlias);
-    		if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance started event for cluster " + clusterId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder found composite app for " + appAlias);
+            }
+            String clusterId = instanceStartedEvent.getClusterId();
+            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            instanceStartedEvent.setGroupId(groupAlias);
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance started event for cluster " + clusterId);
+            }
         }
-        
+
         try {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.Starting);
@@ -322,12 +316,12 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
         //publishing data
         CartridgeInstanceDataPublisher.publish(instanceStartedEvent.getMemberId(),
-                                            instanceStartedEvent.getPartitionId(),
-                                            instanceStartedEvent.getNetworkPartitionId(),
-                                            instanceStartedEvent.getClusterId(),
-                                            instanceStartedEvent.getServiceName(),
-                                            MemberStatus.Starting.toString(),
-                                            null);
+                instanceStartedEvent.getPartitionId(),
+                instanceStartedEvent.getNetworkPartitionId(),
+                instanceStartedEvent.getClusterId(),
+                instanceStartedEvent.getServiceName(),
+                MemberStatus.Starting.toString(),
+                null);
     }
 
     public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
@@ -335,46 +329,46 @@ public class TopologyBuilder {
         Service service = topology.getService(instanceActivatedEvent.getServiceName());
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                                                     instanceActivatedEvent.getServiceName()));
+                    instanceActivatedEvent.getServiceName()));
             return;
         }
-        
+
         Cluster cluster = service.getCluster(instanceActivatedEvent.getClusterId());
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                                                     instanceActivatedEvent.getClusterId()));
+                    instanceActivatedEvent.getClusterId()));
             return;
         }
-        
+
         // grouping
-        
+
         CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
         if (app != null) {
-        	if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder found composite app for member activated " + appAlias);
-        	}
-        	String clusterId = instanceActivatedEvent.getClusterId();
-        	String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
-    		instanceActivatedEvent.setGroupId(groupAlias);
-    		if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance activated event for cluster " + clusterId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder found composite app for member activated " + appAlias);
+            }
+            String clusterId = instanceActivatedEvent.getClusterId();
+            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            instanceActivatedEvent.setGroupId(groupAlias);
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance activated event for cluster " + clusterId);
+            }
         }
-        
-        
-        
+
+
+
         Member member = cluster.getMember(instanceActivatedEvent.getMemberId());
 
         if (member == null) {
-        	log.warn(String.format("Member %s does not exist",
+            log.warn(String.format("Member %s does not exist",
                     instanceActivatedEvent.getMemberId()));
-        	return;
+            return;
         }
 
         MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent(instanceActivatedEvent.getServiceName(),
-                        instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getNetworkPartitionId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
+                instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getNetworkPartitionId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
 
         // grouping - set grouid
         memberActivatedEvent.setGroupId(instanceActivatedEvent.getGroupId());
@@ -406,53 +400,53 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberActivatedEvent.getMemberId(),
-                                            memberActivatedEvent.getPartitionId(),
-                                            memberActivatedEvent.getNetworkPartitionId(),
-                                            memberActivatedEvent.getClusterId(),
-                                            memberActivatedEvent.getServiceName(),
-                                            MemberStatus.Activated.toString(),
-                                            null);
+                memberActivatedEvent.getPartitionId(),
+                memberActivatedEvent.getNetworkPartitionId(),
+                memberActivatedEvent.getClusterId(),
+                memberActivatedEvent.getServiceName(),
+                MemberStatus.Activated.toString(),
+                null);
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
-                            throws InvalidMemberException, InvalidCartridgeTypeException {
+            throws InvalidMemberException, InvalidCartridgeTypeException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
         //update the status of the member
         if (service == null) {
-        	log.warn(String.format("Service %s does not exist",
-                                                     instanceReadyToShutdownEvent.getServiceName()));
-        	return;
+            log.warn(String.format("Service %s does not exist",
+                    instanceReadyToShutdownEvent.getServiceName()));
+            return;
         }
 
         Cluster cluster = service.getCluster(instanceReadyToShutdownEvent.getClusterId());
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                                                     instanceReadyToShutdownEvent.getClusterId()));
+                    instanceReadyToShutdownEvent.getClusterId()));
             return;
         }
-        
-      //grouping 
-        
+
+        //grouping
+
         if (log.isDebugEnabled()) {
-				log.debug("checking group id in ToplogyBuilder for member started event");
-		}
-       
+            log.debug("checking group id in ToplogyBuilder for member started event");
+        }
+
         CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
         if (app != null) {
-        	if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder found composite app for " + appAlias);
-        	}
-        	String clusterId = instanceReadyToShutdownEvent.getClusterId();
-        	String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
-    		instanceReadyToShutdownEvent.setGroupId(groupAlias);
-    		if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder found composite app for " + appAlias);
+            }
+            String clusterId = instanceReadyToShutdownEvent.getClusterId();
+            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            instanceReadyToShutdownEvent.setGroupId(groupAlias);
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
+            }
         }
-        
+
         Member member = cluster.getMember(instanceReadyToShutdownEvent.getMemberId());
         if (member == null) {
             log.warn(String.format("Member %s does not exist",
@@ -460,11 +454,11 @@ public class TopologyBuilder {
             return;
         }
         MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
-                                                                instanceReadyToShutdownEvent.getServiceName(),
-                                                                instanceReadyToShutdownEvent.getClusterId(),
-                                                                instanceReadyToShutdownEvent.getNetworkPartitionId(),
-                                                                instanceReadyToShutdownEvent.getPartitionId(),
-                                                                instanceReadyToShutdownEvent.getMemberId());
+                instanceReadyToShutdownEvent.getServiceName(),
+                instanceReadyToShutdownEvent.getClusterId(),
+                instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                instanceReadyToShutdownEvent.getPartitionId(),
+                instanceReadyToShutdownEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.ReadyToShutDown);
@@ -477,69 +471,69 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
         //publishing data
         CartridgeInstanceDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
-                                            instanceReadyToShutdownEvent.getPartitionId(),
-                                            instanceReadyToShutdownEvent.getNetworkPartitionId(),
-                                            instanceReadyToShutdownEvent.getClusterId(),
-                                            instanceReadyToShutdownEvent.getServiceName(),
-                                            MemberStatus.ReadyToShutDown.toString(),
-                                            null);
+                instanceReadyToShutdownEvent.getPartitionId(),
+                instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                instanceReadyToShutdownEvent.getClusterId(),
+                instanceReadyToShutdownEvent.getServiceName(),
+                MemberStatus.ReadyToShutDown.toString(),
+                null);
         //termination of particular instance will be handled by autoscaler
     }
 
-     public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
-                            throws InvalidMemberException, InvalidCartridgeTypeException {
+    public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
+            throws InvalidMemberException, InvalidCartridgeTypeException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
         //update the status of the member
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                                                     instanceMaintenanceModeEvent.getServiceName()));
+                    instanceMaintenanceModeEvent.getServiceName()));
             return;
         }
 
         Cluster cluster = service.getCluster(instanceMaintenanceModeEvent.getClusterId());
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                                                     instanceMaintenanceModeEvent.getClusterId()));
+                    instanceMaintenanceModeEvent.getClusterId()));
             return;
         }
-        
+
         Member member = cluster.getMember(instanceMaintenanceModeEvent.getMemberId());
         if (member == null) {
             log.warn(String.format("Member %s does not exist",
                     instanceMaintenanceModeEvent.getMemberId()));
             return;
         }
-        
-        
-        //grouping 
-        
+
+
+        //grouping
+
         if (log.isDebugEnabled()) {
-				log.debug("checking group id in ToplogyBuilder for member started event");
-		}
-       
+            log.debug("checking group id in ToplogyBuilder for member started event");
+        }
+
         CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
         if (app != null) {
-        	if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder found composite app for " + appAlias);
-        	}
-        	String clusterId = instanceMaintenanceModeEvent.getClusterId();
-        	
-        	String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
-    		instanceMaintenanceModeEvent.setGroupId(groupAlias);
-    		if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder found composite app for " + appAlias);
+            }
+            String clusterId = instanceMaintenanceModeEvent.getClusterId();
+
+            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            instanceMaintenanceModeEvent.setGroupId(groupAlias);
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
+            }
         }
-        
+
         MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
-                                                                instanceMaintenanceModeEvent.getServiceName(),
-                                                                instanceMaintenanceModeEvent.getClusterId(),
-                                                                instanceMaintenanceModeEvent.getNetworkPartitionId(),
-                                                                instanceMaintenanceModeEvent.getPartitionId(),
-                                                                instanceMaintenanceModeEvent.getMemberId());
+                instanceMaintenanceModeEvent.getServiceName(),
+                instanceMaintenanceModeEvent.getClusterId(),
+                instanceMaintenanceModeEvent.getNetworkPartitionId(),
+                instanceMaintenanceModeEvent.getPartitionId(),
+                instanceMaintenanceModeEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.In_Maintenance);
@@ -560,43 +554,43 @@ public class TopologyBuilder {
         Properties properties;
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                                                     serviceName));
+                    serviceName));
             return;
         }
         Cluster cluster = service.getCluster(clusterId);
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                                                     clusterId));
+                    clusterId));
             return;
         }
-        
+
         Member member = cluster.getMember(memberId);
 
-		if (member == null) {
-			log.warn(String.format("Member with nodeID %s does not exist",
-					memberId));
-			return;
-		}
-		
-		//grouping 
-	      
+        if (member == null) {
+            log.warn(String.format("Member with nodeID %s does not exist",
+                    memberId));
+            return;
+        }
+
+        //grouping
+
         if (log.isDebugEnabled()) {
-				log.debug("checking group id in ToplogyBuilder for member started event");
-		}
-       
+            log.debug("checking group id in ToplogyBuilder for member started event");
+        }
+
         CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
 
         String groupAlias =  null;
         if (app != null) {
-        	if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder found composite app for " + appAlias);
-        	}
-        	groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
-    		if (log.isDebugEnabled()) {
-				log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for member terminated event for cluster " + clusterId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder found composite app for " + appAlias);
+            }
+            groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for member terminated event for cluster " + clusterId);
+            }
         }
 
         try {
@@ -607,11 +601,7 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-<<<<<<< HEAD
-        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, groupAlias);
-=======
-        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, properties);
->>>>>>> master
+        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, properties, groupAlias);
     }
 
     public static void handleMemberSuspended() {
@@ -622,33 +612,33 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
     }
-    
+
     public static void handleCompositeApplicationCreated(ConfigCompositeApplication messConfigApp) {
         Topology topology = TopologyManager.getTopology();
-        
+
         //ConfigCompositeApplication messConfigApp;
         try {
 
             TopologyManager.acquireWriteLock();
             String key = "compositeApplicationAlias"; //app.getAlias()
             topology.addConfigCompositeApplication(key ,messConfigApp);
-            TopologyManager.updateTopology(topology);	
-        } 
+            TopologyManager.updateTopology(topology);
+        }
         finally {
             TopologyManager.releaseWriteLock();
         }
-       TopologyEventPublisher.sendConfigApplicationCreatedEventEvent(messConfigApp);
+        TopologyEventPublisher.sendConfigApplicationCreatedEventEvent(messConfigApp);
         log.info("TopolgyBuilder: sending sendConfigApplicationCreatedEventEvent ");
 
     }
-    
+
     public static void handleCompositeApplicationRemoved(String alias) {
-    	log.info("TopolgyBuilder: sending sendConfigApplicationRemovedEventEvent ");
-    	TopologyEventPublisher.sendConfigApplicationRemovedEventEvent(alias);
+        log.info("TopolgyBuilder: sending sendConfigApplicationRemovedEventEvent ");
+        TopologyEventPublisher.sendConfigApplicationRemovedEventEvent(alias);
     }
-    
-    
-    public static  ConfigCompositeApplication convertCompositeApplication(CompositeApplicationDefinition compositeApplicationDefinition) {
+
+
+    /*public static  ConfigCompositeApplication convertCompositeApplication(CompositeApplicationDefinition compositeApplicationDefinition) {
     	ConfigCompositeApplication messApp = new ConfigCompositeApplication();
     	String alias = compositeApplicationDefinition.getAlias();
     	messApp.setAlias(alias);
@@ -656,15 +646,15 @@ public class TopologyBuilder {
     	messApp.setApplicationId(applicationId);
     	org.apache.stratos.cloud.controller.pojo.ConfigCartridge[] arrayMessCartridges = compositeApplicationDefinition.getCartridges();
     	org.apache.stratos.cloud.controller.pojo.ConfigGroup [] messConfigGroup = compositeApplicationDefinition.getComponents();
-    	
+
     	List<ConfigCartridge> cartridges = new ArrayList<ConfigCartridge>();
     	List<ConfigGroup> messGroups = new ArrayList<ConfigGroup>();
     	List<ConfigDependencies.Pair> messDependencies= new ArrayList<ConfigDependencies.Pair>();
-    	
+
     	for (org.apache.stratos.cloud.controller.pojo.ConfigCartridge cfg : arrayMessCartridges) {
     		ConfigCartridge cartridge = new ConfigCartridge();
     		cartridge.setAlias(cfg.getAlias());
-    		
+
     		cartridges.add(cartridge);
     	}
     	messApp.setCartridges(cartridges);
@@ -673,7 +663,7 @@ public class TopologyBuilder {
     	}
     	for (org.apache.stratos.cloud.controller.pojo.ConfigGroup gr : messConfigGroup) {
     		ConfigGroup group = new ConfigGroup();
-    		
+
     		// alias
     		group.setAlias(gr.getAlias());
     		if (log.isDebugEnabled()) {
@@ -697,7 +687,7 @@ public class TopologyBuilder {
             	}
     		}
     		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder:  adding subscribables to  group: " + group.getAlias() + 
+        		log.debug("TopolgyBuilder:  adding subscribables to  group: " + group.getAlias() +
         				" and nr of subscribables " + subscribables.size());
         	}
     		group.setSubscribables(subscribables);
@@ -716,7 +706,7 @@ public class TopologyBuilder {
 	        			ConfigDependencies.Pair messPair = new ConfigDependencies.Pair(pair.getKey(), pair.getValue());
 	        			startup_order.add(messPair);
 	        			if (log.isDebugEnabled()) {
-	                		log.debug("TopolgyBuilder:  adding dep pairs to  group: " + pair.getKey() + " / " + 
+	                		log.debug("TopolgyBuilder:  adding dep pairs to  group: " + pair.getKey() + " / " +
 	                						pair.getValue() + " at " + i);
 	                	}
 	    			} else {
@@ -731,14 +721,14 @@ public class TopologyBuilder {
             	}
     			startup_order = new ArrayList<ConfigDependencies.Pair>(0);
     		}
-    		
+
     		messDep.setStartup_order(startup_order);
     		messDep.setKill_behavior(dep.getKill_behavior());
     		if (log.isDebugEnabled()) {
         		log.debug("TopolgyBuilder: added kill behavior " + dep.getKill_behavior());
         	}
     		group.setDependencies(messDep);
-    		
+
     		messGroups.add(group);
     		if (log.isDebugEnabled()) {
         		log.debug("TopolgyBuilder: number of groups " + messGroups.size());
@@ -754,7 +744,7 @@ public class TopologyBuilder {
 			}
     	}
 
-    	
+
     	/* test
     	ConfigGroup grX = new ConfigGroup();
     	grX.setAlias("hug");
@@ -776,34 +766,34 @@ public class TopologyBuilder {
     	log.debug("verifying messApp object serialization : " + Util.ObjectToJson(messApp));
     	//
     	test end */
-    	
+    	/*
     	return messApp;
-    }
-    
+    }*/
+
     /*
          public boolean process(String type, String message, Object object) {
         Topology topology = (Topology) object;
-        
+
         if (log.isDebugEnabled()) {
-        	log.debug("processing application event of type " + type + 
+        	log.debug("processing application event of type " + type +
         			" / topology:" +  topology + " msg: " + message);
         }
 
         if (CompositeApplicationCreatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized()) {
-                
+
             	if (log.isDebugEnabled()) {
                 	log.debug("topology is not initialized .... need to add check ... Grouping");
                 }
-            	
+
             	//return false;
             }
 
             // Parse complete message and build event
-            CompositeApplicationCreatedEvent event = 
+            CompositeApplicationCreatedEvent event =
             		(CompositeApplicationCreatedEvent) Util.jsonToObject(message, CompositeApplicationCreatedEvent.class);
-            
+
             if (log.isDebugEnabled()) {
             	log.debug("processing application created event with application id: " + event.getApplicationAlias());
             }
@@ -814,7 +804,7 @@ public class TopologyBuilder {
                     log.warn(String.format("CompositeApplication already created: [com app] %s", event.getApplicationAlias()));
                 }
             } else {
-            	
+
             	ConfigCompositeApplication configApp = event.getCompositeApplication();
             	CompositeApplicationBuilder builder = new CompositeApplicationBuilder(configApp);
             	CompositeApplication app = new CompositeApplication();
@@ -822,7 +812,7 @@ public class TopologyBuilder {
             	app.setTop_level(builder.buildApplication());
             	String key = "compositeApplicationAlias"; //app.getAlias()
                 topology.addCompositeApplication(key ,app);
-            	
+
             	if (log.isInfoEnabled()) {
             		log.info("CompositeApplication created with alias" +app.getAlias() + " and saved with key " + "compositeApplicationAlias" );
             		log.info(String.format("CompositeApplication created: [app] %s", app.getTop_level()));
@@ -831,7 +821,7 @@ public class TopologyBuilder {
             		}
             	}
             }
-            
+
             // Notify event listeners
             notifyEventListeners(event);
             return true;

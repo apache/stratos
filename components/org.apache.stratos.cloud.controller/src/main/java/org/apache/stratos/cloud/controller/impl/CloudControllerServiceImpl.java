@@ -1,18 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one 
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
- * KIND, either express or implied.  See the License for the 
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -61,95 +61,94 @@ import java.util.concurrent.Future;
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
  * terminating already started instances, providing pending instance count etc.
- * 
+ *
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-	private static final Log log = LogFactory
-			.getLog(CloudControllerServiceImpl.class);
-	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
-			.getInstance();
+    private static final Log log = LogFactory
+            .getLog(CloudControllerServiceImpl.class);
+    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
+            .getInstance();
 
-	public CloudControllerServiceImpl() {
-		// acquire serialized data from registry
-		acquireData();
-	}
+    public CloudControllerServiceImpl() {
+        // acquire serialized data from registry
+        acquireData();
+    }
 
-	private void acquireData() {
+    private void acquireData() {
 
-		Object obj = RegistryManager.getInstance().retrieve();
-		if (obj != null) {
-			try {
-				Object dataObj = Deserializer
-						.deserializeFromByteArray((byte[]) obj);
-				if (dataObj instanceof FasterLookUpDataHolder) {
-					FasterLookUpDataHolder serializedObj = (FasterLookUpDataHolder) dataObj;
-					FasterLookUpDataHolder currentData = FasterLookUpDataHolder
-							.getInstance();
+        Object obj = RegistryManager.getInstance().retrieve();
+        if (obj != null) {
+            try {
+                Object dataObj = Deserializer
+                        .deserializeFromByteArray((byte[]) obj);
+                if (dataObj instanceof FasterLookUpDataHolder) {
+                    FasterLookUpDataHolder serializedObj = (FasterLookUpDataHolder) dataObj;
+                    FasterLookUpDataHolder currentData = FasterLookUpDataHolder
+                            .getInstance();
 
-					// assign necessary data
-					currentData.setClusterIdToContext(serializedObj.getClusterIdToContext());
-					currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
-					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
-					currentData.setCartridges(serializedObj.getCartridges());
-                                       currentData.setConfigCompositeApplication(serializedObj.getConfigCompositeApplication());
+                    // assign necessary data
+                    currentData.setClusterIdToContext(serializedObj.getClusterIdToContext());
+                    currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
+                    currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
+                    currentData.setCartridges(serializedObj.getCartridges());
+                    currentData.setConfigCompositeApplication(serializedObj.getConfigCompositeApplication());
 
-					if(log.isDebugEnabled()) {
-					    
-					    log.debug("Cloud Controller Data is retrieved from registry.");
-					}
-				} else {
-				    if(log.isDebugEnabled()) {
-				        
-				        log.debug("Cloud Controller Data cannot be found in registry.");
-				    }
-				}
-			} catch (Exception e) {
+                    if(log.isDebugEnabled()) {
 
-				String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
-				log.warn(msg, e);
-			}
+                        log.debug("Cloud Controller Data is retrieved from registry.");
+                    }
+                } else {
+                    if(log.isDebugEnabled()) {
 
-		}
-                // restore compostie application
-		List<ConfigCompositeApplication> apps = restoreConfigCompositeApplication();
-		if (apps == null) {
-			this.dataHolder.setConfigCompositeApplication(new ArrayList<ConfigCompositeApplication>());
+                        log.debug("Cloud Controller Data cannot be found in registry.");
+                    }
+                }
+            } catch (Exception e) {
 
-		}
-	}
+                String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
+                log.warn(msg, e);
+            }
+
+        }
+        // restore compostie application
+        List<ConfigCompositeApplication> apps = restoreConfigCompositeApplication();
+        if (apps == null) {
+            this.dataHolder.setConfigCompositeApplication(new ArrayList<ConfigCompositeApplication>());
+
+        }
+    }
 
 
-    public void deployCompositeApplicationDefinition(CompositeApplicationDefinition compositeApplicationDefinition) throws InvalidCompositeApplicationDefinitionException, 
-    InvalidIaasProviderException {
-    	
-    	String alias = compositeApplicationDefinition.getAlias();
-    	if(log.isDebugEnabled()){
+    public void deployCompositeApplicationDefinition(CompositeApplicationDefinition compositeApplicationDefinition) throws InvalidCompositeApplicationDefinitionException,
+            InvalidIaasProviderException {
+
+        String alias = compositeApplicationDefinition.getAlias();
+        if(log.isDebugEnabled()){
             log.debug("composite application alias  : " + alias);
-    	}
-    	
-    	ConfigCompositeApplication messConfigApp = TopologyBuilder.convertCompositeApplication(compositeApplicationDefinition);
+        }
+
+        ConfigCompositeApplication messConfigApp = null;//TopologyBuilder.convertCompositeApplication(compositeApplicationDefinition);
         String key = "compositeApplicationAlias"; //app.getAlias()
-        	
-    	
-    	List<ConfigCompositeApplication> data = new ArrayList<ConfigCompositeApplication>();
-    	data.add(messConfigApp);
-    	dataHolder.setConfigCompositeApplication(data);
-        
+
+
+        List<ConfigCompositeApplication> data = new ArrayList<ConfigCompositeApplication>();
+        data.add(messConfigApp);
+        dataHolder.setConfigCompositeApplication(data);
+
         // persist
         persist();
-    	
-    	if(log.isDebugEnabled()){
+
+        if(log.isDebugEnabled()){
             log.debug("deploying composite application in cloud controller: " + compositeApplicationDefinition);
         }
-    	
-    	TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
+
+        TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
     }
-    
-    public void unDeployCompositeApplicationDefinition(String appAlias) throws InvalidCompositeApplicationDefinitionException, 
-    InvalidIaasProviderException {
-<<<<<<< HEAD
-    	if(log.isDebugEnabled()){
+
+    public void unDeployCompositeApplicationDefinition(String appAlias) throws InvalidCompositeApplicationDefinitionException,
+            InvalidIaasProviderException {
+        if(log.isDebugEnabled()){
             log.debug("undeploying composite application in cloud controller, removing all composite apps ");
             dataHolder.removeAllConfigCompositeApplications();
             persist();
@@ -157,10 +156,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
-    InvalidIaasProviderException {
-=======
->>>>>>> master
+    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
+            InvalidIaasProviderException {
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
             log.error(msg);
@@ -177,43 +174,43 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
             String msg =
-                         "Invalid Cartridge Definition: Cartridge Type: " +
-                                 cartridgeConfig.getType()+
-                                 ". Cause: Cannot instantiate a Cartridge Instance with the given Config. "+e.getMessage();
+                    "Invalid Cartridge Definition: Cartridge Type: " +
+                            cartridgeConfig.getType()+
+                            ". Cause: Cannot instantiate a Cartridge Instance with the given Config. "+e.getMessage();
             log.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
         List<IaasProvider> iaases = cartridge.getIaases();
-        
+
         if (iaases == null || iaases.isEmpty()) {
             String msg =
-                         "Invalid Cartridge Definition: Cartridge Type: " +
-                                 cartridgeConfig.getType()+
-                                 ". Cause: Iaases of this Cartridge is null or empty.";
+                    "Invalid Cartridge Definition: Cartridge Type: " +
+                            cartridgeConfig.getType()+
+                            ". Cause: Iaases of this Cartridge is null or empty.";
             log.error(msg);
             throw new InvalidCartridgeDefinitionException(msg);
         }
-        
+
         for (IaasProvider iaasProvider : iaases) {
             CloudControllerUtil.getIaas(iaasProvider);
         }
-        
+
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
         if(dataHolder.getCartridge(cartridgeType) != null) {
-        	Cartridge cartridgeToBeRemoved = dataHolder.getCartridge(cartridgeType);
-        	// undeploy
+            Cartridge cartridgeToBeRemoved = dataHolder.getCartridge(cartridgeType);
+            // undeploy
             try {
-				undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
-			} catch (InvalidCartridgeTypeException e) {
-				//ignore
-			}
+                undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
+            } catch (InvalidCartridgeTypeException e) {
+                //ignore
+            }
             populateNewCartridge(cartridge, cartridgeToBeRemoved);
         }
-        
+
         dataHolder.addCartridge(cartridge);
-        
+
         // persist
         persist();
 
@@ -222,48 +219,48 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         TopologyBuilder.handleServiceCreated(cartridgeList);
         // transaction ends
-        
+
         log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
     private void populateNewCartridge(Cartridge cartridge,
-			Cartridge cartridgeToBeRemoved) {
-    	
-    	List<IaasProvider> newIaasProviders = cartridge.getIaases();
-    	Map<String, IaasProvider> oldPartitionToIaasMap = cartridgeToBeRemoved.getPartitionToIaasProvider();
-    	
-    	for (String partitionId : oldPartitionToIaasMap.keySet()) {
-			IaasProvider oldIaasProvider = oldPartitionToIaasMap.get(partitionId);
-			if (newIaasProviders.contains(oldIaasProvider)) {
-				if (log.isDebugEnabled()) {
-					log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
-							+ "[partition id] : "+partitionId+" [cartridge type] "+cartridge.getType() );
-				}
-				cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
-			}
-		}
-		
-	}
+                                      Cartridge cartridgeToBeRemoved) {
 
-	public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
+        List<IaasProvider> newIaasProviders = cartridge.getIaases();
+        Map<String, IaasProvider> oldPartitionToIaasMap = cartridgeToBeRemoved.getPartitionToIaasProvider();
+
+        for (String partitionId : oldPartitionToIaasMap.keySet()) {
+            IaasProvider oldIaasProvider = oldPartitionToIaasMap.get(partitionId);
+            if (newIaasProviders.contains(oldIaasProvider)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
+                            + "[partition id] : "+partitionId+" [cartridge type] "+cartridge.getType() );
+                }
+                cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
+            }
+        }
+
+    }
+
+    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
 
         Cartridge cartridge = null;
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
             if (dataHolder.getCartridges().remove(cartridge)) {
-            	// invalidate partition validation cache
-            	dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
-            	
-            	if (log.isDebugEnabled()) {
-            		log.debug("Partition cache invalidated for cartridge "+cartridgeType);
-            	}
-            	
+                // invalidate partition validation cache
+                dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Partition cache invalidated for cartridge "+cartridgeType);
+                }
+
                 persist();
-                
+
                 // sends the service removed event
                 List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
                 cartridgeList.add(cartridge);
                 TopologyBuilder.handleServiceRemoved(cartridgeList);
-                
+
                 if(log.isInfoEnabled()) {
                     log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
                 }
@@ -274,14 +271,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
-    
+
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws
-        UnregisteredCartridgeException, InvalidIaasProviderException {
+            UnregisteredCartridgeException, InvalidIaasProviderException {
 
-    	if(log.isDebugEnabled()) {
-    		log.debug("CloudControllerServiceImpl:startInstance");
-    	}
+        if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:startInstance");
+        }
 
         if (memberContext == null) {
             String msg = "Instance start-up failed. Member is null.";
@@ -293,7 +290,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Partition partition = memberContext.getPartition();
 
         if(log.isDebugEnabled()) {
-        	log.debug("Received an instance spawn request : " + memberContext.toString());
+            log.debug("Received an instance spawn request : " + memberContext.toString());
         }
 
         ComputeService computeService = null;
@@ -301,8 +298,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (partition == null) {
             String msg =
-                         "Instance start-up failed. Specified Partition is null. " +
-                                 memberContext.toString();
+                    "Instance start-up failed. Specified Partition is null. " +
+                            memberContext.toString();
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -322,8 +319,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
-                                 memberContext.toString();
+                    "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
+                            memberContext.toString();
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
@@ -333,20 +330,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
-        	if (log.isDebugEnabled()) {
-        		log.debug("IaasToPartitionMap "+cartridge.hashCode()
-        				+ " for cartridge "+cartridgeType+ " and for partition: "+partitionId);
-        	}
-			String msg = "Instance start-up failed. "
-					+ "There's no IaaS provided for the partition: "
-					+ partitionId
-					+ " and for the Cartridge type: "
-					+ cartridgeType
-					+ ". Only following "
-					+ "partitions can be found in this Cartridge: "
-					+ cartridge.getPartitionToIaasProvider().keySet()
-							.toString() + ". " + memberContext.toString()
-					+ ". ";
+            if (log.isDebugEnabled()) {
+                log.debug("IaasToPartitionMap "+cartridge.hashCode()
+                        + " for cartridge "+cartridgeType+ " and for partition: "+partitionId);
+            }
+            String msg = "Instance start-up failed. "
+                    + "There's no IaaS provided for the partition: "
+                    + partitionId
+                    + " and for the Cartridge type: "
+                    + cartridgeType
+                    + ". Only following "
+                    + "partitions can be found in this Cartridge: "
+                    + cartridge.getPartitionToIaasProvider().keySet()
+                    .toString() + ". " + memberContext.toString()
+                    + ". ";
             log.fatal(msg);
             throw new InvalidIaasProviderException(msg);
         }
@@ -362,7 +359,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
             if(memberContext.getProperties() != null) {
-            	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
+                org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
                 if (props1 != null) {
                     for (Property prop : props1.getProperties()) {
                         addToPayload(payload, prop.getName(), prop.getValue());
@@ -371,11 +368,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             Iaas iaas = iaasProvider.getIaas();
-            
+
             if (log.isDebugEnabled()) {
                 log.debug("Payload: " + payload.toString());
             }
-            
+
             if (iaas == null) {
                 if(log.isDebugEnabled()) {
                     log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
@@ -388,7 +385,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.error(msg, e);
                     throw new InvalidIaasProviderException(msg, e);
                 }
-                
+
             }
 
             if(ctxt.isVolumeRequired()) {
@@ -412,12 +409,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // get the pre built ComputeService from provider or region or zone or host
             computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
-                        
+
             if (template == null) {
                 String msg =
-                             "Failed to start an instance. " +
-                                     memberContext.toString() +
-                                     ". Reason : Jclouds Template is null for iaas provider [type]: "+iaasProvider.getType();
+                        "Failed to start an instance. " +
+                                memberContext.toString() +
+                                ". Reason : Jclouds Template is null for iaas provider [type]: "+iaasProvider.getType();
                 log.error(msg);
                 throw new InvalidIaasProviderException(msg);
             }
@@ -430,31 +427,31 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String group = str.replaceAll("[^a-z0-9-]", "");
 
             NodeMetadata node;
-            
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is delegating request to start an instance for "
-						+ memberContext + " to Jclouds layer.");
-			}
+
+            if (log.isDebugEnabled()) {
+                log.debug("Cloud Controller is delegating request to start an instance for "
+                        + memberContext + " to Jclouds layer.");
+            }
 
 //            create and start a node
             Set<? extends NodeMetadata> nodes =
-                                                computeService.createNodesInGroup(group, 1,
-                                                                                  template);
+                    computeService.createNodesInGroup(group, 1,
+                            template);
 
             node = nodes.iterator().next();
-            
+
             if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller received a response for the request to start "
-						+ memberContext + " from Jclouds layer.");
-			}
-            
-            
+                log.debug("Cloud Controller received a response for the request to start "
+                        + memberContext + " from Jclouds layer.");
+            }
+
+
             //Start allocating ip as a new job
 
             ThreadExecutor exec = ThreadExecutor.getInstance();
             if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is starting the IP Allocator thread.");
-			}
+                log.debug("Cloud Controller is starting the IP Allocator thread.");
+            }
             exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
 
 
@@ -465,40 +462,32 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.fatal(msg);
                 throw new IllegalStateException(msg);
             }
-<<<<<<< HEAD
-                memberContext.setNodeId(nodeId);
-                if(log.isDebugEnabled()) {
-                    log.debug("Node id was set. "+memberContext.toString());
-                }
-=======
-            
-			memberContext.setNodeId(nodeId);
-			if (log.isDebugEnabled()) {
-				log.debug("Node id was set. " + memberContext.toString());
-			}
->>>>>>> master
 
-                // attach volumes
-			if (ctxt.isVolumeRequired()) {
-				// remove region prefix
-				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
-						.substring(nodeId.indexOf('/') + 1, nodeId.length())
-						: nodeId;
-				memberContext.setInstanceId(instanceId);
-				if (ctxt.getVolumes() != null) {
-					for (Volume volume : ctxt.getVolumes()) {
-						try {
-							iaas.attachVolume(instanceId, volume.getId(),
-									volume.getDevice());
-						} catch (Exception e) {
-							// continue without throwing an exception, since
-							// there is an instance already running
-							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
-									+ instanceId + " ] failed!", e);
-						}
-					}
-				}
-			}
+            memberContext.setNodeId(nodeId);
+            if (log.isDebugEnabled()) {
+                log.debug("Node id was set. " + memberContext.toString());
+            }
+            // attach volumes
+            if (ctxt.isVolumeRequired()) {
+                // remove region prefix
+                String instanceId = nodeId.indexOf('/') != -1 ? nodeId
+                        .substring(nodeId.indexOf('/') + 1, nodeId.length())
+                        : nodeId;
+                memberContext.setInstanceId(instanceId);
+                if (ctxt.getVolumes() != null) {
+                    for (Volume volume : ctxt.getVolumes()) {
+                        try {
+                            iaas.attachVolume(instanceId, volume.getId(),
+                                    volume.getDevice());
+                        } catch (Exception e) {
+                            // continue without throwing an exception, since
+                            // there is an instance already running
+                            log.error("Attaching Volume " + volume.getId() + " to Instance [ "
+                                    + instanceId + " ] failed!", e);
+                        }
+                    }
+                }
+            }
 
             log.info("Instance is successfully starting up. "+memberContext.toString());
 
@@ -512,12 +501,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-	private void createVolumeAndSetInClusterContext(Volume volume,
-			IaasProvider iaasProvider) {
-		// iaas cannot be null at this state #startInstance method
-		Iaas iaas = iaasProvider.getIaas();
-		int sizeGB = volume.getSize();
-		String snapshotId =  volume.getSnapshotId();
+    private void createVolumeAndSetInClusterContext(Volume volume,
+                                                    IaasProvider iaasProvider) {
+        // iaas cannot be null at this state #startInstance method
+        Iaas iaas = iaasProvider.getIaas();
+        int sizeGB = volume.getSize();
+        String snapshotId =  volume.getSnapshotId();
         if(StringUtils.isNotEmpty(volume.getVolumeId())){
             // volumeID is specified, so not creating additional volumes
             if(log.isDebugEnabled()){
@@ -528,67 +517,67 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String volumeId = iaas.createVolume(sizeGB, snapshotId);
             volume.setId(volumeId);
         }
-        
-		volume.setIaasType(iaasProvider.getType());
-	}
+
+        volume.setIaasType(iaasProvider.getType());
+    }
 
 
     private StringBuilder getPersistencePayload(ClusterContext ctx, Iaas iaas) {
-		StringBuilder persistencePayload = new StringBuilder();
-		if(isPersistenceMappingAvailable(ctx)){
-			for(Volume volume : ctx.getVolumes()){
-				if(log.isDebugEnabled()){
-					log.debug("Adding persistence mapping " + volume.toString());
-				}
-                if(persistencePayload.length() != 0) {
-                   persistencePayload.append("|");
+        StringBuilder persistencePayload = new StringBuilder();
+        if(isPersistenceMappingAvailable(ctx)){
+            for(Volume volume : ctx.getVolumes()){
+                if(log.isDebugEnabled()){
+                    log.debug("Adding persistence mapping " + volume.toString());
                 }
-                
-				persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
-				persistencePayload.append("|");
+                if(persistencePayload.length() != 0) {
+                    persistencePayload.append("|");
+                }
+
+                persistencePayload.append(iaas.getIaasDevice(volume.getDevice()));
+                persistencePayload.append("|");
                 persistencePayload.append(volume.getId());
                 persistencePayload.append("|");
                 persistencePayload.append(volume.getMappingPath());
-			}
-		}
+            }
+        }
         if(log.isDebugEnabled()){
             log.debug("Persistence payload is" + persistencePayload.toString());
         }
         System.out.println("****** " + persistencePayload);
-		return persistencePayload;
-	}
+        return persistencePayload;
+    }
 
-	private boolean isPersistenceMappingAvailable(ClusterContext ctx) {
-		return ctx.getVolumes() != null && ctx.isVolumeRequired();
-	}
+    private boolean isPersistenceMappingAvailable(ClusterContext ctx) {
+        return ctx.getVolumes() != null && ctx.isVolumeRequired();
+    }
 
-	private void addToPayload(StringBuilder payload, String name, String value) {
-	    payload.append(",");
+    private void addToPayload(StringBuilder payload, String name, String value) {
+        payload.append(",");
         payload.append(name+"=" + value);
     }
 
     /**
-	 * Persist data in registry.
-	 */
-	private void persist() {
-		try {
-			RegistryManager.getInstance().persist(
-					dataHolder);
-		} catch (RegistryException e) {
+     * Persist data in registry.
+     */
+    private void persist() {
+        try {
+            RegistryManager.getInstance().persist(
+                    dataHolder);
+        } catch (RegistryException e) {
 
-			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-			log.fatal(msg);
-			throw new CloudControllerException(msg, e);
-		}
-	}
+            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
+            log.fatal(msg);
+            throw new CloudControllerException(msg, e);
+        }
+    }
 
     private String generateMemberId(String clusterId) {
         UUID memberId = UUID.randomUUID();
-         return clusterId + memberId.toString();
+        return clusterId + memberId.toString();
     }
 
     @Override
-    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException 
+    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException
     {
 
         if(memberId == null) {
@@ -596,20 +585,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
+
         MemberContext ctxt = dataHolder.getMemberContextOfMemberId(memberId);
-        
+
         if(ctxt == null) {
             String msg = "Termination failed. Invalid Member Id: "+memberId;
             log.error(msg);
             throw new InvalidMemberException(msg);
         }
-        
+
         ThreadExecutor exec = ThreadExecutor.getInstance();
         exec.execute(new InstanceTerminator(ctxt));
 
-	}
-    
+    }
+
     private class InstanceTerminator implements Runnable {
 
         private MemberContext ctxt;
@@ -632,14 +621,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
                 log.info("Starting to terminate an instance with member id : " + memberId +
-                         " in partition id: " + partitionId + " of cluster id: " + clusterId +
-                         " and of cartridge type: " + cartridgeType);
+                        " in partition id: " + partitionId + " of cluster id: " + clusterId +
+                        " and of cartridge type: " + cartridgeType);
 
                 if (cartridge == null) {
                     String msg =
-                                 "Termination of Member Id: " + memberId + " failed. " +
-                                         "Cannot find a matching Cartridge for type: " +
-                                         cartridgeType;
+                            "Termination of Member Id: " + memberId + " failed. " +
+                                    "Cannot find a matching Cartridge for type: " +
+                                    cartridgeType;
                     log.error(msg);
                     throw new InvalidCartridgeTypeException(msg);
                 }
@@ -648,8 +637,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (nodeId == null) {
 
                     String msg =
-                                 "Termination failed. Cannot find a node id for Member Id: " +
-                                         memberId;
+                            "Termination failed. Cannot find a node id for Member Id: " +
+                                    memberId;
                     log.error(msg);
                     throw new InvalidMemberException(msg);
                 }
@@ -664,7 +653,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             } catch (Exception e) {
                 String msg =
-                             "Instance termination failed. "+ctxt.toString();
+                        "Instance termination failed. "+ctxt.toString();
                 log.error(msg, e);
                 throw new CloudControllerException(msg, e);
             }
@@ -679,8 +668,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         private String cartridgeType;
         NodeMetadata node;
 
-        public IpAllocator(MemberContext memberContext, IaasProvider iaasProvider, 
-        		String cartridgeType, NodeMetadata node) {
+        public IpAllocator(MemberContext memberContext, IaasProvider iaasProvider,
+                           String cartridgeType, NodeMetadata node) {
             this.memberContext = memberContext;
             this.iaasProvider = iaasProvider;
             this.cartridgeType = cartridgeType;
@@ -696,263 +685,263 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String publicIp = null;
 
             try{
-            	if (log.isDebugEnabled()) {
-    				log.debug("IP allocation process started for "+memberContext);
-    			}
+                if (log.isDebugEnabled()) {
+                    log.debug("IP allocation process started for "+memberContext);
+                }
                 String autoAssignIpProp =
-                                          iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
-                
+                        iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
+
                 String pre_defined_ip =
                         iaasProvider.getProperty(CloudControllerConstants.FLOATING_IP_PROPERTY);
-                    
-	                // reset ip
-	                String ip = "";
-                    
-                    // default behavior is autoIpAssign=false
-                    if (autoAssignIpProp == null ||
+
+                // reset ip
+                String ip = "";
+
+                // default behavior is autoIpAssign=false
+                if (autoAssignIpProp == null ||
                         (autoAssignIpProp != null && autoAssignIpProp.equals("false"))) {
-                    	
-                    	// check if floating ip is well defined in cartridge definition
-                    	if (pre_defined_ip != null) {
-                    		if (isValidIpAddress(pre_defined_ip)) {
-                    			if(log.isDebugEnabled()) {
-                    				log.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
-                    			}
-	    	                	Iaas iaas = iaasProvider.getIaas();
-	    	                	ip = iaas.associatePredefinedAddress(node, pre_defined_ip);
-	    	       
-	    	                	if (ip == null || "".equals(ip) || !pre_defined_ip.equals(ip)) {
-	    	                		// throw exception and stop instance creation
-	       	                		String msg = "Error occurred while allocating predefined floating ip address: " + pre_defined_ip + 
-	       	                					 " / allocated ip:" + ip + 
-	       	                				     " - terminating node:"  + memberContext.toString();
-	    	                        log.error(msg);
-	    	                		// terminate instance
-	    	                        terminate(iaasProvider, 
-	    	                    			node.getId(), memberContext);
-	    	                        throw new CloudControllerException(msg);
-	    	                	}
-                    		} else {
-                    			String msg = "Invalid floating ip address configured: " + pre_defined_ip +  
-  	                				     " - terminating node:"  + memberContext.toString();
-                    			log.error(msg);
-                    			// terminate instance
-                    			terminate(iaasProvider, 
-	                    			node.getId(), memberContext);
-                    			throw new CloudControllerException(msg);
-                    		}
-	    	                	
+
+                    // check if floating ip is well defined in cartridge definition
+                    if (pre_defined_ip != null) {
+                        if (isValidIpAddress(pre_defined_ip)) {
+                            if(log.isDebugEnabled()) {
+                                log.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
+                            }
+                            Iaas iaas = iaasProvider.getIaas();
+                            ip = iaas.associatePredefinedAddress(node, pre_defined_ip);
+
+                            if (ip == null || "".equals(ip) || !pre_defined_ip.equals(ip)) {
+                                // throw exception and stop instance creation
+                                String msg = "Error occurred while allocating predefined floating ip address: " + pre_defined_ip +
+                                        " / allocated ip:" + ip +
+                                        " - terminating node:"  + memberContext.toString();
+                                log.error(msg);
+                                // terminate instance
+                                terminate(iaasProvider,
+                                        node.getId(), memberContext);
+                                throw new CloudControllerException(msg);
+                            }
                         } else {
-                        	if(log.isDebugEnabled()) {
-                        		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, " + pre_defined_ip
-                        			+ ", selecting available one from pool");
-                        	}
-                        	Iaas iaas = iaasProvider.getIaas();
-                            // allocate an IP address - manual IP assigning mode
-                            ip = iaas.associateAddress(node);
-                            
-    						if (ip != null) {
-    							memberContext.setAllocatedIpAddress(ip);
-    							log.info("Allocated an ip address: "
-    									+ memberContext.toString());
-    						}
-                        }       
-                    	
-                    	// build the node with the new ip
-                    	node = NodeMetadataBuilder.fromNodeMetadata(node)
-                				.publicAddresses(ImmutableSet.of(ip)).build();
-                    } 
-                    
+                            String msg = "Invalid floating ip address configured: " + pre_defined_ip +
+                                    " - terminating node:"  + memberContext.toString();
+                            log.error(msg);
+                            // terminate instance
+                            terminate(iaasProvider,
+                                    node.getId(), memberContext);
+                            throw new CloudControllerException(msg);
+                        }
 
-                    // public ip
-                    if (node.getPublicAddresses() != null &&
+                    } else {
+                        if(log.isDebugEnabled()) {
+                            log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, " + pre_defined_ip
+                                    + ", selecting available one from pool");
+                        }
+                        Iaas iaas = iaasProvider.getIaas();
+                        // allocate an IP address - manual IP assigning mode
+                        ip = iaas.associateAddress(node);
+
+                        if (ip != null) {
+                            memberContext.setAllocatedIpAddress(ip);
+                            log.info("Allocated an ip address: "
+                                    + memberContext.toString());
+                        }
+                    }
+
+                    // build the node with the new ip
+                    node = NodeMetadataBuilder.fromNodeMetadata(node)
+                            .publicAddresses(ImmutableSet.of(ip)).build();
+                }
+
+
+                // public ip
+                if (node.getPublicAddresses() != null &&
                         node.getPublicAddresses().iterator().hasNext()) {
-                        ip = node.getPublicAddresses().iterator().next();
-                        publicIp = ip;
-                        memberContext.setPublicIpAddress(ip);
-                        log.info("Retrieving Public IP Address : " + memberContext.toString());
-                    }
+                    ip = node.getPublicAddresses().iterator().next();
+                    publicIp = ip;
+                    memberContext.setPublicIpAddress(ip);
+                    log.info("Retrieving Public IP Address : " + memberContext.toString());
+                }
 
-                    // private IP
-                    if (node.getPrivateAddresses() != null &&
+                // private IP
+                if (node.getPrivateAddresses() != null &&
                         node.getPrivateAddresses().iterator().hasNext()) {
-                        ip = node.getPrivateAddresses().iterator().next();
-                        memberContext.setPrivateIpAddress(ip);
-                        log.info("Retrieving Private IP Address. " + memberContext.toString());
-                    }
+                    ip = node.getPrivateAddresses().iterator().next();
+                    memberContext.setPrivateIpAddress(ip);
+                    log.info("Retrieving Private IP Address. " + memberContext.toString());
+                }
 
-                    dataHolder.addMemberContext(memberContext);
+                dataHolder.addMemberContext(memberContext);
 
-                    // persist in registry
-                    persist();
+                // persist in registry
+                persist();
 
 
-                    // trigger topology
-                    TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, 
-                    		partition.getId(), ip, publicIp, memberContext);
-                    
-                    String memberID = memberContext.getMemberId();
+                // trigger topology
+                TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId,
+                        partition.getId(), ip, publicIp, memberContext);
 
-                    // update the topology with the newly spawned member
-                    // publish data
-                    CartridgeInstanceDataPublisher.publish(memberID,
-                                                        memberContext.getPartition().getId(),
-                                                        memberContext.getNetworkPartitionId(),
-                                                        memberContext.getClusterId(),
-                                                        cartridgeType,
-                                                        MemberStatus.Created.toString(),
-                                                        node);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Node details: " + node.toString());
-                    }
-                    
-                    if (log.isDebugEnabled()) {
-        				log.debug("IP allocation process ended for "+memberContext);
-        			}
+                String memberID = memberContext.getMemberId();
+
+                // update the topology with the newly spawned member
+                // publish data
+                CartridgeInstanceDataPublisher.publish(memberID,
+                        memberContext.getPartition().getId(),
+                        memberContext.getNetworkPartitionId(),
+                        memberContext.getClusterId(),
+                        cartridgeType,
+                        MemberStatus.Created.toString(),
+                        node);
+                if (log.isDebugEnabled()) {
+                    log.debug("Node details: " + node.toString());
+                }
+
+                if (log.isDebugEnabled()) {
+                    log.debug("IP allocation process ended for "+memberContext);
+                }
 
             } catch (Exception e) {
                 String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
                 log.error(msg, e);
                 throw new CloudControllerException(msg, e);
-            } 
+            }
 
 
         }
     }
-    
+
     private boolean isValidIpAddress (String ip) {
-    	boolean isValid = InetAddresses.isInetAddress(ip);
-    	return isValid;
+        boolean isValid = InetAddresses.isInetAddress(ip);
+        return isValid;
     }
 
-	@Override
-	public void terminateAllInstances(String clusterId) throws InvalidClusterException {
+    @Override
+    public void terminateAllInstances(String clusterId) throws InvalidClusterException {
 
-		log.info("Starting to terminate all instances of cluster : "
-				+ clusterId);
-		
-		if(clusterId == null) {
-		    String msg = "Instance termination failed. Cluster id is null.";
-		    log.error(msg);
-		    throw new IllegalArgumentException(msg);
-		}
-		
-		List<MemberContext> ctxts = dataHolder.getMemberContextsOfClusterId(clusterId);
-		
-		if(ctxts == null) {
-		    String msg = "Instance termination failed. No members found for cluster id: "+clusterId;
-		    log.warn(msg);
+        log.info("Starting to terminate all instances of cluster : "
+                + clusterId);
+
+        if(clusterId == null) {
+            String msg = "Instance termination failed. Cluster id is null.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        List<MemberContext> ctxts = dataHolder.getMemberContextsOfClusterId(clusterId);
+
+        if(ctxts == null) {
+            String msg = "Instance termination failed. No members found for cluster id: "+clusterId;
+            log.warn(msg);
             return;
-		}
-		
-		ThreadExecutor exec = ThreadExecutor.getInstance();
-		for (MemberContext memberContext : ctxts) {
+        }
+
+        ThreadExecutor exec = ThreadExecutor.getInstance();
+        for (MemberContext memberContext : ctxts) {
             exec.execute(new InstanceTerminator(memberContext));
         }
 
-	}
+    }
 
 
-	/**
-	 * A helper method to terminate an instance.
+    /**
+     * A helper method to terminate an instance.
      * @param iaasProvider
      * @param ctxt
      * @param nodeId
      * @return will return the IaaSProvider
      */
-	private IaasProvider terminate(IaasProvider iaasProvider, 
-			String nodeId, MemberContext ctxt) {
-	    Iaas iaas = iaasProvider.getIaas();
-	    if (iaas == null) {
-	        
-	        try {
-	            iaas = CloudControllerUtil.getIaas(iaasProvider);
-	        } catch (InvalidIaasProviderException e) {
-	            String msg =
-	                    "Instance termination failed. " +ctxt.toString()  +
-	                    ". Cause: Unable to build Iaas of this " + iaasProvider.toString();
-	            log.error(msg, e);
-	            throw new CloudControllerException(msg, e);
-	        }
-	        
-	    }
-	    
-	    //detach volumes if any
-	    detachVolume(iaasProvider, ctxt);
-	    
-		// destroy the node
-		iaasProvider.getComputeService().destroyNode(nodeId);
+    private IaasProvider terminate(IaasProvider iaasProvider,
+                                   String nodeId, MemberContext ctxt) {
+        Iaas iaas = iaasProvider.getIaas();
+        if (iaas == null) {
 
-		// release allocated IP address
-		if (ctxt.getAllocatedIpAddress() != null) {
+            try {
+                iaas = CloudControllerUtil.getIaas(iaasProvider);
+            } catch (InvalidIaasProviderException e) {
+                String msg =
+                        "Instance termination failed. " +ctxt.toString()  +
+                                ". Cause: Unable to build Iaas of this " + iaasProvider.toString();
+                log.error(msg, e);
+                throw new CloudControllerException(msg, e);
+            }
+
+        }
+
+        //detach volumes if any
+        detachVolume(iaasProvider, ctxt);
+
+        // destroy the node
+        iaasProvider.getComputeService().destroyNode(nodeId);
+
+        // release allocated IP address
+        if (ctxt.getAllocatedIpAddress() != null) {
             iaas.releaseAddress(ctxt.getAllocatedIpAddress());
-		}
-		
-		log.info("Member is terminated: "+ctxt.toString());
-		return iaasProvider;
-	}
+        }
 
-	private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
-		String clusterId = ctxt.getClusterId();
-		ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
-		if (clusterCtxt.getVolumes() != null) {
-			for (Volume volume : clusterCtxt.getVolumes()) {
-				try {
-					String volumeId = volume.getId();
-					if (volumeId == null) {
-						return;
-					}
-					Iaas iaas = iaasProvider.getIaas();
-					iaas.detachVolume(ctxt.getInstanceId(), volumeId);
-				} catch (ResourceNotFoundException ignore) {
-					if(log.isDebugEnabled()) {
-						log.debug(ignore);
-					}
-				}
-			}
-		}
-	}
+        log.info("Member is terminated: "+ctxt.toString());
+        return iaasProvider;
+    }
 
-	private void logTermination(MemberContext memberContext) {
+    private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
+        String clusterId = ctxt.getClusterId();
+        ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
+        if (clusterCtxt.getVolumes() != null) {
+            for (Volume volume : clusterCtxt.getVolumes()) {
+                try {
+                    String volumeId = volume.getId();
+                    if (volumeId == null) {
+                        return;
+                    }
+                    Iaas iaas = iaasProvider.getIaas();
+                    iaas.detachVolume(ctxt.getInstanceId(), volumeId);
+                } catch (ResourceNotFoundException ignore) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(ignore);
+                    }
+                }
+            }
+        }
+    }
+
+    private void logTermination(MemberContext memberContext) {
 
         //updating the topology
-        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), 
-        		memberContext.getClusterId(), memberContext.getNetworkPartitionId(), 
-        		memberContext.getPartition().getId(), memberContext.getMemberId());
+        TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
+                memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
+                memberContext.getPartition().getId(), memberContext.getMemberId());
 
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
-                                                        memberContext.getPartition().getId(),
-                                                        memberContext.getNetworkPartitionId(),
-                                                        memberContext.getClusterId(),
-                                                        memberContext.getCartridgeType(),
-                                                        MemberStatus.Terminated.toString(),
-                                                        null);
+                memberContext.getPartition().getId(),
+                memberContext.getNetworkPartitionId(),
+                memberContext.getClusterId(),
+                memberContext.getCartridgeType(),
+                MemberStatus.Terminated.toString(),
+                null);
 
         // update data holders
         dataHolder.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
-        
-		// persist
-		persist();
 
-	}
+        // persist
+        persist();
 
-	@Override
-	public boolean registerService(Registrant registrant)
-			throws UnregisteredCartridgeException {
+    }
 
-	    String cartridgeType = registrant.getCartridgeType();
-	    String clusterId = registrant.getClusterId();
+    @Override
+    public boolean registerService(Registrant registrant)
+            throws UnregisteredCartridgeException {
+
+        String cartridgeType = registrant.getCartridgeType();
+        String clusterId = registrant.getClusterId();
         String payload = registrant.getPayload();
         String hostName = registrant.getHostName();
-        
+
         if(cartridgeType == null || clusterId == null || payload == null || hostName == null) {
-	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", " +
-	                "Cluster Id: "+clusterId+", Payload: "+payload+", Host name: "+hostName;
-	        log.error(msg);
-	        throw new IllegalArgumentException(msg);
-	    }
-	    
+            String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", " +
+                    "Cluster Id: "+clusterId+", Payload: "+payload+", Host name: "+hostName;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
         Cartridge cartridge = null;
         if ((cartridge = dataHolder.getCartridge(cartridgeType)) == null) {
 
@@ -961,41 +950,41 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
-        
+
         Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
         ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
-				payload, hostName, props, isLb, registrant.getPersistence());
+                payload, hostName, props, isLb, registrant.getPersistence());
 
 
-		dataHolder.addClusterContext(ctxt);
-	    TopologyBuilder.handleClusterCreated(registrant, isLb);
-	    
-	    persist();
-	    
-	    log.info("Successfully registered: "+registrant);
-	    
-		return true;
-	}
+        dataHolder.addClusterContext(ctxt);
+        TopologyBuilder.handleClusterCreated(registrant, isLb);
 
-	private ClusterContext buildClusterContext(Cartridge cartridge,
+        persist();
+
+        log.info("Successfully registered: "+registrant);
+
+        return true;
+    }
+
+    private ClusterContext buildClusterContext(Cartridge cartridge,
                                                String clusterId, String payload, String hostName,
                                                Properties props, boolean isLb, Persistence persistence) {
 
 
-		// initialize ClusterContext
-		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
-				hostName, isLb);
-		
-		String property;
-		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
-		long timeout = property != null ? Long.parseLong(property) : 30000;
+        // initialize ClusterContext
+        ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload,
+                hostName, isLb);
+
+        String property;
+        property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+        long timeout = property != null ? Long.parseLong(property) : 30000;
 
         boolean persistanceRequired = false;
         if(persistence != null){
-              persistanceRequired = persistence.isPersistanceRequired();
+            persistanceRequired = persistence.isPersistanceRequired();
         }
 
         if(persistanceRequired){
@@ -1037,7 +1026,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 ctxt.setVolumes(persistence.getVolumes());
                 ctxt.setVolumeRequired(true);
         	} else {
-        		// if we cannot find necessary data, we would not consider 
+        		// if we cannot find necessary data, we would not consider
         		// this as a volume required instance.
         		//isVolumeRequired = false;
                 ctxt.setVolumeRequired(false);
@@ -1046,51 +1035,51 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         	//ctxt.setVolumeRequired(isVolumeRequired);
         }
         */
-	    ctxt.setTimeoutInMillis(timeout);
-		return ctxt;
-	}
+        ctxt.setTimeoutInMillis(timeout);
+        return ctxt;
+    }
 
     @Override
-	public String[] getRegisteredCartridges() {
-		// get the list of cartridges registered
-		List<Cartridge> cartridges = dataHolder
-				.getCartridges();
+    public String[] getRegisteredCartridges() {
+        // get the list of cartridges registered
+        List<Cartridge> cartridges = dataHolder
+                .getCartridges();
 
-		if (cartridges == null) {
-			return new String[0];
-		}
+        if (cartridges == null) {
+            return new String[0];
+        }
 
-		String[] cartridgeTypes = new String[cartridges.size()];
-		int i = 0;
+        String[] cartridgeTypes = new String[cartridges.size()];
+        int i = 0;
 
-		for (Cartridge cartridge : cartridges) {
-			cartridgeTypes[i] = cartridge.getType();
-			i++;
-		}
+        for (Cartridge cartridge : cartridges) {
+            cartridgeTypes[i] = cartridge.getType();
+            i++;
+        }
 
-		return cartridgeTypes;
-	}
-
-	@Override
-	public CartridgeInfo getCartridgeInfo(String cartridgeType)
-			throws UnregisteredCartridgeException {
-		Cartridge cartridge = dataHolder
-				.getCartridge(cartridgeType);
-
-		if (cartridge != null) {
-
-			return CloudControllerUtil.toCartridgeInfo(cartridge);
-
-		}
-
-		String msg = "Cannot find a Cartridge having a type of "
-				+ cartridgeType + ". Hence unable to find information.";
-		log.error(msg);
-		throw new UnregisteredCartridgeException(msg);
-	}
+        return cartridgeTypes;
+    }
 
     @Override
-	public void unregisterService(String clusterId) throws UnregisteredClusterException {
+    public CartridgeInfo getCartridgeInfo(String cartridgeType)
+            throws UnregisteredCartridgeException {
+        Cartridge cartridge = dataHolder
+                .getCartridge(cartridgeType);
+
+        if (cartridge != null) {
+
+            return CloudControllerUtil.toCartridgeInfo(cartridge);
+
+        }
+
+        String msg = "Cannot find a Cartridge having a type of "
+                + cartridgeType + ". Hence unable to find information.";
+        log.error(msg);
+        throw new UnregisteredCartridgeException(msg);
+    }
+
+    @Override
+    public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
         TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
 
@@ -1098,13 +1087,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             @Override
             public void run() {
                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
-                 if(ctxt == null) {
-                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                     log.error(msg);
-                 }
-                 Collection<Member> members = TopologyManager.getTopology().
-                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 //finding the responding members from the existing members in the topology.
+                if(ctxt == null) {
+                    String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                    log.error(msg);
+                }
+                Collection<Member> members = TopologyManager.getTopology().
+                        getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                //finding the responding members from the existing members in the topology.
                 int sizeOfRespondingMembers = 0;
                 for(Member member : members) {
                     if(member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
@@ -1118,63 +1107,63 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 }
 
-                 // if there're still alive members
-                 if(members.size() > 0) {
-                     //forcefully terminate them
-                     for (Member member : members) {
+                // if there're still alive members
+                if(members.size() > 0) {
+                    //forcefully terminate them
+                    for (Member member : members) {
 
-                         try {
+                        try {
                             terminateInstance(member.getMemberId());
                         } catch (Exception e) {
                             // we are not gonna stop the execution due to errors.
                             log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
                         }
                     }
-                 }
+                }
             }
         };
         Runnable unregister = new Runnable() {
-             public void run() {
-                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
-                 if(ctxt == null) {
-                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                     log.error(msg);
-                 }
-                 Collection<Member> members = TopologyManager.getTopology().
-                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 // TODO why end time is needed?
-                 // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+            public void run() {
+                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                if(ctxt == null) {
+                    String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+                    log.error(msg);
+                }
+                Collection<Member> members = TopologyManager.getTopology().
+                        getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+                // TODO why end time is needed?
+                // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
 
-                 while(members.size() > 0) {
+                while(members.size() > 0) {
                     //waiting until all the members got removed from the Topology/ timed out
                     CloudControllerUtil.sleep(1000);
-                 }
+                }
 
-                 log.info("Unregistration of service cluster: " + clusterId_);
-                 deleteVolumes(ctxt);
-                 TopologyBuilder.handleClusterRemoved(ctxt);
-                 dataHolder.removeClusterContext(clusterId_);
-                 dataHolder.removeMemberContextsOfCluster(clusterId_);
-                 persist();
-             }
+                log.info("Unregistration of service cluster: " + clusterId_);
+                deleteVolumes(ctxt);
+                TopologyBuilder.handleClusterRemoved(ctxt);
+                dataHolder.removeClusterContext(clusterId_);
+                dataHolder.removeMemberContextsOfCluster(clusterId_);
+                persist();
+            }
 
             private void deleteVolumes(ClusterContext ctxt) {
                 if(ctxt.isVolumeRequired()) {
-                     Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
-                     if(cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
-                         for (Volume volume : ctxt.getVolumes()) {
+                    Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+                    if(cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
+                        for (Volume volume : ctxt.getVolumes()) {
                             if(volume.getId() != null) {
                                 String iaasType = volume.getIaasType();
                                 //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
                                 Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                 if(iaas != null) {
                                     try {
-                                    // delete the volumes if remove on unsubscription is true.
-                                    if(volume.isRemoveOntermination())
-                                    {
-                                        iaas.deleteVolume(volume.getId());
-                                        volume.setId(null);
-                                    }
+                                        // delete the volumes if remove on unsubscription is true.
+                                        if(volume.isRemoveOntermination())
+                                        {
+                                            iaas.deleteVolume(volume.getId());
+                                            volume.setId(null);
+                                        }
                                     } catch(Exception ignore) {
                                         if(log.isErrorEnabled()) {
                                             log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
@@ -1184,39 +1173,39 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             }
                         }
 
-                     }
-                 }
+                    }
+                }
             }
         };
         new Thread(terminateInTimeout).start();
         new Thread(unregister).start();
-        
-	}
+
+    }
 
 
     @Override
-    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
+    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions)
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
-    	Map<String, List<String>> validatedCache = dataHolder.getCartridgeTypeToPartitionIds();
-    	List<String> validatedPartitions = new ArrayList<String>();
-    	
-    	if (validatedCache.containsKey(cartridgeType)) {
-    		// cache hit for this cartridge
-    		// get list of partitions
-    		validatedPartitions = validatedCache.get(cartridgeType);
-    		if (log.isDebugEnabled()) {
-    			log.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
-    		}
-    		
-    	}
-    	
+        Map<String, List<String>> validatedCache = dataHolder.getCartridgeTypeToPartitionIds();
+        List<String> validatedPartitions = new ArrayList<String>();
+
+        if (validatedCache.containsKey(cartridgeType)) {
+            // cache hit for this cartridge
+            // get list of partitions
+            validatedPartitions = validatedCache.get(cartridgeType);
+            if (log.isDebugEnabled()) {
+                log.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
+            }
+
+        }
+
         Map<String, IaasProvider> partitionToIaasProviders =
-                                                             new ConcurrentHashMap<String, IaasProvider>();
-        
+                new ConcurrentHashMap<String, IaasProvider>();
+
         if (log.isDebugEnabled()) {
-			log.debug("Deployment policy validation started for cartridge type: "+cartridgeType);
-		}
+            log.debug("Deployment policy validation started for cartridge type: "+cartridgeType);
+        }
 
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
@@ -1225,89 +1214,89 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
-        
+
         Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
 
-		for (Partition partition : partitions) {
-			
-			if (validatedPartitions.contains(partition.getId())) {
-				// partition cache hit
-				continue;
-			}
-			
-			Callable<IaasProvider> worker = new PartitionValidatorCallable(
-					partition, cartridge);
-			Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
-					.getExecutor().submit(worker);
-			jobList.put(partition.getId(), job);
-		}
-        
+        for (Partition partition : partitions) {
+
+            if (validatedPartitions.contains(partition.getId())) {
+                // partition cache hit
+                continue;
+            }
+
+            Callable<IaasProvider> worker = new PartitionValidatorCallable(
+                    partition, cartridge);
+            Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
+                    .getExecutor().submit(worker);
+            jobList.put(partition.getId(), job);
+        }
+
         // Retrieve the results of the concurrently performed sanity checks.
         for (String partitionId : jobList.keySet()) {
-        	Future<IaasProvider> job = jobList.get(partitionId);
+            Future<IaasProvider> job = jobList.get(partitionId);
             try {
-            	// add to a temporary Map
-            	partitionToIaasProviders.put(partitionId, job.get());
-            	
-            	// add to cache
-            	this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
-            	
-				if (log.isDebugEnabled()) {
-					log.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
-				}
+                // add to a temporary Map
+                partitionToIaasProviders.put(partitionId, job.get());
+
+                // add to cache
+                this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
+                }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new InvalidPartitionException(e.getMessage(), e);
-            } 
+            }
         }
 
         // if and only if the deployment policy valid
         cartridge.addIaasProviders(partitionToIaasProviders);
-        
+
         // persist data
         persist();
-        
+
         log.info("All partitions "+CloudControllerUtil.getPartitionIds(partitions)+
-        		" were validated successfully, against the Cartridge: "+cartridgeType);
-        
+                " were validated successfully, against the Cartridge: "+cartridgeType);
+
         return true;
     }
 
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
-    	//FIXME add logs
+        //FIXME add logs
         String provider = partition.getProvider();
         IaasProvider iaasProvider = dataHolder.getIaasProvider(provider);
 
         if (iaasProvider == null) {
             String msg =
-                         "Invalid Partition - " + partition.toString()+". Cause: Iaas Provider " +
-                                 "is null for Partition Provider: "+provider;
+                    "Invalid Partition - " + partition.toString()+". Cause: Iaas Provider " +
+                            "is null for Partition Provider: "+provider;
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }
-        
+
         Iaas iaas = iaasProvider.getIaas();
-        
+
         if (iaas == null) {
-            
-        	try {
+
+            try {
                 iaas = CloudControllerUtil.getIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +
-                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
+                                ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }
-            
+
         }
 
         PartitionValidator validator = iaas.getPartitionValidator();
         validator.setIaasProvider(iaasProvider);
         validator.validate(partition.getId(),
-                           CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-        
+                CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
+
         return true;
     }
 
@@ -1317,24 +1306,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
-    	List<ConfigCompositeApplication> apps = this.dataHolder.getConfigCompositeApplication();
-		if (apps == null) {
-			if (log.isDebugEnabled()) {
-				log.debug("composite applications  for cloud controller is null while restoring ");
-			}
-			return apps;
-		}
-    	if (log.isDebugEnabled()) {
-			log.debug("trying to  restore composite applications  for cloud controller " + apps.size());
-		}
-    	for (ConfigCompositeApplication messConfigApp : apps) {
-    		if (log.isDebugEnabled()) {
-    			log.debug(" restoring composite application for cloud controller " + messConfigApp.getAlias());
-    		}
-    		TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
-    	}
-    	
-    	return apps;
+        List<ConfigCompositeApplication> apps = this.dataHolder.getConfigCompositeApplication();
+        if (apps == null) {
+            if (log.isDebugEnabled()) {
+                log.debug("composite applications  for cloud controller is null while restoring ");
+            }
+            return apps;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("trying to  restore composite applications  for cloud controller " + apps.size());
+        }
+        for (ConfigCompositeApplication messConfigApp : apps) {
+            if (log.isDebugEnabled()) {
+                log.debug(" restoring composite application for cloud controller " + messConfigApp.getAlias());
+            }
+            TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
+        }
+
+        return apps;
     }
 
 }

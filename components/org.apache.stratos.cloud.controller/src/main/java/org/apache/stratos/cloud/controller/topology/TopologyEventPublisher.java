@@ -26,15 +26,12 @@ import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-<<<<<<< HEAD
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
 import org.apache.stratos.messaging.domain.topology.Topology;
-=======
 import org.apache.stratos.messaging.domain.topology.*;
->>>>>>> master
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
@@ -60,8 +57,8 @@ public class TopologyEventPublisher {
             List<PortMapping> portMappings = cartridge.getPortMappings();
             for(PortMapping portMapping : portMappings) {
                 port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(portMapping.getPort()),
-                                Integer.parseInt(portMapping.getProxyPort()));
+                        Integer.parseInt(portMapping.getPort()),
+                        Integer.parseInt(portMapping.getProxyPort()));
                 serviceCreatedEvent.addPort(port);
             }
 
@@ -117,7 +114,7 @@ public class TopologyEventPublisher {
     }
 
     public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId,
-    		String lbClusterId, String publicIp, String privateIp, MemberContext context) {
+                                                String lbClusterId, String publicIp, String privateIp, MemberContext context) {
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
         instanceSpawnedEvent.setLbClusterId(lbClusterId);
         instanceSpawnedEvent.setMemberIp(privateIp);
@@ -132,69 +129,64 @@ public class TopologyEventPublisher {
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
         MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
-                           instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId());
+                instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId());
 
-     // grouping
+        // grouping
         memberStartedEventTopology.setGroupId(instanceStartedEvent.getGroupId());
         if(log.isInfoEnabled()) {
             log.info(" Grouping member started event - adding groupID " + instanceStartedEvent.getGroupId() + " for cluster " +
-            		instanceStartedEvent.getClusterId());
+                    instanceStartedEvent.getClusterId());
         }
-        
+
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing member started event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s",
-            		memberStartedEventTopology.getServiceName(), memberStartedEventTopology.getClusterId(), memberStartedEventTopology.getNetworkPartitionId(), 
-            		memberStartedEventTopology.getPartitionId(), memberStartedEventTopology.getMemberId(), memberStartedEventTopology.getGroupId()));
+                    memberStartedEventTopology.getServiceName(), memberStartedEventTopology.getClusterId(), memberStartedEventTopology.getNetworkPartitionId(),
+                    memberStartedEventTopology.getPartitionId(), memberStartedEventTopology.getMemberId(), memberStartedEventTopology.getGroupId()));
         }
-        
+
         publishEvent(memberStartedEventTopology);
     }
 
-     public static void sendMemberActivatedEvent(MemberActivatedEvent memberActivatedEvent) {
-         if(log.isInfoEnabled()) {
+    public static void sendMemberActivatedEvent(MemberActivatedEvent memberActivatedEvent) {
+        if(log.isInfoEnabled()) {
             log.info(String.format("Publishing member activated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s",
-                    memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), memberActivatedEvent.getNetworkPartitionId(), 
+                    memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), memberActivatedEvent.getNetworkPartitionId(),
                     memberActivatedEvent.getPartitionId(), memberActivatedEvent.getMemberId(), memberActivatedEvent.getGroupId()));
-         }
-         publishEvent(memberActivatedEvent);
+        }
+        publishEvent(memberActivatedEvent);
     }
 
     public static void sendMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
-         if(log.isInfoEnabled()) {
+        if(log.isInfoEnabled()) {
             log.info(String.format("Publishing member Ready to shut down event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s",
-                    memberReadyToShutdownEvent.getServiceName(), memberReadyToShutdownEvent.getClusterId(), memberReadyToShutdownEvent.getNetworkPartitionId(), 
+                    memberReadyToShutdownEvent.getServiceName(), memberReadyToShutdownEvent.getClusterId(), memberReadyToShutdownEvent.getNetworkPartitionId(),
                     memberReadyToShutdownEvent.getPartitionId(), memberReadyToShutdownEvent.getMemberId(), memberReadyToShutdownEvent.getGroupId()));
-         }
-         // grouping
-         memberReadyToShutdownEvent.setGroupId(memberReadyToShutdownEvent.getGroupId());
-         publishEvent(memberReadyToShutdownEvent);
+        }
+        // grouping
+        memberReadyToShutdownEvent.setGroupId(memberReadyToShutdownEvent.getGroupId());
+        publishEvent(memberReadyToShutdownEvent);
     }
 
     public static void sendMemberMaintenanceModeEvent(MemberMaintenanceModeEvent memberMaintenanceModeEvent) {
-            if(log.isInfoEnabled()) {
-               log.info(String.format("Publishing Maintenance mode event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s",
-                       memberMaintenanceModeEvent.getServiceName(), memberMaintenanceModeEvent.getClusterId(), memberMaintenanceModeEvent.getNetworkPartitionId(), 
-                       memberMaintenanceModeEvent.getPartitionId(), memberMaintenanceModeEvent.getMemberId(), memberMaintenanceModeEvent.getGroupId()));
-            }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing Maintenance mode event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s",
+                    memberMaintenanceModeEvent.getServiceName(), memberMaintenanceModeEvent.getClusterId(), memberMaintenanceModeEvent.getNetworkPartitionId(),
+                    memberMaintenanceModeEvent.getPartitionId(), memberMaintenanceModeEvent.getMemberId(), memberMaintenanceModeEvent.getGroupId()));
+        }
 
-            publishEvent(memberMaintenanceModeEvent);
-       }
+        publishEvent(memberMaintenanceModeEvent);
+    }
 
 
-<<<<<<< HEAD
-    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, String groupId) {
-        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
-        // grouping
-        memberTerminatedEvent.setGroupId(groupId);
-=======
     public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId,
-                                                 String partitionId, String memberId, Properties properties) {
+                                                 String partitionId, String memberId, Properties properties, String groupId) {
         MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
         memberTerminatedEvent.setProperties(properties);
->>>>>>> master
+        memberTerminatedEvent.setGroupId(groupId);
+
         if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s", serviceName, clusterId, networkPartitionId, 
-            		partitionId, memberId, groupId));
+            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [groupId] %s", serviceName, clusterId, networkPartitionId,
+                    partitionId, memberId, groupId));
         }
 
         publishEvent(memberTerminatedEvent);
@@ -208,27 +200,27 @@ public class TopologyEventPublisher {
         }
         publishEvent(completeTopologyEvent);
     }
-    
+
     // Grouping
     public static void sendConfigApplicationCreatedEventEvent(ConfigCompositeApplication configCompositeApplication) {
-        
-    	CompositeApplicationCreatedEvent compositeApplicationCreatedEvent = new CompositeApplicationCreatedEvent(configCompositeApplication);
+
+        CompositeApplicationCreatedEvent compositeApplicationCreatedEvent = new CompositeApplicationCreatedEvent(configCompositeApplication);
 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Publishing compositeApplicationCreatedEvent: " + compositeApplicationCreatedEvent));
         }
         publishEvent(compositeApplicationCreatedEvent);
     }
-    
-	public static void sendConfigApplicationRemovedEventEvent(String alias) {
-	        
-    	CompositeApplicationRemovedEvent compositeApplicationCreatedEvent = new CompositeApplicationRemovedEvent(alias);
+
+    public static void sendConfigApplicationRemovedEventEvent(String alias) {
+
+        CompositeApplicationRemovedEvent compositeApplicationCreatedEvent = new CompositeApplicationRemovedEvent(alias);
 
         if(log.isDebugEnabled()) {
             log.debug(String.format("Publishing compositeApplicationRemovedEvent: " + compositeApplicationCreatedEvent));
         }
         publishEvent(compositeApplicationCreatedEvent);
-	}
+    }
 
     public static void publishEvent(Event event) {
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TOPOLOGY_TOPIC);

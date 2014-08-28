@@ -583,10 +583,7 @@ public class OpenstackNovaIaas extends Iaas {
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
-<<<<<<< HEAD
         VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
-=======
->>>>>>> master
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
 
         while(volumeStatus != expectedStatus){
