@@ -31,21 +31,49 @@ properties="-Dmb.ip=MB-IP
             -Dthrift.receiver.port=CEP-PORT
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
-            -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
+            -Dlog4j.configuration=file://${script_path}/../conf/log4j.properties
             -Dparam.file.path=${script_path}/../payload/launch-params
             -Dextensions.dir=${script_path}/../extensions
             -Dcep.stats.publisher.enabled=true
+            -Dlb.private.ip=
+            -Dlb.public.ip=
             -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
             -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD
 	    -Denable.artifact.update=true
-	    -Dartifact.update.interval=10
-	    -Denable.data.publisher=ENABLE-DATA-PUBLISHER
+            -Dauto.commit=false
+            -Dauto.checkout=true
+            -Dartifact.update.interval=15
+            -Denable.data.publisher=ENABLE-DATA-PUBLISHER
             -Dmonitoring.server.ip=MONITORING-SERVER-IP
 	    -Dmonitoring.server.port=MONITORING-SERVER-PORT
 	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
 	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
 	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD
+<<<<<<< HEAD
 	    -DAPP_PATH=APP-PATH"
+=======
+	    -Dlog.file.paths=LOG_FILE_PATHS
+	    -DAPP_PATH=APP_PATH
+            -Dsuper.tenant.repository.path=/repository/deployment/server/
+            -Dtenant.repository.path=/repository/tenants/
+	    -Dextension.instance.started=instance-started.sh
+            -Dextension.start.servers=start-servers.sh
+            -Dextension.instance.activated=instance-activated.sh
+            -Dextension.artifacts.updated=artifacts-updated.sh
+            -Dextension.clean=clean.sh
+            -Dextension.mount.volumes=mount_volumes.sh
+            -Dextension.member.started=member-started.sh
+            -Dextension.member.activated=member-activated.sh
+            -Dextension.member.suspended=member-suspended.sh
+            -Dextension.member.terminated=member-terminated.sh
+            -Dextension.complete.topology=complete-topology.sh
+            -Dextension.complete.tenant=complete-tenant.sh
+            -Dextension.subscription.domain.added=subscription-domain-added.sh
+            -Dextension.subscription.domain.removed=subscription-domain-removed.sh
+            -Dextension.artifacts.copy=artifacts-copy.sh
+            -Dextension.tenant.subscribed=tenant-subscribed.sh
+            -Dextension.tenant.unsubscribed=tenant-unsubscribed.sh"
+>>>>>>> master
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

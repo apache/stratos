@@ -74,14 +74,47 @@ public class RuleTasksDelegator {
         }
         return autoscaleAlgorithm;
     }
-
-    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType) {
+    
+    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType, boolean isPrimary) {
+    	
         try {
 
             String nwPartitionId = partitionContext.getNetworkPartitionId();
-//            NetworkPartitionContext ctxt =
-//                                          PartitionManager.getInstance()
-//                                                          .getNetworkPartitionLbHolder(nwPartitionId);
+            NetworkPartitionLbHolder lbHolder =
+                                          PartitionManager.getInstance()
+                                                          .getNetworkPartitionLbHolder(nwPartitionId);
+            String lbClusterId = getLbClusterId(lbRefType, partitionContext, lbHolder);
+            MemberContext memberContext =
+                                         CloudControllerClient.getInstance()
+                                                              .spawnAnInstance(partitionContext.getPartition(),
+                                                                      clusterId,
+                                                                      lbClusterId, partitionContext.getNetworkPartitionId(),
+                                                                      isPrimary,
+                                                                      partitionContext.getMinimumMemberCount());
+            if (memberContext != null) {
+                partitionContext.addPendingMember(memberContext);
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
+                            memberContext.getPartition().getId()));
+                }
+            } else if(log.isDebugEnabled()){
+                log.debug("Returned member context is null, did not add to pending members");
+            }
+
+        } catch (Throwable e) {
+            String message = "Cannot spawn an instance";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    // Original method. Assume this is invoked from mincheck.drl
+    
+   /* public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType) {
+        try {
+
+            String nwPartitionId = partitionContext.getNetworkPartitionId();
+                                                         .getNetworkPartitionLbHolder(nwPartitionId);
             NetworkPartitionLbHolder lbHolder =
                                           PartitionManager.getInstance()
                                                           .getNetworkPartitionLbHolder(nwPartitionId);
@@ -109,7 +142,7 @@ public class RuleTasksDelegator {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
-   	}
+   	}*/
 
 
 

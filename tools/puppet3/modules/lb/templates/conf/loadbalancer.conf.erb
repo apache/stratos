@@ -40,11 +40,6 @@ loadbalancer {
     # section will be used.
     topology-event-listener: true;
 
-    # Message broker endpoint
-    # Provide message broker ip address and port if topology-event-listener or multi-tenancy is set to true.
-    mb-ip: <%= @mb_ip %>;
-    mb-port: <%= @mb_port %>;
-
     # Topology service filter
     # Provide service names in a comma separated list to filter incoming topology events if
     # topology_event_listener_enabled is set to true. This functionality could be used for hosting

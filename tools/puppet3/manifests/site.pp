@@ -15,4 +15,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import "nodes"
+# import Stratos cartridge nodes definitions
+import 'nodes/base.pp'
+import 'nodes/haproxy.pp'
+import 'nodes/lb.pp'
+import 'nodes/mysql.pp'
+import 'nodes/nodejs.pp'
+import 'nodes/php.pp'
+import 'nodes/ruby.pp'
+import 'nodes/tomcat.pp'
+import 'nodes/wordpress.pp'
+
+# import a single manifest file with node definitions
+import 'nodes.pp'
+
+# import default cartridge definition at the last
+import 'nodes/default.pp'

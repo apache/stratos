@@ -84,6 +84,9 @@ public class HAProxy implements LoadBalancer {
     }
 
     public void reload(Topology topology) throws LoadBalancerExtensionException {
+        if(log.isDebugEnabled()) {
+           log.info("Reconfigure and Reload the Load Balancer ");
+        }
         configure(topology);
         reloadConfiguration();
     }

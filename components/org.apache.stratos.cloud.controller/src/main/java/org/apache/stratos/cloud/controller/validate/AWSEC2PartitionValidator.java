@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.validate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
@@ -73,6 +74,8 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                     updatedIaas.setIaasProvider(updatedIaasProvider);
                 } 
                 
+                updateOtherProperties(updatedIaasProvider, properties);
+                
                 return updatedIaasProvider;
                 
             } else {
@@ -87,7 +90,31 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
         
     }
 
-    @Override
+    private void updateOtherProperties(IaasProvider updatedIaasProvider,
+			Properties properties) {
+    	Iaas updatedIaas;
+		try {
+			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+
+			for (Object property : properties.keySet()) {
+				if (property instanceof String) {
+					String key = (String) property;
+					updatedIaasProvider.setProperty(key,
+							properties.getProperty(key));
+					if (log.isDebugEnabled()) {
+						log.debug("Added property " + key
+								+ " to the IaasProvider.");
+					}
+				}
+			}
+			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas.setIaasProvider(updatedIaasProvider);
+		} catch (InvalidIaasProviderException ignore) {
+		}
+    	
+	}
+
+	@Override
     public void setIaasProvider(IaasProvider iaas) {
         this.iaasProvider = iaas;
         this.iaas = iaas.getIaas();

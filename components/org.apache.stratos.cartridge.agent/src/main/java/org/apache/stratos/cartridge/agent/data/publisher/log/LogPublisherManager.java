@@ -19,20 +19,24 @@
 
 package org.apache.stratos.cartridge.agent.data.publisher.log;
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.data.publisher.DataPublisherConfiguration;
 import org.apache.stratos.cartridge.agent.data.publisher.exception.DataPublisherException;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
+import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
 import org.wso2.carbon.databridge.commons.exception.MalformedStreamDefinitionException;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LogPublisherManager {
 
@@ -58,7 +62,7 @@ public class LogPublisherManager {
 
         // stream definition identifier = {log.publisher.<cluster id>}
         try {
-            streamDefinition = new StreamDefinition(Constants.LOG_PUBLISHER_STREAM_PREFIX + CartridgeAgentConfiguration.getInstance().getClusterId(),
+        	streamDefinition = new StreamDefinition(Constants.LOG_PUBLISHER_STREAM_PREFIX + getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()) + "." + getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()) + "." + getCurrentDate(),
                     Constants.LOG_PUBLISHER_STREAM_VERSION);
 
         } catch (MalformedStreamDefinitionException e) {
@@ -71,8 +75,17 @@ public class LogPublisherManager {
         metaDataDefinition.add(new Attribute(Constants.MEMBER_ID, AttributeType.STRING));
 
         List<Attribute> payloadDataDefinition = new ArrayList<Attribute>();
-        payloadDataDefinition.add(new Attribute(Constants.LOG_EVENT, AttributeType.STRING));
-
+        payloadDataDefinition.add(new Attribute(Constants.TENANT_ID, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.SERVER_NAME, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.APP_NAME, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.LOG_TIME, AttributeType.LONG));
+        payloadDataDefinition.add(new Attribute(Constants.PRIORITY, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.MESSAGE, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.LOGGER, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.IP, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.INSTANCE, AttributeType.STRING));
+        payloadDataDefinition.add(new Attribute(Constants.STACKTRACE, AttributeType.STRING));
+                 
         streamDefinition.setMetaData(metaDataDefinition);
         streamDefinition.setPayloadData(payloadDataDefinition);
     }
@@ -85,7 +98,10 @@ public class LogPublisherManager {
         }
 
         LogPublisher fileBasedLogPublisher = new FileBasedLogPublisher(dataPublisherConfig, streamDefinition, filePath,
-               CartridgeAgentConfiguration.getInstance().getMemberId());
+        		CartridgeAgentConfiguration.getInstance().getMemberId(),
+        		getValidTenantId(CartridgeAgentConfiguration.getInstance().getTenantId()),
+        		getAlias(CartridgeAgentConfiguration.getInstance().getClusterId()),
+        		getDateTime());
 
         fileBasedLogPublisher.initialize();
         fileBasedLogPublisher.start();
@@ -102,4 +118,37 @@ public class LogPublisherManager {
            }
        }
     }
+    
+	private String getCurrentDate() {
+		Date now = new Date();
+		DateFormat formatter = new SimpleDateFormat(Constants.DATE_FORMATTER);
+		String formattedDate = formatter.format(now);
+		return formattedDate.replace("-", ".");
+	}
+
+	private String getAlias(String clusterId) {
+		String alias;
+		try {
+			alias = clusterId.split("\\.")[0];
+		} catch (Exception e) {
+			e.printStackTrace();
+			alias = clusterId;
+		}
+		return alias;
+	}
+
+	private Long getDateTime() {
+		Date date = new Date();
+		return date.getTime();
+	}
+
+	private String getValidTenantId(String tenantId) {
+		if (tenantId.equals(String
+				.valueOf(MultitenantConstants.INVALID_TENANT_ID))
+				|| tenantId.equals(String
+						.valueOf(MultitenantConstants.SUPER_TENANT_ID))) {
+			return "0";
+		}
+		return tenantId;
+	}
 }

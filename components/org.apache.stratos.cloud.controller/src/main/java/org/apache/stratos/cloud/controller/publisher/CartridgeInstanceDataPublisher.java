@@ -21,9 +21,7 @@ package org.apache.stratos.cloud.controller.publisher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
-import org.apache.stratos.cloud.controller.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -51,7 +49,6 @@ public class CartridgeInstanceDataPublisher {
     private static StreamDefinition streamDefinition;
     private static final String cloudControllerEventStreamVersion = "1.0.0";
 
-    @SuppressWarnings("deprecation")
     public static void publish(String memberId,
                                String partitionId,
                                String networkId,
@@ -75,73 +72,70 @@ public class CartridgeInstanceDataPublisher {
                 return;
             }
         }
-        CartridgeInfo cartridgeInfo = null;
+
+
+        MemberContext memberContext = FasterLookUpDataHolder.getInstance().getMemberContextOfMemberId(memberId);
+        String cartridgeType = memberContext.getCartridgeType();
+        Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(cartridgeType);
+        
+        //Construct the data to be published
+        List<Object> payload = new ArrayList<Object>();
+        // Payload values
+        payload.add(memberId);
+        payload.add(serviceName);
+        payload.add(clusterId);
+        payload.add(memberContext.getLbClusterId());
+        payload.add(partitionId);
+        payload.add(networkId);
+		if (cartridge != null) {
+			payload.add(String.valueOf(cartridge.isMultiTenant()));
+		} else {
+			payload.add("");
+		}
+        payload.add(memberContext.getPartition().getProvider());
+        payload.add(status);
+
+        if(metadata != null) {
+            payload.add(metadata.getHostname());
+            payload.add(metadata.getHardware().getHypervisor());
+            payload.add(String.valueOf(metadata.getHardware().getRam()));
+            payload.add(metadata.getImageId());
+            payload.add(metadata.getLoginPort());
+            payload.add(metadata.getOperatingSystem().getName());
+            payload.add(metadata.getOperatingSystem().getVersion());
+            payload.add(metadata.getOperatingSystem().getArch());
+            payload.add(String.valueOf(metadata.getOperatingSystem().is64Bit()));
+        } else {
+            payload.add("");
+            payload.add("");
+            payload.add("");
+            payload.add("");
+            payload.add(0);
+            payload.add("");
+            payload.add("");
+            payload.add("");
+            payload.add("");
+        }
+
+        payload.add(memberContext.getPrivateIpAddress());
+        payload.add(memberContext.getPublicIpAddress());
+        payload.add(memberContext.getAllocatedIpAddress());
+
+        Event event = new Event();
+        event.setPayloadData(payload.toArray());
+        event.setArbitraryDataMap(new HashMap<String, String>());
+
         try {
-            cartridgeInfo = new CloudControllerServiceImpl().getCartridgeInfo(serviceName);
-        } catch (UnregisteredCartridgeException e) {
-            log.error("error while getting the cartridge information when publishing the state changes... ");
-        } finally {
-            MemberContext memberContext = FasterLookUpDataHolder.getInstance().getMemberContextOfMemberId(memberId);
-            //Construct the data to be published
-            List<Object> payload = new ArrayList<Object>();
-            // Payload values
-            payload.add(memberId);
-            payload.add(serviceName);
-            payload.add(clusterId);
-            payload.add(memberContext.getLbClusterId());
-            payload.add(partitionId);
-            payload.add(networkId);
-            if(cartridgeInfo != null) {
-                payload.add(String.valueOf(cartridgeInfo.isMultiTenant()));
-            } else {
-                payload.add("");
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Publishing BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()));
             }
-            payload.add(memberContext.getPartition().getProvider());
-            payload.add(status);
-
-            if(metadata != null) {
-                payload.add(metadata.getHostname());
-                payload.add(metadata.getHardware().getHypervisor());
-                payload.add(String.valueOf(metadata.getHardware().getRam()));
-                payload.add(metadata.getImageId());
-                payload.add(metadata.getLoginPort());
-                payload.add(metadata.getOperatingSystem().getName());
-                payload.add(metadata.getOperatingSystem().getVersion());
-                payload.add(metadata.getOperatingSystem().getArch());
-                payload.add(String.valueOf(metadata.getOperatingSystem().is64Bit()));
-            } else {
-                payload.add("");
-                payload.add("");
-                payload.add("");
-                payload.add("");
-                payload.add(0);
-                payload.add("");
-                payload.add("");
-                payload.add("");
-                payload.add("");
+            dataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
+        } catch (AgentException e) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not publish BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()), e);
             }
-
-            payload.add(memberContext.getPrivateIpAddress());
-            payload.add(memberContext.getPublicIpAddress());
-            payload.add(memberContext.getAllocatedIpAddress());
-
-            Event event = new Event();
-            event.setPayloadData(payload.toArray());
-            event.setArbitraryDataMap(new HashMap<String, String>());
-
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Publishing BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()));
-                }
-                dataPublisher.publish(streamDefinition.getName(), streamDefinition.getVersion(), event);
-            } catch (AgentException e) {
-                if (log.isErrorEnabled()) {
-                    log.error(String.format("Could not publish BAM event: [stream] %s [version] %s", streamDefinition.getName(), streamDefinition.getVersion()), e);
-                }
-            }
-
+        }
     }
-}
     
     private static void release(){
         FasterLookUpDataHolder.getInstance().setPublisherRunning(false);

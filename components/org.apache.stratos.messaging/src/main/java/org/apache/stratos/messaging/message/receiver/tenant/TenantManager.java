@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
+import org.wso2.carbon.base.MultitenantConstants;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,6 +79,10 @@ public class TenantManager {
     private TenantManager() {
         this.tenantIdTenantMap = new HashMap<Integer, Tenant>();
         this.tenantDomainTenantMap = new HashMap<String, Tenant>();
+        Tenant superTenant = new Tenant(MultitenantConstants.SUPER_TENANT_ID, 
+        		MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        this.tenantIdTenantMap.put(MultitenantConstants.SUPER_TENANT_ID, superTenant);
+        this.tenantDomainTenantMap.put(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, superTenant);
     }
 
     public static TenantManager getInstance() {

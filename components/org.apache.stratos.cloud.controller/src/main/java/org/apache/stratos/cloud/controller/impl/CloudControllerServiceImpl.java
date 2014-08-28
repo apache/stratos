@@ -148,6 +148,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     
     public void unDeployCompositeApplicationDefinition(String appAlias) throws InvalidCompositeApplicationDefinitionException, 
     InvalidIaasProviderException {
+<<<<<<< HEAD
     	if(log.isDebugEnabled()){
             log.debug("undeploying composite application in cloud controller, removing all composite apps ");
             dataHolder.removeAllConfigCompositeApplications();
@@ -158,6 +159,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
     InvalidIaasProviderException {
+=======
+>>>>>>> master
         if (cartridgeConfig == null) {
             String msg = "Invalid Cartridge Definition: Definition is null.";
             log.error(msg);
@@ -247,7 +250,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Cartridge cartridge = null;
         if((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
             if (dataHolder.getCartridges().remove(cartridge)) {
+            	// invalidate partition validation cache
+            	dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
+            	
+            	if (log.isDebugEnabled()) {
+            		log.debug("Partition cache invalidated for cartridge "+cartridgeType);
+            	}
+            	
                 persist();
+                
+                // sends the service removed event
+                List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+                cartridgeList.add(cartridge);
+                TopologyBuilder.handleServiceRemoved(cartridgeList);
+                
                 if(log.isInfoEnabled()) {
                     log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
                 }
@@ -317,11 +333,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
-            String msg =
-                         "Instance start-up failed. " + "There's no IaaS provided for the partition: " + partitionId +
-                         " and for the Cartridge type: " + cartridgeType+". Only following "
-                  		+ "partitions can be found in this Cartridge: "
-                  		+cartridge.getPartitionToIaasProvider().keySet().toString()+ memberContext.toString() + ". ";
+        	if (log.isDebugEnabled()) {
+        		log.debug("IaasToPartitionMap "+cartridge.hashCode()
+        				+ " for cartridge "+cartridgeType+ " and for partition: "+partitionId);
+        	}
+			String msg = "Instance start-up failed. "
+					+ "There's no IaaS provided for the partition: "
+					+ partitionId
+					+ " and for the Cartridge type: "
+					+ cartridgeType
+					+ ". Only following "
+					+ "partitions can be found in this Cartridge: "
+					+ cartridge.getPartitionToIaasProvider().keySet()
+							.toString() + ". " + memberContext.toString()
+					+ ". ";
             log.fatal(msg);
             throw new InvalidIaasProviderException(msg);
         }
@@ -336,6 +361,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
+            if(memberContext.getProperties() != null) {
+            	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
+                if (props1 != null) {
+                    for (Property prop : props1.getProperties()) {
+                        addToPayload(payload, prop.getName(), prop.getValue());
+                    }
+                }
+            }
 
             Iaas iaas = iaasProvider.getIaas();
             
@@ -397,6 +430,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String group = str.replaceAll("[^a-z0-9-]", "");
 
             NodeMetadata node;
+            
+			if (log.isDebugEnabled()) {
+				log.debug("Cloud Controller is delegating request to start an instance for "
+						+ memberContext + " to Jclouds layer.");
+			}
 
 //            create and start a node
             Set<? extends NodeMetadata> nodes =
@@ -404,9 +442,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                                                                   template);
 
             node = nodes.iterator().next();
+            
+            if (log.isDebugEnabled()) {
+				log.debug("Cloud Controller received a response for the request to start "
+						+ memberContext + " from Jclouds layer.");
+			}
+            
+            
             //Start allocating ip as a new job
 
             ThreadExecutor exec = ThreadExecutor.getInstance();
+            if (log.isDebugEnabled()) {
+				log.debug("Cloud Controller is starting the IP Allocator thread.");
+			}
             exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
 
 
@@ -417,10 +465,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.fatal(msg);
                 throw new IllegalStateException(msg);
             }
+<<<<<<< HEAD
                 memberContext.setNodeId(nodeId);
                 if(log.isDebugEnabled()) {
                     log.debug("Node id was set. "+memberContext.toString());
                 }
+=======
+            
+			memberContext.setNodeId(nodeId);
+			if (log.isDebugEnabled()) {
+				log.debug("Node id was set. " + memberContext.toString());
+			}
+>>>>>>> master
 
                 // attach volumes
 			if (ctxt.isVolumeRequired()) {
@@ -640,7 +696,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String publicIp = null;
 
             try{
-
+            	if (log.isDebugEnabled()) {
+    				log.debug("IP allocation process started for "+memberContext);
+    			}
                 String autoAssignIpProp =
                                           iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
                 
@@ -728,11 +786,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // persist in registry
                     persist();
 
-                    String memberID = memberContext.getMemberId();
 
                     // trigger topology
-                    TopologyBuilder.handleMemberSpawned(memberID, cartridgeType, clusterId, memberContext.getNetworkPartitionId(),
-                            partition.getId(), ip, memberContext.getLbClusterId(),publicIp);
+                    TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, 
+                    		partition.getId(), ip, publicIp, memberContext);
+                    
+                    String memberID = memberContext.getMemberId();
 
                     // update the topology with the newly spawned member
                     // publish data
@@ -744,14 +803,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                                         MemberStatus.Created.toString(),
                                                         node);
                     if (log.isDebugEnabled()) {
-                        log.debug("Node details: \n" + node.toString());
+                        log.debug("Node details: " + node.toString());
                     }
+                    
+                    if (log.isDebugEnabled()) {
+        				log.debug("IP allocation process ended for "+memberContext);
+        			}
 
             } catch (Exception e) {
                 String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
                 log.error(msg, e);
                 throw new CloudControllerException(msg, e);
-            }
+            } 
 
 
         }
@@ -1029,6 +1092,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
 	public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
+        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
 
         Runnable terminateInTimeout = new Runnable() {
             @Override
@@ -1134,8 +1198,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
+    	Map<String, List<String>> validatedCache = dataHolder.getCartridgeTypeToPartitionIds();
+    	List<String> validatedPartitions = new ArrayList<String>();
+    	
+    	if (validatedCache.containsKey(cartridgeType)) {
+    		// cache hit for this cartridge
+    		// get list of partitions
+    		validatedPartitions = validatedCache.get(cartridgeType);
+    		if (log.isDebugEnabled()) {
+    			log.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
+    		}
+    		
+    	}
+    	
         Map<String, IaasProvider> partitionToIaasProviders =
                                                              new ConcurrentHashMap<String, IaasProvider>();
+        
+        if (log.isDebugEnabled()) {
+			log.debug("Deployment policy validation started for cartridge type: "+cartridgeType);
+		}
 
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
@@ -1148,6 +1229,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
 
 		for (Partition partition : partitions) {
+			
+			if (validatedPartitions.contains(partition.getId())) {
+				// partition cache hit
+				continue;
+			}
+			
 			Callable<IaasProvider> worker = new PartitionValidatorCallable(
 					partition, cartridge);
 			Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
@@ -1161,6 +1248,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             try {
             	// add to a temporary Map
             	partitionToIaasProviders.put(partitionId, job.get());
+            	
+            	// add to cache
+            	this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
+            	
+				if (log.isDebugEnabled()) {
+					log.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
+				}
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 throw new InvalidPartitionException(e.getMessage(), e);

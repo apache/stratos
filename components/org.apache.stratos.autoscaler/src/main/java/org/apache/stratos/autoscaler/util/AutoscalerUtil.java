@@ -38,9 +38,10 @@ import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
@@ -111,6 +112,7 @@ public class AutoscalerUtil {
                                         new ClusterMonitor(cluster.getClusterId(),
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
+        clusterMonitor.setStatus(ClusterStatus.Created);
         
         for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
 
@@ -130,7 +132,8 @@ public class AutoscalerUtil {
                         memberContext.setClusterId(member.getClusterId());
                         memberContext.setMemberId(memberId);
                         memberContext.setPartition(partition);
-
+                        memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
+                        
                         if(MemberStatus.Activated.equals(member.getStatus())){
                             partitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
@@ -175,12 +178,29 @@ public class AutoscalerUtil {
                 log.debug("Set the lb reference type: "+value);
             }
         }
+        
+        // set hasPrimary property
+        // hasPrimary is true if there are primary members available in that cluster
+        clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
 
         log.info("Cluster monitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
     
-    public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
+    private static Properties convertMemberPropsToMemberContextProps(
+			java.util.Properties properties) {
+    	Properties props = new Properties();
+    	for (Map.Entry<Object, Object> e : properties.entrySet()	) {
+			Property prop = new Property();
+			prop.setName((String)e.getKey());
+			prop.setValue((String)e.getValue());
+			props.addProperties(prop);
+		}    	
+		return props;
+	}
+
+
+	public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
         // FIXME fix the following code to correctly update
         // AutoscalerContext context = AutoscalerContext.getInstance();
         if (null == cluster) {
@@ -213,6 +233,7 @@ public class AutoscalerUtil {
                                         new LbClusterMonitor(clusterId,
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
+        clusterMonitor.setStatus(ClusterStatus.Created);
         // partition group = network partition context
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 

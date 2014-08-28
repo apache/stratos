@@ -53,6 +53,8 @@ global java.lang.String lbRef;
 global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
+global java.lang.Boolean isPrimary;
+global java.util.List primaryMembers;
 
 rule "Scaling Rule"
 dialect "mvel"
@@ -67,36 +69,46 @@ dialect "mvel"
         eval(log.debug("[scaling] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
         eval(log.debug("[scaling] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
+	
+        rifUpperLimit : Float() from  $loadThresholds.getRequestsInFlight().getUpperLimit()
+        rifLowerLimit : Float() from  $loadThresholds.getRequestsInFlight().getLowerLimit()
 
         rifAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
         rifGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
         rifSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
-        rifAverageLimit : Float() from  $loadThresholds.getRequestsInFlight().getAverage()
 	    rifPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
+
+        mcUpperLimit : Float() from  $loadThresholds.getMemoryConsumption().getUpperLimit()
+        mcLowerLimit : Float() from  $loadThresholds.getMemoryConsumption().getLowerLimit()
 
         memoryConsumptionAverage : Float() from  $networkPartitionContext.getAverageMemoryConsumption()
         memoryConsumptionGradient : Float() from  $networkPartitionContext.getMemoryConsumptionGradient()
         memoryConsumptionSecondDerivative : Float() from  $networkPartitionContext.getMemoryConsumptionSecondDerivative()
-        mcAverageLimit : Float() from  $loadThresholds.getMemoryConsumption().getAverage()
 	    mcPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(memoryConsumptionAverage, memoryConsumptionGradient, memoryConsumptionSecondDerivative, 1)
+
+        laUpperLimit : Float() from  $loadThresholds.getLoadAverage().getUpperLimit()
+        laLowerLimit : Float() from  $loadThresholds.getLoadAverage().getLowerLimit()
 
         loadAverageAverage : Float() from  $networkPartitionContext.getAverageLoadAverage()
         loadAverageGradient : Float() from  $networkPartitionContext.getLoadAverageGradient()
         loadAverageSecondDerivative : Float() from  $networkPartitionContext.getLoadAverageSecondDerivative()
-        laAverageLimit : Float() from  $loadThresholds.getLoadAverage().getAverage()
 	    laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
 
-        scaleUp : Boolean() from ((rifReset && (rifPredictedValue > rifAverageLimit * 0.8)) || (mcReset && (mcPredictedValue > mcAverageLimit * 0.8)) || (laReset && (laPredictedValue > laAverageLimit * 0.8)))
-        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifAverageLimit * 0.1)) && (mcReset && (mcPredictedValue < mcAverageLimit * 0.1)) && (laReset && (laPredictedValue < laAverageLimit * 0.1)))
+        scaleUp : Boolean() from ((rifReset && (rifPredictedValue > rifUpperLimit)) || (mcReset && (mcPredictedValue > mcUpperLimit)) || (laReset && (laPredictedValue > laUpperLimit)))
+        scaleDown : Boolean() from ((rifReset && (rifPredictedValue < rifLowerLimit )) && (mcReset && (mcPredictedValue < mcLowerLimit)) && (laReset && (laPredictedValue < laLowerLimit)))
 
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF Resetted?: " + rifReset))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF average limit: " + rifAverageLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF upper limit: " + rifUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF lower limit: " + rifLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC average limit: " + mcAverageLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC upper limit: " + mcUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC lower limit: " + mcLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA Average limit: " + laAverageLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA upper limit: " + laUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA lower limit: " + laLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-up action: " + scaleUp))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-down action: " + scaleDown))
@@ -109,7 +121,7 @@ dialect "mvel"
             if(partition != null){
                 log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                 log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
-                $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef);
+                $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, lbRef, isPrimary);
             }
         } else if(scaleDown){
 
@@ -126,8 +138,15 @@ dialect "mvel"
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
                     partitionContext = $networkPartitionContext.getPartitionCtxt(partition.getId());
 
-                    for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
+					// In partition context member stat context, all the primary members need to be
+					// avoided being selected as the member to terminated
+					
+
+                    for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+					
+						if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
+						
                         LoadAverage loadAverage = memberStatsContext.getLoadAverage();
                         log.debug("[scale-down] " + " [cluster] "
                             + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
@@ -156,6 +175,10 @@ dialect "mvel"
                             selectedMemberStatsContext = memberStatsContext;
                             lowestOverallLoad = overallLoad;
                         }
+                        
+                        							
+					  }
+						
                     }
                     if(selectedMemberStatsContext != null) {
                         log.info("[scale-down] Trying to terminating an instace to scale down!" );

@@ -67,6 +67,13 @@ public class FasterLookUpDataHolder implements Serializable{
 	private Map<String, ClusterContext> clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
 	
 	/**
+	 * This works as a cache to hold already validated partitions against a cartridge type.
+	 * Key - cartridge type
+	 * Value - list of partition ids
+	 */
+	private Map<String, List<String>> cartridgeTypeToPartitionIds = new ConcurrentHashMap<String, List<String>>();
+	
+	/**
      * Thread pool used in this task to execute parallel tasks.
      */
     private transient ExecutorService executor = Executors.newFixedThreadPool(20);
@@ -371,6 +378,30 @@ public class FasterLookUpDataHolder implements Serializable{
 
 	public void setExecutor(ExecutorService executor) {
 		this.executor = executor;
+	}
+
+	public Map<String, List<String>> getCartridgeTypeToPartitionIds() {
+		return cartridgeTypeToPartitionIds;
+	}
+
+	public void setCartridgeTypeToPartitionIds(
+			Map<String, List<String>> cartridgeTypeToPartitionIds) {
+		this.cartridgeTypeToPartitionIds = cartridgeTypeToPartitionIds;
+	}
+	
+	public void addToCartridgeTypeToPartitionIdMap(String cartridgeType, String partitionId) {
+		List<String> list = this.cartridgeTypeToPartitionIds.get(cartridgeType);
+		
+		if(list == null) {
+			list = new ArrayList<String>();
+		}
+		
+		list.add(partitionId);
+		this.cartridgeTypeToPartitionIds.put(cartridgeType, list);
+	}
+	
+	public void removeFromCartridgeTypeToPartitionIds(String cartridgeType) {
+		this.cartridgeTypeToPartitionIds.remove(cartridgeType);
 	}
 
 }

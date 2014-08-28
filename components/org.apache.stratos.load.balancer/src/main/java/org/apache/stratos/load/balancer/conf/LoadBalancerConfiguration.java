@@ -35,10 +35,7 @@ import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -54,8 +51,6 @@ public class LoadBalancerConfiguration {
     private long endpointTimeout;
     private long sessionTimeout;
     private boolean cepStatsPublisherEnabled;
-    private String mbIp;
-    private int mbPort;
     private String cepIp;
     private int cepPort;
     private boolean topologyEventListenerEnabled;
@@ -65,9 +60,10 @@ public class LoadBalancerConfiguration {
     private String topologyClusterFilter;
     private boolean multiTenancyEnabled;
     private TenantIdentifier tenantIdentifier;
-    private String tenantIdentifierRegex;
+    private List<String> tenantIdentifierRegexList;
     private String topologyMemberFilter;
     private String networkPartitionId;
+    private boolean reWriteLocationHeader;
 
     /**
      * Load balancer configuration is singleton.
@@ -155,22 +151,6 @@ public class LoadBalancerConfiguration {
         this.cepStatsPublisherEnabled = cepStatsPublisherEnabled;
     }
 
-    public String getMbIp() {
-        return mbIp;
-    }
-
-    public void setMbIp(String mbIp) {
-        this.mbIp = mbIp;
-    }
-
-    public int getMbPort() {
-        return mbPort;
-    }
-
-    public void setMbPort(int mbPort) {
-        this.mbPort = mbPort;
-    }
-
     public String getCepIp() {
         return cepIp;
     }
@@ -255,12 +235,12 @@ public class LoadBalancerConfiguration {
         return tenantIdentifier;
     }
 
-    public void setTenantIdentifierRegex(String tenantIdentifierRegex) {
-        this.tenantIdentifierRegex = tenantIdentifierRegex;
+    public void setTenantIdentifierRegexList(List<String> tenantIdentifierRegexList) {
+        this.tenantIdentifierRegexList = tenantIdentifierRegexList;
     }
 
-    public String getTenantIdentifierRegex() {
-        return tenantIdentifierRegex;
+    public List<String> getTenantIdentifierRegexList() {
+        return tenantIdentifierRegexList;
     }
 
     public void setNetworkPartitionId(String networkPartitionId) {
@@ -271,9 +251,15 @@ public class LoadBalancerConfiguration {
         return networkPartitionId;
     }
 
-    private static class LoadBalancerConfigurationReader {
+    public void setRewriteLocationHeader(boolean reWriteLocationHeader) {
+        this.reWriteLocationHeader = reWriteLocationHeader;
+    }
 
-        private String property;
+    public boolean isReWriteLocationHeader() {
+        return reWriteLocationHeader;
+    }
+
+    private static class LoadBalancerConfigurationReader {
 
         public LoadBalancerConfiguration readFromFile() {
             String configFilePath = System.getProperty("loadbalancer.conf.file");
@@ -362,17 +348,6 @@ public class LoadBalancerConfiguration {
                 configuration.setMultiTenancyEnabled(Boolean.parseBoolean(multiTenancyEnabled));
             }
 
-            // Read mb ip and port
-            if (configuration.isTopologyEventListenerEnabled() || configuration.isMultiTenancyEnabled()) {
-                String mbIp = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_IP);
-                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_IP, mbIp, "loadbalancer");
-                configuration.setMbIp(mbIp);
-
-                String mbPort = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MB_PORT);
-                validateRequiredPropertyInNode(Constants.CONF_PROPERTY_MB_PORT, mbPort, "loadbalancer");
-                configuration.setMbPort(Integer.parseInt(mbPort));
-            }
-
             // Read topology service filter and topology cluster filter
             if (configuration.isTopologyEventListenerEnabled()) {
                 String serviceFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_SERVICE_FILTER);
@@ -423,7 +398,17 @@ public class LoadBalancerConfiguration {
                 } catch (Exception e) {
                     throw new InvalidConfigurationException(String.format("Invalid tenant identifier regular expression: %s", tenantIdentifierRegex), e);
                 }
-                configuration.setTenantIdentifierRegex(tenantIdentifierRegex);
+                List<String> regexList = new ArrayList<String>();
+                if(tenantIdentifierRegex.contains(org.apache.stratos.messaging.util.Constants.FILTER_VALUE_SEPARATOR)) {
+                    String[] regexArray;
+                    regexArray = tenantIdentifierRegex.split(org.apache.stratos.messaging.util.Constants.FILTER_VALUE_SEPARATOR);
+                    for(String regex: regexArray) {
+                       regexList.add(regex);
+                    }
+                } else {
+                    regexList.add(tenantIdentifierRegex);
+                }
+                configuration.setTenantIdentifierRegexList(regexList);
             }
 
             Node algorithmsNode = loadBalancerNode.findChildNodeByName(Constants.CONF_ELEMENT_ALGORITHMS);
@@ -434,6 +419,11 @@ public class LoadBalancerConfiguration {
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_CLASS_NAME, className, "algorithm", algorithmNode.getName());
                 Algorithm algorithm = new Algorithm(algorithmNode.getName(), className);
                 configuration.addAlgorithm(algorithm);
+            }
+
+            String rewriteLocationHeader = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_REWRITE_LOCATION_HEADER);
+            if(StringUtils.isNotEmpty(rewriteLocationHeader)) {
+                configuration.setRewriteLocationHeader(Boolean.parseBoolean(topologyEventListenerEnabled));
             }
 
             if (!configuration.isTopologyEventListenerEnabled()) {
@@ -515,7 +505,7 @@ public class LoadBalancerConfiguration {
                         }
 
                         // Add cluster to load balancer context
-                        LoadBalancerContextUtil.addClusterToLbContext(cluster);
+                        LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
                     }
                 }
             }

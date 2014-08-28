@@ -51,6 +51,7 @@ public class AutoscalerRuleEvaluator {
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
+	@SuppressWarnings("unused")
 	private static KnowledgeBase terminateAllKbase;
 	private static KnowledgeBase terminateDependencyKbase;
 

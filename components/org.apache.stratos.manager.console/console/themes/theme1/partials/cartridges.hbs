@@ -35,47 +35,39 @@
                 <div class="box-container">
                     <div class="row">
 
-                        <div class="col-lg-12">
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-lg-push-2 col-lg-10"><a><h3>{{serviceGroup}}</h3></a></div>
-                                </div>
-                            </div>
+                        <div class="col-lg-3">
 
+                            <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
 
-                            <div class="container">
-                                {{#each items}}
-                                <div class="row">
-                                    <div class="col-lg-2">
-                                        <div class="box-left"><i class="icons-default icons-{{cartridgeType}} big-pro-icons"></i></div>
-                                    </div>
-                                    <div class="col-lg-10">
-                                        {{#if loadBalancer}}
-                                        <h3>{{displayName}} - {{version}}</h3>
-                                        <div class="cartridge-description">{{description}}</div>
-                                        <div class="lb-description">This will be auto subscribed for you</div>
+                        </div>
+                        <div class="col-lg-9">
+                            <a  href="{{url "/subscribe_cartridge.jag"}}?cartridgeType={{cartridgeType}}&serviceGroup={{serviceGroup}}"><h3>{{serviceGroup}} - {{version}}</h3></a>
 
+                            {{#each items}}
+                                <div class="serviceGroup-child-wrapper">
+                                    {{#if loadBalancer}}
+                                    <h3>{{displayName}} - {{version}}</h3>
+                                    <div class="cartridge-description">{{description}}</div>
+                                    <div class="lb-description">This will be auto subscribed for you</div>
+
+                                    {{else}}
+                                    <div class="cartridge-description">{{description}}</div>
+                                    <div class="cartridge-description">
+                                        {{#if multiTenant}}
+                                        <i class="icons-users"></i> Multi Tenant Enabled
                                         {{else}}
-                                        <a href="{{url "/subscribe_cartridge.jag"}}?cartridgeType={{cartridgeType}}"><h3>{{displayName}} - {{version}}</h3></a>
-                                        <div class="cartridge-description">{{description}}</div>
-                                        <div class="cartridge-description">
-                                            {{#if multiTenant}}
-                                            <i class="icons-users"></i> Multi Tenant Enabled
-                                            {{else}}
-                                            <i class="icons-user"></i> Single Tenant
-                                            {{/if}}
-                                        </div>
+                                        <i class="icons-user"></i> Single Tenant
                                         {{/if}}
                                     </div>
+                                    {{/if}}
                                 </div>
-                                {{/each}}
-                            </div>
+                            {{/each}}
                         </div>
                     </div>
                 </div>
-        </div>
+            </div>
 
-            {{else}}
+            {{else}}    <!-- End serviceGroup check if -->
                 <div class="col-md-6">
                     <div class="box-container">
                         <div class="row">
@@ -103,9 +95,9 @@
                         </div>
                     </div>
                 </div>
-            {{/if}}
+            {{/if}}   <!-- End serviceGroup check -->
 
-        {{else}}
+        {{else}}  <!-- Each can have else close ( Else of #each cartridges ) -->
         <div class="col-lg-12">
             <div class="alert alert-info alert-empty-page">
                 <strong>There are no Cartridges available for you.</strong>

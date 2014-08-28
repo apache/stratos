@@ -30,7 +30,8 @@ import java.util.Map;
  * Algorithm context cache manages algorithm context values in a clustered environment.
  */
 public class AlgorithmContextCache {
-    private static final Log log = LogFactory.getLog(AlgorithmContextCache.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(AlgorithmContextCache.class);
 
     // TODO Current member index should be stored in a context property. This map may grow since entris are not deleted when clusters are removed.
     private static Map<String, Integer> clusterServiceToMemberIndex = new HashMap<String, Integer>();

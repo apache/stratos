@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 /**
  * In-flight request increment callable definition.
  */
-public class InFlightRequestIncrementCallable implements Callable {
+public class InFlightRequestIncrementCallable implements Callable<Object> {
     private String clusterId;
 
     public InFlightRequestIncrementCallable(String clusterId) {

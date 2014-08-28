@@ -73,6 +73,31 @@ public class DataInsertionAndRetrievalManager {
         }
     }
 
+    public void cacheAndUpdateSubscription(CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
+
+        // get the write lock
+        LookupDataHolder.getInstance().acquireWriteLock();
+
+        try {
+            // store in LookupDataHolder
+            LookupDataHolder.getInstance().putSubscription(cartridgeSubscription);
+
+            try {
+                // store in Persistence Manager
+                persistenceManager.persistCartridgeSubscription(cartridgeSubscription);
+
+            } catch (PersistenceManagerException e) {
+                String errorMsg = "Error in updating cartridge subscription in persistence manager";
+                log.error(errorMsg, e);
+                throw e;
+            }
+
+        } finally {
+            // release the write lock
+            LookupDataHolder.getInstance().releaseWriteLock();
+        }
+    }
+
     public void removeSubscription (int tenantId, String subscriptionAlias) throws PersistenceManagerException {
 
         CartridgeSubscription cartridgeSubscription = getCartridgeSubscription(tenantId, subscriptionAlias);

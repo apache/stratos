@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
 import java.util.*;
+<<<<<<< HEAD
 
 import org.apache.stratos.messaging.domain.topology.Port;
 
@@ -28,6 +29,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+=======
+>>>>>>> master
 
 /**
  * This event is fired by Cloud Controller when a member has started it's server and

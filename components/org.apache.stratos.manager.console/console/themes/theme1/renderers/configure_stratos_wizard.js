@@ -120,6 +120,7 @@ var render = function (theme, data, meta, require) {
                         name:'Deploy New Cartridge',
                         class_name:''
                     },
+                    bamInfo:data.bamInfo,
                     has_help:false,
                     step_data:true,
                     config_status:data.config_status,

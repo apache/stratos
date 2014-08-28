@@ -45,6 +45,7 @@ var render = function (theme, data, meta, require) {
                             name:'Add New Tenant',
                             class_name:create_btn_class
                         },
+                        bamInfo:data.bamInfo,
                         has_help:false,
                         help:"Tenants you create has permission to view and subscribe to Cartridges. Tenants don't have permission to do Partition deployment, Policy deployment, LB Creation, and MT service deployment.",
                         tenant_mgt:true,
@@ -83,7 +84,12 @@ var render = function (theme, data, meta, require) {
                             name: 'Subscribe to Cartridge',
                             class_name: 'btn-important'
                         },
+<<<<<<< HEAD
                         has_help:false,
+=======
+                        bamInfo:data.bamInfo,
+                        has_help: true,
+>>>>>>> 400
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }

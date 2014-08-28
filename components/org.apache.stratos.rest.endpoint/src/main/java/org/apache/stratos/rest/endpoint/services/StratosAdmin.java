@@ -30,7 +30,10 @@ import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
+<<<<<<< HEAD
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
+=======
+>>>>>>> master
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
@@ -41,7 +44,6 @@ import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
@@ -72,7 +74,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,11 +232,13 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
+    public Response deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
 
-        return ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
-                                     getTenantDomain());
+        ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
+                getTenantDomain());
+        URI url =  uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.type).build();
+        return Response.created(url).build();
 
     }
 
@@ -245,6 +252,7 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.undeployCartridge(cartridgeType);
         return Response.noContent().build();
+<<<<<<< HEAD
     }
 
     @POST
@@ -283,6 +291,8 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.undeployServiceGroupDefinition(groupDefinitionName);
         return Response.noContent().build();
+=======
+>>>>>>> master
     }
 
     @POST

@@ -197,7 +197,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    /**
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileArn(String)
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public AWSEC2TemplateOptions iamInstanceProfileArn(String arn) {
       this.iamInstanceProfileArn = checkNotNull(emptyToNull(arn), "arn must be defined");
       return this;
@@ -206,7 +206,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
    /**
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileName(String)
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public AWSEC2TemplateOptions iamInstanceProfileName(String name) {
       this.iamInstanceProfileName = checkNotNull(emptyToNull(name), "name must be defined");
       return this;
@@ -453,7 +453,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       /**
        * @see AWSEC2TemplateOptions#iamInstanceProfileArn
        */
-      @SinceApiVersion("2014-02-01")
+      @SinceApiVersion("2012-06-01")
       public static AWSEC2TemplateOptions iamInstanceProfileArn(String arn) {
          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
          return options.iamInstanceProfileArn(arn);
@@ -462,7 +462,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
       /**
        * @see AWSEC2TemplateOptions#iamInstanceProfileName
        */
-      @SinceApiVersion("2014-02-01")
+      @SinceApiVersion("2012-06-01")
       public static AWSEC2TemplateOptions iamInstanceProfileName(String name) {
          AWSEC2TemplateOptions options = new AWSEC2TemplateOptions();
          return options.iamInstanceProfileName(name);
@@ -807,7 +807,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
     * 
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileArn(String)
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public String getIAMInstanceProfileArn() {
       return iamInstanceProfileArn;
    }
@@ -817,7 +817,7 @@ public class AWSEC2TemplateOptions extends EC2TemplateOptions implements Cloneab
     * 
     * @see org.jclouds.aws.ec2.options.AWSRunInstancesOptions#withIAMInstanceProfileName(String)
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public String getIAMInstanceProfileName() {
       return iamInstanceProfileName;
    }

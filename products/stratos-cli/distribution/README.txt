@@ -23,6 +23,10 @@ CLI, with the exception of registering tenants and viewing logs.
 The CLI tool also supports command history and auto-completing features 
 in the interactive mode.
 
+Configuring CLI Tool
+==================================
+Configuration guide can be found at https://cwiki.apache.org/confluence/display/STRATOS/4.1.0+Configuring+CLI+Tool
+
 Help
 ==================================
 usage: stratos [-debug] [-h] [-p <password>] [-trace] [-u <username>]
@@ -57,7 +61,7 @@ or in the JIRA issue tracker. If you are sending an email to the mailing
 list make sure to add the [Apache Stratos] prefix to the subject.
 
 Mailing list subscription:
-    dev-subscribe@stratos.incubator.apache.org
+    dev-subscribe@stratos.apache.org
 
 
 Issue Tracker
@@ -69,4 +73,3 @@ Jira:
 
 Thank you for using Apache Stratos!
 The Stratos Team
-

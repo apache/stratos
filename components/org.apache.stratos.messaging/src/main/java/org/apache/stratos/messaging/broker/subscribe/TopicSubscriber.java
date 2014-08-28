@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
+import org.apache.stratos.messaging.util.Util;
 
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
@@ -132,10 +133,10 @@ public class TopicSubscriber implements Runnable {
                 else {
 				    // subscription failed
                     if(log.isInfoEnabled()) {
-                        log.info("Will try to subscribe again in 30 sec");
+                        log.info("Will try to subscribe again in "+Util.getFailoverPingInterval()/1000+" sec");
                     }
                     try {
-                        Thread.sleep(30000);
+                        Thread.sleep(Util.getFailoverPingInterval());
                     } catch (InterruptedException ignore) {
                     }
                 }

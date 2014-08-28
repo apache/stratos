@@ -39,17 +39,18 @@
                 <exclude>**/LICENSE.txt</exclude>
                 <exclude>**/NOTICE</exclude>
                 <exclude>**/release-notes.html</exclude>
- 		<exclude>**/launch.ini</exclude>
+ 		        <exclude>**/launch.ini</exclude>
                 <exclude>**/carbon.xml</exclude>
                 <exclude>**/README*</exclude>
                 <exclude>**/log4j.properties</exclude>
                 <exclude>**/repository/components/**</exclude>
-		<exclude>**/lib/endorsed/**</exclude>
+		        <exclude>**/lib/endorsed/**</exclude>
                 <exclude>**/dbscripts/mysql.sql</exclude>
                 <exclude>**/repository/conf/security/cipher-tool.properties</exclude>
                 <exclude>**/repository/conf/security/cipher-text.properties</exclude>
-		<exclude>**/repository/conf/axis2/axis2.xml</exclude>
-		<exclude>**/repository/conf/registry.xml</exclude>
+		        <exclude>**/repository/conf/axis2/axis2.xml</exclude>
+		        <exclude>**/repository/conf/registry.xml</exclude>
+
 		<exclude>**/repository/conf/log4j.properties</exclude>
   		<exclude>**/repository/conf/data-bridge/**</exclude>
             </excludes>
@@ -153,6 +154,7 @@
                 <exclude>**/datasources.properties</exclude>
                 <exclude>.svn</exclude>
                 <exclude>**/temp-artifacts/**</exclude>
+                <exclude>tenant-mgt.xml</exclude>
                 <exclude>email-bill-generated.xml</exclude>
                 <exclude>email-billing-notifications.xml</exclude>
                 <exclude>email-new-tenant-activation.xml</exclude>
@@ -168,6 +170,7 @@
 		<exclude>tenant-reg-agent.xml</exclude>
                 <exclude>features-dashboard.xml</exclude>
                 <exclude>**/data-bridge/**</exclude>
+
             </excludes>
         </fileSet>
         <fileSet>
@@ -840,6 +843,12 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security</outputDirectory>
 	    <destName>jaas.conf</destName>
             <filtered>true</filtered>
+        </file>
+        <file>
+            <source>../../conf/tenant-mgt.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>644</fileMode>
         </file>
         <!--Application authenticators -->
         <file>

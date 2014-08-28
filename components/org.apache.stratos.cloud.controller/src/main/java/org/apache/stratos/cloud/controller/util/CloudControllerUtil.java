@@ -45,7 +45,6 @@ import java.util.Properties;
 public class CloudControllerUtil {
 	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
 
-    @SuppressWarnings("unchecked")
     public static Cartridge toCartridge(CartridgeConfig config) {
         if (config == null) {
             return null;
@@ -185,6 +184,7 @@ public class CloudControllerUtil {
 		carInfo.setAppTypes(cartridge.getAppTypeMappings()
                                 .toArray(new AppType[cartridge.getAppTypeMappings()
                                                                   .size()]));
+        carInfo.setServiceGroup(cartridge.getServiceGroup());
 		
 		List<Property> propList = new ArrayList<Property>();
         carInfo.setPersistence(cartridge.getPersistence());

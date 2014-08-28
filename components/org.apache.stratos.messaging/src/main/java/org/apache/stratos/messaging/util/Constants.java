@@ -64,4 +64,15 @@ public class Constants {
     public static final String DEVICE_NAME = "volume.device.name";
 	public static final String GRACEFUL_SHUTDOWN_TIMEOUT = "graceful.shutdown.timeout";
 
+    public static final String IS_PRIMARY = "PRIMARY";
+
+    //System Properties
+    public static final String AVERAGE_PING_INTERVAL_PROPERTY = "stratos.messaging.averagePingInterval";
+    public static final String FAILOVER_PING_INTERVAL_PROPERTY = "stratos.messaging.failoverPingInterval";
+
+    //Default values
+    public static final int DEFAULT_AVERAGE_PING_INTERVAL = 1000;
+    public static final int DEFAULT_FAILOVER_PING_INTERVAL = 30000;
+
+
 }

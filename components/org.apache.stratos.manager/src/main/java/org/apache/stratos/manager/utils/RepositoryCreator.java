@@ -120,7 +120,7 @@ public class RepositoryCreator implements Runnable {
 			handleException(e.getMessage(), e);
 		}
 		
-		repository.setUrl(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL)+repoName);
+		repository.setUrl(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL) + "/git/" + repoName);
 		repository.setUserName(userName);
 		repository.setPassword(password);
 		
@@ -155,8 +155,9 @@ public class RepositoryCreator implements Runnable {
 
 		CloneCommand cloneCmd =
 		                        git.cloneRepository()
-		                           .setURI(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL) + tenantDomain + "/" +
-		                                           cartridgeName + ".git")
+		                           .setURI(System.getProperty(CartridgeConstants.INTERNAL_GIT_URL) +
+                                                    "/git/" + tenantDomain + "/" +
+		                                            cartridgeName + ".git")
 		                           .setDirectory(new File(parentDirName));
 
 		cloneCmd.setCredentialsProvider(credentialsProvider);

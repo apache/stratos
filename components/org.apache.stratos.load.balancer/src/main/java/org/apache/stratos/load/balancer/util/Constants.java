@@ -22,12 +22,17 @@ package org.apache.stratos.load.balancer.util;
 public class Constants {
 
     public static final String CLUSTER_ID = "cluster_id";
+    public static final String MEMBER_ID = "member_id";
 
-    public static final String LB_HOST_NAME = "LB_HOST_NAME";
+    public static final String HTTP = "http";
+    public static final String HTTPS = "https";
+
+    public static final String AXIS2_MSG_CTX_TRANSPORT_IN_URL = "TransportInURL";
+    public static final String AXIS2_MSG_CTX_SERVICE_PREFIX = "SERVICE_PREFIX";
+
+    public static final String LB_TARGET_HOSTNAME = "LB_TARGET_HOSTNAME";
     public static final String LB_HTTP_PORT = "LB_HTTP_PORT";
     public static final String LB_HTTPS_PORT = "LB_HTTPS_PORT";
 
     public static final String ALGORITHM_CONTEXT_CACHE = "algorithm.context.cache";
-
-    public static final String AXIS2_MSG_CTX_TRANSPORT_IN_URL = "TransportInURL";
 }

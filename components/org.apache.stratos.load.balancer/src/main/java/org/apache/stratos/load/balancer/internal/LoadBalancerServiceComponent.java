@@ -31,7 +31,6 @@ import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatistics
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
-import org.apache.stratos.load.balancer.conf.configurator.JndiConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
@@ -124,8 +123,6 @@ public class LoadBalancerServiceComponent {
             TopologyFilterConfigurator.configure(configuration);
 
             if (configuration.isMultiTenancyEnabled()) {
-                // Configure jndi.properties
-                JndiConfigurator.configure(configuration);
 
                 tenantReceiver = new LoadBalancerTenantEventReceiver();
                 Thread tenantReceiverThread = new Thread(tenantReceiver);
@@ -136,10 +133,6 @@ public class LoadBalancerServiceComponent {
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
-                if (!JndiConfigurator.isConfigured()) {
-                    // Configure jndi.properties
-                    JndiConfigurator.configure(configuration);
-                }
 
                 // Start topology receiver
                 topologyReceiver = new LoadBalancerTopologyEventReceiver();

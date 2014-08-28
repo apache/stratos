@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.topic.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.topology.TopologyManager;
 
 import javax.jms.JMSException;
 import javax.jms.Message;

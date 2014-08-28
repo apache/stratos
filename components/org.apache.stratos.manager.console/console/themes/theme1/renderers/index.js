@@ -126,6 +126,7 @@ var render = function (theme, data, meta, require) {
                             class_name: 'btn-important'
                         },
                         has_help:false,
+                        bamInfo:data.bamInfo,
                         help: 'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }
                 }

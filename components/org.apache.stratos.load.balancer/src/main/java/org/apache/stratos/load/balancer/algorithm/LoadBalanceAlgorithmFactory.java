@@ -33,7 +33,7 @@ public class LoadBalanceAlgorithmFactory {
 
     public static LoadBalanceAlgorithm createAlgorithm(String className) {
         try {
-            Class algorithmClass = Class.forName(className);
+            Class<?> algorithmClass = Class.forName(className);
             try {
                 Object instance = algorithmClass.getConstructor().newInstance();
                 if (instance instanceof LoadBalanceAlgorithm) {

@@ -47,6 +47,7 @@
             session.put("USER_NAME",username);
             session.put("TENANT_DOMAIN",userObject.domain);
             session.put("ROLE_ARRAY",roles);
+            session.put("TENANT_ID",userObject.tenantId);
             //call the authentication rest-endpoint and get the JSESSION_ID
             var result =  utils.consoleAppUtil.getSessionCookie(username,password);
             //TODO: handle the error scenario

@@ -115,6 +115,7 @@
             };
             var permissionObject = acl.authorizationUtil.getPermissionObj(tenantDomain,roleArray);
             request.permissions = permissionObject;
+            print(includePath);
             include(includePath);
             return;
         }

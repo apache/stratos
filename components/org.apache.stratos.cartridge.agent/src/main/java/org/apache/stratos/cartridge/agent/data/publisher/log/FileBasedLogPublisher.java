@@ -39,9 +39,9 @@ public class FileBasedLogPublisher extends LogPublisher implements Runnable {
     private Process process;
     private Scanner scanner;
 
-    public FileBasedLogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId) {
+    public FileBasedLogPublisher(DataPublisherConfiguration dataPublisherConfig, StreamDefinition streamDefinition, String filePath, String memberId, String tenantId, String alias, Long datetime) {
 
-        super(dataPublisherConfig, streamDefinition, filePath, memberId);
+    	super(dataPublisherConfig, streamDefinition, filePath, memberId, tenantId, alias, datetime);
         this.executorService = Executors.newSingleThreadExecutor(new FileBasedLogPublisherTaskThreadFactory(filePath));
     }
 
@@ -88,7 +88,7 @@ public class FileBasedLogPublisher extends LogPublisher implements Runnable {
             // set the relevant data
             dataContext.setCorrelationData(null);
             dataContext.setMetaData(new Object[] {memberId});
-            dataContext.setPayloadData(new Object[] {scanner.nextLine()});
+            dataContext.setPayloadData(new Object[] {tenantId, alias, "", datetime, "", scanner.nextLine(), "","",memberId, ""});
             // publish data
             publish(dataContext);
         }

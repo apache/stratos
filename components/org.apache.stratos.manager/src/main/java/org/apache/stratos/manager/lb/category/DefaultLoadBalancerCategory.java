@@ -90,8 +90,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
             // set hostname
             cluster.setHostName(generateHostName(alias, cartridgeInfo.getHostName()));
         
-        return createPayload(cartridgeInfo, subscriptionKey, subscriber,
-                cluster, repository, alias, customPayloadEntries);
+            return createPayload(cartridgeInfo, subscriptionKey, subscriber, cluster, repository, alias, customPayloadEntries);
         }
     }
 
@@ -103,7 +102,7 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
         	}
             super.register(cartridgeInfo, cluster, payloadData, autoscalePolicyName, deploymentPolicyName, properties, persistence);
         }else {
-        	log.info(" Default LB exists... Not registering...");
+            log.info("Default LB already exists for deployment policy: " + getDeploymentPolicyName());
         }
     }
 

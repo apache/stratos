@@ -25,7 +25,13 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -37,6 +43,8 @@ public class ClusterMonitor extends AbstractMonitor {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String lbReferenceType;
+    private boolean hasPrimary;
+    private ClusterStatus status;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
@@ -66,35 +74,90 @@ public class ClusterMonitor extends AbstractMonitor {
             Thread.sleep(60000);
         } catch (InterruptedException ignore) {
         }
+
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                monitor();
+                if(!ClusterStatus.In_Maintenance.equals(status)) {
+                    monitor();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster monitor is suspended as the cluster is in " +
+                                    ClusterStatus.In_Maintenance + " mode......");
+                    }
+                }
             } catch (Exception e) {
                 log.error("Cluster monitor: Monitor failed." + this.toString(), e);
             }
             try {
-                // TODO make this configurable
-                Thread.sleep(30000);
+                Thread.sleep(monitorInterval);
             } catch (InterruptedException ignore) {
             }
         }
     }
 
+<<<<<<< HEAD
     private void monitor() {
 //        if(clusterCtxt != null ) {
+=======
+    private boolean isPrimaryMember(MemberContext memberContext){
+        Properties props = memberContext.getProperties();
+        if (log.isDebugEnabled()) {
+            log.debug(" Properties [" + props + "] ");
+        }
+        if (props != null && props.getProperties() != null) {
+            for (Property prop : props.getProperties()) {
+                if (prop.getName().equals("PRIMARY")) {
+                    if (Boolean.parseBoolean(prop.getValue())) {
+                        log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
+                                "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private void monitor() {
+
+>>>>>>> master
         //TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+            // store primary members in the network partition context
+            List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
 
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+<<<<<<< HEAD
 
                 minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
                 minCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
                 minCheckKnowledgeSession.setGlobal("serviceId", serviceId);
+=======
+                // store primary members in the partition context
+                List<String> primaryMemberListInPartition = new ArrayList<String>();
+                // get active primary members in this partition context
+                for (MemberContext memberContext : partitionContext.getActiveMembers()) {
+                    if (isPrimaryMember(memberContext)){
+                        primaryMemberListInPartition.add(memberContext.getMemberId());
+                    }
+                }
+                // get pending primary members in this partition context
+                for (MemberContext memberContext : partitionContext.getPendingMembers()) {
+                    if (isPrimaryMember(memberContext)){
+                        primaryMemberListInPartition.add(memberContext.getMemberId());
+                    }
+                }
+                primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
+                minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+                minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
+                minCheckKnowledgeSession.setGlobal("isPrimary", hasPrimary);
+                minCheckKnowledgeSession.setGlobal("primaryMemberCount", primaryMemberListInPartition.size());
+>>>>>>> master
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
@@ -126,8 +189,16 @@ public class ClusterMonitor extends AbstractMonitor {
             boolean rifReset = networkPartitionContext.isRifReset();
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
+<<<<<<< HEAD
             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
+=======
+            if (log.isDebugEnabled()) {
+                log.debug("flag of rifReset: "  + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
+                        + " flag of loadAverageReset" + loadAverageReset);
+            }
+            if (rifReset || memoryConsumptionReset || loadAverageReset) {
+>>>>>>> master
                 scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
                 scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
@@ -135,9 +206,12 @@ public class ClusterMonitor extends AbstractMonitor {
                 scaleCheckKnowledgeSession.setGlobal("mcReset", memoryConsumptionReset);
                 scaleCheckKnowledgeSession.setGlobal("laReset", loadAverageReset);
                 scaleCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
+                scaleCheckKnowledgeSession.setGlobal("isPrimary", false);
+                scaleCheckKnowledgeSession.setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                    log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
                 }
 
                 scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
@@ -157,7 +231,12 @@ public class ClusterMonitor extends AbstractMonitor {
     public String toString() {
         return "ClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId +
                 ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
+<<<<<<< HEAD
                 ", lbReferenceType=" + lbReferenceType + "]";
+=======
+                ", lbReferenceType=" + lbReferenceType +
+                ", hasPrimary=" + hasPrimary + " ]";
+>>>>>>> master
     }
 
     public String getLbReferenceType() {
@@ -166,5 +245,21 @@ public class ClusterMonitor extends AbstractMonitor {
 
     public void setLbReferenceType(String lbReferenceType) {
         this.lbReferenceType = lbReferenceType;
+    }
+
+    public boolean isHasPrimary() {
+        return hasPrimary;
+    }
+
+    public void setHasPrimary(boolean hasPrimary) {
+        this.hasPrimary = hasPrimary;
+    }
+
+    public ClusterStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ClusterStatus status) {
+        this.status = status;
     }
 }

@@ -23,8 +23,8 @@ package org.apache.stratos.manager.dao;
 import java.io.Serializable;
 
 public class Cluster implements Serializable {
-
-    private int id;
+	private static final long serialVersionUID = -1579127946734432357L;
+	private int id;
     private String clusterDomain;
     private String clusterSubDomain;
     private String mgtClusterDomain;

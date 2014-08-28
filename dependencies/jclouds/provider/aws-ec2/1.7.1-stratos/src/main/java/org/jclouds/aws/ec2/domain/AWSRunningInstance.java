@@ -284,7 +284,7 @@ public class AWSRunningInstance extends RunningInstance {
    /**
     * The IAM Instance Profile (IIP) associated with the instance.
     */
-   @SinceApiVersion("2014-02-01")
+   @SinceApiVersion("2012-06-01")
    public Optional<IAMInstanceProfile> getIAMInstanceProfile() {
       return iamInstanceProfile;
    }

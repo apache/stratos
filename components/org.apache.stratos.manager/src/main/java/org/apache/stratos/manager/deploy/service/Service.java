@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.deploy.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
@@ -33,7 +31,7 @@ import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 
 public abstract class Service extends CartridgeMgtBehaviour {
 
-    private static Log log = LogFactory.getLog(Service.class);
+	private static final long serialVersionUID = -3261972002698749232L;
 
     private String type;
     private String autoscalingPolicyName;
@@ -62,7 +60,7 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
         setClusterId(generateClusterId(null, type));
         //host name is the hostname defined in cartridge definition
-        setHostName(cartridgeInfo.getHostName());
+        setHostName(generateHostName(null, cartridgeInfo.getHostName()));
 
         // create and set PayloadData instance
         setPayloadData(createPayload(cartridgeInfo, subscriptionKey, null, cluster, null, null, null));
@@ -70,13 +68,18 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
     protected String generateClusterId (String alias, String cartridgeType) {
 
-        String clusterId = cartridgeType + cartridgeInfo.getHostName() + ".domain";
+        String clusterId = cartridgeType + "." + cartridgeInfo.getHostName() + ".domain";
         // limit the cartridge alias to 30 characters in length
         if (clusterId.length() > 30) {
             clusterId = CartridgeSubscriptionUtils.limitLengthOfString(clusterId, 30);
         }
 
         return clusterId;
+    }
+
+    protected String generateHostName (String alias, String cartridgeDefinitionHostName) {
+
+        return cartridgeDefinitionHostName;
     }
 
     public void deploy (Properties properties) throws ADCException, UnregisteredCartridgeException {

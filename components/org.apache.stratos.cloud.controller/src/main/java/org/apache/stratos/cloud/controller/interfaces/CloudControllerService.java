@@ -104,21 +104,6 @@ public interface CloudControllerService {
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
     public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
-
-    /**
-     * Calling this method will spawn more than one instances in the
-      * specified partition for the particular cluster
-     *
-     * @param clusterId
-     *            cluster ID of the instance to be started up.
-     * @param noOfInstancesToBeSpawned
-     *            no of instances to be started up.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be started.
-     * @return public IP which is associated with the newly started instance.
-     */
-//    public String startInstances(String clusterId, Partition partition, int noOfInstancesToBeSpawned);
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.
@@ -131,44 +116,6 @@ public interface CloudControllerService {
      * @return whether an instance terminated successfully or not.
      */
     public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;
-    
-    /**
-     * Calling this method will result in termination of an instance which is belong
-     * to the provided cluster Id and the location scope..
-     * 
-     * @param clusterId
-     *            cluster ID of the instance to be terminated.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be terminated..
-     * @return whether an instance terminated successfully or not.
-     */
-//    public boolean terminateInstance(String clusterId, Partition partition);
-
-    /**
-     * Calling this method will result in termination of an instance which is belong
-     * to the provided cluster Id and the location scope..
-     *
-     * @param noOfInstances
-     *            no of instances to be started up
-     * @param clusterId
-     *            cluster ID of the instance to be terminated.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be terminated..
-     * @return whether an instance terminated successfully or not.
-     */
-//    public boolean terminateInstances(String[] memberIds);
-
-//     /**
-//     * Calling this method will result in termination of an instance which is belong
-//     * to the provided instance Id.
-//     *
-//     * @param instancesToBeTerminated
-//     *            list of instance Ids to be terminated.
-//     * @return whether an instance terminated successfully or not.
-//     */
-//    public boolean terminateUnhealthyInstances(List<String> instancesToBeTerminated);
 
     /**
      * Calling this method will result in termination of all instances belong
@@ -180,7 +127,6 @@ public interface CloudControllerService {
      */
     public void terminateAllInstances(String clusterId) throws InvalidClusterException;
 
-    /**
     /**
      * Unregister the service cluster which represents by this domain and sub domain.
      * @param clusterId service cluster domain
@@ -199,17 +145,6 @@ public interface CloudControllerService {
      * @throws UnregisteredCartridgeException if there is no registered cartridge with this type.
      */
     public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException;
-
-//    /**
-//     * Calling this method will result in returning the pending instances
-//     * count of a particular domain.
-//     * 
-//     * @param clusterId
-//     *            service cluster domain
-//     * @return number of pending instances for this domain. If no instances of this
-//     *         domain is present, this will return zero.
-//     */
-//    public int getPendingInstanceCount(String clusterId);
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.pojo.Cartridge}s

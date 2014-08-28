@@ -19,11 +19,14 @@
 package org.apache.stratos.load.balancer.mediators;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
+import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.util.Constants;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.AbstractMediator;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -38,6 +41,13 @@ public class LocationReWriter extends AbstractMediator {
 
     @Override
     public boolean mediate(MessageContext messageContext) {
+        if (LoadBalancerConfiguration.getInstance().isReWriteLocationHeader()) {
+            rewriteLocationHeader(messageContext);
+        }
+        return true;
+    }
+
+    private void rewriteLocationHeader(MessageContext messageContext) {
         try {
             // Read transport headers
             Map transportHeaders = (Map) ((Axis2MessageContext) messageContext).getAxis2MessageContext().
@@ -45,24 +55,47 @@ public class LocationReWriter extends AbstractMediator {
             if (transportHeaders != null) {
                 // Find location header
                 String inLocation = (String) transportHeaders.get(LOCATION);
-                if(StringUtils.isNotBlank(inLocation)) {
-                    URL inLocationUrl = new URL(inLocation);
-                    // Find load balancer host name and port
-                    String lbHost = (String) messageContext.getProperty(Constants.LB_HOST_NAME);
-                    int lbPort = -1;
+                if (StringUtils.isNotBlank(inLocation)) {
+                    URL inLocationUrl = null;
+                    try {
+                        inLocationUrl = new URL(inLocation);
+                    } catch (MalformedURLException e) {
+                        return;
+                    }
+
+                    // Check whether the location host is an ip address of a known member
+                    String hostname = LoadBalancerContext.getInstance().getMemberIpHostnameMap().get(inLocationUrl.getHost());
+                    if (StringUtils.isEmpty(hostname)) {
+                        
+                        if (!LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(inLocationUrl.getHost())) {
+                        	if (log.isDebugEnabled()) {
+                                log.debug(String.format("A hostname not found for ip: [ip-address] %s", inLocationUrl.getHost()));
+                            }
+                        	return;
+                        } else {
+                        	hostname = inLocationUrl.getHost();
+                        }
+                    }
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A location header found with member ip: [member-ip] %s " +
+                                "[hostname] %s ", inLocationUrl.getHost(), hostname));
+                    }
+
+                    int targetPort = -1;
                     if (HTTP.equals(inLocationUrl.getProtocol())) {
-                        lbPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTP_PORT));
+                        targetPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTP_PORT));
                     } else if (HTTPS.equals(inLocationUrl.getProtocol())) {
-                        lbPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTPS_PORT));
+                        targetPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTPS_PORT));
                     } else {
-                        if(log.isWarnEnabled()) {
+                        if (log.isWarnEnabled()) {
                             log.warn(String.format("An unknown protocol found: %s", inLocationUrl.getProtocol()));
                         }
                     }
 
-                    if (lbPort != -1) {
+                    if (targetPort != -1) {
                         // Re-write location header
-                        URL outLocationUrl = new URL(inLocationUrl.getProtocol(), lbHost, lbPort, inLocationUrl.getFile());
+                        URL outLocationUrl = new URL(inLocationUrl.getProtocol(), hostname, targetPort, inLocationUrl.getFile());
                         transportHeaders.put(LOCATION, outLocationUrl.toString());
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Location header re-written: %s", outLocationUrl.toString()));
@@ -71,10 +104,9 @@ public class LocationReWriter extends AbstractMediator {
                 }
             }
         } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("Could re-write location header", e);
+            if (log.isWarnEnabled()) {
+                log.warn("Could not re-write location header", e);
             }
         }
-        return true;
     }
 }

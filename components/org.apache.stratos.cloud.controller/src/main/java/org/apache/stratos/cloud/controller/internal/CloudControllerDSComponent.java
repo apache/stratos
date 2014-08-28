@@ -27,7 +27,6 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageDelegator;
 import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -61,14 +60,9 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                bind="setConfigurationContextService"
  *                unbind="unsetConfigurationContextService"           
  */
-//* @scr.reference name="org.apache.stratos.cloud.controller.deployers" 
-//*                interface="org.apache.stratos.cloud.controller.interfaces.CloudControllerDeployerService"
-//*                cardinality="1..1" policy="dynamic" bind="setCloudControllerDeployerService"
-//*                unbind="unsetCloudControllerDeployerService"
 public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
-    private static final FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     protected void activate(ComponentContext context) {
         try {
@@ -84,7 +78,7 @@ public class CloudControllerDSComponent {
             Thread tdelegator = new Thread(delegator);
             tdelegator.start();
         	
-        	// Register cloud controller service                                                   E
+        	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
 

@@ -59,7 +59,6 @@ import org.jclouds.ec2.options.DetachVolumeOptions;
 
 import java.util.*;
 
-@SuppressWarnings("deprecation")
 public class AWSEC2Iaas extends Iaas {
 
 	public AWSEC2Iaas(IaasProvider iaasProvider) {

@@ -24,13 +24,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo "Instance started" | tee -a $log
-
-
-<%- if @type == 'mysql' -%>
-<%= scope.function_template(['agent/extensions/addons/_mysql.erb']) -%>
-<%- end -%>
-
-<%- if @type == 'ruby' -%>
-<%= scope.function_template(['agent/extensions/addons/_ruby.erb']) -%>
-<%- end -%>
+echo `date`": Instance Started Event: " | tee -a $log

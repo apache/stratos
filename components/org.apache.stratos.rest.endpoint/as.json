@@ -1,0 +1,26 @@
+{
+    "id": "simpleAutoscalePolicy2",
+    "loadThresholds": {
+      "requestsInFlight": {
+        "average": "20",
+        "gradient": "0",
+        "secondDerivative": "0",
+        "scaleDownMarginOfGradient": "1.0",
+        "scaleDownMarginOfSecondDerivative": "0.2"
+      },
+      "memoryConsumption": {
+        "average": "1000",
+        "gradient": "0",
+        "secondDerivative": "0",
+        "scaleDownMarginOfGradient": "1.0",
+        "scaleDownMarginOfSecondDerivative": "0.2"
+      },
+      "loadAverage": {
+        "average": "1000",
+        "gradient": "0",
+        "secondDerivative": "0",
+        "scaleDownMarginOfGradient": "1.0",
+        "scaleDownMarginOfSecondDerivative": "0.2"
+      }
+    }
+}

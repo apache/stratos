@@ -282,7 +282,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 					allCommandOptions.addOption((Option) o);
 				}
 				
-				commandLine = parser.parse(allCommandOptions, args);
+				commandLine = parser.parse(options, args, true);
 				remainingArgs = commandLine.getArgs();
 				actionOptions = commandLine.getOptions();
 				if (remainingArgs != null && remainingArgs.length > 0) {
@@ -472,17 +472,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		username = System.getenv(CliConstants.STRATOS_USERNAME_ENV_PROPERTY);
 		password = System.getenv(CliConstants.STRATOS_PASSWORD_ENV_PROPERTY);
 
-        int slashCount = StringUtils.countMatches(stratosURL, "/");
-        int colonCount = StringUtils.countMatches(stratosURL, ":");
-
-        if ( ! (colonCount == 2 && (slashCount == 3 || slashCount == 2))) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Invalid STRATOS_URL");
-            }
-
-            System.out.println("Invalid STRATOS_URL. Please enter correct STRATOS_URL");
-            return false;
-        }
 		if (StringUtils.isBlank(stratosURL)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Required configuration not found.");
@@ -491,30 +480,38 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			System.out.format("Could not find required \"%s\" variable in your environment.%n",
 					CliConstants.STRATOS_URL_ENV_PROPERTY);
 			return false;
-		} else {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Required configuration found. Validating {}", stratosURL);
-			}
-			UrlValidator urlValidator = new UrlValidator(new String[] { "https" },UrlValidator.ALLOW_LOCAL_URLS);
-			if (!urlValidator.isValid(stratosURL)) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Stratos Controller URL {} is not valid", stratosURL);
-				}
-				System.out.format(
-						"The \"%s\" variable in your environment is not a valid URL. You have provided \"%s\".%n"
-								+ "Please provide the Stratos Controller URL as follows%nhttps://<host>:<port>%n",
-						CliConstants.STRATOS_URL_ENV_PROPERTY, stratosURL);
-				return false;
-			}
-			if (logger.isDebugEnabled()) {
-				logger.debug("Stratos Controller URL {} is valid.", stratosURL);
-				logger.debug("Adding the values to context.");
-			}
-			context.put(CliConstants.STRATOS_URL_ENV_PROPERTY, stratosURL);
-			context.put(CliConstants.STRATOS_USERNAME_ENV_PROPERTY, username);
-			context.put(CliConstants.STRATOS_PASSWORD_ENV_PROPERTY, password);
-			return true;
 		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Required configuration found. Validating {}", stratosURL);
+		}
+
+		int slashCount = StringUtils.countMatches(stratosURL, "/");
+		int colonCount = StringUtils.countMatches(stratosURL, ":");
+
+		UrlValidator urlValidator = new UrlValidator(new String[] { "https" },UrlValidator.ALLOW_LOCAL_URLS);
+		
+		// port must be provided, so colonCount must be 2
+		// context path must not be provided, so slashCount must not be >3
+		
+		if (!urlValidator.isValid(stratosURL) || colonCount != 2 || slashCount >3) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Stratos Controller URL {} is not valid", stratosURL);
+			}
+			System.out.format(
+					"The \"%s\" variable in your environment is not a valid URL. You have provided \"%s\".%n"
+							+ "Please provide the Stratos Controller URL as follows%nhttps://<host>:<port>%n",
+					CliConstants.STRATOS_URL_ENV_PROPERTY, stratosURL);
+			return false;
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("Stratos Controller URL {} is valid.", stratosURL);
+			logger.debug("Adding the values to context.");
+		}
+		context.put(CliConstants.STRATOS_URL_ENV_PROPERTY, stratosURL);
+		context.put(CliConstants.STRATOS_USERNAME_ENV_PROPERTY, username);
+		context.put(CliConstants.STRATOS_PASSWORD_ENV_PROPERTY, password);
+		return true;
 	}
 	
 	private void setLoggerLevel(boolean trace, boolean debug) {

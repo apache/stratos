@@ -27,9 +27,9 @@
 	    </rulesEvaluator>
 	    <cloudController>
 	        <hostname>localhost</hostname>
-		<port>9444</port>
-		<!-->CC client timout in ms<-->
-                <clientTimeout>300000</clientTimeout>
+		    <port>9443</port>
+		    <!-->CC client timout in ms<-->
+            <clientTimeout>300000</clientTimeout>
 	    </cloudController>
             <stratosManager>
 	        <hostname>localhost</hostname>
@@ -41,5 +41,7 @@
 		<!-->member expiry timeout (time waited till activation) in ms<-->
 		<expiryTimeout>900000</expiryTimeout>
 	    </member>
+	    <!-- monitor task interval -->
+	    <monitorInterval>90000</monitorInterval>
 	</autoscaler>
 </configuration>

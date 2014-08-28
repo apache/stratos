@@ -217,7 +217,7 @@ andes-client-0.13.wso2v8.jar,
 ant-1.7.0.jar,
 ant-1.7.0.wso2v1.jar,
 ant-launcher-1.7.0.jar,
-apache-stratos-cartridge-agent-4.0.0.jar,
+apache-stratos-cartridge-agent-4.0.0-SNAPSHOT.jar,
 axiom-1.2.11.wso2v4.jar,
 axiom-api-1.2.11.jar,
 axiom-impl-1.2.11.jar,
@@ -261,9 +261,9 @@ neethi-2.0.4.wso2v4.jar
 not-yet-commons-ssl-0.3.9.jar
 opencsv-1.8.wso2v1.jar
 org.apache.log4j-1.2.13.v200706111418.jar
-org.apache.stratos.cartridge.agent-4.0.0.jar
-org.apache.stratos.common-4.0.0.jar
-org.apache.stratos.messaging-4.0.0.jar
+org.apache.stratos.cartridge.agent-4.0.0-SNAPSHOT.jar
+org.apache.stratos.common-4.0.0-SNAPSHOT.jar
+org.apache.stratos.messaging-4.0.0-SNAPSHOT.jar 
 org.wso2.carbon.base-4.2.0.jar
 org.wso2.carbon.bootstrap-4.2.0.jar
 org.wso2.carbon.core-4.2.0.jar
@@ -342,6 +342,8 @@ jline-0.9.94.jar,
 jsch-0.1.49.jar
 jaxen-1.1.1.jar
 
+Copyright (c) 2010 Terence Parr
+All rights reserved.
 
 [The BSD License]
 
@@ -478,7 +480,6 @@ slf4j-api-1.7.5.jar,
 slf4j-log4j12-1.7.5.jar
 
 The MIT License (MIT)
-
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -28,7 +28,10 @@ import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
-import org.apache.stratos.manager.deploy.service.multitenant.lb.MultiTenantLBService;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.DefaultLBService;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.ExistingLBService;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.LBService;
+import org.apache.stratos.manager.deploy.service.multitenant.lb.ServiceAwareLBService;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
@@ -185,7 +188,7 @@ public class ServiceDeploymentManager {
 //                                        if (!AutoscalerServiceClient.getServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
 //
 //                                            // if lb cluster doesn't exist
-//                                            lbService = new MultiTenantLBService(lbCartridgeType,
+//                                            lbService = new LBService(lbCartridgeType,
 //                                                    lbCartridgeInfo.getDefaultAutoscalingPolicy(),
 //                                                    deploymentPolicyName, tenantId,
 //                                                    lbCartridgeInfo,
@@ -261,7 +264,7 @@ public class ServiceDeploymentManager {
 //                                        lbCartridgeInfo.addProperties(property);
 //                                        lbCartridgeInfo.addProperties(loadBalancedServiceTypeProperty);
 //
-//                                        lbService = new MultiTenantLBService(lbCartridgeType,
+//                                        lbService = new LBService(lbCartridgeType,
 //                                                lbCartridgeInfo.getDefaultAutoscalingPolicy(),
 //                                                deploymentPolicyName, tenantId,
 //                                                lbCartridgeInfo,
@@ -319,9 +322,11 @@ public class ServiceDeploymentManager {
         Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
 
         Properties serviceClusterProperties = null;
-        if (lbDataCtxt.getLoadBalancedServiceProperties() != null && !lbDataCtxt.getLoadBalancedServiceProperties().isEmpty()) {
-            serviceClusterProperties = new Properties();
-            serviceClusterProperties.setProperties(lbDataCtxt.getLoadBalancedServiceProperties().toArray(new Property[0]));
+        if (lbDataCtxt != null) {
+            if (lbDataCtxt.getLoadBalancedServiceProperties() != null && !lbDataCtxt.getLoadBalancedServiceProperties().isEmpty()) {
+                serviceClusterProperties = new Properties();
+                serviceClusterProperties.setProperties(lbDataCtxt.getLoadBalancedServiceProperties().toArray(new Property[0]));
+            }
         }
 
         // create
@@ -343,35 +348,37 @@ public class ServiceDeploymentManager {
             return;
         }
 
-        LoadBalancerCategory loadBalancerCategory = null;
+        LBService lbService = null;
 
         if (lbDataCtxt.getLbCategory().equals(Constants.EXISTING_LOAD_BALANCERS)) {
-            loadBalancerCategory = new ExistingLoadBalancerCategory();
+            lbService = new ExistingLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
+                    lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
+                    tenantRange);
 
         } else if (lbDataCtxt.getLbCategory().equals(Constants.DEFAULT_LOAD_BALANCER)) {
-            loadBalancerCategory = new DefaultLoadBalancerCategory();
+            lbService = new DefaultLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
+                    lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
+                    tenantRange);
 
         } else if (lbDataCtxt.getLbCategory().equals(Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-            loadBalancerCategory = new ServiceLevelLoadBalancerCategory();
+            lbService = new ServiceAwareLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
+                    lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
+                    tenantRange);
         }
 
-        if (loadBalancerCategory == null) {
+        if (lbService == null) {
             throw new ADCException("The given Load Balancer category " + lbDataCtxt.getLbCategory() + " not found");
         }
 
         // Set the load balanced service type
-        loadBalancerCategory.setLoadBalancedServiceType(loadBalancedService);
+        lbService.setLoadBalancedServiceType(loadBalancedService);
 
         // Set if the load balanced service is multi tenant or not
-        loadBalancerCategory.setLoadBalancedServiceMultiTenant(true); // TODO --- temp hack
+        //lbService.setLoadBalancedServiceMultiTenant(true); // TODO --- temp hack
 
         // set the relevant deployment policy
-        log.info(" ******* Setting Deployment Policy name : ------>  " + lbDataCtxt.getDeploymentPolicy());
-        loadBalancerCategory.setDeploymentPolicyName(lbDataCtxt.getDeploymentPolicy());
-
-        Service lbService = new MultiTenantLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
-                lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
-                tenantRange, loadBalancerCategory);
+        //log.info(" ******* Setting Deployment Policy name : ------>  " + lbDataCtxt.getDeploymentPolicy());
+        //loadBalancerCategory.setDeploymentPolicyName(lbDataCtxt.getDeploymentPolicy());
 
         Properties lbProperties = null;
         if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty())  {
@@ -383,7 +390,9 @@ public class ServiceDeploymentManager {
         lbService.create();
 
         // add LB category to the payload
-        lbService.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataCtxt.getLbCategory());
+        if (lbService.getPayloadData() != null) {
+            lbService.getPayloadData().add(CartridgeConstants.LB_CATEGORY, lbDataCtxt.getLbCategory());
+        }
 
         // delpoy
         lbService.deploy(lbProperties);
@@ -430,7 +439,7 @@ public class ServiceDeploymentManager {
         }
     }
 
-    public void undeployService (String type) throws ADCException {
+    public void undeployService (String type) throws ADCException, ServiceDoesNotExistException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
 
@@ -441,7 +450,7 @@ public class ServiceDeploymentManager {
                 // can't undeploy; there are existing Subscriptions
                 String errorMsg = "Cannot undeploy Service since existing Subscriptions are found";
                 log.error(errorMsg);
-                throw new ADCException(errorMsg);
+                throw new ServiceDoesNotExistException(errorMsg, type);
             }
         }
 
@@ -485,7 +494,8 @@ public class ServiceDeploymentManager {
         }
     }
 
-    private static Property[] combine (Property[] propertyArray1, Property[] propertyArray2) {
+    @SuppressWarnings("unused")
+	private static Property[] combine (Property[] propertyArray1, Property[] propertyArray2) {
 
         int length = propertyArray1.length + propertyArray2.length;
         Property[] combinedProperties = new Property[length];

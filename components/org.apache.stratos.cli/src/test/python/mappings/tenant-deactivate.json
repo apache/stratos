@@ -1,0 +1,16 @@
+{
+  "request" : {
+    "url" : "/stratos/admin/tenant/deactivate/tenant.com",
+    "method" : "POST"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body_tenant_deactivate.json",
+    "headers" : {
+      "Date" : "Sat, 10 May 2014 10:07:14 GMT",
+      "Content-Type" : "application/json",
+      "Transfer-Encoding" : "chunked",
+      "Server" : "WSO2 Carbon Server"
+    }
+  }
+}

@@ -21,8 +21,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
     <jaxrs:server id="stratosAdmin" address="/">
@@ -31,6 +33,11 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
+            <ref bean="throwableExceptionHandler"/>
+            <ref bean="genericExceptionHandler"/>
+            <ref bean="badRequestExceptionHandler"/>
+            <ref bean="jsonProvider"/>
+			<ref bean="throwableExceptionHandler"/>
             <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
                 <property name="dropRootElement" value="true"/>
                 <property name="supportUnwrapped" value="true"/>
@@ -41,4 +48,35 @@
 
     <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
+    <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
+    <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
+    <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
+        <property name="schemaHandler" ref="schemaHolder"/>
+        <property name="supportUnwrapped" value="true"/>
+        <property name="serializeAsArray" value="true"/>
+        <property name="arrayKeys">
+            <list>
+                <value>partitions</value>
+                <value>property</value>
+                <value>hostNames</value>
+                <value>memberMap</value>
+                <value>portMap</value>
+                <value>partitionGroup</value>
+                <value>partition</value>
+                <value>member</value>
+                <value>hostNames</value>
+                <value>portMappings</value>
+                <value>volumes</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="schemaHolder" class="org.apache.cxf.jaxrs.utils.schemas.SchemaHandler">
+        <property name="schemas" ref="theSchemas"/>
+    </bean>
+
+    <util:list id="theSchemas">
+        <value>classpath:/WEB-INF/schemas/schema.xsd</value>
+    </util:list>
 </beans>

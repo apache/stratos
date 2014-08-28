@@ -25,4 +25,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-echo "Instance activated" | tee -a $log
+echo `date`": Instance activated" | tee -a $log

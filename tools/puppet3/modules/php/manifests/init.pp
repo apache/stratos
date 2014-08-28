@@ -21,9 +21,7 @@
 
 
 class php () {
-  $packages = [
-    'nano',
-    'zip',
+  $packages = [    
     'build-essential',
     'mysql-client',
     'apache2',
@@ -34,9 +32,7 @@ class php () {
     'php5-mysql',
     'php-db',
     'php-pear',
-    'php5-curl',
-    'curl',
-    'wget',
+    'php5-curl',    
     'php5-ldap',
     'php5-adodb',
     'mailutils',
@@ -73,6 +69,12 @@ class php () {
     require  => Exec['update-apt'],
   }
 
+  exec { 'clean sites':
+      path    => ['/bin', '/usr/bin', '/usr/sbin/'],
+      command => 'rm -rf /etc/apache2/sites-available/*; rm -rf /etc/apache2/sites-enabled/*',
+      require => Package['apache2'];
+  }
+
   file {
    '/etc/apache2/apache2.conf':
       owner   => 'root',
@@ -86,36 +88,47 @@ class php () {
       group   => 'root',
       mode    => '0775',
       content => template('php/apache2/sites-available/default.erb'),
-      require => File['/etc/apache2/apache2.conf'];
+      require => Exec['clean sites'];
 
     '/etc/apache2/sites-available/default-ssl':
       owner   => 'root',
       group   => 'root',
       mode    => '0775',
       content => template('php/apache2/sites-available/default-ssl.erb'),
+      require => Exec['clean sites'];
+
+    '/etc/apache2/sites-enabled/default':
+      ensure  => 'link',
+      target  => '/etc/apache2/sites-available/default',
       require => File['/etc/apache2/sites-available/default'];
+
+    '/etc/apache2/sites-enabled/default-ssl':
+      ensure  => 'link',
+      target  => '/etc/apache2/sites-available/default-ssl',
+      require => File['/etc/apache2/sites-available/default-ssl'];	
+  }
+
+  php::importssl {'import ssl':
+     ssl_certificate_file => $ssl_certificate_file,
+     ssl_key_file         => $ssl_key_file,
+     require               => File['/etc/apache2/apache2.conf']
   }
 
   exec {
     'enable ssl module':
       path    => ['/bin', '/usr/bin', '/usr/sbin/'],
       command => 'a2enmod ssl',
-      require => File['/etc/apache2/sites-available/default-ssl'];
-
-    'enable ssl':
-      path    => ['/bin', '/usr/bin', '/usr/sbin/'],
-      command => 'a2enmod ssl',
-      require => Exec["enable ssl module"];
+      require => [ File['/etc/apache2/apache2.conf'],
+                   Php::Importssl['import ssl']
+                 ];
 
     'apache2 restart':
       path    => ['/bin', '/usr/bin', '/usr/sbin/'],
       command => "/etc/init.d/apache2 restart",
-      require => Exec["enable ssl"];
+      require => [ Exec["enable ssl module"],
+                   File['/etc/apache2/sites-enabled/default'], 
+                   File['/etc/apache2/sites-enabled/default-ssl']
+                 ];
   }
 
-#  file { "/tmp/puppet-payload":
-#    ensure  => present,
-#    content => ",MB_IP=${mb_ip},MB_PORT=${mb_port},CEP_IP=${cep_ip},CEP_PORT=${cep_port},CERT_TRUSTSTORE=${cert_truststore},TRUSTSTORE_PASSWORD=${truststore_password},APP_PATH=${docroot}",
-#    require => Exec["apache2 restart"];
-#  }
 }

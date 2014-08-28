@@ -314,8 +314,7 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		@SuppressWarnings("deprecation")
-        NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
+		NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
 		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
@@ -407,9 +406,7 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		@SuppressWarnings("deprecation")
 		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		@SuppressWarnings("deprecation")
 		FloatingIPApi floatingIPApi = nova.getApi()
 				.getFloatingIPExtensionForZone(region).get();
 
@@ -586,7 +583,10 @@ public class OpenstackNovaIaas extends Iaas {
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
         RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
         VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+<<<<<<< HEAD
         VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+=======
+>>>>>>> master
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
 
         while(volumeStatus != expectedStatus){

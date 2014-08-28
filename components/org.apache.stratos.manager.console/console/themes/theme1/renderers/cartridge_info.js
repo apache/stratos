@@ -46,6 +46,7 @@ var render = function (theme, data, meta, require) {
                             class_name:"btn-default",
                             class_icon: 'icons-arrow-left'
                         },
+                        bamInfo:data.bamInfo,
                         has_help:false,
                         help:'Create cartridges like PHP, Python, Ruby etc.. Or create data cartridges with mySql, PostgreSQL. Directly install applications like Drupal, Wordpress etc..'
                     }

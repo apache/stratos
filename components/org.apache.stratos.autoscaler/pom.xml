@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>org.apache.stratos</groupId>
 		<artifactId>stratos-components-parent</artifactId>
-		<version>4.0.0</version>
+		<version>4.1.0-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -196,8 +196,6 @@
                         </Import-Package>
 						<Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
 						<DynamicImport-Package>*</DynamicImport-Package>
-						<!--<Axis2Deployer>AutoscalerPolicyDeployer</Axis2Deployer>
-						<Axis2Deployer>DeploymentPolicyDeployer</Axis2Deployer>-->
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Directory>lib</Embed-Directory>
 					</instructions>

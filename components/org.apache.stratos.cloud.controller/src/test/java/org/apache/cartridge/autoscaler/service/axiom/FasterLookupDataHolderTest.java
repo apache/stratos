@@ -18,14 +18,8 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
-import java.io.File;
-
-import org.apache.axiom.om.OMElement;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.xml.sax.SAXParseException;
-
 import junit.framework.TestCase;
 
 public class FasterLookupDataHolderTest extends TestCase {

@@ -42,6 +42,14 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>jndi.properties</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/extensions</directory>
             <outputDirectory>/extensions</outputDirectory>
             <fileMode>0755</fileMode>
@@ -51,15 +59,18 @@
                 <include>instance-started.sh</include>
                 <include>start-servers.sh</include>
                 <include>clean.sh</include>
-                <include>mount_volumes.sh</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.basedir}/src/main/conf/templates</directory>
-            <outputDirectory>/conf/templates</outputDirectory>
-            <fileMode>0600</fileMode>
-            <includes>
-                <include>jndi.properties.template</include>
+                <include>mount-volumes.sh</include>
+		<include>member-activated.sh</include>
+                <include>member-started.sh</include>
+                <include>member-terminated.sh</include>
+                <include>member-suspended.sh</include>
+                <include>complete-topology.sh</include>
+                <include>complete-tenant.sh</include>
+                <include>subscription-domain-added.sh</include>
+                <include>subscription-domain-removed.sh</include>
+                <include>artifacts-copy.sh</include>
+                <include>tenant-subscribed.sh</include>
+                <include>tenant-unsubscribed.sh</include>
             </includes>
         </fileSet>
         <fileSet>
@@ -101,6 +112,7 @@
 		<exclude>*:jboss-transaction-api*</exclude>
 		<exclude>*:wrapper*</exclude>
 		<exclude>*:xom*</exclude>
+		<exclude>slf4j.wso2:slf4j</exclude>
 	    </excludes>
             <outputDirectory>/lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>

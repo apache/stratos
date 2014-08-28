@@ -113,4 +113,45 @@ public class Util {
     	return result;
     }
 
+
+    // Time interval between each ping message sent to topic.
+    private static int averagePingInterval;
+
+    // Time interval between each ping message after an error had occurred.
+    private static int failoverPingInterval;
+
+    /**
+     * fetch value from system param
+     * @return
+     */
+    public static int getAveragePingInterval() {
+        if (averagePingInterval <= 0) {
+            averagePingInterval = Util.getNumericSystemProperty(Constants.DEFAULT_AVERAGE_PING_INTERVAL,Constants.AVERAGE_PING_INTERVAL_PROPERTY);
+        }
+        return averagePingInterval;
+    }
+
+    /**
+     * fetch value from system param
+     * @return
+     */
+    public static int getFailoverPingInterval() {
+        if (failoverPingInterval <= 0) {
+            failoverPingInterval = Util.getNumericSystemProperty(Constants.DEFAULT_FAILOVER_PING_INTERVAL,Constants.FAILOVER_PING_INTERVAL_PROPERTY);
+        }
+        return failoverPingInterval;
+    }
+
+    /**
+     * Method to safely access numeric system properties
+     * @param defaultValue
+     * @return
+     */
+    public static Integer getNumericSystemProperty(Integer defaultValue, String propertyKey) {
+        try {
+            return Integer.valueOf(System.getProperty(propertyKey));
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
 }

@@ -38,7 +38,8 @@ public class DeploymentPolicyDeployer extends AbstractDeployer {
 	
 	 private static final Log log = LogFactory.getLog(DeploymentPolicyDeployer.class);
 	 
-	 private static String fileExt="xml"; //default
+	 @SuppressWarnings("unused")
+	private String extension ="xml"; //default
 	 private static String deployDirectory=null;
 
 	@Override
@@ -63,7 +64,7 @@ public class DeploymentPolicyDeployer extends AbstractDeployer {
 
 	@Override
 	public void setExtension(String ext) {
-		fileExt = ext;
+		extension = ext;
 	}
 	
 	@Override

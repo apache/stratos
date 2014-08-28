@@ -59,12 +59,17 @@ public class LoadBalancerContext {
     // Map<ClusterId, Cluster>
     // Keep track of all clusters
     private ClusterIdClusterMap clusterIdClusterMap;
-    // Map<HostName, Cluster>
+    // Map<Host/Domain-Name, Cluster>
     // Keep tack of all clusters
     private HostNameClusterMap hostNameClusterMap;
+    // Map<Host/Domain-Name, AppContext>
+    private HostNameAppContextMap hostNameAppContextMap;
     // Map<HostName, Map<TenantId, Cluster>>
     // Keep track of multi-tenant service clusters
     private MultiTenantClusterMap multiTenantClusterMap;
+    // Map<MemberIp, Hostname>
+    // Keep track of cluster hostnames of of all members  against their ip addresses
+    private MemberIpHostnameMap memberIpHostnameMap;
 
     private LoadBalancerContext() {
         tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
@@ -72,7 +77,9 @@ public class LoadBalancerContext {
         clusterIdClusterContextMap = new ClusterIdClusterContextMap();
         clusterIdClusterMap = new ClusterIdClusterMap();
         hostNameClusterMap = new HostNameClusterMap();
+        hostNameAppContextMap = new HostNameAppContextMap();
         multiTenantClusterMap = new MultiTenantClusterMap();
+        memberIpHostnameMap = new MemberIpHostnameMap();
     }
 
     public static LoadBalancerContext getInstance() {
@@ -182,7 +189,15 @@ public class LoadBalancerContext {
         return hostNameClusterMap;
     }
 
+    public HostNameAppContextMap getHostNameAppContextMap() {
+        return hostNameAppContextMap;
+    }
+
     public MultiTenantClusterMap getMultiTenantClusterMap() {
-        return multiTenantClusterMap;
+       return multiTenantClusterMap;
+    }
+
+    public MemberIpHostnameMap getMemberIpHostnameMap() {
+        return memberIpHostnameMap;
     }
 }

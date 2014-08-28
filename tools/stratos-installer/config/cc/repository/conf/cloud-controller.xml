@@ -71,6 +71,8 @@
                         <property name="jclouds.api-version" value="2.0/" />
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
+                        <property name="securityGroups" value="OPENSTACK_SECURITY_GROUPS"/>
+                        <property name="keyPair" value="OPENSTACK_KEYPAIR"/>
         	</iaasProviderOPENSTACK_PROVIDER_END>
                 <VCLOUD_PROVIDER_STARTiaasProvider type="vcloud" name="VMware vCloud specific details">
                         <className>org.apache.stratos.cloud.controller.iaases.VCloudIaas</className>
