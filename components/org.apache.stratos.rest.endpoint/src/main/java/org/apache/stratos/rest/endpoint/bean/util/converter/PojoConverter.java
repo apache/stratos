@@ -19,10 +19,7 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
-<<<<<<< HEAD
 import org.apache.commons.logging.LogFactory;
-=======
->>>>>>> master
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -153,11 +150,8 @@ public class PojoConverter {
         return iaasConfigsArray;
     }
 
-<<<<<<< HEAD
-    public static Persistence getPersistence(PersistenceBean persistenceBean) {
-=======
      public static Persistence getPersistence(PersistenceBean persistenceBean) {
->>>>>>> master
+
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];

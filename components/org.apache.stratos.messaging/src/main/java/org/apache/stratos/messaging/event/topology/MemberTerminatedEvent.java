@@ -34,10 +34,7 @@ public class
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-<<<<<<< HEAD
     private String groupId;
-=======
->>>>>>> master
     private Properties properties;
 
 
@@ -68,8 +65,6 @@ public class
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
-
-<<<<<<< HEAD
 	public String getGroupId() {
 		return groupId;
 	}
@@ -77,8 +72,7 @@ public class
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
-=======
->>>>>>> master
+
     public Properties getProperties() {
         return properties;
     }

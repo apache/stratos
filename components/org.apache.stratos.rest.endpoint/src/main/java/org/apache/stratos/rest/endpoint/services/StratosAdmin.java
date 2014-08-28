@@ -30,10 +30,7 @@ import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
-<<<<<<< HEAD
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
-=======
->>>>>>> master
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
@@ -74,10 +71,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +246,6 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.undeployCartridge(cartridgeType);
         return Response.noContent().build();
-<<<<<<< HEAD
     }
 
     @POST
@@ -291,8 +284,6 @@ public class StratosAdmin extends AbstractAdmin {
 
         ServiceUtils.undeployServiceGroupDefinition(groupDefinitionName);
         return Response.noContent().build();
-=======
->>>>>>> master
     }
 
     @POST

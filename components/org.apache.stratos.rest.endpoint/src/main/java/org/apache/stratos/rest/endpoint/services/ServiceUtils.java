@@ -24,28 +24,22 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-<<<<<<< HEAD
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-=======
->>>>>>> master
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-<<<<<<< HEAD
 import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
-=======
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
->>>>>>> master
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -1170,10 +1164,6 @@ public class ServiceUtils {
         subscriptionData.setRepositoryPassword(cartridgeInfoBean.getRepoPassword());
         subscriptionData.setCommitsEnabled(cartridgeInfoBean.isCommitsEnabled());
         subscriptionData.setServiceGroup(cartridgeInfoBean.getServiceGroup());
-<<<<<<< HEAD
-        
-=======
->>>>>>> master
 
         PersistenceBean persistenceBean = cartridgeInfoBean.getPersistence();
         if(persistenceBean != null) {
@@ -1202,10 +1192,6 @@ public class ServiceUtils {
             subscriptionData.setPersistanceCtxt(persistenceContext);
         }
         */
-<<<<<<< HEAD
-
-=======
->>>>>>> master
         //subscribe
         SubscriptionInfo subscriptionInfo = null;
         try{
