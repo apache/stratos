@@ -154,14 +154,11 @@ public class CartridgeAgent implements Runnable {
             if (log.isInfoEnabled()) {
                 log.info("No artifact repository found");
             }
-<<<<<<< HEAD
-=======
             // Execute instance activated shell script
             extensionHandler.onInstanceActivatedEvent();
 
             // Publish instance activated event
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
->>>>>>> master
         } else {
             //Start periodical file checker task
             /*if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
@@ -620,59 +617,10 @@ public class CartridgeAgent implements Runnable {
         }
     }
 
-<<<<<<< HEAD
-    private void onArtifactUpdateEvent(ArtifactUpdatedEvent event) {
-        ArtifactUpdatedEvent artifactUpdatedEvent = event;
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Artifact update event received: %s", artifactUpdatedEvent.toString()));
-        }
-
-        String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
-        String localRepoPath = CartridgeAgentConfiguration.getInstance().getAppPath();
-        String clusterIdInMessage = artifactUpdatedEvent.getClusterId();
-        String repoURL = artifactUpdatedEvent.getRepoURL();
-        String repoPassword = CartridgeAgentUtils.decryptPassword(artifactUpdatedEvent.getRepoPassword());
-        String repoUsername = artifactUpdatedEvent.getRepoUserName();
-        String tenantId = artifactUpdatedEvent.getTenantId();
-        boolean isMultitenant = CartridgeAgentConfiguration.getInstance().isMultitenant();
-
-        if(StringUtils.isNotEmpty(repoURL) && (clusterIdInPayload != null) && clusterIdInPayload.equals(clusterIdInMessage)) {
-            if(log.isInfoEnabled()) {
-                log.info("Executing git checkout");
-            }
-            RepositoryInformation repoInformation = new RepositoryInformation();
-            repoInformation.setRepoUsername(repoUsername);
-            if(repoPassword == null) {
-            	repoInformation.setRepoPassword("");
-            }else {
-            	repoInformation.setRepoPassword(repoPassword);
-            }            
-            repoInformation.setRepoUrl(repoURL);
-            repoInformation.setRepoPath(localRepoPath);
-            repoInformation.setTenantId(tenantId);
-            repoInformation.setMultitenant(isMultitenant);
-            boolean cloneExists = GitBasedArtifactRepository.getInstance().cloneExists(repoInformation);
-            GitBasedArtifactRepository.getInstance().checkout(repoInformation);
-
-            ExtensionUtils.executeArtifactsUpdatedExtension();
-
-            if (!cloneExists && portsActivated) {
-                // Executed git clone, publish instance activated event
-                CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
-            }
-
-            // Start the artifact update task
-            boolean artifactUpdateEnabled = Boolean.parseBoolean(System.getProperty(CartridgeAgentConstants.ENABLE_ARTIFACT_UPDATE));
-            if (artifactUpdateEnabled) {
-
-                long artifactUpdateInterval = 10;
-                // get update interval
-                String artifactUpdateIntervalStr = System.getProperty(CartridgeAgentConstants.ARTIFACT_UPDATE_INTERVAL);
-=======
     public static ExtensionHandler getExtensionHandler() {
         return extensionHandler;
     }
->>>>>>> master
+
 
     public void terminate() {
         terminated = true;
