@@ -20,7 +20,6 @@ package org.apache.stratos.manager.exception;
 
 public class DomainSubscriptionDoesNotExist extends Exception {
 
-<<<<<<< HEAD
     private static final long serialVersionUID = 1L;
 
     private final String message;
@@ -46,31 +45,5 @@ public class DomainSubscriptionDoesNotExist extends Exception {
     public String getSubscriptionDomain() {
         return subscriptionDomain;
     }
-=======
-	private static final long serialVersionUID = 1L;
 
-	private final String message;
-
-	private final String subscriptionDomain;
-
-	public DomainSubscriptionDoesNotExist(String message, String subscriptionDomain, Throwable cause) {
-		super(message, cause);
-		this.message = message;
-		this.subscriptionDomain = subscriptionDomain;
-	}
-
-	public DomainSubscriptionDoesNotExist(String message, String subscriptionDomain) {
-		super(message);
-		this.message = message;
-		this.subscriptionDomain = subscriptionDomain;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public String getSubscriptionDomain() {
-		return subscriptionDomain;
-	}
->>>>>>> master
 }

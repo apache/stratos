@@ -21,10 +21,6 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.util.java$util$ArrayList$proxy;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -35,14 +31,11 @@ import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
-<<<<<<< HEAD
 import org.apache.stratos.manager.subscription.*;
-=======
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.PersistenceContext;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
->>>>>>> master
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
@@ -434,7 +427,7 @@ public class CartridgeSubscriptionManager {
         }else {
         	// Generate and set the key
             subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
-<<<<<<< HEAD
+
         }
         
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
@@ -444,19 +437,7 @@ public class CartridgeSubscriptionManager {
                     " username: " + subscriptionData.getRepositoryUsername() +
                     " Type: " + subscriptionData.getRepositoryType());
         }
-        
-=======
-        }
-        
-        cartridgeSubscription.setSubscriptionKey(subscriptionKey);
 
-        if(log.isDebugEnabled()) {
-            log.debug("Repository with url: " + subscriptionData.getRepositoryURL() +
-                    " username: " + subscriptionData.getRepositoryUsername() +
-                    " Type: " + subscriptionData.getRepositoryType());
-        }
-        
->>>>>>> master
         // Create subscriber
         Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
         cartridgeSubscription.setSubscriber(subscriber);

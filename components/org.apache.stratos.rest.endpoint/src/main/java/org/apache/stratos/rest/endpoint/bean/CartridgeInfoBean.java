@@ -20,10 +20,6 @@ package org.apache.stratos.rest.endpoint.bean;
 
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,24 +37,17 @@ public class CartridgeInfoBean {
     String dataCartridgeType;
     String dataCartridgeAlias;
     boolean commitsEnabled;
-<<<<<<< HEAD
 
-=======
->>>>>>> master
     private String serviceGroup;
 
     private PersistenceBean persistence;
 
     private List<PropertyBean> property;
 
-<<<<<<< HEAD
-    public CartridgeInfoBean() {
-=======
     private List<String> domains;
 
     public CartridgeInfoBean() {
         this.domains = new ArrayList<String>();
->>>>>>> master
     }
 
     public String getCartridgeType() {
@@ -161,13 +150,8 @@ public class CartridgeInfoBean {
         return persistence;
     }
 
-<<<<<<< HEAD
-    public void setPersistence(PersistenceBean persistenceBean) {
-        this.persistence = persistenceBean;
-=======
     public void setPersistence(PersistenceBean persistence) {
         this.persistence = persistence;
->>>>>>> master
     }
 
     public List<PropertyBean> getProperty() {
@@ -177,12 +161,7 @@ public class CartridgeInfoBean {
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
     }
-<<<<<<< HEAD
-=======
-
     public List<String> getDomains() { return domains; }
 
     public void setDomains(List<String> domains) { this.domains = domains; }
-
->>>>>>> master
 }
