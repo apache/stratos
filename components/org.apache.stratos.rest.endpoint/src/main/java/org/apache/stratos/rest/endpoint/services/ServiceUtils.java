@@ -877,6 +877,7 @@ public class ServiceUtils {
                 cartridge.setLbClusterId(subscription.getLbClusterId());
             }
 
+            cartridge.setClusterId(subscription.getClusterDomain());
             cartridge.setStatus(subscription.getSubscriptionStatus());
             cartridge.setPortMappings(subscription.getCartridgeInfo()
                     .getPortMappings());
