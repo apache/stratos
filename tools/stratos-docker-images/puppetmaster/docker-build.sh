@@ -57,4 +57,4 @@ cd files/
 tar -cvzf agentfiles.tgz apache-stratos-cartridge-agent-*.zip apache-stratos-load-balancer-*.zip 
 cd ..
 
-docker build -t=apachestratos/puppetmaster .
+docker build -t=apachestratos/puppetmaster:$VERSION .

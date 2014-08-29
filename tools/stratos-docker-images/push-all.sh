@@ -22,26 +22,28 @@
 
 set -e
 
+version=
+
 cd bind
-docker push apachestratos/bind
+docker push apachestratos/bind:$version
 cd ..
 
 cd puppetmaster
-docker push apachestratos/puppetmaster
+docker push apachestratos/puppetmaster:$version
 cd ..
 
 cd puppettestnode
-docker push apachestratos/puppettestnode
+docker push apachestratos/puppettestnode:$version
 cd ..
 
 cd mysql
-docker push apachestratos/mysql
+docker push apachestratos/mysql:$version
 cd ..
 
 cd activemq
-docker push apachestratos/activemq
+docker push apachestratos/activemq:$version
 cd ..
 
 cd stratos
-docker push apachestratos/stratos
+docker push apachestratos/stratos:$version
 cd ..

@@ -7,7 +7,10 @@ docker images for installing stratos
 
 To build mysql, activemq and stratos images:
 
-`./build-all.sh`
+`mvn install -Pdocker-build`
+
+The above command requires you to be able to execute the docker command without sudo usually by being in the 'docker' group.
+
 
 ### Upload to registry.hub.docker.com
 

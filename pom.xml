@@ -84,6 +84,7 @@
         <module>extensions</module>
         <module>features</module>
         <module>products</module>
+        <module>tools</module>
     </modules>
 
     <repositories>

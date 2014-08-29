@@ -43,5 +43,4 @@ rm files/mysql.tmp.*
 
 ### build docker
 
-docker build -t=apachestratos/mysql .
-#sudo docker push apachestratos/mysql
+docker build -t=apachestratos/mysql:$VERSION .

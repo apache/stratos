@@ -20,9 +20,13 @@
 #
 # ----------------------------------------------------------------------------
 
+# This script is executed by mvn - see the README for more information
+
 set -e
 
 export STRATOS_SOURCE="$(cd ../../; pwd)"
+
+export VERSION=$VERSION
 
 cd bind
 ./docker-build.sh
