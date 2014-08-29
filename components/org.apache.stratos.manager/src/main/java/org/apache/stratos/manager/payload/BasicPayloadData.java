@@ -91,6 +91,8 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_HOSTNAME=" + System.getProperty(CartridgeConstants.PUPPET_HOSTNAME));
         payloadBuilder.append(",");
+        payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty(CartridgeConstants.PUPPET_DNS_AVAILABLE));
+        payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_ENV=" + System.getProperty(CartridgeConstants.PUPPET_ENVIRONMENT));
 
     }
