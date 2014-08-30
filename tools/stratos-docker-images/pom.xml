@@ -70,5 +70,34 @@
 				</plugins>
 			</build>
 		</profile>
+		<!-- Push docker images -->
+		<profile>
+			<id>docker-push</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3</version>
+						<executions>
+							<execution>
+								<configuration>
+									<executable>bash</executable>
+									<workingDirectory>.</workingDirectory>
+									<arguments>
+										<argument>push-all.sh</argument>
+									</arguments>
+								</configuration>
+								<id>docker-push</id>
+								<phase>install</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

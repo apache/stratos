@@ -20,30 +20,29 @@
 #
 # ----------------------------------------------------------------------------
 
-set -e
-
-version=
+set -e # fail on error
+set -x # debug output
 
 cd bind
-docker push apachestratos/bind:$version
+docker -D push apachestratos/bind:$VERSION
 cd ..
 
 cd puppetmaster
-docker push apachestratos/puppetmaster:$version
+docker push apachestratos/puppetmaster:$VERSION
 cd ..
 
 cd puppettestnode
-docker push apachestratos/puppettestnode:$version
+docker push apachestratos/puppettestnode:$VERSION
 cd ..
 
 cd mysql
-docker push apachestratos/mysql:$version
+docker push apachestratos/mysql:$VERSION
 cd ..
 
 cd activemq
-docker push apachestratos/activemq:$version
+docker push apachestratos/activemq:$VERSION
 cd ..
 
 cd stratos
-docker push apachestratos/stratos:$version
+docker push apachestratos/stratos:$VERSION
 cd ..
