@@ -23,9 +23,9 @@
 set -e
 set -u
 
-stratos_container_ids=$(sudo docker ps -a | awk '{print $2, $1}' | grep '^apachestratos' | awk '{print $2}')
+running_stratos_container_ids=$(docker ps -a | awk '{print $2, $1}' | grep '^apachestratos' | awk '{print $2}')
 
-if [[ -n $stratos_container_ids ]]; then
-  sudo docker stop $stratos_container_ids
-  sudo docker rm $stratos_container_ids
+if [[ -n $running_stratos_container_ids ]]; then
+  docker stop $running_stratos_container_ids
+  docker rm $running_stratos_container_ids
 fi
