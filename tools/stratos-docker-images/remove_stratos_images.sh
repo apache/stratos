@@ -25,7 +25,7 @@ set -u
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-./$SCRIPT_DIR/stop_stratos_containers.sh
+. /$SCRIPT_DIR/stop_stratos_containers.sh
 
 stratos_image_ids=$(docker images -a | grep '^apachestratos' | awk '{print $3}')
 if [[ -n $stratos_image_ids ]]; then
