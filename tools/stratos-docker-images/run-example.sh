@@ -99,7 +99,7 @@ docker_env+=(-e "USERSTORE_DB_PASS=password")
  
 # Puppet Setings
 docker_env+=(-e "PUPPET_IP=${IP_ADDR}")
-docker_env+=(-e "PUPPET_HOSTNAME=${DOMAIN}")
+docker_env+=(-e "PUPPET_HOSTNAME=${MASTERHOSTNAME}")
 docker_env+=(-e "PUPPET_ENVIRONMENT=none")
  
 # MB Settings
@@ -129,5 +129,8 @@ docker_env+=(-e "VCLOUD_ENDPOINT=none")
 docker_env+=(-e "STRATOS_PROFILE=default")
 
 # Start Stratos container as daemon
-STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 apachestratos/stratos:$STRATOS_VERSION)
+STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION)
 sudo docker logs -f $STRATOS_ID
+
+# To run stratos interactively - e.g. for debugging
+# docker run -i -t "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION /bin/bash
