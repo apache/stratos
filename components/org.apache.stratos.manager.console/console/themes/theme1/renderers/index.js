@@ -23,6 +23,9 @@ var render = function (theme, data, meta, require) {
       // Re-create the data structure of the cartridges.
     var log = new Log();
     if(data.error.length == 0 ){
+        if(data.mycartridges == null || data.mycartridges == undefined || data.mycartridges == ""){
+          data.mycartridges = {};
+        }
         var cartridges= data.mycartridges.cartridge,cartridges_new =[];
         session.remove("get-status");
         session.remove("deploy-status");

@@ -87,9 +87,13 @@ var render = function (theme, data, meta, require) {
     }else{
         title = 'Configure Stratos Wizard Finished';
     }
-    for(var i=0;i<step_data.length;i++){
-        step_data[i].json_string = stringify(step_data[i]);
+    
+    if(step_data != null && step_data != undefined){
+      for(var i=0;i<step_data.length;i++){
+          step_data[i].json_string = stringify(step_data[i]);
+      }
     }
+
     theme('index', {
         body: [
             {

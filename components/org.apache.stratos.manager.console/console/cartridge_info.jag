@@ -23,10 +23,14 @@ var caramel = require('caramel');
 var error = [];
 var utils = require('/util/utility.jag');
 var process = require('process');
- var log = new Log('utility.cartridgeInfo');
+var log = new Log('utility.cartridgeInfo');
 var alias = request.getParameter("alias");
 var lbCluster = {};
 var cartridgeInfo = utils.consoleAppUtil.getCartridgeInfo(alias);
+
+if(cartridgeInfo == null || cartridgeInfo == undefined || cartridgeInfo == ""){
+    cartridgeInfo = {};
+}
 
 if(cartridgeInfo.Error != undefined){
     error.push(cartridgeInfo.Error);
@@ -43,11 +47,17 @@ if(cartridgeInfo.Error != undefined){
     }
     */
     lbCluster = utils.consoleAppUtil.getLBClusterInfo();
-            if(lbCluster.Error != undefined){
-                error.push(lbCluster.Error);
+    if(lbCluster == null || lbCluster == undefined || lbCluster == ""){
+        lbCluster = {};
     }
-
+    if(lbCluster.Error != undefined){
+        error.push(lbCluster.Error);
+    }
+    
     var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridge.cartridgeType, alias);
+    if(clusterInfo == null || clusterInfo == undefined || clusterInfo == ""){
+        clusterInfo = {};
+    }
     if(clusterInfo.Error != undefined){
         error.push(clusterInfo.Error);
     }
