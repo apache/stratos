@@ -98,6 +98,18 @@
                 <checksumPolicy>ignore</checksumPolicy>
             </releases>
         </repository>
+
+        <repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <layout>default</layout>
+            <url>http://repo1.maven.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
     </repositories>
 
     <profiles>
@@ -527,7 +539,7 @@
         <carbon.platform.package.import.version.range>[4.2.0, 5.0.0)</carbon.platform.package.import.version.range>
         <carbon.platform.package.export.version>4.2.0</carbon.platform.package.export.version>
         <axis2.osgi.version>1.6.1.wso2v10</axis2.osgi.version>
-        <jclouds.version>1.7.1</jclouds.version>
-        <jclouds.stratos.version>1.7.1-stratos</jclouds.stratos.version>
+        <jclouds.version>1.8.0</jclouds.version>
+        <jclouds.stratos.version>1.8.0-stratos</jclouds.stratos.version>
     </properties>
 </project>

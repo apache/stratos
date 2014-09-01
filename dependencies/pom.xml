@@ -33,11 +33,11 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>jclouds/apis/vcloud/1.7.1-stratos</module>
-        <module>jclouds/apis/ec2/1.7.1-stratos</module>
-        <module>jclouds/apis/openstack-nova/1.7.1-stratos</module>
-        <module>jclouds/apis/docker/1.7.1-stratos</module>
-        <module>jclouds/provider/aws-ec2/1.7.1-stratos</module>
+        <module>jclouds/apis/vcloud/1.8.0-stratos</module>
+        <module>jclouds/apis/ec2/1.8.0-stratos</module>
+        <module>jclouds/apis/openstack-nova/1.8.0-stratos</module>
+        <module>jclouds/apis/docker/1.8.0-stratos</module>
+        <module>jclouds/provider/aws-ec2/1.8.0-stratos</module>
         <module>org.wso2.carbon.ui</module>
     </modules>
 </project>
