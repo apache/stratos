@@ -38,11 +38,7 @@ COPY files/modules /etc/puppet/modules
 
 ADD files/jdk-7u51-linux-x64.tar.gz /etc/puppet/modules/java/files/
 ADD files/apache-tomcat-7.0.52.tar.gz /etc/puppet/modules/tomcat/files/
-
-ADD files/agentfiles.tgz /tmp/
-
-RUN mv /tmp/apache-stratos-cartridge-agent-*.zip /etc/puppet/modules/agent/files/
-RUN mv /tmp/apache-stratos-load-balancer-*.zip /etc/puppet/modules/agent/files/
+ADD files/agentfiles.tgz /etc/puppet/modules/agent/files/
 
 ADD run /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run

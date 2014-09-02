@@ -19,22 +19,20 @@
 #
 # ----------------------------------------------------------------------------
 
-FROM    ubuntu:14.04
+FROM ubuntu:14.04
 
-RUN apt-get update
-RUN apt-get upgrade tzdata -y
-RUN apt-get install openjdk-7-jre-headless unzip wget -y
+RUN apt-get update && \
+    apt-get upgrade tzdata -y && \
+    apt-get install openjdk-7-jre-headless -y && \
+    apt-get clean && \
+    rm -rf /var/cache/apt/*
+
 
 #################
 # Unpack Stratos 
 #################
 
-WORKDIR /opt/
-
-ADD /files/apache-stratos.zip /opt/apache-stratos.zip
-RUN unzip -q apache-stratos.zip 
-RUN rm apache-stratos.zip
-RUN mv apache-stratos-* apache-stratos
+ADD /files/apache-stratos /opt/apache-stratos/
 
 ADD /files/stratos-installer/config/all/repository/conf/activemq/jndi.properties /opt/apache-stratos/repository/conf/
 
@@ -42,13 +40,7 @@ ADD /files/stratos-installer/config/all/repository/conf/activemq/jndi.properties
 # Get ActiveMQ libs
 ####################
 
-ADD /files/apache-activemq-5.9.1-bin.tar.gz /opt/
-
-RUN cp -f apache-activemq-5.9.1/lib/activemq-broker-5.9.1.jar /opt/apache-stratos/repository/components/lib/
-RUN cp -f apache-activemq-5.9.1/lib/activemq-client-5.9.1.jar /opt/apache-stratos/repository/components/lib/
-RUN cp -f apache-activemq-5.9.1/lib/geronimo-j2ee-management_1.1_spec-1.0.1.jar /opt/apache-stratos/repository/components/lib/ 
-RUN cp -f apache-activemq-5.9.1/lib/geronimo-jms_1.1_spec-1.1.1.jar /opt/apache-stratos/repository/components/lib/ 
-RUN rm -rf apache-activemq-5.9.1
+#ADD /files/apache-activemq-lib /opt/apache-stratos/repository/components/lib/ 
 
 ###########
 # CC Setup
