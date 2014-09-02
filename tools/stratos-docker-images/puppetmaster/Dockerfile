@@ -21,24 +21,29 @@
 
 FROM ubuntu:14.04
 
-RUN apt-get update -qq 
-RUN apt-get install -y wget
+RUN apt-get update -qq && \
+    apt-get install -y wget && \
+    wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb && \
+    dpkg -i puppetlabs-release-precise.deb && \
+    rm puppetlabs-release-precise.deb && \
+    apt-get update -qq && \
+    apt-get install -y puppetmaster && \
+    apt-get clean && \
+    rm -rf /var/cache/apt/*    
 
-RUN wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb
-RUN dpkg -i puppetlabs-release-precise.deb
-RUN apt-get update -qq 
-RUN apt-get install -y puppetmaster
-
-RUN mkdir -p /etc/puppet/modules/agent/files
-RUN mkdir -p /etc/puppet/modules/java/files
-RUN mkdir -p /etc/puppet/modules/tomcat/files
+RUN mkdir -p /etc/puppet/modules/agent/files && \
+    mkdir -p /etc/puppet/modules/java/files && \
+    mkdir -p /etc/puppet/modules/tomcat/files
 
 COPY files/manifests /etc/puppet/manifests
 COPY files/modules /etc/puppet/modules
 
-ADD files/jdk-7u51-linux-x64.tar.gz /etc/puppet/modules/java/files/
-ADD files/apache-tomcat-7.0.52.tar.gz /etc/puppet/modules/tomcat/files/
-ADD files/agentfiles.tgz /etc/puppet/modules/agent/files/
+ADD files/apache-activemq-libs.tgz           /etc/puppet/modules/agent/files/activemq/
+ADD files/jdk.tgz                            /etc/puppet/modules/java/files/
+ADD files/apache-tomcat.tgz                  /etc/puppet/modules/tomcat/files/
+ADD files/apache-stratos-cartridge-agent.tgz /etc/puppet/modules/agent/files/
+ADD files/apache-stratos-load-balancer.tgz   /etc/puppet/modules/lb/files/
+
 
 ADD run /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run
