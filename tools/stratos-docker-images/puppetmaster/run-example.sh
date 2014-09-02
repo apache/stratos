@@ -27,16 +27,7 @@ MB_HOSTNAME=
 MB_PORT=
 TRUSTSTORE_PASSWORD=wso2carbon
 
-
-# To run interactively:
-# docker run -i -t -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -p 8140 apachestratos/puppet /bin/bash
-
 PUPPET_ID=$(docker run -d --dns=${IP_ADDR} -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -p 8140 apachestratos/puppet)
 PUPPET_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $PUPPET_ID)
 PUPPET_PORT=$(docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
-
-# TODO create a docker cartridge 
-# add dns record for cartridge, e.g. cartridge1.$DOMAIN
-# start puppet agent in cartridge to test puppetmaster:
-# puppet agent --server ${MASTERHOSTNAME} --masterport ${PUPPET_PORT} --test --verbose --debug
 

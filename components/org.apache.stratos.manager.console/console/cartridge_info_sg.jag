@@ -27,6 +27,10 @@ var process = require('process');
 var serviceGroup = request.getParameter("serviceGroup");
 //Get all alias for a service group
 var cartridges = utils.consoleAppUtil.getCartridgeServiceGroup(serviceGroup);
+
+if(cartridges == null || cartridges == undefined || cartridges == ""){
+    cartridges = {};
+}
 cartridges=cartridges.cartridge;
 
 if(cartridges.Error != undefined){
@@ -41,24 +45,31 @@ if(cartridges.Error != undefined){
         var alias = cartridges[i].cartridgeAlias;
         var lbCluster = {};
 
-           lbCluster = utils.consoleAppUtil.getLBClusterInfo();
-           if(lbCluster.Error != undefined){
-                error.push(lbCluster.Error);
-            }else{
-                //cartridges[i].lbClusterinfo = {member:[{memberIp:"foo"},{}]};//lbCluster.cluster;
-                //cartridges[i].lbClusterinfo = lbCluster.cluster[0];
-                cartridges[i].lbclusterinfo = lbCluster.cluster[0];
-            }
+        lbCluster = utils.consoleAppUtil.getLBClusterInfo();
+        if(lbCluster == null || lbCluster == undefined || lbCluster == ""){
+            lbCluster = {};
+        }
+        if(lbCluster.Error != undefined){
+            error.push(lbCluster.Error);
+        }else{
+            //cartridges[i].lbClusterinfo = {member:[{memberIp:"foo"},{}]};//lbCluster.cluster;
+            //cartridges[i].lbClusterinfo = lbCluster.cluster[0];
+            cartridges[i].lbclusterinfo = lbCluster.cluster[0];
+        }
+        
         //Getting the clusterInfo and putting it to the relevant cartridge json
         var clusterInfo = utils.consoleAppUtil.getClusterInfoWithAlias(cartridgeInfo.cartridgeType, alias);
+        if(clusterInfo == null || clusterInfo == undefined || clusterInfo == ""){
+           clusterInfo = {};
+        }
         if(clusterInfo.Error != undefined){
             error.push(clusterInfo.Error);
         }else{
             cartridges[i].clusterInfo = clusterInfo.cluster[0];
         }
-
     }
 }
+
 var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
     cartridges:cartridges,

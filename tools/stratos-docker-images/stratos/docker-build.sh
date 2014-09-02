@@ -32,4 +32,4 @@ cp -rf $STRATOS_SOURCE/tools/stratos-installer files/
 
 cp -rf $STRATOS_SOURCE/extensions/ files/
 
-docker build -t=apachestratos/stratos .
+docker build -t=apachestratos/stratos:$VERSION .

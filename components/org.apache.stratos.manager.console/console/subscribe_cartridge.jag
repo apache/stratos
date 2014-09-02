@@ -30,13 +30,31 @@ var deploymentPolicies = utils.consoleAppUtil.getApplicableDeploymentPolicies(ty
 var mtServiceInfo = utils.consoleAppUtil.getServiceInfo(type);
 var cartridge = utils.consoleAppUtil.getSingleTenantCartridgeInfo(type);
 
+if(autoScalePolicies == null || autoScalePolicies == undefined || autoScalePolicies == ""){
+    autoScalePolicies = {};
+}
 if(autoScalePolicies.Error != undefined ){
     error.push(autoScalePolicies.Error);
-}if(deploymentPolicies.Error != undefined ){
+}
+
+if(deploymentPolicies == null || deploymentPolicies == undefined || deploymentPolicies == ""){
+    deploymentPolicies = {};
+}
+if(deploymentPolicies.Error != undefined ){
     error.push(deploymentPolicies.Error);
-}if(cartridge.Error != undefined ){
+}
+
+if(cartridge == null || cartridge == undefined || cartridge == ""){
+    cartridge = {};
+}
+if(cartridge.Error != undefined ){
     error.push(cartridge.Error);
-}if(mtServiceInfo.Error != undefined ){
+}
+
+if(mtServiceInfo == null || mtServiceInfo == undefined || mtServiceInfo == ""){
+    mtServiceInfo = {};
+}
+if(mtServiceInfo.Error != undefined ){
     error.push(mtServiceInfo.Error);
 }
 

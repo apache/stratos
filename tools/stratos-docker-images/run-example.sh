@@ -30,6 +30,9 @@ export DOMAIN=example.com
 # Set the IP_ADDR to the IP address you use to reach the docker host
 export IP_ADDR=192.168.56.5
 
+# Set the version of Stratos docker images
+export STRATOS_VERSION=4.1.0-SNAPSHOT
+
 ########
 # Bind
 ########
@@ -38,14 +41,14 @@ export IP_ADDR=192.168.56.5
 # See http://www.zytrax.com/books/dns/ch7/address_match_list.html for more info
 export UPDATE_ADDR_LIST=any
  
-export BIND_ID=$(docker run -d -p 53:53/udp -e "DOMAIN=$DOMAIN" -e "IP_ADDR=$IP_ADDR" -e "UPDATE_ADDR_LIST=$UPDATE_ADDR_LIST" apachestratos/bind); sleep 2s;
+export BIND_ID=$(docker run -d -p 53:53/udp -e "DOMAIN=$DOMAIN" -e "IP_ADDR=$IP_ADDR" -e "UPDATE_ADDR_LIST=$UPDATE_ADDR_LIST" apachestratos/bind:$STRATOS_VERSION); sleep 2s;
 export BIND_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $BIND_ID)
 
 ###########
 # ActiveMQ
 ###########
 
-export MB_ID=$(docker run -p 61616 -d apachestratos/activemq); sleep 2s;
+export MB_ID=$(docker run -p 61616 -d apachestratos/activemq:$STRATOS_VERSION); sleep 2s;
 export MB_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $MB_ID)
 export MB_PORT=$(docker port $MB_ID 61616 | awk -F':' '{ print $2 }')
 
@@ -69,7 +72,7 @@ rm -f addpuppetdomain.txt
 export MASTERHOSTNAME=puppet.$DOMAIN
 export TRUSTSTORE_PASSWORD=wso2carbon
  
-export PUPPET_ID=$(docker run -d -h ${MASTERHOSTNAME} --dns=${BIND_IP_ADDR} -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -e "MB_HOSTNAME=${MB_IP_ADDR}" -e "MB_PORT=${MB_PORT}" -e "TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}" -p 8140 apachestratos/puppetmaster); sleep 2s;
+export PUPPET_ID=$(docker run -d -h ${MASTERHOSTNAME} --dns=${BIND_IP_ADDR} -e "DOMAIN=${DOMAIN}" -e "MASTERHOSTNAME=${MASTERHOSTNAME}" -e "MB_HOSTNAME=${MB_IP_ADDR}" -e "MB_PORT=${MB_PORT}" -e "TRUSTSTORE_PASSWORD=${TRUSTSTORE_PASSWORD}" -p 8140 apachestratos/puppetmaster:$STRATOS_VERSION); sleep 2s;
 export PUPPET_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $PUPPET_ID)
 export PUPPET_PORT=$(docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
 
@@ -77,7 +80,7 @@ export PUPPET_PORT=$(docker port $PUPPET_ID 8140 | awk -F':' '{ print $2 }')
 # MySQL
 ########
 
-export USERSTORE_ID=$(docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql); sleep 2s;
+export USERSTORE_ID=$(docker run -d -p 3306 -e MYSQL_ROOT_PASSWORD=password apachestratos/mysql:$STRATOS_VERSION); sleep 2s;
 export USERSTORE_IP_ADDR=$(docker inspect --format '{{ .NetworkSettings.Gateway }}' $USERSTORE_ID)
 export USERSTORE_PORT=$(docker port $USERSTORE_ID 3306 | awk -F':' '{ print $2 }')
 
@@ -96,7 +99,7 @@ docker_env+=(-e "USERSTORE_DB_PASS=password")
  
 # Puppet Setings
 docker_env+=(-e "PUPPET_IP=${IP_ADDR}")
-docker_env+=(-e "PUPPET_HOSTNAME=${DOMAIN}")
+docker_env+=(-e "PUPPET_HOSTNAME=${MASTERHOSTNAME}")
 docker_env+=(-e "PUPPET_ENVIRONMENT=none")
  
 # MB Settings
@@ -126,5 +129,8 @@ docker_env+=(-e "VCLOUD_ENDPOINT=none")
 docker_env+=(-e "STRATOS_PROFILE=default")
 
 # Start Stratos container as daemon
-STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 apachestratos/stratos)
+STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION)
 sudo docker logs -f $STRATOS_ID
+
+# To run stratos interactively - e.g. for debugging
+# docker run -i -t "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION /bin/bash

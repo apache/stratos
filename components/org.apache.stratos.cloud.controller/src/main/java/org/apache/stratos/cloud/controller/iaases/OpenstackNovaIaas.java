@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -46,7 +47,6 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.NovaApiMetadata;
-import org.jclouds.openstack.nova.v2_0.NovaAsyncApi;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
 import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
@@ -55,7 +55,7 @@ import org.jclouds.openstack.nova.v2_0.domain.Network;
 import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
-import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneAPI;
+import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneApi;
 import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
@@ -199,8 +199,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		KeyPairApi api = nova.getApi().getKeyPairExtensionForZone(region).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+		KeyPairApi api = novaApi.getKeyPairExtensionForZone(region).get();
 
 		KeyPair keyPair = api.createWithPublicKey(keyPairName, publicKey);
 
@@ -228,8 +228,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		FloatingIPApi floatingIp = nova.getApi().getFloatingIPExtensionForZone(
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+		FloatingIPApi floatingIp = novaApi.getFloatingIPExtensionForZone(
 				region).get();
 
 		String ip = null;
@@ -311,11 +311,10 @@ public class OpenstackNovaIaas extends Iaas {
 		ComputeServiceContext context = iaasInfo.getComputeService()
 				.getContext();
 
-		NovaApi novaClient = context.unwrap(NovaApiMetadata.CONTEXT_TOKEN).getApi();
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		FloatingIPApi floatingIp = novaClient.getFloatingIPExtensionForZone(
-				region).get();
+		FloatingIPApi floatingIp = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(
+                region).get();
 
 		if(log.isDebugEnabled()) {
 			log.debug("OpenstackNovaIaas:associatePredefinedAddress:floatingip:" + floatingIp);
@@ -403,9 +402,8 @@ public class OpenstackNovaIaas extends Iaas {
 
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		FloatingIPApi floatingIPApi = nova.getApi()
-				.getFloatingIPExtensionForZone(region).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+		FloatingIPApi floatingIPApi = novaApi.getFloatingIPExtensionForZone(region).get();
 
 		for (FloatingIP floatingIP : floatingIPApi.list()) {
 			if (floatingIP.getIp().equals(ip)) {
@@ -439,8 +437,8 @@ public class OpenstackNovaIaas extends Iaas {
         }
         
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        Set<String> zones = nova.getApi().getConfiguredZones();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        Set<String> zones = novaApi.getConfiguredZones();
         for (String configuredZone : zones) {
             if (region.equalsIgnoreCase(configuredZone)) {
                 if (log.isDebugEnabled()) {
@@ -467,9 +465,9 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidZoneException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        AvailabilityZoneAPI zoneApi = nova.getApi().getAvailabilityZoneApi(region);
-        for (AvailabilityZone z : zoneApi.list()) {
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        Optional<? extends AvailabilityZoneApi> availabilityZoneApi = novaApi.getAvailabilityZoneApi(region);
+        for (AvailabilityZone z : availabilityZoneApi.get().list()) {
 			
         	if (zone.equalsIgnoreCase(z.getName())) {
         		if (log.isDebugEnabled()) {
@@ -495,8 +493,8 @@ public class OpenstackNovaIaas extends Iaas {
             throw new InvalidHostException(msg);
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        HostAggregateApi hostApi = nova.getApi().getHostAggregateExtensionForZone(zone).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        HostAggregateApi hostApi = novaApi.getHostAggregateExtensionForZone(zone).get();
         for (HostAggregate hostAggregate : hostApi.list()) {
             for (String configuredHost : hostAggregate.getHosts()) {
                 if (host.equalsIgnoreCase(configuredHost)) {
@@ -529,9 +527,9 @@ public class OpenstackNovaIaas extends Iaas {
             return null;
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
-        
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        VolumeApi volumeApi = novaApi.getVolumeExtensionForZone(region).get();
         Volume volume;
         if(StringUtils.isEmpty(snapshotId)){
         	if(log.isDebugEnabled()){
@@ -578,8 +576,8 @@ public class OpenstackNovaIaas extends Iaas {
         IaasProvider iaasInfo = getIaasProvider();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        VolumeApi volumeApi = novaApi.getVolumeExtensionForZone(region).get();
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
 
         while(volumeStatus != expectedStatus){
@@ -629,9 +627,9 @@ public class OpenstackNovaIaas extends Iaas {
             return null;
         }
 
-        RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeApi volumeApi = nova.getApi().getVolumeExtensionForZone(region).get();
-        VolumeAttachmentApi volumeAttachmentApi = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        VolumeApi volumeApi = novaApi.getVolumeExtensionForZone(region).get();
+        VolumeAttachmentApi volumeAttachmentApi = novaApi.getVolumeAttachmentExtensionForZone(region).get();
 
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);
 
@@ -698,8 +696,8 @@ public class OpenstackNovaIaas extends Iaas {
             log.debug(String.format("Starting to detach volume %s from the instance %s", volumeId, instanceId));
         }
 
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-        VolumeAttachmentApi api = nova.getApi().getVolumeAttachmentExtensionForZone(region).get();
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        VolumeAttachmentApi api = novaApi.getVolumeAttachmentExtensionForZone(region).get();
         if (api.detachVolumeFromServer(volumeId, instanceId)) {
         	log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
         }else{
@@ -721,9 +719,9 @@ public class OpenstackNovaIaas extends Iaas {
 			log.fatal(String.format("Cannot delete the volume [id]: %s of the [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
 			return;
 		}
-		
-		RestContext<NovaApi, NovaAsyncApi> nova = context.unwrap();
-		VolumeApi api = nova.getApi().getVolumeExtensionForZone(region).get();
+
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+		VolumeApi api = novaApi.getVolumeExtensionForZone(region).get();
         if (api.delete(volumeId)) {
         	log.info(String.format("Deletion of Volume [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
         }

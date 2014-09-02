@@ -25,9 +25,14 @@ var error = [];
 var utils = require('/util/utility.jag');
 var process = require('process');
 var tenants =  utils.consoleAppUtil.getTenants();
+
+if(tenants == null || tenants == undefined || tenants == ""){
+    tenants = {};
+}
 if(tenants.Error != undefined){
     error.push(tenants.Error);
 }
+
 var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
     tenants:tenants,

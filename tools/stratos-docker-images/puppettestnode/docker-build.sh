@@ -22,4 +22,4 @@
 
 set -e # exit on error
 
-docker build -t=apachestratos/puppettestnode .
+docker build -t=apachestratos/puppettestnode:$VERSION .

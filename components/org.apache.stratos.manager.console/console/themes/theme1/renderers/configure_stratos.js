@@ -89,8 +89,10 @@ var render = function (theme, data, meta, require) {
     session.remove("get-status");
     session.remove("deploy-status");
 
-    for(var i=0;i<step_data.length;i++){
-        step_data[i].json_string = stringify(step_data[i]);
+    if(step_data != null && step_data != undefined){
+      for(var i=0;i<step_data.length;i++){
+          step_data[i].json_string = stringify(step_data[i]);
+      }
     }
     var log = new Log();
     theme('index', {

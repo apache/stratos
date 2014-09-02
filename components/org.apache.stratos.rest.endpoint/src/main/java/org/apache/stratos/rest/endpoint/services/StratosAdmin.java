@@ -377,7 +377,8 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getAvailableLbCartridges() throws RestAPIException {
-        return Response.ok().entity(ServiceUtils.getAvailableLbCartridges(false, getConfigContext())).build();
+    	List<Cartridge> lbCartridges = ServiceUtils.getAvailableLbCartridges(false, getConfigContext());
+        return Response.ok().entity(lbCartridges.isEmpty() ? new Cartridge[0] : lbCartridges.toArray(new Cartridge[lbCartridges.size()])).build();
     }
 
     @GET

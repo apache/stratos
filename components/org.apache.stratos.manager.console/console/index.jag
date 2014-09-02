@@ -27,6 +27,10 @@ var process = require('process');
 
 var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
 
+if(subscribedCartridges == null || subscribedCartridges == undefined || subscribedCartridges == ""){
+    subscribedCartridges = {};
+}
+
 var errorInSession = session.get("errorinbackend");
 if(errorInSession != undefined) {
    session.remove("errorinbackend");
@@ -34,7 +38,7 @@ if(errorInSession != undefined) {
 }
 
 if(subscribedCartridges.Error != undefined){
-    error.push(subscribedCartridges.Error);
+   error.push(subscribedCartridges.Error);
 }
 
 var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
