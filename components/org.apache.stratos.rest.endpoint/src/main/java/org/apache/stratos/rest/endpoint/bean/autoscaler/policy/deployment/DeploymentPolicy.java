@@ -30,6 +30,8 @@ import java.util.List;
 public class DeploymentPolicy {
 
     public String id;
+    
+    public String description;
 
     //partition groups
     public List<PartitionGroup> partitionGroup;

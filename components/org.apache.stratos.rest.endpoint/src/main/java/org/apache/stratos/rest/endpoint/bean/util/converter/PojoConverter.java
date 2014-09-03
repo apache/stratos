@@ -217,6 +217,7 @@ public class PojoConverter {
                 org.apache.stratos.cloud.controller.stub.deployment.partition.Partition();
 
         partition.setId(partitionBean.id);
+        partition.setDescription(partitionBean.description);
         partition.setProvider(partitionBean.provider);
         partition.setPartitionMin(partitionBean.partitionMin);
         partition.setPartitionMax(partitionBean.partitionMax);
@@ -288,6 +289,7 @@ public class PojoConverter {
                 org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy();
 
         deploymentPolicy.setId(deploymentPolicyBean.id);
+        deploymentPolicy.setDescription(deploymentPolicyBean.description);
         if(deploymentPolicyBean.partitionGroup != null && !deploymentPolicyBean.partitionGroup.isEmpty()) {
             deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.partitionGroup));
         }
@@ -402,6 +404,7 @@ public class PojoConverter {
         }
 
         partitionBeans.id = partition.getId();
+        partitionBeans.description = partition.getDescription();
         partitionBeans.provider = partition.getProvider();
         partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();
@@ -490,6 +493,7 @@ public class PojoConverter {
         }
 
         autoscalePolicyBean.setId(autoscalePolicy.getId());
+        autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if(autoscalePolicy.getLoadThresholds() != null) {
@@ -557,6 +561,7 @@ public class PojoConverter {
         }
 
         deploymentPolicyBean.id = deploymentPolicy.getId();
+        deploymentPolicyBean.description = deploymentPolicy.getDescription();
 
         if (deploymentPolicy.getPartitionGroups() != null &&  deploymentPolicy.getPartitionGroups().length > 0) {
             deploymentPolicyBean.partitionGroup = Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups()));

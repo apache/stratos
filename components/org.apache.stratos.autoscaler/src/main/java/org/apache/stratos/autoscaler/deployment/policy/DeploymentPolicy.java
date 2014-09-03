@@ -33,7 +33,8 @@ public class DeploymentPolicy implements Serializable{
 
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
-	private PartitionGroup[] partitionGroups;
+    private String description;
+    private PartitionGroup[] partitionGroups;
 
     /**
      * Gets the value of the id property.
@@ -57,6 +58,30 @@ public class DeploymentPolicy implements Serializable{
      */
     public void setId(String value) {
         this.id = value;
+    }
+    
+    /**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDescription() {
+        return description;
+    }
+    
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDescription(String value) {
+        this.description = value;
     }
     
     public void setPartitionGroups(PartitionGroup[] groups) {
@@ -100,7 +125,7 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public String toString() {
-        return "Deployment Policy [id]" + this.id + " [partitions] " + Arrays.toString(this.getAllPartitions());
+        return "Deployment Policy [id]" + this.id + " Description " +  this.description +" [partitions] " + Arrays.toString(this.getAllPartitions());
     }
 
 }

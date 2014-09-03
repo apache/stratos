@@ -28,6 +28,8 @@ import java.util.List;
 public class Partition {
 
     public String id;
+    
+    public String description;
 
     public int partitionMin;
 
