@@ -130,7 +130,14 @@ docker_env+=(-e "STRATOS_PROFILE=default")
 
 # Start Stratos container as daemon
 STRATOS_ID=$(docker run -d "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION)
-sudo docker logs -f $STRATOS_ID
+
+echo ==============================================
+echo Starting Stratos docker images. 
+echo
+echo To view the stratos log file, run the command:
+echo 
+echo docker logs -f $STRATOS_ID
+echo ==============================================
 
 # To run stratos interactively - e.g. for debugging
 # docker run -i -t "${docker_env[@]}" -p 9443:9443 --dns=${BIND_IP_ADDR} apachestratos/stratos:$STRATOS_VERSION /bin/bash
