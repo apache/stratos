@@ -97,6 +97,9 @@ public class CartridgeConstants {
     // payload data related information
     public static final String LOAD_BALANCED_SERVICE_TYPE = "LOAD_BALANCED_SERVICE_TYPE";
     public static final String LB_CATEGORY = "LB_CATEGORY";
+    
+    // lb cluster
+    public static final String LB_CLUSTER_ID = "lbClusterId";
 
     public static final class DomainMappingInfo {
 		public static final String ACTUAL_HOST = "actual.host";
