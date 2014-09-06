@@ -20,4 +20,4 @@
 #
 # ----------------------------------------------------------------------------
 
-docker build -t=apachestratos/bind .
+docker build -t=apachestratos/bind:$VERSION .

@@ -25,14 +25,26 @@ var render = function (theme, data, meta, require) {
         if(cartridge == undefined){
             cartridge = data.cartridge;
         }
+        var mtServiceInfo = {}
+        if(data.mtServiceInfo != null || data.mtServiceInfo != undefined && data.mtServiceInfo != ""){
+            mtServiceInfo = data.mtServiceInfo.serviceDefinitionBean;
+        }
+        var autoScalePolicies = {}
+        if(data.autoScalePolicies != null && data.autoScalePolicies != undefined && data.autoScalePolicies != ""){
+            autoScalePolicies = data.autoScalePolicies.autoscalePolicy;
+        }
+        var deploymentPolicies = {}
+        if(data.deploymentPolicies != null && data.deploymentPolicies != undefined && data.deploymentPolicies != ""){
+            deploymentPolicies = data.deploymentPolicies.deploymentPolicy;     
+        } 
         theme('index', {
             body: [
                 {
                     partial: 'subscribe_cartridge',
                     context: {
-                        autoScalePolicies:data.autoScalePolicies.autoscalePolicy,
-                        deploymentPolicies:data.deploymentPolicies.deploymentPolicy,
-                        mtServiceInfo:data.mtServiceInfo.serviceDefinitionBean,
+                        autoScalePolicies:autoScalePolicies,
+                        deploymentPolicies:deploymentPolicies,
+                        mtServiceInfo:mtServiceInfo,
                         cartridge:cartridge,
                         cartridgeType:meta.request.getParameter('cartridgeType'),
                         serviceGroup:meta.request.getParameter('serviceGroup')

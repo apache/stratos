@@ -98,150 +98,150 @@ consoleAppUtil = new function(){
     var log = new Log('utility.consoleAppUtil');
 
     this.getAvailableSingleTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list",{}).data;
+        return this.sendReceive("GET","/cartridge/list",{});
     };
 
     this.getAvailableMultiTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/tenanted/list",{}).data;
+        return this.sendReceive("GET","/cartridge/tenanted/list",{});
     };
 
     this.getSubscribedCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list/subscribed",{}).data;
+        return this.sendReceive("GET","/cartridge/list/subscribed",{});
     }
 
     this.getTenants = function(){
-        return this.sendReceive("GET","/tenant/list",{}).data;
+        return this.sendReceive("GET","/tenant/list",{});
     };
 
     this.getServices = function(){
-        return this.sendReceive("GET","/service",{}).data;
+        return this.sendReceive("GET","/service",{});
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
-        return this.send("POST","/cartridge/definition",cartridgeDefinition).data;
+        return this.send("POST","/cartridge/definition",cartridgeDefinition);
     };
 
     this.deployServiceDefinition = function(serviceDefinition){
-        return this.send("POST","/service/definition",serviceDefinition).data;
+        return this.send("POST","/service/definition",serviceDefinition);
     };
 
     this.deployLbDefinition = function(lbDefinition){
-        return this.send("POST","/cartridge/definition",lbDefinition).data;
+        return this.send("POST","/cartridge/definition",lbDefinition);
     };
 
     this.activateTenant = function(tenantDomain){
-            return this.send("POST","/tenant/activate/" + tenantDomain,{}).data;
+            return this.send("POST","/tenant/activate/" + tenantDomain,{});
             };
 
     this.deactivateTenant = function(tenantDomain){
-        return this.send("POST","/tenant/deactivate/" + tenantDomain,{}).data;
+        return this.send("POST","/tenant/deactivate/" + tenantDomain,{});
     };
 
     this.deleteTenant = function(tenantDomain){
-        return this.send("DELETE","/tenant/" + tenantDomain,{}).data;
+        return this.send("DELETE","/tenant/" + tenantDomain,{});
     };
 
     this.checkAvailability = function(tenantDomain){
-        return this.send("POST","/tenant/availability/" + tenantDomain,{}).data;
+        return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
     this.deployPartitionDefinition = function(partitionDefinition){
-        return this.send("POST","/policy/deployment/partition",partitionDefinition).data;
+        return this.send("POST","/policy/deployment/partition",partitionDefinition);
     };
 
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/deployment",policyDefinition).data;
+        return this.send("POST","/policy/deployment",policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/autoscale",policyDefinition).data;
+        return this.send("POST","/policy/autoscale",policyDefinition);
     };
 
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
-        return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo).data;
+        return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo);
     };
 
     this.addTenant = function(tenantInfoBean){
-        return this.sendReceive("POST","/tenant",tenantInfoBean).data;
+        return this.sendReceive("POST","/tenant",tenantInfoBean);
     };
 
     this.syncRepo = function(alias){
-        return this.send("POST","/cartridge/sync",alias).data;
+        return this.send("POST","/cartridge/sync",alias);
     };
 
     this.getAutoScalePolicies = function(){
-        return this.sendReceive("GET","/policy/autoscale",{}).data;
+        return this.sendReceive("GET","/policy/autoscale",{});
     };
 
     this.getDeploymentPolicies = function(){
-        return this.sendReceive("GET","/policy/deployment",{}).data;
+        return this.sendReceive("GET","/policy/deployment",{});
     };
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
-     return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{}).data;
+     return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{});
    };
 
     this.getPartitions = function(){
-        return this.sendReceive("GET","/partition",{}).data;
+        return this.sendReceive("GET","/partition",{});
     };
 
     this.getSingleTenantCartridgeInfo = function(cartridgeType){
-        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{}).data;
+        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{});
     };
 
     this.getServiceInfo = function(cartridgeType){
-        return this.sendReceive("GET","/service/" + cartridgeType,{}).data;
+        return this.sendReceive("GET","/service/" + cartridgeType,{});
     };
 
     this.getPolicyAutoScale = function(){
-        return this.sendReceive("GET","/policy/autoscale",{}).data;
+        return this.sendReceive("GET","/policy/autoscale",{});
     };
 
     this.getPolicyDeployment = function(){
-        return this.sendReceive("GET","/policy/deployment",{}).data;
+        return this.sendReceive("GET","/policy/deployment",{});
     };
     this.unsubscribeCartridge = function(alias){
-        return this.send("POST","/cartridge/unsubscribe",alias).data;
+        return this.send("POST","/cartridge/unsubscribe",alias);
     };
     this.getCartridges = function(){
-        return this.sendReceive("GET","/cartridge/available/list",{}).data;
+        return this.sendReceive("GET","/cartridge/available/list",{});
     };
 
     this.getLbCartridges = function(){
-        return this.sendReceive("GET","/cartridge/lb",{}).data;
+        return this.sendReceive("GET","/cartridge/lb",{});
     };
 
     this.getClusterInfo = function(clusterId){
-        return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{}).data;
+        return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
     };
 
     this.getLBClusterInfo = function(){
-        return this.sendReceive("GET","/cluster/lb",{}).data;
+        return this.sendReceive("GET","/cluster/lb",{});
     };
 
     this.getClusterInfoWithAlias = function(cartridgeType, alias){
-        return this.sendReceive("GET","/cluster/" + cartridgeType + "/" + alias,{}).data;
+        return this.sendReceive("GET","/cluster/" + cartridgeType + "/" + alias,{});
     };
     this.getCartridgeInfo = function(alias){
-        return this.sendReceive("GET","/cartridge/info/"+alias,{}).data;
+        return this.sendReceive("GET","/cartridge/info/"+alias,{});
     };
     this.getCartridgeServiceGroup = function(serviceGroup){
-        return this.sendReceive("GET","/cartridge/list/subscribed/group/"+serviceGroup,{}).data;
+        return this.sendReceive("GET","/cartridge/list/subscribed/group/"+serviceGroup,{});
     };
     this.validateCaptcha = function(captchaText){
-        return this.sendReceive("POST","/captcha",captchaText).data;
+        return this.sendReceive("POST","/captcha",captchaText);
     };
     this.getCaptcha = function(){
         return this.sendReceiveImage("Get","/simpleImg",{});
     };
     this.undeployCartridge = function(cartridgeType){
-        return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{}).data;
+        return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{});
     };
     this.getConfigStatus = function(){
         var configStatus = {};
         var error;
-        var par_res = this.sendReceive("GET","/partition",{}).data;
+        var par_res = this.sendReceive("GET","/partition",{});
         var get_status = session.get("get-status");
         if(par_res.Error != undefined){
             error = par_res.Error;
@@ -251,7 +251,7 @@ consoleAppUtil = new function(){
                 if(par_res.partition.length == 0){
                     configStatus.first_use = true;
                 }else{
-                    var car_res = this.sendReceive("GET","/cartridge/available/list",{}).data;
+                    var car_res = this.sendReceive("GET","/cartridge/available/list",{});
                     if(car_res.Error != undefined){
                         error=car_res.Error;
                         configStatus.first_use = false;
@@ -301,33 +301,43 @@ consoleAppUtil = new function(){
         // getting the access token from the session.
         var endpoint = backendServerURL + urlPostFix;
         var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
-        var type = "json"; // response format
         var response;
         switch (httpMethod){
             case  "GET":
-                response = get(endpoint,{},headers,type);
+                response = get(endpoint,{},headers);
                 break;
             case   "POST":
-                response = post(endpoint,stringify(data),headers,type);
+                response = post(endpoint,stringify(data),headers);
                 break;
             case    "PUT":
-                response = put(endpoint,stringify(data),headers,type);
+                response = put(endpoint,stringify(data),headers);
                 break;
             case    "DELETE":
-                response = del(endpoint,stringify(data),headers,type);
+                response = del(endpoint,stringify(data),headers);
                 break;
             default :
                 log.error("Error in the programme flow.");
         }
-        log.debug("-----------------------:" + stringify(response));
-        if(response.data.Error) {
-            session.put("get-status", response.data.Error.errorMessage);
-        } else {
-            session.put("get-status", "succeeded");
+        
+        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
+           session.put("get-status", "succeeded");
+        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
+           if(response.data != null && response.data != undefined) {
+               session.put("get-status", parse(response.data).Error.errorMessage);
+           }
+        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
+           if(response.data != null && response.data != undefined) {
+               session.put("get-status", response.data); return;
+           }
         }
 
-        log.debug("--------------------:    +  " + urlPostFix + "      "+ session.get("get-status"));
-        return response;
+        log.debug("sent is: " + stringify(response));
+
+        if (response.data != null && response.data != undefined) {
+            return parse(response.data);
+        } else {
+            return response.data;
+        }
     };
 
     // refactor sendRecive and send method. duplicate code...
@@ -365,33 +375,43 @@ consoleAppUtil = new function(){
         // getting the access token from the session.
         var endpoint = backendServerURL + urlPostFix;
         var headers = this.getRequestHeaders(config.ssoConfiguration.enabled);
-        var type = "json"; // response format
         var response;
         switch (httpMethod){
             case  "GET":
-                response = get(endpoint,{},headers, 'json');
+                response = get(endpoint,{},headers);
                 break;
             case   "POST":
-                response = post(endpoint,data,headers, 'json');
+                response = post(endpoint,data,headers);
                 break;
             case    "PUT":
-                response = put(endpoint,data,headers, 'json');
+                response = put(endpoint,data,headers);
                 break;
             case    "DELETE":
-                response = del(endpoint,data,headers, 'json');
+                response = del(endpoint,data,headers);
                 break;
             default :
                 log.error("Error in the programme flow.");
         }
 
-        if (response.data.Error) {
-            session.put("deploy-status", response.data.Error.errorMessage);
-        } else {
-            session.put("deploy-status", "succeeded");
+        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
+           session.put("deploy-status", "succeeded");
+        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
+           if(response.data != null && response.data != undefined) {
+               session.put("deploy-status", parse(response.data).Error.errorMessage);
+           }
+        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
+           if(response.data != null && response.data != undefined) {         
+               session.put("deploy-status", response.data); return;             
+           }
         }
+        
         log.debug("sent is: " + stringify(response));
 
-        return response;
+        if (response.data != null && response.data != undefined) {
+            return parse(response.data);
+        } else {
+            return response.data;
+        }
     };
 
 

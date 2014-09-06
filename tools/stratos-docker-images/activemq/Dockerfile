@@ -22,14 +22,16 @@
 #  Server configuration script for Apache Stratos
 # ----------------------------------------------------------------------------
 
-FROM    ubuntu:14.04
+FROM ubuntu:14.04
 
-RUN apt-get update
-RUN apt-get upgrade tzdata -y
-RUN apt-get install openjdk-7-jre-headless curl -y
+RUN apt-get update && \
+    apt-get upgrade tzdata -y && \
+    apt-get install openjdk-7-jre-headless curl -y && \
+    apt-get clean && \
+    rm -rf /var/cache/apt/*
 
-RUN curl http://www.mirrorservice.org/sites/ftp.apache.org/activemq/5.10.0/apache-activemq-5.10.0-bin.tar.gz > apache-activemq-5.10.0-bin.tar.gz
-RUN tar xzf apache-activemq-5.10.0-bin.tar.gz
+
+RUN curl http://www.mirrorservice.org/sites/ftp.apache.org/activemq/5.10.0/apache-activemq-5.10.0-bin.tar.gz | tar -zx
 
 EXPOSE 61616 8161
 

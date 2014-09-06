@@ -88,7 +88,7 @@
                 <xs:element name="host" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="displayName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                <xs:element name="version" type="xs:float" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="version" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="defaultAutoscalingPolicy" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
                 <xs:element name="multiTenant" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="portMapping" minOccurs="1" maxOccurs="unbounded">
@@ -219,11 +219,8 @@
 
     <xs:complexType name="thresholdValues">
         <xs:all>
-            <xs:element name="average" type="xs:int" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="gradient" type="xs:float" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="secondDerivative" type="xs:float" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="scaleDownMarginOfGradient" type="xs:float" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="scaleDownMarginOfSecondDerivative" type="xs:float" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="upperLimit" type="xs:float" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="lowerLimit" type="xs:float" minOccurs="1" maxOccurs="1"/>
         </xs:all>
     </xs:complexType>
 </xs:schema>
