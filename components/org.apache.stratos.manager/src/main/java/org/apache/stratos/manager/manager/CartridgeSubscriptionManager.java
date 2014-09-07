@@ -140,9 +140,15 @@ public class CartridgeSubscriptionManager {
     }
 
     private static String getLBClusterId(Properties propertiesReturnedByFilters) {
-    	for (Property prop : propertiesReturnedByFilters.getProperties()) {
-			if(prop.getName().equals(CartridgeConstants.LB_CLUSTER_ID)) {
-				return prop.getValue();
+		if (propertiesReturnedByFilters != null
+				&& propertiesReturnedByFilters.getProperties() != null) {
+			for (Property prop : propertiesReturnedByFilters.getProperties()) {
+				if (prop == null) {
+					continue;
+				}
+				if (prop.getName().equals(CartridgeConstants.LB_CLUSTER_ID)) {
+					return prop.getValue();
+				}
 			}
 		}
 		return null;
@@ -151,8 +157,14 @@ public class CartridgeSubscriptionManager {
 	private static void appendProperties(
 			Properties propertiesReturnedByFilters, Properties newProperties) {
 
+		if (newProperties.getProperties() == null) {
+			return;
+		}
     	for (Property property : newProperties.getProperties()) {
-			propertiesReturnedByFilters.addProperties(property);
+    		if (property != null) {
+    			
+    			propertiesReturnedByFilters.addProperties(property);
+    		}
 		}
     	
 	}

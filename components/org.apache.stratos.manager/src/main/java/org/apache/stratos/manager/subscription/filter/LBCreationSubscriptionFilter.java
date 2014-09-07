@@ -65,7 +65,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 		
 		LBDataContext lbDataCtxt = null;
         CartridgeSubscription lbCartridgeSubscription = null;
-        Properties lbCartridgeSubscriptionProperties = null;
+        Properties lbCartridgeSubscriptionProperties  = new Properties();
 
 		try {
 			// get lb config reference
@@ -92,7 +92,6 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 				lbCartridgeSubscription = subscribeToLB(subscriptionData,
 						lbDataCtxt, cartridgeInfo);
 
-				lbCartridgeSubscriptionProperties = new Properties();
 				if (lbDataCtxt.getLbProperperties() != null
 						&& !lbDataCtxt.getLbProperperties().isEmpty()) {
 					lbCartridgeSubscriptionProperties.setProperties(lbDataCtxt
