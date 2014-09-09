@@ -19,9 +19,12 @@
 #
 # ----------------------------------------------------------------------------
 
-FROM stackbrew/ubuntu:12.04
+FROM ubuntu:14.04
 
-RUN apt-get update -qq && apt-get install -y mysql-server-5.5
+RUN apt-get update && \
+    apt-get install mysql-server-5.5 -y && \
+    apt-get clean && \
+    rm -rf /var/cache/apt/*
 
 ADD my.cnf /etc/mysql/conf.d/my.cnf
 RUN chmod 664 /etc/mysql/conf.d/my.cnf

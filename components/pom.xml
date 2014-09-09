@@ -43,6 +43,7 @@
         <module>org.apache.stratos.autoscaler</module>
         <!-- CC -->
         <module>org.apache.stratos.cloud.controller</module>
+        <module>org.apache.stratos.kubernetes.client</module>
         <!-- SM -->
         <module>org.apache.stratos.manager</module>
         <module>org.apache.stratos.deployment</module>
