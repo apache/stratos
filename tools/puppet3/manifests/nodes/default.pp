@@ -17,6 +17,7 @@
 
 # default (base) cartridge node
 node /default/ inherits base {
+
   require java
   class {'agent':}
 

@@ -1,0 +1,68 @@
+        <datasource>
+            <name>WSO2_GOVERNANCE_DB</name>
+            <description>The datasource used for governance MySQL database</description>
+            <jndiConfig>
+                <name>jdbc/<%= @registry_database %></name>
+            </jndiConfig>
+            <definition type="RDBMS">
+                <configuration>
+                    <url>jdbc:mysql://<%= @mysql_server %>:<%= @mysql_port %>/<%= @registry_database %>?autoReconnect=true</url>
+                    <username><%= @registry_user %></username>
+                    <password><%= @registry_password %></password>
+                    <driverClassName>com.mysql.jdbc.Driver</driverClassName>
+                    <maxActive><%= @max_active %></maxActive>
+                    <maxWait><%= @max_wait %></maxWait>
+                    <minIdle>5</minIdle>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1</validationQuery>
+                    <validationInterval>30000</validationInterval>
+                </configuration>
+            </definition>
+        </datasource>
+
+        <datasource>
+            <name>WSO2_USERSTORE_DB</name>
+            <description>The datasource used for userstore MySQL database</description>
+            <jndiConfig>
+                <name>jdbc/<%= @userstore_database %></name>
+            </jndiConfig>
+            <definition type="RDBMS">
+                <configuration>
+                    <url>jdbc:mysql://<%= @mysql_server %>:<%= @mysql_port %>/<%= @userstore_database %>?autoReconnect=true</url>
+                    <username><%= @userstore_user %></username>
+                    <password><%= @userstore_password %></password>
+                    <driverClassName>com.mysql.jdbc.Driver</driverClassName>
+                    <maxActive><%= @max_active %></maxActive>
+                    <maxWait><%= @max_wait %></maxWait>
+                    <minIdle>5</minIdle>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1</validationQuery>
+                    <validationInterval>30000</validationInterval>
+                </configuration>
+            </definition>
+        </datasource>
+
+<!-- CONFIG DBS -->
+
+        <datasource>
+            <name>WSO2_APPSERVER_CONFIG_DB</name>
+            <description>The datasource used for APPSERVER_CONFIG MySQL database</description>
+            <jndiConfig>
+              <name>jdbc/<%= @config_db -%></name>
+            </jndiConfig>
+            <definition type="RDBMS">
+                <configuration>
+                  <url>jdbc:mysql://<%= @mysql_server %>:<%= @mysql_port %>/<%= @config_db %>?autoReconnect=true</url>
+                    <username><%= @registry_user %></username>
+                    <password><%= @registry_password %></password>
+                    <driverClassName>com.mysql.jdbc.Driver</driverClassName>
+                    <maxActive><%= @max_active %></maxActive>
+                    <maxWait><%= @max_wait %></maxWait>
+                    <minIdle>5</minIdle>
+                    <testOnBorrow>true</testOnBorrow>
+                    <validationQuery>SELECT 1</validationQuery>
+                    <validationInterval>30000</validationInterval>
+                </configuration>
+            </definition>
+        </datasource>
+

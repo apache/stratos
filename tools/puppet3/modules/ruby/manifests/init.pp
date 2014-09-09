@@ -17,6 +17,14 @@
 
 class ruby( $target = '/mnt' ) {
 
+  require java
+
+  $custom_agent_templates = ['extensions/instance-started.sh']
+  class {'agent':
+    custom_templates => $custom_agent_templates,
+    module=>'ruby'
+  }
+
   if $stratos_app_path {
     $ruby_home = $stratos_app_path
   } 
@@ -57,4 +65,7 @@ class ruby( $target = '/mnt' ) {
       command => "/bin/bash /mnt/ruby-start.sh",
       require => File['/mnt/ruby-start.sh'];
   }
+
+  # install stratos_base before java before ruby before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['ruby']
 }

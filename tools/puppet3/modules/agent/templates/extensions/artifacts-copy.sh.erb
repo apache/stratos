@@ -25,5 +25,4 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-cp -rf $1* $2
-echo "Artifacts Copied" | tee -a $log
+echo `date`": Artifacts Copied: " | tee -a $log

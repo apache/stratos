@@ -21,6 +21,9 @@ class tomcat(
   $target  = '/mnt',
 ){
 
+  require java
+  class {'agent':}
+
   $package_name    = "apache-tomcat-${tomcat_version}"
   $service_code    = 'apache-tomcat'
   $tomcat_home     = "${target}/${package_name}"
@@ -76,5 +79,8 @@ class tomcat(
       logoutput   => 'on_failure',
       require     => Exec['Set tomcat home permission'];
   }
+
+  # install stratos_base before java before tomcat before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['tomcat']
 }
 

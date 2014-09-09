@@ -39,11 +39,13 @@ class lb (
   $target             = '/mnt',
 ) inherits params {
 
-
   $deployment_code = 'lb'
   $carbon_version  = $version
   $service_code    = 'load-balancer'
   $carbon_home     = "${target}/apache-stratos-${service_code}-${carbon_version}"
+
+  require java
+  class {'agent':}
 
   $service_templates = [
     'conf/axis2/axis2.xml',
@@ -106,4 +108,7 @@ class lb (
        Lb::Importssl[$deployment_code]
      ],
    }
+
+  # install stratos_base before java before lb before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['lb']
 }

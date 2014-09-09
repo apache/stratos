@@ -17,16 +17,10 @@
 
 # php cartridge node
 node /php/ inherits base {
+
   $docroot = "/var/www/www"
   $syslog="/var/log/apache2/error.log"
   $samlalias="/var/www/"
 
-  require java
-  class {'agent':
-    type => 'php',
-  }
   class {'php':}
-  
-  #install stratos_base before java before php before agent
-  Class['stratos_base'] -> Class['java'] -> Class['php'] ~> Class['agent']
 }

@@ -17,11 +17,6 @@
 
 # nodejs cartridge node
 node /nodejs/ inherits base {
-  require java
-  class {'agent':
-    type => 'nodejs',
-  }
-  class {'nodejs':}
 
-  Class['stratos_base'] -> Class['java'] -> Class['nodejs'] ~> Class['agent']
+  class {'nodejs':}
 }

@@ -1,0 +1,11 @@
+name    'wso2-appserver'
+version '0.1.0'
+source ''
+author 'WSO2 Inc'
+license 'Apache License Version 2.0'
+summary 'WSO2 AS puppet module'
+description 'WSO2 AS 5.2.1 version puppet module'
+project_page ''
+
+## Add dependencies, if any:
+# dependency 'username/name', '>= 1.2.0'

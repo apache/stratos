@@ -17,6 +17,14 @@
 
 class mysql{
 
+  require java
+
+  $custom_agent_templates = ['extensions/instance-started.sh']
+  class {'agent':
+    custom_templates => $custom_agent_templates,
+    module=>'mysql'
+  }
+
   if $stratos_mysql_password {
     $root_password = $stratos_mysql_password
   }
@@ -96,4 +104,6 @@ class mysql{
     require => File['/etc/apache2/sites-enabled/000-default'];
   }
 
+  # install stratos_base before java before mysql before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['mysql'] 
 }

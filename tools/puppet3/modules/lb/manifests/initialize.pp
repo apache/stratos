@@ -19,11 +19,11 @@
 
 define lb::initialize ($repo, $version, $service, $local_dir, $target, $mode, $owner,) {
 
-  file {
-    "/${local_dir}/apache-stratos-${service}-${version}.zip":
-      ensure => present,
-      source => "puppet:///modules/lb/apache-stratos-${service}-${version}.zip";
-  }
+#  file {
+#    "/${local_dir}/apache-stratos-${service}-${version}.zip":
+#      ensure => present,
+#      source => "puppet:///modules/lb/apache-stratos-${service}-${version}.zip";
+#  }
 
   exec {
     "creating_target_for_${name}":

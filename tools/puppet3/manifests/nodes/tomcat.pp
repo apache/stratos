@@ -17,12 +17,9 @@
 
 # tomcat cartridge node
 node /tomcat/ inherits base {
+
   $docroot = "/mnt/apache-tomcat-${tomcat_version}/webapps/"
   $samlalias="/mnt/apache-tomcat-${tomcat_version}/webapps/"
 
-  require java
-  class {'agent':}
   class {'tomcat':}
-
-  Class['stratos_base'] -> Class['java'] -> Class['tomcat'] ~> Class['agent']
 }

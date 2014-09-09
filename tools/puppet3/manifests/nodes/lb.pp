@@ -17,9 +17,6 @@
 
 # loadbalancer cartridge node
 node /lb/ inherits base {
-  require java
-  class {'agent':}
-  class {'lb': maintenance_mode   => 'norestart'}
 
-  Class['stratos_base'] -> Class['java'] -> Class['lb'] ~> Class['agent']
+  class {'lb': maintenance_mode   => 'norestart'}
 }

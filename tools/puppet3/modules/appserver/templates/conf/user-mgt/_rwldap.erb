@@ -1,0 +1,41 @@
+        <UserStoreManager class="org.wso2.carbon.user.core.ldap.ReadWriteLDAPUserStoreManager">
+            <Property name="TenantManager">org.wso2.carbon.user.core.tenant.CommonHybridLDAPTenantManager</Property>
+            <Property name="ConnectionURL"><%= @ldap_connection_uri %></Property>
+            <Property name="Disabled">false</Property>                       
+            <Property name="ConnectionName"><%= @bind_dn %></Property>
+            <Property name="ConnectionPassword"><%= @bind_dn_password %></Property>
+            <Property name="passwordHashMethod">SHA</Property>
+            <Property name="UserNameListFilter">(objectClass=person)</Property>
+            <Property name="UserEntryObjectClass">inetOrgPerson</Property>
+            <Property name="UserSearchBase"><%= @user_search_base %></Property>
+            <Property name="UserNameSearchFilter">(&amp;(objectClass=person)(uid=?))</Property>
+            <Property name="UserNameAttribute">uid</Property>
+            <Property name="UsernameJavaRegEx">[a-zA-Z0-9._-|//]{3,30}$</Property>
+            <Property name="UsernameJavaScriptRegEx">^[\S]{3,30}$</Property>
+            <Property name="RolenameJavaScriptRegEx">^[\S]{3,30}$</Property>
+            <Property name="RolenameJavaRegEx">[a-zA-Z0-9._-|//]{3,30}$</Property>
+            <Property name="PasswordJavaScriptRegEx">^[\S]{5,30}$</Property>
+            <Property name="ReadGroups">true</Property>
+            <Property name="WriteGroups">true</Property>
+            <Property name="EmptyRolesAllowed">false</Property>
+            <Property name="GroupSearchBase"><%= @group_search_base %></Property>
+            <Property name="GroupNameListFilter">(objectClass=groupOfNames)</Property>
+            <Property name="GroupEntryObjectClass">groupOfNames</Property>
+            <Property name="GroupNameSearchFilter">(&amp;(objectClass=groupOfNames)(cn=?))</Property>
+            <Property name="GroupNameAttribute">cn</Property>
+            <Property name="SharedGroupNameAttribute">cn</Property>
+            <Property name="SharedGroupSearchBase"><%= @sharedgroup_search_base %></Property>
+            <Property name="SharedGroupEntryObjectClass">groupOfNames</Property>
+            <Property name="SharedGroupNameListFilter">(objectClass=groupOfNames)</Property>
+            <Property name="SharedGroupNameSearchFilter">(&amp;(objectClass=groupOfNames)(cn=?))</Property>
+            <Property name="SharedTenantNameListFilter">(objectClass=organizationalUnit)</Property>
+            <Property name="SharedTenantNameAttribute">ou</Property>
+            <Property name="SharedTenantObjectClass">organizationalUnit</Property>
+            <Property name="MembershipAttribute">member</Property>
+            <Property name="UserRolesCacheEnabled">true</Property>
+            <Property name="ReplaceEscapeCharactersAtUserLogin">true</Property>
+            <Property name="MaxRoleNameListLength">100</Property>
+            <Property name="MaxUserNameListLength">100</Property>
+            <Property name="SCIMEnabled">false</Property>
+        </UserStoreManager>
+

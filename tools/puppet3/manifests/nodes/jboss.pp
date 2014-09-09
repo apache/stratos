@@ -15,4 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
-chown -R www-data:www-data /var/www
+# Jboss cartridge node
+node /jboss/ inherits base {
+
+  $product = 'jboss-as'
+  $version = '7.1.1.Final'
+  $docroot = "/mnt/${product}-${version}/standalone/deployments/"
+  $jboss_user    = 'jbossas1'
+  $jboss_group   = 'jboss'
+
+  class {'jboss': 
+     user       => $jboss_user,
+     group      => $jboss_group,
+     java_home  => $java_home,
+     version    => $version,
+     java_opts  => "-Xms512m -Xmx3000m",
+     extra_jars => ['mysql-connector-java-5.1.29-bin.jar']
+  }
+}
