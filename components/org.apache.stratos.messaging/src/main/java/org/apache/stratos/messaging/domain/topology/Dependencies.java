@@ -20,7 +20,7 @@ public class Dependencies implements Serializable{
 	private Map<String, List<Subscribable>> dependencies = new HashMap<String, List<Subscribable>>();
 	private String kill_behavior = KILL_UNDEFINED;
 	private boolean isKillAllEnabled = false;
-	private Group group;
+	private GroupTemp groupTemp;
 	private static final Log log = LogFactory.getLog(Dependencies.class);
 	public static String KILL_NONE = "kill-none";
 	public static String KILL_ALL = "kill-all";
@@ -207,7 +207,7 @@ public class Dependencies implements Serializable{
 		for (String key : keys) {
 			if (log.isDebugEnabled()) {
 				log.debug("looping over dependency list with key:" + key + " for alias " + alias + 
-						" in group " + this.getGroup().getAlias());
+						" in group " + this.getGroupTemp().getAlias());
 			}
 			List<Subscribable> my_dep = dependencies.get(key);
 			if (my_dep != null) {
@@ -217,7 +217,7 @@ public class Dependencies implements Serializable{
 					if (alias.equals(obj.getAlias())) {
 						//results.add(obj);
 						// adding "key"
-						Subscribable key_upstreamdep = this.group.getSubscribable(key);
+						Subscribable key_upstreamdep = this.groupTemp.getSubscribable(key);
 						if (log.isDebugEnabled()) {
 							log.debug("adding subscribalbe " + key_upstreamdep.getAlias() + " to upstream dependency list");
 						}
@@ -238,17 +238,17 @@ public class Dependencies implements Serializable{
 			}
 		}
 		// get upstream subscribables which have group as dependency
-		Subscribable parent = group.getParent();
-		if (parent instanceof Group) {
-			Group gr = (Group)parent;
-			List<Subscribable> results2 = gr.getUpstreamDependencies(this.group);
+		Subscribable parent = groupTemp.getParent();
+		if (parent instanceof GroupTemp) {
+			GroupTemp gr = (GroupTemp)parent;
+			List<Subscribable> results2 = gr.getUpstreamDependencies(this.groupTemp);
 			for (Subscribable s : results2) {
 				if (!results.contains(s)) {
 					results.add(s);
 				}
 			}
 			if (log.isDebugEnabled()) {
-				log.debug("added " + results2.size() + " elements as subsequent upstream dependencies for " + this.group.getAlias() + 
+				log.debug("added " + results2.size() + " elements as subsequent upstream dependencies for " + this.groupTemp.getAlias() +
 						" as dependency for " + alias);
 			}
 			
@@ -299,12 +299,12 @@ public class Dependencies implements Serializable{
 		return results;
 	} */
 		
-	public Group getGroup() {
-		return group;
+	public GroupTemp getGroupTemp() {
+		return groupTemp;
 	}
 
-	public void setGroup(Group group) {
-		this.group = group;
+	public void setGroupTemp(GroupTemp groupTemp) {
+		this.groupTemp = groupTemp;
 	}
 
 	public String toString() {

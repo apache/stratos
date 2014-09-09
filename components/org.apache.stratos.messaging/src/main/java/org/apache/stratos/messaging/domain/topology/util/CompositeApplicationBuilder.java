@@ -10,7 +10,7 @@ import java.util.*;
 
 public class CompositeApplicationBuilder {
 
-	private Map<String, Group> groups = null;
+	private Map<String, GroupTemp> groups = null;
 	private Map<String, Cartridge> cartridgesTypes = null;
 	
 	private List<ConfigGroup> configGroupArray = null;
@@ -40,7 +40,7 @@ public class CompositeApplicationBuilder {
  				}
  				setConfigConfiguration(configComplexApplication);
  				
- 	        	Group top_level = this.buildApplication();
+ 	        	GroupTemp top_level = this.buildApplication();
  	        	if (top_level != null) {
  	        		if (log.isDebugEnabled()) {
  	    				log.debug("ServiceGroupContext:configComplexApplication toplevel is " + top_level.getAlias());
@@ -71,12 +71,12 @@ public class CompositeApplicationBuilder {
 	
 	
 	
-	public Group buildApplication() {
+	public GroupTemp buildApplication() {
 
 		for (ConfigGroup configGroup : configGroupArray) {
 			log.debug("deploying group " + configGroup.getAlias());
-			Group realGroup = new Group(configGroup.getAlias());
-			groups.put(realGroup.getAlias(), realGroup);
+			GroupTemp realGroupTemp = new GroupTemp(configGroup.getAlias());
+			groups.put(realGroupTemp.getAlias(), realGroupTemp);
 		}
 		
 
@@ -90,29 +90,29 @@ public class CompositeApplicationBuilder {
 		// this should be done when reading the topology event in autoscaler
 		log.debug("converting group configuration to groups and assembling application");
 		for (ConfigGroup configGroup : configGroupArray) {
-			Group assembleGroup = groups.get(configGroup.getAlias());
+			GroupTemp assembleGroupTemp = groups.get(configGroup.getAlias());
 			Map<String, Cartridge> groupCartridges = new HashMap<String, Cartridge>();
-			log.debug("converting configuration for group " + assembleGroup.getAlias());
+			log.debug("converting configuration for group " + assembleGroupTemp.getAlias());
 			for (String key : configGroup.getSubscribables()) {
-				Group realgroup = groups.get(key);
+				GroupTemp realgroup = groups.get(key);
 				if (realgroup != null) {
 					// try cartridges
-					assembleGroup.add(realgroup);
-					realgroup.setParent(assembleGroup);
-					realgroup.setHomeGroup(assembleGroup);
+					assembleGroupTemp.add(realgroup);
+					realgroup.setParent(assembleGroupTemp);
+					realgroup.setHomeGroup(assembleGroupTemp);
 				} else {
 					Cartridge realcartridge_type = cartridgesTypes.get(key);
 					if (realcartridge_type != null) {
 						// create a copy of the cartridge type
 						Cartridge groupCartridge = new Cartridge(realcartridge_type.getAlias());
-						groupCartridge.setCartridgeId(getCartridgeId(assembleGroup.getAlias(), realcartridge_type.getAlias()));
-						assembleGroup.add(groupCartridge);
-						groupCartridge.setParent(assembleGroup);
-						groupCartridge.setHomeGroup(assembleGroup); // TODO need to consolidate parent / home group
+						groupCartridge.setCartridgeId(getCartridgeId(assembleGroupTemp.getAlias(), realcartridge_type.getAlias()));
+						assembleGroupTemp.add(groupCartridge);
+						groupCartridge.setParent(assembleGroupTemp);
+						groupCartridge.setHomeGroup(assembleGroupTemp); // TODO need to consolidate parent / home group
 						groupCartridges.put(groupCartridge.getAlias(), groupCartridge);
 						if (log.isDebugEnabled()) {
 							log.debug("added new cartrdige of type " + groupCartridge.getAlias() + " and cartrdigeId " + groupCartridge.getCartridgeId() + 
-									" to group " + assembleGroup.getAlias());
+									" to group " + assembleGroupTemp.getAlias());
 						}
 					} else {
 						log.debug("Error: no group, cartridge found for alias: " + key);
@@ -120,19 +120,19 @@ public class CompositeApplicationBuilder {
 				}
 			}
 			// build dependencies
-			log.debug("building dependencies for group " + assembleGroup.getAlias());
+			log.debug("building dependencies for group " + assembleGroupTemp.getAlias());
 			Dependencies real_dependencies = buildDependency(configGroup, groups, groupCartridges);
-			assembleGroup.setDependencies(real_dependencies);
-			real_dependencies.setGroup(assembleGroup);
+			assembleGroupTemp.setDependencies(real_dependencies);
+			real_dependencies.setGroupTemp(assembleGroupTemp);
 		}
 		
-		Group application = getTopLevelGroup();
+		GroupTemp application = getTopLevelGroup();
 		log.debug("top level group is: " + application.getAlias());
 		
 		return application;
 	}
 	
-	public Group getTopLevelGroup () {
+	public GroupTemp getTopLevelGroup () {
 		String alias = null;
 		for (ConfigGroup configGroup : configGroupArray) {
 			alias = configGroup.getAlias();
@@ -153,12 +153,12 @@ public class CompositeApplicationBuilder {
 				break;
 			}
 		}		
-		Group application = groups.get(alias);
+		GroupTemp application = groups.get(alias);
 		log.debug("top level group is: " + alias);
 		return application;
 	}
 	
-	public Dependencies buildDependency(ConfigGroup configGroup, Map<String, Group> groups, Map<String, Cartridge> groupCartridges) {
+	public Dependencies buildDependency(ConfigGroup configGroup, Map<String, GroupTemp> groups, Map<String, Cartridge> groupCartridges) {
 		
 		// building dependencies
 		ConfigDependencies config_dep = configGroup.getDependencies();
@@ -171,7 +171,7 @@ public class CompositeApplicationBuilder {
 		    	String key = pair.getKey();
 		    	String value = pair.getValue();
 			    //check groups
-			    Group gr = groups.get(value);
+			    GroupTemp gr = groups.get(value);
 			    log.debug("checking dependency for key " + key + " /val: " + value + " in groups");
 			    if (gr != null) {
 			    	real_dependencies.addDependency(key, gr);
@@ -202,7 +202,7 @@ public class CompositeApplicationBuilder {
     }
 	
 	private  void setConfigConfiguration(ConfigCompositeApplication configApp) {
-		this.groups = new HashMap<String, Group>();
+		this.groups = new HashMap<String, GroupTemp>();
 		this.cartridgesTypes = new HashMap<String, Cartridge>();
 		
 		if (configApp.getComponents() != null) {

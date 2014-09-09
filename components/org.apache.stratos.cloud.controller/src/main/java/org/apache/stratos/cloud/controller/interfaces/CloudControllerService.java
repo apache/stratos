@@ -19,15 +19,9 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
-import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
+import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 
 /**
  * This API provides a way to communicate with underline
@@ -161,5 +155,13 @@ public interface CloudControllerService {
      * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
      */
     public ClusterContext getClusterContext (String clusterId);
+
+    /**
+     * deployed an Application Definition
+     *
+     * @param applicationContext {@link org.apache.stratos.cloud.controller.pojo.application.ApplicationContext} object
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
 }

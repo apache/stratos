@@ -18,8 +18,8 @@ public interface Subscribable {
 	
 	public void unsubscribe();	
 	
-	public void setHomeGroup(Group homeGroup);
+	public void setHomeGroup(GroupTemp homeGroupTemp);
 	
-	public Group getHomeGroup();
+	public GroupTemp getHomeGroup();
 
 }

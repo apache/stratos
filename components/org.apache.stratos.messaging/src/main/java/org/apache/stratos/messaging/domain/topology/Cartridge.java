@@ -12,7 +12,7 @@ public class Cartridge implements Subscribable, Scalable {
 	private String cartridgeId;
 	private Dependencies dependencies;
 	private Subscribable parent;
-	private Group homeGroup;
+	private GroupTemp homeGroupTemp;
     private Cluster cluster;
     private static final Log log = LogFactory.getLog(Cartridge.class);
 
@@ -40,12 +40,12 @@ public class Cartridge implements Subscribable, Scalable {
 		return parent;
 	}
 
-	public Group getHomeGroup() {
-		return homeGroup;
+	public GroupTemp getHomeGroup() {
+		return homeGroupTemp;
 	}
 
-	public void setHomeGroup(Group homeGroup) {
-		this.homeGroup = homeGroup;
+	public void setHomeGroup(GroupTemp homeGroupTemp) {
+		this.homeGroupTemp = homeGroupTemp;
 	}
 
 	public void setParent(Subscribable parent) {

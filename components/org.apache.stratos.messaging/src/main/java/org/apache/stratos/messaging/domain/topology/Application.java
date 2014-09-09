@@ -19,33 +19,35 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Group implements SubscribableBehavior {
+public class Application implements SubscribableBehavior {
 
-    // Name of the Group, specified in Group Definition
-    private String name;
-    // Group alias
-    private String alias;
+    // Unique id for the Application, defined in Application Definition
+    private String id;
+    // Key used for authentication (with metadata service, etc.)
+    private String key;
     // Dependency Order
     private DependencyOrder dependencyOrder;
-    // Sub Group Map, key = Group.name
+    // Group Map, key = Group.name
     private Map<String, Group> groupMap;
     // Cluster Id map, key = service name
     private Map<String, String> clusterIdMap;
 
-    public Group (String name, String alias) {
-        this.name = name;
-        this.alias = alias;
+    public Application (String id) {
+        this.id = id;
+        this.key = RandomStringUtils.randomAlphanumeric(16);
         groupMap = new HashMap<String, Group>();
         clusterIdMap = new HashMap<String, String>();
     }
 
     @Override
     public void addGroup(Group group) {
-        groupMap.put(group.name, group);
+        groupMap.put(group.getName(), group);
     }
 
     @Override
@@ -83,11 +85,11 @@ public class Group implements SubscribableBehavior {
         return clusterIdMap.values();
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getKey() {
+        return key;
     }
 }

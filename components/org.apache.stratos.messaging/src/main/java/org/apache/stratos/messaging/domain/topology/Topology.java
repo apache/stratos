@@ -39,6 +39,9 @@ public class Topology implements Serializable {
     //Grouping
     private Map<String, CompositeApplication> compositeApplicationMap;
     private Map<String, ConfigCompositeApplication> configCompositeApplicationMap;
+    // Key: Application.id
+    private Map<String, Application> applicationMap;
+
     private boolean initialized;
     private static Log log = LogFactory.getLog(Topology.class);
 
@@ -46,6 +49,23 @@ public class Topology implements Serializable {
         this.serviceMap = new HashMap<String, Service>();
         this.compositeApplicationMap = new HashMap<String, CompositeApplication>();
         this.configCompositeApplicationMap = new HashMap<String, ConfigCompositeApplication>();
+        this.applicationMap = new HashMap<String, Application>();
+    }
+
+    public void addApplication (Application application) {
+        this.applicationMap.put(application.getId(), application);
+    }
+
+    public Application getApplication (String applicationId) {
+        return applicationMap.get(applicationId);
+    }
+
+    public Collection<Application> getApplications () {
+        return applicationMap.values();
+    }
+
+    public boolean applicationExists (String applicationId) {
+        return this.applicationMap.containsKey(applicationId);
     }
 
     public Collection<Service> getServices() {
@@ -120,7 +140,7 @@ public class Topology implements Serializable {
     public void removeConfigCompositeApplication(String alias) {
         this.configCompositeApplicationMap.remove(alias);
     }
-    
+
     public void removeAllCompositeApplication() {
     	java.util.Set<String> keys = this.compositeApplicationMap.keySet();
     	for (String key : keys) {

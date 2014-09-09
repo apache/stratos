@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -1303,6 +1304,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public ClusterContext getClusterContext (String clusterId) {
 
         return dataHolder.getClusterContext(clusterId);
+    }
+
+    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
+
+        // TODO:
+        // 1. parse and create Composite App tree
+        // 2. send the ApplicationCreated event
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {

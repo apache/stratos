@@ -35,8 +35,8 @@ public class CompositeApplication implements Serializable {
     private static final long serialVersionUID = -1L;
     // Key: Service.serviceName
     private String alias;
-    private Group top_level;
-    private Map<String, Group> all_groups  = null;
+    private GroupTemp top_level;
+    private Map<String, GroupTemp> all_groups  = null;
     private List<String> clusterIds;
     private static final Log log = LogFactory.getLog(CompositeApplication.class);
 
@@ -63,21 +63,21 @@ public class CompositeApplication implements Serializable {
 	} */
 	
 
-	public Map<String, Group> getAll_groups() {
+	public Map<String, GroupTemp> getAll_groups() {
 		return all_groups;
 	}
 
-	public void setAll_groups(Map<String, Group> all_groups) {
+	public void setAll_groups(Map<String, GroupTemp> all_groups) {
 		this.all_groups = all_groups;
 	}
 	
 	
-	public List<Group> findAllGroupsForServiceType(String serviceType) {
+	public List<GroupTemp> findAllGroupsForServiceType(String serviceType) {
 		Set<String> group_names = this.all_groups.keySet();
-		List<Group> found_groups = new ArrayList<Group>();
+		List<GroupTemp> found_groups = new ArrayList<GroupTemp>();
 		
 		for (String group_name: group_names) {
-			Group gr = this.all_groups.get(group_name);
+            GroupTemp gr = this.all_groups.get(group_name);
 			Subscribable sub = gr.getSubscribable(serviceType);
 			if (sub != null) {
 				found_groups.add(gr);
@@ -87,7 +87,7 @@ public class CompositeApplication implements Serializable {
 		return found_groups;
 	}
 	
-	public Group getGroupFromGroupAlias(String alias) {
+	public GroupTemp getGroupFromGroupAlias(String alias) {
 		return this.all_groups.get(alias);
 	}
 	
@@ -260,7 +260,7 @@ public class CompositeApplication implements Serializable {
  		return arrayAll;
 	} */
 	
-	public Map<String, String> getAllInPathOfAsMap(String aServiceId, Group home_group) {
+	public Map<String, String> getAllInPathOfAsMap(String aServiceId, GroupTemp home_group) {
 		// check kill_all_enabled flag
 			Map<String, String> upstreamDependencies = home_group.getUpstreamDependenciesAsMap(aServiceId);
 			Map<String, String> downstreamDependencies = home_group.getDownStreamDependenciesAsMap(aServiceId);

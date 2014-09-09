@@ -20,10 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -32,6 +29,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CompleteTopologyMessageProcessor extends MessageProcessor {
@@ -120,6 +118,21 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
 						}
 					}
 				}
+
+                // add existing Applications to Topology
+                Collection<Application> applications = event.getTopology().getApplications();
+                if (applications != null && !applications.isEmpty()) {
+                    for (Application application : applications) {
+                        topology.addApplication(application);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Application with id [ " +  application.getId() + " ] added to Topology");
+                        }
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("No Application information found in Complete Topology event");
+                    }
+                }
 
 				if (log.isInfoEnabled()) {
 					log.info("Topology initialized");

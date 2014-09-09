@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,33 +19,15 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import java.io.Serializable;
-import java.util.*;
+public class ApplicationRemovedEvent extends TopologyEvent {
 
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
+    private String applicationId;
 
+    public ApplicationRemovedEvent (String applicationId) {
+        this.applicationId = applicationId;
+    }
 
-/**
- * 
- * @author netiq
- * event is fired when application is created
- */
-public class CompositeApplicationCreatedEvent extends TopologyEvent implements Serializable{
-	private static final long serialVersionUID = -1L;
-	private ConfigCompositeApplication compositeApplication;
-	
-	public CompositeApplicationCreatedEvent(ConfigCompositeApplication configCompositeApplication) {
-		this.compositeApplication = configCompositeApplication;
-		
-	}
-
-	public String getApplicationAlias() {
-		return compositeApplication.getAlias();
-	}
-	
-	public ConfigCompositeApplication getCompositeApplication () {
-		return this.compositeApplication;
-	}
+    public String getApplicationId() {
+        return applicationId;
+    }
 }
-
-

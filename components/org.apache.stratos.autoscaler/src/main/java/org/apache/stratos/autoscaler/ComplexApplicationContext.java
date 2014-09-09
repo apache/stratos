@@ -89,7 +89,7 @@ public class ComplexApplicationContext {
 			return true;
 		} 
 		
-		List<Group> service_type_groups = complexApplication.findAllGroupsForServiceType(serviceType);
+		List<GroupTemp> service_type_groupTemps = complexApplication.findAllGroupsForServiceType(serviceType);
 
 		String clusterGroupFromClusterId = extractClusterGroupFromClusterId(clusterId);
 		
@@ -99,16 +99,16 @@ public class ComplexApplicationContext {
 			}
 		}
 		
-		for (Group service_type_group : service_type_groups) {
+		for (GroupTemp service_type_groupTemp : service_type_groupTemps) {
 			// check if cluster is in the group
 			if (log.isDebugEnabled()) {
-				log.debug(" checking if cluster  " + clusterId + " is in the group " + service_type_group.getAlias() +
+				log.debug(" checking if cluster  " + clusterId + " is in the group " + service_type_groupTemp.getAlias() +
 						"extracted group from clusterId is " + clusterGroupFromClusterId);
 			}
-			if (service_type_group.getAlias().equals(clusterGroupFromClusterId)) {
-				boolean result_flag = checkServiceDependenciesForServiceType (serviceType, clusterId, kill_flag, service_type_group);
+			if (service_type_groupTemp.getAlias().equals(clusterGroupFromClusterId)) {
+				boolean result_flag = checkServiceDependenciesForServiceType (serviceType, clusterId, kill_flag, service_type_groupTemp);
 				if (log.isDebugEnabled()) {
-					log.debug("cluster is " + clusterId + " is in the group " + service_type_group.getAlias() + " and startup dependency check is " + result_flag);
+					log.debug("cluster is " + clusterId + " is in the group " + service_type_groupTemp.getAlias() + " and startup dependency check is " + result_flag);
 				}
 				return result_flag;
 			}
@@ -122,11 +122,11 @@ public class ComplexApplicationContext {
     	
     }
     
-    public static boolean checkServiceDependenciesForServiceType(String serviceType, String clusterId, boolean kill_flag, Group home_group) {
+    public static boolean checkServiceDependenciesForServiceType(String serviceType, String clusterId, boolean kill_flag, GroupTemp home_groupTemp) {
 		
     	String aServiceId = serviceType;
 		
-		if (home_group == null) {
+		if (home_groupTemp == null) {
  			if (log.isDebugEnabled()) {
  				log.debug(" lone cluster without group " + aServiceId + "skip checking and return true (no dependency check)" );
  			}
@@ -134,7 +134,7 @@ public class ComplexApplicationContext {
  		}
 		
 		
-		if (ComplexApplicationContext.isInKillAllTransition(getKillInTransitionKey(serviceType, home_group.getAlias()))) {
+		if (ComplexApplicationContext.isInKillAllTransition(getKillInTransitionKey(serviceType, home_groupTemp.getAlias()))) {
 			if (log.isDebugEnabled()) {
 				log.debug(" subscribable " + aServiceId + " is inKillAll transition, not spawning a new instance" );
 			}
@@ -145,7 +145,7 @@ public class ComplexApplicationContext {
 			}
 		}
 
-		Map<String, String> downstreamDependencies = home_group.getDownStreamDependenciesAsMap(aServiceId);
+		Map<String, String> downstreamDependencies = home_groupTemp.getDownStreamDependenciesAsMap(aServiceId);
 		
 		
 		if (downstreamDependencies == null || downstreamDependencies.size() == 0) {
@@ -223,7 +223,7 @@ public class ComplexApplicationContext {
 			return true;
 		}
 
-		List<Group> service_type_groups = complexApplication.findAllGroupsForServiceType(serviceType);
+		List<GroupTemp> service_type_groupTemps = complexApplication.findAllGroupsForServiceType(serviceType);
 
 		String clusterGroupFromClusterId = extractClusterGroupFromClusterId(clusterId);
 		
@@ -233,17 +233,17 @@ public class ComplexApplicationContext {
 			}
 		}
 		
-		for (Group service_type_group : service_type_groups) {
+		for (GroupTemp service_type_groupTemp : service_type_groupTemps) {
 			// check if cluster is in the group
 			if (log.isDebugEnabled()) {
-				log.debug(" checking if cluster  " + clusterId + " is in the group " + service_type_group.getAlias() +
+				log.debug(" checking if cluster  " + clusterId + " is in the group " + service_type_groupTemp.getAlias() +
 						"extracted group from clusterId is " + clusterGroupFromClusterId);
 			}
-			if (service_type_group.getAlias().equals(clusterGroupFromClusterId)) {
-				boolean result_flag = checkKillTerminateDependenciesForServiceType (serviceType, clusterId, kill_flag, 
-						service_type_group, complexApplication);
+			if (service_type_groupTemp.getAlias().equals(clusterGroupFromClusterId)) {
+				boolean result_flag = checkKillTerminateDependenciesForServiceType (serviceType, clusterId, kill_flag,
+                        service_type_groupTemp, complexApplication);
 				if (log.isDebugEnabled()) {
-					log.debug("cluster is " + clusterId + " is in the group " + service_type_group.getAlias() + " and kill dependency check is " + result_flag);
+					log.debug("cluster is " + clusterId + " is in the group " + service_type_groupTemp.getAlias() + " and kill dependency check is " + result_flag);
 				}
 				return result_flag;
 			}
@@ -258,16 +258,16 @@ public class ComplexApplicationContext {
 
     // return false will terminate instances
     public boolean checkKillTerminateDependenciesForServiceType (String serviceType, String clusterId, boolean kill_flag, 
-    		Group home_group, CompositeApplication complexApplication ) {
+    		GroupTemp home_groupTemp, CompositeApplication complexApplication ) {
 		
     	String aServiceId = serviceType;
 		
-		if (home_group == null) {
+		if (home_groupTemp == null) {
  			if (log.isDebugEnabled()) {
  				log.debug(" lone cluster without top level group " + aServiceId + "skip checking and return true (no kill)" );
  			}
  			return true;
- 		} else if (home_group.findGroup(aServiceId) == null) {
+ 		} else if (home_groupTemp.findGroup(aServiceId) == null) {
  			if (log.isDebugEnabled()) {
  				log.debug(" lone cluster without group " + aServiceId + "skip checking and return true (no kill)" );
  			}
@@ -281,7 +281,7 @@ public class ComplexApplicationContext {
 			log.debug("checking  downstream dependencies for " + aServiceId );
 		}
 		Map<String, String> downstreamDependencies = null;
-		downstreamDependencies = home_group.getDownStreamDependenciesAsMap(aServiceId);
+		downstreamDependencies = home_groupTemp.getDownStreamDependenciesAsMap(aServiceId);
 		if (log.isDebugEnabled()) {
  			StringBuffer buf = new StringBuffer();
  			buf.append("downstreamdependencies list: [ ");
@@ -305,7 +305,7 @@ public class ComplexApplicationContext {
 				log.debug("checking  upstream dependencies for " + aServiceId );
 		}
 		// 2. get upstream dependencies
-		Map<String, String> upstreamDependencies = home_group.getUpstreamDependenciesAsMap(aServiceId);
+		Map<String, String> upstreamDependencies = home_groupTemp.getUpstreamDependenciesAsMap(aServiceId);
  		
 		if (log.isDebugEnabled()) {
  			StringBuffer buf = new StringBuffer();
@@ -335,7 +335,7 @@ public class ComplexApplicationContext {
  		// return false if instances should be terminated, true if not
  		for (String serviceTypeAlias : in_active_upstreams) {
  			String gr_alias = upstreamDependencies.get(serviceTypeAlias); 
- 			Group gr = complexApplication.getGroupFromGroupAlias(gr_alias);
+ 			GroupTemp gr = complexApplication.getGroupFromGroupAlias(gr_alias);
  			if (gr != null) {
  				
 	 			kill_behavior = gr.getDependencies().getKill_behavior();
@@ -350,7 +350,7 @@ public class ComplexApplicationContext {
 	 					// building key from alias + group alias
 	 					ComplexApplicationContext.setKillAllTransitionFlag(getKillInTransitionKey(serviceTypeAlias,gr.getAlias()));
 	 					// building key from alias + group alias
-	 					ComplexApplicationContext.setKillAllTransitionFlag(getKillInTransitionKey(aServiceId,home_group.getAlias()));
+	 					ComplexApplicationContext.setKillAllTransitionFlag(getKillInTransitionKey(aServiceId, home_groupTemp.getAlias()));
 	 					return false;
 	 				} else {
 	 					if (log.isDebugEnabled()) {
@@ -384,8 +384,8 @@ public class ComplexApplicationContext {
  		}
  		
  		// check kill_all_enabled flag
- 		Map<String, String> all = complexApplication.getAllInPathOfAsMap(aServiceId, home_group);
- 		String [] group_with_kill_all_aliases = home_group.findAllGroupsWithKill2(all, Dependencies.KILL_ALL);
+ 		Map<String, String> all = complexApplication.getAllInPathOfAsMap(aServiceId, home_groupTemp);
+ 		String [] group_with_kill_all_aliases = home_groupTemp.findAllGroupsWithKill2(all, Dependencies.KILL_ALL);
  		// "persistent flag for each group"
  		this.updateEnableKillAllFlag(all, group_with_kill_all_aliases);
  		
@@ -398,7 +398,7 @@ public class ComplexApplicationContext {
  		
  		kill_behavior = Dependencies.KILL_UNDEFINED;
  		for (String alias : in_active_downstreams) {
- 			Group gr = home_group.findGroup(alias);
+ 			GroupTemp gr = home_groupTemp.findGroup(alias);
  			if (gr !=null) {
 	 			kill_behavior = gr.getDependencies().getKill_behavior();
 	 			if (kill_behavior.equals(Dependencies.KILL_ALL) ) {
@@ -447,7 +447,7 @@ public class ComplexApplicationContext {
  		}
  		
  		// this cluster
- 		Group gr = home_group.findGroup(aServiceId);
+ 		GroupTemp gr = home_groupTemp.findGroup(aServiceId);
  		if (gr == null) {
  			if (log.isDebugEnabled()) {
  				log.debug(" cluster without group, should not reach this code ? for " + aServiceId );
