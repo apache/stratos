@@ -37,6 +37,7 @@ public class CartridgeAgentConfiguration {
 
     private static final Log log = LogFactory.getLog(CartridgeAgentConfiguration.class);
     private static volatile CartridgeAgentConfiguration instance;
+    private boolean initialized;
     private final String serviceGroup;
     private final String serviceName;
     private final String clusterId;
@@ -495,5 +496,13 @@ public class CartridgeAgentConfiguration {
 
     public boolean isCheckoutEnabled() {
         return isCheckoutEnabled;
+    }
+    
+    public boolean isInitialized() {
+    	return initialized;
+    }
+    
+    public void setInitialized(boolean initialized) {
+    	this.initialized = initialized;
     }
 }

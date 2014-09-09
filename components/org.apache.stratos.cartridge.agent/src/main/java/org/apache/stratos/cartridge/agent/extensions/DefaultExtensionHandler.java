@@ -334,8 +334,16 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         String serviceNameInPayload = CartridgeAgentConfiguration.getInstance().getServiceName();
         String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
         String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
-        ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
 
+        
+        boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
+        if (!isConsistent) {
+        	// if this member isn't there in the complete topology
+        	return;
+        } else {
+        	CartridgeAgentConfiguration.getInstance().setInitialized(true);
+        }
+        
         Topology topology = completeTopologyEvent.getTopology();
         Service service = topology.getService(serviceNameInPayload);
         Cluster cluster = service.getCluster(clusterIdInPayload);
@@ -344,6 +352,27 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         env.put("STRATOS_TOPOLOGY_JSON", gson.toJson(topology.getServices(), serviceType));
         env.put("STRATOS_MEMBER_LIST_JSON", gson.toJson(cluster.getMembers(), memberType));
         ExtensionUtils.executeCompleteTopologyExtension(env);
+    }
+    
+    
+    @Override
+    
+    public void onInstanceSpawnedEvent(InstanceSpawnedEvent instanceSpawnedEvent) {
+    
+    	// listen to this just to get updated faster about the member initialization
+    	if (log.isDebugEnabled()) {
+    		log.debug("Instance Spawned event received");
+    	}
+    	String serviceNameInPayload = CartridgeAgentConfiguration.getInstance().getServiceName();
+    	String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+    	String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
+    	boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
+    	if (!isConsistent) {
+    		// if this event is not relevant to this member
+    		return;
+    	} else {
+    		CartridgeAgentConfiguration.getInstance().setInitialized(true);
+    	}
     }
 
     @Override

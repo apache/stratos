@@ -55,9 +55,10 @@ rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
             $ctxt : PartitionContext ()
-            eval($ctxt.getObsoletedMembers().size() > 0)
-            memberId : String() from $ctxt.getObsoletedMembers()
+            eval($ctxt.getObsoletedMembers().keySet().size() > 0)
+            memberId : String() from $ctxt.getObsoletedMembers().keySet()
+            memCtxt : MemberContext() from $ctxt.getObsoletedMembers().get(memberId)
             eval($ctxt.removeObsoleteMember(memberId))
         then
-            addObsoleteMember(memberId);
+            addObsoleteMember(memCtxt);
 end

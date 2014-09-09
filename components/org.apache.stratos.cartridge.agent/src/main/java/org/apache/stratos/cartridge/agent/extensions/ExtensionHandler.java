@@ -32,6 +32,9 @@ import org.apache.stratos.messaging.event.topology.*;
 import java.io.IOException;
 
 public interface ExtensionHandler {
+	
+	public void onInstanceSpawnedEvent(InstanceSpawnedEvent instanceSpawnedEvent);
+	
     public void onInstanceStartedEvent();
 
     public void onInstanceActivatedEvent();

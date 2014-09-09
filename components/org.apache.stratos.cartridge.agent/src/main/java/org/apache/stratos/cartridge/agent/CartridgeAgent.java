@@ -95,9 +95,17 @@ public class CartridgeAgent implements Runnable {
 
         // Start topology event receiver thread
         registerTopologyEventListeners();
-
+        
         // Start tenant event receiver thread
         registerTenantEventListeners();
+        
+		// wait till the member spawned event
+		while (!CartridgeAgentConfiguration.getInstance().isInitialized()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ignore) {
+			}
+		}
 
         // Execute instance started shell script
         extensionHandler.onInstanceStartedEvent();
@@ -317,10 +325,41 @@ public class CartridgeAgent implements Runnable {
         if (log.isDebugEnabled()) {
             log.debug("Starting topology event message receiver thread");
         }
+        
         TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
+        
+        topologyEventReceiver.addEventListener(new InstanceSpawnedEventListener() {
+        	@Override
+        	protected void onEvent(Event event) {
+        		try {
+        			boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+        			if (initialized) {
+        				// no need to process this event, if the member is initialized.
+        				return;
+        			}
+        			TopologyManager.acquireReadLock();
+        			if (log.isDebugEnabled()) {
+        				log.debug("Instance spawned event received");
+        			}
+        			InstanceSpawnedEvent instanceSpawnedEvent = (InstanceSpawnedEvent) event;
+        			extensionHandler.onInstanceSpawnedEvent(instanceSpawnedEvent);
+        		} catch (Exception e) {
+        			if (log.isErrorEnabled()) {
+        				log.error("Error processing instance spawned event", e);
+        			}
+        		} finally {
+        			TopologyManager.releaseReadLock();
+        		}
+        	}
+        });
+        
         topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+            	if (!initialized) {
+            		return;
+            	}
                 try {
                     TopologyManager.acquireReadLock();
                     if (log.isDebugEnabled()) {
@@ -341,6 +380,10 @@ public class CartridgeAgent implements Runnable {
         topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+            	if (!initialized) {
+            		return;
+            	}
                 try {
                     TopologyManager.acquireReadLock();
                     if (log.isDebugEnabled()) {
@@ -361,6 +404,10 @@ public class CartridgeAgent implements Runnable {
         topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
+            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+            	if (!initialized) {
+            		return;
+            	}
                 try {
                     TopologyManager.acquireReadLock();
                     if (log.isDebugEnabled()) {
@@ -379,10 +426,10 @@ public class CartridgeAgent implements Runnable {
         });
 
         topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
-            private boolean initialized;
 
             @Override
             protected void onEvent(Event event) {
+            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
                 if (!initialized) {
                     try {
                         TopologyManager.acquireReadLock();
@@ -391,7 +438,6 @@ public class CartridgeAgent implements Runnable {
                         }
                         CompleteTopologyEvent completeTopologyEvent = (CompleteTopologyEvent) event;
                         extensionHandler.onCompleteTopologyEvent(completeTopologyEvent);
-                        initialized = true;
                     } catch (Exception e) {
                         if (log.isErrorEnabled()) {
                             log.error("Error processing complete topology event", e);
@@ -406,6 +452,10 @@ public class CartridgeAgent implements Runnable {
         topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
+            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+            	if (!initialized) {
+            		return;
+            	}
                 try {
                     TopologyManager.acquireReadLock();
                     if (log.isDebugEnabled()) {

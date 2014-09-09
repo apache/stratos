@@ -314,6 +314,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         }
                     } else if (partitionContext.removeActiveMemberById(memberId)) {
                         log.warn(String.format("Member is in the wrong list and it is removed from active members list", memberId));
+                    } else if (partitionContext.removeObsoleteMember(memberId)){
+                    	log.warn(String.format("Member's obsolated timeout has been expired and it is removed from obsolated members list", memberId));
                     } else {
                         log.warn(String.format("Member is not available in any of the list active, pending and termination pending", memberId));
                     }

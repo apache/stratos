@@ -380,76 +380,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new InvalidIaasProviderException(msg);
             }
 
-            // generate the group id from domain name and sub domain
-            // name.
-            // Should have lower-case ASCII letters, numbers, or dashes.
-            // Should have a length between 3-15
-            String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
-            String group = str.replaceAll("[^a-z0-9-]", "");
-
-            NodeMetadata node;
-            
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is delegating request to start an instance for "
-						+ memberContext + " to Jclouds layer.");
-			}
-
-//            create and start a node
-            Set<? extends NodeMetadata> nodes =
-                                                computeService.createNodesInGroup(group, 1,
-                                                                                  template);
-
-            node = nodes.iterator().next();
-            
-            if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller received a response for the request to start "
-						+ memberContext + " from Jclouds layer.");
-			}
-            
-            
-            //Start allocating ip as a new job
-
+            //Start instance start up in a new thread
             ThreadExecutor exec = ThreadExecutor.getInstance();
             if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is starting the IP Allocator thread.");
+            	log.debug("Cloud Controller is starting the instance start up thread.");
 			}
-            exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
-
-
-            // node id
-            String nodeId = node.getId();
-            if (nodeId == null) {
-                String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
-                log.fatal(msg);
-                throw new IllegalStateException(msg);
-            }
-            
-			memberContext.setNodeId(nodeId);
-			if (log.isDebugEnabled()) {
-				log.debug("Node id was set. " + memberContext.toString());
-			}
-
-                // attach volumes
-			if (ctxt.isVolumeRequired()) {
-				// remove region prefix
-				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
-						.substring(nodeId.indexOf('/') + 1, nodeId.length())
-						: nodeId;
-				memberContext.setInstanceId(instanceId);
-				if (ctxt.getVolumes() != null) {
-					for (Volume volume : ctxt.getVolumes()) {
-						try {
-							iaas.attachVolume(instanceId, volume.getId(),
-									volume.getDevice());
-						} catch (Exception e) {
-							// continue without throwing an exception, since
-							// there is an instance already running
-							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
-									+ instanceId + " ] failed!", e);
-						}
-					}
-				}
-			}
+            exec.execute(new JcloudsInstanceCreator(memberContext, iaasProvider, cartridgeType));
 
             log.info("Instance is successfully starting up. "+memberContext.toString());
 
@@ -622,19 +558,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    private class IpAllocator implements Runnable {
+    private class JcloudsInstanceCreator implements Runnable {
 
         private MemberContext memberContext;
         private IaasProvider iaasProvider;
         private String cartridgeType;
-        NodeMetadata node;
 
-        public IpAllocator(MemberContext memberContext, IaasProvider iaasProvider, 
-        		String cartridgeType, NodeMetadata node) {
+        public JcloudsInstanceCreator(MemberContext memberContext, IaasProvider iaasProvider, 
+        		String cartridgeType) {
             this.memberContext = memberContext;
             this.iaasProvider = iaasProvider;
             this.cartridgeType = cartridgeType;
-            this.node = node;
         }
 
         @Override
@@ -643,7 +577,76 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = memberContext.getClusterId();
             Partition partition = memberContext.getPartition();
+            ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+            Iaas iaas = iaasProvider.getIaas();
             String publicIp = null;
+            
+            NodeMetadata node = null;
+            // generate the group id from domain name and sub domain name.
+            // Should have lower-case ASCII letters, numbers, or dashes.
+            // Should have a length between 3-15
+            String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
+            String group = str.replaceAll("[^a-z0-9-]", "");
+            
+            try {
+            	ComputeService computeService = iaasProvider
+            			.getComputeService();
+            	Template template = iaasProvider.getTemplate();
+            	
+            	if (log.isDebugEnabled()) {
+            		log.debug("Cloud Controller is delegating request to start an instance for "
+            				+ memberContext + " to Jclouds layer.");
+            	}
+            	// create and start a node
+            	Set<? extends NodeMetadata> nodes = computeService
+            			.createNodesInGroup(group, 1, template);
+            	node = nodes.iterator().next();
+            	if (log.isDebugEnabled()) {
+            		log.debug("Cloud Controller received a response for the request to start "
+            				+ memberContext + " from Jclouds layer.");
+            	}
+            	
+            	// node id
+            	String nodeId = node.getId();
+            	if (nodeId == null) {
+            		String msg = "Node id of the starting instance is null.\n"
+            				+ memberContext.toString();
+            		log.fatal(msg);
+            		throw new IllegalStateException(msg);
+            	}
+            	
+            	memberContext.setNodeId(nodeId);
+            	if (log.isDebugEnabled()) {
+            		log.debug("Node id was set. " + memberContext.toString());
+            	}
+            	
+            	// attach volumes
+            	if (ctxt.isVolumeRequired()) {
+            		// remove region prefix
+            		String instanceId = nodeId.indexOf('/') != -1 ? nodeId
+            				.substring(nodeId.indexOf('/') + 1, nodeId.length())
+            				: nodeId;
+            				memberContext.setInstanceId(instanceId);
+            				if (ctxt.getVolumes() != null) {
+            					for (Volume volume : ctxt.getVolumes()) {
+            						try {
+            							iaas.attachVolume(instanceId, volume.getId(),
+            									volume.getDevice());
+            						} catch (Exception e) {
+            							// continue without throwing an exception, since
+            							// there is an instance already running
+            							log.error("Attaching Volume to Instance [ "
+            									+ instanceId + " ] failed!", e);
+            						}
+            					}
+            				}
+            	}
+            	
+            } catch (Exception e) {
+            	String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
+            	log.error(msg, e);
+            	throw new IllegalStateException(msg, e);
+            }
 
             try{
             	if (log.isDebugEnabled()) {
@@ -668,7 +671,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     			if(log.isDebugEnabled()) {
                     				log.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
                     			}
-	    	                	Iaas iaas = iaasProvider.getIaas();
 	    	                	ip = iaas.associatePredefinedAddress(node, pre_defined_ip);
 	    	       
 	    	                	if (ip == null || "".equals(ip) || !pre_defined_ip.equals(ip)) {
@@ -697,7 +699,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, " + pre_defined_ip
                         			+ ", selecting available one from pool");
                         	}
-                        	Iaas iaas = iaasProvider.getIaas();
                             // allocate an IP address - manual IP assigning mode
                             ip = iaas.associateAddress(node);
                             
