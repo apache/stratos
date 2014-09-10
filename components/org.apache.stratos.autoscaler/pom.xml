@@ -207,6 +207,22 @@
 					</instructions>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+                <configuration>
+                    <className>org.apache.stratos.autoscaler.api.AutoScalerServiceImpl</className>
+                    <outputFileName>target/generated-resources/wsdl/AutoScalerService.wsdl</outputFileName>
+                    <serviceName>AutoScalerService</serviceName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java2wsdl</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
         <resources>
            <resource>

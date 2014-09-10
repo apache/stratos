@@ -30,6 +30,9 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
@@ -65,6 +68,9 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinit
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
+import org.apache.stratos.rest.endpoint.exception.KubernetesGroupDoesNotExistException;
+import org.apache.stratos.rest.endpoint.exception.KubernetesHostAlreadyDeployedException;
+import org.apache.stratos.rest.endpoint.exception.KubernetesMasterDoesNotExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
@@ -161,6 +167,8 @@ public class ServiceUtils {
 
         }
     }
+
+
 
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
@@ -1254,4 +1262,27 @@ public class ServiceUtils {
 
     }
 
+    public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws KubernetesGroupDoesNotExistException {
+        return false;
+    }
+
+    public static boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost) throws KubernetesHostAlreadyDeployedException{
+        return false;
+    }
+
+    public static boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws KubernetesMasterDoesNotExistException {
+        return false;
+    }
+
+    public static KubernetesGroup[] getAvailableKubernetesGroups() {
+        return null;
+    }
+
+    public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws KubernetesGroupDoesNotExistException {
+        return null;
+    }
+
+    public static boolean undeployKubernetesGroup(String kubernetesGroupId) throws KubernetesGroupDoesNotExistException {
+        return false;
+    }
 }
