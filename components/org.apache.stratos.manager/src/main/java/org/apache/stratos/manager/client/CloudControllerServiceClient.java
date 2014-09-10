@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaa
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredClusterExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -92,6 +93,14 @@ public class CloudControllerServiceClient {
 		stub.undeployCartridgeDefinition(cartridgeType);
 
 	}
+    
+    public void deployServiceGroup (ServiceGroup serviceGroup) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	stub.deployServiceGroup(serviceGroup);
+    }
+    
+    public void undeployServiceGroup (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	stub.undeployServiceGroup(name);
+    }
 
 	public boolean register(String clusterId, String cartridgeType,
                             String payload, String tenantRange,

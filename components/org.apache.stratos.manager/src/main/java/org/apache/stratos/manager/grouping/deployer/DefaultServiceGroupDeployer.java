@@ -22,45 +22,65 @@ package org.apache.stratos.manager.grouping.deployer;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+//import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
-import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
+import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
+import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
+import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
+import org.apache.stratos.cloud.controller.stub.pojo.StartupOrder;
+import org.apache.stratos.cloud.controller.stub.*;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
     private static Log log = LogFactory.getLog(DefaultServiceGroupDeployer.class);
 
-    private DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr;
 
     public DefaultServiceGroupDeployer () {
-        dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
     }
 
-    public void deployServiceGroupDefinition (Object serviceGroupDefinitionObj) throws InvalidServiceGroupException,
-            CloudControllerServiceUnregisteredCartridgeExceptionException, ServiceGroupDefinitioException, ADCException {
+    public void deployServiceGroupDefinition (Object serviceGroupDefinitionObj) throws InvalidServiceGroupException, ServiceGroupDefinitioException, ADCException {
 
-        ServiceGroupDefinition serviceGroupDefinition = null;
-
-        if (serviceGroupDefinitionObj instanceof ServiceGroupDefinition) {
-            serviceGroupDefinition = (ServiceGroupDefinition) serviceGroupDefinitionObj;
-        } else {
-            throw new InvalidServiceGroupException("Invalid Service Group definition");
-        }
-
-        if (serviceGroupDefinition == null) {
+        ServiceGroupDefinition serviceGroupDefinition = null; 
+        ServiceGroup serviceGroup = null;
+        
+        if (serviceGroupDefinitionObj == null) {
+        	if (log.isDebugEnabled()) {
+            	log.debug("deploying service group is null ");
+            }
             throw new InvalidServiceGroupException("Service Group definition not found");
         }
 
-//        if any cartridges are specified in the group, they should be already deployed
+        if (serviceGroupDefinitionObj instanceof ServiceGroupDefinition) {
+            serviceGroupDefinition = (ServiceGroupDefinition) serviceGroupDefinitionObj;
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("deploying service group with name " + serviceGroupDefinition.getName());
+            }
+            
+            // convert serviceGroupDefinition to serviceGroup
+            serviceGroup = this.populateServiceGroupPojo(serviceGroupDefinition);
+        } else {
+            log.error("trying to deploy invalid service group ");
+            throw new InvalidServiceGroupException("Invalid Service Group definition");
+        }
+        
+
+        // if any cartridges are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getCartridges() != null) {
+        	
+        	if (log.isDebugEnabled()) {
+            	log.debug("checking cartridges in service group " + serviceGroupDefinition.getName());
+            }
+        	
             List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
 
             CloudControllerServiceClient ccServiceClient = null;
@@ -76,50 +96,110 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 try {
                     if(ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
                         // cartridge is not deployed, can't continue
+                    	log.error("invalid cartridge found in service group " + cartridgeType);
                         throw new InvalidServiceGroupException("No Cartridge Definition found with type " + cartridgeType);
                     }
                 } catch (RemoteException e) {
                     throw new ADCException(e);
+                } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+                	throw new ADCException(e);
                 }
             }
         }
 
         // if any sub groups are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getSubGroups() != null) {
+        	
+        	if (log.isDebugEnabled()) {
+            	log.debug("checking subGroups in service group " + serviceGroupDefinition.getName());
+            }
+        	
             List<String> subGroupNames = serviceGroupDefinition.getSubGroups();
+
             for (String subGroupName : subGroupNames) {
                 if (getServiceGroupDefinition(subGroupName) == null) {
                     // sub group not deployed, can't continue
-                    throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
+                	log.error("invalid sub group found in service group " + subGroupName);
+                    //throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
                 }
             }
         }
 
-        try {
-            dataInsertionAndRetrievalMgr.peristServiceGroupDefinition(serviceGroupDefinition);
+        
+        CloudControllerServiceClient ccServiceClient = null;
 
-        } catch (PersistenceManagerException e) {
-            throw new InvalidServiceGroupException(e);
+        try {
+            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
+            }
+            
+            ccServiceClient.deployServiceGroup(serviceGroup);
+
+        } catch (AxisFault axisFault) {
+            throw new ADCException(axisFault);
+        }catch (RemoteException e) {
+            throw new ADCException(e);
+        } catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
+        	throw new ADCException(e);
         }
     }
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
+    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) /*throws ServiceGroupDefinitioException */{
 
-        try {
-            return dataInsertionAndRetrievalMgr.getServiceGroupDefinition(serviceGroupDefinitionName);
-
-        } catch (PersistenceManagerException e) {
-            throw new ServiceGroupDefinitioException(e);
+    	if (log.isDebugEnabled()) {
+        	log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
         }
+        //throw new ServiceGroupDefinitioException("method not supported");
+    	return null;
     }
 
     public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
 
-        try {
-            dataInsertionAndRetrievalMgr.removeServiceGroupDefinition(serviceGroupDefinitionName);
+    	throw new ServiceGroupDefinitioException("method not supported");
+    }
+    
+    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    	ServiceGroup servicegroup = new ServiceGroup();
+    	
+    	// implement conversion (mostly List -> Array)
+    	servicegroup.setName(serviceGroupDefinition.getName());
+    	List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
+    	List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+    	
+    	if (subGroupsDef == null) {
+    		subGroupsDef = new ArrayList<String>(0);
+    	}
+    	
+    	if (cartridgesDef == null) {
+    		cartridgesDef = new ArrayList<String>(0);
+    	}
 
-        } catch (PersistenceManagerException e) {
-            throw new ServiceGroupDefinitioException(e);
-        }
+    	String [] subGroups = new String[subGroupsDef.size()];
+    	String [] cartridges = new String[cartridgesDef.size()];
+    	
+    	subGroups = subGroupsDef.toArray(subGroups);
+    	cartridges = cartridgesDef.toArray(cartridges);
+    	
+    	servicegroup.setSubGroups(subGroups);
+    	servicegroup.setCartridges(cartridges);
+    	
+    	DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+    	List<StartupOrderDefinition> startDefs = depDefs.getStartupOrder();
+    	
+    	Dependencies deps = new Dependencies();
+    	StartupOrder [] startups = new StartupOrder [startDefs.size()];
+    	for (int i = 0; i < startDefs.size(); i++) {
+    		StartupOrderDefinition stDef = startDefs.get(i);
+    		StartupOrder st = new StartupOrder();
+    		st.setStart(stDef.getStart());
+    		st.setAfter(stDef.getAfter());
+    		startups[i] = st;
+    	}
+    	deps.setStartupOrder(startups);
+    	servicegroup.setDependencies(deps);
+    	
+    	return servicegroup;
     }
 }

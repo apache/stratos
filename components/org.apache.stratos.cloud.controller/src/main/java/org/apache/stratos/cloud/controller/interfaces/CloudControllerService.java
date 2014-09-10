@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.exception.InvalidServiceGroupException;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 
@@ -46,6 +47,10 @@ public interface CloudControllerService {
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
     public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    
+    public void undeployServiceGroup(String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.

@@ -60,6 +60,10 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="UnregisteredCartridgeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
@@ -188,6 +192,26 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="terminateAllInstances">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax219:InvalidServiceGroupException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="undeployServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
@@ -406,7 +430,6 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadbalancerConfig">
-                <xs:sequence>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax221:Properties"></xs:element>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -416,8 +439,6 @@
                     <xs:element minOccurs="0" name="port" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="protocol" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="proxyPort" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="CompositeApplicationDefinition">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
@@ -451,6 +472,37 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="CartridgeConfig">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"></xs:element>
+                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax220:Volume"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ServiceGroup">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax220:Dependencies"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrder" nillable="true" type="ax220:StartupOrder"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="StartupOrder">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="after" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="start" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
                 <xs:sequence>
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"></xs:element>
@@ -554,6 +606,12 @@
     <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="undeployServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:undeployServiceGroup"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidServiceGroupException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidServiceGroupException"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="getCartridgeInfoRequest">
         <wsdl:part name="parameters" element="ns:getCartridgeInfo"></wsdl:part>
     </wsdl:message>
@@ -605,6 +663,9 @@
     <wsdl:message name="getClusterContextResponse">
         <wsdl:part name="parameters" element="ns:getClusterContextResponse"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="deployServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:deployServiceGroup"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="unDeployCompositeApplicationDefinitionRequest">
         <wsdl:part name="parameters" element="ns:unDeployCompositeApplicationDefinition"></wsdl:part>
     </wsdl:message>
@@ -634,6 +695,10 @@
             <wsdl:input message="ns:deployCartridgeDefinitionRequest" wsaw:Action="urn:deployCartridgeDefinition"></wsdl:input>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidCartridgeDefinitionException"></wsdl:fault>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:deployCartridgeDefinitionCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="undeployServiceGroup">
+            <wsdl:input message="ns:undeployServiceGroupRequest" wsaw:Action="urn:undeployServiceGroup"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:undeployServiceGroupCloudControllerServiceInvalidServiceGroupException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <wsdl:input message="ns:getCartridgeInfoRequest" wsaw:Action="urn:getCartridgeInfo"></wsdl:input>
@@ -674,6 +739,10 @@
         <wsdl:operation name="getClusterContext">
             <wsdl:input message="ns:getClusterContextRequest" wsaw:Action="urn:getClusterContext"></wsdl:input>
             <wsdl:output message="ns:getClusterContextResponse" wsaw:Action="urn:getClusterContextResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceGroup">
+            <wsdl:input message="ns:deployServiceGroupRequest" wsaw:Action="urn:deployServiceGroup"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:deployServiceGroupCloudControllerServiceInvalidServiceGroupException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unDeployCompositeApplicationDefinition">
             <wsdl:input message="ns:unDeployCompositeApplicationDefinitionRequest" wsaw:Action="urn:unDeployCompositeApplicationDefinition"></wsdl:input>
@@ -838,6 +907,15 @@
             <wsdl:output>
                 <soap:body use="literal"></soap:body>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceGroup">
+            <soap:operation soapAction="urn:deployServiceGroup" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap:fault>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unDeployCompositeApplicationDefinition">
             <soap:operation soapAction="urn:unDeployCompositeApplicationDefinition" style="document"></soap:operation>
@@ -1010,6 +1088,15 @@
                 <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="deployServiceGroup">
+            <soap12:operation soapAction="urn:deployServiceGroup" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap12:fault>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="unDeployCompositeApplicationDefinition">
             <soap12:operation soapAction="urn:unDeployCompositeApplicationDefinition" style="document"></soap12:operation>
             <wsdl:input>
@@ -1129,6 +1216,12 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceGroup">
+            <http:operation location="deployServiceGroup"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="unDeployCompositeApplicationDefinition">
             <http:operation location="unDeployCompositeApplicationDefinition"></http:operation>

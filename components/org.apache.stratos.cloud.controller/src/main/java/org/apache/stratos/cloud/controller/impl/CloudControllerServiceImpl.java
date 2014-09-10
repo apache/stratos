@@ -272,6 +272,64 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
+    
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
+    	
+    	if (servicegroup == null) {
+            String msg = "Invalid ServiceGroup Definition: Definition is null.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+
+        }
+    	
+    	if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:" + servicegroup.getName());
+        }
+    	
+    	Dependencies dependencies = servicegroup.getDependencies();
+    	
+    	if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
+        }
+    	
+    	StartupOrder [] startupOrder = dependencies.getStartupOrder();
+    	
+    	if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder" + startupOrder);
+            
+            if (startupOrder != null) {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrder.length);
+            } else {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
+            }
+        }
+    	
+    	dataHolder.addServiceGroup(servicegroup);
+    	
+    	this.persist();
+    	
+    }
+    
+    public void undeployServiceGroup(String name) throws InvalidServiceGroupException {
+    	if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:undeployServiceGroup: " + name);
+        }
+    	
+        ServiceGroup serviceGroup = null;
+        if((serviceGroup = dataHolder.getServiceGroup(name)) != null) {
+            if (dataHolder.getServiceGroups().remove(name)) {
+                persist();
+                if(log.isInfoEnabled()) {
+                    log.info("Successfully undeployed the Service Group definition: " + serviceGroup);
+                }
+                return;
+            }
+        }
+        String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
+        log.error(msg);
+        throw new InvalidServiceGroupException(msg);
+    	
+    }
 
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws

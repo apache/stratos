@@ -83,6 +83,11 @@ public class FasterLookUpDataHolder implements Serializable{
 	 */
 	private List<Cartridge> cartridges;
 	
+	/**
+	 * List of deployed service groups
+	 */
+	private List<ServiceGroup> serviceGroups;
+	
 	private List<ConfigCompositeApplication> configCompositeApplication;
 
 	/**
@@ -128,6 +133,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	private FasterLookUpDataHolder() {
 
 		cartridges = new ArrayList<Cartridge>();
+		serviceGroups = new ArrayList<ServiceGroup>();
 		configCompositeApplication = new ArrayList<ConfigCompositeApplication>();
 		
 	}
@@ -138,6 +144,14 @@ public class FasterLookUpDataHolder implements Serializable{
 	
 	public void setCartridges(List<Cartridge> cartridges) {
 	    this.cartridges = cartridges;
+	}
+	
+	public void setServiceGroups(List<ServiceGroup> serviceGroups) {
+		this.serviceGroups = serviceGroups;
+	}
+	
+	public List<ServiceGroup> getServiceGroups() {
+		return this.serviceGroups;
 	}
 
 	public List<ConfigCompositeApplication> getConfigCompositeApplication() {
@@ -176,6 +190,26 @@ public class FasterLookUpDataHolder implements Serializable{
 			this.cartridges.removeAll(cartridges);
 		}
 
+	}
+	
+	public ServiceGroup getServiceGroup(String name) {
+		for (ServiceGroup serviceGroup : serviceGroups) {
+			if (serviceGroup.getName().equals(name)) {
+				return serviceGroup;
+			}
+		}
+
+		return null;
+	}
+	
+	public void addServiceGroup(ServiceGroup newServiceGroup) {
+		this.serviceGroups.add(newServiceGroup);
+	}
+	
+	public void removeServiceGroup(List<ServiceGroup> serviceGroup) {
+		if (this.serviceGroups != null) {
+			this.serviceGroups.removeAll(serviceGroup);
+		}
 	}
 	
 	public IaasProvider getIaasProvider(String type) {

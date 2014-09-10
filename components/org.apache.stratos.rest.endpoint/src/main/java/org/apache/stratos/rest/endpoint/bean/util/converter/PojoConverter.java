@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -89,6 +90,14 @@ public class PojoConverter {
         }
 
         return cartridgeConfig;
+    }
+    
+    public static ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    	ServiceGroup servicegroup = new ServiceGroup();
+    	
+    	// implement conversion (mostly List -> Array)
+    	
+    	return servicegroup;
     }
 
 	private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
