@@ -482,6 +482,14 @@
     <wsdl:message name="addPartitionResponse">
         <wsdl:part name="parameters" element="ns:addPartitionResponse"/>
     </wsdl:message>
+
+    <wsdl:message name="addKubernetesRequest">
+        <wsdl:part name="parameters" element="ns:addPartition"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="addPartitionResponse">
+        <wsdl:part name="parameters" element="ns:addPartitionResponse"></wsdl:part>
+    </wsdl:message>
+
     <wsdl:message name="AutoScalerServiceInvalidPartitionException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPartitionException"/>
     </wsdl:message>

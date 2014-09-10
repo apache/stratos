@@ -23,6 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
@@ -43,10 +46,12 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.rest.endpoint.exception.KubernetesGroupDoesNotExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
@@ -160,6 +165,84 @@ public class StratosAdmin extends AbstractAdmin {
         URI url =  uriInfo.getAbsolutePathBuilder().path(partition.id).build();
         return Response.created(url).build();
     }
+
+    @POST
+    @Path("/kubernetes/deploy/group")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public Response deployKubernetesGroup (KubernetesGroup kubernetesGroup)
+            throws RestAPIException {
+
+        ServiceUtils.deployKubernetesGroup(kubernetesGroup);
+        URI url =  uriInfo.getAbsolutePathBuilder().path(kubernetesGroup.getGroupId()).build();
+        return Response.created(url).build();
+    }
+
+    @POST
+    @Path("/kubernetes/deploy/host/{kubernetesGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public Response deployKubernetesHost (@PathParam("kubernetesGroupId") String kubernetesGroupId, KubernetesHost kubernetesHost)
+            throws RestAPIException {
+
+        ServiceUtils.deployKubernetesHost(kubernetesGroupId, kubernetesHost);
+        URI url =  uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
+        return Response.created(url).build();
+    }
+
+    @PUT
+    @Path("/kubernetes/update/master")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public Response updateKubernetesMaster (KubernetesMaster kubernetesMaster)
+            throws RestAPIException {
+
+        ServiceUtils.updateKubernetesMaster(kubernetesMaster);
+        URI url =  uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
+        return Response.created(url).build();
+    }
+
+    @GET
+    @Path("/kubernetes/group")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getKubernetesGroups () throws RestAPIException {
+        return Response.ok().entity(ServiceUtils.getAvailableKubernetesGroups()).build();
+    }
+
+
+    @GET
+    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getKubernetesGroup (@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
+        return Response.ok().entity(ServiceUtils.getKubernetesGroup(kubernetesGroupId)).build();
+    }
+
+
+    @DELETE
+    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    @SuperTenantService(true)
+    public Response unDeployKubernetesGroup (@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
+        try {
+            ServiceUtils.undeployKubernetesGroup(kubernetesGroupId);
+        } catch (KubernetesGroupDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.noContent().build();
+    }
+
 
     @POST
     @Path("/policy/autoscale")
