@@ -38,6 +38,7 @@
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
 			<ref bean="throwableExceptionHandler"/>
+			<ref bean="basicAuthenticationFilter"/>
             <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
                 <property name="dropRootElement" value="true"/>
                 <property name="supportUnwrapped" value="true"/>
@@ -47,6 +48,7 @@
     </jaxrs:server>
 
     <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
+    <bean id="basicAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosMockHandler"/>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>

@@ -19,13 +19,20 @@
 package org.apache.stratos.rest.endpoint.mock;
 
 
+import java.net.URI;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
+import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
@@ -42,6 +49,14 @@ import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDom
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.services.ServiceUtils;
+import org.apache.stratos.tenant.mgt.core.TenantPersistor;
+import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.context.RegistryType;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.user.core.tenant.Tenant;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -49,6 +64,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Path("/admin/")
 public class StratosTestAdmin {
@@ -151,7 +167,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
-         return MockContext.getInstance().addTenant(tenantInfoBean);
+    	return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
 
@@ -191,7 +207,7 @@ public class StratosTestAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean[] retrieveTenants() throws RestAPIException {
-           return MockContext.getInstance().getTenants();
+    	return MockContext.getInstance().getTenants();
     }
 
     @GET
@@ -518,5 +534,13 @@ public class StratosTestAdmin {
 
         return MockContext.getInstance().removeSubscriptionDomain(2, subscriptionAlias, domainName);
     }
+    
+    @POST
+	@Path("/cartridge/sync")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
+	public Response synchronizeRepository(String alias) throws RestAPIException {
+		return Response.noContent().build();
+	}
 
 }
