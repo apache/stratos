@@ -91,6 +91,7 @@
 		        <configuration>
 			       <className>org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl</className>
 			       <outputFileName>target/generated-resources/wsdl/CloudControllerService.wsdl</outputFileName>
+			       <serviceName>CloudControllerService</serviceName>
 		        </configuration>
 		        <executions>
 		           <execution>
