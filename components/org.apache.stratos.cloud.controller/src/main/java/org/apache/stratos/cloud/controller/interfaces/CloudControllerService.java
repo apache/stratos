@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.exception.InvalidServiceGroupException;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 
@@ -51,6 +50,14 @@ public interface CloudControllerService {
     public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
     
     public void undeployServiceGroup(String name) throws InvalidServiceGroupException;
+    
+    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException;
+    
+    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
+    
+    public Dependencies getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
+    
+    public Dependencies getServiceGroupDepenencies (String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.

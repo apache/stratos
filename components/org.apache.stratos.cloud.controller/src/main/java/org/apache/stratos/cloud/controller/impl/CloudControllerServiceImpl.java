@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,8 +42,6 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
-import org.apache.stratos.cloud.controller.pojo.ConfigDependencies;
-import org.apache.stratos.cloud.controller.pojo.ConfigGroup;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
@@ -329,6 +328,35 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         log.error(msg);
         throw new InvalidServiceGroupException(msg);
     	
+    }
+    
+    @Override
+    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException {
+    	
+    	if(log.isDebugEnabled()) {
+            log.debug("getServiceGroupDefinition:" + name);
+        }
+    	
+    	ServiceGroup serviceGroup = this.dataHolder.getServiceGroup(name);
+    	
+    	if (serviceGroup == null) {
+    		String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
+    		throw new InvalidServiceGroupException(msg);
+    	}
+    	
+    	return serviceGroup;
+    }
+    
+    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException {
+    	return null;
+    }
+    
+    public Dependencies getServiceGroupCartridges (String name) throws InvalidServiceGroupException {
+    	return null;
+    }
+    
+    public Dependencies getServiceGroupDepenencies (String name) throws InvalidServiceGroupException {
+    	return null;
     }
 
     @Override

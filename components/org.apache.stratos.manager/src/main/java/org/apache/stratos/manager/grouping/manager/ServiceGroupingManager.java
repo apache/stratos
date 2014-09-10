@@ -45,12 +45,12 @@ public class ServiceGroupingManager {
         serviceGroupDeployer.deployServiceGroupDefinition(serviceGroupDefinition);
     }
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
+    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
         return serviceGroupDeployer.getServiceGroupDefinition(serviceGroupDefinitionName);
     }
 
-    public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
+    public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
         serviceGroupDeployer.undeployServiceGroupDefinition(serviceGroupDefinitionName);
     }

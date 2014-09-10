@@ -22,7 +22,6 @@ package org.apache.stratos.manager.grouping.deployer;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
@@ -33,10 +32,12 @@ import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
 import org.apache.stratos.cloud.controller.stub.pojo.StartupOrder;
-import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
@@ -119,12 +120,13 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             for (String subGroupName : subGroupNames) {
                 if (getServiceGroupDefinition(subGroupName) == null) {
                     // sub group not deployed, can't continue
-                	log.error("invalid sub group found in service group " + subGroupName);
-                    //throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
+                	if (log.isDebugEnabled()) {
+                		log.debug("invalid sub group found in service group " + subGroupName);
+                	}
+                    throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
                 }
             }
         }
-
         
         CloudControllerServiceClient ccServiceClient = null;
 
@@ -146,19 +148,60 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         }
     }
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) /*throws ServiceGroupDefinitioException */{
+    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
     	if (log.isDebugEnabled()) {
         	log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
         }
-        //throw new ServiceGroupDefinitioException("method not supported");
-    	return null;
+    	
+    	CloudControllerServiceClient ccServiceClient = null;
+
+        try {
+            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
+            }
+            
+            ServiceGroup serviceGroup = ccServiceClient.getServiceGroup(serviceGroupDefinitionName);
+            ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
+            return serviceGroupDef;
+
+        } catch (AxisFault axisFault) {
+            throw new ADCException(axisFault);
+        } catch (RemoteException e) {
+        	throw new ADCException(e);
+		} catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
+			throw new ADCException(e);
+		}
+    	
     }
 
-    public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException {
 
-    	throw new ServiceGroupDefinitioException("method not supported");
+    public void undeployServiceGroupDefinition (String name) throws ADCException, ServiceGroupDefinitioException {
+
+    	//throw new ServiceGroupDefinitioException("method not supported");
+    	
+    	CloudControllerServiceClient ccServiceClient = null;
+    	
+    	try {
+            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            
+            if (log.isDebugEnabled()) {
+            	log.debug("undeploying service group from cloud controller " + name);
+            }
+            
+            ccServiceClient.undeployServiceGroup(name);
+
+        } catch (AxisFault axisFault) {
+            throw new ADCException(axisFault);
+        } catch (RemoteException e) {
+        	throw new ADCException(e);
+		} catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
+			throw new ADCException(e);
+		}
     }
+    
     
     private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
     	ServiceGroup servicegroup = new ServiceGroup();
@@ -201,5 +244,32 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	servicegroup.setDependencies(deps);
     	
     	return servicegroup;
+    }
+    
+    private ServiceGroupDefinition populateServiceGroupDefinitionPojo (ServiceGroup serviceGroup ) {
+    	ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
+    	
+    	String [] cartridges = serviceGroup.getCartridges();
+    	String [] subGroups = serviceGroup.getSubGroups();
+    	Dependencies deps = serviceGroup.getDependencies();
+    	StartupOrder [] startupOrders = deps.getStartupOrder();
+    	
+    	List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
+    	List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
+    	DependencyDefinitions depsDef = new DependencyDefinitions();
+    	List<StartupOrderDefinition> startupsDef = new ArrayList<StartupOrderDefinition>();
+    	for (StartupOrder startupOrder :  startupOrders) {
+    		StartupOrderDefinition astartupDef = new StartupOrderDefinition();
+    		astartupDef.setAfter(startupOrder.getAfter());
+    		astartupDef.setStart(startupOrder.getStart());
+    		startupsDef.add(astartupDef);
+    	}
+    	depsDef.setStartupOrder(startupsDef);
+    	depsDef.setKillBehaviour(deps.getKillBehaviour());
+    	servicegroupDef.setCartridges(cartridgesDef);
+    	servicegroupDef.setSubGroups(subGroupsDef);
+    	servicegroupDef.setDependencies(depsDef);
+   
+    	return servicegroupDef;
     }
 }

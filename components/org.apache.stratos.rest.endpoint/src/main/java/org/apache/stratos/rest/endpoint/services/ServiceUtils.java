@@ -1491,7 +1491,9 @@ public class ServiceUtils {
 
         } catch (ServiceGroupDefinitioException e) {
             throw new RestAPIException(e);
-        }
+        } catch (ADCException e) {
+			throw new RestAPIException(e);
+		} 
     }
 
     static void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws RestAPIException {
@@ -1501,7 +1503,9 @@ public class ServiceUtils {
 
         } catch (ServiceGroupDefinitioException e) {
             throw new RestAPIException(e);
-        }
+        } catch (ADCException e) {
+        	throw new RestAPIException(e);
+		}
 
         log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
     }

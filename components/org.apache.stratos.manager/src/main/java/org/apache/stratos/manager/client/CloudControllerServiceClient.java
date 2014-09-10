@@ -101,6 +101,10 @@ public class CloudControllerServiceClient {
     public void undeployServiceGroup (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
     	stub.undeployServiceGroup(name);
     }
+    
+    public ServiceGroup getServiceGroup(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroup(name);
+    }
 
 	public boolean register(String clusterId, String cartridgeType,
                             String payload, String tenantRange,
