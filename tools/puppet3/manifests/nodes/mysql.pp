@@ -17,11 +17,6 @@
 
 # mysql cartridge node
 node /mysql/ inherits base {
-  require java
-  class {'agent':
-    type => 'mysql',
-  }
-  class {'mysql':}
 
-  Class['stratos_base'] -> Class['java'] -> Class['mysql'] ~> Class['agent']
+  class {'mysql':}
 }

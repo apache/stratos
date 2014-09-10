@@ -17,6 +17,14 @@
 
 class nodejs {
 
+  require java
+
+  $custom_agent_templates = ['extensions/start-servers.sh']
+  class {'agent':
+    custom_templates => $custom_agent_templates,
+    module=>'nodejs'
+  }
+
   $target = '/mnt'
 
   if $stratos_app_path {
@@ -65,5 +73,8 @@ class nodejs {
       try_sleep => 2,
       require   => Exec['Install libraries'];
   }
+
+  # install stratos_base before java before nodejs before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['nodejs']
 }
 

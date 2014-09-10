@@ -17,10 +17,7 @@
 
 #wordpress cartridge node
 node /wordpress/ inherits base {
-  require java
-  class {'agent':}
+
   class {'wordpress':}
   class {'mysql':}
-
-  Class['stratos_base'] -> Class['java'] -> Class['mysql'] -> Class['wordpress'] ~> Class['agent']
 }

@@ -1,0 +1,35 @@
+    <dbConfig name="governance">
+        <dataSource>jdbc/<%= @registry_database %></dataSource>
+    </dbConfig>
+
+    <remoteInstance url="<%= @greg_url %>">
+        <id>governance</id>
+        <dbConfig>governance</dbConfig>
+        <readOnly>false</readOnly>
+        <registryRoot>/</registryRoot>
+        <enableCache>true</enableCache>
+        <cacheId><%= @registry_user %>@jdbc:mysql://<%= @mysql_server %>:<%= @mysql_port %>/<%= @registry_database %></cacheId>
+    </remoteInstance>
+
+    <mount path="/_system/governance" overwrite="true">
+        <instanceId>governance</instanceId>
+        <targetPath>/_system/governance</targetPath>
+    </mount>
+
+    <dbConfig name="config">
+        <dataSource>jdbc/<%= @config_db %></dataSource>
+    </dbConfig>
+
+    <remoteInstance url="<%= @greg_url %>">
+        <id>config</id>
+        <dbConfig>config</dbConfig>
+        <readOnly>false</readOnly>
+        <registryRoot>/</registryRoot>
+        <enableCache>true</enableCache>
+        <cacheId><%= @registry_user %>@jdbc:mysql://<%= @mysql_server %>:<%= @mysql_port %>/<%= @config_db %></cacheId>
+    </remoteInstance>
+
+    <mount path="/_system/config" overwrite="true">
+        <instanceId>config</instanceId>
+        <targetPath>/_system/<%= @config_target_path %></targetPath>
+    </mount>

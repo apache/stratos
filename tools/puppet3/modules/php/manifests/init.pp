@@ -21,6 +21,15 @@
 
 
 class php () {
+
+  require java
+ 
+  $custom_agent_templates = ['extensions/artifacts-updated.sh']
+  class {'agent':
+    custom_templates => $custom_agent_templates,
+    module=>'php'
+  }
+
   $packages = [    
     'build-essential',
     'mysql-client',
@@ -131,4 +140,6 @@ class php () {
                  ];
   }
 
+  #install stratos_base before java before php before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['php']
 }

@@ -22,6 +22,9 @@ class wordpress (
   $wp_password = 'wordpress'
 ) { 
   
+  require java
+  class {'agent':}
+
   $packages = [
     'httpd',
     'openssl.x86_64',
@@ -84,4 +87,6 @@ class wordpress (
       require => Exec['Create wordpress database'];
   }
  
+  # install stratos_base before java before mysql before wordpress before agent
+  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['mysql'] -> Class['wordpress']
 }

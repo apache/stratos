@@ -36,7 +36,8 @@ public class Partition implements Serializable{
 	 */
     private String provider;
     private Properties properties = new Properties();
-	private String id;
+    private String id;
+    private String description;
 
 
     /**
@@ -70,6 +71,7 @@ public class Partition implements Serializable{
     public void setPartitionMin(int value) {
         this.partitionMin = value;
     }
+
     /**
      * Gets the value of the id property.
      * 
@@ -94,6 +96,30 @@ public class Partition implements Serializable{
 		this.id = id;
 	}
 	
+	/**
+     * Gets the value of the description property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+	public String getDescription() {
+		return description;
+	}
+	
+    /**
+     * Sets the value of the description property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	public Properties getProperties() {
         return properties;
     }
@@ -112,7 +138,7 @@ public class Partition implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "Partition [id=" + id + ", provider=" + provider
+		return "Partition [id=" + id + ", description=" + description + ", provider=" + provider
 				+ ", partitionMin=" + partitionMin + ", partitionMax="
 				+ partitionMax + ", properties=" + properties + "]";
 	}

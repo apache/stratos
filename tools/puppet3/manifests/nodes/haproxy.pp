@@ -17,9 +17,6 @@
 
 # haproxy extension loadbalancer cartridge node
 node /haproxy/ inherits base {
-  require java
-  class {'haproxy':}
-  class {'agent':}
 
-  Class['stratos_base'] -> Class['java'] -> Class['haproxy'] ~> Class['agent']
+  class {'haproxy':}
 }

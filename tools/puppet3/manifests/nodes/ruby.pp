@@ -17,10 +17,6 @@
 
 # ruby cartridge node
 node /ruby/ inherits base {
-  require java
-  class {'agent':
-  }
-  class {'ruby':}
 
-  Class['stratos_base'] -> Class['java'] -> Class['ruby'] ~> Class['agent']
+  class {'ruby':}
 }

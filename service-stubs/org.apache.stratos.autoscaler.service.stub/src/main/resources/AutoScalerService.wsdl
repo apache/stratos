@@ -4,1152 +4,1153 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="NonExistingLBException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidPartitionException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidPolicyException">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"></xs:element>
-                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
+                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax213="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://policy.deployment.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:element name="getValidDeploymentPoliciesforCartridge">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getValidDeploymentPoliciesforCartridgeResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getServiceLBClusterId">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getServiceLBClusterIdResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionsOfGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionsOfGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionsOfDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionsOfDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionGroupsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:PartitionGroup"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:PartitionGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getPartitionResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax24:Partition"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax24:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDefaultLBClusterId">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDefaultLBClusterIdResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAutoscalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAutoscalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:AutoscalePolicy"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllDeploymentPolicies">
                 <xs:complexType>
-                    <xs:sequence></xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllDeploymentPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllAvailablePartitions">
                 <xs:complexType>
-                    <xs:sequence></xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllAvailablePartitionsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllAutoScalingPolicy">
                 <xs:complexType>
-                    <xs:sequence></xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getAllAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax214:AutoscalePolicy"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax214:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkServiceLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkServiceLBExistenceAgainstPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoScalerServiceNonExistingLBException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingLBException" nillable="true" type="ax217:NonExistingLBException"></xs:element>
+                        <xs:element minOccurs="0" name="NonExistingLBException" nillable="true" type="ax217:NonExistingLBException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkDefaultLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkDefaultLBExistenceAgainstPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkClusterLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="checkClusterLBExistenceAgainstPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoScalerServiceInvalidPartitionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax217:InvalidPartitionException"></xs:element>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax217:InvalidPartitionException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addPartition">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax24:Partition"></xs:element>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax24:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addPartitionResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoScalerServiceInvalidPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax217:InvalidPolicyException"></xs:element>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax217:InvalidPolicyException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="depPolicy" nillable="true" type="ax23:DeploymentPolicy"></xs:element>
+                        <xs:element minOccurs="0" name="depPolicy" nillable="true" type="ax23:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="aspolicy" nillable="true" type="ax214:AutoscalePolicy"></xs:element>
+                        <xs:element minOccurs="0" name="aspolicy" nillable="true" type="ax214:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
         <xs:schema xmlns:ax29="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="PartitionGroup">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax29:Partition"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax29:Partition"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.policy.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="AutoscalePolicy">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax214:LoadThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax214:LoadThresholds"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax214:LoadAverageThresholds"></xs:element>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax214:MemoryConsumptionThresholds"></xs:element>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax214:RequestsInFlightThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax214:LoadAverageThresholds"/>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax214:MemoryConsumptionThresholds"/>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax214:RequestsInFlightThresholds"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadAverageThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="MemoryConsumptionThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="RequestsInFlightThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax27="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
             <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax27:Partition"></xs:element>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax28:PartitionGroup"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax27:Partition"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax28:PartitionGroup"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax26="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="Partition">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"></xs:element>
-                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
+                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
     <wsdl:message name="getPartitionsOfDeploymentPolicyRequest">
-        <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicy"/>
     </wsdl:message>
     <wsdl:message name="getPartitionsOfDeploymentPolicyResponse">
-        <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionsOfDeploymentPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="getDefaultLBClusterIdRequest">
-        <wsdl:part name="parameters" element="ns:getDefaultLBClusterId"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getDefaultLBClusterId"/>
     </wsdl:message>
     <wsdl:message name="getDefaultLBClusterIdResponse">
-        <wsdl:part name="parameters" element="ns:getDefaultLBClusterIdResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getDefaultLBClusterIdResponse"/>
     </wsdl:message>
     <wsdl:message name="getPartitionsOfGroupRequest">
-        <wsdl:part name="parameters" element="ns:getPartitionsOfGroup"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionsOfGroup"/>
     </wsdl:message>
     <wsdl:message name="getPartitionsOfGroupResponse">
-        <wsdl:part name="parameters" element="ns:getPartitionsOfGroupResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionsOfGroupResponse"/>
     </wsdl:message>
     <wsdl:message name="getAllAutoScalingPolicyRequest">
-        <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicy"/>
     </wsdl:message>
     <wsdl:message name="getAllAutoScalingPolicyResponse">
-        <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllAutoScalingPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="getDeploymentPolicyRequest">
-        <wsdl:part name="parameters" element="ns:getDeploymentPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicy"/>
     </wsdl:message>
     <wsdl:message name="getDeploymentPolicyResponse">
-        <wsdl:part name="parameters" element="ns:getDeploymentPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getDeploymentPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="addAutoScalingPolicyRequest">
-        <wsdl:part name="parameters" element="ns:addAutoScalingPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addAutoScalingPolicy"/>
     </wsdl:message>
     <wsdl:message name="addAutoScalingPolicyResponse">
-        <wsdl:part name="parameters" element="ns:addAutoScalingPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addAutoScalingPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceInvalidPolicyException">
-        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPolicyException"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPolicyException"/>
     </wsdl:message>
     <wsdl:message name="getAllDeploymentPoliciesRequest">
-        <wsdl:part name="parameters" element="ns:getAllDeploymentPolicies"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllDeploymentPolicies"/>
     </wsdl:message>
     <wsdl:message name="getAllDeploymentPoliciesResponse">
-        <wsdl:part name="parameters" element="ns:getAllDeploymentPoliciesResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllDeploymentPoliciesResponse"/>
     </wsdl:message>
     <wsdl:message name="getValidDeploymentPoliciesforCartridgeRequest">
-        <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridge"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridge"/>
     </wsdl:message>
     <wsdl:message name="getValidDeploymentPoliciesforCartridgeResponse">
-        <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridgeResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridgeResponse"/>
     </wsdl:message>
     <wsdl:message name="getAllAvailablePartitionsRequest">
-        <wsdl:part name="parameters" element="ns:getAllAvailablePartitions"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllAvailablePartitions"/>
     </wsdl:message>
     <wsdl:message name="getAllAvailablePartitionsResponse">
-        <wsdl:part name="parameters" element="ns:getAllAvailablePartitionsResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAllAvailablePartitionsResponse"/>
     </wsdl:message>
     <wsdl:message name="getAutoscalingPolicyRequest">
-        <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"/>
     </wsdl:message>
     <wsdl:message name="getAutoscalingPolicyResponse">
-        <wsdl:part name="parameters" element="ns:getAutoscalingPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getAutoscalingPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="checkClusterLBExistenceAgainstPolicyRequest">
-        <wsdl:part name="parameters" element="ns:checkClusterLBExistenceAgainstPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkClusterLBExistenceAgainstPolicy"/>
     </wsdl:message>
     <wsdl:message name="checkClusterLBExistenceAgainstPolicyResponse">
-        <wsdl:part name="parameters" element="ns:checkClusterLBExistenceAgainstPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkClusterLBExistenceAgainstPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="checkDefaultLBExistenceAgainstPolicyRequest">
-        <wsdl:part name="parameters" element="ns:checkDefaultLBExistenceAgainstPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkDefaultLBExistenceAgainstPolicy"/>
     </wsdl:message>
     <wsdl:message name="checkDefaultLBExistenceAgainstPolicyResponse">
-        <wsdl:part name="parameters" element="ns:checkDefaultLBExistenceAgainstPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkDefaultLBExistenceAgainstPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="getPartitionRequest">
-        <wsdl:part name="parameters" element="ns:getPartition"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartition"/>
     </wsdl:message>
     <wsdl:message name="getPartitionResponse">
-        <wsdl:part name="parameters" element="ns:getPartitionResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionResponse"/>
     </wsdl:message>
     <wsdl:message name="addPartitionRequest">
-        <wsdl:part name="parameters" element="ns:addPartition"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addPartition"/>
     </wsdl:message>
     <wsdl:message name="addPartitionResponse">
-        <wsdl:part name="parameters" element="ns:addPartitionResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addPartitionResponse"/>
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceInvalidPartitionException">
-        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPartitionException"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPartitionException"/>
     </wsdl:message>
     <wsdl:message name="checkServiceLBExistenceAgainstPolicyRequest">
-        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicy"/>
     </wsdl:message>
     <wsdl:message name="checkServiceLBExistenceAgainstPolicyResponse">
-        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkServiceLBExistenceAgainstPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="addDeploymentPolicyRequest">
-        <wsdl:part name="parameters" element="ns:addDeploymentPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addDeploymentPolicy"/>
     </wsdl:message>
     <wsdl:message name="addDeploymentPolicyResponse">
-        <wsdl:part name="parameters" element="ns:addDeploymentPolicyResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:addDeploymentPolicyResponse"/>
     </wsdl:message>
     <wsdl:message name="getServiceLBClusterIdRequest">
-        <wsdl:part name="parameters" element="ns:getServiceLBClusterId"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getServiceLBClusterId"/>
     </wsdl:message>
     <wsdl:message name="getServiceLBClusterIdResponse">
-        <wsdl:part name="parameters" element="ns:getServiceLBClusterIdResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getServiceLBClusterIdResponse"/>
     </wsdl:message>
     <wsdl:message name="getPartitionGroupsRequest">
-        <wsdl:part name="parameters" element="ns:getPartitionGroups"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionGroups"/>
     </wsdl:message>
     <wsdl:message name="getPartitionGroupsResponse">
-        <wsdl:part name="parameters" element="ns:getPartitionGroupsResponse"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:getPartitionGroupsResponse"/>
     </wsdl:message>
     <wsdl:message name="checkLBExistenceAgainstPolicyRequest">
-        <wsdl:part name="parameters" element="ns:checkLBExistenceAgainstPolicy"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:checkLBExistenceAgainstPolicy"/>
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceNonExistingLBException">
-        <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingLBException"></wsdl:part>
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingLBException"/>
     </wsdl:message>
     <wsdl:portType name="AutoScalerServicePortType">
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
-            <wsdl:input message="ns:getPartitionsOfDeploymentPolicyRequest" wsaw:Action="urn:getPartitionsOfDeploymentPolicy"></wsdl:input>
-            <wsdl:output message="ns:getPartitionsOfDeploymentPolicyResponse" wsaw:Action="urn:getPartitionsOfDeploymentPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:getPartitionsOfDeploymentPolicyRequest" wsaw:Action="urn:getPartitionsOfDeploymentPolicy"/>
+            <wsdl:output message="ns:getPartitionsOfDeploymentPolicyResponse" wsaw:Action="urn:getPartitionsOfDeploymentPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getDefaultLBClusterId">
-            <wsdl:input message="ns:getDefaultLBClusterIdRequest" wsaw:Action="urn:getDefaultLBClusterId"></wsdl:input>
-            <wsdl:output message="ns:getDefaultLBClusterIdResponse" wsaw:Action="urn:getDefaultLBClusterIdResponse"></wsdl:output>
+            <wsdl:input message="ns:getDefaultLBClusterIdRequest" wsaw:Action="urn:getDefaultLBClusterId"/>
+            <wsdl:output message="ns:getDefaultLBClusterIdResponse" wsaw:Action="urn:getDefaultLBClusterIdResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
-            <wsdl:input message="ns:getPartitionsOfGroupRequest" wsaw:Action="urn:getPartitionsOfGroup"></wsdl:input>
-            <wsdl:output message="ns:getPartitionsOfGroupResponse" wsaw:Action="urn:getPartitionsOfGroupResponse"></wsdl:output>
+            <wsdl:input message="ns:getPartitionsOfGroupRequest" wsaw:Action="urn:getPartitionsOfGroup"/>
+            <wsdl:output message="ns:getPartitionsOfGroupResponse" wsaw:Action="urn:getPartitionsOfGroupResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
-            <wsdl:input message="ns:getAllAutoScalingPolicyRequest" wsaw:Action="urn:getAllAutoScalingPolicy"></wsdl:input>
-            <wsdl:output message="ns:getAllAutoScalingPolicyResponse" wsaw:Action="urn:getAllAutoScalingPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:getAllAutoScalingPolicyRequest" wsaw:Action="urn:getAllAutoScalingPolicy"/>
+            <wsdl:output message="ns:getAllAutoScalingPolicyResponse" wsaw:Action="urn:getAllAutoScalingPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
-            <wsdl:input message="ns:getDeploymentPolicyRequest" wsaw:Action="urn:getDeploymentPolicy"></wsdl:input>
-            <wsdl:output message="ns:getDeploymentPolicyResponse" wsaw:Action="urn:getDeploymentPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:getDeploymentPolicyRequest" wsaw:Action="urn:getDeploymentPolicy"/>
+            <wsdl:output message="ns:getDeploymentPolicyResponse" wsaw:Action="urn:getDeploymentPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
-            <wsdl:input message="ns:addAutoScalingPolicyRequest" wsaw:Action="urn:addAutoScalingPolicy"></wsdl:input>
-            <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"></wsdl:output>
-            <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addAutoScalingPolicyAutoScalerServiceInvalidPolicyException"></wsdl:fault>
+            <wsdl:input message="ns:addAutoScalingPolicyRequest" wsaw:Action="urn:addAutoScalingPolicy"/>
+            <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addAutoScalingPolicyAutoScalerServiceInvalidPolicyException"/>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
-            <wsdl:input message="ns:getAllDeploymentPoliciesRequest" wsaw:Action="urn:getAllDeploymentPolicies"></wsdl:input>
-            <wsdl:output message="ns:getAllDeploymentPoliciesResponse" wsaw:Action="urn:getAllDeploymentPoliciesResponse"></wsdl:output>
+            <wsdl:input message="ns:getAllDeploymentPoliciesRequest" wsaw:Action="urn:getAllDeploymentPolicies"/>
+            <wsdl:output message="ns:getAllDeploymentPoliciesResponse" wsaw:Action="urn:getAllDeploymentPoliciesResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getValidDeploymentPoliciesforCartridge">
-            <wsdl:input message="ns:getValidDeploymentPoliciesforCartridgeRequest" wsaw:Action="urn:getValidDeploymentPoliciesforCartridge"></wsdl:input>
-            <wsdl:output message="ns:getValidDeploymentPoliciesforCartridgeResponse" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeResponse"></wsdl:output>
+            <wsdl:input message="ns:getValidDeploymentPoliciesforCartridgeRequest" wsaw:Action="urn:getValidDeploymentPoliciesforCartridge"/>
+            <wsdl:output message="ns:getValidDeploymentPoliciesforCartridgeResponse" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAllAvailablePartitions">
-            <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"></wsdl:input>
-            <wsdl:output message="ns:getAllAvailablePartitionsResponse" wsaw:Action="urn:getAllAvailablePartitionsResponse"></wsdl:output>
+            <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"/>
+            <wsdl:output message="ns:getAllAvailablePartitionsResponse" wsaw:Action="urn:getAllAvailablePartitionsResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
-            <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"></wsdl:input>
-            <wsdl:output message="ns:getAutoscalingPolicyResponse" wsaw:Action="urn:getAutoscalingPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"/>
+            <wsdl:output message="ns:getAutoscalingPolicyResponse" wsaw:Action="urn:getAutoscalingPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="checkClusterLBExistenceAgainstPolicy">
-            <wsdl:input message="ns:checkClusterLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkClusterLBExistenceAgainstPolicy"></wsdl:input>
-            <wsdl:output message="ns:checkClusterLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkClusterLBExistenceAgainstPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:checkClusterLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkClusterLBExistenceAgainstPolicy"/>
+            <wsdl:output message="ns:checkClusterLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkClusterLBExistenceAgainstPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="checkDefaultLBExistenceAgainstPolicy">
-            <wsdl:input message="ns:checkDefaultLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicy"></wsdl:input>
-            <wsdl:output message="ns:checkDefaultLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:checkDefaultLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicy"/>
+            <wsdl:output message="ns:checkDefaultLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getPartition">
-            <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"></wsdl:input>
-            <wsdl:output message="ns:getPartitionResponse" wsaw:Action="urn:getPartitionResponse"></wsdl:output>
+            <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"/>
+            <wsdl:output message="ns:getPartitionResponse" wsaw:Action="urn:getPartitionResponse"/>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
-            <wsdl:input message="ns:addPartitionRequest" wsaw:Action="urn:addPartition"></wsdl:input>
-            <wsdl:output message="ns:addPartitionResponse" wsaw:Action="urn:addPartitionResponse"></wsdl:output>
-            <wsdl:fault message="ns:AutoScalerServiceInvalidPartitionException" name="AutoScalerServiceInvalidPartitionException" wsaw:Action="urn:addPartitionAutoScalerServiceInvalidPartitionException"></wsdl:fault>
+            <wsdl:input message="ns:addPartitionRequest" wsaw:Action="urn:addPartition"/>
+            <wsdl:output message="ns:addPartitionResponse" wsaw:Action="urn:addPartitionResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceInvalidPartitionException" name="AutoScalerServiceInvalidPartitionException" wsaw:Action="urn:addPartitionAutoScalerServiceInvalidPartitionException"/>
         </wsdl:operation>
         <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
-            <wsdl:input message="ns:checkServiceLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicy"></wsdl:input>
-            <wsdl:output message="ns:checkServiceLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicyResponse"></wsdl:output>
+            <wsdl:input message="ns:checkServiceLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicy"/>
+            <wsdl:output message="ns:checkServiceLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkServiceLBExistenceAgainstPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
-            <wsdl:input message="ns:addDeploymentPolicyRequest" wsaw:Action="urn:addDeploymentPolicy"></wsdl:input>
-            <wsdl:output message="ns:addDeploymentPolicyResponse" wsaw:Action="urn:addDeploymentPolicyResponse"></wsdl:output>
-            <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addDeploymentPolicyAutoScalerServiceInvalidPolicyException"></wsdl:fault>
+            <wsdl:input message="ns:addDeploymentPolicyRequest" wsaw:Action="urn:addDeploymentPolicy"/>
+            <wsdl:output message="ns:addDeploymentPolicyResponse" wsaw:Action="urn:addDeploymentPolicyResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addDeploymentPolicyAutoScalerServiceInvalidPolicyException"/>
         </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
-            <wsdl:input message="ns:getServiceLBClusterIdRequest" wsaw:Action="urn:getServiceLBClusterId"></wsdl:input>
-            <wsdl:output message="ns:getServiceLBClusterIdResponse" wsaw:Action="urn:getServiceLBClusterIdResponse"></wsdl:output>
+            <wsdl:input message="ns:getServiceLBClusterIdRequest" wsaw:Action="urn:getServiceLBClusterId"/>
+            <wsdl:output message="ns:getServiceLBClusterIdResponse" wsaw:Action="urn:getServiceLBClusterIdResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
-            <wsdl:input message="ns:getPartitionGroupsRequest" wsaw:Action="urn:getPartitionGroups"></wsdl:input>
-            <wsdl:output message="ns:getPartitionGroupsResponse" wsaw:Action="urn:getPartitionGroupsResponse"></wsdl:output>
+            <wsdl:input message="ns:getPartitionGroupsRequest" wsaw:Action="urn:getPartitionGroups"/>
+            <wsdl:output message="ns:getPartitionGroupsResponse" wsaw:Action="urn:getPartitionGroupsResponse"/>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <wsdl:input message="ns:checkLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkLBExistenceAgainstPolicy"></wsdl:input>
-            <wsdl:fault message="ns:AutoScalerServiceNonExistingLBException" name="AutoScalerServiceNonExistingLBException" wsaw:Action="urn:checkLBExistenceAgainstPolicyAutoScalerServiceNonExistingLBException"></wsdl:fault>
+            <wsdl:input message="ns:checkLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkLBExistenceAgainstPolicy"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingLBException" name="AutoScalerServiceNonExistingLBException" wsaw:Action="urn:checkLBExistenceAgainstPolicyAutoScalerServiceNonExistingLBException"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="AutoScalerServiceSoap11Binding" type="ns:AutoScalerServicePortType">
-        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
-            <soap:operation soapAction="urn:getPartitionsOfDeploymentPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getPartitionsOfDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDefaultLBClusterId">
-            <soap:operation soapAction="urn:getDefaultLBClusterId" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getDefaultLBClusterId" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
-            <soap:operation soapAction="urn:getPartitionsOfGroup" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getPartitionsOfGroup" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
-            <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getAllAutoScalingPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
-            <soap:operation soapAction="urn:getDeploymentPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
-            <soap:operation soapAction="urn:addAutoScalingPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPolicyException">
-                <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap:fault>
+                <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
-            <soap:operation soapAction="urn:getAllDeploymentPolicies" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getAllDeploymentPolicies" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getValidDeploymentPoliciesforCartridge">
-            <soap:operation soapAction="urn:getValidDeploymentPoliciesforCartridge" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getValidDeploymentPoliciesforCartridge" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAvailablePartitions">
-            <soap:operation soapAction="urn:getAllAvailablePartitions" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getAllAvailablePartitions" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
-            <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkDefaultLBExistenceAgainstPolicy">
-            <soap:operation soapAction="urn:checkDefaultLBExistenceAgainstPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:checkDefaultLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkClusterLBExistenceAgainstPolicy">
-            <soap:operation soapAction="urn:checkClusterLBExistenceAgainstPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:checkClusterLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartition">
-            <soap:operation soapAction="urn:getPartition" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getPartition" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
-            <soap:operation soapAction="urn:addPartition" style="document"></soap:operation>
+            <soap:operation soapAction="urn:addPartition" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPartitionException">
-                <soap:fault use="literal" name="AutoScalerServiceInvalidPartitionException"></soap:fault>
+                <soap:fault use="literal" name="AutoScalerServiceInvalidPartitionException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
-            <soap:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
-            <soap:operation soapAction="urn:addDeploymentPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:addDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPolicyException">
-                <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap:fault>
+                <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
-            <soap:operation soapAction="urn:getServiceLBClusterId" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getServiceLBClusterId" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
-            <soap:operation soapAction="urn:getPartitionGroups" style="document"></soap:operation>
+            <soap:operation soapAction="urn:getPartitionGroups" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"></soap:operation>
+            <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap:body use="literal"></soap:body>
+                <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:fault name="AutoScalerServiceNonExistingLBException">
-                <soap:fault use="literal" name="AutoScalerServiceNonExistingLBException"></soap:fault>
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="AutoScalerServiceSoap12Binding" type="ns:AutoScalerServicePortType">
-        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
-            <soap12:operation soapAction="urn:getPartitionsOfDeploymentPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getPartitionsOfDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDefaultLBClusterId">
-            <soap12:operation soapAction="urn:getDefaultLBClusterId" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getDefaultLBClusterId" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
-            <soap12:operation soapAction="urn:getPartitionsOfGroup" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getPartitionsOfGroup" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
-            <soap12:operation soapAction="urn:getAllAutoScalingPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getAllAutoScalingPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
-            <soap12:operation soapAction="urn:getDeploymentPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
-            <soap12:operation soapAction="urn:addAutoScalingPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPolicyException">
-                <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap12:fault>
+                <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
-            <soap12:operation soapAction="urn:getAllDeploymentPolicies" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getAllDeploymentPolicies" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getValidDeploymentPoliciesforCartridge">
-            <soap12:operation soapAction="urn:getValidDeploymentPoliciesforCartridge" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getValidDeploymentPoliciesforCartridge" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAvailablePartitions">
-            <soap12:operation soapAction="urn:getAllAvailablePartitions" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getAllAvailablePartitions" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
-            <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkDefaultLBExistenceAgainstPolicy">
-            <soap12:operation soapAction="urn:checkDefaultLBExistenceAgainstPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:checkDefaultLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkClusterLBExistenceAgainstPolicy">
-            <soap12:operation soapAction="urn:checkClusterLBExistenceAgainstPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:checkClusterLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartition">
-            <soap12:operation soapAction="urn:getPartition" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getPartition" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
-            <soap12:operation soapAction="urn:addPartition" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:addPartition" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPartitionException">
-                <soap12:fault use="literal" name="AutoScalerServiceInvalidPartitionException"></soap12:fault>
+                <soap12:fault use="literal" name="AutoScalerServiceInvalidPartitionException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
-            <soap12:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:checkServiceLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
-            <soap12:operation soapAction="urn:addDeploymentPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:addDeploymentPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceInvalidPolicyException">
-                <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap12:fault>
+                <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
-            <soap12:operation soapAction="urn:getServiceLBClusterId" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getServiceLBClusterId" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
-            <soap12:operation soapAction="urn:getPartitionGroups" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:getPartitionGroups" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"></soap12:operation>
+            <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
             <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
+                <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:fault name="AutoScalerServiceNonExistingLBException">
-                <soap12:fault use="literal" name="AutoScalerServiceNonExistingLBException"></soap12:fault>
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="AutoScalerServiceHttpBinding" type="ns:AutoScalerServicePortType">
-        <http:binding verb="POST"></http:binding>
+        <http:binding verb="POST"/>
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
-            <http:operation location="getPartitionsOfDeploymentPolicy"></http:operation>
+            <http:operation location="getPartitionsOfDeploymentPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDefaultLBClusterId">
-            <http:operation location="getDefaultLBClusterId"></http:operation>
+            <http:operation location="getDefaultLBClusterId"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfGroup">
-            <http:operation location="getPartitionsOfGroup"></http:operation>
+            <http:operation location="getPartitionsOfGroup"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAutoScalingPolicy">
-            <http:operation location="getAllAutoScalingPolicy"></http:operation>
+            <http:operation location="getAllAutoScalingPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
-            <http:operation location="getDeploymentPolicy"></http:operation>
+            <http:operation location="getDeploymentPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
-            <http:operation location="addAutoScalingPolicy"></http:operation>
+            <http:operation location="addAutoScalingPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
-            <http:operation location="getAllDeploymentPolicies"></http:operation>
+            <http:operation location="getAllDeploymentPolicies"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getValidDeploymentPoliciesforCartridge">
-            <http:operation location="getValidDeploymentPoliciesforCartridge"></http:operation>
+            <http:operation location="getValidDeploymentPoliciesforCartridge"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllAvailablePartitions">
-            <http:operation location="getAllAvailablePartitions"></http:operation>
+            <http:operation location="getAllAvailablePartitions"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
-            <http:operation location="getAutoscalingPolicy"></http:operation>
+            <http:operation location="getAutoscalingPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkDefaultLBExistenceAgainstPolicy">
-            <http:operation location="checkDefaultLBExistenceAgainstPolicy"></http:operation>
+            <http:operation location="checkDefaultLBExistenceAgainstPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkClusterLBExistenceAgainstPolicy">
-            <http:operation location="checkClusterLBExistenceAgainstPolicy"></http:operation>
+            <http:operation location="checkClusterLBExistenceAgainstPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartition">
-            <http:operation location="getPartition"></http:operation>
+            <http:operation location="getPartition"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
-            <http:operation location="addPartition"></http:operation>
+            <http:operation location="addPartition"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkServiceLBExistenceAgainstPolicy">
-            <http:operation location="checkServiceLBExistenceAgainstPolicy"></http:operation>
+            <http:operation location="checkServiceLBExistenceAgainstPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
-            <http:operation location="addDeploymentPolicy"></http:operation>
+            <http:operation location="addDeploymentPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
-            <http:operation location="getServiceLBClusterId"></http:operation>
+            <http:operation location="getServiceLBClusterId"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
-            <http:operation location="getPartitionGroups"></http:operation>
+            <http:operation location="getPartitionGroups"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <http:operation location="checkLBExistenceAgainstPolicy"></http:operation>
+            <http:operation location="checkLBExistenceAgainstPolicy"/>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
+                <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"></soap:address>
+            <soap:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"></soap:address>
+            <soap:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"></soap12:address>
+            <soap12:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"></soap12:address>
+            <soap12:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://172.17.42.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"></http:address>
+            <http:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://172.17.42.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"></http:address>
+            <http:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
