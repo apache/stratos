@@ -18,6 +18,17 @@
  */
 package org.apache.stratos.rest.endpoint.services;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
@@ -26,19 +37,21 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.exception.*;
+import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.DomainMappingExistsException;
+import org.apache.stratos.manager.exception.NotSubscribedException;
+import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -64,12 +77,6 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
-import java.rmi.RemoteException;
-import java.util.*;
-import java.util.regex.Pattern;
 
 public class ServiceUtils {
     public static final String IS_VOLUME_REQUIRED = "volume.required";
@@ -79,45 +86,23 @@ public class ServiceUtils {
     public static final String VOLUME_ID = "volume.id";
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
-    private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
+    private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager(); 
 
-    static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                                String userName, String tenantDomain) throws RestAPIException {
+	static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt, String userName, String tenantDomain)
+			throws RestAPIException {
 
-        log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
+		log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
 
-        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+		CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
+		if (cartridgeConfig == null) {
+			throw new RestAPIException(
+					"Populated CartridgeConfig instance is null, cartridge deployment aborted");
+		}
+		CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
 
-        if (cloudControllerServiceClient != null) {
+		log.info("Successfully deployed Cartridge [type] "+ cartridgeDefinitionBean.type);
 
-            CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
-
-            if (cartridgeConfig == null) {
-                throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
-            }
-
-
-            // call CC
-            try {
-                cloudControllerServiceClient
-                        .deployCartridgeDefinition(cartridgeConfig);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-                String message = e.getFaultMessage().getInvalidCartridgeDefinitionException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-                String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-            log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
-
-        }
-    }
+	}
 
     @SuppressWarnings("unused")
     private static DeploymentPolicy[] intersection(
