@@ -26,17 +26,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.KubernetesHost;
-import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
@@ -69,8 +65,6 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinit
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
-import org.apache.stratos.rest.endpoint.exception.KubernetesGroupDoesNotExistException;
-import org.apache.stratos.rest.endpoint.exception.KubernetesMasterDoesNotExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
@@ -89,42 +83,20 @@ public class ServiceUtils {
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
-    static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                String userName, String tenantDomain) throws RestAPIException {
+    static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt, String userName, String tenantDomain)
+            throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
 
-        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-
-        if (cloudControllerServiceClient != null) {
-
-            CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
-
-            if (cartridgeConfig == null) {
-                throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
-            }
-
-
-            // call CC
-            try {
-                cloudControllerServiceClient
-                        .deployCartridgeDefinition(cartridgeConfig);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-                String message = e.getFaultMessage().getInvalidCartridgeDefinitionException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-                String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-            log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
-
+        CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
+        if (cartridgeConfig == null) {
+            throw new RestAPIException(
+                    "Populated CartridgeConfig instance is null, cartridge deployment aborted");
         }
+        CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
+
+        log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
+
     }
 
     @SuppressWarnings("unused")
@@ -188,33 +160,6 @@ public class ServiceUtils {
             }
 
         }
-    }
-
-
-    public static void deployKubernetesGroup(KubernetesGroup kubernetesGroup) {
-        //TODO
-    }
-
-    public static void deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost) {
-        //TODO
-    }
-
-    public static void updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws KubernetesMasterDoesNotExistException {
-        //TODO
-    }
-
-    public static KubernetesGroup[] getAvailableKubernetesGroups() {
-        //TODO
-        return null;
-    }
-
-    public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId) {
-        //TODO
-        return null;
-    }
-
-    public static void undeployKubernetesGroup(String kubernetesGroupId) throws KubernetesGroupDoesNotExistException {
-        //TODO
     }
 
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
@@ -907,7 +852,6 @@ public class ServiceUtils {
                 cartridge.setLbClusterId(subscription.getLbClusterId());
             }
 
-            cartridge.setClusterId(subscription.getClusterDomain());
             cartridge.setStatus(subscription.getSubscriptionStatus());
             cartridge.setPortMappings(subscription.getCartridgeInfo()
                     .getPortMappings());

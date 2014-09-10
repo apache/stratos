@@ -85,6 +85,22 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+		        <groupId>org.apache.axis2</groupId>
+		        <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+		        <configuration>
+			       <className>org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl</className>
+			       <outputFileName>target/generated-resources/wsdl/CloudControllerService.wsdl</outputFileName>
+			       <serviceName>CloudControllerService</serviceName>
+		        </configuration>
+		        <executions>
+		           <execution>
+		             <goals>
+		               <goal>java2wsdl</goal>
+		             </goals>
+		          </execution>
+		        </executions>
+            </plugin>
         </plugins>
     </build>
 

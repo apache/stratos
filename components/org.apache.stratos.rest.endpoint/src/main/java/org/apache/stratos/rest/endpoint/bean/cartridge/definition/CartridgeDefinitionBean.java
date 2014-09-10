@@ -57,6 +57,10 @@ public class CartridgeDefinitionBean {
     public String defaultDeploymentPolicy;
     
     public String serviceGroup;
+    
+    public ContainerBean container;
+    
+    public String deployerType;
 
     public String toString () {
 

@@ -62,6 +62,8 @@ public class CartridgeConfig implements Serializable {
     private LoadbalancerConfig lbConfig;
     
     private String serviceGroup;
+    
+    private Container container;
 
 
     public String getType() {
@@ -269,6 +271,15 @@ public class CartridgeConfig implements Serializable {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
+
+	public Container getContainer() {
+		return container;
+	}
+
+	public void setContainer(Container container) {
+		this.container = container;
+	}
     
+	
     
 }
