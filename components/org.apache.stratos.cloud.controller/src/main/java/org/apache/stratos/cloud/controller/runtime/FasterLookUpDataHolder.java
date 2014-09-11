@@ -60,6 +60,12 @@ public class FasterLookUpDataHolder implements Serializable{
 	private Map<String, MemberContext> memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
 	
 	/**
+	 * Key - member id 
+	 * Value - Kubernetes master id
+	 */
+	private Map<String, String> memberIdToKubernetesMasterId = new ConcurrentHashMap<String, String>();
+	
+	/**
 	 * Key - cluster id
 	 * Value - {@link ClusterContext}
 	 */
