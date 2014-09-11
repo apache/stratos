@@ -139,5 +139,8 @@ public class StratosConstants {
     public static final String MULTITENANCY_LARGE_PLAN = "Enterprise";
     public static final String EMAIL_CONFIG= "email";
     public static final String MULTITENANCY_CONFIG_FOLDER = "multitenancy";
+    
+    // Kubernetes related constants
+    public static final String KUBERNETES_HOST_CLUSTER_ID = "khost.cluster.id";
 
 }
