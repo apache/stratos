@@ -92,18 +92,20 @@ public interface CloudControllerService {
      * to the provided Cluster ID. Also note that the instance that is starting up
      * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
      * by a hyphen (<i>-</i>).
-     * 
-     * @param clusterId
-     *            cluster ID of the instance to be started up.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be started.
-     * @return public IP which is associated with the newly started instance.
-     * @throws IllegalArgumentException if the provided member is not valid.
+     * @param Member Context with cluster id, partition etc.
+     * @return updated {@link MemberContext}
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
     public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
+    
+    /**
+     * Create a new Container via Kubernetes API.
+     * @param Member Context with cluster id, and host cluster details. 
+     * @return updated {@link MemberContext}
+     * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
+     */
+    public MemberContext startContainer(MemberContext member) throws UnregisteredCartridgeException;
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.

@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1257,6 +1258,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         return dataHolder.getClusterContext(clusterId);
     }
+
+	@Override
+	public MemberContext startContainer(MemberContext member)
+			throws UnregisteredCartridgeException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
 
