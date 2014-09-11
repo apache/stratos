@@ -284,6 +284,19 @@ public class CloudControllerUtil {
     	
     }
 	
+	public static String getProperty(Properties properties, String key) {
+    	if (key != null && properties != null) {
+    		for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+				String prop = (String) iterator.next();
+				if (key.equals(prop)) {
+					return properties.getProperty(prop);
+				}
+			}
+    	}
+    	
+    	return null;
+    }
+	
 	/**
 	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
 	 * @param properties org.apache.stratos.messaging.util.Properties

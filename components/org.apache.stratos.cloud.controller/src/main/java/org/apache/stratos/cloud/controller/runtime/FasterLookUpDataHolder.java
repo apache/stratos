@@ -60,6 +60,13 @@ public class FasterLookUpDataHolder implements Serializable{
 	private Map<String, MemberContext> memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
 	
 	/**
+	 * Key - Kubernetes cluster id
+	 * Value - {@link KubernetesClusterContext}
+	 */
+	private Map<String, KubernetesClusterContext> kubClusterIdToKubClusterContext = 
+			new ConcurrentHashMap<String, KubernetesClusterContext>();
+	
+	/**
 	 * Key - cluster id
 	 * Value - {@link ClusterContext}
 	 */
@@ -383,6 +390,19 @@ public class FasterLookUpDataHolder implements Serializable{
 	
 	public void removeFromCartridgeTypeToPartitionIds(String cartridgeType) {
 		this.cartridgeTypeToPartitionIds.remove(cartridgeType);
+	}
+
+	public Map<String, KubernetesClusterContext> getKubClusterIdToKubClusterContext() {
+		return kubClusterIdToKubClusterContext;
+	}
+	
+	public KubernetesClusterContext getKubernetesClusterContext(String kubClusterId) {
+		return kubClusterIdToKubClusterContext.get(kubClusterId);
+	}
+
+	public void setKubClusterIdToKubClusterContext(
+			Map<String, KubernetesClusterContext> kubClusterIdToKubClusterContext) {
+		this.kubClusterIdToKubClusterContext = kubClusterIdToKubClusterContext;
 	}
 
 }
