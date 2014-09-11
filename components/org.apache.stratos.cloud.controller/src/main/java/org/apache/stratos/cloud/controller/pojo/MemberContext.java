@@ -210,4 +210,17 @@ public class MemberContext implements Serializable{
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+    
+    public String getProperty(String key) {
+    	if (key != null && this.properties != null && this.properties.getProperties() != null) {
+    		Property[] propertyArray = this.properties.getProperties();
+    		for (Property property : propertyArray) {
+				if (key.equals(property.getName())) {
+					return property.getValue();
+				}
+			}
+    	}
+    	
+    	return null;
+    }
 }
