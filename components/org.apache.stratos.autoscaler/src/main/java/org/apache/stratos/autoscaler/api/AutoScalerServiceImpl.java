@@ -121,6 +121,24 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return depPol.getAllPartitions();
     }
 
+    @Override
+    public KubernetesGroup[] getAllKubernetesGroups() {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) {
+        //TODO
+        return null;
+    }
+
 
     @Override
     public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException {

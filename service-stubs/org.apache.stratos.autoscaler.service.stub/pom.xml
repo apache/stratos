@@ -17,7 +17,8 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -33,7 +34,7 @@
 
     <build>
         <plugins>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -47,10 +48,12 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/AutoScalerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.autoscaler.stub -ns2p http://policy.deployment.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.deployment.policy,http://model.policy.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.policy.model,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.exception,http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://pojo.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://partition.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.partition" />
-                                    <classpath refid="maven.dependency.classpath" />
-                                    <classpath refid="maven.compile.classpath" />
-                                    <classpath refid="maven.runtime.classpath" />
+                                    <arg line="-uri src/main/resources/AutoScalerService.wsdl -u -uw -o target/generated-code
+                                    -p org.apache.stratos.autoscaler.stub
+                                    -ns2p http://policy.deployment.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.deployment.policy,http://model.policy.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.policy.model,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.exception,http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://pojo.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://partition.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.partition,http://kubernetes.common.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.kubernetes,http://api.autoscaler.stratos.apache.org=org.apache.stratos.autoscaler.stub.api"/>
+                                    <classpath refid="maven.dependency.classpath"/>
+                                    <classpath refid="maven.compile.classpath"/>
+                                    <classpath refid="maven.runtime.classpath"/>
                                 </java>
                             </tasks>
                         </configuration>
@@ -80,22 +83,22 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                
+
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-			    org.apache.stratos.autoscaler.stub.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.*; version=${project.version},
                             org.apache.stratos.autoscaler.deployment.policy.*; version=${project.version},
                             org.apache.stratos.autoscaler.policy.model.*; version=${project.version},
                             org.apache.stratos.autoscaler.exception.*; version=${project.version},
-			    org.apache.stratos.autoscaler.partition.*; version=${project.version},
-			    org.apache.stratos.autoscaler.api.*; version=${project.version}
+                            org.apache.stratos.autoscaler.partition.*; version=${project.version},
+                            org.apache.stratos.autoscaler.api.*; version=${project.version}
                         </Export-Package>
-			<Private-Package>
-			</Private-Package>
+                        <Private-Package>
+                        </Private-Package>
                         <Import-Package>
                             *;resolution:=optional
                         </Import-Package>
@@ -110,26 +113,26 @@
             <groupId>org.apache.axis2.wso2</groupId>
             <artifactId>axis2</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ws.commons.schema.wso2</groupId>
             <artifactId>XmlSchema</artifactId>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
-       </dependency>
-       <dependency>
+        </dependency>
+        <dependency>
             <groupId>org.apache.neethi.wso2</groupId>
-       	    <artifactId>neethi</artifactId>
-       </dependency>
+            <artifactId>neethi</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

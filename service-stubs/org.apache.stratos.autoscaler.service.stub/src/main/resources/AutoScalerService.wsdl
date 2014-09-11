@@ -279,6 +279,34 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getMasterForKubernetesGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getMasterForKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:KubernetesMaster"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHostsForKubernetesGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getHostsForKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:KubernetesHost"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
@@ -318,6 +346,18 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllKubernetesGroups">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllKubernetesGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:KubernetesGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -643,6 +683,12 @@
     <wsdl:message name="AutoScalerServiceInvalidPolicyException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPolicyException"/>
     </wsdl:message>
+    <wsdl:message name="getMasterForKubernetesGroupRequest">
+        <wsdl:part name="parameters" element="ns:getMasterForKubernetesGroup"/>
+    </wsdl:message>
+    <wsdl:message name="getMasterForKubernetesGroupResponse">
+        <wsdl:part name="parameters" element="ns:getMasterForKubernetesGroupResponse"/>
+    </wsdl:message>
     <wsdl:message name="getAllDeploymentPoliciesRequest">
         <wsdl:part name="parameters" element="ns:getAllDeploymentPolicies"/>
     </wsdl:message>
@@ -733,6 +779,12 @@
     <wsdl:message name="addDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:addDeploymentPolicyResponse"/>
     </wsdl:message>
+    <wsdl:message name="getAllKubernetesGroupsRequest">
+        <wsdl:part name="parameters" element="ns:getAllKubernetesGroups"/>
+    </wsdl:message>
+    <wsdl:message name="getAllKubernetesGroupsResponse">
+        <wsdl:part name="parameters" element="ns:getAllKubernetesGroupsResponse"/>
+    </wsdl:message>
     <wsdl:message name="getServiceLBClusterIdRequest">
         <wsdl:part name="parameters" element="ns:getServiceLBClusterId"/>
     </wsdl:message>
@@ -756,6 +808,12 @@
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceNonExistingLBException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingLBException"/>
+    </wsdl:message>
+    <wsdl:message name="getHostsForKubernetesGroupRequest">
+        <wsdl:part name="parameters" element="ns:getHostsForKubernetesGroup"/>
+    </wsdl:message>
+    <wsdl:message name="getHostsForKubernetesGroupResponse">
+        <wsdl:part name="parameters" element="ns:getHostsForKubernetesGroupResponse"/>
     </wsdl:message>
     <wsdl:portType name="AutoScalerServicePortType">
         <wsdl:operation name="addKubernetesGroup">
@@ -792,6 +850,10 @@
             <wsdl:input message="ns:addAutoScalingPolicyRequest" wsaw:Action="urn:addAutoScalingPolicy"/>
             <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addAutoScalingPolicyAutoScalerServiceInvalidPolicyException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getMasterForKubernetesGroup">
+            <wsdl:input message="ns:getMasterForKubernetesGroupRequest" wsaw:Action="urn:getMasterForKubernetesGroup"/>
+            <wsdl:output message="ns:getMasterForKubernetesGroupResponse" wsaw:Action="urn:getMasterForKubernetesGroupResponse"/>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
             <wsdl:input message="ns:getAllDeploymentPoliciesRequest" wsaw:Action="urn:getAllDeploymentPolicies"/>
@@ -851,6 +913,10 @@
             <wsdl:output message="ns:addDeploymentPolicyResponse" wsaw:Action="urn:addDeploymentPolicyResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addDeploymentPolicyAutoScalerServiceInvalidPolicyException"/>
         </wsdl:operation>
+        <wsdl:operation name="getAllKubernetesGroups">
+            <wsdl:input message="ns:getAllKubernetesGroupsRequest" wsaw:Action="urn:getAllKubernetesGroups"/>
+            <wsdl:output message="ns:getAllKubernetesGroupsResponse" wsaw:Action="urn:getAllKubernetesGroupsResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
             <wsdl:input message="ns:getServiceLBClusterIdRequest" wsaw:Action="urn:getServiceLBClusterId"/>
             <wsdl:output message="ns:getServiceLBClusterIdResponse" wsaw:Action="urn:getServiceLBClusterIdResponse"/>
@@ -868,6 +934,10 @@
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
             <wsdl:input message="ns:checkLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkLBExistenceAgainstPolicy"/>
             <wsdl:fault message="ns:AutoScalerServiceNonExistingLBException" name="AutoScalerServiceNonExistingLBException" wsaw:Action="urn:checkLBExistenceAgainstPolicyAutoScalerServiceNonExistingLBException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getHostsForKubernetesGroup">
+            <wsdl:input message="ns:getHostsForKubernetesGroupRequest" wsaw:Action="urn:getHostsForKubernetesGroup"/>
+            <wsdl:output message="ns:getHostsForKubernetesGroupResponse" wsaw:Action="urn:getHostsForKubernetesGroupResponse"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="AutoScalerServiceSoap11Binding" type="ns:AutoScalerServicePortType">
@@ -934,6 +1004,15 @@
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
             <soap:operation soapAction="urn:getDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMasterForKubernetesGroup">
+            <soap:operation soapAction="urn:getMasterForKubernetesGroup" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -1088,6 +1167,15 @@
                 <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getAllKubernetesGroups">
+            <soap:operation soapAction="urn:getAllKubernetesGroups" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
             <soap:operation soapAction="urn:getServiceLBClusterId" style="document"/>
             <wsdl:input>
@@ -1120,6 +1208,15 @@
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHostsForKubernetesGroup">
+            <soap:operation soapAction="urn:getHostsForKubernetesGroup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
             <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
@@ -1195,6 +1292,15 @@
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
             <soap12:operation soapAction="urn:getDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMasterForKubernetesGroup">
+            <soap12:operation soapAction="urn:getMasterForKubernetesGroup" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -1349,6 +1455,15 @@
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getAllKubernetesGroups">
+            <soap12:operation soapAction="urn:getAllKubernetesGroups" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
             <soap12:operation soapAction="urn:getServiceLBClusterId" style="document"/>
             <wsdl:input>
@@ -1381,6 +1496,15 @@
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getHostsForKubernetesGroup">
+            <soap12:operation soapAction="urn:getHostsForKubernetesGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
             <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
@@ -1450,6 +1574,15 @@
         </wsdl:operation>
         <wsdl:operation name="getDeploymentPolicy">
             <http:operation location="getDeploymentPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getMasterForKubernetesGroup">
+            <http:operation location="getMasterForKubernetesGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -1583,6 +1716,15 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="getAllKubernetesGroups">
+            <http:operation location="getAllKubernetesGroups"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getServiceLBClusterId">
             <http:operation location="getServiceLBClusterId"/>
             <wsdl:input>
@@ -1603,6 +1745,15 @@
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <http:operation location="updateKubernetesHost"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getHostsForKubernetesGroup">
+            <http:operation location="getHostsForKubernetesGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

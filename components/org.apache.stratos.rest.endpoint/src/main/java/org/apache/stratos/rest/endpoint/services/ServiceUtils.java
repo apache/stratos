@@ -23,9 +23,10 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidKubernetesGroupExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
@@ -68,10 +69,7 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinit
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
-import org.apache.stratos.rest.endpoint.exception.KubernetesGroupDoesNotExistException;
-import org.apache.stratos.rest.endpoint.exception.KubernetesHostAlreadyDeployedException;
-import org.apache.stratos.rest.endpoint.exception.KubernetesMasterDoesNotExistException;
-import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.exception.*;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -169,7 +167,6 @@ public class ServiceUtils {
     }
 
 
-
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
@@ -177,7 +174,7 @@ public class ServiceUtils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy = PojoConverter.
+            org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = PojoConverter.
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
@@ -205,7 +202,7 @@ public class ServiceUtils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy deploymentPolicy =
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
@@ -329,7 +326,7 @@ public class ServiceUtils {
 
     public static AutoscalePolicy[] getAutoScalePolicies() throws RestAPIException {
 
-        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy[] autoscalePolicies = null;
+        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy[] autoscalePolicies = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -346,7 +343,7 @@ public class ServiceUtils {
 
     public static AutoscalePolicy getAutoScalePolicy(String autoscalePolicyId) throws RestAPIException {
 
-        org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy = null;
+        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -438,7 +435,7 @@ public class ServiceUtils {
     public static PartitionGroup[] getPartitionGroups(String deploymentPolicyId)
             throws RestAPIException {
 
-        org.apache.stratos.autoscaler.partition.PartitionGroup[] partitionGroups = null;
+        org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -681,7 +678,7 @@ public class ServiceUtils {
         }
         
 		/*if (availableMultitenantCartridges.isEmpty()) {
-			String msg = "Cannot find any active deployed service for tenant [id] "+tenantId;
+            String msg = "Cannot find any active deployed service for tenant [id] "+tenantId;
 			log.error(msg);
 			throw new RestAPIException(msg);
 		}*/
@@ -759,7 +756,7 @@ public class ServiceUtils {
         }
         
         /*if(cartridges.isEmpty()) {
-        	String msg = "Cannot find any subscribed Cartridge, matching the given string: "+cartridgeSearchString;
+            String msg = "Cannot find any subscribed Cartridge, matching the given string: "+cartridgeSearchString;
             log.error(msg);
             throw new RestAPIException(msg);
         }*/
@@ -1262,27 +1259,55 @@ public class ServiceUtils {
 
     }
 
-    public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws KubernetesGroupDoesNotExistException {
+    public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroupBean)
+            throws RestAPIException {
+
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup =
+                    PojoConverter.convertToASKubernetesGroupPojo(kubernetesGroupBean);
+
+            try {
+                autoscalerServiceClient.deployKubernetesGroup(kubernetesGroup);
+            } catch (RemoteException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
+            } catch (AutoScalerServiceInvalidKubernetesGroupExceptionException e) {
+                String message = e.getFaultMessage().getInvalidKubernetesGroupException().getMessage();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
+            }
+        }
+
         return false;
     }
 
-    public static boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost) throws KubernetesHostAlreadyDeployedException{
+    public static boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
+            throws KubernetesHostAlreadyDeployedException {
         return false;
     }
 
-    public static boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws KubernetesMasterDoesNotExistException {
+    public static boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws KubernetesMasterDoesNotExistException {
         return false;
     }
 
-    public static KubernetesGroup[] getAvailableKubernetesGroups() {
+    public static KubernetesGroup[] getAvailableKubernetesGroups() throws RestAPIException {
         return null;
     }
 
-    public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws KubernetesGroupDoesNotExistException {
+    public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId)
+            throws KubernetesGroupDoesNotExistException {
         return null;
     }
 
-    public static boolean undeployKubernetesGroup(String kubernetesGroupId) throws KubernetesGroupDoesNotExistException {
+    public static boolean undeployKubernetesGroup(String kubernetesGroupId)
+            throws KubernetesGroupDoesNotExistException {
+        return false;
+    }
+
+    public static boolean undeployKubernetesHost(String kubernetesHostId)
+            throws KubernetesHostDoesNotExistException {
         return false;
     }
 }

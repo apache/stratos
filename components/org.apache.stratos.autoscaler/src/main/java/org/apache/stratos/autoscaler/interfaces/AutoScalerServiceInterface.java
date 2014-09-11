@@ -59,6 +59,26 @@ public interface AutoScalerServiceInterface {
     public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId);
 
     /**
+     * Retrieves registered Kubernetes Groups.
+     *
+     */
+    public KubernetesGroup[] getAllKubernetesGroups();
+
+    /**
+     * Retrieves Kubernetes Master for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId);
+
+    /**
+     * Retrieves Kubernetes Hosts for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId);
+
+    /**
      * Register a Kubernetes cluster.
      *
      * @param kubernetesGroup
