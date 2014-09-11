@@ -31,6 +31,7 @@ public class ServiceDefinitionBean {
 	private String clusterDomain;
 	private String clusterSubDomain;
 	private String tenantRange;
+	private boolean isPublic;
 	
 	public String getServiceName() {
 		return serviceName;
@@ -73,6 +74,12 @@ public class ServiceDefinitionBean {
 	}
 	public void setTenantRange(String tenantRange) {
 		this.tenantRange = tenantRange;
+	}
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 	
 }
