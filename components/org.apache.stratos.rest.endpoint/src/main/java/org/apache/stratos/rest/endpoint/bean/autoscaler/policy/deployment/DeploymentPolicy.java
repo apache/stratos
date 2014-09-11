@@ -32,6 +32,8 @@ public class DeploymentPolicy {
     public String id;
     
     public String description;
+    
+    public boolean isPublic;
 
     //partition groups
     public List<PartitionGroup> partitionGroup;
