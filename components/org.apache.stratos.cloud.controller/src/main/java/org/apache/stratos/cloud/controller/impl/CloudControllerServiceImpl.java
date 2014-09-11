@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.functions.ClusterContextToReplicationController;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
@@ -40,6 +41,8 @@ import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
@@ -930,7 +933,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		// initialize ClusterContext
 		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
-				hostName, isLb);
+				hostName, isLb, props);
 		
 		String property;
 		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
@@ -1260,11 +1263,216 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public MemberContext startContainer(MemberContext member)
+	public MemberContext startContainer(MemberContext memberContext)
 			throws UnregisteredCartridgeException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		
+		if(log.isDebugEnabled()) {
+    		log.debug("CloudControllerServiceImpl:startContainer");
+    	}
 
+        if (memberContext == null) {
+            String msg = "Instance start-up failed. Member is null.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        String clusterId = memberContext.getClusterId();
+        if(log.isDebugEnabled()) {
+        	log.debug("Received an instance spawn request : " + memberContext.toString());
+        }
+
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        if (ctxt == null) {
+            String msg = "Instance start-up failed. Invalid cluster id. " + memberContext.toString();
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+        		StratosConstants.KUBERNETES_HOST_CLUSTER_ID);
+        
+        if (kubernetesClusterId == null) {
+        	 String msg = "Instance start-up failed. Cannot find '"+
+        StratosConstants.KUBERNETES_HOST_CLUSTER_ID+"'. " + memberContext.toString();
+             log.error(msg);
+             throw new IllegalArgumentException(msg);
+        }
+        
+        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        
+        String cartridgeType = ctxt.getCartridgeType();
+
+        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+
+        if (cartridge == null) {
+            String msg =
+                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
+                                 memberContext.toString();
+            log.error(msg);
+            throw new UnregisteredCartridgeException(msg);
+        }
+
+        memberContext.setCartridgeType(cartridgeType);
+
+        KubernetesApiClient client = kubClusterContext.getKubernetesApiClient();
+        
+        ClusterContextToReplicationController controllerFunc = new ClusterContextToReplicationController();
+		return memberContext;
+        
+//        client.createReplicationController(controllerFunc.apply(ctxt));
+
+//        try {
+//            // generating the Unique member ID...
+//            String memberID = generateMemberId(clusterId);
+//            memberContext.setMemberId(memberID);
+//            // have to add memberID to the payload
+//            StringBuilder payload = new StringBuilder(ctxt.getPayload());
+//            addToPayload(payload, "MEMBER_ID", memberID);
+//            addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
+//            addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
+//            addToPayload(payload, "PARTITION_ID", partitionId);
+//            if(memberContext.getProperties() != null) {
+//            	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
+//                if (props1 != null) {
+//                    for (Property prop : props1.getProperties()) {
+//                        addToPayload(payload, prop.getName(), prop.getValue());
+//                    }
+//                }
+//            }
+//
+//            Iaas iaas = iaasProvider.getIaas();
+//            
+//            if (log.isDebugEnabled()) {
+//                log.debug("Payload: " + payload.toString());
+//            }
+//            
+//            if (iaas == null) {
+//                if(log.isDebugEnabled()) {
+//                    log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
+//                }
+//                try {
+//                    iaas = CloudControllerUtil.getIaas(iaasProvider);
+//                } catch (InvalidIaasProviderException e) {
+//                    String msg ="Instance start up failed. "+memberContext.toString()+
+//                            "Unable to build Iaas of this IaasProvider [Provider] : " + type+". Cause: "+e.getMessage();
+//                    log.error(msg, e);
+//                    throw new InvalidIaasProviderException(msg, e);
+//                }
+//                
+//            }
+//
+//            if(ctxt.isVolumeRequired()) {
+//                if (ctxt.getVolumes() != null) {
+//                    for (Volume volume : ctxt.getVolumes()) {
+//
+//                        if (volume.getId() == null) {
+//                            // create a new volume
+//                            createVolumeAndSetInClusterContext(volume, iaasProvider);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if(ctxt.isVolumeRequired()){
+//                addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
+//            }
+//            iaasProvider.setPayload(payload.toString().getBytes());
+//            iaas.setDynamicPayload();
+//
+//            // get the pre built ComputeService from provider or region or zone or host
+//            computeService = iaasProvider.getComputeService();
+//            template = iaasProvider.getTemplate();
+//                        
+//            if (template == null) {
+//                String msg =
+//                             "Failed to start an instance. " +
+//                                     memberContext.toString() +
+//                                     ". Reason : Jclouds Template is null for iaas provider [type]: "+iaasProvider.getType();
+//                log.error(msg);
+//                throw new InvalidIaasProviderException(msg);
+//            }
+//
+//            // generate the group id from domain name and sub domain
+//            // name.
+//            // Should have lower-case ASCII letters, numbers, or dashes.
+//            // Should have a length between 3-15
+//            String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
+//            String group = str.replaceAll("[^a-z0-9-]", "");
+//
+//            NodeMetadata node;
+//            
+//			if (log.isDebugEnabled()) {
+//				log.debug("Cloud Controller is delegating request to start an instance for "
+//						+ memberContext + " to Jclouds layer.");
+//			}
+//
+////            create and start a node
+//            Set<? extends NodeMetadata> nodes =
+//                                                computeService.createNodesInGroup(group, 1,
+//                                                                                  template);
+//
+//            node = nodes.iterator().next();
+//            
+//            if (log.isDebugEnabled()) {
+//				log.debug("Cloud Controller received a response for the request to start "
+//						+ memberContext + " from Jclouds layer.");
+//			}
+//            
+//            
+//            //Start allocating ip as a new job
+//
+//            ThreadExecutor exec = ThreadExecutor.getInstance();
+//            if (log.isDebugEnabled()) {
+//				log.debug("Cloud Controller is starting the IP Allocator thread.");
+//			}
+//            exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
+//
+//
+//            // node id
+//            String nodeId = node.getId();
+//            if (nodeId == null) {
+//                String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
+//                log.fatal(msg);
+//                throw new IllegalStateException(msg);
+//            }
+//            
+//			memberContext.setNodeId(nodeId);
+//			if (log.isDebugEnabled()) {
+//				log.debug("Node id was set. " + memberContext.toString());
+//			}
+//
+//                // attach volumes
+//			if (ctxt.isVolumeRequired()) {
+//				// remove region prefix
+//				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
+//						.substring(nodeId.indexOf('/') + 1, nodeId.length())
+//						: nodeId;
+//				memberContext.setInstanceId(instanceId);
+//				if (ctxt.getVolumes() != null) {
+//					for (Volume volume : ctxt.getVolumes()) {
+//						try {
+//							iaas.attachVolume(instanceId, volume.getId(),
+//									volume.getDevice());
+//						} catch (Exception e) {
+//							// continue without throwing an exception, since
+//							// there is an instance already running
+//							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
+//									+ instanceId + " ] failed!", e);
+//						}
+//					}
+//				}
+//			}
+//
+//            log.info("Instance is successfully starting up. "+memberContext.toString());
+//
+//            return memberContext;
+//
+//        } catch (Exception e) {
+//            String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
+//            log.error(msg, e);
+//            throw new IllegalStateException(msg, e);
+//        }
+	}
 }
 
