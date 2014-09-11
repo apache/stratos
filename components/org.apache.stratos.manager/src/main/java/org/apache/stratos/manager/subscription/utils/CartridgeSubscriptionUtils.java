@@ -23,7 +23,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -52,8 +52,8 @@ public class CartridgeSubscriptionUtils {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionUtils.class);
 
-    public static BasicPayloadData createBasicPayload (CartridgeInfo cartridgeInfo, String subscriptionKey, Cluster cluster,
-                                                       Repository repository, String alias, Subscriber subscriber) {
+    public static BasicPayloadData createBasicPayload(CartridgeInfo cartridgeInfo, String subscriptionKey, Cluster cluster,
+                                                      Repository repository, String alias, Subscriber subscriber) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setApplicationPath(cartridgeInfo.getBaseDir());
@@ -64,7 +64,7 @@ public class CartridgeSubscriptionUtils {
         basicPayloadData.setServiceName(cartridgeInfo.getType());
         basicPayloadData.setProvider(cartridgeInfo.getProvider());
 
-        if(repository != null) {
+        if (repository != null) {
             basicPayloadData.setGitRepositoryUrl(repository.getUrl());
         }
 
@@ -82,7 +82,7 @@ public class CartridgeSubscriptionUtils {
         }
 
         //TODO:remove. we do not want to know about the tenant rance in subscription!
-        if(cartridgeInfo.getMultiTenant()) {  //TODO: fix properly
+        if (cartridgeInfo.getMultiTenant()) {  //TODO: fix properly
             basicPayloadData.setTenantRange("*");
         } else if (subscriber != null) {
             basicPayloadData.setTenantRange(String.valueOf(subscriber.getTenantId()));
@@ -91,7 +91,7 @@ public class CartridgeSubscriptionUtils {
         return basicPayloadData;
     }
 
-    public static BasicPayloadData createBasicPayload (Service service) {
+    public static BasicPayloadData createBasicPayload(Service service) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setApplicationPath(service.getCartridgeInfo().getBaseDir());
@@ -131,7 +131,7 @@ public class CartridgeSubscriptionUtils {
 //        return basicPayloadData;
 //    }
 
-    private static String createPortMappingPayloadString (CartridgeInfo cartridgeInfo) {
+    private static String createPortMappingPayloadString(CartridgeInfo cartridgeInfo) {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
@@ -152,50 +152,52 @@ public class CartridgeSubscriptionUtils {
     }
 
     static class TenantSubscribedEventPublisher implements Runnable {
-    	
-    	private int tenantId;
-    	private String serviceName;
+
+        private int tenantId;
+        private String serviceName;
         private Set<String> clusterIds;
 
         public TenantSubscribedEventPublisher(int tenantId, String service, Set<String> clusterIds) {
-    		this.tenantId = tenantId;
-    		this.serviceName = service;
+            this.tenantId = tenantId;
+            this.serviceName = service;
             this.clusterIds = clusterIds;
-		}
-		@Override
-		public void run() {
-			try {
-				if(log.isInfoEnabled()) {
-					log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
-				}
-				TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds);
-				EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
-				eventPublisher.publish(subscribedEvent);
-			} catch (Exception e) {
-				if (log.isErrorEnabled()) {
-					log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
-				}
-			}
-			
-		}
-    	
+        }
+
+        @Override
+        public void run() {
+            try {
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Publishing tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
+                }
+                TenantSubscribedEvent subscribedEvent = new TenantSubscribedEvent(tenantId, serviceName, clusterIds);
+                EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
+                eventPublisher.publish(subscribedEvent);
+            } catch (Exception e) {
+                if (log.isErrorEnabled()) {
+                    log.error(String.format("Could not publish tenant subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName), e);
+                }
+            }
+
+        }
+
     }
+
     public static void publishTenantSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
-    	
-    	
-    	Executor exec = new Executor() {
-			@Override
-			public void execute(Runnable command) {
-				command.run();
-			}
-		};
-		
-		exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds));
+
+
+        Executor exec = new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
+
+        exec.execute(new TenantSubscribedEventPublisher(tenantId, serviceName, clusterIds));
     }
 
     public static void publishTenantUnSubscribedEvent(int tenantId, String serviceName, Set<String> clusterIds) {
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Publishing tenant un-subscribed event: [tenant-id] %d [service] %s", tenantId, serviceName));
             }
             TenantUnSubscribedEvent event = new TenantUnSubscribedEvent(tenantId, serviceName, clusterIds);
@@ -208,7 +210,7 @@ public class CartridgeSubscriptionUtils {
         }
     }
 
-    public static void validateCartridgeAlias (int tenantId, String cartridgeType, String alias) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
+    public static void validateCartridgeAlias(int tenantId, String cartridgeType, String alias) throws InvalidCartridgeAliasException, DuplicateCartridgeAliasException, ADCException {
 
         String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
         Pattern pattern = Pattern.compile(patternString);
@@ -235,7 +237,7 @@ public class CartridgeSubscriptionUtils {
         }
     }
 
-    public static boolean isAliasTaken (int tenantId, String alias) {
+    public static boolean isAliasTaken(int tenantId, String alias) {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
         // return (dataInsertionAndRetrievalManager.getCartridgeSubscription(tenantId, alias) == null) ? false : true;
@@ -243,12 +245,12 @@ public class CartridgeSubscriptionUtils {
         return (dataInsertionAndRetrievalManager.getCartridgeSubscriptionForAlias(alias) == null) ? false : true;
     }
 
-    public static String limitLengthOfString (String source, int length) {
+    public static String limitLengthOfString(String source, int length) {
 
         return source.substring(0, length);
     }
 
-    public static LBDataContext getLoadBalancerDataContext (int tenantId, String serviceType, String deploymentPolicyName, LoadbalancerConfig lbConfig) throws UnregisteredCartridgeException, ADCException {
+    public static LBDataContext getLoadBalancerDataContext(int tenantId, String serviceType, String deploymentPolicyName, LoadbalancerConfig lbConfig) throws UnregisteredCartridgeException, ADCException {
 
         String lbCartridgeType = lbConfig.getType();
 
@@ -324,7 +326,7 @@ public class CartridgeSubscriptionUtils {
 
                     if (lbCartridgeInfo == null) {
                         String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
-                            Constants.DEFAULT_LOAD_BALANCER;
+                                Constants.DEFAULT_LOAD_BALANCER;
                         log.error(msg);
                         throw new ADCException(msg);
                     }
@@ -346,17 +348,17 @@ public class CartridgeSubscriptionUtils {
                             if (deploymentPolicyName.equals(policy.getId())) {
 
                                 if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
-                                	if(log.isDebugEnabled()){
-                                		log.debug(" Default LB doesn't exist for deployment policy ["+deploymentPolicyName+"] ");
-                                	}
+                                    if (log.isDebugEnabled()) {
+                                        log.debug(" Default LB doesn't exist for deployment policy [" + deploymentPolicyName + "] ");
+                                    }
 
                                     Properties lbProperties = new Properties();
 
                                     // if LB cartridge definition has properties as well, combine
                                     if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
-                                    	if(log.isDebugEnabled()){
-                                    		log.debug(" Combining LB properties ");
-                                    	}
+                                        if (log.isDebugEnabled()) {
+                                            log.debug(" Combining LB properties ");
+                                        }
                                         lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty}));
                                     } else {
                                         lbProperties.setProperties(new Property[]{lbRefProperty});
@@ -467,7 +469,7 @@ public class CartridgeSubscriptionUtils {
         return lbDataCtxt;
     }
 
-    private static AutoscalerServiceClient getAutoscalerServiceClient () throws ADCException {
+    private static AutoscalerServiceClient getAutoscalerServiceClient() throws ADCException {
 
         try {
             return AutoscalerServiceClient.getServiceClient();
@@ -475,11 +477,11 @@ public class CartridgeSubscriptionUtils {
         } catch (AxisFault axisFault) {
             String errorMsg = "Error in getting AutoscalerServiceClient instance";
             log.error(errorMsg, axisFault);
-            throw new ADCException (errorMsg, axisFault);
+            throw new ADCException(errorMsg, axisFault);
         }
     }
 
-    private static Property[] combine (Property[] propertyArray1, Property[] propertyArray2) {
+    private static Property[] combine(Property[] propertyArray1, Property[] propertyArray2) {
 
         int length = propertyArray1.length + propertyArray2.length;
         Property[] combinedProperties = new Property[length];
