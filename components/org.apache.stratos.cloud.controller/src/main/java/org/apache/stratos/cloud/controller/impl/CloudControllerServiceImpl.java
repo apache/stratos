@@ -93,6 +93,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
                     currentData.setCartridges(serializedObj.getCartridges());
                     currentData.setConfigCompositeApplication(serializedObj.getConfigCompositeApplication());
+                    currentData.setServiceGroups(serializedObj.getServiceGroups());
 
                     if(log.isDebugEnabled()) {
 
@@ -340,6 +341,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	ServiceGroup serviceGroup = this.dataHolder.getServiceGroup(name);
     	
     	if (serviceGroup == null) {
+    		if(log.isDebugEnabled()) {
+                log.debug("getServiceGroupDefinition: no entry found for service group " + name);
+            }
     		String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
     		throw new InvalidServiceGroupException(msg);
     	}
