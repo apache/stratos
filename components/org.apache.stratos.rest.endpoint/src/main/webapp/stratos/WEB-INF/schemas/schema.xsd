@@ -208,24 +208,73 @@
             	<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
             	<xs:element name="subGroups" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="false"/>
             	<xs:element name="cartridges" type="xs:string" minOccurs="1" maxOccurs="unbounded" nillable="false"/>
-            	<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
-                	<xs:complexType>
-                		<xs:sequence>
-                    		<xs:element name="killBehaviour" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                    		<xs:element name="startupOrder" minOccurs="0" maxOccurs="unbounded">
-                                <xs:complexType>
-                                    <xs:all>
-                                        <xs:element name="start" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                                        <xs:element name="after" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                                    </xs:all>
-                                </xs:complexType>
-                            </xs:element>
-                    	</xs:sequence>
-                	</xs:complexType>   
-                </xs:element> 	
+            	<xs:element name="dependencies" type="tdependencies" minOccurs="0" maxOccurs="1"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
+    
+        <xs:element name="compositeAppDefinition">
+        <xs:complexType>
+        	<xs:sequence>
+            	<xs:element name="applicationId" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            	<xs:element name="alias" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            	<xs:element name="components" minOccurs="0" maxOccurs="1">
+                	<xs:complexType>
+                		<xs:sequence>
+                    		<xs:element name="groups" type="tgroups" minOccurs="0" maxOccurs="unbounded"/>
+                    		<xs:element name="subscribables" type="tsubscribables" minOccurs="0" maxOccurs="unbounded"/>
+                    		<xs:element name="dependencies" type="tdependencies" minOccurs="0" maxOccurs="1"/>
+                    	</xs:sequence>
+                	</xs:complexType>   
+                </xs:element> 
+                <xs:element name="subscribableInfo" type="tsubscribableInfo" minOccurs="0" maxOccurs="unbounded" nillable="false"/>	
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:complexType name="tsubscribableInfo">
+        <xs:all>
+            <xs:element name="alias" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="deploymentPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="autoscalingPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="repoURL" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="privateRepo" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="repoUsername" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="repoPassword" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+        </xs:all>
+    </xs:complexType>
+    
+    <xs:complexType name="tdependencies">
+    	<xs:sequence>
+			<xs:element name="killBehaviour" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+			<xs:element name="startupOrder" type="tstartupOrder" minOccurs="0" maxOccurs="unbounded"/>            
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="tstartupOrder">
+        	<xs:all>
+            	<xs:element name="start" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                 <xs:element name="after" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            </xs:all>
+	</xs:complexType> 
+    
+    <xs:complexType name="tgroups">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="alias" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="deploymentPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="autoscalingPolicy" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+            <xs:element name="subscribables" type="tsubscribables" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="subGroups" type="tgroups" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="tsubscribables">
+		<xs:all>
+	    	<xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+	        <xs:element name="alias" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+	    </xs:all>
+	</xs:complexType>
 
     <xs:element name="subscriptionDomainRequest">
         <xs:complexType>
