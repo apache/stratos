@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
@@ -117,6 +118,11 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             String cartridgeType = registrant.getCartridgeType();
             service = topology.getService(cartridgeType);
+            
+            if(log.isDebugEnabled()) {
+            	log.debug(" Service is retrieved from Topology [" + service + "] ");
+            }
+            
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
             
             Cluster cluster;
@@ -133,6 +139,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
+                cluster.setKubernetesCluster(getKubernetesCluster(service));
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
                                       registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
@@ -145,6 +152,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
+                cluster.setKubernetesCluster(getKubernetesCluster(service));
                 cluster.setStatus(ClusterStatus.Created);
                 service.addCluster(cluster);
             }
@@ -156,7 +164,16 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterRemoved(ClusterContext ctxt) {
+    private static boolean getKubernetesCluster(Service service) {  
+    	boolean isKubernetesCluster = false;
+    	isKubernetesCluster = (service.getProperties().getProperty(StratosConstants.KUBERNETES_CLUSTER_ID) != null);
+		if (log.isDebugEnabled()) {
+			log.debug(" Kubernetes Cluster ["+ isKubernetesCluster + "] ");
+		}
+		return isKubernetesCluster;		
+	}
+
+	public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());
         String deploymentPolicy;
