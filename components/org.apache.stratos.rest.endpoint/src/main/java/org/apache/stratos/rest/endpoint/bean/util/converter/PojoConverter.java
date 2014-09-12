@@ -23,9 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE;
 import org.apache.stratos.autoscaler.stub.kubernetes.PropertyE;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.common.kubernetes.*;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -91,24 +88,24 @@ public class PojoConverter {
         if (cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
             cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
         }
-        
-        if(cartridgeDefinitionBean.container != null) {
-        	cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
+
+        if (cartridgeDefinitionBean.container != null) {
+            cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
         }
 
         return cartridgeConfig;
     }
 
 
-	private static Container getContainer(ContainerBean container) {
-		Container cn = new Container();
-		cn.setDockerFileRepo(container.dockerfileRepo);
-		cn.setImageName(container.imageName);
-		//cn.setProperties(getProperties(container.property));
-		return cn;
-	}
+    private static Container getContainer(ContainerBean container) {
+        Container cn = new Container();
+        cn.setDockerFileRepo(container.dockerfileRepo);
+        cn.setImageName(container.imageName);
+        //cn.setProperties(getProperties(container.property));
+        return cn;
+    }
 
-	private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
+    private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
         lbConfig.setType(loadBalancer.type);
         if (loadBalancer.property != null && !loadBalancer.property.isEmpty()) {
@@ -218,7 +215,7 @@ public class PojoConverter {
         //convert to an array
         PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
         propertyBeans.toArray(propertyBeansArray);
-        PropertyE[]  propertyArray = new PropertyE[propertyBeansArray.length];
+        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
 
         for (int j = 0; j < propertyBeansArray.length; j++) {
             PropertyE property = new PropertyE();

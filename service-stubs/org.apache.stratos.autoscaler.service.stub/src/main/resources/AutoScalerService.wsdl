@@ -295,6 +295,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getKubernetesGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:KubernetesGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getHostsForKubernetesGroup">
                 <xs:complexType>
                     <xs:sequence>
@@ -745,12 +759,6 @@
     <wsdl:message name="checkDefaultLBExistenceAgainstPolicyResponse">
         <wsdl:part name="parameters" element="ns:checkDefaultLBExistenceAgainstPolicyResponse"/>
     </wsdl:message>
-    <wsdl:message name="getPartitionRequest">
-        <wsdl:part name="parameters" element="ns:getPartition"/>
-    </wsdl:message>
-    <wsdl:message name="getPartitionResponse">
-        <wsdl:part name="parameters" element="ns:getPartitionResponse"/>
-    </wsdl:message>
     <wsdl:message name="removeKubernetesHostRequest">
         <wsdl:part name="parameters" element="ns:removeKubernetesHost"/>
     </wsdl:message>
@@ -759,6 +767,18 @@
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceNonExistingKubernetesHostException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingKubernetesHostException"/>
+    </wsdl:message>
+    <wsdl:message name="getKubernetesGroupRequest">
+        <wsdl:part name="parameters" element="ns:getKubernetesGroup"/>
+    </wsdl:message>
+    <wsdl:message name="getKubernetesGroupResponse">
+        <wsdl:part name="parameters" element="ns:getKubernetesGroupResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionRequest">
+        <wsdl:part name="parameters" element="ns:getPartition"/>
+    </wsdl:message>
+    <wsdl:message name="getPartitionResponse">
+        <wsdl:part name="parameters" element="ns:getPartitionResponse"/>
     </wsdl:message>
     <wsdl:message name="addPartitionRequest">
         <wsdl:part name="parameters" element="ns:addPartition"/>
@@ -892,14 +912,18 @@
             <wsdl:input message="ns:checkDefaultLBExistenceAgainstPolicyRequest" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicy"/>
             <wsdl:output message="ns:checkDefaultLBExistenceAgainstPolicyResponse" wsaw:Action="urn:checkDefaultLBExistenceAgainstPolicyResponse"/>
         </wsdl:operation>
-        <wsdl:operation name="getPartition">
-            <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"/>
-            <wsdl:output message="ns:getPartitionResponse" wsaw:Action="urn:getPartitionResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="removeKubernetesHost">
             <wsdl:input message="ns:removeKubernetesHostRequest" wsaw:Action="urn:removeKubernetesHost"/>
             <wsdl:output message="ns:removeKubernetesHostResponse" wsaw:Action="urn:removeKubernetesHostResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesHostException" name="AutoScalerServiceNonExistingKubernetesHostException" wsaw:Action="urn:removeKubernetesHostAutoScalerServiceNonExistingKubernetesHostException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getKubernetesGroup">
+            <wsdl:input message="ns:getKubernetesGroupRequest" wsaw:Action="urn:getKubernetesGroup"/>
+            <wsdl:output message="ns:getKubernetesGroupResponse" wsaw:Action="urn:getKubernetesGroupResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="getPartition">
+            <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"/>
+            <wsdl:output message="ns:getPartitionResponse" wsaw:Action="urn:getPartitionResponse"/>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
             <wsdl:input message="ns:addPartitionRequest" wsaw:Action="urn:addPartition"/>
@@ -1117,6 +1141,15 @@
         </wsdl:operation>
         <wsdl:operation name="getPartition">
             <soap:operation soapAction="urn:getPartition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getKubernetesGroup">
+            <soap:operation soapAction="urn:getKubernetesGroup" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -1412,6 +1445,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="getKubernetesGroup">
+            <soap12:operation soapAction="urn:getKubernetesGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="removeKubernetesHost">
             <soap12:operation soapAction="urn:removeKubernetesHost" style="document"/>
             <wsdl:input>
@@ -1675,6 +1717,15 @@
         </wsdl:operation>
         <wsdl:operation name="getPartition">
             <http:operation location="getPartition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getKubernetesGroup">
+            <http:operation location="getKubernetesGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

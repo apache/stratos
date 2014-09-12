@@ -65,6 +65,13 @@ public interface AutoScalerServiceInterface {
     public KubernetesGroup[] getAllKubernetesGroups();
 
     /**
+     * Retrieves Kubernetes Group for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesGroup  getKubernetesGroup(String kubernetesGroupId);
+
+    /**
      * Retrieves Kubernetes Master for given Kubernetes Group ID.
      *
      * @param kubernetesGroupId

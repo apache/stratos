@@ -128,6 +128,12 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     }
 
     @Override
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) {
+        //TODO
+        return null;
+    }
+
+    @Override
     public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) {
         //TODO
         return null;
