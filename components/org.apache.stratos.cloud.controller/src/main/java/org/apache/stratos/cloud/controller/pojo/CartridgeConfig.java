@@ -65,6 +65,7 @@ public class CartridgeConfig implements Serializable {
     
     private Container container;
 
+    private String deployerType;
 
     public String getType() {
         return type;
@@ -279,7 +280,14 @@ public class CartridgeConfig implements Serializable {
 	public void setContainer(Container container) {
 		this.container = container;
 	}
-    
+
+	public String getDeployerType() {
+		return deployerType;
+	}
+
+	public void setDeployerType(String deployerType) {
+		this.deployerType = deployerType;
+	}	
 	
     
 }

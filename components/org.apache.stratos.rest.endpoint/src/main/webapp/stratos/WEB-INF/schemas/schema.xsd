@@ -95,6 +95,7 @@
                 <xs:element name="version" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="defaultAutoscalingPolicy" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
                 <xs:element name="multiTenant" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="deployerType" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="portMapping" minOccurs="1" maxOccurs="unbounded">
                     <xs:complexType>
                         <xs:all>
@@ -125,6 +126,22 @@
                                     </xs:all>
                                 </xs:complexType>
                             </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="container" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="imageName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                            <xs:element name="dockerfileRepo" type="xs:string" minOccurs="0" maxOccurs="1" nillable="false"/>
+                            <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                        <xs:element name="value" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>                            
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

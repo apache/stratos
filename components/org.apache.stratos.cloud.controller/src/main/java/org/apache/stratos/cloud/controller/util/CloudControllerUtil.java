@@ -75,6 +75,7 @@ public class CloudControllerUtil {
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
         cartridge.setServiceGroup(config.getServiceGroup());
+        cartridge.setDeployerType(config.getDeployerType());
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
@@ -158,6 +159,11 @@ public class CloudControllerUtil {
                     cartridge.addIaasProvider(iaasProvider);
                 }
             }
+        }
+        
+        // populate container
+        if(config.getContainer() != null) {
+        	cartridge.setContainer(config.getContainer());
         }
 
         return cartridge;

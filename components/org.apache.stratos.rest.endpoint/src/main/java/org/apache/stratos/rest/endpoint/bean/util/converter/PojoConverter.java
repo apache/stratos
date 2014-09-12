@@ -54,7 +54,7 @@ public class PojoConverter {
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
         cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
         cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
-
+        cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
 
         //deployment information
         if (cartridgeDefinitionBean.deployment != null) {
@@ -86,11 +86,24 @@ public class PojoConverter {
         if (cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
             cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
         }
+        
+        if(cartridgeDefinitionBean.container != null) {
+        	cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
+        }
 
         return cartridgeConfig;
     }
 
-    private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
+
+	private static Container getContainer(ContainerBean container) {
+		Container cn = new Container();
+		cn.setDockerFileRepo(container.dockerfileRepo);
+		cn.setImageName(container.imageName);
+		//cn.setProperties(getProperties(container.property));
+		return cn;
+	}
+
+	private static LoadbalancerConfig getLBConfig(LoadBalancerBean loadBalancer) {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
         lbConfig.setType(loadBalancer.type);
         if (loadBalancer.property != null && !loadBalancer.property.isEmpty()) {

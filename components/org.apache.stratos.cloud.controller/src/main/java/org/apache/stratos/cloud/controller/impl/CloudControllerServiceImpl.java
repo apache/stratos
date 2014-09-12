@@ -140,18 +140,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         List<IaasProvider> iaases = cartridge.getIaases();
         
-        if (iaases == null || iaases.isEmpty()) {
-            String msg =
-                         "Invalid Cartridge Definition: Cartridge Type: " +
-                                 cartridgeConfig.getType()+
-                                 ". Cause: Iaases of this Cartridge is null or empty.";
-            log.error(msg);
-            throw new InvalidCartridgeDefinitionException(msg);
-        }
-        
-        for (IaasProvider iaasProvider : iaases) {
-            CloudControllerUtil.getIaas(iaasProvider);
-        }
+		if (!cartridge.getDeployerType().equals("kubernetes")) {
+			if (iaases == null || iaases.isEmpty()) {
+				String msg = "Invalid Cartridge Definition: Cartridge Type: "
+						+ cartridgeConfig.getType()
+						+ ". Cause: Iaases of this Cartridge is null or empty.";
+				log.error(msg);
+				throw new InvalidCartridgeDefinitionException(msg);
+			}
+
+			for (IaasProvider iaasProvider : iaases) {
+				CloudControllerUtil.getIaas(iaasProvider);
+			}
+		}
         
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
