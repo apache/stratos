@@ -29,7 +29,7 @@ public class KubernetesGroup implements Serializable {
 
     private String groupId;
     private List<KubernetesHost> kubernetesHosts;
-    private List<KubernetesMaster> kubernetesMasters;
+    private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private String description;
     private Properties properties = new Properties();
@@ -50,12 +50,12 @@ public class KubernetesGroup implements Serializable {
         this.kubernetesHosts = kubernetesHosts;
     }
 
-    public List<KubernetesMaster> getKubernetesMasters() {
-        return kubernetesMasters;
+    public KubernetesMaster getKubernetesMasters() {
+        return kubernetesMaster;
     }
 
-    public void setKubernetesMasters(List<KubernetesMaster> kubernetesMasters) {
-        this.kubernetesMasters = kubernetesMasters;
+    public void setKubernetesMasters(KubernetesMaster kubernetesMasters) {
+        this.kubernetesMaster = kubernetesMasters;
     }
 
     public PortRange getPortRange() {

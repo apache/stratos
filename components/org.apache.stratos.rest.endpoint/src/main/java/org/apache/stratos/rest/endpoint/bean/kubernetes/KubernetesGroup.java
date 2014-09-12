@@ -30,7 +30,7 @@ public class KubernetesGroup {
     private String groupId;
     private String description;
     private List<KubernetesHost> kubernetesHosts;
-    private List<KubernetesMaster> kubernetesMasters;
+    private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private List<PropertyBean> property;
 
@@ -50,12 +50,12 @@ public class KubernetesGroup {
         this.kubernetesHosts = kubernetesHosts;
     }
 
-    public List<KubernetesMaster> getKubernetesMasters() {
-        return kubernetesMasters;
+    public KubernetesMaster getKubernetesMaster() {
+        return kubernetesMaster;
     }
 
-    public void setKubernetesMasters(List<KubernetesMaster> kubernetesMasters) {
-        this.kubernetesMasters = kubernetesMasters;
+    public void setKubernetesMaster(KubernetesMaster kubernetesMaster) {
+        this.kubernetesMaster = kubernetesMaster;
     }
 
     public PortRange getPortRange() {
