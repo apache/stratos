@@ -28,6 +28,7 @@ import java.util.List;
 public class KubernetesGroup {
 
     private String groupId;
+    private String description;
     private List<KubernetesHost> kubernetesHosts;
     private List<KubernetesMaster> kubernetesMasters;
     private PortRange portRange;
@@ -71,5 +72,13 @@ public class KubernetesGroup {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

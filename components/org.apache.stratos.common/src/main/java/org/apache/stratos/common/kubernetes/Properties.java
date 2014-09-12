@@ -27,7 +27,6 @@ import java.util.Arrays;
  */
 public class Properties implements Serializable{
 
-    private static final long serialVersionUID = 1986895299288322592L;
     private Property[] properties;
 
     public Property[] getProperties() {

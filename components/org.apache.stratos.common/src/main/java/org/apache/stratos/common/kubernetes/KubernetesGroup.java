@@ -31,6 +31,8 @@ public class KubernetesGroup implements Serializable {
     private List<KubernetesHost> kubernetesHosts;
     private List<KubernetesMaster> kubernetesMasters;
     private PortRange portRange;
+    private String description;
+    private Properties properties = new Properties();
 
     public String getGroupId() {
         return groupId;
@@ -62,5 +64,21 @@ public class KubernetesGroup implements Serializable {
 
     public void setPortRange(PortRange portRange) {
         this.portRange = portRange;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

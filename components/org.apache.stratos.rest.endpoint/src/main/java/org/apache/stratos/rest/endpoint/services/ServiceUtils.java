@@ -31,9 +31,6 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.KubernetesHost;
-import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
@@ -66,6 +63,9 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.Autosca
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
@@ -1268,7 +1268,7 @@ public class ServiceUtils {
                     PojoConverter.convertToASKubernetesGroupPojo(kubernetesGroupBean);
 
             try {
-                autoscalerServiceClient.deployKubernetesGroup(kubernetesGroup);
+                return autoscalerServiceClient.deployKubernetesGroup(kubernetesGroup);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -1278,7 +1278,6 @@ public class ServiceUtils {
                 throw new RestAPIException(message, e);
             }
         }
-
         return false;
     }
 

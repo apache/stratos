@@ -88,10 +88,12 @@
             </xs:complexType>
             <xs:complexType name="KubernetesGroup">
                 <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="kubernetesHosts" nillable="true" type="xs:anyType"/>
                     <xs:element minOccurs="0" name="kubernetesMasters" nillable="true" type="xs:anyType"/>
                     <xs:element minOccurs="0" name="portRange" nillable="true" type="ax23:PortRange"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PortRange">
