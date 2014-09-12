@@ -229,6 +229,8 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.mediators.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.relay.server.feature:${carbon.version}</featureArtifactDef>
+				<!--User Management-->
+				<featureArtifactDef>org.wso2.carbon:org.wso2.carbon.user.mgt.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
                                 <!--CEP-->
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.input.adaptor.feature:1.0.0</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.output.adaptor.feature:1.0.0</featureArtifactDef>
@@ -438,6 +440,11 @@
                                 <feature>
                                     <id>org.wso2.carbon.identity.application.authentication.framework.server.feature.group</id>
                                     <version>4.2.1</version>
+                                </feature>
+				<!-- User Management features -->
+				<feature>
+                                     <id>org.wso2.carbon.user.mgt.feature.group</id>
+				     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -658,6 +665,12 @@
                                 <feature>
                                     <id>org.wso2.carbon.captcha.mgt.server.feature.group</id>
                                     <version>${carbon.version}</version>
+                                </feature>
+
+				<!-- User Management features -->
+				<feature>
+                                     <id>org.wso2.carbon.user.mgt.feature.group</id>
+				     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
 
                                 <!-- GApp SSO features -->

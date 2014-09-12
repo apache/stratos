@@ -42,10 +42,12 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.stratos.cli.commands.ActivateTenantCommand;
 import org.apache.stratos.cli.commands.AddTenantCommand;
+import org.apache.stratos.cli.commands.AddUserCommand;
 import org.apache.stratos.cli.commands.AutoscalePolicyCommand;
 import org.apache.stratos.cli.commands.AutoscalingPolicyDeploymentCommand;
 import org.apache.stratos.cli.commands.CartridgeDeploymentCommand;
 import org.apache.stratos.cli.commands.DeactivateTenantCommand;
+import org.apache.stratos.cli.commands.DeleteUserCommand;
 import org.apache.stratos.cli.commands.DeployServiceDeploymentCommand;
 import org.apache.stratos.cli.commands.DeploymentPolicyCommand;
 import org.apache.stratos.cli.commands.DeploymentPolicyDeploymentCommand;
@@ -133,6 +135,12 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		commands.put(command.getName(), command);
 
         command = new AddTenantCommand();
+        commands.put(command.getName(), command);
+
+        command = new AddUserCommand();
+        commands.put(command.getName(), command);
+
+        command = new DeleteUserCommand();
         commands.put(command.getName(), command);
 
         //command = new DeleteTenantCommand();

@@ -60,24 +60,24 @@
         }
     }
 
-    jQuery(document).ready(
-                          function() {
-                              jQuery.ajax({
-                                  type: 'POST',
-                                  url: 'get_package_info_ajaxprocessor.jsp',
-                                  dataType: 'json',
-                                  data: 'plan=0',
-                                  async: false,
-                                  success: function(data) {
-                                      packageInfo = data;
-                                  },
-                                  error:function (xhr, ajaxOptions, thrownError) {
-                                      CARBON.showErrorDialog('Could not get package information.');
-                                  }
-                              });
-
-                          }
-            );
+//    jQuery(document).ready(
+//                          function() {
+//                              jQuery.ajax({
+//                                  type: 'POST',
+//                                  url: 'get_package_info_ajaxprocessor.jsp',
+//                                  dataType: 'json',
+//                                  data: 'plan=0',
+//                                  async: false,
+//                                  success: function(data) {
+//                                      packageInfo = data;
+//                                  },
+//                                  error:function (xhr, ajaxOptions, thrownError) {
+//                                      CARBON.showErrorDialog('Could not get package information.');
+//                                  }
+//                              });
+//
+//                          }
+//            );
 </script>
 
 

@@ -21,11 +21,13 @@ package org.apache.stratos.manager.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.listener.InstanceStatusListener;
+import org.apache.stratos.manager.listener.TenantUserRoleCreator;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyEventReceiver;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
+import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
@@ -89,6 +91,14 @@ public class ADCManagementServerComponent {
             subscriber.setMessageListener(new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
+
+            //Create a Tenant-User Role at server start-up
+            UserRoleCreator.CreateTenantUserRole();
+
+            TenantUserRoleCreator tenantUserRoleCreator = new TenantUserRoleCreator();
+            componentContext.getBundleContext().registerService(
+                    org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
+                    tenantUserRoleCreator, null);
 
             //initializing the topology event subscriber
             /*TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);

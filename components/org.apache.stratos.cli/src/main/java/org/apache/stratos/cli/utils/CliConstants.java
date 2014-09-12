@@ -85,6 +85,11 @@ public class CliConstants {
     public static final String ADD_TENANT = "create-tenant";
 
     /**
+     * Add user
+     */
+    public static final String ADD_USER = "create-user";
+
+    /**
      * Cartridge deployment
      */
     public static final String CARTRIDGE_DEPLOYMENT = "deploy-cartridge";
@@ -168,6 +173,10 @@ public class CliConstants {
      * Delete tenant
      */
     public static final String DELETE_TENANT = "delete-tenant";
+    /**
+     * Delete user
+     */
+    public static final String DELETE_USER= "delete-user";
     /**
      * Deactivate tenant
      */
@@ -274,6 +283,13 @@ public class CliConstants {
     public static final String ACTIVE_OPTION = "a";
     public static final String ACTIVE_LONG_OPTION = "active";
 
+    // Add User options
+    public static final String ROLE_NAME_OPTION = "r";
+    public static final String ROLE_NAME_LONG_OPTION = "role-name";
+
+    public static final String PROFILE_NAME_OPTION = "pr";
+    public static final String PROFILE_NAME_LONG_OPTION = "profile-name";
+
     // Deployment options
     public static final String RESOURCE_PATH = "p";
     public static final String RESOURCE_PATH_LONG_OPTION = "resource-path";
@@ -282,5 +298,6 @@ public class CliConstants {
     public static final String RESPONSE_AUTHORIZATION_FAIL = "403";
     public static final String RESPONSE_NO_CONTENT = "204";
     public static final String RESPONSE_OK = "200";
+    public static final String RESPONSE_CREATED = "201";
     public static final String RESPONSE_BAD_REQUEST = "400";
 }

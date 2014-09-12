@@ -105,4 +105,21 @@ public class CartridgeConstants {
 		public static final String ACTUAL_HOST = "actual.host";
 		public static final String HOSTINFO = "hostinfo/";
 	}
+
+    public static final class Permissions {
+        public static final String ADD_SUBSCRIPTION = "/permission/admin/manage/add/subscription";
+        public static final String REST_LOGIN = "/permission/admin/restlogin";
+        public static final String ADD_GIT_SYNC = "/permission/admin/manage/add/sync";
+        public static final String ADD_DOMAIN = "/permission/admin/manage/add/domain";
+        public static final String VIEW_AUTOSCALING_POLICY = "/permission/admin/manage/view/autoscalingPolicy";
+        public static final String VIEW_DEPLOYMENT_POLICY = "/permission/admin/manage/view/deploymentPolicy";
+        public static final String VIEW_SUBSCRIPTION = "/permission/admin/manage/view/subscription";
+        public static final String VIEW_CARTRIDGE = "/permission/admin/manage/view/cartridge";
+        public static final String VIEW_SERVICE = "/permission/admin/manage/view/service";
+        public static final String VIEW_DOMAIN = "/permission/admin/manage/view/domain";
+        public static final String VIEW_CLUSTER = "/permission/admin/manage/view/cluster";
+        public static final String VIEW_INSTANCE = "/permission/admin/manage/view/instance";
+        public static final String VIEW_KUBERNETES = "/permission/admin/manage/view/kubernetes";
+        public static final String VIEW_PARTITION = "/permission/admin/manage/view/partition";
+    }
 }

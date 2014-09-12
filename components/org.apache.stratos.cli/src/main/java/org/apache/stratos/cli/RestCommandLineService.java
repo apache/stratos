@@ -47,6 +47,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
+import org.apache.stratos.cli.beans.UserInfoBean;
 import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
 import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
@@ -80,6 +81,7 @@ public class RestCommandLineService {
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
+    private final String addUserEndPoint = "/stratos/admin/user";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
     private final String syncEndPoint = "/stratos/admin/cartridge/sync";
@@ -1020,6 +1022,47 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to create the new user
+    public void addUser(String userName, String credential, String role, String firstName, String lastName, String email, String profileName)
+            throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            UserInfoBean userInfoBean = new UserInfoBean();
+            userInfoBean.setUserName(userName);
+            userInfoBean.setCredential(credential);
+            userInfoBean.setRole(role);
+            userInfoBean.setFirstName(firstName);
+            userInfoBean.setLastName(lastName);
+            userInfoBean.setEmail(email);
+            userInfoBean.setProfileName(profileName);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(userInfoBean, UserInfoBean.class);
+
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+                                                                  + addUserEndPoint, jsonString);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            if (responseCode.equals(CliConstants.RESPONSE_CREATED)){
+                System.out.println("User added successfully");
+                return;
+            } else {
+                String resultString = getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in creating User", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to delete the created tenant
     public void deleteTenant(String tenantDomain) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1044,6 +1087,35 @@ public class RestCommandLineService {
 
         } catch (Exception e) {
             handleException("Exception in deleting " + tenantDomain + " tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to delete the created user
+    public void deleteUser(String userName) throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
+                                                                    + addUserEndPoint + "/" + userName);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully deleted " + userName + " user");
+                return;
+            } else {
+                String resultString = getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deleting " + userName + " user", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
