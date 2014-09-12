@@ -24,16 +24,21 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.api.AutoScalerServiceImpl;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 
 import java.rmi.RemoteException;
 
@@ -226,6 +231,46 @@ public class CloudControllerClient {
         }
     }
 
-
+    public synchronized MemberContext createContainer(String kubernetesClusterId, String clusterId) throws SpawningException {
+        try {
+        	
+    		AutoScalerServiceInterface service = new AutoScalerServiceImpl();
+    		KubernetesMaster kubernetesMaster = service.getMasterForKubernetesGroup(kubernetesClusterId);
+    		String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
+    		KubernetesGroup kubernetesGroup = service.getKubernetesGroup(kubernetesClusterId);
+    		int lower = kubernetesGroup.getPortRange().getLower();
+    		int upper = kubernetesGroup.getPortRange().getUpper();
+    		String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
+    		
+            MemberContext member = new MemberContext();
+            member.setClusterId(clusterId);
+            member.setInitTime(System.currentTimeMillis());
+            Properties memberContextProps = new Properties();
+            Property kubernetesClusterMasterIPProps = new Property();
+            kubernetesClusterMasterIPProps.setName(StratosConstants.KUBERNETES_MASTER_IP);
+            kubernetesClusterMasterIPProps.setValue(kubernetesMasterIP);
+            memberContextProps.addProperties(kubernetesClusterMasterIPProps);
+            Property kubernetesClusterPortRangeProps = new Property();
+            kubernetesClusterPortRangeProps.setName(StratosConstants.KUBERNETES_PORT_RANGE);
+            kubernetesClusterPortRangeProps.setValue(portRange);
+            memberContextProps.addProperties(kubernetesClusterPortRangeProps);
+            member.setProperties(memberContextProps);
+            long startTime = System.currentTimeMillis();
+            MemberContext memberContext = stub.startContainer(member);
+            
+            if(log.isDebugEnabled()) {
+                long endTime = System.currentTimeMillis();
+                log.debug(String.format("Service call startContainer() returned in %dms", (endTime - startTime)));
+            }
+            return memberContext;
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+        	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
+        	log.error(message, e);
+			throw new SpawningException(message, e);
+        } catch (RemoteException e) {
+        	log.error(e.getMessage(), e);
+            throw new SpawningException(e.getMessage(), e);
+		}
+    }
 
 }

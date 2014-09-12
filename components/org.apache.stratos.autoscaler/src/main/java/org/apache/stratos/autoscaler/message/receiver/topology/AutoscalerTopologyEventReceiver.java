@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.KubernetesClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -184,7 +185,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
                     Service service = TopologyManager.getTopology().getService(e.getServiceName());
                     Cluster cluster = service.getCluster(e.getClusterId());
-                    if(AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
+                    if(AutoscalerContext.getInstance().kubernetesClusterMonitorExist(cluster.getClusterId())) {
+                    	AutoscalerContext.getInstance().getKubernetesClusterMonitor(e.getClusterId()).setStatus(e.getStatus());
+                    } else if(AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getMonitor(e.getClusterId()).setStatus(e.getStatus());
                     } else if (AutoscalerContext.getInstance().lbMonitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getLBMonitor(e.getClusterId()).setStatus(e.getStatus());
@@ -210,9 +213,19 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     String clusterId = e.getClusterId();
                     String deploymentPolicy = e.getDeploymentPolicy();
 
-                    AbstractMonitor monitor;
+                    AbstractMonitor monitor = null;
+                    KubernetesClusterMonitor kubernetesClusterMonitor = null;
 
-                    if (e.isLbCluster()) {
+                    if (e.isKubernetesCluster()) {
+                    	
+                    	kubernetesClusterMonitor = 
+                    			AutoscalerContext.getInstance().removeKubernetesClusterMonitor(clusterId);
+                    	if(kubernetesClusterMonitor != null) {
+                    		// destroy drools sessions
+                            log.info(String.format("Kubernetes cluster monitor has been removed successfully: [cluster] %s ",
+                                    clusterId));
+                    	}
+                    } else if (e.isLbCluster()) {
                         DeploymentPolicy depPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicy);
                         if (depPolicy != null) {
                             List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
@@ -564,6 +577,51 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         }
     }
 
+    private class KubernetesClusterMonitorAdder implements Runnable {
+        private Cluster cluster;
+
+        public KubernetesClusterMonitorAdder(Cluster cluster) {
+            this.cluster = cluster;
+        }
+
+        public void run() {
+            KubernetesClusterMonitor monitor = null;
+            int retries = 5;
+            boolean success = false;
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
+
+                try {
+                    monitor = AutoscalerUtil.getKubernetesClusterMonitor(cluster);
+                    success = true;
+
+                } catch (Exception e) {
+                    String msg = "Kubernetes cluster monitor creation failed for cluster: " + cluster.getClusterId();
+                    log.debug(msg, e);
+                    retries--;
+                }
+            } while (!success && retries != 0);
+
+            if (monitor == null) {
+                String msg = "Kubernetes cluster monitor creation failed, even after retrying for 5 times, "
+                        + "for cluster: " + cluster.getClusterId();
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            Thread th = new Thread(monitor);
+            th.start();
+            AutoscalerContext.getInstance().addKubernetesClusterMonitor(monitor);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Kubernetes cluster monitor has been added successfully: [cluster] %s",
+                        cluster.getClusterId()));
+            }
+        }
+    }
+    
     @SuppressWarnings("unused")
 	private void runTerminateAllRule(AbstractMonitor monitor) {
 
@@ -588,16 +646,15 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     protected synchronized void startClusterMonitor(Cluster cluster) {
         Thread th = null;
-        if (cluster.isLbCluster()
-                && !AutoscalerContext.getInstance()
-                .lbMonitorExist(
-                        cluster.getClusterId())) {
-            th = new Thread(new LBClusterMonitorAdder(
-                    cluster));
-        } else if (!cluster.isLbCluster() && !AutoscalerContext.getInstance()
-                .monitorExist(cluster.getClusterId())) {
-            th = new Thread(
-                    new ClusterMonitorAdder(cluster));
+        if (cluster.isKubernetesCluster() 
+        		&& !AutoscalerContext.getInstance().kubernetesClusterMonitorExist(cluster.getClusterId())) {
+        	th = new Thread(new KubernetesClusterMonitorAdder(cluster));
+        } else if (cluster.isLbCluster() 
+        		&& !AutoscalerContext.getInstance().lbMonitorExist(cluster.getClusterId())) {
+            th = new Thread(new LBClusterMonitorAdder(cluster));
+        } else if (!cluster.isLbCluster() 
+        		&& !AutoscalerContext.getInstance().monitorExist(cluster.getClusterId())) {
+            th = new Thread(new ClusterMonitorAdder(cluster));
         }
         if (th != null) {
             th.start();

@@ -22,6 +22,7 @@ package org.apache.stratos.autoscaler.util;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
@@ -31,6 +32,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.KubernetesClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
@@ -40,6 +42,7 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -47,6 +50,7 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
+
 import java.util.*;
 
 /**
@@ -314,7 +318,48 @@ public class AutoscalerUtil {
         log.info("LB Cluster monitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
+	
+    public static KubernetesClusterMonitor getKubernetesClusterMonitor(Cluster cluster) {
 
+    	if (null == cluster) {
+            return null;
+        }
+
+        String autoscalePolicyName = cluster.getAutoscalePolicyName();
+        if (log.isDebugEnabled()) {
+            log.debug("Autoscaler policy name: " + autoscalePolicyName);
+        }
+
+        AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
+        java.util.Properties props = cluster.getProperties();
+        String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
+		KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID);
+
+        KubernetesClusterMonitor kubernetesClusterMonitor = new KubernetesClusterMonitor(
+        		kubernetesClusterCtxt, 
+        		cluster.getClusterId(), 
+        		cluster.getServiceName(), 
+        		policy);
+                                        
+        kubernetesClusterMonitor.setStatus(ClusterStatus.Created);
+        
+        // find lb reference type
+        if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
+            String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+            kubernetesClusterMonitor.setLbReferenceType(value);
+            if(log.isDebugEnabled()) {
+                log.debug("Set the lb reference type: "+value);
+            }
+        }
+        
+        // set hasPrimary property
+        // hasPrimary is true if there are primary members available in that cluster
+        kubernetesClusterMonitor.setHasPrimary(Boolean.parseBoolean(props.getProperty(Constants.IS_PRIMARY)));
+
+        log.info("Kubernetes cluster monitor created: "+ kubernetesClusterMonitor.toString());
+        return kubernetesClusterMonitor;
+    }
+    
     public static Properties getProperties(final OMElement elt) {
 
         Iterator<?> it = elt.getChildrenWithName(new QName(AutoScalerConstants.PROPERTY_ELEMENT));
