@@ -28,7 +28,7 @@ import java.util.List;
 public class KubernetesGroup implements Serializable {
 
     private String groupId;
-    private List<KubernetesHost> kubernetesHosts;
+    private KubernetesHost[] kubernetesHosts;
     private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private String description;
@@ -42,20 +42,20 @@ public class KubernetesGroup implements Serializable {
         this.groupId = groupId;
     }
 
-    public List<KubernetesHost> getKubernetesHosts() {
+    public KubernetesHost[] getKubernetesHosts() {
         return kubernetesHosts;
     }
 
-    public void setKubernetesHosts(List<KubernetesHost> kubernetesHosts) {
+    public void setKubernetesHosts(KubernetesHost[] kubernetesHosts) {
         this.kubernetesHosts = kubernetesHosts;
     }
 
-    public KubernetesMaster getKubernetesMasters() {
+    public KubernetesMaster getKubernetesMaster() {
         return kubernetesMaster;
     }
 
-    public void setKubernetesMasters(KubernetesMaster kubernetesMasters) {
-        this.kubernetesMaster = kubernetesMasters;
+    public void setKubernetesMaster(KubernetesMaster kubernetesMaster) {
+        this.kubernetesMaster = kubernetesMaster;
     }
 
     public PortRange getPortRange() {

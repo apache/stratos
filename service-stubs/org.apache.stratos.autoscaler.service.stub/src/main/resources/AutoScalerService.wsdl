@@ -2,6 +2,11 @@
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax27="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax25="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://kubernetes.common.stratos.apache.org/xsd" xmlns:ax21="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="InvalidKubernetesMasterException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="NonExistingKubernetesMasterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
@@ -12,12 +17,12 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesGroupException">
+            <xs:complexType name="NonExistingKubernetesHostException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesHostException">
+            <xs:complexType name="NonExistingKubernetesGroupException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -82,7 +87,9 @@
             <xs:complexType name="KubernetesMaster">
                 <xs:complexContent>
                     <xs:extension base="ax23:KubernetesHost">
-                        <xs:sequence/>
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="endpoint" nillable="true" type="xs:string"/>
+                        </xs:sequence>
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
@@ -90,8 +97,8 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesHosts" nillable="true" type="xs:anyType"/>
-                    <xs:element minOccurs="0" name="kubernetesMasters" nillable="true" type="xs:anyType"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax23:KubernetesHost"/>
+                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax23:KubernetesMaster"/>
                     <xs:element minOccurs="0" name="portRange" nillable="true" type="ax23:PortRange"/>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax23:Properties"/>
                 </xs:sequence>
@@ -110,6 +117,13 @@
             <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"/>
+            <xs:element name="AutoScalerServiceInvalidKubernetesMasterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax21:InvalidKubernetesMasterException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="AutoScalerServiceNonExistingKubernetesMasterException">
                 <xs:complexType>
                     <xs:sequence>
@@ -138,17 +152,16 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="AutoScalerServiceNonExistingKubernetesGroupException">
+            <xs:element name="AutoScalerServiceNonExistingKubernetesHostException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesGroupException" nillable="true" type="ax21:NonExistingKubernetesGroupException"/>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax21:NonExistingKubernetesHostException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="updateKubernetesHost">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax23:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
@@ -157,13 +170,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoScalerServiceNonExistingKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax21:NonExistingKubernetesHostException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -178,6 +184,13 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesGroupException" nillable="true" type="ax21:NonExistingKubernetesGroupException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -657,6 +670,9 @@
     <wsdl:message name="updateKubernetesMasterResponse">
         <wsdl:part name="parameters" element="ns:updateKubernetesMasterResponse"/>
     </wsdl:message>
+    <wsdl:message name="AutoScalerServiceInvalidKubernetesMasterException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidKubernetesMasterException"/>
+    </wsdl:message>
     <wsdl:message name="AutoScalerServiceNonExistingKubernetesMasterException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingKubernetesMasterException"/>
     </wsdl:message>
@@ -705,6 +721,9 @@
     <wsdl:message name="getMasterForKubernetesGroupResponse">
         <wsdl:part name="parameters" element="ns:getMasterForKubernetesGroupResponse"/>
     </wsdl:message>
+    <wsdl:message name="AutoScalerServiceNonExistingKubernetesGroupException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingKubernetesGroupException"/>
+    </wsdl:message>
     <wsdl:message name="getAllDeploymentPoliciesRequest">
         <wsdl:part name="parameters" element="ns:getAllDeploymentPolicies"/>
     </wsdl:message>
@@ -716,9 +735,6 @@
     </wsdl:message>
     <wsdl:message name="removeKubernetesGroupResponse">
         <wsdl:part name="parameters" element="ns:removeKubernetesGroupResponse"/>
-    </wsdl:message>
-    <wsdl:message name="AutoScalerServiceNonExistingKubernetesGroupException">
-        <wsdl:part name="parameters" element="ns:AutoScalerServiceNonExistingKubernetesGroupException"/>
     </wsdl:message>
     <wsdl:message name="getValidDeploymentPoliciesforCartridgeRequest">
         <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridge"/>
@@ -846,6 +862,7 @@
         <wsdl:operation name="updateKubernetesMaster">
             <wsdl:input message="ns:updateKubernetesMasterRequest" wsaw:Action="urn:updateKubernetesMaster"/>
             <wsdl:output message="ns:updateKubernetesMasterResponse" wsaw:Action="urn:updateKubernetesMasterResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceInvalidKubernetesMasterException" name="AutoScalerServiceInvalidKubernetesMasterException" wsaw:Action="urn:updateKubernetesMasterAutoScalerServiceInvalidKubernetesMasterException"/>
             <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesMasterException" name="AutoScalerServiceNonExistingKubernetesMasterException" wsaw:Action="urn:updateKubernetesMasterAutoScalerServiceNonExistingKubernetesMasterException"/>
         </wsdl:operation>
         <wsdl:operation name="getPartitionsOfDeploymentPolicy">
@@ -876,6 +893,7 @@
         <wsdl:operation name="getMasterForKubernetesGroup">
             <wsdl:input message="ns:getMasterForKubernetesGroupRequest" wsaw:Action="urn:getMasterForKubernetesGroup"/>
             <wsdl:output message="ns:getMasterForKubernetesGroupResponse" wsaw:Action="urn:getMasterForKubernetesGroupResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesGroupException" name="AutoScalerServiceNonExistingKubernetesGroupException" wsaw:Action="urn:getMasterForKubernetesGroupAutoScalerServiceNonExistingKubernetesGroupException"/>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
             <wsdl:input message="ns:getAllDeploymentPoliciesRequest" wsaw:Action="urn:getAllDeploymentPolicies"/>
@@ -920,6 +938,7 @@
         <wsdl:operation name="getKubernetesGroup">
             <wsdl:input message="ns:getKubernetesGroupRequest" wsaw:Action="urn:getKubernetesGroup"/>
             <wsdl:output message="ns:getKubernetesGroupResponse" wsaw:Action="urn:getKubernetesGroupResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesGroupException" name="AutoScalerServiceNonExistingKubernetesGroupException" wsaw:Action="urn:getKubernetesGroupAutoScalerServiceNonExistingKubernetesGroupException"/>
         </wsdl:operation>
         <wsdl:operation name="getPartition">
             <wsdl:input message="ns:getPartitionRequest" wsaw:Action="urn:getPartition"/>
@@ -951,7 +970,7 @@
             <wsdl:input message="ns:updateKubernetesHostRequest" wsaw:Action="urn:updateKubernetesHost"/>
             <wsdl:output message="ns:updateKubernetesHostResponse" wsaw:Action="urn:updateKubernetesHostResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceInvalidKubernetesHostException" name="AutoScalerServiceInvalidKubernetesHostException" wsaw:Action="urn:updateKubernetesHostAutoScalerServiceInvalidKubernetesHostException"/>
-            <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesGroupException" name="AutoScalerServiceNonExistingKubernetesGroupException" wsaw:Action="urn:updateKubernetesHostAutoScalerServiceNonExistingKubernetesGroupException"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesHostException" name="AutoScalerServiceNonExistingKubernetesHostException" wsaw:Action="urn:updateKubernetesHostAutoScalerServiceNonExistingKubernetesHostException"/>
         </wsdl:operation>
         <wsdl:operation name="getPartitionGroups">
             <wsdl:input message="ns:getPartitionGroupsRequest" wsaw:Action="urn:getPartitionGroups"/>
@@ -964,6 +983,7 @@
         <wsdl:operation name="getHostsForKubernetesGroup">
             <wsdl:input message="ns:getHostsForKubernetesGroupRequest" wsaw:Action="urn:getHostsForKubernetesGroup"/>
             <wsdl:output message="ns:getHostsForKubernetesGroupResponse" wsaw:Action="urn:getHostsForKubernetesGroupResponse"/>
+            <wsdl:fault message="ns:AutoScalerServiceNonExistingKubernetesGroupException" name="AutoScalerServiceNonExistingKubernetesGroupException" wsaw:Action="urn:getHostsForKubernetesGroupAutoScalerServiceNonExistingKubernetesGroupException"/>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="AutoScalerServiceSoap11Binding" type="ns:AutoScalerServicePortType">
@@ -976,6 +996,9 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceInvalidKubernetesMasterException">
+                <soap:fault use="literal" name="AutoScalerServiceInvalidKubernetesMasterException"/>
+            </wsdl:fault>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesMasterException">
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesMasterException"/>
             </wsdl:fault>
@@ -1045,6 +1068,9 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
             <soap:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
@@ -1156,6 +1182,9 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeKubernetesHost">
             <soap:operation soapAction="urn:removeKubernetesHost" style="document"/>
@@ -1240,8 +1269,8 @@
             <wsdl:fault name="AutoScalerServiceInvalidKubernetesHostException">
                 <soap:fault use="literal" name="AutoScalerServiceInvalidKubernetesHostException"/>
             </wsdl:fault>
-            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
-                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getHostsForKubernetesGroup">
@@ -1252,6 +1281,9 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
             <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
@@ -1273,6 +1305,9 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceInvalidKubernetesMasterException">
+                <soap12:fault use="literal" name="AutoScalerServiceInvalidKubernetesMasterException"/>
+            </wsdl:fault>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesMasterException">
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesMasterException"/>
             </wsdl:fault>
@@ -1342,6 +1377,9 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
             <soap12:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
@@ -1453,6 +1491,9 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeKubernetesHost">
             <soap12:operation soapAction="urn:removeKubernetesHost" style="document"/>
@@ -1537,8 +1578,8 @@
             <wsdl:fault name="AutoScalerServiceInvalidKubernetesHostException">
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidKubernetesHostException"/>
             </wsdl:fault>
-            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
-                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getHostsForKubernetesGroup">
@@ -1549,6 +1590,9 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="checkLBExistenceAgainstPolicy">
             <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>

@@ -33,4 +33,23 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
     private static final Log log = LogFactory.getLog(KubernetesMaster.class);
 
     private String endpoint;
+
+    public KubernetesMaster() {
+
+    }
+
+    public KubernetesMaster(String hostId, String hostname, String hostIpAddress, String endpoint) {
+        this.hostId = hostId;
+        this.hostname = hostname;
+        this.hostIpAddress = hostIpAddress;
+        this.endpoint = endpoint;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
 }

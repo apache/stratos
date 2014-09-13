@@ -21,7 +21,7 @@ package org.apache.stratos.rest.endpoint.exception;
 
 import javax.ws.rs.core.Response;
 
-public class KubernetesHostAlreadyDeployedException extends RestAPIException {
+public class KubernetesHostAlreadyDeployedException extends Exception {
     private String message;
     private Response.Status httpStatusCode;
 

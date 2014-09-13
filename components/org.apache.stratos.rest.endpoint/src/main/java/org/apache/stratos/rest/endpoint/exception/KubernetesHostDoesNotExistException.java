@@ -23,7 +23,7 @@ package org.apache.stratos.rest.endpoint.exception;
 
 import javax.ws.rs.core.Response;
 
-public class KubernetesHostDoesNotExistException extends RestAPIException {
+public class KubernetesHostDoesNotExistException extends Exception {
     private String message;
     private Response.Status httpStatusCode;
 

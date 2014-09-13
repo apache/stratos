@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
+import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
+import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.manager.internal.DataHolder;
@@ -212,5 +214,53 @@ public class AutoscalerServiceClient {
     public boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RemoteException,
             AutoScalerServiceInvalidKubernetesGroupExceptionException {
         return stub.addKubernetesGroup(kubernetesGroup);
+    }
+
+    public boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
+            throws RemoteException, AutoScalerServiceInvalidKubernetesHostExceptionException,
+            AutoScalerServiceNonExistingKubernetesGroupExceptionException {
+
+        return stub.addKubernetesHost(kubernetesGroupId, kubernetesHost);
+    }
+
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws RemoteException, AutoScalerServiceInvalidKubernetesMasterExceptionException,
+            AutoScalerServiceNonExistingKubernetesMasterExceptionException {
+        return stub.updateKubernetesMaster(kubernetesMaster);
+    }
+
+    public KubernetesGroup[] getAvailableKubernetesGroups() throws RemoteException {
+        return stub.getAllKubernetesGroups();
+    }
+
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId)
+            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean undeployKubernetesGroup(String kubernetesGroupId)
+            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.removeKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean undeployKubernetesHost(String kubernetesHostId)
+            throws RemoteException, AutoScalerServiceNonExistingKubernetesHostExceptionException {
+        return stub.removeKubernetesHost(kubernetesHostId);
+    }
+
+    public KubernetesHost[] getKubernetesHosts(String kubernetesGroupId)
+            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getHostsForKubernetesGroup(kubernetesGroupId);
+    }
+
+    public KubernetesMaster getKubernetesMaster(String kubernetesGroupId)
+            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getMasterForKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost)
+            throws RemoteException, AutoScalerServiceInvalidKubernetesHostExceptionException,
+            AutoScalerServiceNonExistingKubernetesHostExceptionException {
+        return stub.updateKubernetesHost(kubernetesHost);
     }
 }

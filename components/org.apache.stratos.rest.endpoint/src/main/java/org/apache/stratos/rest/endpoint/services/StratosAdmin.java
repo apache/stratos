@@ -49,8 +49,6 @@ import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
-import org.apache.stratos.rest.endpoint.exception.KubernetesGroupDoesNotExistException;
-import org.apache.stratos.rest.endpoint.exception.KubernetesHostDoesNotExistException;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
@@ -1186,21 +1184,18 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    @SuperTenantService(true)
-    public Response deployKubernetesGroup(KubernetesGroup kubernetesGroup)
-            throws RestAPIException {
+    public Response deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RestAPIException {
 
         ServiceUtils.deployKubernetesGroup(kubernetesGroup);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesGroup.getGroupId()).build();
         return Response.created(url).build();
     }
 
-    @POST
+    @PUT
     @Path("/kubernetes/deploy/host/{kubernetesGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    @SuperTenantService(true)
     public Response deployKubernetesHost(@PathParam("kubernetesGroupId") String kubernetesGroupId, KubernetesHost kubernetesHost)
             throws RestAPIException {
 
@@ -1214,13 +1209,29 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    @SuperTenantService(true)
-    public Response updateKubernetesMaster(KubernetesMaster kubernetesMaster)
-            throws RestAPIException {
+    public Response updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RestAPIException {
+        try {
+            ServiceUtils.updateKubernetesMaster(kubernetesMaster);
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
+            return Response.created(url).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
-        ServiceUtils.updateKubernetesMaster(kubernetesMaster);
-        URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
-        return Response.created(url).build();
+    @PUT
+    @Path("/kubernetes/update/host")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/kubernetes")
+    public Response updateKubernetesHost(KubernetesHost kubernetesHost) throws RestAPIException {
+        try {
+            ServiceUtils.updateKubernetesHost(kubernetesHost);
+            URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
+            return Response.created(url).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @GET
@@ -1239,20 +1250,48 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/kubernetes")
     public Response getKubernetesGroup(@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
-        return Response.ok().entity(ServiceUtils.getKubernetesGroup(kubernetesGroupId)).build();
+        try {
+            return Response.ok().entity(ServiceUtils.getKubernetesGroup(kubernetesGroupId)).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
+    @GET
+    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/kubernetes")
+    public Response getKubernetesHosts(@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
+        try {
+            return Response.ok().entity(ServiceUtils.getKubernetesHosts(kubernetesGroupId)).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @GET
+    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/kubernetes")
+    public Response getKubernetesMaster(@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
+        try {
+            return Response.ok().entity(ServiceUtils.getKubernetesMaster(kubernetesGroupId)).build();
+        } catch (RestAPIException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     @DELETE
     @Path("/kubernetes/group/{kubernetesGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    @SuperTenantService(true)
     public Response unDeployKubernetesGroup(@PathParam("kubernetesGroupId") String kubernetesGroupId) throws RestAPIException {
         try {
             ServiceUtils.undeployKubernetesGroup(kubernetesGroupId);
-        } catch (KubernetesGroupDoesNotExistException e) {
+        } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.noContent().build();
@@ -1263,11 +1302,10 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    @SuperTenantService(true)
     public Response unDeployKubernetesHost(@PathParam("kubernetesHostId") String kubernetesHostId) throws RestAPIException {
         try {
             ServiceUtils.undeployKubernetesHost(kubernetesHostId);
-        } catch (KubernetesHostDoesNotExistException e) {
+        } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.noContent().build();

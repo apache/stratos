@@ -41,39 +41,39 @@ import java.util.Map;
  */
 public class PartitionManager {
 
-private static final Log log = LogFactory.getLog(PartitionManager.class);
-	
-	// Partitions against partitionID
-	private static Map<String,Partition> partitions = new HashMap<String, Partition>();
-	
-	/*
-	 * Key - network partition id
-	 * Value - reference to NetworkPartition
-	 */
-	private Map<String, NetworkPartitionLbHolder> networkPartitionLbHolders;
+    private static final Log log = LogFactory.getLog(PartitionManager.class);
 
-	private static class Holder {
+    // Partitions against partitionID
+    private static Map<String, Partition> partitions = new HashMap<String, Partition>();
+
+    /*
+     * Key - network partition id
+     * Value - reference to NetworkPartition
+     */
+    private Map<String, NetworkPartitionLbHolder> networkPartitionLbHolders;
+
+    private static class Holder {
         static final PartitionManager INSTANCE = new PartitionManager();
     }
-	
-	public static PartitionManager getInstance(){
-	    return Holder.INSTANCE;
-	}
-	
-	private PartitionManager(){
+
+    public static PartitionManager getInstance() {
+        return Holder.INSTANCE;
+    }
+
+    private PartitionManager() {
         networkPartitionLbHolders = new HashMap<String, NetworkPartitionLbHolder>();
-	}
-	
-	
-	public boolean partitionExist(String partitionId){
-		return partitions.containsKey(partitionId);
-	}
-	
-	/*
-	 * Deploy a new partition to Auto Scaler.
-	 */
+    }
+
+
+    public boolean partitionExist(String partitionId) {
+        return partitions.containsKey(partitionId);
+    }
+
+    /*
+     * Deploy a new partition to Auto Scaler.
+     */
     public boolean addNewPartition(Partition partition) throws InvalidPartitionException {
-        if (StringUtils.isEmpty(partition.getId())){
+        if (StringUtils.isEmpty(partition.getId())) {
             throw new InvalidPartitionException("Partition id can not be empty");
         }
         if (this.partitionExist(partition.getId())) {
@@ -97,46 +97,46 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 
 
     public void addPartitionToInformationModel(Partition partition) {
-		partitions.put(partition.getId(), partition);
-	}
+        partitions.put(partition.getId(), partition);
+    }
 
-	public NetworkPartitionLbHolder getNetworkPartitionLbHolder(String networkPartitionId) {
-	    return this.networkPartitionLbHolders.get(networkPartitionId);
-	}
+    public NetworkPartitionLbHolder getNetworkPartitionLbHolder(String networkPartitionId) {
+        return this.networkPartitionLbHolders.get(networkPartitionId);
+    }
 
-    public Partition getPartitionById(String partitionId){
-		if(partitionExist(partitionId))
-			return partitions.get(partitionId);
-		else
-			return null;
-	}
-	
-	public Partition[] getAllPartitions(){
-		return partitions.values().toArray(new Partition[0]);
-		
-	}
-	
-	public boolean validatePartitionViaCloudController(Partition partition) throws PartitionValidationException {
-        if(log.isDebugEnabled()) {
+    public Partition getPartitionById(String partitionId) {
+        if (partitionExist(partitionId))
+            return partitions.get(partitionId);
+        else
+            return null;
+    }
+
+    public Partition[] getAllPartitions() {
+        return partitions.values().toArray(new Partition[0]);
+
+    }
+
+    public boolean validatePartitionViaCloudController(Partition partition) throws PartitionValidationException {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
         }
-		return CloudControllerClient.getInstance().validatePartition(partition);
-	}
-	
-	public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
-		List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
-		for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
+        return CloudControllerClient.getInstance().validatePartition(partition);
+    }
+
+    public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
+        List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
+        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
             String id = partitionGroup.getId();
             NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
-            if(entry != null) {
-            	lbHolders.add(entry);
+            if (entry != null) {
+                lbHolders.add(entry);
             }
-		}
-		return lbHolders;
-	}
+        }
+        return lbHolders;
+    }
 
     public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
-        for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
+        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
             String id = partitionGroup.getId();
             if (!networkPartitionLbHolders.containsKey(id)) {
                 NetworkPartitionLbHolder networkPartitionLbHolder =
@@ -147,30 +147,30 @@ private static final Log log = LogFactory.getLog(PartitionManager.class);
 
         }
     }
-    
+
     public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
-        for(PartitionGroup partitionGroup: depPolicy.getPartitionGroups()){
+        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
             String id = partitionGroup.getId();
-            if (networkPartitionLbHolders.containsKey(id)) {                
+            if (networkPartitionLbHolders.containsKey(id)) {
                 NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);
                 // remove from information model
                 this.removeNetworkPartitionLbHolder(netPartCtx);
                 //remove from the registry
                 RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartitionLbHolder(id).getNetworkPartitionId());
-            }else{
-            	String errMsg = "Network partition context not found for policy " + depPolicy;
-            	log.error(errMsg);
-            	throw new AutoScalerException(errMsg);
+            } else {
+                String errMsg = "Network partition context not found for policy " + depPolicy;
+                log.error(errMsg);
+                throw new AutoScalerException(errMsg);
             }
 
         }
     }
-    
-    private void removeNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
-    	 networkPartitionLbHolders.remove(nwPartLbHolder.getNetworkPartitionId());
-	}
 
-	public void addNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+    private void removeNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+        networkPartitionLbHolders.remove(nwPartLbHolder.getNetworkPartitionId());
+    }
+
+    public void addNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
         networkPartitionLbHolders.put(nwPartLbHolder.getNetworkPartitionId(), nwPartLbHolder);
     }
 

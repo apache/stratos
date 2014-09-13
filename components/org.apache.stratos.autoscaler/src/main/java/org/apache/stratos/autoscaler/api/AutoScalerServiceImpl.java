@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
+import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -43,6 +44,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
     PartitionManager partitionManager = PartitionManager.getInstance();
+    KubernetesManager kubernetesManager = KubernetesManager.getInstance();
 
     public Partition[] getAllAvailablePartitions() {
         return partitionManager.getAllPartitions();
@@ -123,66 +125,56 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     @Override
     public KubernetesGroup[] getAllKubernetesGroups() {
-        //TODO
-        return null;
+        return kubernetesManager.getKubernetesGroups();
     }
 
     @Override
-    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) {
-        //TODO
-        return null;
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return kubernetesManager.getKubernetesGroup(kubernetesGroupId);
     }
 
     @Override
-    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) {
-        //TODO
-        return null;
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return kubernetesManager.getKubernetesMasterInGroup(kubernetesGroupId);
     }
 
     @Override
-    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) {
-        //TODO
-        return null;
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return kubernetesManager.getKubernetesHostsInGroup(kubernetesGroupId);
     }
 
 
     @Override
     public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException {
-        //TODO
-        return false;
+        return kubernetesManager.addNewKubernetesGroup(kubernetesGroup);
     }
 
     @Override
     public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesGroupException {
-        //TODO
-        return false;
-    }
-
-    @Override
-    public boolean updateKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
-            InvalidKubernetesHostException, NonExistingKubernetesGroupException {
-        //TODO
-        return false;
+        return kubernetesManager.addNewKubernetesHost(groupId, kubernetesHost);
     }
 
     @Override
     public boolean removeKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException {
-        //TODO
-        return false;
+        return kubernetesManager.removeKubernetesGroup(groupId);
     }
 
     @Override
     public boolean removeKubernetesHost(String hostId) throws NonExistingKubernetesHostException {
-        //TODO
-        return false;
+        return kubernetesManager.removeKubernetesHost(hostId);
     }
 
     @Override
-    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws
-            NonExistingKubernetesMasterException {
-        //TODO
-        return false;
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException {
+        return kubernetesManager.updateKubernetesMaster(kubernetesMaster);
+    }
+
+    @Override
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesHostException {
+        return kubernetesManager.updateKubernetesHost(kubernetesHost);
     }
 
     @Override

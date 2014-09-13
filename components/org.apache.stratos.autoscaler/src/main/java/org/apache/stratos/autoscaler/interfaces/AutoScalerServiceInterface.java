@@ -60,7 +60,6 @@ public interface AutoScalerServiceInterface {
 
     /**
      * Retrieves registered Kubernetes Groups.
-     *
      */
     public KubernetesGroup[] getAllKubernetesGroups();
 
@@ -69,21 +68,21 @@ public interface AutoScalerServiceInterface {
      *
      * @param kubernetesGroupId
      */
-    public KubernetesGroup  getKubernetesGroup(String kubernetesGroupId);
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
      * Retrieves Kubernetes Master for given Kubernetes Group ID.
      *
      * @param kubernetesGroupId
      */
-    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId);
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
      * Retrieves Kubernetes Hosts for given Kubernetes Group ID.
      *
      * @param kubernetesGroupId
      */
-    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId);
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
      * Register a Kubernetes cluster.
@@ -106,11 +105,11 @@ public interface AutoScalerServiceInterface {
     /**
      * Update a Kubernetes host.
      *
-     * @param groupId * @param kubernetesHost
+     * @param kubernetesHost
      * @throws InvalidKubernetesHostException
      */
-    public boolean updateKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
-            InvalidKubernetesHostException, NonExistingKubernetesGroupException;
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesHostException;
 
     /**
      * Remove a Kubernetes host.
@@ -134,7 +133,8 @@ public interface AutoScalerServiceInterface {
      * @param kubernetesMaster
      * @throws NonExistingKubernetesMasterException
      */
-    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws NonExistingKubernetesMasterException;
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException;
 
     /**
      * Check existence of a lb cluster in network partitions of a given policy.

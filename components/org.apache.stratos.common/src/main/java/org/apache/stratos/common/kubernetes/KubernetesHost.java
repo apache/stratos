@@ -36,6 +36,16 @@ public class KubernetesHost implements Serializable {
     protected String hostIpAddress;
     protected Properties properties = new Properties();
 
+    public KubernetesHost() {
+
+    }
+
+    public KubernetesHost(String hostId, String hostname, String hostIpAddress) {
+        this.hostId = hostId;
+        this.hostname = hostname;
+        this.hostIpAddress = hostIpAddress;
+    }
+
     public String getHostId() {
         return hostId;
     }

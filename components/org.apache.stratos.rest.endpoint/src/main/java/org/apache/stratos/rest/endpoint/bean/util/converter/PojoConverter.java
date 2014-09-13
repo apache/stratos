@@ -32,6 +32,9 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
+import org.apache.stratos.rest.endpoint.bean.kubernetes.PortRange;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
@@ -211,6 +214,9 @@ public class PojoConverter {
 
 
     public static org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
+        if (propertyBeans == null || propertyBeans.isEmpty()) {
+            return null;
+        }
 
         //convert to an array
         PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
@@ -684,24 +690,174 @@ public class PojoConverter {
     public static List<ServiceDefinitionBean> convertToServiceDefinitionBeans(Collection<Service> services) {
 
         List<ServiceDefinitionBean> serviceDefinitionBeans = new ArrayList<ServiceDefinitionBean>();
-
         for (Service service : services) {
             serviceDefinitionBeans.add(convertToServiceDefinitionBean(service));
         }
-
         return serviceDefinitionBeans;
     }
 
     public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup convertToASKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
+
         org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup = new
                 org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup();
 
         kubernetesGroup.setGroupId(kubernetesGroupBean.getGroupId());
-
-        if (kubernetesGroupBean.getProperty() != null && !kubernetesGroupBean.getProperty().isEmpty()) {
-            kubernetesGroup.setProperties((getASProperties(kubernetesGroupBean.getProperty())));
-        }
+        kubernetesGroup.setDescription(kubernetesGroupBean.getDescription());
+        kubernetesGroup.setKubernetesMaster(convertToASKubernetesMasterPojo(kubernetesGroupBean.getKubernetesMaster()));
+        kubernetesGroup.setPortRange(convertToASPortRange(kubernetesGroupBean.getPortRange()));
+        kubernetesGroup.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesGroupBean.getKubernetesHosts()));
+        kubernetesGroup.setProperties((getASProperties(kubernetesGroupBean.getProperty())));
 
         return kubernetesGroup;
+    }
+
+    private static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
+        if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
+            return null;
+        }
+        int kubernetesHostCount = kubernetesHosts.size();
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
+                kubernetesHostsArr = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[kubernetesHostCount];
+        for (int i = 0; i < kubernetesHostCount; i++) {
+            KubernetesHost kubernetesHostBean = kubernetesHosts.get(i);
+            kubernetesHostsArr[i] = convertToASKubernetesHostPojo(kubernetesHostBean);
+        }
+        return kubernetesHostsArr;
+    }
+
+
+    private static org.apache.stratos.autoscaler.stub.kubernetes.PortRange convertToASPortRange(PortRange portRangeBean) {
+        if (portRangeBean == null) {
+            return null;
+        }
+        org.apache.stratos.autoscaler.stub.kubernetes.PortRange
+                portRange = new org.apache.stratos.autoscaler.stub.kubernetes.PortRange();
+        portRange.setLower(portRangeBean.getLower());
+        portRange.setUpper(portRangeBean.getUpper());
+        return portRange;
+    }
+
+    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost convertToASKubernetesHostPojo(KubernetesHost kubernetesHostBean) {
+        if (kubernetesHostBean == null) {
+            return null;
+        }
+
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost
+                kubernetesHost = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost();
+        kubernetesHost.setHostId(kubernetesHostBean.getHostId());
+        kubernetesHost.setHostIpAddress(kubernetesHostBean.getHostIpAddress());
+        kubernetesHost.setHostname(kubernetesHostBean.getHostname());
+        kubernetesHost.setProperties(getASProperties(kubernetesHostBean.getProperty()));
+
+        return kubernetesHost;
+    }
+
+    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster convertToASKubernetesMasterPojo(KubernetesMaster kubernetesMasterBean) {
+        if (kubernetesMasterBean == null) {
+            return null;
+        }
+
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
+                kubernetesMaster = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster();
+        kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
+        kubernetesMaster.setHostIpAddress(kubernetesMasterBean.getHostIpAddress());
+        kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
+        kubernetesMaster.setEndpoint(kubernetesMasterBean.getEndpoint());
+        kubernetesMaster.setProperties(getASProperties(kubernetesMasterBean.getProperty()));
+
+        return kubernetesMaster;
+    }
+
+    public static KubernetesGroup[] populateKubernetesGroupsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[] kubernetesGroups) {
+
+        if (kubernetesGroups == null){
+            return null;
+        }
+        KubernetesGroup[] kubernetesGroupsBean = new KubernetesGroup[kubernetesGroups.length];
+        for (int i = 0; i < kubernetesGroups.length; i++){
+            kubernetesGroupsBean[i] = populateKubernetesGroupPojo(kubernetesGroups[i]);
+        }
+        return kubernetesGroupsBean;
+    }
+
+    public static KubernetesGroup populateKubernetesGroupPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup) {
+        if (kubernetesGroup == null){
+            return null;
+        }
+        KubernetesGroup kubernetesGroupBean = new KubernetesGroup();
+        kubernetesGroupBean.setGroupId(kubernetesGroup.getGroupId());
+        kubernetesGroupBean.setDescription(kubernetesGroup.getDescription());
+        kubernetesGroupBean.setPortRange(populatePortRangePojo(kubernetesGroup.getPortRange()));
+        kubernetesGroupBean.setKubernetesHosts(populateKubernetesHostsPojo(kubernetesGroup.getKubernetesHosts()));
+        kubernetesGroupBean.setKubernetesMaster(populateKubernetesMasterPojo(kubernetesGroup.getKubernetesMaster()));
+        kubernetesGroupBean.setProperty(populateASProperties(kubernetesGroup.getProperties()));
+        return kubernetesGroupBean;
+    }
+
+    public static KubernetesMaster populateKubernetesMasterPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster) {
+        if (kubernetesMaster == null){
+            return null;
+        }
+        KubernetesMaster kubernetesMasterBean = new KubernetesMaster();
+        kubernetesMasterBean.setHostId(kubernetesMaster.getHostId());
+        kubernetesMasterBean.setHostname(kubernetesMaster.getHostname());
+        kubernetesMasterBean.setHostIpAddress(kubernetesMaster.getHostIpAddress());
+        kubernetesMasterBean.setProperty(populateASProperties(kubernetesMaster.getProperties()));
+        kubernetesMasterBean.setEndpoint(kubernetesMaster.getEndpoint());
+        return kubernetesMasterBean;
+    }
+
+    public static List<KubernetesHost> populateKubernetesHostsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] kubernetesHosts) {
+        if (kubernetesHosts == null){
+            return null;
+        }
+        List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
+        for (int i = 0; i < kubernetesHosts.length; i++){
+            kubernetesHostList.add(populateKubernetesHostPojo(kubernetesHosts[i]));
+        }
+        return kubernetesHostList;
+    }
+
+    private static KubernetesHost populateKubernetesHostPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost) {
+        if (kubernetesHost == null){
+            return null;
+        }
+        KubernetesHost kubernetesHostBean = new KubernetesHost();
+        kubernetesHostBean.setHostId(kubernetesHost.getHostId());
+        kubernetesHostBean.setHostname(kubernetesHost.getHostname());
+        kubernetesHostBean.setHostIpAddress(kubernetesHost.getHostIpAddress());
+        kubernetesHostBean.setProperty(populateASProperties(kubernetesHost.getProperties()));
+        return kubernetesHostBean;
+    }
+
+    private static List<PropertyBean> populateASProperties(PropertiesE properties) {
+        if (properties == null || properties.getProperties() == null){
+            return null;
+        }
+        List<PropertyBean> propertyBeanList = new ArrayList<PropertyBean>();
+        for (int i = 0; i < properties.getProperties().length; i++){
+            propertyBeanList.add(populateASProperty(properties.getProperties()[i]));
+        }
+        return propertyBeanList;
+    }
+
+    private static PropertyBean populateASProperty(PropertyE propertyE) {
+        if (propertyE == null){
+            return null;
+        }
+        PropertyBean propertyBean = new PropertyBean();
+        propertyBean.name = propertyE.getName();
+        propertyBean.value = propertyE.getValue();
+        return propertyBean;
+    }
+
+    private static PortRange populatePortRangePojo(org.apache.stratos.autoscaler.stub.kubernetes.PortRange portRange) {
+        if (portRange == null){
+            return null;
+        }
+        PortRange portRangeBean = new PortRange();
+        portRangeBean.setUpper(portRange.getUpper());
+        portRangeBean.setLower(portRange.getLower());
+        return portRangeBean;
     }
 }

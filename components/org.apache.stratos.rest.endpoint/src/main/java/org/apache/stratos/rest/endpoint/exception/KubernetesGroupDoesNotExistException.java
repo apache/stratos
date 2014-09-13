@@ -21,7 +21,7 @@ package org.apache.stratos.rest.endpoint.exception;
 
 import javax.ws.rs.core.Response;
 
-public class KubernetesGroupDoesNotExistException extends RestAPIException {
+public class KubernetesGroupDoesNotExistException extends Exception {
     private String message;
     private Response.Status httpStatusCode;
 
