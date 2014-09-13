@@ -74,10 +74,9 @@ dialect "mvel"
             $ctxt : PartitionContext ()
             eval(log.debug("Running obsolete instances rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
             eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Obsolete member count: " + $ctxt.getObsoletedMembers().size()))
-            eval($ctxt.getObsoletedMembers().size() > 0)
-            memberId : String() from $ctxt.getObsoletedMembers()
+            eval($ctxt.getObsoletedMembers().keySet().size() > 0)
+            memberId : String() from $ctxt.getObsoletedMembers().keySet()
             eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
-            eval($ctxt.removeObsoleteMember(memberId))
         then
            $delegator.terminateObsoleteInstance(memberId);
 end

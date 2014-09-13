@@ -23,6 +23,7 @@ package org.apache.stratos.autoscaler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.KubernetesClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
 
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class AutoscalerContext {
         try {
             setMonitors(new HashMap<String, ClusterMonitor>());
             setLbMonitors(new HashMap<String, LbClusterMonitor>());
+            setKubernetesClusterMonitors(new HashMap<String, KubernetesClusterMonitor>());
         } catch (Exception e) {
             log.error("Rule evaluateMinCheck error", e);
         }
@@ -47,6 +49,8 @@ public class AutoscalerContext {
     private Map<String, ClusterMonitor> monitors;
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
+    // Map<ClusterId, KubernetesClusterMonitor>
+    private Map<String, KubernetesClusterMonitor> kubernetesClusterMonitors;
 
 	private static class Holder {
 		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
@@ -108,5 +112,34 @@ public class AutoscalerContext {
 
     public void addLbMonitor(LbClusterMonitor monitor) {
         lbMonitors.put(monitor.getClusterId(), monitor);
+    }
+    
+    public void addKubernetesClusterMonitor(KubernetesClusterMonitor kubernetesClusterMonitor) {
+        kubernetesClusterMonitors.put(kubernetesClusterMonitor.getClusterId(), kubernetesClusterMonitor);
+    }
+
+    public KubernetesClusterMonitor getKubernetesClusterMonitor(String clusterId) {
+        return kubernetesClusterMonitors.get(clusterId);
+    }
+    
+    public boolean kubernetesClusterMonitorExist(String clusterId) {
+        return kubernetesClusterMonitors.containsKey(clusterId);
+    }
+    
+    public Map<String, KubernetesClusterMonitor> getKubernetesClusterMonitors() {
+        return kubernetesClusterMonitors;
+    }
+
+    public void setKubernetesClusterMonitors(Map<String, KubernetesClusterMonitor> kubernetesClusterMonitors) {
+        this.kubernetesClusterMonitors = kubernetesClusterMonitors;
+    }
+    
+    public KubernetesClusterMonitor removeKubernetesClusterMonitor(String clusterId) {
+    	if(!kubernetesClusterMonitorExist(clusterId)) {
+    		log.fatal("Kubernetes cluster monitor not found for cluster id: "+clusterId);
+    		return null;
+    	}
+    	log.info("Removed KubernetesClusterMonitor [cluster id]: " + clusterId);
+        return kubernetesClusterMonitors.remove(clusterId);
     }
 }

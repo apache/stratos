@@ -31,12 +31,14 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
     private final String clusterId;
     private final String deploymentPolicy;
     private final boolean isLbCluster;
+    private final boolean isKubernetesCluster;
 
-    public ClusterRemovedEvent(String serviceName, String clusterId, String deploymentPolicy, boolean isLbCluster) {
+    public ClusterRemovedEvent(String serviceName, String clusterId, String deploymentPolicy, boolean isLbCluster, boolean isKubernetesCluster) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.isLbCluster = isLbCluster;
         this.deploymentPolicy = deploymentPolicy;
+        this.isKubernetesCluster = isKubernetesCluster;
     }
 
     public String getServiceName() {
@@ -54,4 +56,8 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
 	public String getDeploymentPolicy() {
 		return deploymentPolicy;
 	}
+	
+    public boolean isKubernetesCluster() {
+        return isKubernetesCluster;
+    }
 }

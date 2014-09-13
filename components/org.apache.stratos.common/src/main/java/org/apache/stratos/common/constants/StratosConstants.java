@@ -140,8 +140,16 @@ public class StratosConstants {
     public static final String EMAIL_CONFIG= "email";
     public static final String MULTITENANCY_CONFIG_FOLDER = "multitenancy";
     
+    // Cloud controller - payload
+    public static final String MEMBER_ID= "MEMBER_ID";
+    public static final String LB_CLUSTER_ID= "LB_CLUSTER_ID";
+    public static final String NETWORK_PARTITION_ID= "NETWORK_PARTITION_ID";
+    
+    
+    
     // Kubernetes related constants
     public static final String KUBERNETES_CLUSTER_ID = "kubernetes.cluster.id";
     public static final String KUBERNETES_MASTER_IP = "kubernetes.master.ip";
-
+    public static final String KUBERNETES_MIN_REPLICAS = "kubernetes.replicas.min";
+    public static final String KUBERNETES_PORT_RANGE = "kubernetes.port.range";
 }

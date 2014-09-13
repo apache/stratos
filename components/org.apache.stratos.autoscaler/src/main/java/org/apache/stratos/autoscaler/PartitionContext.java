@@ -18,21 +18,21 @@
  */
 package org.apache.stratos.autoscaler;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -61,9 +61,12 @@ public class PartitionContext implements Serializable{
     private long expiryTime = 900000;
     // pending members
     private List<MemberContext> pendingMembers;
+    
+    // 1 day as default
+    private long obsoltedMemberExpiryTime = 1*24*60*60*1000;
 
     // members to be terminated
-    private List<String> obsoletedMembers;
+    private Map<String, MemberContext> obsoletedMembers;
     
     // active members
     private List<MemberContext> activeMembers;
@@ -89,7 +92,7 @@ public class PartitionContext implements Serializable{
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
-        this.obsoletedMembers = new CopyOnWriteArrayList<String>();
+        this.obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
 
         // check if a different value has been set for expiryTime
@@ -101,6 +104,8 @@ public class PartitionContext implements Serializable{
 
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
+        Thread th2 = new Thread(new ObsoletedMemberWatcher(this));
+        th2.start();
     }
     
     public List<MemberContext> getPendingMembers() {
@@ -236,12 +241,23 @@ public class PartitionContext implements Serializable{
         return terminationPendingMemberAvailable;
     }
     
-    public void addObsoleteMember(String memberId) {
-        this.obsoletedMembers.add(memberId);
+    public long getObsoltedMemberExpiryTime() {
+    	return obsoltedMemberExpiryTime;
+    }
+    
+    public void setObsoltedMemberExpiryTime(long obsoltedMemberExpiryTime) {
+    	this.obsoltedMemberExpiryTime = obsoltedMemberExpiryTime;
+    }
+    
+    public void addObsoleteMember(MemberContext ctxt) {
+        this.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
     }
     
     public boolean removeObsoleteMember(String memberId) {
-        return this.obsoletedMembers.remove(memberId);
+    	if(this.obsoletedMembers.remove(memberId) == null) {
+    		return false;
+    	}
+    	return true;
     }
 
     public long getExpiryTime() {
@@ -252,11 +268,11 @@ public class PartitionContext implements Serializable{
         this.expiryTime = expiryTime;
     }
     
-    public List<String> getObsoletedMembers() {
+    public Map<String, MemberContext> getObsoletedMembers() {
         return obsoletedMembers;
     }
         
-    public void setObsoletedMembers(List<String> obsoletedMembers) {
+    public void setObsoletedMembers(Map<String, MemberContext> obsoletedMembers) {
         this.obsoletedMembers = obsoletedMembers;
     }
 
@@ -388,7 +404,7 @@ public class PartitionContext implements Serializable{
                             log.info("Pending state of member: " + pendingMember.getMemberId() +
                                      " is expired. " + "Adding as an obsoleted member.");
                             // member should be terminated
-                            ctxt.addObsoleteMember(pendingMember.getMemberId());
+                            ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
                             if( pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD){
                                 setExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
@@ -406,5 +422,40 @@ public class PartitionContext implements Serializable{
             }
         }
 
+    } 
+    
+    private class ObsoletedMemberWatcher implements Runnable {
+    	private PartitionContext ctxt;
+
+    	public ObsoletedMemberWatcher(PartitionContext ctxt) {
+    		this.ctxt = ctxt;
+    	}
+        
+    	@Override
+    	public void run() {
+    		while (true) {
+    			
+    			long obsoltedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
+    			Map<String, MemberContext> obsoletedMembers = ctxt.getObsoletedMembers();
+    			Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
+    			
+    			while (iterator.hasNext()) {
+    				Map.Entry<String, MemberContext> pairs = iterator.next();
+    				MemberContext obsoleteMember = (MemberContext) pairs.getValue();
+    				if (obsoleteMember == null){
+    					continue;
+    				}
+    				long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
+    				if (obsoleteTime >= obsoltedMemberExpiryTime) {
+    					iterator.remove();
+    				}
+    			}
+    			try {
+    				// TODO find a constant
+    				Thread.sleep(15000);
+    			} catch (InterruptedException ignore) {
+    			}
+    		}
+    	}
     } 
 }

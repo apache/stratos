@@ -23,6 +23,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
@@ -34,10 +35,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestObsoletedMemberRule {
     private static final Log log = LogFactory.getLog(TestObsoletedMemberRule.class);
@@ -74,16 +77,18 @@ public class TestObsoletedMemberRule {
     public void testOneObsoletedMemberCase() {
         
         // reset helper class
-        TestDelegator.setObsoletedMembers(new ArrayList<String>());
+    	TestDelegator.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         
         if(kbase == null) {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
         ksession = kbase.newStatefulKnowledgeSession();
         PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
-        p.setObsoletedMembers(new CopyOnWriteArrayList<String>());
+        p.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         String memberId = "member1";
-        p.addObsoleteMember(memberId);
+        MemberContext ctxt1 = new MemberContext();
+        ctxt1.setMemberId(memberId);
+        p.addObsoleteMember(ctxt1);
         ksession.insert(p);
         ksession.fireAllRules();
 
@@ -95,7 +100,7 @@ public class TestObsoletedMemberRule {
         }
         
         assertEquals(1, TestDelegator.getObsoletedMembers().size());
-        assertEquals(memberId, TestDelegator.getObsoletedMembers().get(0));
+        assertTrue(TestDelegator.getObsoletedMembers().containsKey(memberId));
         
     }
     
@@ -103,7 +108,7 @@ public class TestObsoletedMemberRule {
     public void testMoreThanOneObsoletedMemberCase() {
         
         // reset helper class
-        TestDelegator.setObsoletedMembers(new ArrayList<String>());
+    	TestDelegator.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         
         if(kbase == null) {
             throw new IllegalArgumentException("Knowledge base is null.");
@@ -111,13 +116,18 @@ public class TestObsoletedMemberRule {
 
         ksession = kbase.newStatefulKnowledgeSession();
         PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
-        p.setObsoletedMembers(new CopyOnWriteArrayList<String>());
+        p.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         String memberId1 = "member1";
         String memberId2 = "member2";
         String memberId3 = "member3";
         
-        p.addObsoleteMember(memberId1);
-        p.addObsoleteMember(memberId2);
+        MemberContext ctxt1 = new MemberContext();
+        ctxt1.setMemberId(memberId1);
+        p.addObsoleteMember(ctxt1);
+        
+        MemberContext ctxt2 = new MemberContext();
+        ctxt2.setMemberId(memberId2);
+        p.addObsoleteMember(ctxt2);
         
         FactHandle handle = ksession.insert(p);
         ksession.fireAllRules();
@@ -133,20 +143,22 @@ public class TestObsoletedMemberRule {
         
         assertEquals(0, p.getObsoletedMembers().size());
         
-        assertNotEquals(TestDelegator.getObsoletedMembers().get(0), TestDelegator.getObsoletedMembers().get(1));
+        assertNotEquals(TestDelegator.getObsoletedMembers().get(memberId1), TestDelegator.getObsoletedMembers().get(memberId2));
         
-        boolean check0thPosition = memberId1.equals(TestDelegator.getObsoletedMembers().get(0)) ||
-                memberId2.equals(TestDelegator.getObsoletedMembers().get(0));
-        assertEquals(true, check0thPosition);
+//        boolean check0thPosition = memberId1.equals(TestDelegator.getObsoletedMembers().get(0)) ||
+//                memberId2.equals(TestDelegator.getObsoletedMembers().get(0));
+//        assertEquals(true, check0thPosition);
         
-        boolean check1stPosition = memberId1.equals(TestDelegator.getObsoletedMembers().get(1)) ||
-                memberId2.equals(TestDelegator.getObsoletedMembers().get(2));
-        assertEquals(true, check1stPosition);
+//        boolean check1stPosition = memberId1.equals(TestDelegator.getObsoletedMembers().get(1)) ||
+//                memberId2.equals(TestDelegator.getObsoletedMembers().get(2));
+//        assertEquals(true, check1stPosition);
         
         // reset helper class
-        TestDelegator.setObsoletedMembers(new ArrayList<String>());
+        TestDelegator.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         
-        p.addObsoleteMember(memberId3);
+        MemberContext ctxt3 = new MemberContext();
+        ctxt3.setMemberId(memberId3);
+        p.addObsoleteMember(ctxt3);
         ksession.update(handle, p);
         ksession.fireAllRules();
         
@@ -158,7 +170,7 @@ public class TestObsoletedMemberRule {
         }
         
         assertEquals(1, TestDelegator.getObsoletedMembers().size());
-        assertEquals(memberId3, TestDelegator.getObsoletedMembers().get(0));
+        assertTrue(TestDelegator.getObsoletedMembers().containsKey(memberId3));
         
         
     }

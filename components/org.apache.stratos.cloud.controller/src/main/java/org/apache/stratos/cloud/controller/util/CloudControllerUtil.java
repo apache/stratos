@@ -303,6 +303,12 @@ public class CloudControllerUtil {
     	return null;
     }
 	
+	public static String getProperty(org.apache.stratos.cloud.controller.pojo.Properties properties, String key) {
+		Properties props = toJavaUtilProperties(properties);
+		
+		return getProperty(props, key);
+	}
+	
 	/**
 	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
 	 * @param properties org.apache.stratos.messaging.util.Properties
