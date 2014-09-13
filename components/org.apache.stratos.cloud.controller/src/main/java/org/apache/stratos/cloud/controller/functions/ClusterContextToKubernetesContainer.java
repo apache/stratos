@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.functions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +28,14 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Container;
+import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
 import org.apache.stratos.kubernetes.client.model.Port;
+
 import com.google.common.base.Function;
 
 /**
@@ -81,6 +85,47 @@ public class ClusterContextToKubernetesContainer implements Function<ClusterCont
 		}
 		
 		return portList.toArray(ports);
+	}
+	
+	private String generateMemberId(String clusterId) {
+        UUID memberId = UUID.randomUUID();
+         return clusterId + memberId.toString();
+    }
+	
+	private EnvironmentVariable[] getEnvironmentVars(ClusterContext ctxt, Cartridge cartridge) {
+		
+		String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+        		StratosConstants.KUBERNETES_CLUSTER_ID);
+		
+		List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
+		
+		addToEnvironment(envVars, StratosConstants.MEMBER_ID, generateMemberId(ctxt.getClusterId()));
+		addToEnvironment(envVars, StratosConstants.LB_CLUSTER_ID, generateMemberId(ctxt.getClusterId()));
+		addToEnvironment(envVars, StratosConstants.MEMBER_ID, generateMemberId(ctxt.getClusterId()));
+		addToEnvironment(envVars, StratosConstants.MEMBER_ID, generateMemberId(ctxt.getClusterId()));
+		// have to add memberID to the payload
+        StringBuilder payload = new StringBuilder(ctxt.getPayload());
+        addToPayload(payload, "MEMBER_ID", memberID);
+        addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
+        addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
+        addToPayload(payload, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
+        if(memberContext.getProperties() != null) {
+        	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
+            if (props1 != null) {
+                for (Property prop : props1.getProperties()) {
+                    addToPayload(payload, prop.getName(), prop.getValue());
+                }
+            }
+        }
+	}
+
+	private void addToEnvironment(List<EnvironmentVariable> envVars,
+			String name, String value) {
+
+		EnvironmentVariable var = new EnvironmentVariable();
+		var.setName(name);
+		var.setValue(value);
+		envVars.add(var);
 	}
 
 }
