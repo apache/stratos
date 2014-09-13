@@ -40,15 +40,25 @@ public class KubernetesClusterContext implements Serializable {
     private String kubernetesClusterId;
     // available host port range, delimited by a hyphen
     private String hostPortRange;
+    // kubernetes master ip
+    private String masterIp;
     // available list of ports
     private List<Integer> availableHostPorts;
     // kubernetes client API instance
     private KubernetesApiClient kubernetesApiClient;
     
-    public KubernetesClusterContext() {
+    public KubernetesClusterContext(String id, String portRange, String masterIp) {
     	availableHostPorts = new ArrayList<Integer>();
+    	this.kubernetesClusterId = id;
+    	this.hostPortRange = portRange;
+    	this.masterIp = masterIp;
+    	kubernetesApiClient = new KubernetesApiClient(getEndpoint(masterIp));
 	}
     
+	private String getEndpoint(String ip) {
+		return "http://"+ip+":8080/api/v1beta1/";
+	}
+
 	public String getKubernetesClusterId() {
 		return kubernetesClusterId;
 	}
@@ -112,6 +122,56 @@ public class KubernetesClusterContext implements Serializable {
 
 	public void setKubernetesApiClient(KubernetesApiClient kubernetesApiClient) {
 		this.kubernetesApiClient = kubernetesApiClient;
+	}
+
+	public String getMasterIp() {
+		return masterIp;
+	}
+
+	public void setMasterIp(String masterIp) {
+		this.masterIp = masterIp;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((hostPortRange == null) ? 0 : hostPortRange.hashCode());
+		result = prime
+				* result
+				+ ((kubernetesClusterId == null) ? 0 : kubernetesClusterId
+						.hashCode());
+		result = prime * result
+				+ ((masterIp == null) ? 0 : masterIp.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KubernetesClusterContext other = (KubernetesClusterContext) obj;
+		if (hostPortRange == null) {
+			if (other.hostPortRange != null)
+				return false;
+		} else if (!hostPortRange.equals(other.hostPortRange))
+			return false;
+		if (kubernetesClusterId == null) {
+			if (other.kubernetesClusterId != null)
+				return false;
+		} else if (!kubernetesClusterId.equals(other.kubernetesClusterId))
+			return false;
+		if (masterIp == null) {
+			if (other.masterIp != null)
+				return false;
+		} else if (!masterIp.equals(other.masterIp))
+			return false;
+		return true;
 	}
     
 }

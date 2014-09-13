@@ -399,10 +399,14 @@ public class FasterLookUpDataHolder implements Serializable{
 	public KubernetesClusterContext getKubernetesClusterContext(String kubClusterId) {
 		return kubClusterIdToKubClusterContext.get(kubClusterId);
 	}
+	
+	public void addKubernetesClusterContext(KubernetesClusterContext ctxt) {
+		this.kubClusterIdToKubClusterContext.put(ctxt.getKubernetesClusterId(), ctxt);
+	}
 
 	public void setKubClusterIdToKubClusterContext(
 			Map<String, KubernetesClusterContext> kubClusterIdToKubClusterContext) {
 		this.kubClusterIdToKubClusterContext = kubClusterIdToKubClusterContext;
 	}
-
+	
 }

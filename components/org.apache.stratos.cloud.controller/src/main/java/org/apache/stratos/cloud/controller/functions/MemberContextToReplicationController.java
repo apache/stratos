@@ -19,6 +19,10 @@
 package org.apache.stratos.cloud.controller.functions;
 
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
+import org.apache.stratos.cloud.controller.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Container;
 import org.apache.stratos.kubernetes.client.model.Label;
 import org.apache.stratos.kubernetes.client.model.Manifest;
@@ -30,19 +34,27 @@ import org.apache.stratos.kubernetes.client.model.State;
 import com.google.common.base.Function;
 
 /**
- *	Is responsible for converting a {@link ClusterContext} object to a Kubernetes {@link ReplicationController}
+ *	Is responsible for converting a {@link MemberContext} object to a Kubernetes {@link ReplicationController}
  *	Object.
  */
-public class ClusterContextToReplicationController implements Function<ClusterContext, ReplicationController>{
+public class MemberContextToReplicationController implements Function<MemberContext, ReplicationController>{
 
+	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+	
 	@Override
-	public ReplicationController apply(ClusterContext clusterContext) {
+	public ReplicationController apply(MemberContext memberContext) {
+		
+		String clusterId = memberContext.getClusterId();
+        ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
+        
 		ReplicationController contr = new ReplicationController();
 		contr.setId(clusterContext.getClusterId());
 		contr.setKind("ReplicationController");
 		contr.setApiVersion("v1beta1");
 		State desiredState = new State();
-		desiredState.setReplicas(3);
+		String minReplicas = CloudControllerUtil.getProperty(clusterContext.getProperties(), 
+				StratosConstants.KUBERNETES_MIN_REPLICAS);
+		desiredState.setReplicas(Integer.parseInt(minReplicas));
 		Selector selector = new Selector();
 		selector.setName(clusterContext.getClusterId());
 		desiredState.setReplicaSelector(selector);
@@ -53,8 +65,8 @@ public class ClusterContextToReplicationController implements Function<ClusterCo
 		manifest.setVersion("v1beta1");
 		manifest.setId(clusterContext.getClusterId());
 
-		ClusterContextToKubernetesContainer containerFunc = new ClusterContextToKubernetesContainer();
-		Container container = containerFunc.apply(clusterContext);
+		MemberContextToKubernetesContainer containerFunc = new MemberContextToKubernetesContainer();
+		Container container = containerFunc.apply(memberContext);
 
 		manifest.setContainers(new Container[] { container });
 
