@@ -1436,5 +1436,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			return origCtxt;
 		}
 	}
+
+	@Override
+	public void terminateAllKubernetesUnits(String clusterId)
+			throws InvalidClusterException {
+		
+	}
 }
 

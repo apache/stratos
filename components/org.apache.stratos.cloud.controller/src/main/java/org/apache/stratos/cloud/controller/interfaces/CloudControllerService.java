@@ -128,6 +128,13 @@ public interface CloudControllerService {
      * @return whether an instance terminated successfully or not.
      */
     public void terminateAllInstances(String clusterId) throws InvalidClusterException;
+    
+    /**
+     * Terminate all Kubernetes units created for the given cluster.
+     * @param clusterId
+     * @throws InvalidClusterException
+     */
+    public void terminateAllKubernetesUnits(String clusterId) throws InvalidClusterException;
 
     /**
      * Unregister the service cluster which represents by this domain and sub domain.
