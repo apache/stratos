@@ -327,7 +327,7 @@ consoleAppUtil = new function(){
            }
         } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
            if(response.data != null && response.data != undefined) {
-               session.put("get-status", response.data); return;
+               session.put("get-status", parse(response.data).Error.errorMessage);
            }
         }
 
@@ -401,7 +401,7 @@ consoleAppUtil = new function(){
            }
         } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
            if(response.data != null && response.data != undefined) {         
-               session.put("deploy-status", response.data); return;             
+               session.put("deploy-status", parse(response.data).Error.errorMessage);
            }
         }
         
