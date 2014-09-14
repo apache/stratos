@@ -77,4 +77,68 @@ public class KubernetesHost implements Serializable {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+
+    @Override
+    public String toString() {
+        return "KubernetesHost [hostId=" + hostId +
+                " hostname=" + hostname +
+                " hostIpAddress=" + hostIpAddress +
+                " properties=" + properties + "]";
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (anObject == null) {
+            return false;
+        }
+        if (this == anObject) {
+            return true;
+        }
+
+        if (!(anObject instanceof KubernetesHost)) {
+            return false;
+        }
+        KubernetesHost kubernetesHostObj = (KubernetesHost) anObject;
+
+        if (this.hostId == null || kubernetesHostObj.getHostId() == null) {
+            return false;
+        } else if (!this.hostId.equals(kubernetesHostObj.getHostId())) {
+            return false;
+        }
+
+        if (this.hostIpAddress == null || kubernetesHostObj.getHostIpAddress() == null) {
+            return false;
+        } else if (!this.hostIpAddress.equals(kubernetesHostObj.getHostIpAddress())) {
+            return false;
+        }
+
+        if (this.hostname == null) {
+            if (kubernetesHostObj.getHostname() != null) {
+                return false;
+            }
+        } else if (!this.hostname.equals(kubernetesHostObj.getHostname())) {
+            return false;
+        }
+
+        if (this.properties == null) {
+            if (kubernetesHostObj.getProperties() != null) {
+                return false;
+            }
+        } else if (this.properties.equals(kubernetesHostObj.getProperties())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.hostId == null) ? 0 : this.hostId.hashCode());
+        result = prime * result + ((this.hostname == null) ? 0 : this.hostname.hashCode());
+        result = prime * result + ((this.hostIpAddress == null) ? 0 : this.hostIpAddress.hashCode());
+        result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
+        return result;
+    }
 }

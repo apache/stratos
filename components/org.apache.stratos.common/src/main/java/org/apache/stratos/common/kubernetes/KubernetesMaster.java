@@ -52,4 +52,37 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
+
+    @Override
+    public String toString() {
+        return "KubernetesMaster [hostId=" + hostId +
+                " hostname=" + hostname +
+                " hostIpAddress=" + hostIpAddress +
+                " endpoint=" + endpoint +
+                " properties=" + properties + "]";
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (anObject == null) {
+            return false;
+        }
+        if (this == anObject) {
+            return true;
+        }
+
+        if (!(anObject instanceof KubernetesMaster)) {
+            return false;
+        }
+
+        return super.equals(anObject);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.endpoint == null) ? 0 : this.endpoint.hashCode());
+        return result;
+    }
 }

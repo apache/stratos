@@ -21,19 +21,19 @@ package org.apache.stratos.common.kubernetes;
 import java.io.Serializable;
 
 /**
- * Holds a property 
+ * Holds a property
  */
-public class Property implements Serializable{
-    
+public class Property implements Serializable {
+
     private static final long serialVersionUID = -2191782657999410197L;
     private String name;
     private String value;
-    
-    public Property(){
-        
+
+    public Property() {
+
     }
-    
-    public Property(String name, String value){
+
+    public Property(String name, String value) {
         this.setName(name);
         this.setValue(value);
     }
@@ -57,6 +57,45 @@ public class Property implements Serializable{
     @Override
     public String toString() {
         return "Property [name=" + name + ", value=" + value + "]";
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (anObject == null) {
+            return false;
+        }
+
+        if (!(anObject instanceof Property)) {
+            return false;
+        }
+
+        Property propertyObj = (Property) anObject;
+        if (this.name == null) {
+            if (propertyObj.getName() != null) {
+                return false;
+            }
+        } else if (!this.name.equals(propertyObj.getName())) {
+            return false;
+        }
+
+        if (this.value == null) {
+            if (propertyObj.getValue() != null) {
+                return false;
+            }
+        } else if (!this.value.equals(propertyObj.getValue())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.value == null) ? 0 : this.value.hashCode());
+        return result;
     }
 
 }

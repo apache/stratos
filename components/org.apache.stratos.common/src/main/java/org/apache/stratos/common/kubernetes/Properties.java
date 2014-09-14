@@ -22,10 +22,10 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * Had to wrap {@link Property} array using a class, since there's a bug in current 
+ * Had to wrap {@link Property} array using a class, since there's a bug in current
  * stub generation.
  */
-public class Properties implements Serializable{
+public class Properties implements Serializable {
 
     private Property[] properties;
 
@@ -41,5 +41,36 @@ public class Properties implements Serializable{
     public String toString() {
         return "Properties [properties=" + Arrays.toString(properties) + "]";
     }
-    
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (anObject == null) {
+            return false;
+        }
+        if (this == anObject) {
+            return false;
+        }
+
+        if (!(anObject instanceof Properties)) {
+            return false;
+        }
+        Properties propertiesObj = (Properties) anObject;
+        if (this.properties == null) {
+            if (propertiesObj.getProperties() != null) {
+                return false;
+            }
+        } else if (!Arrays.equals(this.properties, propertiesObj.getProperties())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.properties == null) ? 0 : Arrays.hashCode(this.properties));
+        return result;
+    }
 }

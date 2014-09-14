@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.api.AutoScalerServiceImpl;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.NonExistingKubernetesGroupException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -270,7 +271,10 @@ public class CloudControllerClient {
         } catch (RemoteException e) {
         	log.error(e.getMessage(), e);
             throw new SpawningException(e.getMessage(), e);
-		}
+		} catch (NonExistingKubernetesGroupException e){
+            log.error(e.getMessage(), e);
+            throw new SpawningException(e.getMessage(), e);
+        }
     }
 
 }

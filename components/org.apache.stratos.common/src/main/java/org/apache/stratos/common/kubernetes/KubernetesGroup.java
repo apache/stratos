@@ -20,7 +20,7 @@
 package org.apache.stratos.common.kubernetes;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * The model class for KubernetesGroup definition.
@@ -80,5 +80,84 @@ public class KubernetesGroup implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String toString() {
+        return "KubernetesGroup [groupId=" + groupId +
+                " kubernetesHosts=" + Arrays.toString(kubernetesHosts) +
+                "kubernetesMaster=" + kubernetesMaster +
+                "portRange=" + portRange +
+                "description=" + description +
+                "properties=" + properties + "]";
+    }
+
+    @Override
+    public boolean equals(Object anObject) {
+        if (anObject == null) {
+            return false;
+        }
+        if (this == anObject) {
+            return true;
+        }
+        if (!(anObject instanceof KubernetesGroup)) {
+            return false;
+        }
+        KubernetesGroup kubernetesGroupObj = (KubernetesGroup) anObject;
+        if (this.groupId == null || kubernetesGroupObj.getGroupId() == null) {
+            return false;
+        } else if (!this.groupId.equals(kubernetesGroupObj.getGroupId())) {
+            return false;
+        }
+
+        if (this.portRange == null || kubernetesGroupObj.getPortRange() == null) {
+            return false;
+        } else if (!this.portRange.equals(kubernetesGroupObj.getPortRange())) {
+            return false;
+        }
+
+        if (this.properties == null) {
+            if (kubernetesGroupObj.getProperties() != null) {
+                return false;
+            }
+        } else if (!this.properties.equals(kubernetesGroupObj.getProperties())) {
+            return false;
+        }
+
+        if (this.description == null) {
+            if (kubernetesGroupObj.description != null) {
+                return false;
+            }
+        } else if (!this.description.equals(kubernetesGroupObj.getDescription())) {
+            return false;
+        }
+
+        if (this.kubernetesMaster == null || kubernetesGroupObj.getKubernetesMaster() == null) {
+            return false;
+        } else if (!this.kubernetesMaster.equals(kubernetesGroupObj.getKubernetesMaster())) {
+            return false;
+        }
+
+        if (this.getKubernetesHosts() == null) {
+            if (kubernetesGroupObj.getKubernetesHosts() != null) {
+                return false;
+            }
+        } else if (!Arrays.equals(this.kubernetesHosts, kubernetesGroupObj.getKubernetesHosts())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.portRange == null) ? 0 : this.portRange.hashCode());
+        result = prime * result + ((this.groupId == null) ? 0 : this.groupId.hashCode());
+        result = prime * result + ((this.description == null) ? 0 : this.description.hashCode());
+        result = prime * result + ((this.kubernetesMaster == null) ? 0 : this.kubernetesMaster.hashCode());
+        result = prime * result + ((this.kubernetesHosts == null) ? 0 : Arrays.hashCode(this.kubernetesHosts));
+        result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
+        return result;
     }
 }
