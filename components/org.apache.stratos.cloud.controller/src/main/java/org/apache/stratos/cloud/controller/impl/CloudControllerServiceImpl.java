@@ -1387,88 +1387,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						+ controller + " via Kubernetes layer.");
 			}
 			
-//			 try{
-//				 		memberContext.setPublicIpAddress();
-//	                    dataHolder.addMemberContext(memberContext);
-//
-//	                    // persist in registry
-//	                    persist();
-//
-//
-//	                    // trigger topology
-//	                    TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, 
-//	                    		partition.getId(), ip, publicIp, memberContext);
-//	                    
-//	                    String memberID = memberContext.getMemberId();
-//
-//	                    // update the topology with the newly spawned member
-//	                    // publish data
-//	                    CartridgeInstanceDataPublisher.publish(memberID,
-//	                                                        memberContext.getPartition().getId(),
-//	                                                        memberContext.getNetworkPartitionId(),
-//	                                                        memberContext.getClusterId(),
-//	                                                        cartridgeType,
-//	                                                        MemberStatus.Created.toString(),
-//	                                                        node);
-//	                    if (log.isDebugEnabled()) {
-//	                        log.debug("Node details: " + node.toString());
-//	                    }
-//	                    
-//	                    if (log.isDebugEnabled()) {
-//	        				log.debug("IP allocation process ended for "+memberContext);
-//	        			}
-//
-//	            } catch (Exception e) {
-//	                String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
-//	                log.error(msg, e);
-//	                throw new CloudControllerException(msg, e);
-//	            } 
+			memberContext.setPublicIpAddress(kubernetesMasterIp);
+			memberContext.setPrivateIpAddress(kubernetesMasterIp);
+			dataHolder.addMemberContext(memberContext);
 
-            
-            
-//            //Start allocating ip as a new job
-//
-//            ThreadExecutor exec = ThreadExecutor.getInstance();
-//            if (log.isDebugEnabled()) {
-//				log.debug("Cloud Controller is starting the IP Allocator thread.");
-//			}
-//            exec.execute(new IpAllocator(memberContext, iaasProvider, cartridgeType, node));
-//
-//
-//            // node id
-//            String nodeId = node.getId();
-//            if (nodeId == null) {
-//                String msg = "Node id of the starting instance is null.\n" + memberContext.toString();
-//                log.fatal(msg);
-//                throw new IllegalStateException(msg);
-//            }
-//            
-//			memberContext.setNodeId(nodeId);
-//			if (log.isDebugEnabled()) {
-//				log.debug("Node id was set. " + memberContext.toString());
-//			}
-//
-//                // attach volumes
-//			if (ctxt.isVolumeRequired()) {
-//				// remove region prefix
-//				String instanceId = nodeId.indexOf('/') != -1 ? nodeId
-//						.substring(nodeId.indexOf('/') + 1, nodeId.length())
-//						: nodeId;
-//				memberContext.setInstanceId(instanceId);
-//				if (ctxt.getVolumes() != null) {
-//					for (Volume volume : ctxt.getVolumes()) {
-//						try {
-//							iaas.attachVolume(instanceId, volume.getId(),
-//									volume.getDevice());
-//						} catch (Exception e) {
-//							// continue without throwing an exception, since
-//							// there is an instance already running
-//							log.error("Attaching Volume " + volume.getId() + " to Instance [ "
-//									+ instanceId + " ] failed!", e);
-//						}
-//					}
-//				}
-//			}
+			// persist in registry
+			persist();
+
+			// trigger topology
+			// update the topology with the newly spawned member
+			TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
+					kubernetesMasterIp, kubernetesMasterIp, memberContext);
+
+			// publish data
+			// TODO
+			// CartridgeInstanceDataPublisher.publish(memberID,
+			// memberContext.getPartition().getId(),
+			// memberContext.getNetworkPartitionId(),
+			// memberContext.getClusterId(),
+			// cartridgeType,
+			// MemberStatus.Created.toString(),
+			// node);
 
             log.info("Kubernetes entities are successfully starting up. "+memberContext.toString());
 
