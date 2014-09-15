@@ -19,30 +19,28 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-import java.util.List;
-
 public class ComponentContext {
 
-    private List<GroupContext> groupContexts;
+    private GroupContext[] groupContexts;
 
-    private List<SubscribableContext> subscribableContexts;
+    private SubscribableContext[] subscribableContexts;
 
     private DependencyContext dependencyContext;
 
 
-    public List<GroupContext> getGroupContexts() {
+    public GroupContext[] getGroupContexts() {
         return groupContexts;
     }
 
-    public void setGroupContexts(List<GroupContext> groupContexts) {
+    public void setGroupContexts(GroupContext[] groupContexts) {
         this.groupContexts = groupContexts;
     }
 
-    public List<SubscribableContext> getSubscribableContexts() {
+    public SubscribableContext[] getSubscribableContexts() {
         return subscribableContexts;
     }
 
-    public void setSubscribableContexts(List<SubscribableContext> subscribableContexts) {
+    public void setSubscribableContexts(SubscribableContext[] subscribableContexts) {
         this.subscribableContexts = subscribableContexts;
     }
 

@@ -19,24 +19,27 @@
 
 package org.apache.stratos.cloud.controller.application;
 
-import java.util.regex.Pattern;
+public class MTClusterInformation implements ClusterInformation {
 
-public class ApplicationUtils {
+    @Override
+    public String getClusterId(String alias, String cartridgeType) {
 
-    public static boolean isAliasValid (String alias) {
+        if (!ApplicationUtils.isValid(cartridgeType))  {
+            // cannot happen
+            throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
+        }
 
-        String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
-        Pattern pattern = Pattern.compile(patternString);
-
-        return pattern.matcher(alias).matches();
+        return cartridgeType + ".domain";
     }
 
-    public static boolean isValid (String arg) {
+    @Override
+    public String getHostName(String alias, String cartridgeDefinitionHostName) {
 
-        if (arg == null || arg.isEmpty()) {
-            return false;
-        } else {
-            return true;
+        if (!ApplicationUtils.isValid(cartridgeDefinitionHostName)) {
+            // cannot happen
+            throw new IllegalArgumentException("Invalid host name value provided: [ " + cartridgeDefinitionHostName + " ]");
         }
+
+        return cartridgeDefinitionHostName;
     }
 }

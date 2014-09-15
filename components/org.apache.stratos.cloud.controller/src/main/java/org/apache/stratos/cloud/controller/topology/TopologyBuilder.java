@@ -613,6 +613,26 @@ public class TopologyBuilder {
         }
     }
 
+    public static void handleApplicationDepolyed (ApplicationDataHolder applicationDataHolder) {
+
+        Topology topology = TopologyManager.getTopology();
+        try {
+            TopologyManager.acquireWriteLock();
+
+            for (Cluster cluster : applicationDataHolder.getClusters()) {
+                String cartridgeType = cluster.getServiceName();
+                topology.getService(cartridgeType).addCluster(cluster);
+                log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + applicationDataHolder.getApplication().getId());
+            }
+            TopologyManager.updateTopology(topology);
+
+            TopologyEventPublisher.sendApplicationCreatedEvent(applicationDataHolder.getApplication());
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+    }
+
     public static void handleCompositeApplicationCreated(ConfigCompositeApplication messConfigApp) {
         Topology topology = TopologyManager.getTopology();
 

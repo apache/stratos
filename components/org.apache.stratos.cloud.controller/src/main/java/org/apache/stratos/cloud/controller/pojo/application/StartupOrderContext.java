@@ -25,6 +25,10 @@ public class StartupOrderContext {
 
     private String after;
 
+    public StartupOrderContext () {
+
+    }
+
     public String getStart() {
         return start;
     }

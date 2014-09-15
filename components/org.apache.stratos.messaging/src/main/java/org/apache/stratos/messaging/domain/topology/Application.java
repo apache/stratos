@@ -27,6 +27,7 @@ import java.util.Map;
 
 public class Application implements SubscribableBehavior {
 
+    private static final long serialVersionUID = -5092959597171649688L;
     // Unique id for the Application, defined in Application Definition
     private String id;
     // Key used for authentication (with metadata service, etc.)
@@ -48,6 +49,11 @@ public class Application implements SubscribableBehavior {
     @Override
     public void addGroup(Group group) {
         groupMap.put(group.getName(), group);
+    }
+
+    @Override
+    public void setGroups(Map<String, Group> groupNameToGroup) {
+        groupMap.putAll(groupNameToGroup);
     }
 
     @Override
@@ -73,6 +79,11 @@ public class Application implements SubscribableBehavior {
     @Override
     public void addClusterId(String serviceName, String clusterId) {
         clusterIdMap.put(serviceName, clusterId);
+    }
+
+    @Override
+    public void setClusterIds(Map<String, String> serviceNameToClusterId) {
+        clusterIdMap.putAll(serviceNameToClusterId);
     }
 
     @Override

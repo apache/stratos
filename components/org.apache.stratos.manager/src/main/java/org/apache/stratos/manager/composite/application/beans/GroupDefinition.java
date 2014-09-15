@@ -19,7 +19,6 @@
 
 package org.apache.stratos.manager.composite.application.beans;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 

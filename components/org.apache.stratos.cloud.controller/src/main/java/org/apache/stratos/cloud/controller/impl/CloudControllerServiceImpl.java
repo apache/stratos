@@ -24,10 +24,12 @@ import com.google.common.net.InetAddresses;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.application.parser.DefaultApplicationParser;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
@@ -1398,9 +1400,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 
-        // TODO:
-        // 1. parse and create Composite App tree
-        // 2. send the ApplicationCreated event
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationDataHolder applicationDataHolder = applicationParser.parse(applicationContext);
+
+        TopologyBuilder.handleApplicationDepolyed(applicationDataHolder);
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {

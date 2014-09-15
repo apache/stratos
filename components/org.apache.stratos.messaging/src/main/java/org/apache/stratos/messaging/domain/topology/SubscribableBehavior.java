@@ -21,10 +21,13 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 public interface SubscribableBehavior extends Serializable {
 
     public void addGroup (Group group);
+
+    public void setGroups (Map<String, Group> groupNameToGroup);
 
     public Group getGroup (String groupName);
 
@@ -35,6 +38,8 @@ public interface SubscribableBehavior extends Serializable {
     public DependencyOrder getDependencyOrder ();
 
     public void addClusterId (String serviceName, String clusterId);
+
+    public void setClusterIds (Map<String,String> serviceNameToClusterId);
 
     public String getClusterId (String serviceName);
 

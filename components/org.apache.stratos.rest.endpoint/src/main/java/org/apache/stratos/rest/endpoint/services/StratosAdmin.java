@@ -133,7 +133,7 @@ public class StratosAdmin extends AbstractAdmin {
     public StratosAdminResponse deployApplicationDefinition(CompositeApplicationDefinitionBean applicationDefinitionBean)
             throws RestAPIException {
 
-    	return ServiceUtils.deployCompositeApplicationDefinition(applicationDefinitionBean, getConfigContext(), getUsername(),
+    	return ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(), getUsername(),
                                      getTenantDomain());
 
     }

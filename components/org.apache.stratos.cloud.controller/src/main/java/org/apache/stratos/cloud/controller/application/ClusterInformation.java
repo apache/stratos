@@ -17,28 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.pojo.application;
+package org.apache.stratos.cloud.controller.application;
 
+public interface ClusterInformation {
 
-public class DependencyContext {
+    public String getClusterId (String alias, String cartridgeType);
 
-    private StartupOrderContext[] startupOrderContexts;
-
-    private String killBehaviour;
-
-    public StartupOrderContext[] getStartupOrderContext() {
-        return startupOrderContexts;
-    }
-
-    public void setStartupOrderContext(StartupOrderContext[] startupOrderContexts) {
-        this.startupOrderContexts = startupOrderContexts;
-    }
-
-    public String getKillBehaviour() {
-        return killBehaviour;
-    }
-
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
-    }
+    public String getHostName (String alias, String cartridgeDefinitionHostName);
 }

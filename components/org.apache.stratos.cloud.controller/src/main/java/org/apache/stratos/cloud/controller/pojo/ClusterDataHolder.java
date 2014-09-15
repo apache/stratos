@@ -17,28 +17,31 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.pojo.application;
+package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.messaging.domain.topology.Cluster;
 
-public class DependencyContext {
+import java.util.Map;
+import java.util.Set;
 
-    private StartupOrderContext[] startupOrderContexts;
+public class ClusterDataHolder {
 
-    private String killBehaviour;
+    // Cluster Id map, key = service name
+    private Map<String, String> clusterIdMap;
 
-    public StartupOrderContext[] getStartupOrderContext() {
-        return startupOrderContexts;
+    // Cluster object collection
+    private Set<Cluster> clusters;
+
+   public ClusterDataHolder (Map<String, String> clusterIdMap, Set<Cluster> clusters) {
+       this.clusterIdMap = clusterIdMap;
+       this.clusters = clusters;
+   }
+
+    public Map<String, String> getClusterIdMap() {
+        return clusterIdMap;
     }
 
-    public void setStartupOrderContext(StartupOrderContext[] startupOrderContexts) {
-        this.startupOrderContexts = startupOrderContexts;
-    }
-
-    public String getKillBehaviour() {
-        return killBehaviour;
-    }
-
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+    public Set<Cluster> getClusters() {
+        return clusters;
     }
 }

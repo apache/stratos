@@ -25,15 +25,20 @@ import java.util.Map;
 
 public class Group implements SubscribableBehavior {
 
+    private static final long serialVersionUID = 8347096598203655846L;
     // Name of the Group, specified in Group Definition
     private String name;
     // Group alias
     private String alias;
+    // Group deployment policy
+    private String deploymentPolicy;
+    // Group level autoscaling policy
+    private String autoscalingPolicy;
     // Dependency Order
     private DependencyOrder dependencyOrder;
     // Sub Group Map, key = Group.name
     private Map<String, Group> groupMap;
-    // Cluster Id map, key = service name
+    // Cluster id map, key = service name
     private Map<String, String> clusterIdMap;
 
     public Group (String name, String alias) {
@@ -46,6 +51,11 @@ public class Group implements SubscribableBehavior {
     @Override
     public void addGroup(Group group) {
         groupMap.put(group.name, group);
+    }
+
+    @Override
+    public void setGroups(Map<String, Group> groupNameToGroup) {
+        groupMap.putAll(groupNameToGroup);
     }
 
     @Override
@@ -74,6 +84,11 @@ public class Group implements SubscribableBehavior {
     }
 
     @Override
+    public void setClusterIds(Map<String, String> serviceNameToClusterId) {
+        clusterIdMap.putAll(serviceNameToClusterId);
+    }
+
+    @Override
     public String getClusterId(String serviceName) {
         return clusterIdMap.get(serviceName);
     }
@@ -89,5 +104,38 @@ public class Group implements SubscribableBehavior {
 
     public String getAlias() {
         return alias;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public String getAutoscalingPolicy() {
+        return autoscalingPolicy;
+    }
+
+    public void setAutoscalingPolicy(String autoscalingPolicy) {
+        this.autoscalingPolicy = autoscalingPolicy;
+    }
+
+    public boolean equals(Object other) {
+        if(other == null || !(other instanceof Group)) {
+            return false;
+        }
+
+        if(this == other) {
+            return true;
+        }
+
+        Group that = (Group)other;
+        return this.name.equals(that.name) && this.alias.equals(that.alias);
+    }
+
+    public int hashCode () {
+        return name.hashCode() + alias.hashCode();
     }
 }

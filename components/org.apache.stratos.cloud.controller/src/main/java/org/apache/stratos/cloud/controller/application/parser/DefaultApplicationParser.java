@@ -19,19 +19,22 @@
 
 package org.apache.stratos.cloud.controller.application.parser;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.application.ApplicationUtils;
+import org.apache.stratos.cloud.controller.application.ClusterInformation;
+import org.apache.stratos.cloud.controller.application.MTClusterInformation;
+import org.apache.stratos.cloud.controller.application.STClusterInformation;
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
-import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
-import org.apache.stratos.cloud.controller.pojo.application.GroupContext;
-import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
-import org.apache.stratos.cloud.controller.pojo.application.SubscribableInfoContext;
-import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.cloud.controller.pojo.ApplicationDataHolder;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.ClusterDataHolder;
+import org.apache.stratos.cloud.controller.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.pojo.application.*;
+import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.messaging.domain.topology.*;
 
-import java.rmi.RemoteException;
 import java.util.*;
 
 public class DefaultApplicationParser implements ApplicationParser {
@@ -39,7 +42,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     @Override
-    public Application parse(Object obj) throws ApplicationDefinitionException {
+    public ApplicationDataHolder parse(Object obj) throws ApplicationDefinitionException {
 
         ApplicationContext applicationCtxt = null;
 
@@ -85,9 +88,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throw new ApplicationDefinitionException("Invalid Composite Application Definition, no Subscribable Information specified");
         }
 
-        //TODO
-        //return buildCompositeAppStructure (applicationCtxt, definedGroups, subscribablesInfo);
-        return null;
+        return buildCompositeAppStructure (applicationCtxt, definedGroups, subscribablesInfo);
     }
 
     private Map<String, GroupContext> getDefinedGroups (ApplicationContext appCtxt) throws
@@ -168,247 +169,316 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     private boolean isGroupDeployed (String serviceGroupName) throws ApplicationDefinitionException {
 
-        //TODO
-        return true;
+        return FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName) != null;
     }
 
-//    private Application buildCompositeAppStructure (ApplicationContext appCtxt,
-//                                                            Map<String, GroupContext> definedGroupCtxts,
-//                                                            Map<String, SubscribableInfoContext> subscribableInfoCtxts)
+    private ApplicationDataHolder buildCompositeAppStructure (ApplicationContext appCtxt,
+                                                            Map<String, GroupContext> definedGroupCtxts,
+                                                            Map<String, SubscribableInfoContext> subscribableInfoCtxts)
+            throws ApplicationDefinitionException {
+
+        Application application = new Application(appCtxt.getApplicationId());
+        // following keeps track of all Clusters created for this application
+        Set<Cluster> clusters = new HashSet<Cluster>();
+
+        if (appCtxt.getComponents() != null) {
+            // get top level Subscribables
+            if (appCtxt.getComponents().getSubscribableContexts() != null) {
+                ClusterDataHolder clusterDataHolder = getClusterInformation(Arrays.asList(appCtxt.getComponents().getSubscribableContexts()), subscribableInfoCtxts);
+                application.setClusterIds(clusterDataHolder.getClusterIdMap());
+                clusters.addAll(clusterDataHolder.getClusters());
+            }
+
+            // get Groups
+            if (appCtxt.getComponents().getGroupContexts() != null) {
+                application.setGroups(getGroupInfo(clusters, Arrays.asList(appCtxt.getComponents().getGroupContexts()), subscribableInfoCtxts, definedGroupCtxts));
+            }
+
+            // get top level Dependency definitions
+            if (appCtxt.getComponents().getDependencyContext() != null) {
+                DependencyOrder appDependencyOrder = new DependencyOrder();
+                Set<StartupOrder>  startupOrders = getStartupOrderForApplicationComponents(new HashSet<StartupOrderContext>(Arrays.asList(appCtxt.getComponents().
+                        getDependencyContext().getStartupOrderContext())));
+                if (startupOrders != null) {
+                    appDependencyOrder.setStartupOrders(startupOrders);
+                }
+                appDependencyOrder.setKillbehavior(appCtxt.getComponents().getDependencyContext().getKillBehaviour());
+
+                application.setDependencyOrder(appDependencyOrder);
+            }
+        }
+
+        log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
+
+        ApplicationDataHolder applicationDataHolder = new ApplicationDataHolder();
+        applicationDataHolder.setClusters(clusters);
+        applicationDataHolder.setApplication(application);
+
+        return applicationDataHolder;
+    }
+
+    private Map<String, Group> getGroupInfo (Set<Cluster> clusters, List<GroupContext> groupCtxts,
+                                         Map<String, SubscribableInfoContext> subscribableInformation,
+                                         Map<String, GroupContext> definedGroupCtxts)
+            throws ApplicationDefinitionException {
+
+        Map<String, Group> groupNameToGroup = new HashMap<String, Group>();
+
+        for (GroupContext groupCtxt : groupCtxts) {
+            Group group = getGroup(clusters, groupCtxt, subscribableInformation, definedGroupCtxts);
+            groupNameToGroup.put(group.getName(), group);
+        }
+
+        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupNameToGroup);
+        Set<Group> nestedGroups = new HashSet<Group>();
+        getNestedGroupContexts(nestedGroups, groupNameToGroup.values());
+        filterDuplicatedGroupContexts(groupNameToGroup.values(), nestedGroups);
+
+        return groupNameToGroup;
+    }
+
+    private void getNestedGroupContexts (Set<Group> nestedGroups, Collection<Group> groups) {
+
+        if (groups != null) {
+            for (Group group : groups) {
+                if (group.getGroups() != null) {
+                    nestedGroups.addAll(group.getGroups());
+                    getNestedGroupContexts(nestedGroups, group.getGroups());
+                }
+            }
+        }
+    }
+
+    private void filterDuplicatedGroupContexts (Collection<Group> topLevelGroups, Set<Group> nestedGroups) {
+
+        for (Group nestedGroup : nestedGroups) {
+            filterNestedGroupFromTopLevel(topLevelGroups, nestedGroup);
+        }
+    }
+
+    private void filterNestedGroupFromTopLevel (Collection<Group> topLevelGroups, Group nestedGroup) {
+
+        Iterator<Group> parentIterator = topLevelGroups.iterator();
+        while (parentIterator.hasNext()) {
+            Group parentGroup = parentIterator.next();
+            // if there is an exactly similar nested Group Context and a top level Group Context
+            // it implies that they are duplicates. Should be removed from top level.
+            if (parentGroup.equals(nestedGroup)) {
+                parentIterator.remove();
+            }
+        }
+    }
+
+    private Group getGroup(Set<Cluster> clusters, GroupContext groupCtxt, Map<String, SubscribableInfoContext> subscribableInfoCtxts,
+                           Map<String, GroupContext> definedGroupCtxts) throws ApplicationDefinitionException {
+
+        // check if are in the defined Group set
+        GroupContext definedGroupDef = definedGroupCtxts.get(groupCtxt.getAlias());
+        if (definedGroupDef == null) {
+            throw new ApplicationDefinitionException("Group Definition with name: " + groupCtxt.getName() + ", alias: " +
+                    groupCtxt.getAlias() + " is not found in the all Group Definitions collection");
+        }
+
+        Group group = new Group(groupCtxt.getName(), groupCtxt.getAlias());
+
+        group.setAutoscalingPolicy(groupCtxt.getAutoscalingPolicy());
+        group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
+        DependencyOrder dependencyOrder = new DependencyOrder();
+        // create the Dependency Ordering
+        Set<StartupOrder>  startupOrders = getStartupOrderForGroup(groupCtxt.getName());
+        if (startupOrders != null) {
+            dependencyOrder.setStartupOrders(startupOrders);
+        }
+        dependencyOrder.setKillbehavior(getKillbehaviour(groupCtxt.getName()));
+        group.setDependencyOrder(dependencyOrder);
+
+        ClusterDataHolder clusterDataHolder;
+
+        // get group level Subscribables
+        if (groupCtxt.getSubscribableContexts() != null) {
+            clusterDataHolder = getClusterInformation(Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts);
+            group.setClusterIds(clusterDataHolder.getClusterIdMap());
+            clusters.addAll(clusterDataHolder.getClusters());
+        }
+
+        // get nested groups
+        if (groupCtxt.getGroupContexts() != null) {
+            Map<String, Group> nestedGroups = new HashMap<String, Group>();
+            // check sub groups
+            for (GroupContext subGroupCtxt : groupCtxt.getGroupContexts()) {
+                // get the complete Group Definition
+                subGroupCtxt = definedGroupCtxts.get(subGroupCtxt.getAlias());
+                Group nestedGroup = getGroup(clusters, subGroupCtxt, subscribableInfoCtxts, definedGroupCtxts);
+                nestedGroups.put(nestedGroup.getName(), nestedGroup);
+            }
+
+            group.setGroups(nestedGroups);
+        }
+
+        return group;
+    }
+
+    private Set<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws ApplicationDefinitionException {
+
+        ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName);
+
+        if (serviceGroup == null) {
+            throw new ApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
+        }
+
+        if (serviceGroup.getDependencies() != null) {
+            if (serviceGroup.getDependencies().getStartupOrder() != null) {
+                return ParserUtils.convert(serviceGroup.getDependencies().getStartupOrder());
+            }
+        }
+
+        return null;
+    }
+
+    private Set<StartupOrder> getStartupOrderForApplicationComponents (Set<StartupOrderContext> startupOrderCtxts)
+            throws ApplicationDefinitionException {
+
+        if (startupOrderCtxts == null) {
+            return null;
+        }
+
+        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
+
+        for (StartupOrderContext startupOrderContext : startupOrderCtxts) {
+            startupOrders.add(new StartupOrder(startupOrderContext.getStart(), startupOrderContext.getAfter()));
+        }
+
+        return startupOrders;
+    }
+
+    private String getKillbehaviour (String serviceGroupName) throws ApplicationDefinitionException {
+
+        ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName);
+
+        if (serviceGroup == null) {
+            throw new ApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
+        }
+
+        if (serviceGroup.getDependencies() != null) {
+            return serviceGroup.getDependencies().getKillBehaviour();
+        }
+
+        return null;
+
+    }
+
+//    private Set<SubscribableContext> getSubsribableContexts (List<SubscribableContext> subscribableCtxts,
+//                                                             Map<String, SubscribableInfoContext> subscribableInfoCtxts)
 //            throws ApplicationDefinitionException {
 //
-//        Application application = new Application(appCtxt.getApplicationId());
+//        Set<SubscribableContext> subscribableContexts = new HashSet<SubscribableContext>();
 //
-//        if (appCtxt.getComponents() != null) {
-//            // get top level Subscribables
-//            if (appCtxt.getComponents().getSubscribableContexts() != null) {
-//                application.setSubscribableContexts(getSubsribableContexts(appCtxt.getComponents().getSubscribables(),
-//                        subscribableInfoCtxts));
+//        for (SubscribableContext subscribableCtxt : subscribableCtxts) {
+//            // check is there is a related Subscribable Information
+//            SubscribableInfo subscribableInfo = subscribableInfoCtxts.get(subscribableCtxt.getAlias());
+//            if (subscribableInfo == null) {
+//                throw new CompositeApplicationDefinitionException("Related Subscribable Information not found for Subscribable with alias: "
+//                        + subscribableCtxt.getAlias());
 //            }
 //
-//            // get Groups
-//            if (appCtxt.getComponents().getGroups() != null) {
-//                application.setGroupContexts(getGroupContexts(appCtxt.getComponents().getGroups(),
-//                        subscribableInfoCtxts, definedGroupCtxts));
+//            // check if Cartridge Type is valid
+//            if (subscribableCtxt.getType() == null || subscribableCtxt.getType().isEmpty()) {
+//                throw new CompositeApplicationDefinitionException ("Invalid Cartridge Type specified : [ "
+//                        + subscribableCtxt.getType() + " ]");
 //            }
 //
-//            // get top level Dependency definitions
-//            if (appCtxt.getComponents().getDependencies() != null) {
-//                application.setStartupOrder(getStartupOrderForApplicationComponents(appCtxt.getComponents().
-//                        getDependencies().getStartupOrder()));
-//
-//                application.setKillBehaviour(appCtxt.getComponents().getDependencies().getKillBehaviour());
+//            // check if a cartridge with relevant type is already deployed. else, can't continue
+//            if (!isCartrigdeDeployed(subscribableCtxt.getType())) {
+//                throw new CompositeApplicationDefinitionException("No deployed Cartridge found with type [ " + subscribableCtxt.getType() +
+//                        " ] for Composite Application");
 //            }
+//
+//            subscribableContexts.add(ParserUtils.convert(subscribableCtxt, subscribableInfo));
 //        }
 //
-//        return application;
+//        return subscribableContexts;
 //    }
-//
-//    private Set<GroupContext> getGroupContexts (List<GroupDefinition> groupDefinitions,
-//                                                Map<String, SubscribableInfo> subscribableInformation,
-//                                                Map<String, GroupDefinition> definedGroups)
-//            throws CompositeApplicationDefinitionException {
+
+    private ClusterDataHolder getClusterInformation (List<SubscribableContext> subscribableCtxts,
+                                                               Map<String, SubscribableInfoContext> subscribableInfoCtxts)
+            throws ApplicationDefinitionException {
+
+        Map<String, String> clusterIdMap = new HashMap<String, String>();
+        Set<Cluster> clusters = new HashSet<Cluster>();
+
+        for (SubscribableContext subscribableCtxt : subscribableCtxts) {
+            // check is there is a related Subscribable Information
+            SubscribableInfoContext subscribableInfoCtxt = subscribableInfoCtxts.get(subscribableCtxt.getAlias());
+            if (subscribableInfoCtxt == null) {
+                throw new ApplicationDefinitionException("Related Subscribable Information Ctxt not found for Subscribable with alias: "
+                        + subscribableCtxt.getAlias());
+            }
+
+            // check if Cartridge Type is valid
+            if (subscribableCtxt.getType() == null || subscribableCtxt.getType().isEmpty()) {
+                throw new ApplicationDefinitionException ("Invalid Cartridge Type specified : [ "
+                        + subscribableCtxt.getType() + " ]");
+            }
+
+            // check if a cartridge with relevant type is already deployed. else, can't continue
+            Cartridge cartridge =  getCartridge(subscribableCtxt.getType());
+            if (cartridge == null) {
+                throw new ApplicationDefinitionException("No deployed Cartridge found with type [ " + subscribableCtxt.getType() +
+                        " ] for Composite Application");
+            }
+
+            Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
+            clusters.add(cluster);
+            clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId());
+        }
+
+        return new ClusterDataHolder(clusterIdMap, clusters);
+    }
+
+    private Cluster getCluster (SubscribableContext subscribableCtxt, SubscribableInfoContext subscribableInfoCtxt, Cartridge cartridge)
+            throws ApplicationDefinitionException {
+
+        // get hostname and cluster id
+        ClusterInformation clusterInfo;
+        if (cartridge.isMultiTenant()) {
+            clusterInfo = new MTClusterInformation();
+        } else {
+            clusterInfo = new STClusterInformation();
+        }
+
+        String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridge.getHostName());
+        String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
+
+        Cluster cluster = new Cluster(subscribableCtxt.getType(), clusterId, subscribableInfoCtxt.getDeploymentPolicy(),
+                subscribableInfoCtxt.getAutoscalingPolicy());
+
+        cluster.addHostName(hostname);
+        cluster.setLbCluster(false);
+        cluster.setStatus(ClusterStatus.Created);
+
+        return cluster;
+    }
+
+//    private GroupDataHolder getGroupInformation (List<GroupContext> groupCtxts,
+//                                                 Map<String, SubscribableInfoContext> subscribableInformation,
+//                                                 Map<String, GroupContext> definedGroupCtxts)
+//            throws ApplicationDefinitionException {
 //
 //        Set<GroupContext> groupContexts = new HashSet<GroupContext>();
 //
-//        for (GroupDefinition group : groupDefinitions) {
-//            groupContexts.add(getGroupContext(group, subscribableInformation, definedGroups));
+//        for (GroupContext groupCtxt : groupCtxts) {
+//            groupContexts.add(getGroup(groupCtxt, subscribableInformation, definedGroupCtxts));
 //        }
 //
 //        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupContexts);
 //        Set<GroupContext> nestedGroupContexts = new HashSet<GroupContext>();
 //        getNestedGroupContexts(nestedGroupContexts, groupContexts);
 //        filterDuplicatedGroupContexts(groupContexts, nestedGroupContexts);
-//
-//        return groupContexts;
 //    }
-//
-//    private void getNestedGroupContexts (Set<GroupContext> nestedGroupContexts, Set<GroupContext> groupContexts) {
-//
-//        if (groupContexts != null) {
-//            for (GroupContext groupContext : groupContexts) {
-//                if (groupContext.getGroupContexts() != null) {
-//                    nestedGroupContexts.addAll(groupContext.getGroupContexts());
-//                    getNestedGroupContexts(nestedGroupContexts, groupContext.getGroupContexts());
-//                }
-//            }
-//        }
-//    }
-//
-//    private void filterDuplicatedGroupContexts (Set<GroupContext> topLevelGroupContexts, Set<GroupContext> nestedGroupContexts) {
-//
-//        for (GroupContext nestedGropCtxt : nestedGroupContexts) {
-//            filterNestedGroupFromTopLevel(topLevelGroupContexts, nestedGropCtxt);
-//        }
-//    }
-//
-//    private void filterNestedGroupFromTopLevel (Set<GroupContext> topLevelGroupContexts, GroupContext nestedGroupCtxt) {
-//
-//        Iterator<GroupContext> parentIterator = topLevelGroupContexts.iterator();
-//        while (parentIterator.hasNext()) {
-//            GroupContext parentGroupCtxt = parentIterator.next();
-//            // if there is an exactly similar nested Group Context and a top level Group Context
-//            // it implies that they are duplicates. Should be removed from top level.
-//            if (parentGroupCtxt.equals(nestedGroupCtxt)) {
-//                parentIterator.remove();
-//            }
-//        }
-//    }
-//
-//    private GroupContext getGroupContext (GroupDefinition group, Map<String, SubscribableInfo> subscribableInformation,
-//                                          Map<String, GroupDefinition> definedGroups) throws CompositeApplicationDefinitionException {
-//
-//        // check if are in the defined Group set
-//        GroupDefinition definedGroupDef = definedGroups.get(group.getAlias());
-//        if (definedGroupDef == null) {
-//            throw new CompositeApplicationDefinitionException("Group Definition with name: " + group.getName() + ", alias: " +
-//                    group.getAlias() + " is not found in the all Group Definitions collection");
-//        }
-//
-//        GroupContext groupContext = new GroupContext();
-//
-//        groupContext.setName(group.getName());
-//        groupContext.setAlias(group.getAlias());
-//        groupContext.setAutoscalingPolicy(group.getAutoscalingPolicy());
-//        groupContext.setDeploymentPolicy(group.getDeploymentPolicy());
-//        groupContext.setStartupOrder(getStartupOrderForGroup(group.getName()));
-//        groupContext.setKillBehaviour(getKillbehaviour(group.getName()));
-//
-//        // get group level Subscribables
-//        if (group.getSubscribables() != null) {
-//            groupContext.setSubscribableContexts(getSubsribableContexts(group.getSubscribables(), subscribableInformation));
-//        }
-//        // get nested groups
-//        if (group.getSubGroups() != null) {
-//            Set<GroupContext> nestedGroupContexts = new HashSet<GroupContext>();
-//            // check sub groups
-//            for (GroupDefinition subGroup : group.getSubGroups()) {
-//                // get the complete Group Definition
-//                subGroup = definedGroups.get(subGroup.getAlias());
-//                nestedGroupContexts.add(getGroupContext(subGroup, subscribableInformation, definedGroups));
-//            }
-//
-//            groupContext.setGroupContexts(nestedGroupContexts);
-//        }
-//
-//        return groupContext;
-//    }
-//
-//    private Set<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws CompositeApplicationDefinitionException {
-//
-//        ServiceGroupDefinition groupDefinition;
-//
-//        try {
-//            groupDefinition = dataInsertionAndRetrievalMgr.getServiceGroupDefinition(serviceGroupName);
-//
-//        } catch (PersistenceManagerException e) {
-//            throw new CompositeApplicationDefinitionException(e);
-//        }
-//
-//        if (groupDefinition == null) {
-//            throw new CompositeApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
-//        }
-//
-//        if (groupDefinition.getDependencies() != null) {
-//            if (groupDefinition.getDependencies().getStartupOrder() != null) {
-//                return ParserUtils.convert(groupDefinition.getDependencies().getStartupOrder());
-//            }
-//        }
-//
-//        return null;
-//    }
-//
-//    private Set<StartupOrder> getStartupOrderForApplicationComponents (List<StartupOrderDefinition> startupOrderDefinitions)
-//            throws CompositeApplicationDefinitionException {
-//
-//        if (startupOrderDefinitions == null) {
-//            return null;
-//        }
-//
-//        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
-//
-//        for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
-//            startupOrders.add(new StartupOrder(startupOrderDefinition.getStart(), startupOrderDefinition.getAfter()));
-//        }
-//
-//        return startupOrders;
-//    }
-//
-//    private String getKillbehaviour (String serviceGroupName) throws CompositeApplicationDefinitionException {
-//
-//        ServiceGroupDefinition groupDefinition;
-//
-//        try {
-//            groupDefinition = dataInsertionAndRetrievalMgr.getServiceGroupDefinition(serviceGroupName);
-//
-//        } catch (PersistenceManagerException e) {
-//            throw new CompositeApplicationDefinitionException(e);
-//        }
-//
-//        if (groupDefinition == null) {
-//            throw new CompositeApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
-//        }
-//
-//        if (groupDefinition.getDependencies() != null) {
-//            return groupDefinition.getDependencies().getKillBehaviour();
-//        }
-//
-//        return null;
-//
-//    }
-//
-//    private Set<SubscribableContext> getSubsribableContexts (List<SubscribableDefinition> subscribableDefinitions,
-//                                                             Map<String, SubscribableInfo> subscribableInformation)
-//            throws CompositeApplicationDefinitionException {
-//
-//        Set<SubscribableContext> subscribableContexts = new HashSet<SubscribableContext>();
-//
-//        for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
-//            // check is there is a related Subscribable Information
-//            SubscribableInfo subscribableInfo = subscribableInformation.get(subscribableDefinition.getAlias());
-//            if (subscribableInfo == null) {
-//                throw new CompositeApplicationDefinitionException("Related Subscribable Information not found for Subscribable with alias: "
-//                        + subscribableDefinition.getAlias());
-//            }
-//
-//            // check if Cartridge Type is valid
-//            if (subscribableDefinition.getType() == null || subscribableDefinition.getType().isEmpty()) {
-//                throw new CompositeApplicationDefinitionException ("Invalid Cartridge Type specified : [ "
-//                        + subscribableDefinition.getType() + " ]");
-//            }
-//
-//            // check if a cartridge with relevant type is already deployed. else, can't continue
-//            if (!isCartrigdeDeployed(subscribableDefinition.getType())) {
-//                throw new CompositeApplicationDefinitionException("No deployed Cartridge found with type [ " + subscribableDefinition.getType() +
-//                        " ] for Composite Application");
-//            }
-//
-//            subscribableContexts.add(ParserUtils.convert(subscribableDefinition, subscribableInfo));
-//        }
-//
-//        return subscribableContexts;
-//    }
-//
-//    private boolean isCartrigdeDeployed (String cartridgeType) throws CompositeApplicationDefinitionException {
-//
-//        CloudControllerServiceClient ccServiceClient;
-//
-//        try {
-//            ccServiceClient = CloudControllerServiceClient.getServiceClient();
-//
-//        } catch (AxisFault axisFault) {
-//            throw new CompositeApplicationDefinitionException(axisFault);
-//        }
-//
-//        try {
-//            return ccServiceClient.getCartridgeInfo(cartridgeType) != null;
-//
-//        } catch (RemoteException e) {
-//            throw new CompositeApplicationDefinitionException(e);
-//
-//        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-//            throw new CompositeApplicationDefinitionException(e);
-//        }
-//    }
+
+    private Cartridge getCartridge (String cartridgeType)  {
+
+        return FasterLookUpDataHolder.getInstance().getCartridge(cartridgeType);
+    }
 
 }

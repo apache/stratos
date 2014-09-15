@@ -24,18 +24,11 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredClusterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -126,11 +119,11 @@ public class CloudControllerServiceClient {
 	}
 
 
-	public void deployCompositeApplicationDefinition (CompositeApplicationDefinition compositeApplicationDefinition) 
-			throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException, CloudControllerServiceInvalidIaasProviderExceptionException  
-    		 {
+	public void deployApplicationDefinition(ApplicationContext applicationContext)
+            throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException,
+            CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceApplicationDefinitionExceptionException {
 
-		stub.deployCompositeApplicationDefinition(compositeApplicationDefinition);
+		stub.deployApplicationDefinition(applicationContext);
 
 	}
 	

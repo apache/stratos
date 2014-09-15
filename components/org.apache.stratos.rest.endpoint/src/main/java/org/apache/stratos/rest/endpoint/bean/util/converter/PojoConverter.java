@@ -22,8 +22,15 @@ package org.apache.stratos.rest.endpoint.bean.util.converter;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.application.*;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
+import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -664,6 +671,127 @@ public class PojoConverter {
     }
     
 	private static Log log = LogFactory.getLog(PojoConverter.class);
+
+    public static ApplicationContext convertApplicationBeanToApplicationContext (CompositeAppDefinition compositeAppDefinition) {
+
+        ApplicationContext applicationContext = new ApplicationContext();
+        applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
+        applicationContext.setAlias(compositeAppDefinition.getAlias());
+
+        // convert and set components
+        if (compositeAppDefinition.getComponents() != null) {
+            ComponentContext componentContext = new ComponentContext();
+            // top level subscribables
+            if (compositeAppDefinition.getComponents().getSubscribables() != null) {
+                componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
+                        compositeAppDefinition.getComponents().getSubscribables()));
+            }
+            // top level Groups
+            if (compositeAppDefinition.getComponents().getGroups() != null) {
+                componentContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(compositeAppDefinition.getComponents().getGroups()));
+            }
+            // top level dependency information
+            if (compositeAppDefinition.getComponents().getDependencies() != null) {
+                componentContext.setDependencyContext(getDependencyContextFromDependencyDefinition(compositeAppDefinition.getComponents().getDependencies()));
+            }
+
+            applicationContext.setComponents(componentContext);
+        }
+
+        // subscribable information
+        applicationContext.setSubscribableInfoContext(getSubscribableInfoContextArrFromSubscribableInfoDefinition(compositeAppDefinition.getSubscribableInfo()));
+
+        return applicationContext;
+    }
+
+    private static SubscribableInfoContext[] getSubscribableInfoContextArrFromSubscribableInfoDefinition (List<SubscribableInfo> subscribableInfos) {
+
+        SubscribableInfoContext[] subscribableInfoContexts = new SubscribableInfoContext[subscribableInfos.size()];
+        int i = 0;
+        for (SubscribableInfo subscribableInfo : subscribableInfos) {
+            SubscribableInfoContext subscribableInfoContext = new SubscribableInfoContext();
+            subscribableInfoContext.setAlias(subscribableInfo.getAlias());
+            subscribableInfoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+            subscribableInfoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
+            subscribableInfoContext.setRepoUrl(subscribableInfo.getRepoUrl());
+            subscribableInfoContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
+            subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
+            subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
+            subscribableInfoContexts[i++] =  subscribableInfoContext;
+        }
+
+        return subscribableInfoContexts;
+    }
+
+    private static DependencyContext getDependencyContextFromDependencyDefinition (DependencyDefinitions dependencyDefinitions) {
+
+        DependencyContext dependencyContext = new DependencyContext();
+        dependencyContext.setKillBehaviour(dependencyDefinitions.getKillBehaviour());
+        if (dependencyDefinitions.getStartupOrder() != null) {
+            dependencyContext.setStartupOrderContext(getStartupOrderContextArrFromStartupDefinition(dependencyDefinitions.getStartupOrder()));
+        }
+
+        return dependencyContext;
+    }
+
+    private static StartupOrderContext[] getStartupOrderContextArrFromStartupDefinition (List<StartupOrderDefinition> startupOrderDefinitions) {
+
+        StartupOrderContext[] startupOrderContexts = new StartupOrderContext[startupOrderDefinitions.size()];
+        int i = 0;
+        for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
+            StartupOrderContext startupOrderContext = new StartupOrderContext();
+            startupOrderContext.setStart(startupOrderDefinition.getStart());
+            startupOrderContext.setAfter(startupOrderDefinition.getAfter());
+            startupOrderContexts[i++] = startupOrderContext;
+        }
+
+        return startupOrderContexts;
+    }
+
+    private static GroupContext[] getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
+
+        GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
+        int i = 0;
+        for (GroupDefinition groupDefinition : groupDefinitions) {
+            GroupContext groupContext = new GroupContext();
+            groupContext.setName(groupDefinition.getName());
+            groupContext.setAlias(groupDefinition.getAlias());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
+            groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
+            // nested Subscribables
+            if (groupDefinition.getSubscribables() != null) {
+                groupContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
+            }
+            // nested Groups
+            if (groupDefinition.getSubGroups() != null) {
+                groupContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(groupDefinition.getSubGroups()));
+            }
+            groupContexts[i++] = groupContext;
+        }
+
+        return groupContexts;
+    }
+
+    private static SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+
+        SubscribableContext[] subscribableContexts = new SubscribableContext[subscribableDefinitions.size()];
+        int i = 0;
+        for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
+            SubscribableContext subscribableContext = new SubscribableContext();
+            subscribableContext.setType(subscribableDefinition.getType());
+            subscribableContext.setAlias(subscribableDefinition.getAlias());
+            subscribableContexts[i++] = subscribableContext;
+        }
+
+        return subscribableContexts;
+    }
+
+    private static SubscribableContext getSubscribableContextFromSubscribableDefinition (SubscribableDefinition subscribableDefinition) {
+
+        SubscribableContext subscribableContext = new SubscribableContext();
+        subscribableContext.setType(subscribableDefinition.getType());
+        return subscribableContext;
+    }
 	
 	/*
 	public static ConfigCompositeApplication convertToCompositeApplication(CompositeApplicationDefinitionBean appBean) {

@@ -17,28 +17,27 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.pojo.application;
+package org.apache.stratos.cloud.controller.application.parser;
 
+import org.apache.stratos.messaging.domain.topology.StartupOrder;
 
-public class DependencyContext {
+import java.util.HashSet;
+import java.util.Set;
 
-    private StartupOrderContext[] startupOrderContexts;
+public class ParserUtils {
 
-    private String killBehaviour;
+    public static Set<StartupOrder> convert (org.apache.stratos.cloud.controller.pojo.StartupOrder [] startupOrderArr) {
 
-    public StartupOrderContext[] getStartupOrderContext() {
-        return startupOrderContexts;
-    }
+        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
-    public void setStartupOrderContext(StartupOrderContext[] startupOrderContexts) {
-        this.startupOrderContexts = startupOrderContexts;
-    }
+        if (startupOrderArr == null) {
+            return startupOrders;
+        }
 
-    public String getKillBehaviour() {
-        return killBehaviour;
-    }
+        for (int i = 0; i < startupOrderArr.length ; i++) {
+            startupOrders.add(new StartupOrder(startupOrderArr[i].getStart(), startupOrderArr[i].getAfter()));
+        }
 
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+        return startupOrders;
     }
 }

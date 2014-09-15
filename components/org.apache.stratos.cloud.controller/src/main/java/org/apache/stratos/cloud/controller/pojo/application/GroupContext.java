@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-import java.util.List;
-
 public class GroupContext {
 
     private String name;
@@ -31,9 +29,9 @@ public class GroupContext {
 
     private String autoscalingPolicy;
 
-    private List<SubscribableContext> subscribableContexts;
+    private SubscribableContext[] subscribableContexts;
 
-    private List<GroupContext> groupContexts;
+    private GroupContext[] groupContexts;
 
 
     public String getName() {
@@ -68,19 +66,19 @@ public class GroupContext {
         this.autoscalingPolicy = autoscalingPolicy;
     }
 
-    public List<SubscribableContext> getSubscribableContexts() {
+    public SubscribableContext[] getSubscribableContexts() {
         return subscribableContexts;
     }
 
-    public void setSubscribableContexts(List<SubscribableContext> subscribableContexts) {
+    public void setSubscribableContexts(SubscribableContext[] subscribableContexts) {
         this.subscribableContexts = subscribableContexts;
     }
 
-    public List<GroupContext> getGroupContexts() {
+    public GroupContext[] getGroupContexts() {
         return groupContexts;
     }
 
-    public void setGroupContexts(List<GroupContext> groupContexts) {
+    public void setGroupContexts(GroupContext[] groupContexts) {
         this.groupContexts = groupContexts;
     }
 }

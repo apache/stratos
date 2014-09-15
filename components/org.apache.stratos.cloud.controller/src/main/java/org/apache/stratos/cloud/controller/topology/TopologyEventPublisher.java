@@ -90,6 +90,15 @@ public class TopologyEventPublisher {
 
     }
 
+    public static void sendApplicationCreatedEvent (Application application) {
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing Application created event: " + application.toString());
+        }
+
+        publishEvent(new ApplicationCreatedEvent(application));
+    }
+
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {
 
         ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(ctxt.getCartridgeType(), ctxt.getClusterId(), deploymentPolicy, ctxt.isLbCluster());

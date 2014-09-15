@@ -32,6 +32,10 @@ public class DependencyOrder {
         this.startupOrders = new HashSet<StartupOrder>();
     }
 
+    public void setStartupOrders (Set<StartupOrder> startupOrders) {
+        this.startupOrders.addAll(startupOrders);
+    }
+
     public Set<StartupOrder> getStartupOrders() {
         return startupOrders;
     }

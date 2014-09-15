@@ -229,19 +229,24 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	servicegroup.setCartridges(cartridges);
     	
     	DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
-    	List<StartupOrderDefinition> startDefs = depDefs.getStartupOrder();
-    	
-    	Dependencies deps = new Dependencies();
-    	StartupOrder [] startups = new StartupOrder [startDefs.size()];
-    	for (int i = 0; i < startDefs.size(); i++) {
-    		StartupOrderDefinition stDef = startDefs.get(i);
-    		StartupOrder st = new StartupOrder();
-    		st.setStart(stDef.getStart());
-    		st.setAfter(stDef.getAfter());
-    		startups[i] = st;
-    	}
-    	deps.setStartupOrder(startups);
-    	servicegroup.setDependencies(deps);
+        if (depDefs != null) {
+            List<StartupOrderDefinition> startDefs = depDefs.getStartupOrder();
+
+            Dependencies deps = new Dependencies();
+            if (startDefs != null) {
+                StartupOrder [] startups = new StartupOrder [startDefs.size()];
+                for (int i = 0; i < startDefs.size(); i++) {
+                    StartupOrderDefinition stDef = startDefs.get(i);
+                    StartupOrder st = new StartupOrder();
+                    st.setStart(stDef.getStart());
+                    st.setAfter(stDef.getAfter());
+                    startups[i] = st;
+                }
+                deps.setStartupOrder(startups);
+            }
+            deps.setKillBehaviour(depDefs.getKillBehaviour());
+            servicegroup.setDependencies(deps);
+        }
     	
     	return servicegroup;
     }
@@ -252,23 +257,33 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	String [] cartridges = serviceGroup.getCartridges();
     	String [] subGroups = serviceGroup.getSubGroups();
     	Dependencies deps = serviceGroup.getDependencies();
-    	StartupOrder [] startupOrders = deps.getStartupOrder();
-    	
-    	List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
-    	List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
-    	DependencyDefinitions depsDef = new DependencyDefinitions();
-    	List<StartupOrderDefinition> startupsDef = new ArrayList<StartupOrderDefinition>();
-    	for (StartupOrder startupOrder :  startupOrders) {
-    		StartupOrderDefinition astartupDef = new StartupOrderDefinition();
-    		astartupDef.setAfter(startupOrder.getAfter());
-    		astartupDef.setStart(startupOrder.getStart());
-    		startupsDef.add(astartupDef);
-    	}
-    	depsDef.setStartupOrder(startupsDef);
-    	depsDef.setKillBehaviour(deps.getKillBehaviour());
+
+        if (deps != null) {
+            DependencyDefinitions depsDef = new DependencyDefinitions();
+            StartupOrder [] startupOrders = deps.getStartupOrder();
+            if (startupOrders != null && startupOrders.length > 0) {
+                List<StartupOrderDefinition> startupsDef = new ArrayList<StartupOrderDefinition>();
+                for (StartupOrder startupOrder :  startupOrders) {
+                    if (startupOrder != null) {
+                        StartupOrderDefinition astartupDef = new StartupOrderDefinition();
+                        astartupDef.setAfter(startupOrder.getAfter());
+                        astartupDef.setStart(startupOrder.getStart());
+                        startupsDef.add(astartupDef);
+                    }
+                }
+
+                depsDef.setStartupOrder(startupsDef);
+            }
+
+            depsDef.setKillBehaviour(deps.getKillBehaviour());
+            servicegroupDef.setDependencies(depsDef);
+        }
+
+        List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
+        List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
+
     	servicegroupDef.setCartridges(cartridgesDef);
     	servicegroupDef.setSubGroups(subGroupsDef);
-    	servicegroupDef.setDependencies(depsDef);
    
     	return servicegroupDef;
     }

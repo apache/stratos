@@ -20,9 +20,10 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
+import org.apache.stratos.cloud.controller.pojo.ApplicationDataHolder;
 import org.apache.stratos.messaging.domain.topology.Application;
 
 public interface ApplicationParser {
 
-    public Application parse (Object obj) throws ApplicationDefinitionException;
+    public ApplicationDataHolder parse (Object obj) throws ApplicationDefinitionException;
 }

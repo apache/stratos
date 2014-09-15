@@ -24,14 +24,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.CompositeApplicationDefinition;
+import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
@@ -51,7 +47,6 @@ import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -61,7 +56,6 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
-import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -73,7 +67,6 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -199,7 +192,7 @@ public class ServiceUtils {
     			log.debug("deployeing composite app in cloud controller");
     		}
             
-            ServiceUtils.deployCompositeApplicationDefinition(applicationDefinitionBean, ctxt, userName, tenantDomain);
+            ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, ctxt, userName, tenantDomain);
     		 
             if (log.isDebugEnabled()) {
     			log.debug("done deployeing composite app in cloud controller");
@@ -210,7 +203,7 @@ public class ServiceUtils {
     		return stratosAdminResponse;
     } */
     /*
-    static StratosAdminResponse deployCompositeApplicationDefinition (CompositeApplicationDefinitionBean compositeApplicationDefinition, ConfigurationContext ctxt,
+    static StratosAdminResponse deployApplicationDefinition (CompositeApplicationDefinitionBean compositeApplicationDefinition, ConfigurationContext ctxt,
             String userName, String tenantDomain) throws RestAPIException {
 
             log.info("Starting to deploy composite application definition "+  compositeApplicationDefinition);
@@ -223,7 +216,7 @@ public class ServiceUtils {
             if (cloudControllerServiceClient != null) {
     			// call CC
             	try {
-					cloudControllerServiceClient.deployCompositeApplicationDefinition(appConfig);
+					cloudControllerServiceClient.deployApplicationDefinition(appConfig);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -256,17 +249,32 @@ public class ServiceUtils {
     static void deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition, ConfigurationContext ctxt,
                                                                      String userName, String tenantDomain)
             throws RestAPIException {
+//
+//        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+//
+//        try {
+//            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition, tenantId, tenantDomain, userName);
+//
+//        } catch (CompositeApplicationDefinitionException e) {
+//            throw new RestAPIException(e);
+//        } catch (PersistenceManagerException e) {
+//            throw new RestAPIException(e);
+//        } catch (CompositeApplicationException e) {
+//            throw new RestAPIException(e);
+//        }
 
-        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+        ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(compositeAppDefinition);
 
         try {
-            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition, tenantId, tenantDomain, userName);
+            CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
 
-        } catch (CompositeApplicationDefinitionException e) {
+        } catch (RemoteException e) {
             throw new RestAPIException(e);
-        } catch (PersistenceManagerException e) {
+        } catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
-        } catch (CompositeApplicationException e) {
+        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+            throw new RestAPIException(e);
+        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         }
     }

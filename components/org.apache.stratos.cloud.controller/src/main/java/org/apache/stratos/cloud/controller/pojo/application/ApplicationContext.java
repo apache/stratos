@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-import java.util.List;
-
 public class ApplicationContext {
 
     private String applicationId;
@@ -29,7 +27,7 @@ public class ApplicationContext {
 
     private ComponentContext componentContext;
 
-    private List<SubscribableInfoContext> subscribableInfoContexts;
+    private SubscribableInfoContext[] subscribableInfoContexts;
 
     public String getApplicationId() {
         return applicationId;
@@ -55,11 +53,11 @@ public class ApplicationContext {
         this.componentContext = componentContext;
     }
 
-    public List<SubscribableInfoContext> getSubscribableInfoContext() {
+    public SubscribableInfoContext[] getSubscribableInfoContext() {
         return subscribableInfoContexts;
     }
 
-    public void setSubscribableInfoContext(List<SubscribableInfoContext> subscribableInfoContexts) {
+    public void setSubscribableInfoContext(SubscribableInfoContext[] subscribableInfoContexts) {
         this.subscribableInfoContexts = subscribableInfoContexts;
     }
 }

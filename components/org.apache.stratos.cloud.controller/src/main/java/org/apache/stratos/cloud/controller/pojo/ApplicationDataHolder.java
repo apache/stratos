@@ -17,28 +17,32 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.pojo.application;
+package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 
-public class DependencyContext {
+import java.util.Set;
 
-    private StartupOrderContext[] startupOrderContexts;
+public class ApplicationDataHolder {
 
-    private String killBehaviour;
+    private Application application;
 
-    public StartupOrderContext[] getStartupOrderContext() {
-        return startupOrderContexts;
+    private Set<Cluster> clusters;
+
+    public Application getApplication() {
+        return application;
     }
 
-    public void setStartupOrderContext(StartupOrderContext[] startupOrderContexts) {
-        this.startupOrderContexts = startupOrderContexts;
+    public void setApplication(Application application) {
+        this.application = application;
     }
 
-    public String getKillBehaviour() {
-        return killBehaviour;
+    public Set<Cluster> getClusters() {
+        return clusters;
     }
 
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+    public void setClusters(Set<Cluster> clusters) {
+        this.clusters = clusters;
     }
 }

@@ -210,5 +210,22 @@ public class Cluster implements Serializable {
     public void setStatus(ClusterStatus status) {
         this.status = status;
     }
+
+    public boolean equals(Object other) {
+        if(other == null || !(other instanceof Cluster)) {
+            return false;
+        }
+
+        if(this == other) {
+            return true;
+        }
+
+        Cluster that = (Cluster)other;
+        return this.clusterId.equals(that.clusterId);
+    }
+
+    public int hashCode () {
+        return clusterId.hashCode();
+    }
 }
 
