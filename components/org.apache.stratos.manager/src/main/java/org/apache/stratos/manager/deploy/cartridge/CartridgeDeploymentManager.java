@@ -22,10 +22,10 @@ package org.apache.stratos.manager.deploy.cartridge;
 public class CartridgeDeploymentManager {
 
 	public static CartridgeDeployer getDeploymentManager(String deployerType){
-		if(deployerType.equals("kubernetes")) {
+		if(deployerType != null && deployerType.equals("kubernetes")) {
 			return new DockerCartridgeDeployer();
 		} else {
 			return new DefaultCartridgeDeployer();
-		}
+		} 
 	}
 }
