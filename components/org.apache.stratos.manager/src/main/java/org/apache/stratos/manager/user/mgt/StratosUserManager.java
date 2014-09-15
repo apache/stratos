@@ -22,6 +22,7 @@ package org.apache.stratos.manager.user.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
@@ -33,18 +34,13 @@ import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class StratosUserManager {
 
     private transient static final Log log = LogFactory.getLog(StratosUserManager.class);
-    private UserStoreManager userStoreManager;
-
-
-    public StratosUserManager(UserStoreManager userStoreManager) {
-        this.userStoreManager = userStoreManager;
-
-    }
+    private String internalEveryoneRole = "Internal/everyone";
 
     /**
      * Add a user to the user store
@@ -52,7 +48,7 @@ public class StratosUserManager {
      * @param userInfoBean
      * @throws UserStoreException
      */
-    public void addUser(UserInfoBean userInfoBean) throws UserManagementException {
+    public void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean) throws UserManagementException {
 
         try {
 
@@ -61,6 +57,7 @@ public class StratosUserManager {
                     log.debug("Creating new User: " + userInfoBean.getUserName());
                 }
             }
+
             String[] roles = new String[1];
             roles[0] = userInfoBean.getRole();
             Map<String, String> claims = new HashMap<String, String>();
@@ -74,16 +71,15 @@ public class StratosUserManager {
             log.error(e.getMessage(), e);
             throw new UserManagementException(e.getMessage(), e);
         }
-
     }
 
     /**
-     * Delete the user with the given user name
+     * Delete the user with the given username
      *
-     * @param userName The user name
+     * @param userName The username
      * @throws UserStoreException
      */
-    public void deleteUser(String userName) throws UserManagementException {
+    public void deleteUser(UserStoreManager userStoreManager, String userName) throws UserManagementException {
 
         try {
             userStoreManager.deleteUser(userName);
@@ -99,29 +95,19 @@ public class StratosUserManager {
      *
      * @param userInfoBean
      */
-    public void updateUser(UserInfoBean userInfoBean) throws UserManagementException {
+    public void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean) throws UserManagementException {
 
         try {
             if (userStoreManager.isExistingUser(userInfoBean.getUserName())) {
                 String[] newRoles = new String[1];
                 newRoles[0] = userInfoBean.getRole();
-
-                //String[] rolesToDelete = new String[1];
-                ArrayList<String> rolesToDelete = new ArrayList<String>();
-                String[] currentRolesList = userStoreManager.getRoleListOfUser(userInfoBean.getUserName());
-                for(String role: currentRolesList){
-                    if(!role.equals("Internal/everyone")){
-                        rolesToDelete.add(role);
-                    }
-                }
-                String[] rolesToDeleteArray = new String[rolesToDelete.size()];
                 Map<String, String> claims = new HashMap<String, String>();
 
                 claims.put(UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail());
                 claims.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName());
                 claims.put(UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName());
 
-                userStoreManager.updateRoleListOfUser(userInfoBean.getUserName(), rolesToDelete.toArray(rolesToDeleteArray), newRoles);
+                userStoreManager.updateRoleListOfUser(userInfoBean.getUserName(), getRefinedListOfRolesOfUser(userStoreManager, userInfoBean.getUserName()), newRoles);
                 userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail(),userInfoBean.getProfileName());
                 userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName(),userInfoBean.getProfileName());
                 userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName(),userInfoBean.getProfileName());
@@ -133,6 +119,63 @@ public class StratosUserManager {
             throw new UserManagementException(e.getMessage(), e);
         }
 
+    }
+
+    /**
+     * Get a List of usernames and associated Roles
+     * @return List<UserInfoBean>
+     * @throws UserManagementException
+     */
+    public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager) throws UserManagementException{
+
+        String[] userRoles = null;
+        List<UserInfoBean> userList = new ArrayList<UserInfoBean>();
+
+        try {
+            userRoles = userStoreManager.getRoleNames();
+
+            for(String userRole: userRoles){
+                UserInfoBean userInfoBean = new UserInfoBean();
+                userInfoBean.setUserName(userRole);
+                userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, userRole)[0]);
+                userList.add(userInfoBean);
+            }
+
+        } catch (UserStoreException e) {
+            log.error(e.getMessage(), e);
+            throw new UserManagementException(e.getMessage(), e);
+        }
+
+        return userList;
+    }
+
+    /**
+     * Get the List of userRoles except the everyone role
+     * @param username
+     * @return
+     * @throws UserManagementException
+     */
+    private String[] getRefinedListOfRolesOfUser(UserStoreManager userStoreManager, String username) throws UserManagementException{
+
+        ArrayList<String> rolesWithoutEveryoneRole = new ArrayList<String>();
+
+        try {
+
+            String[] allUserRoles = userStoreManager.getRoleListOfUser(username);
+
+            for(String role: allUserRoles){
+                if(!role.equals(internalEveryoneRole)){
+                    rolesWithoutEveryoneRole.add(role);
+                }
+            }
+
+        } catch (UserStoreException e) {
+            log.error(e.getMessage(), e);
+            throw new UserManagementException(e.getMessage(), e);
+        }
+
+        String[] rolesWithoutEveryoneRoleArray = new String[rolesWithoutEveryoneRole.size()];
+        return rolesWithoutEveryoneRole.toArray(rolesWithoutEveryoneRoleArray);
     }
 
 }

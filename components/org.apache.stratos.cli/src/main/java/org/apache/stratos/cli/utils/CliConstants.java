@@ -110,6 +110,11 @@ public class CliConstants {
     public static final String LIST_TENANTS = "list-tenants";
 
     /**
+     * List tenants
+     */
+    public static final String LIST_USERS = "list-users";
+
+    /**
      * List deployment policies
      */
     public static final String LIST_DEPLOYMENT_POLICIES = "list-deployment-policies";

@@ -1179,6 +1179,22 @@ public class StratosAdmin extends AbstractAdmin {
         return Response.created(url).build();
     }
 
+    @GET
+    @Path("/user/list")
+    @Produces("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/users")
+    public UserInfoBean[] retrieveUsers() throws RestAPIException {
+        List<UserInfoBean> userList = null;
+        try {
+            userList = ServiceUtils.getAllUsers();
+        } catch (Exception e) {
+            String msg = "Error in retrieving users";
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+        return userList.toArray(new UserInfoBean[userList.size()]);
+    }
+
     @POST
     @Path("/kubernetes/deploy/group")
     @Produces("application/json")

@@ -19,9 +19,6 @@
 
 package org.apache.stratos.cli.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class UserInfoBean {
 
     private String userName;

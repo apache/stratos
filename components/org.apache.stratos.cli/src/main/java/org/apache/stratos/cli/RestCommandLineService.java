@@ -96,6 +96,7 @@ public class RestCommandLineService {
     private final String deactivateTenantRestEndPoint = "/stratos/admin/tenant/deactivate";
     private final String activateTenantRestEndPoint = "/stratos/admin/tenant/activate";
     private final String listAllTenantRestEndPoint = "/stratos/admin/tenant/list";
+    private final String listAllUserRestEndPoint = "/stratos/admin/user/list";
     private final String getListAvailableCartridgeInfoRestEndPoint = "/stratos/admin/cartridge/available/info";
 
 
@@ -1247,6 +1248,71 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to list all users
+    public void listAllUsers() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+                                                                 + listAllUserRestEndPoint);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            UserInfoList userInfoList = gson.fromJson(resultString, UserInfoList.class);
+
+            if (userInfoList == null) {
+                System.out.println("User information list is empty");
+                return;
+            }
+
+            RowMapper<UserInfoBean> userInfoMapper = new RowMapper<UserInfoBean>() {
+
+                public String[] getData(UserInfoBean userInfo) {
+                    String[] data = new String[2];
+                    data[0] = userInfo.getUserName();
+                    data[1] = userInfo.getRole();
+                    return data;
+                }
+            };
+
+            UserInfoBean[] users = new UserInfoBean[userInfoList.getUserInfoBean().size()];
+            users = userInfoList.getUserInfoBean().toArray(users);
+
+            if (users.length == 0) {
+                String message = "Cannot find any User. "
+                                 + "Please create a new user using [" + CliConstants.ADD_USER + "] command.";
+                if (logger.isDebugEnabled()) {
+                    logger.debug(message);
+                }
+                System.out.println(message);
+                return;
+            }
+
+            System.out.println("Available Tenants:" );
+            CommandLineUtils.printTable(users, userInfoMapper, "Username", "Role");
+            System.out.println();
+
+        } catch (Exception e) {
+            handleException("Exception in listing partitions", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1990,6 +2056,22 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to UserInfoBean object
+    private class UserInfoList {
+        private ArrayList<UserInfoBean> userInfoBean;
+
+        public ArrayList<UserInfoBean> getUserInfoBean() {
+            return userInfoBean;
+        }
+
+        public void setUserInfoBean(ArrayList<UserInfoBean> userInfoBean) {
+            this.userInfoBean = userInfoBean;
+        }
+
+        UserInfoList() {
+            userInfoBean = new ArrayList<UserInfoBean>();
+        }
+    }
     // This class is for convert JSON string to CartridgeList object
     private class CartridgeList  {
         private ArrayList<Cartridge> cartridge;

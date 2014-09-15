@@ -23,6 +23,7 @@ package org.apache.stratos.manager.utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
@@ -33,45 +34,42 @@ import org.wso2.carbon.user.mgt.UserMgtConstants;
 public class UserRoleCreator {
 
     private transient static final Log log = LogFactory.getLog(UserRoleCreator.class);
-    private static String role = "Internal/user";
+    private static String userRole = "Internal/user";
 
     /**
-     * Creating a Tenant User Carbon Role at Server Start-up
+     * Creating a Internal/user Role at Carbon Server Start-up
      */
-    public static void CreateTenantUserRole() {
+    public static void CreateTenantUserRole(UserStoreManager manager) throws UserManagementException{
 
         try {
 
-            RealmService realmService = DataHolder.getRealmService();
-            UserRealm realm = realmService.getBootstrapRealm();
-            UserStoreManager manager = realm.getUserStoreManager();
-
-            if (!manager.isExistingRole(role)) {
+            if (!manager.isExistingRole(userRole)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Creating new role: " + role);
+                    log.debug("Creating new role: " + userRole);
                 }
-                Permission[] TenantUserPermissions = new Permission[]{  new Permission(CartridgeConstants.Permissions.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                        new Permission(CartridgeConstants.Permissions.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
+                Permission[] TenantUserPermissions = new Permission[]{  new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
+                                                                        new Permission(PermissionConstants.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
                 };
 
                 String[] userList = new String[]{};
-                manager.addRole(role, userList, TenantUserPermissions);
+                manager.addRole(userRole, userList, TenantUserPermissions);
             }
 
         } catch (UserStoreException e) {
-            log.error("Error while creating the role: " + role + " - " +
+            log.error("Error while creating the role: " + userRole + " - " +
                       e.getMessage());
+            throw new UserManagementException(e.getMessage(), e);
         }
 
     }

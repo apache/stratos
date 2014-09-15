@@ -93,6 +93,7 @@ public class ServiceUtils {
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
+    private static StratosUserManager stratosUserManager = new StratosUserManager();
 
     static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                 String userName, String tenantDomain) throws RestAPIException {
@@ -1270,60 +1271,79 @@ public class ServiceUtils {
     public static void addUser(UserInfoBean userInfoBean) throws RestAPIException {
 
         try {
-            getStratosUserManager().addUser(userInfoBean);
+
+            stratosUserManager.addUser(getTenantUserStoreManager(), userInfoBean);
+
         } catch (UserManagementException e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-
-        log.info("Successfully added an user with UserName " + userInfoBean.getUserName());
+        log.info("Successfully added an user with Username " + userInfoBean.getUserName());
     }
 
     public static void updateUser(UserInfoBean userInfoBean) throws RestAPIException {
 
         try {
-            getStratosUserManager().updateUser(userInfoBean);
+
+            stratosUserManager.updateUser(getTenantUserStoreManager(), userInfoBean);
+
         } catch (UserManagementException e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-        log.info("Successfully updated an user with UserName " + userInfoBean.getUserName());
+        log.info("Successfully updated an user with Username " + userInfoBean.getUserName());
     }
 
     public static void deleteUser(String userName) throws RestAPIException {
 
         try {
-            getStratosUserManager().deleteUser(userName);
+
+            stratosUserManager.deleteUser(getTenantUserStoreManager(), userName);
+
         } catch (UserManagementException e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
-        log.info("Successfully deleted an user with UserName " + userName);
+        log.info("Successfully deleted an user with Username " + userName);
+    }
+
+    public static List<UserInfoBean> getAllUsers() throws RestAPIException {
+
+        List<UserInfoBean> userList = null;
+
+        try {
+
+            userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        return userList;
     }
 
     /**
-     * Get Tenant aware UserStore
+     * Get Tenant aware UserStoreManager
      *
      * @return
      * @throws RestAPIException
      */
-    private static StratosUserManager getStratosUserManager() throws RestAPIException {
+    private static UserStoreManager getTenantUserStoreManager() throws RestAPIException {
 
         CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
         UserRealm userRealm = null;
-        StratosUserManager stratosUserManager = null;
+        UserStoreManager userStoreManager = null;
 
         try {
             userRealm = carbonContext.getUserRealm();
-            UserStoreManager userStoreManager = userRealm.getUserStoreManager();
-            stratosUserManager = new StratosUserManager(userStoreManager);
+            userStoreManager = userRealm.getUserStoreManager();
 
         } catch (UserStoreException e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
         }
 
-        return stratosUserManager;
+        return userStoreManager;
     }
 
     public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {

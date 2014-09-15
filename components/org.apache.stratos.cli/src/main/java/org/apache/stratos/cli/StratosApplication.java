@@ -58,6 +58,7 @@ import org.apache.stratos.cli.commands.DescribePartitionCommand;
 import org.apache.stratos.cli.commands.ExitCommand;
 import org.apache.stratos.cli.commands.HelpCommand;
 import org.apache.stratos.cli.commands.ListAllTenants;
+import org.apache.stratos.cli.commands.ListAllUsers;
 import org.apache.stratos.cli.commands.ListCartridgesCommand;
 import org.apache.stratos.cli.commands.ListDeployServiceCommand;
 import org.apache.stratos.cli.commands.ListMemberCommand;
@@ -137,10 +138,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddTenantCommand();
         commands.put(command.getName(), command);
 
+        //Adding User Operations
         command = new AddUserCommand();
         commands.put(command.getName(), command);
 
         command = new DeleteUserCommand();
+        commands.put(command.getName(), command);
+
+        command = new ListAllUsers();
         commands.put(command.getName(), command);
 
         //command = new DeleteTenantCommand();

@@ -25,7 +25,9 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.user.api.Permission;
@@ -39,11 +41,10 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 public class TenantUserRoleCreator implements TenantMgtListener {
 
     private transient static final Log log = LogFactory.getLog(TenantUserRoleCreator.class);
-    private static String role = "Internal/user";
 
     /**
      * Create an 'user' role at tenant creation time
-     * @param tenantInfo
+     * @param tenantInfo TenantInfoBean
      * @throws StratosException
      */
     @Override
@@ -55,37 +56,18 @@ public class TenantUserRoleCreator implements TenantMgtListener {
                 PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
                 carbonContext.setTenantDomain(tenantInfo.getTenantDomain());
                 carbonContext.setTenantId(tenantInfo.getTenantId());
-
+                //Get tenant UserRealm & UserStoreManager
                 UserRealm userRealm = DataHolder.getRealmService().getTenantUserRealm(tenantInfo.getTenantId());
-                UserStoreManager manager = userRealm.getUserStoreManager();
+                UserStoreManager userStoreManager = userRealm.getUserStoreManager();
 
-                if (!manager.isExistingRole(role)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Creating new role: " + role);
-                    }
-
-                    Permission[] TenantUserPermissions = new Permission[]{  new Permission(CartridgeConstants.Permissions.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_CLUSTER, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_INSTANCE, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.VIEW_KUBERNETES, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.ADD_GIT_SYNC, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.ADD_SUBSCRIPTION, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.ADD_DOMAIN, UserMgtConstants.EXECUTE_ACTION),
-                                                                            new Permission(CartridgeConstants.Permissions.REST_LOGIN, UserMgtConstants.EXECUTE_ACTION),
-                    };
-
-                    String[] userList = new String[]{};
-                    manager.addRole(role, userList, TenantUserPermissions);
-                }
+                UserRoleCreator.CreateTenantUserRole(userStoreManager);
 
             } catch (UserStoreException e) {
-                log.error("Error while creating the role: " + role + " - " +
-                          e.getMessage());
+                log.error(e.getMessage(), e);
+                throw new StratosException(e.getMessage(), e);
+            } catch (UserManagementException e) {
+                log.error(e.getMessage(), e);
+                throw new StratosException(e.getMessage(), e);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }

@@ -27,44 +27,39 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteUserCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DeleteUserCommand.class);
+public class ListAllUsers implements Command<StratosCommandContext> {
 
-    @Override
+    private static final Logger logger = LoggerFactory.getLogger(ListAllUsers.class);
+
+    public ListAllUsers(){
+    }
+
     public String getName() {
-        return CliConstants.DELETE_USER;
+        return CliConstants.LIST_USERS;
     }
 
-    @Override
     public String getDescription() {
-        return "Delete User";
+        return "List available users";
     }
 
-    @Override
     public String getArgumentSyntax() {
-        return "[UserName]";
-    }
-
-    @Override
-    public Options getOptions() {
         return null;
     }
 
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
-		}
-		if (args != null && args.length == 1) {
-			String username = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting delete user info {}", username);
-			}
-			RestCommandLineService.getInstance().deleteUser(username);
-			return CliConstants.SUCCESSFUL_CODE;
-		} else {
-			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
-		}
+            logger.debug("Executing {} command...", getName());
+        }
+        if (args == null || args.length == 0) {
+            RestCommandLineService.getInstance().listAllUsers();
+            return CliConstants.SUCCESSFUL_CODE;
+        } else {
+            context.getStratosApplication().printUsage(getName());
+            return CliConstants.BAD_ARGS_CODE;
+        }
+    }
+
+    public Options getOptions() {
+        return null;
     }
 }
