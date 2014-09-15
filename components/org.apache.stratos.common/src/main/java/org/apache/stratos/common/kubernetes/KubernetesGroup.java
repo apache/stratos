@@ -84,11 +84,11 @@ public class KubernetesGroup implements Serializable {
 
     public String toString() {
         return "KubernetesGroup [groupId=" + groupId +
-                " kubernetesHosts=" + Arrays.toString(kubernetesHosts) +
-                "kubernetesMaster=" + kubernetesMaster +
-                "portRange=" + portRange +
-                "description=" + description +
-                "properties=" + properties + "]";
+                " , kubernetesHosts=" + Arrays.toString(kubernetesHosts) +
+                " , kubernetesMaster=" + kubernetesMaster +
+                " , portRange=" + portRange +
+                " , description=" + description +
+                " , properties=" + properties + "]";
     }
 
     @Override

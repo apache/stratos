@@ -41,4 +41,8 @@ public class PortRange {
     public void setLower(int lower) {
         this.lower = lower;
     }
+
+    public String toString() {
+        return "[ upper=" + upper + " , lower=" + lower + " ]";
+    }
 }

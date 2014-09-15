@@ -96,22 +96,26 @@ public class KubernetesManager {
             }
 
             // Check for duplicate hostIds
-            List<String> hostIds = new ArrayList<String>();
-            hostIds.add(kubernetesGroup.getKubernetesMaster().getHostId());
-            for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
-                if (hostIds.contains(kubernetesHost.getHostId())) {
-                    throw new InvalidKubernetesGroupException(
-                            String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
-                }
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                List<String> hostIds = new ArrayList<String>();
+                hostIds.add(kubernetesGroup.getKubernetesMaster().getHostId());
 
-                // check whether host already exists
-                if (kubernetesHostExists(kubernetesHost.getHostId())) {
-                    throw new InvalidKubernetesGroupException("Kubernetes host already exists [id] " +
-                            kubernetesHost.getHostId());
-                }
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (hostIds.contains(kubernetesHost.getHostId())) {
+                        throw new InvalidKubernetesGroupException(
+                                String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
+                    }
 
-                hostIds.add(kubernetesHost.getHostId());
+                    // check whether host already exists
+                    if (kubernetesHostExists(kubernetesHost.getHostId())) {
+                        throw new InvalidKubernetesGroupException("Kubernetes host already exists [id] " +
+                                kubernetesHost.getHostId());
+                    }
+
+                    hostIds.add(kubernetesHost.getHostId());
+                }
             }
+
         } catch (InvalidKubernetesHostException e) {
             throw new InvalidKubernetesGroupException(e.getMessage());
         } catch (InvalidKubernetesMasterException e) {
@@ -156,15 +160,22 @@ public class KubernetesManager {
     public synchronized boolean addNewKubernetesGroup(KubernetesGroup kubernetesGroup)
             throws InvalidKubernetesGroupException {
 
+        if (kubernetesGroup == null){
+            throw new InvalidKubernetesGroupException("Kubernetes Group can not be null");
+        }
+        if (log.isInfoEnabled()){
+            log.info("Deploying new Kubernetes group: " + kubernetesGroup);
+        }
         validateKubernetesGroup(kubernetesGroup);
         try {
             validateKubernetesEndPointViaCloudController(kubernetesGroup.getKubernetesMaster());
 
+            // Add to information model
+            addKubernetesGroupToInformationModel(kubernetesGroup);
+
             // Persist the KubernetesGroup object in registry space
             RegistryManager.getInstance().persistKubernetesGroup(kubernetesGroup);
 
-            // Add to information model
-            addKubernetesGroupToInformationModel(kubernetesGroup);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes group deployed successfully: [id] %s, [description] %s",
                         kubernetesGroup.getGroupId(), kubernetesGroup.getDescription()));
@@ -182,9 +193,11 @@ public class KubernetesManager {
             throws InvalidKubernetesHostException, NonExistingKubernetesGroupException {
 
         if (StringUtils.isEmpty(kubernetesGroupId) || kubernetesHost == null) {
-            return false;
+            throw new InvalidKubernetesHostException("Kubernetes host can not be null");
         }
-
+        if (log.isInfoEnabled()){
+            log.info("Deploying new Kubernetes Host: " + kubernetesHost + " for Kubernetes group id: " + kubernetesGroupId);
+        }
         validateKubernetesHost(kubernetesHost);
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
@@ -223,6 +236,9 @@ public class KubernetesManager {
             throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException {
 
         validateKubernetesMaster(kubernetesMaster);
+        if (log.isInfoEnabled()){
+            log.info("Updating Kubernetes master: " + kubernetesMaster);
+        }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesMaster.getHostId());
 
@@ -249,7 +265,12 @@ public class KubernetesManager {
      */
     public synchronized boolean updateKubernetesHost(KubernetesHost kubernetesHost)
             throws InvalidKubernetesHostException, NonExistingKubernetesHostException {
+
         validateKubernetesHost(kubernetesHost);
+        if (log.isInfoEnabled()){
+            log.info("Updating Kubernetes Host: " + kubernetesHost);
+        }
+
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesHost.getHostId());
 
@@ -283,6 +304,9 @@ public class KubernetesManager {
      * Remove a registered Kubernetes group from registry
      */
     public synchronized boolean removeKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        if (log.isInfoEnabled()){
+            log.info("Removing Kubernetes group: " + kubernetesGroupId);
+        }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
 
@@ -305,6 +329,9 @@ public class KubernetesManager {
      * Remove a registered Kubernetes host from registry
      */
     public synchronized boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
+        if (log.isInfoEnabled()){
+            log.info("Removing Kubernetes Host: " + kubernetesHostId);
+        }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesHostId);
 
