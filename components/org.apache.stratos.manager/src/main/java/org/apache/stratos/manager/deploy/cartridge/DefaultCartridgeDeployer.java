@@ -18,11 +18,16 @@
  */
 package org.apache.stratos.manager.deploy.cartridge;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.exception.ADCException;
 
 public class DefaultCartridgeDeployer extends CartridgeDeployer{
 
+	private static Log log = LogFactory.getLog(DefaultCartridgeDeployer.class);
+	
 	@Override
 	protected void preDeployment() {
 				
@@ -35,13 +40,14 @@ public class DefaultCartridgeDeployer extends CartridgeDeployer{
 	}
 
 	@Override
-	protected void deployCartridge(CartridgeConfig cartridgeConfig) {
+	protected void deployCartridge(CartridgeConfig cartridgeConfig) throws ADCException {
 		try {
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getServiceClient();
 			cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String msg = "Exception in deploying the cartridge. ";
+			log.error(msg + e.getMessage());
+			throw new ADCException(msg);
 		}	
 	}
 

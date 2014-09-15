@@ -19,10 +19,11 @@
 package org.apache.stratos.manager.deploy.cartridge;
 
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.manager.exception.ADCException;
 
 public abstract class CartridgeDeployer {
 
-	public final void deploy(CartridgeConfig cartridgeConfig) {
+	public final void deploy(CartridgeConfig cartridgeConfig) throws ADCException {
 		preDeployment();
 		deployCartridge(cartridgeConfig);
 		postDeployment();
@@ -30,7 +31,7 @@ public abstract class CartridgeDeployer {
 	
 	protected abstract void preDeployment();
 	
-	protected abstract void deployCartridge(CartridgeConfig cartridgeConfig);
+	protected abstract void deployCartridge(CartridgeConfig cartridgeConfig) throws ADCException;
 			
 	protected abstract void postDeployment();
 	

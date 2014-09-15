@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
@@ -96,39 +97,18 @@ public class ServiceUtils {
     static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                 String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
-
-        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-
-        if (cloudControllerServiceClient != null) {
-
-            CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
-
-            if (cartridgeConfig == null) {
-                throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
-            }
-
-
-            // call CC
-            try {
-                cloudControllerServiceClient
-                        .deployCartridgeDefinition(cartridgeConfig);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
-                String message = e.getFaultMessage().getInvalidCartridgeDefinitionException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-                String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-            log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
-
-        }
+		log.info("Starting to deploy a Cartridge [type] "+ cartridgeDefinitionBean.type);
+		
+		CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
+		if (cartridgeConfig == null) {
+			throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
+		}
+		try {
+			CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
+		} catch (ADCException e) {	
+			throw new RestAPIException(e.getMessage());
+		}
+		log.info("Successfully deployed Cartridge [type] "+ cartridgeDefinitionBean.type);
     }
 
     @SuppressWarnings("unused")
