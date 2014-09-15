@@ -61,7 +61,7 @@
         <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
     </bean>
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-        <property name="schemaHandler" ref="schemaHolder"/>
+        <!-- property name="schemaHandler" ref="schemaHolder"/-->
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
         <property name="arrayKeys">
@@ -78,6 +78,7 @@
                 <value>portMappings</value>
                 <value>volumes</value>
                 <value>domains</value>
+                <value>kubernetesHost</value>
             </list>
         </property>
     </bean>
