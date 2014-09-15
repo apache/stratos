@@ -40,7 +40,8 @@ import java.util.Map;
 public class StratosUserManager {
 
     private transient static final Log log = LogFactory.getLog(StratosUserManager.class);
-    private String internalEveryoneRole = "Internal/everyone";
+    private static final String INTERNAL_EVERYONE_ROLE = "Internal/everyone";
+    private static final String GET_ALL_USERS_WILD_CARD = "*";
 
     /**
      * Add a user to the user store
@@ -128,16 +129,16 @@ public class StratosUserManager {
      */
     public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager) throws UserManagementException{
 
-        String[] userRoles = null;
+        String[] users = null;
         List<UserInfoBean> userList = new ArrayList<UserInfoBean>();
 
         try {
-            userRoles = userStoreManager.getRoleNames();
+            users = userStoreManager.listUsers(GET_ALL_USERS_WILD_CARD, -1);
 
-            for(String userRole: userRoles){
+            for(String user: users){
                 UserInfoBean userInfoBean = new UserInfoBean();
-                userInfoBean.setUserName(userRole);
-                userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, userRole)[0]);
+                userInfoBean.setUserName(user);
+                userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, user)[0]);
                 userList.add(userInfoBean);
             }
 
@@ -164,7 +165,7 @@ public class StratosUserManager {
             String[] allUserRoles = userStoreManager.getRoleListOfUser(username);
 
             for(String role: allUserRoles){
-                if(!role.equals(internalEveryoneRole)){
+                if(!role.equals(INTERNAL_EVERYONE_ROLE)){
                     rolesWithoutEveryoneRole.add(role);
                 }
             }
