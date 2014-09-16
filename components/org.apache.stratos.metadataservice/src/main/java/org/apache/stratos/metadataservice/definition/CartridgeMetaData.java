@@ -20,21 +20,21 @@ public class CartridgeMetaData {
 
 	public String version;
 
-	public List<PropertyBean> property;
+	public List<PropertyBean> properties;
 
 	@Override
 	public String toString() {
 
 		return "applicationName: " + applicationName + ", displayName: " + displayName +
 		       ", description: " + description + ", type: " + type + ", provider: " + provider +
-		       ", host: " + host + ", Version: " + version + ", property: " + getProperties();
+		       ", host: " + host + ", Version: " + version + ", properties: " + getProperties();
 	}
 
 	private String getProperties() {
 
 		StringBuilder propertyBuilder = new StringBuilder();
-		if (property != null) {
-			for (PropertyBean propertyBean : property) {
+		if (properties != null) {
+			for (PropertyBean propertyBean : properties) {
 				propertyBuilder.append(propertyBean.toString());
 			}
 		}

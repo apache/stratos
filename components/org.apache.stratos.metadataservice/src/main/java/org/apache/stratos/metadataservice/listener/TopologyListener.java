@@ -59,8 +59,10 @@ public class TopologyListener implements ServletContextListener {
 						log.debug("Member terminated event received");
 					}
 					MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
-					System.out.println("Terminated event :::::::::::::::::::: " +
-					                   memberTerminatedEvent.getServiceName());
+					if(log.isDebugEnabled()){
+    					log.info("Terminated event :::::::::::::::::::: " +
+    					                   memberTerminatedEvent.getServiceName());
+					}
 					new MetaDataAdmin().removeCartridgeMetaDataDetails("appA", "php");
 
 					// extensionHandler.onMemberTerminatedEvent(memberTerminatedEvent);

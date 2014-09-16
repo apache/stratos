@@ -67,8 +67,8 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 	@Override
 	public String addCartridgeMetaDataDetails(String applicationName, String cartridgeType,
 	                                          CartridgeMetaData cartridgeMetaData) throws Exception {
-		System.out.println("Adding meta data details");
-
+		log.debug("Adding meta data details");
+		
 		Registry tempRegistry = getGovernanceUserRegistry();
 		try {
 
@@ -88,7 +88,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 			resource.addProperty("Version", cartridgeMetaData.version);
 			resource.addProperty("host", cartridgeMetaData.host);
 
-			for (PropertyBean prop : cartridgeMetaData.property) {
+			for (PropertyBean prop : cartridgeMetaData.properties) {
 				resource.addProperty("hostname", prop.hostname);
 				resource.addProperty("username", prop.username);
 				resource.addProperty("password", prop.password);
@@ -96,24 +96,23 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
 			tempRegistry.put(resourcePath, resource);
 
-			System.out.println("A resource added to: " + resourcePath);
-
-			System.out.println(cartridgeMetaData.type);
-			// registry.rateResource(resourcePath, defaultRank);
-
+			if(log.isDebugEnabled()){
+				log.debug("A resource added to: " + resourcePath);
+			}
+		
 			Comment comment = new Comment();
 			comment.setText("Added the " + applicationName + " " + type + " cartridge");
 			// registry.addComment(resourcePath, comment);
 
 		} catch (Exception e) {
-
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			if (log.isErrorEnabled()) {
+				log.error("addCartridgeMetaDataDetails", e);
+			}
 		} finally {
 			// Close the session
 
 		}
-		System.out.println("Add meta data details");
+        
 		return "success";
 	}
 
@@ -134,10 +133,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 			if (registry.resourceExists(resourcePath)) {
 
 				Resource getResource = registry.get(resourcePath);
-				System.out.println("Resource retrived");
-				System.out.println("Printing retrieved resource content: " +
-				                   new String((byte[]) getResource.getContent()));
-
+			
 				cartridgeMetaData.type = getResource.getProperty("Cartidge Type");
 				cartridgeMetaData.applicationName = getResource.getProperty("Application Name");
 				cartridgeMetaData.description = getResource.getProperty("Description");
@@ -153,14 +149,15 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 				prop.password = getResource.getProperty("password");
 				lst.add(prop);
 
-				cartridgeMetaData.property = lst;
+				cartridgeMetaData.properties = lst;
 
 			}
 
 		} catch (Exception e) {
 
-			System.out.println(e.getMessage());
-			e.printStackTrace();
+			if (log.isErrorEnabled()) {
+				log.error("getCartridgeMetaDataDetails", e);
+			}
 		} finally {
 			// Close the session
 

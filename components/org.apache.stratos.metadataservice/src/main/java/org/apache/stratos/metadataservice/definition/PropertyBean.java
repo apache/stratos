@@ -21,7 +21,7 @@ package org.apache.stratos.metadataservice.definition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "property")
+@XmlRootElement(name = "properties")
 public class PropertyBean {
 
 	public String hostname;
