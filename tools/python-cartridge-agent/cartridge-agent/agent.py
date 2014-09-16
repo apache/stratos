@@ -12,6 +12,8 @@ import extensionhandler
 import util
 import subprocess
 import ConfigParser
+import paho.mqtt.client as mqtt
+import paho.mqtt.publish as publish
 
 
 def readProperty(property):
@@ -88,16 +90,18 @@ def instance_notifier_connect(client, userdata, flags, rc):
     print "Connected! Subscribing to instance/# topics"
     instance_topic_client.subscribe("instance/#")
 
+
 def artifact_updated(msg):
     extensionhandler.onArtifactUpdatedEvent(extensionsDir, 'artifacts-updated.sh')
 
+
 def instance_cleanup_member(msg):
-    #if sd['MEMBER_ID'] == member_id_from_event:
+    # if sd['MEMBER_ID'] == member_id_from_event:
     extensionhandler.onInstanceCleanupMemberEvent(extensionsDir, 'clean.sh')
 
 
 def instance_cleanup_cluster(msg):
-    #if cluster_id == cluster_id_from_event:
+    # if cluster_id == cluster_id_from_event:
     extensionhandler.onInstanceCleanupMemberEvent(extensionsDir, 'clean.sh')
 
 
@@ -111,49 +115,22 @@ def instance_notifier_message(client, userdata, msg):
         artifact_updated(msg)
     elif event == "InstanceCleanupMemberEvent":
         print "InstanceCleanupMemberEvent received"
-        #TODO: event details to be passed to the script
+        # TODO: event details to be passed to the script
         instance_cleanup_member(msg)
     elif event == "InstanceCleanupClusterEvent":
         print "InstanceCleanupClusterEvent received"
-        #TODO: event details to be passed to the script
+        # TODO: event details to be passed to the script
         instance_cleanup_cluster(msg)
     else:
         print "Unidentified event: %r" % event
 
+
 def publishInstanceStartedEvent():
-    class MyListener(stomp.ConnectionListener):
-        def on_error(self, headers, message):
-            print('received an error %s' % message)
-
-        def on_message(self, headers, message):
-            for k, v in headers.iteritems():
-                print('header: key %s , value %s' % (k, v))
-            print('received message\n %s' % message)
-
-
-    dest = '/topic/instance-status'
-    conn = stomp.Connection([('localhost', 61613)])
-    print('set up Connection')
-
-    conn.start()
-    print('started connection')
-
-    conn.connect(wait=True)
-    print('connected')
-    conn.subscribe(destination=dest, ack='auto')
-    print('subscribed')
-
-    message = InstanceStartedEvent(service_name, cluster_id, '', '', tenant_id).to_JSON()
-    conn.send(message=message, destination=dest,
-              headers={'seltype': 'mandi-age-to-man', 'type': 'textMessage', 'MessageNumber': random.randint(0, 65535),
-                       'event-class-name': 'org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent'},
-              ack='auto')
-    print('sent message')
-    print(message)
-    time.sleep(2)
-    print('slept')
-    conn.disconnect()
-    print('disconnected')
+    instance_started_event = InstanceStartedEvent(service_name, cluster_id, sd['NETWORK_PARTITION_ID'],
+                                                  sd['PARTITION_ID'], sd['MEMBER_ID'])
+    msgs = [{'topic': "instance/status/InstanceStartedEvent", 'payload': instance_started_event.to_JSON()}]
+    #publish.single("instance", instance_started_event.to_JSON(), hostname="localhost", port=1883)
+    publish.multiple(msgs, "localhost", 1883)
 
 
 def checkPortsActive():
