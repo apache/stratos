@@ -20,6 +20,7 @@
 package org.apache.stratos.manager.utils;
 
 public class PermissionConstants {
+
     public static final String ADD_SUBSCRIPTION = "/permission/admin/manage/add/subscription";
     public static final String REST_LOGIN = "/permission/admin/restlogin";
     public static final String ADD_GIT_SYNC = "/permission/admin/manage/add/sync";
@@ -33,4 +34,5 @@ public class PermissionConstants {
     public static final String VIEW_CLUSTER = "/permission/admin/manage/view/cluster";
     public static final String VIEW_INSTANCE = "/permission/admin/manage/view/instance";
     public static final String VIEW_KUBERNETES = "/permission/admin/manage/view/kubernetes";
+
 }

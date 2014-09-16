@@ -98,7 +98,7 @@ public class ADCManagementServerComponent {
             UserRealm realm = realmService.getBootstrapRealm();
             UserStoreManager userStoreManager = realm.getUserStoreManager();
             //Create a Internal/user Role at server start-up
-            UserRoleCreator.CreateTenantUserRole(userStoreManager);
+            UserRoleCreator.createTenantUserRole(userStoreManager);
 
             TenantUserRoleCreator tenantUserRoleCreator = new TenantUserRoleCreator();
             componentContext.getBundleContext().registerService(

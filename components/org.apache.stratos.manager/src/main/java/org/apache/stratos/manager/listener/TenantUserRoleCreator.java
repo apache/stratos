@@ -59,8 +59,8 @@ public class TenantUserRoleCreator implements TenantMgtListener {
                 //Get tenant UserRealm & UserStoreManager
                 UserRealm userRealm = DataHolder.getRealmService().getTenantUserRealm(tenantInfo.getTenantId());
                 UserStoreManager userStoreManager = userRealm.getUserStoreManager();
-
-                UserRoleCreator.CreateTenantUserRole(userStoreManager);
+                //Call Util class to create the user role
+                UserRoleCreator.createTenantUserRole(userStoreManager);
 
             } catch (UserStoreException e) {
                 log.error(e.getMessage(), e);

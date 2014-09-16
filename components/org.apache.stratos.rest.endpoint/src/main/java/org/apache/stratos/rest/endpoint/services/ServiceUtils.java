@@ -1325,7 +1325,7 @@ public class ServiceUtils {
     /**
      * Get Tenant aware UserStoreManager
      *
-     * @return
+     * @return UserStoreManager
      * @throws RestAPIException
      */
     private static UserStoreManager getTenantUserStoreManager() throws RestAPIException {

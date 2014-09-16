@@ -44,12 +44,14 @@ public class StratosUserManager {
     private static final String GET_ALL_USERS_WILD_CARD = "*";
 
     /**
-     * Add a user to the user store
+     * Add a user to the user-store
      *
+     * @param userStoreManager
      * @param userInfoBean
-     * @throws UserStoreException
+     * @throws UserManagementException
      */
-    public void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean) throws UserManagementException {
+    public void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
+            throws UserManagementException {
 
         try {
 
@@ -57,16 +59,18 @@ public class StratosUserManager {
                 if (log.isDebugEnabled()) {
                     log.debug("Creating new User: " + userInfoBean.getUserName());
                 }
+
+                String[] roles = new String[1];
+                roles[0] = userInfoBean.getRole();
+                Map<String, String> claims = new HashMap<String, String>();
+
+                //set firstname, lastname and email as user claims
+                claims.put(UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail());
+                claims.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName());
+                claims.put(UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName());
+                userStoreManager.addUser(userInfoBean.getUserName(), userInfoBean.getCredential(), roles, claims, userInfoBean.getProfileName());
+
             }
-
-            String[] roles = new String[1];
-            roles[0] = userInfoBean.getRole();
-            Map<String, String> claims = new HashMap<String, String>();
-
-            claims.put(UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail());
-            claims.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName());
-            claims.put(UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName());
-            userStoreManager.addUser(userInfoBean.getUserName(), userInfoBean.getCredential(), roles, claims, userInfoBean.getProfileName());
 
         } catch (UserStoreException e) {
             log.error(e.getMessage(), e);
@@ -77,10 +81,12 @@ public class StratosUserManager {
     /**
      * Delete the user with the given username
      *
-     * @param userName The username
-     * @throws UserStoreException
+     * @param userStoreManager
+     * @param userName
+     * @throws UserManagementException
      */
-    public void deleteUser(UserStoreManager userStoreManager, String userName) throws UserManagementException {
+    public void deleteUser(UserStoreManager userStoreManager, String userName)
+            throws UserManagementException {
 
         try {
             userStoreManager.deleteUser(userName);
@@ -94,12 +100,19 @@ public class StratosUserManager {
     /**
      * Updates the user info
      *
+     * @param userStoreManager
      * @param userInfoBean
+     * @throws UserManagementException
      */
-    public void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean) throws UserManagementException {
+    public void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
+            throws UserManagementException {
 
         try {
             if (userStoreManager.isExistingUser(userInfoBean.getUserName())) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Updating User: " + userInfoBean.getUserName());
+                }
+
                 String[] newRoles = new String[1];
                 newRoles[0] = userInfoBean.getRole();
                 Map<String, String> claims = new HashMap<String, String>();
@@ -109,9 +122,9 @@ public class StratosUserManager {
                 claims.put(UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName());
 
                 userStoreManager.updateRoleListOfUser(userInfoBean.getUserName(), getRefinedListOfRolesOfUser(userStoreManager, userInfoBean.getUserName()), newRoles);
-                userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail(),userInfoBean.getProfileName());
-                userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName(),userInfoBean.getProfileName());
-                userStoreManager.setUserClaimValue(userInfoBean.getUserName(),UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName(),userInfoBean.getProfileName());
+                userStoreManager.setUserClaimValue(userInfoBean.getUserName(), UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail(), userInfoBean.getProfileName());
+                userStoreManager.setUserClaimValue(userInfoBean.getUserName(), UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName(), userInfoBean.getProfileName());
+                userStoreManager.setUserClaimValue(userInfoBean.getUserName(), UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName(), userInfoBean.getProfileName());
                 userStoreManager.updateCredentialByAdmin(userInfoBean.getUserName(), userInfoBean.getCredential());
 
             }
@@ -124,10 +137,13 @@ public class StratosUserManager {
 
     /**
      * Get a List of usernames and associated Roles
+     *
+     * @param userStoreManager UserStoreManager
      * @return List<UserInfoBean>
      * @throws UserManagementException
      */
-    public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager) throws UserManagementException{
+    public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager)
+            throws UserManagementException {
 
         String[] users = null;
         List<UserInfoBean> userList = new ArrayList<UserInfoBean>();
@@ -135,7 +151,8 @@ public class StratosUserManager {
         try {
             users = userStoreManager.listUsers(GET_ALL_USERS_WILD_CARD, -1);
 
-            for(String user: users){
+            //Iterate through the list of users and retrieve their roles
+            for (String user : users) {
                 UserInfoBean userInfoBean = new UserInfoBean();
                 userInfoBean.setUserName(user);
                 userInfoBean.setRole(getRefinedListOfRolesOfUser(userStoreManager, user)[0]);
@@ -152,11 +169,14 @@ public class StratosUserManager {
 
     /**
      * Get the List of userRoles except the everyone role
-     * @param username
-     * @return
+     *
+     * @param userStoreManager UserStoreManager
+     * @param username         Username of the user
+     * @return String[]
      * @throws UserManagementException
      */
-    private String[] getRefinedListOfRolesOfUser(UserStoreManager userStoreManager, String username) throws UserManagementException{
+    private String[] getRefinedListOfRolesOfUser(UserStoreManager userStoreManager, String username)
+            throws UserManagementException {
 
         ArrayList<String> rolesWithoutEveryoneRole = new ArrayList<String>();
 
@@ -164,8 +184,8 @@ public class StratosUserManager {
 
             String[] allUserRoles = userStoreManager.getRoleListOfUser(username);
 
-            for(String role: allUserRoles){
-                if(!role.equals(INTERNAL_EVERYONE_ROLE)){
+            for (String role : allUserRoles) {
+                if (!role.equals(INTERNAL_EVERYONE_ROLE)) {
                     rolesWithoutEveryoneRole.add(role);
                 }
             }

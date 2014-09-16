@@ -39,7 +39,7 @@ public class UserRoleCreator {
     /**
      * Creating a Internal/user Role at Carbon Server Start-up
      */
-    public static void CreateTenantUserRole(UserStoreManager manager) throws UserManagementException{
+    public static void createTenantUserRole(UserStoreManager manager) throws UserManagementException{
 
         try {
 
@@ -47,7 +47,8 @@ public class UserRoleCreator {
                 if (log.isDebugEnabled()) {
                     log.debug("Creating new role: " + userRole);
                 }
-                Permission[] TenantUserPermissions = new Permission[]{  new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
+                //Set permissions to the Internal/user role
+                Permission[] tenantUserPermissions = new Permission[]{  new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
                                                                         new Permission(PermissionConstants.VIEW_DEPLOYMENT_POLICY, UserMgtConstants.EXECUTE_ACTION),
                                                                         new Permission(PermissionConstants.VIEW_CARTRIDGE, UserMgtConstants.EXECUTE_ACTION),
                                                                         new Permission(PermissionConstants.VIEW_SERVICE, UserMgtConstants.EXECUTE_ACTION),
@@ -63,7 +64,7 @@ public class UserRoleCreator {
                 };
 
                 String[] userList = new String[]{};
-                manager.addRole(userRole, userList, TenantUserPermissions);
+                manager.addRole(userRole, userList, tenantUserPermissions);
             }
 
         } catch (UserStoreException e) {
