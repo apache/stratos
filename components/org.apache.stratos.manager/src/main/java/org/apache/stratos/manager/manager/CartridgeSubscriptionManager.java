@@ -131,7 +131,7 @@ public class CartridgeSubscriptionManager {
         }
 
         // add properties returned by filters
-		if (propertiesReturnedByFilters != null && propertiesReturnedByFilters.getProperties().length > 0) {
+		if (propertiesReturnedByFilters != null && propertiesReturnedByFilters.getProperties() != null && propertiesReturnedByFilters.getProperties().length > 0) {
 			for (Property prop : propertiesReturnedByFilters.getProperties()) {
 
 				serviceCartridgeSubscriptionProperties.addProperties(prop);
