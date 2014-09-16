@@ -67,7 +67,7 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
             // check if an Application with same name exists in topology
             if (topology.applicationExists(appCreatedEvent.getApplication().getId())) {
-                log.error("Application with id [ " + appCreatedEvent.getApplication().getId() + " ] already exists in Topology");
+                log.warn("Application with id [ " + appCreatedEvent.getApplication().getId() + " ] already exists in Topology");
                 return false;
             }
 

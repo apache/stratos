@@ -613,11 +613,16 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationDepolyed (ApplicationDataHolder applicationDataHolder) {
+    public static void handleApplicationDeployed(ApplicationDataHolder applicationDataHolder) {
 
         Topology topology = TopologyManager.getTopology();
         try {
             TopologyManager.acquireWriteLock();
+
+            if (topology.applicationExists(applicationDataHolder.getApplication().getId())) {
+                log.warn("Application with id [ " + applicationDataHolder.getApplication().getId() + " ] already exists in Topology");
+                return;
+            }
 
             for (Cluster cluster : applicationDataHolder.getClusters()) {
                 String cartridgeType = cluster.getServiceName();
