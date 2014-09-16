@@ -22,11 +22,7 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos</artifactId>
-<<<<<<< HEAD
         <version>4.1.0-SNAPSHOT</version>
-=======
-        <version>4.0.0</version>
->>>>>>> ba4d11984f33c63ed1332569831889f4892c5351
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
