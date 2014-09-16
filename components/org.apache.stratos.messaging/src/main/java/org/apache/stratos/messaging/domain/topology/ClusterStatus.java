@@ -21,7 +21,10 @@ package org.apache.stratos.messaging.domain.topology;
 public enum ClusterStatus {
     Created(1),
     In_Maintenance(2),
-    Removed(3);
+    terminating(3),
+    Removed(4),
+    Running(5),
+    Active(6);
 
     private int code;
 
