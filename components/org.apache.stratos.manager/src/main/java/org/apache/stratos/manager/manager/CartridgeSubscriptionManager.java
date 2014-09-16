@@ -122,7 +122,13 @@ public class CartridgeSubscriptionManager {
 
         // subscribe to relevant service cartridge
         CartridgeSubscription serviceCartridgeSubscription = subscribe (subscriptionData, cartridgeInfo, getLBClusterId(propertiesReturnedByFilters));
-        serviceCartridgeSubscriptionProperties = new Properties();
+        
+        if (subscriptionData.getProperties() != null) {
+        	serviceCartridgeSubscriptionProperties = subscriptionData.getProperties();
+        } else {
+        	
+        	serviceCartridgeSubscriptionProperties = new Properties();
+        }
 
         // add properties returned by filters
         serviceCartridgeSubscriptionProperties.setProperties(propertiesReturnedByFilters.getProperties());
