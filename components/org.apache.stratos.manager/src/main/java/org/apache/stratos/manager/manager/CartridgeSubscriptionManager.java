@@ -131,7 +131,10 @@ public class CartridgeSubscriptionManager {
         }
 
         // add properties returned by filters
-        serviceCartridgeSubscriptionProperties.setProperties(propertiesReturnedByFilters.getProperties());
+        for (Property prop : propertiesReturnedByFilters.getProperties()) {
+			
+        	serviceCartridgeSubscriptionProperties.addProperties(prop);
+		}
 
         // Persistence Mapping related properties
         if (persistenceMappingProperties != null && persistenceMappingProperties.getProperties().length > 0) {
