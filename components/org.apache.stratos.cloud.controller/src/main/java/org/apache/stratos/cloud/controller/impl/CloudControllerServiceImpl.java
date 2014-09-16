@@ -1403,7 +1403,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ApplicationParser applicationParser = new DefaultApplicationParser();
         ApplicationDataHolder applicationDataHolder = applicationParser.parse(applicationContext);
 
-        TopologyBuilder.handleApplicationDepolyed(applicationDataHolder);
+        TopologyBuilder.handleApplicationDeployed(applicationDataHolder);
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
