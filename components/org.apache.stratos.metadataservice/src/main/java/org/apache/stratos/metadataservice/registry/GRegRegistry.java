@@ -121,7 +121,7 @@ public class GRegRegistry implements DataStore {
 			resource.addProperty("Version", cartridgeMetaData.version);
 			resource.addProperty("host", cartridgeMetaData.host);
 
-			for (PropertyBean prop : cartridgeMetaData.property) {
+			for (PropertyBean prop : cartridgeMetaData.properties) {
 				resource.addProperty("hostname", prop.hostname);
 				resource.addProperty("username", prop.username);
 				resource.addProperty("password", prop.password);
@@ -146,7 +146,7 @@ public class GRegRegistry implements DataStore {
 			// Close the session
 			((WSRegistryServiceClient) registry).logut();
 		}
-		System.out.println("Add meta data details");
+		log.info("Add meta data details");
 		return "success";
 	}
 
@@ -186,7 +186,7 @@ public class GRegRegistry implements DataStore {
 				prop.password = getResource.getProperty("password");
 				lst.add(prop);
 
-				cartridgeMetaData.property = lst;
+				cartridgeMetaData.properties = lst;
 
 			}
 

@@ -155,7 +155,7 @@ public class StratosAuthorizingHandler implements RequestHandler {
 
 	/**
 	 * Here we are getting the target invocation method. The method get set as a
-	 * property in the
+	 * properties in the
 	 * message by the
 	 * {@link org.apache.cxf.jaxrs.interceptor.JAXRSInInterceptor}
 	 * 

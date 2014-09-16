@@ -67,7 +67,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 	@Override
 	public String addCartridgeMetaDataDetails(String applicationName, String cartridgeType,
 	                                          CartridgeMetaData cartridgeMetaData) throws Exception {
-		System.out.println("Adding meta data details");
+		log.debug("Adding meta data details");
 
 		Registry tempRegistry = getGovernanceUserRegistry();
 		try {
@@ -88,7 +88,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 			resource.addProperty("Version", cartridgeMetaData.version);
 			resource.addProperty("host", cartridgeMetaData.host);
 
-			for (PropertyBean prop : cartridgeMetaData.property) {
+			for (PropertyBean prop : cartridgeMetaData.properties) {
 				resource.addProperty("hostname", prop.hostname);
 				resource.addProperty("username", prop.username);
 				resource.addProperty("password", prop.password);
@@ -96,10 +96,8 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
 			tempRegistry.put(resourcePath, resource);
 
-			System.out.println("A resource added to: " + resourcePath);
-
-			System.out.println(cartridgeMetaData.type);
-			// registry.rateResource(resourcePath, defaultRank);
+            if(log.isDebugEnabled())
+			    log.debug(String.format("A resource added to: %s", resourcePath));
 
 			Comment comment = new Comment();
 			comment.setText("Added the " + applicationName + " " + type + " cartridge");
@@ -113,7 +111,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 			// Close the session
 
 		}
-		System.out.println("Add meta data details");
+        
 		return "success";
 	}
 
@@ -153,7 +151,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 				prop.password = getResource.getProperty("password");
 				lst.add(prop);
 
-				cartridgeMetaData.property = lst;
+				cartridgeMetaData.properties = lst;
 
 			}
 
