@@ -1258,7 +1258,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Path("/kubernetes/hosts/{kubernetesGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/kubernetes")
@@ -1271,7 +1271,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @GET
-    @Path("/kubernetes/group/{kubernetesGroupId}")
+    @Path("/kubernetes/master/{kubernetesGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/kubernetes")
@@ -1298,7 +1298,7 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     @DELETE
-    @Path("/kubernetes/group/{kubernetesHostId}")
+    @Path("/kubernetes/host/{kubernetesHostId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")

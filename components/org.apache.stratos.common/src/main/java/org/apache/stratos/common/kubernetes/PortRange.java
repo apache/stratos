@@ -19,10 +19,12 @@
 
 package org.apache.stratos.common.kubernetes;
 
+import java.io.Serializable;
+
 /**
  * The model class for PortRange definition.
  */
-public class PortRange {
+public class PortRange implements Serializable {
     int upper;
     int lower;
 

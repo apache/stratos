@@ -19,8 +19,8 @@
 
 package org.apache.stratos.autoscaler.kubernetes;
 
+import com.google.common.net.InetAddresses;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.*;
@@ -68,11 +68,11 @@ public class KubernetesManager {
                     "[id] %s", kubernetesGroup.getGroupId()));
         }
         if (kubernetesGroup.getKubernetesMaster() == null) {
-            throw new InvalidKubernetesGroupException("Mandatory field Kubernetes master has not been set " +
+            throw new InvalidKubernetesGroupException("Mandatory field master has not been set " +
                     "for the Kubernetes group [id] " + kubernetesGroup.getGroupId());
         }
         if (kubernetesGroup.getPortRange() == null) {
-            throw new InvalidKubernetesGroupException("Mandatory field PortRange has not been set " +
+            throw new InvalidKubernetesGroupException("Mandatory field portRange has not been set " +
                     "for the Kubernetes group [id] " + kubernetesGroup.getGroupId());
         }
 
@@ -143,6 +143,9 @@ public class KubernetesManager {
             throw new InvalidKubernetesHostException("Mandatory field Kubernetes host IP address has not been set " +
                     "for [hostId] " + kubernetesHost.getHostId());
         }
+        if (!InetAddresses.isInetAddress(kubernetesHost.getHostIpAddress())){
+            throw new InvalidKubernetesHostException("Kubernetes host ip address is invalid: " + kubernetesHost.getHostIpAddress());
+        }
     }
 
     private void validateKubernetesMaster(KubernetesMaster kubernetesMaster) throws InvalidKubernetesMasterException {
@@ -160,10 +163,10 @@ public class KubernetesManager {
     public synchronized boolean addNewKubernetesGroup(KubernetesGroup kubernetesGroup)
             throws InvalidKubernetesGroupException {
 
-        if (kubernetesGroup == null){
+        if (kubernetesGroup == null) {
             throw new InvalidKubernetesGroupException("Kubernetes Group can not be null");
         }
-        if (log.isInfoEnabled()){
+        if (log.isInfoEnabled()) {
             log.info("Deploying new Kubernetes group: " + kubernetesGroup);
         }
         validateKubernetesGroup(kubernetesGroup);
@@ -192,10 +195,13 @@ public class KubernetesManager {
     public synchronized boolean addNewKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
             throws InvalidKubernetesHostException, NonExistingKubernetesGroupException {
 
-        if (StringUtils.isEmpty(kubernetesGroupId) || kubernetesHost == null) {
+        if (kubernetesHost == null) {
             throw new InvalidKubernetesHostException("Kubernetes host can not be null");
         }
-        if (log.isInfoEnabled()){
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Kubernetes group id can not be null");
+        }
+        if (log.isInfoEnabled()) {
             log.info("Deploying new Kubernetes Host: " + kubernetesHost + " for Kubernetes group id: " + kubernetesGroupId);
         }
         validateKubernetesHost(kubernetesHost);
@@ -208,17 +214,12 @@ public class KubernetesManager {
             ArrayList<KubernetesHost> kubernetesHostArrayList = new
                     ArrayList<KubernetesHost>(Arrays.asList(kubernetesGroupStored.getKubernetesHosts()));
             kubernetesHostArrayList.add(kubernetesHost);
-            KubernetesHost[] kubernetesHostArray = new KubernetesHost[kubernetesHostArrayList.size()];
-
-            // TODO - Fix updating logic. Implement registry hierarchical structure
-            KubernetesGroup clonedObj = SerializationUtils.clone(kubernetesGroupStored);
-            clonedObj.setKubernetesHosts(kubernetesHostArrayList.toArray(kubernetesHostArray));
-
-            // Persist the new KubernetesHost wrapped under KubernetesGroup object
-            RegistryManager.getInstance().persistKubernetesGroup(clonedObj);
 
             // Update information model
-            kubernetesGroupStored.setKubernetesHosts(kubernetesHostArrayList.toArray(kubernetesHostArray));
+            kubernetesGroupStored.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
+
+            // Persist the new KubernetesHost wrapped under KubernetesGroup object
+            RegistryManager.getInstance().persistKubernetesGroup(kubernetesGroupStored);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes host deployed successfully: [id] %s", kubernetesGroupStored.getGroupId()));
@@ -236,21 +237,18 @@ public class KubernetesManager {
             throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException {
 
         validateKubernetesMaster(kubernetesMaster);
-        if (log.isInfoEnabled()){
+        if (log.isInfoEnabled()) {
             log.info("Updating Kubernetes master: " + kubernetesMaster);
         }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesMaster.getHostId());
 
-            // TODO - Fix updating logic. Implement registry hierarchical structure
-            KubernetesGroup clonedObj = SerializationUtils.clone(kubernetesGroupStored);
-            clonedObj.setKubernetesMaster(kubernetesMaster);
-
-            // Persist the new KubernetesHost wrapped under KubernetesGroup object
-            RegistryManager.getInstance().persistKubernetesGroup(clonedObj);
-
             // Update information model
             kubernetesGroupStored.setKubernetesMaster(kubernetesMaster);
+
+            // Persist the new KubernetesHost wrapped under KubernetesGroup object
+            RegistryManager.getInstance().persistKubernetesGroup(kubernetesGroupStored);
+
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes master updated successfully: [id] %s", kubernetesMaster.getHostId()));
             }
@@ -267,7 +265,7 @@ public class KubernetesManager {
             throws InvalidKubernetesHostException, NonExistingKubernetesHostException {
 
         validateKubernetesHost(kubernetesHost);
-        if (log.isInfoEnabled()){
+        if (log.isInfoEnabled()) {
             log.info("Updating Kubernetes Host: " + kubernetesHost);
         }
 
@@ -277,15 +275,11 @@ public class KubernetesManager {
             for (int i = 0; i < kubernetesGroupStored.getKubernetesHosts().length; i++) {
                 if (kubernetesGroupStored.getKubernetesHosts()[i].getHostId().equals(kubernetesHost.getHostId())) {
 
-                    // TODO - Fix updating logic. Implement registry hierarchical structure
-                    KubernetesGroup clonedObj = SerializationUtils.clone(kubernetesGroupStored);
-                    clonedObj.getKubernetesHosts()[i] = kubernetesHost;
-
-                    // Persist the new KubernetesHost wrapped under KubernetesGroup object
-                    RegistryManager.getInstance().persistKubernetesGroup(clonedObj);
-
                     // Update the information model
                     kubernetesGroupStored.getKubernetesHosts()[i] = kubernetesHost;
+
+                    // Persist the new KubernetesHost wrapped under KubernetesGroup object
+                    RegistryManager.getInstance().persistKubernetesGroup(kubernetesGroupStored);
 
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Kubernetes host updated successfully: [id] %s", kubernetesHost.getHostId()));
@@ -297,43 +291,54 @@ public class KubernetesManager {
         } catch (Exception e) {
             throw new InvalidKubernetesHostException(e.getMessage(), e);
         }
-        return false;
+        throw new NonExistingKubernetesHostException("Kubernetes host not found [id] " + kubernetesHost.getHostId());
     }
 
     /**
      * Remove a registered Kubernetes group from registry
      */
     public synchronized boolean removeKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
-        if (log.isInfoEnabled()){
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Kubernetes group id can not be empty");
+        }
+        if (log.isInfoEnabled()) {
             log.info("Removing Kubernetes group: " + kubernetesGroupId);
         }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
 
-            // Persist the new KubernetesHost wrapped under KubernetesGroup object
-            RegistryManager.getInstance().removeKubernetesGroup(kubernetesGroupStored);
-
             // Remove entry from information model
             kubernetesGroupsMap.remove(kubernetesGroupId);
+
+            // Persist the new KubernetesHost wrapped under KubernetesGroup object
+            RegistryManager.getInstance().removeKubernetesGroup(kubernetesGroupStored);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes group removed successfully: [id] %s", kubernetesGroupId));
             }
+            return true;
         } catch (Exception e) {
             throw new NonExistingKubernetesGroupException(e.getMessage(), e);
         }
-        return false;
     }
 
     /**
      * Remove a registered Kubernetes host from registry
      */
     public synchronized boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
-        if (log.isInfoEnabled()){
+        if (kubernetesHostId == null) {
+            throw new NonExistingKubernetesHostException("Kubernetes host id can not be null");
+        }
+        if (log.isInfoEnabled()) {
             log.info("Removing Kubernetes Host: " + kubernetesHostId);
         }
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesHostId);
+
+            // Kubernetes master can not be removed
+            if (kubernetesGroupStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)){
+                throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
+            }
 
             List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
             for (KubernetesHost kubernetesHost : kubernetesGroupStored.getKubernetesHosts()) {
@@ -341,26 +346,27 @@ public class KubernetesManager {
                     kubernetesHostList.add(kubernetesHost);
                 }
             }
+            // member count will be equal only when host object was not found
+            if (kubernetesHostList.size() == kubernetesGroupStored.getKubernetesHosts().length) {
+                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
+            }
             KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
             kubernetesHostList.toArray(kubernetesHostsArray);
-
-            // TODO - Fix updating logic. Implement registry hierarchical structure
-            KubernetesGroup clonedObj = SerializationUtils.clone(kubernetesGroupStored);
-            clonedObj.setKubernetesHosts(kubernetesHostsArray);
-
-            // Persist the updated KubernetesGroup object
-            RegistryManager.getInstance().persistKubernetesGroup(clonedObj);
 
             // Update information model
             kubernetesGroupStored.setKubernetesHosts(kubernetesHostsArray);
 
+            // Persist the updated KubernetesGroup object
+            RegistryManager.getInstance().persistKubernetesGroup(kubernetesGroupStored);
+
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
             }
+
+            return true;
         } catch (Exception e) {
             throw new NonExistingKubernetesHostException(e.getMessage(), e);
         }
-        return false;
     }
 
     private void addKubernetesGroupToInformationModel(KubernetesGroup kubernetesGroup) {
