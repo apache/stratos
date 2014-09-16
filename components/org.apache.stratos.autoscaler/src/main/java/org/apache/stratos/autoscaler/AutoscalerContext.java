@@ -22,9 +22,10 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.CompositeApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,18 +50,28 @@ public class AutoscalerContext {
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
-    private Map<String, CompositeApplicationMonitor> appMonitors;
+    private Map<String, GroupMonitor> groupMonitors;
 
-    public Map<String, CompositeApplicationMonitor> getAppMonitors() {
+    private Map<String, ApplicationMonitor> appMonitors;
+
+    public Map<String, ApplicationMonitor> getAppMonitors() {
         return appMonitors;
     }
 
-    public CompositeApplicationMonitor getAppMonitor(String applicationId) {
+    public ApplicationMonitor getAppMonitor(String applicationId) {
         return appMonitors.get(applicationId);
     }
 
-    public void setAppMonitors(Map<String, CompositeApplicationMonitor> appMonitors) {
+    public void setAppMonitors(Map<String, ApplicationMonitor> appMonitors) {
         this.appMonitors = appMonitors;
+    }
+
+    public Map<String, GroupMonitor> getGroupMonitors() {
+        return groupMonitors;
+    }
+
+    public void setGroupMonitors(Map<String, GroupMonitor> groupMonitors) {
+        this.groupMonitors = groupMonitors;
     }
 
 
@@ -82,6 +93,14 @@ public class AutoscalerContext {
     
     public boolean monitorExist(String clusterId) {
         return monitors.containsKey(clusterId);
+    }
+
+    public void addAppMonitor(ApplicationMonitor appMonitor) {
+        appMonitors.put(appMonitor.getId(), appMonitor);
+    }
+
+    public boolean appMonitorExist(String appId) {
+        return appMonitors.containsKey(appId);
     }
     
     public boolean lbMonitorExist(String clusterId) {
@@ -126,11 +145,7 @@ public class AutoscalerContext {
         lbMonitors.put(monitor.getClusterId(), monitor);
     }
 
-    public void addAppMonitor(CompositeApplicationMonitor monitor) {
-        appMonitors.put(monitor.getAppId(), monitor);
-    }
-
-    public CompositeApplicationMonitor removeAppMonitor(String appId) {
+    public ApplicationMonitor removeAppMonitor(String appId) {
         if(!appMonitorExist(appId)) {
             log.fatal("LB monitor not found for App id: "+ appId);
             return null;
@@ -139,7 +154,4 @@ public class AutoscalerContext {
         return appMonitors.remove(appId);
     }
 
-    public boolean appMonitorExist(String appId) {
-        return  appMonitors.containsKey(appId);
-    }
 }

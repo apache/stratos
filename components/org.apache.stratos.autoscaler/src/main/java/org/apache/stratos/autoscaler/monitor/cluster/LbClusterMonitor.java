@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -34,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-public class LbClusterMonitor extends AbstractMonitor {
+public class LbClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
     private ClusterStatus status;
@@ -122,4 +123,6 @@ public class LbClusterMonitor extends AbstractMonitor {
     public void setStatus(ClusterStatus status) {
         this.status = status;
     }
+
+
 }
