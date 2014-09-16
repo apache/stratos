@@ -143,7 +143,7 @@ public class KubernetesManager {
             throw new InvalidKubernetesHostException("Mandatory field Kubernetes host IP address has not been set " +
                     "for [hostId] " + kubernetesHost.getHostId());
         }
-        if (!InetAddresses.isInetAddress(kubernetesHost.getHostIpAddress())){
+        if (!InetAddresses.isInetAddress(kubernetesHost.getHostIpAddress())) {
             throw new InvalidKubernetesHostException("Kubernetes host ip address is invalid: " + kubernetesHost.getHostIpAddress());
         }
     }
@@ -207,12 +207,17 @@ public class KubernetesManager {
         validateKubernetesHost(kubernetesHost);
         try {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
+            ArrayList<KubernetesHost> kubernetesHostArrayList;
 
-            if (kubernetesHostExists(kubernetesHost.getHostId())) {
-                throw new InvalidKubernetesHostException("Kubernetes host already exists: [id] " + kubernetesHost.getHostId());
+            if (kubernetesGroupStored.getKubernetesHosts() == null) {
+                kubernetesHostArrayList = new ArrayList<KubernetesHost>();
+            } else {
+                if (kubernetesHostExists(kubernetesHost.getHostId())) {
+                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [id] " + kubernetesHost.getHostId());
+                }
+                kubernetesHostArrayList = new
+                        ArrayList<KubernetesHost>(Arrays.asList(kubernetesGroupStored.getKubernetesHosts()));
             }
-            ArrayList<KubernetesHost> kubernetesHostArrayList = new
-                    ArrayList<KubernetesHost>(Arrays.asList(kubernetesGroupStored.getKubernetesHosts()));
             kubernetesHostArrayList.add(kubernetesHost);
 
             // Update information model
@@ -336,7 +341,7 @@ public class KubernetesManager {
             KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesHostId);
 
             // Kubernetes master can not be removed
-            if (kubernetesGroupStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)){
+            if (kubernetesGroupStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
                 throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
             }
 
@@ -387,12 +392,14 @@ public class KubernetesManager {
             return false;
         }
         for (KubernetesGroup kubernetesGroup : kubernetesGroupsMap.values()) {
-            for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
-                if (kubernetesHost.getHostId().equals(hostId)) {
-                    return true;
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (kubernetesHost.getHostId().equals(hostId)) {
+                        return true;
+                    }
                 }
             }
-            if (kubernetesGroup.getKubernetesMaster().getHostId().equals(hostId)) {
+            if (hostId.equals(kubernetesGroup.getKubernetesMaster().getHostId())) {
                 return true;
             }
         }
@@ -438,12 +445,14 @@ public class KubernetesManager {
             return null;
         }
         for (KubernetesGroup kubernetesGroup : kubernetesGroupsMap.values()) {
-            if (kubernetesGroup.getKubernetesMaster().getHostId().equals(hostId)) {
+            if (hostId.equals(kubernetesGroup.getKubernetesMaster().getHostId())) {
                 return kubernetesGroup;
             }
-            for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
-                if (kubernetesHost.getHostId().equals(hostId)) {
-                    return kubernetesGroup;
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (kubernetesHost.getHostId().equals(hostId)) {
+                        return kubernetesGroup;
+                    }
                 }
             }
         }
