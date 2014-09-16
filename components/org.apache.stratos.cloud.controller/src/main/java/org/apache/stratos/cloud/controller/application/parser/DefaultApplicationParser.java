@@ -226,7 +226,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         for (GroupContext groupCtxt : groupCtxts) {
             Group group = getGroup(clusters, groupCtxt, subscribableInformation, definedGroupCtxts);
-            groupNameToGroup.put(group.getName(), group);
+            if(groupNameToGroup.put(group.getName(), group) != null) {
+                // Application Definition has same Group multiple times at the top-level
+                throw new ApplicationDefinitionException("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
+            }
         }
 
         //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupNameToGroup);
@@ -429,7 +432,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
             clusters.add(cluster);
-            clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId());
+            if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
+                // Application Definition has same cartridge multiple times at the top-level
+                throw new ApplicationDefinitionException("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
+            }
         }
 
         return new ClusterDataHolder(clusterIdMap, clusters);
