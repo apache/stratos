@@ -33,6 +33,7 @@ profile="default"
 config_mb="true"
 mb_client_lib_path=""
 auto_start_servers="false"
+config_greg="true"
 
 function help {
     echo ""
@@ -227,11 +228,24 @@ function cc_setup() {
 
     pushd $stratos_extract_path
     
+
+   
+    
     popd 
     echo "End configuring the Cloud Controller"
 }
 
+# Setup greg
+function greg_setup() {
+    echo "Setup GREG" >> $LOG
+    echo "Configuring the GREG"
 
+    cp -f ./config/all/repository/conf/metadataservice.xml $stratos_extract_path/repository/conf/ 
+    cp -f ./config/greg/repository/conf/carbon.xml $greg_extract_path/repository/conf/ 
+  
+   
+    echo "End configuring the GREG"
+}
 # AS related functions
 # -------------------------------------------------------------------
 function as_related_popup() {
@@ -508,6 +522,7 @@ if [ "$UID" -ne "0" ]; then
 fi
 
 general_conf_validate
+
 if [[ $profile = "cc" ]]; then
     cc_conf_validate
 elif [[ $profile = "as" ]]; then
@@ -539,7 +554,21 @@ if [[ ($profile = "default" && $config_mb = "true") ]]; then
     sed -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $stratos_path/apache-activemq-5.9.1/conf/activemq.xml
 fi
 
+if [[ ($profile = "default" && $config_greg = "true") ]]; then
+    echo "Extracting wso2 greg"
+    unzip -q $greg_pack_zip -d $stratos_path
+  
+fi
+
 general_setup
+
+if [[ ($profile = "default" && $config_greg = "true") ]]; then
+    echo "Running the GREG"
+    greg_setup
+  
+fi
+
+
 if [[ $profile = "cc" ]]; then
     cc_setup
 elif [[ $profile = "as" ]]; then

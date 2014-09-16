@@ -629,6 +629,12 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+        <file>
+            <source>src/main/conf/metadataservice.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
 		<file>
             <source>src/main/conf/mincheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
@@ -859,6 +865,12 @@
         <!-- REST endpoint webapp -->
         <file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/stratos.war</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <!-- Meta data service -->
+        <file>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/stratosmetadataservice.war</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
             <fileMode>644</fileMode>
         </file>

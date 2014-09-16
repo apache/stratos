@@ -86,9 +86,12 @@ if [[ $profile = "default" ]]; then
     sleep 10
 fi
 
+echo "Starting wso2 greg server ..." >> $LOG
+echo "$greg_extract_path/bin/wso2server.sh -Dprofile=$profile start"
+$greg_extract_path/bin/wso2server.sh -Dprofile=$profile start
+echo "Stratos server started" >> $LOG
+
 echo "Starting Stratos server ..." >> $LOG
 echo "$stratos_extract_path/bin/stratos.sh -Dprofile=$profile start"
 $stratos_extract_path/bin/stratos.sh -Dprofile=$profile start
 echo "Stratos server started" >> $LOG
-
-
