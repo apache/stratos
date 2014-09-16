@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Group implements SubscribableBehavior {
+public class Group implements ParentBehavior {
 
     private static final long serialVersionUID = 8347096598203655846L;
     // Name of the Group, specified in Group Definition

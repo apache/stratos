@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface SubscribableBehavior extends Serializable {
+public interface ParentBehavior extends Serializable {
 
     public void addGroup (Group group);
 
