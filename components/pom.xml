@@ -102,6 +102,8 @@
         <module>org.apache.stratos.rest.endpoint</module>
         <!-- Stratos manager styles bundle -->
         <module>org.apache.stratos.manager.styles</module>
+		
+	<module>org.apache.stratos.metadataservice</module>
 	
     </modules>
 	    

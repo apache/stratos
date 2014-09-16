@@ -67,8 +67,10 @@ public class TopologyAgent implements Runnable {
 						log.debug("Member terminated event received");
 					}
 					MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
-					System.out.println("Terminated event :::::::::::::::::::: " +
+					if(log.isDebugEnabled()){
+						log.debug("Terminated event :::::::::::::::::::: " +
 					                   memberTerminatedEvent.getServiceName());
+					}
 					new MetaDataAdmin().removeCartridgeMetaDataDetails("appA", "php");
 
 				} catch (Exception e) {
