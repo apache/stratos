@@ -16,19 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +41,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-public class ClusterMonitor extends AbstractMonitor {
+public class ClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String lbReferenceType;
     private boolean hasPrimary;
     private ClusterStatus status;
+    private Group parent;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
@@ -68,34 +71,36 @@ public class ClusterMonitor extends AbstractMonitor {
     @Override
     public void run() {
 
-        try {
-            // TODO make this configurable,
+        /*try {
+            // TODO make this configurable(**Remove this as LB will be a seperate monitor),
             // this is the delay the min check of normal cluster monitor to wait until LB monitor is added
             Thread.sleep(60000);
         } catch (InterruptedException ignore) {
-        }
-
-        while (!isDestroyed()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running.. " + this.toString());
-            }
-            try {
-                if(!ClusterStatus.In_Maintenance.equals(status)) {
-                    monitor();
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Cluster monitor is suspended as the cluster is in " +
-                                ClusterStatus.In_Maintenance + " mode......");
-                    }
+        }*/
+        this.status = ClusterStatus.Running;
+            while (!isDestroyed() && status.getCode() >= ClusterStatus.Running.getCode()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cluster monitor is running.. " + this.toString());
                 }
-            } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+                try {
+                    if(!ClusterStatus.In_Maintenance.equals(status)) {
+                        monitor();
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Cluster monitor is suspended as the cluster is in " +
+                                    ClusterStatus.In_Maintenance + " mode......");
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+                }
+                try {
+                    Thread.sleep(monitorInterval);
+                } catch (InterruptedException ignore) {
+                }
             }
-            try {
-                Thread.sleep(monitorInterval);
-            } catch (InterruptedException ignore) {
-            }
-        }
+
+
     }
 
     private boolean isPrimaryMember(MemberContext memberContext){
@@ -117,12 +122,35 @@ public class ClusterMonitor extends AbstractMonitor {
         return false;
     }
 
-    private void monitor() {
+    public void monitor() {
         //TODO make this concurrent
+        /*final ClusterMonitor clusterMonitor = this;
+
+        Runnable checkClusterStatus = new Runnable() {
+            @Override
+            public void run() {
+                boolean clusterActive = false;
+                for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+                    //minimum check per partition
+                    for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                        if(partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
+                           clusterActive = true;
+                        }
+                        clusterActive = false;
+                    }
+
+                }
+                // if active then notify upper layer
+
+                if(clusterActive) {
+                   clusterMonitor.setStatus(ClusterStatus.Active);
+                }
+
+            }
+        };*/
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
             // store primary members in the network partition context
             List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
-
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                 // store primary members in the partition context
@@ -133,6 +161,7 @@ public class ClusterMonitor extends AbstractMonitor {
                         primaryMemberListInPartition.add(memberContext.getMemberId());
                     }
                 }
+
                 // get pending primary members in this partition context
                 for (MemberContext memberContext : partitionContext.getPendingMembers()) {
                     if (isPrimaryMember(memberContext)){
@@ -151,6 +180,9 @@ public class ClusterMonitor extends AbstractMonitor {
 
                 minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
                         , minCheckFactHandle, partitionContext);
+
+                //checking the status of the cluster
+
 
             }
 

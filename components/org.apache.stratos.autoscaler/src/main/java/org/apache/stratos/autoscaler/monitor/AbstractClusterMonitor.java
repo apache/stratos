@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -38,16 +37,14 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
-import java.util.Map;
-
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-abstract public class AbstractMonitor implements Runnable{
+abstract public class AbstractClusterMonitor implements Runnable {
 
-    private static final Log log = LogFactory.getLog(AbstractMonitor.class);
+    private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
     // Map<NetworkpartitionId, Network Partition Context>
     protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
     protected DeploymentPolicy deploymentPolicy;
@@ -71,7 +68,7 @@ abstract public class AbstractMonitor implements Runnable{
     // time intereval between two runs of the Monitor. Default is 90000ms.
     protected int monitorInterval;
 
-    public AbstractMonitor() {
+    public AbstractClusterMonitor() {
         readConfigurations();
     }
 
@@ -87,7 +84,6 @@ abstract public class AbstractMonitor implements Runnable{
     @Override
     public void run() {
         // TODO Auto-generated method stub
-
     }
 
 

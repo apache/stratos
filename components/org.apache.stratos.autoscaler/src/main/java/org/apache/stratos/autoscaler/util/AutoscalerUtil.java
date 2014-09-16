@@ -30,8 +30,10 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -40,10 +42,7 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
@@ -315,6 +314,20 @@ public class AutoscalerUtil {
         return clusterMonitor;
     }
 
+    public static GroupMonitor getGroupMonitor(Group group) {
+        GroupMonitor groupMonitor =
+                new GroupMonitor(group);
+        return groupMonitor;
+
+    }
+
+    public static ApplicationMonitor getApplicationMonitor(Application application) {
+        ApplicationMonitor applicationMonitor =
+                new ApplicationMonitor(application);
+        return applicationMonitor;
+
+    }
+
     public static Properties getProperties(final OMElement elt) {
 
         Iterator<?> it = elt.getChildrenWithName(new QName(AutoScalerConstants.PROPERTY_ELEMENT));
@@ -415,4 +428,5 @@ public class AutoscalerUtil {
 //           }
 //        return null;
 //    }
+
 }

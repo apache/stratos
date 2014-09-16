@@ -26,7 +26,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.monitor.AbstractMonitor;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -94,7 +94,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -136,7 +136,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -178,7 +178,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -218,7 +218,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -259,7 +259,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -299,7 +299,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -340,7 +340,6 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                 , floatValue));
                     }
                 }
-
             }
 
         });
@@ -461,7 +460,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -502,7 +501,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -542,7 +541,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                             clusterId, networkPartitionId, floatValue));
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractMonitor monitor;
+                AbstractClusterMonitor monitor;
 
                 if(asCtx.monitorExist(clusterId)){
                     monitor = asCtx.getMonitor(clusterId);
@@ -584,7 +583,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         String clusterId = member.getClusterId();
 
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        AbstractMonitor monitor;
+        AbstractClusterMonitor monitor;
 
         if(asCtx.monitorExist(clusterId)){
             monitor = asCtx.getMonitor(clusterId);
@@ -628,7 +627,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
         	return null;
         }
-        AbstractMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        AbstractClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
         if(null == monitor){
 
             monitor = AutoscalerContext.getInstance().getLBMonitor(member.getClusterId());
@@ -692,7 +691,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
     private void handleMemberFaultEvent(String clusterId, String memberId) {
         try {
         	AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        	AbstractMonitor monitor;
+        	AbstractClusterMonitor monitor;
         	
         	if(asCtx.monitorExist(clusterId)){
         		monitor = asCtx.getMonitor(clusterId);
