@@ -19,6 +19,7 @@
             <xs:sequence>
                 <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                <xs:element name="isPublic" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="provider" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="property" minOccurs="1" maxOccurs="unbounded">
                     <xs:complexType>
@@ -37,6 +38,7 @@
             <xs:sequence>
                 <xs:element name="id" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                <xs:element name="isPublic" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="loadThresholds" minOccurs="1" maxOccurs="1" nillable="false">
                     <xs:complexType>
                         <xs:all>
@@ -55,6 +57,7 @@
             <xs:sequence>
                 <xs:element name="id" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>
                 <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                <xs:element name="isPublic" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="partitionGroup">
                     <xs:complexType>
                         <xs:sequence>
@@ -88,6 +91,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="isPublic" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="provider" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="host" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="displayName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
@@ -196,6 +200,7 @@
         <xs:complexType>
             <xs:all>
                 <xs:element name="serviceName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+                <xs:element name="isPublic" type="xs:boolean" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="cartridgeType" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="deploymentPolicyName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                 <xs:element name="autoscalingPolicyName" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>

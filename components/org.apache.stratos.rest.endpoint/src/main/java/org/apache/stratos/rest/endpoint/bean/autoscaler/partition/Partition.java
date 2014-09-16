@@ -30,6 +30,8 @@ public class Partition {
     public String id;
     
     public String description;
+    
+    public boolean isPublic;
 
     public int partitionMin;
 

@@ -30,6 +30,7 @@ public class Cartridge implements Comparable<Cartridge> {
 
     private String displayName;
     private String description;
+    private boolean isPublic;
 	private String cartridgeAlias;
 	private String cartridgeType;
 	private int activeInstances;
@@ -82,6 +83,14 @@ public class Cartridge implements Comparable<Cartridge> {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 
 	public String getCartridgeAlias() {
