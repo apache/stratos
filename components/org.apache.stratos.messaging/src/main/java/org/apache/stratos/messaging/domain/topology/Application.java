@@ -38,10 +38,13 @@ public class Application implements SubscribableBehavior {
     private Map<String, Group> groupMap;
     // Cluster Id map, key = service name
     private Map<String, String> clusterIdMap;
+    // Application status
+    private Status status;
 
     public Application (String id) {
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
+        this.status = Status.Created;
         groupMap = new HashMap<String, Group>();
         clusterIdMap = new HashMap<String, String>();
     }
@@ -102,5 +105,13 @@ public class Application implements SubscribableBehavior {
 
     public String getKey() {
         return key;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

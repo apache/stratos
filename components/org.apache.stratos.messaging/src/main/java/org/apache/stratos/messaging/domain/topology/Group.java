@@ -40,10 +40,13 @@ public class Group implements SubscribableBehavior {
     private Map<String, Group> groupMap;
     // Cluster id map, key = service name
     private Map<String, String> clusterIdMap;
+    // Group status
+    private Status status;
 
     public Group (String name, String alias) {
         this.name = name;
         this.alias = alias;
+        this.status = Status.Created;
         groupMap = new HashMap<String, Group>();
         clusterIdMap = new HashMap<String, String>();
     }
@@ -137,5 +140,13 @@ public class Group implements SubscribableBehavior {
 
     public int hashCode () {
         return name.hashCode() + alias.hashCode();
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
