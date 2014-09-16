@@ -654,7 +654,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         } else if (cluster.isLbCluster() 
         		&& !AutoscalerContext.getInstance().lbMonitorExist(cluster.getClusterId())) {
             th = new Thread(new LBClusterMonitorAdder(cluster));
-        } else if (!cluster.isLbCluster() 
+        } else if (!cluster.isLbCluster() && !cluster.isKubernetesCluster()
         		&& !AutoscalerContext.getInstance().monitorExist(cluster.getClusterId())) {
             th = new Thread(new ClusterMonitorAdder(cluster));
         }
