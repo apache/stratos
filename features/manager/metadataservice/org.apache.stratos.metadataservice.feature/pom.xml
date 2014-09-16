@@ -23,15 +23,15 @@
     <parent>
         <groupId>org.apache.stratos</groupId>
         <artifactId>stratos-manager-features</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.rest.endpoint.feature</artifactId>
+    <artifactId>org.apache.stratos.metadataservice.feature</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - RESTful admin services feature</name>
-    <description>This feature packs the RESTful API cabability of stratos</description>
+    <name>Apache Stratos - Meta Data Service feature</name>
+    <description>This feature packs the Meta Data Service of stratos</description>
 
     <dependencies>
         <!--CXF runtime environment-->
@@ -216,7 +216,7 @@
             <artifactId>carbon-cxf</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
+         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
             <version>4.2.0</version>
@@ -226,6 +226,8 @@
             <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
             <version>4.2.0</version>
         </dependency>
+        
+        
         <!--dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
@@ -271,12 +273,12 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.stratos</groupId>
-                                    <artifactId>org.apache.stratos.rest.endpoint</artifactId>
+                                    <artifactId>org.apache.stratos.metadataservice</artifactId>
                                     <version>${project.version}</version>
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/web-app/web-app</outputDirectory>
-                                    <destFileName>stratos.war</destFileName>
+                                    <destFileName>stratosmetadataservice.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -294,7 +296,7 @@
                             <goal>p2-feature-gen</goal>
                         </goals>
                         <configuration>
-                            <id>org.apache.stratos.rest.endpoint</id>
+                            <id>org.apache.stratos.metadataservice</id>
                             <propertiesFile>../../etc/feature.properties</propertiesFile>
                             <adviceFile>
                                 <properties>
@@ -303,7 +305,7 @@
                                 </properties>
                             </adviceFile>
 			    <bundles>
-				<bundleDef>org.apache.stratos:org.apache.stratos.autoscaler.service.stub:${project.version}</bundleDef>
+				<bundleDef>org.apache.stratos:org.apache.stratos.manager.stub:${project.version}</bundleDef>
 			    </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core:${wso2carbon.version}</importFeatureDef>
