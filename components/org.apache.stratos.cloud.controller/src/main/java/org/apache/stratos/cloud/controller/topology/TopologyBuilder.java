@@ -139,7 +139,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setKubernetesCluster(getKubernetesCluster(service));
+                setKubernetesCluster(cluster);
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
                                       registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
@@ -152,7 +152,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setKubernetesCluster(getKubernetesCluster(service));
+                setKubernetesCluster(cluster);
                 cluster.setStatus(ClusterStatus.Created);
                 service.addCluster(cluster);
             }
@@ -164,13 +164,12 @@ public class TopologyBuilder {
         }
     }
 
-    private static boolean getKubernetesCluster(Service service) {  
-    	boolean isKubernetesCluster = false;
-    	isKubernetesCluster = (service.getProperties().getProperty(StratosConstants.KUBERNETES_CLUSTER_ID) != null);
+    private static void setKubernetesCluster(Cluster cluster) {  
+    	boolean isKubernetesCluster = (cluster.getProperties().getProperty(StratosConstants.KUBERNETES_CLUSTER_ID) != null);
 		if (log.isDebugEnabled()) {
 			log.debug(" Kubernetes Cluster ["+ isKubernetesCluster + "] ");
 		}
-		return isKubernetesCluster;		
+		cluster.setKubernetesCluster(isKubernetesCluster);		
 	}
 
 	public static void handleClusterRemoved(ClusterContext ctxt) {
