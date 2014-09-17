@@ -95,6 +95,18 @@ public class CloudControllerServiceClient {
     	stub.undeployServiceGroup(name);
     }
     
+    public String [] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupSubGroups(name);
+    }
+    
+    public String [] getServiceGroupCartridges(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupCartridges(name);
+    }
+    
+    public Dependencies getServiceGroupDependencies (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupDependencies(name);
+    }
+     
     public ServiceGroup getServiceGroup(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
     	return stub.getServiceGroup(name);
     }
