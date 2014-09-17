@@ -1,47 +1,12 @@
 import ConfigParser
 import logging
 
-import cartridgeagentconstants
-
-from exception import ParameterNotFoundException
+from ..util import cartridgeagentconstants
+from ..exception import ParameterNotFoundException
 
 
 class CartridgeAgentConfiguration:
     class __CartridgeAgentConfiguration:
-
-        properties = None
-        payload_params = None
-
-        __service_group = None
-        __service_name = None
-        __cluster_id = None
-        __network_partition_id = None
-        __partitionId = None
-        __memberId = None
-        __cartridgeKey = None
-        __appPath = None
-        __repoUrl = None
-        __ports = None
-        __logFilePaths = None
-        __isCommitsEnabled = None
-        __isCheckoutEnabled = None
-        __listenAddress = None
-        __lbClusterId = None
-        __tenantId = None
-        __isClustered = None
-        __minCount = None
-        __parameters = None
-        __isMultitenant = None
-        __persistenceMappings = None
-        __isInternalRepo = None
-        __isPrimary = None
-        __lbPrivateIp = None
-        __lbPublicIp = None
-        __deployment = None
-        __managerServiceName = None
-        __workerServiceName = None
-        __superTenantRepositoryPath = None
-        __tenantRepositoryPath = None
 
         def __init__(self):
             # set log level
@@ -52,11 +17,17 @@ class CartridgeAgentConfiguration:
             self.__read_parameter_file()
 
             try:
-                self.__service_group = self.payload_params[
-                    cartridgeagentconstants.SERVICE_GROUP] if cartridgeagentconstants.SERVICE_GROUP in self.payload_params else None
+                self.__service_group = self.payload_params[cartridgeagentconstants.SERVICE_GROUP] \
+                    if cartridgeagentconstants.SERVICE_GROUP in self.payload_params \
+                    else None
 
-                self.__isClustered = self.payload_params[
-                    cartridgeagentconstants.CLUSTERING] if cartridgeagentconstants.CLUSTERING in self.payload_params else None
+                if cartridgeagentconstants.CLUSTERING in self.payload_params and \
+                                str(self.payload_params[cartridgeagentconstants.CLUSTERING]).strip().lower() == "true":
+                    self.__isClustered = True
+                else:
+                    self.__isClustered = False
+                # self.__isClustered = self.payload_params[
+                #     cartridgeagentconstants.CLUSTERING] if cartridgeagentconstants.CLUSTERING in self.payload_params else None
 
                 self.__service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
                 self.__cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
@@ -177,7 +148,7 @@ class CartridgeAgentConfiguration:
             """
 
             self.properties = ConfigParser.SafeConfigParser()
-            self.properties.read('agent.properties')
+            self.properties.read('agent.conf')
 
         def __read_parameter_file(self):
             """

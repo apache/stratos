@@ -2,6 +2,9 @@ JNDI_PROPERTIES_DIR = "jndi.properties.dir"
 PARAM_FILE_PATH = "param.file.path"
 EXTENSIONS_DIR = "extensions.dir"
 
+MB_IP = "mb.ip"
+MB_PORT = "mb.port"
+
 INSTANCE_STARTED_SH = "instance-started.sh"
 START_SERVERS_SH = "start-servers.sh"
 INSTANCE_ACTIVATED_SH = "instance-activated.sh"
@@ -76,3 +79,9 @@ DEPLOYMENT_WORKER = "worker"
 DEPLOYMENT_DEFAULT = "default"
 SUPER_TENANT_REPO_PATH = "super.tenant.repository.path"
 TENANT_REPO_PATH = "tenant.repository.path"
+
+# topic names to subscribe
+INSTANCE_NOTIFIER_TOPIC = "instance/#"
+HEALTH_STAT_TOPIC = "health/#"
+TOPOLOGY_TOPIC = "topology/#"
+TENANT_TOPIC = "tenant/#"

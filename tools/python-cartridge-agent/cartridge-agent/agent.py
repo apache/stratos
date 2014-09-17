@@ -1,22 +1,23 @@
 #!/usr/bin/env python
-import stomp
-import time
 import logging
 import sys
-import random
 import os
 import threading
 import socket
 import json
-import extensionhandler
-import util
 import subprocess
 import ConfigParser
+
+import stomp
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
-from cartridgeagentconfiguration import CartridgeAgentConfiguration
-import cartridgeagentconstants
+
+import extensionhandler
+import util
+from config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+import util.cartridgeagentconstants as cartridgeagentconstants
 from exception import ParameterNotFoundException
+from event.subscriber import instanceeventsubscriber
 
 
 class CartridgeAgent(threading.Thread):
@@ -27,6 +28,7 @@ class CartridgeAgent(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
+        self.__instance_event_subscriber = instanceeventsubscriber.InstanceEventSubscriber()
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -56,10 +58,12 @@ class CartridgeAgent(threading.Thread):
 
     def subscribe_to_topics_and_register_listeners(self):
         self.log.debug("Starting instance notifier event message receiver thread")
+
         #ArtifactUpdateEventListener
         #InstanceCleanupMemberEventListener
         #InstanceCleanupClusterEventListener
         #start instanceeventreceiverthread
+        self.__instance_event_subscriber.start()
 
         #SubscriptionDomainsAddedEventListener
         #SubscriptionDomainsRemovedEventListener
