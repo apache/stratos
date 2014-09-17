@@ -14,13 +14,67 @@ import subprocess
 import ConfigParser
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
+from cartridgeagentconfiguration import CartridgeAgentConfiguration
+import cartridgeagentconstants
+from exception import ParameterNotFoundException
 
 
-def readProperty(property):
-    """
-        Read provided property from the properties file
-    """
-    return properties.get("agent", property)
+class CartridgeAgent(threading.Thread):
+    logging.basicConfig(level=logging.DEBUG)
+    log = logging.getLogger(__name__)
+
+    cart_config = CartridgeAgentConfiguration()
+
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.log.info("Starting Cartridge Agent...")
+
+        self.validate_required_properties()
+
+        self.subscribe_to_topics_and_register_listeners()
+
+    def validate_required_properties(self):
+        #JNDI_PROPERTIES_DIR
+        try:
+            self.cart_config.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
+        except ParameterNotFoundException:
+            self.log.error("System property not found: %r" % cartridgeagentconstants.JNDI_PROPERTIES_DIR)
+
+        #PARAM_FILE_PATH
+        try:
+            self.cart_config.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+        except ParameterNotFoundException:
+            self.log.error("System property not found: %r" % cartridgeagentconstants.PARAM_FILE_PATH)
+
+        #EXTENSIONS_DIR
+        try:
+            self.cart_config.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
+        except ParameterNotFoundException:
+            self.log.error("System property not found: %r" % cartridgeagentconstants.EXTENSIONS_DIR)
+
+    def subscribe_to_topics_and_register_listeners(self):
+        self.log.debug("Starting instance notifier event message receiver thread")
+        #ArtifactUpdateEventListener
+        #InstanceCleanupMemberEventListener
+        #InstanceCleanupClusterEventListener
+        #start instanceeventreceiverthread
+
+        #SubscriptionDomainsAddedEventListener
+        #SubscriptionDomainsRemovedEventListener
+        #start tenanteventreceiverthread
+
+        #wait till subscribed to continue
+
+def Main():
+
+    cartridge_agent = CartridgeAgent()
+
+
+if __name__ == "__main__":
+    Main()
+#========================================================
 
 
 def runningSuspendScript():
