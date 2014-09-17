@@ -32,6 +32,12 @@ public class Application implements ParentBehavior {
     private String id;
     // Key used for authentication (with metadata service, etc.)
     private String key;
+    // tenant id
+    private int tenantId;
+    // tenant domain
+    private String tenantDomain;
+    // tenant admin user
+    private String tenantAdminUserName;
     // Dependency Order
     private DependencyOrder dependencyOrder;
     // Group Map, key = Group.name
@@ -136,5 +142,29 @@ public class Application implements ParentBehavior {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getTenantDomain() {
+        return tenantDomain;
+    }
+
+    public void setTenantDomain(String tenantDomain) {
+        this.tenantDomain = tenantDomain;
+    }
+
+    public String getTenantAdminUserName() {
+        return tenantAdminUserName;
+    }
+
+    public void setTenantAdminUserName(String tenantAdminUserName) {
+        this.tenantAdminUserName = tenantAdminUserName;
     }
 }

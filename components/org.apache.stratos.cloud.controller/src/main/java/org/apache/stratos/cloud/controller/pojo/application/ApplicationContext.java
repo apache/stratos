@@ -21,6 +21,12 @@ package org.apache.stratos.cloud.controller.pojo.application;
 
 public class ApplicationContext {
 
+    private int tenantId;
+
+    private String tenantDomain;
+
+    private String teantAdminUsername;
+
     private String applicationId;
 
     private String alias;
@@ -59,5 +65,29 @@ public class ApplicationContext {
 
     public void setSubscribableInfoContext(SubscribableInfoContext[] subscribableInfoContexts) {
         this.subscribableInfoContexts = subscribableInfoContexts;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getTenantDomain() {
+        return tenantDomain;
+    }
+
+    public void setTenantDomain(String tenantDomain) {
+        this.tenantDomain = tenantDomain;
+    }
+
+    public String getTeantAdminUsername() {
+        return teantAdminUsername;
+    }
+
+    public void setTeantAdminUsername(String teantAdminUsername) {
+        this.teantAdminUsername = teantAdminUsername;
     }
 }

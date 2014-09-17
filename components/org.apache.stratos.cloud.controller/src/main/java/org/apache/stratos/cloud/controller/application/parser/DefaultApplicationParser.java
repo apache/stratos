@@ -179,6 +179,12 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         Application application = new Application(appCtxt.getApplicationId());
+
+        // set tenant related information
+        application.setTenantId(appCtxt.getTenantId());
+        application.setTenantDomain(appCtxt.getTenantDomain());
+        application.setTenantAdminUserName(appCtxt.getTeantAdminUsername());
+
         // following keeps track of all Clusters created for this application
         Set<Cluster> clusters = new HashSet<Cluster>();
 

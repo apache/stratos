@@ -264,6 +264,9 @@ public class ServiceUtils {
 //        }
 
         ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(compositeAppDefinition);
+        applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
+        applicationContext.setTenantDomain(tenantDomain);
+        applicationContext.setTeantAdminUsername(userName);
 
         try {
             CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
