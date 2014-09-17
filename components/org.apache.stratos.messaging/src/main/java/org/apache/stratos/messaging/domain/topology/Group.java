@@ -67,6 +67,29 @@ public class Group implements ParentBehavior {
     }
 
     @Override
+    public Group getGroupRecursively(String groupAlias) {
+
+        return travereAndCheckRecursively(groupMap.values(), groupAlias);
+    }
+
+    private Group travereAndCheckRecursively (Collection<Group> groups, String groupAlias) {
+
+        for (Group group : groups) {
+            // check if alias is equal, if so, return
+            if (groupAlias.equals(group.getAlias())) {
+                return group;
+            } else {
+                // check if this Group has nested sub Groups. If so, traverse them as well
+                if (group.getGroups() != null) {
+                    return travereAndCheckRecursively(group.getGroups(), groupAlias);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public Collection<Group> getGroups() {
         return groupMap.values();
     }

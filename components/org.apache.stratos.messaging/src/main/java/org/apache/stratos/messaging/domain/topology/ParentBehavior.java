@@ -31,6 +31,8 @@ public interface ParentBehavior extends Serializable {
 
     public Group getGroup (String groupName);
 
+    public Group getGroupRecursively (String groupAlias);
+
     public Collection<Group> getGroups ();
 
     public void setDependencyOrder (DependencyOrder dependencyOrder);
