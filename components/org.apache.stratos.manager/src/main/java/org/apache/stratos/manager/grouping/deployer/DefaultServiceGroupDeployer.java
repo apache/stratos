@@ -38,7 +38,9 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregister
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
@@ -83,6 +85,20 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             }
         	
             List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
+            
+            Set<String> duplicates = this.findDuplicates(cartridgeTypes);
+            
+            if (duplicates.size() > 0) {
+            	
+            	StringBuffer buf = new StringBuffer();
+            	for (String dup : duplicates) {
+            		buf. append(dup).append(" ");
+            	}
+            	if (log.isDebugEnabled()) {
+                	log.debug("duplicate cartridges defined: " + buf.toString());
+                }
+            	throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate cartridges defined:" + buf.toString());
+            }
 
             CloudControllerServiceClient ccServiceClient = null;
 
@@ -116,6 +132,20 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             }
         	
             List<String> subGroupNames = serviceGroupDefinition.getSubGroups();
+            
+        	Set<String> duplicates = this.findDuplicates(subGroupNames);
+            
+            if (duplicates.size() > 0) {
+            	
+            	StringBuffer buf = new StringBuffer();
+            	for (String dup : duplicates) {
+            		buf. append(dup).append(" ");
+            	}
+            	if (log.isDebugEnabled()) {
+                	log.debug("duplicate subGroups defined: " + buf.toString());
+                }
+            	throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
+            }
 
             for (String subGroupName : subGroupNames) {
                 if (getServiceGroupDefinition(subGroupName) == null) {
@@ -165,6 +195,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             
             ServiceGroup serviceGroup = ccServiceClient.getServiceGroup(serviceGroupDefinitionName);
             ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
+            
             return serviceGroupDef;
 
         } catch (AxisFault axisFault) {
@@ -287,4 +318,25 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
    
     	return servicegroupDef;
     }
-}
+    
+    
+    /**
+     * returns any duplicates in a List
+     * @param checkedList
+     * @return
+     */
+    private Set<String> findDuplicates(List<String> checkedList)
+    { 
+      final Set<String> retVals = new HashSet<String>(); 
+      final Set<String> set1 = new HashSet<String>();
+
+      for (String val : checkedList) {
+    	  
+    	  if (!set1.add(val)) {
+	        retVals.add(val);
+    	  }
+      }
+      return retVals;
+    }
+    
+ }

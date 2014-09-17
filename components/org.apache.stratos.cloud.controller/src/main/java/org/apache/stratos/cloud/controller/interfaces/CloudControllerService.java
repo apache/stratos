@@ -55,9 +55,9 @@ public interface CloudControllerService {
     
     public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
     
-    public Dependencies getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
+    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
     
-    public Dependencies getServiceGroupDepenencies (String name) throws InvalidServiceGroupException;
+    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.

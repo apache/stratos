@@ -288,6 +288,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("CloudControllerServiceImpl:deployServiceGroup:" + servicegroup.getName());
         }
     	
+    	String [] subGroups = servicegroup.getCartridges();
+    	
+
+    	if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups.length);
+        }
+    	
+    	
     	Dependencies dependencies = servicegroup.getDependencies();
     	
     	if(log.isDebugEnabled()) {
@@ -353,16 +361,34 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	return serviceGroup;
     }
     
-    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException {
-    	return null;
+    public String [] getServiceGroupSubGroups (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	
+    	return serviceGroup.getSubGroups();
     }
     
-    public Dependencies getServiceGroupCartridges (String name) throws InvalidServiceGroupException {
-    	return null;
+    /**
+     * 
+     */
+    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	String [] cs = serviceGroup.getCartridges();
+    	return cs;
+    	
     }
     
-    public Dependencies getServiceGroupDepenencies (String name) throws InvalidServiceGroupException {
-    	return null;
+    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	return serviceGroup.getDependencies();
     }
 
     @Override
