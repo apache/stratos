@@ -51,15 +51,16 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         if (applicationCtxt == null) {
-            throw new ApplicationDefinitionException("Invalid Composite Application Definition");
+            handleError("Invalid Composite Application Definition");
         }
 
+        assert applicationCtxt != null;
         if (applicationCtxt.getAlias() == null || applicationCtxt.getAlias().isEmpty()) {
-            throw new ApplicationDefinitionException("Invalid alias specified");
+            handleError("Invalid alias specified");
         }
 
         if (applicationCtxt.getApplicationId() == null || applicationCtxt.getApplicationId().isEmpty()) {
-            throw new ApplicationDefinitionException("Invalid Composite App id specified");
+            handleError("Invalid Composite App id specified");
         }
 
         // get the defined groups
@@ -85,7 +86,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         if (subscribablesInfo == null) {
-            throw new ApplicationDefinitionException("Invalid Composite Application Definition, no Subscribable Information specified");
+            handleError("Invalid Composite Application Definition, no Subscribable Information specified");
         }
 
         return buildCompositeAppStructure (applicationCtxt, definedGroups, subscribablesInfo);
@@ -105,23 +106,23 @@ public class DefaultApplicationParser implements ApplicationParser {
 
                     // check validity of group name
                     if (groupContext.getName() == null || groupContext.getName().isEmpty()) {
-                        throw new ApplicationDefinitionException("Invalid Group name specified");
+                        handleError("Invalid Group name specified");
                     }
 
                     // check if group is deployed
                     if(!isGroupDeployed(groupContext.getName())) {
-                        throw new ApplicationDefinitionException("Group with name " + groupContext.getName() + " not deployed");
+                        handleError("Group with name " + groupContext.getName() + " not deployed");
                     }
 
                     // check validity of group alias
                     if (groupContext.getAlias() == null || groupContext.getAlias().isEmpty() || !ApplicationUtils.isAliasValid(groupContext.getAlias())) {
-                        throw new ApplicationDefinitionException("Invalid Group alias specified: [ " + groupContext.getAlias() + " ]");
+                        handleError("Invalid Group alias specified: [ " + groupContext.getAlias() + " ]");
                     }
 
                     // check if a group is already defined under the same alias
                     if(definedGroups.get(groupContext.getAlias()) != null) {
                         // a group with same alias already exists, can't continue
-                        throw new ApplicationDefinitionException("A Group with alias " + groupContext.getAlias() + " already exists");
+                        handleError("A Group with alias " + groupContext.getAlias() + " already exists");
                     }
 
                     definedGroups.put(groupContext.getAlias(), groupContext);
@@ -148,13 +149,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 
                 if (subscribableInfoCtxt.getAlias() == null || subscribableInfoCtxt.getAlias().isEmpty() ||
                         !ApplicationUtils.isAliasValid(subscribableInfoCtxt.getAlias())) {
-                    throw new ApplicationDefinitionException("Invalid alias specified for Subscribable Information Obj: [ " + subscribableInfoCtxt.getAlias() + " ]");
+                    handleError("Invalid alias specified for Subscribable Information Obj: [ " + subscribableInfoCtxt.getAlias() + " ]");
                 }
 
                 // check if a group is already defined under the same alias
                 if(subscribableInformation.get(subscribableInfoCtxt.getAlias()) != null) {
                     // a group with same alias already exists, can't continue
-                    throw new ApplicationDefinitionException("A Subscribable Info obj with alias " + subscribableInfoCtxt.getAlias() + " already exists");
+                    handleError("A Subscribable Info obj with alias " + subscribableInfoCtxt.getAlias() + " already exists");
                 }
 
                 subscribableInformation.put(subscribableInfoCtxt.getAlias(), subscribableInfoCtxt);
@@ -228,7 +229,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             Group group = getGroup(clusters, groupCtxt, subscribableInformation, definedGroupCtxts);
             if(groupNameToGroup.put(group.getName(), group) != null) {
                 // Application Definition has same Group multiple times at the top-level
-                throw new ApplicationDefinitionException("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
+                handleError("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
             }
         }
 
@@ -278,7 +279,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // check if are in the defined Group set
         GroupContext definedGroupDef = definedGroupCtxts.get(groupCtxt.getAlias());
         if (definedGroupDef == null) {
-            throw new ApplicationDefinitionException("Group Definition with name: " + groupCtxt.getName() + ", alias: " +
+            handleError("Group Definition with name: " + groupCtxt.getName() + ", alias: " +
                     groupCtxt.getAlias() + " is not found in the all Group Definitions collection");
         }
 
@@ -326,9 +327,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName);
 
         if (serviceGroup == null) {
-            throw new ApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + serviceGroupName);
         }
 
+        assert serviceGroup != null;
         if (serviceGroup.getDependencies() != null) {
             if (serviceGroup.getDependencies().getStartupOrder() != null) {
                 return ParserUtils.convert(serviceGroup.getDependencies().getStartupOrder());
@@ -359,9 +361,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName);
 
         if (serviceGroup == null) {
-            throw new ApplicationDefinitionException("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + serviceGroupName);
         }
 
+        assert serviceGroup != null;
         if (serviceGroup.getDependencies() != null) {
             return serviceGroup.getDependencies().getKillBehaviour();
         }
@@ -413,20 +416,20 @@ public class DefaultApplicationParser implements ApplicationParser {
             // check is there is a related Subscribable Information
             SubscribableInfoContext subscribableInfoCtxt = subscribableInfoCtxts.get(subscribableCtxt.getAlias());
             if (subscribableInfoCtxt == null) {
-                throw new ApplicationDefinitionException("Related Subscribable Information Ctxt not found for Subscribable with alias: "
+                handleError("Related Subscribable Information Ctxt not found for Subscribable with alias: "
                         + subscribableCtxt.getAlias());
             }
 
             // check if Cartridge Type is valid
             if (subscribableCtxt.getType() == null || subscribableCtxt.getType().isEmpty()) {
-                throw new ApplicationDefinitionException ("Invalid Cartridge Type specified : [ "
+                handleError("Invalid Cartridge Type specified : [ "
                         + subscribableCtxt.getType() + " ]");
             }
 
             // check if a cartridge with relevant type is already deployed. else, can't continue
             Cartridge cartridge =  getCartridge(subscribableCtxt.getType());
             if (cartridge == null) {
-                throw new ApplicationDefinitionException("No deployed Cartridge found with type [ " + subscribableCtxt.getType() +
+                handleError("No deployed Cartridge found with type [ " + subscribableCtxt.getType() +
                         " ] for Composite Application");
             }
 
@@ -434,7 +437,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             clusters.add(cluster);
             if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
                 // Application Definition has same cartridge multiple times at the top-level
-                throw new ApplicationDefinitionException("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
+                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
             }
         }
 
@@ -485,6 +488,11 @@ public class DefaultApplicationParser implements ApplicationParser {
     private Cartridge getCartridge (String cartridgeType)  {
 
         return FasterLookUpDataHolder.getInstance().getCartridge(cartridgeType);
+    }
+
+    private void handleError (String errorMsg) throws ApplicationDefinitionException {
+        log.error(errorMsg);
+        throw new ApplicationDefinitionException(errorMsg);
     }
 
 }
