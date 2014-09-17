@@ -576,6 +576,10 @@
                 <include>org.apache.activemq:activemq-client:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
                 <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
+                <include>org.apache.stratos:org.apache.stratos.kubernetes.client:jar</include>
+		<include>org.jboss.resteasy:resteasy-jaxrs:jar</include>
+		<include>org.jboss.resteasy:resteasy-jaxb-provider:jar</include>
+		<include>org.jboss.resteasy:resteasy-jackson-provider:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
