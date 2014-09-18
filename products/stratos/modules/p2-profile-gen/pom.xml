@@ -204,7 +204,6 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.caching.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.manager.feature:${project.version}</featureArtifactDef>
-                                <featureArtifactDef>org.apache.stratos:org.apache.stratos.cartridge.mgt.ui.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.rest.endpoint.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.server.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature:${carbon.platform.patch.version.4.2.2}</featureArtifactDef>
@@ -398,10 +397,6 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.manager.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.cartridge.mgt.ui.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
@@ -681,10 +676,6 @@
                                 </feature>
                                 <feature>
                                     <id>org.apache.stratos.manager.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.apache.stratos.cartridge.mgt.ui.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
