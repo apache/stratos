@@ -38,10 +38,6 @@ import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.*;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.PersistenceContext;
-import org.apache.stratos.manager.subscription.SubscriptionData;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionMultiTenantBehaviour;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionSingleTenantBehaviour;
@@ -95,6 +91,10 @@ public class CartridgeSubscriptionManager {
 
     public CompositeAppSubscription createCompositeAppSubscription (String appId, int tenantId)  throws CompositeAppSubscriptionException {
 
+    	if (log.isDebugEnabled()) {
+            log.debug("createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
         CompositeAppSubscription compositeAppSubscription;
 
@@ -102,12 +102,24 @@ public class CartridgeSubscriptionManager {
             compositeAppSubscription = dataInsertionAndRetrievalMgr.getCompositeAppSubscription(tenantId, appId);
 
         } catch (PersistenceManagerException e) {
+            log.error("failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
             throw new CompositeAppSubscriptionException(e);
         }
 
         if (compositeAppSubscription != null) {
             // Composite App Subscription already exists with same app id
-            throw new CompositeAppSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
+           log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
+           throw new CompositeAppSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
+        } else {
+        	// persist 
+        	try {
+				persistCompositeAppSubscription(compositeAppSubscription);
+			} catch (ADCException e) {
+				// TODO Auto-generated catch block
+				log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + 
+																			" and tenantId: " + tenantId + " e:" + e);
+				e.printStackTrace();
+			}
         }
 
         return new CompositeAppSubscription(appId);
