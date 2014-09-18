@@ -31,4 +31,20 @@ public class GroupActivatedEvent extends Event {
         this.appId = appId;
         this.groupId = groupId;
     }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 }

@@ -19,15 +19,17 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.event.Event;
 
 /**
  * Cluster activated event will be sent by Autoscaler
  */
-public class ClusterActivatedEvent {
+public class ClusterActivatedEvent extends Event {
 
     private final String serviceName;
     private final String clusterId;
     private ClusterStatus status;
+    private String appId;
 
     public ClusterActivatedEvent(String serviceName, String clusterId) {
         this.serviceName = serviceName;
@@ -54,5 +56,13 @@ public class ClusterActivatedEvent {
 
     public void setStatus(ClusterStatus status) {
         this.status = status;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

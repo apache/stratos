@@ -20,49 +20,47 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.*;
 
+/**
+ * ApplicationMonitor is to control the child monitors
+ */
 public class ApplicationMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
     private Application application;
     private Queue<String> preOrderTraverse = new LinkedList<String>();
-    private Queue<Cluster> clusters = new LinkedList<Cluster>();
-    Map<String, StatusChecker> statusCheckerMap = new HashMap<String, StatusChecker>();
-
-    private Queue<Group> groups = new LinkedList<Group>();
-
 
     public ApplicationMonitor(Application application) {
         this.application = application;
         //TODO build dependencies and keep them here
-        DependencyOrder dependencyOrder = application.getDependencyOrder();
-        Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
-        for(StartupOrder startupOrder: startupOrderSet) {
+        startDependency();
 
-            String start = startupOrder.getStart();
-            String after = startupOrder.getAfter();
+    }
 
-            if (!preOrderTraverse.contains(start)) {
-                preOrderTraverse.add(start);
-                if (!preOrderTraverse.contains(after)) {
-                    preOrderTraverse.add(after);
+    @Override
+    public void update(Observable observable, Object arg) {
+        if(arg instanceof Event) {
 
-                } else {
-                    //TODO throw exception since after is there before start
-                }
-            } else {
-                if (!preOrderTraverse.contains(after)) {
-                    preOrderTraverse.add(after);
-                } else {
-                    //TODO throw exception since start and after already there
-                }
-            }
         }
+
+    }
+
+    @Override
+    protected void onEvent(Event event) {
+
+    }
+
+    public void startDependency() {
+        preOrderTraverse = DependencyBuilder.getStartupOrder(application);
 
         //TODO find out the parallel ones
 
@@ -76,52 +74,73 @@ public class ApplicationMonitor extends Monitor {
             TopologyManager.acquireReadLock();
             cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
             TopologyManager.releaseReadLock();
-           if(cluster != null) {
-               startClusterMonitor(cluster);
-           } else {
-               //TODO throw exception since Topology is inconsistent
-           }
+            if(cluster != null) {
+                startClusterMonitor(cluster);
+            } else {
+                //TODO throw exception since Topology is inconsistent
+            }
         }
     }
 
-
-    //start the least dependent cluster monitor as part of the applicationCreatedEvent
-    public void registerFirstClusterMonitor() {
-        //build dependency tree
-
-
-
-
-        //traverse dependency tree and find the clusters to be started and
-        // register the correct GroupMonitor or ClusterMonitor
-        //startGroupMonitor(groups.peek());
-        //groups.poll();
-
-
-
-
-
-
+    /**
+     * Find the group monitor by traversing recursively in the hierarchical monitors.
+     * @param id the unique alias of the Group
+     * @return the found GroupMonitor
+     */
+    public Monitor findGroupMonitorWithId(String id) {
+        return findGroupMonitor(id, groupMonitors.values());
 
     }
 
-    public void startMonitor() {
+    private Monitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
+        for (GroupMonitor monitor : monitors) {
+            // check if alias is equal, if so, return
+            if (monitor.equals(id)) {
+                return monitor;
+            } else {
+                // check if this Group has nested sub Groups. If so, traverse them as well
+                if (monitor.getGroupMonitors() != null) {
+                    return findGroupMonitor(id, monitor.getGroupMonitors().values());
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public Monitor findParentOfGroup(String groupId) {
+      return findParentMonitor(groupId, this);
+    }
+
+    private Monitor findParentMonitor(String groupId, Monitor monitor) {
+        //if this monitor has the group, return it as the parent
+        if(monitor.getGroupMonitors().containsKey(groupId)) {
+            return monitor;
+        } else {
+            if(monitor.getGroupMonitors() != null) {
+                //check whether the children has the group and find its parent
+                for(GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                    return findParentMonitor(groupId, groupMonitor);
+
+                }
+            }
+        }
+        return null;
 
     }
+
 
     @Override
     public void run() {
-        while (true ) { //TODO add the correct status
+        while (true) {
             if (log.isDebugEnabled()) {
-                log.debug("App monitor is running.. " + this.toString());
+                log.debug("Application monitor is running.. " + this.toString());
             }
-
-
-
+                    monitor();
             try {
-                // TODO make this configurable
-                Thread.sleep(30000);
-            } catch (InterruptedException ignore) {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -129,7 +148,9 @@ public class ApplicationMonitor extends Monitor {
 
     @Override
     public void monitor() {
+        startDependency();
 
+        //evaluate dependency
     }
 
     public Queue<String> getPreOrderTraverse() {

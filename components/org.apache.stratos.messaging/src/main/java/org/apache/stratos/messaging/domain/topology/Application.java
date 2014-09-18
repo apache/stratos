@@ -71,6 +71,16 @@ public class Application implements ParentBehavior {
     }
 
     @Override
+    public Map<String, Group> getGroupMap() {
+        return this.groupMap;
+    }
+
+    @Override
+    public Map<String, String> getClusterMap() {
+        return this.clusterIdMap;
+    }
+
+    @Override
     public Group getGroupRecursively(String groupAlias) {
 
         return travereAndCheckRecursively(groupMap.values(), groupAlias);

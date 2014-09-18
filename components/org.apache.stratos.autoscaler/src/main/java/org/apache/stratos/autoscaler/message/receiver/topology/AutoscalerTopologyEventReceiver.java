@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -117,7 +118,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO build dependency and organize the application
 
                     //start the application monitor
-                    startApplicationMonitor(applicationCreatedEvent.getApplication());
+                   // startApplicationMonitor(applicationCreatedEvent.getApplication());
 
                 } finally {
                     //release read lock
@@ -125,6 +126,34 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
 
             }
+        });
+
+        topologyEventReceiver.addEventListener(new GroupActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[GroupActivatedEvent] Received: " + event.getClass());
+                GroupActivatedEvent groupActivatedEvent = (GroupActivatedEvent) event;
+
+                //trigger status checker
+                //StatusChecker.getInstance().onGroupStatusChange(groupActivatedEvent.getGroupId(),
+                                                                //groupActivatedEvent.getAppId());
+
+                }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+                ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
+
+                //trigger status checker
+                /*StatusChecker.getInstance().onClusterStatusChange(clusterActivatedEvent.getClusterId(),
+                                                                clusterActivatedEvent.getAppId());
+*/
+                }
         });
 
         topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
@@ -382,6 +411,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
 //                partitionContext.incrementCurrentActiveMemberCount(1);
                     partitionContext.movePendingMemberToActiveMembers(memberId);
+
+                    //trigger status checker
+                    StatusChecker.getInstance().onMemberStatusChange(e.getClusterId());
 
                 } catch (Exception e) {
                     log.error("Error processing event", e);

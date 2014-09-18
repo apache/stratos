@@ -18,20 +18,18 @@
  */
 package org.apache.stratos.autoscaler.status.checker;
 
+import org.apache.stratos.autoscaler.monitor.Monitor;
+
 /**
  * Group status checker will check the group status and
  * notify the interested parties on behalf of the status changes
  */
-public class GroupStatusChecker extends StatusChecker {
+public class GroupStatusChecker  {
     private String groupId;
     private String appId;
 
     public GroupStatusChecker(String groupId, String appId) {
         this.groupId = groupId;
         this.appId = appId;
-    }
-    @Override
-    public void run() {
-
     }
 }

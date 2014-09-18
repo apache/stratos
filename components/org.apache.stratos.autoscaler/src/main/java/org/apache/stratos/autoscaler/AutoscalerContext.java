@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +48,9 @@ public class AutoscalerContext {
 
     // Map<ClusterId, ClusterMonitor>
     private Map<String, ClusterMonitor> monitors;
+
+    // Map<ClusterId, ClusterMonitor>
+    private Map<String, StatusChecker> statusCheckers;
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
@@ -74,6 +78,9 @@ public class AutoscalerContext {
         this.groupMonitors = groupMonitors;
     }
 
+    public Map<String, StatusChecker> getStatusCheckers() {
+        return statusCheckers;
+    }
 
     private static class Holder {
 		private static final AutoscalerContext INSTANCE = new AutoscalerContext();

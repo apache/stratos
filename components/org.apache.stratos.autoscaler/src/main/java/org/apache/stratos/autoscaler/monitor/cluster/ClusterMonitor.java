@@ -124,30 +124,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     public void monitor() {
         //TODO make this concurrent
-        /*final ClusterMonitor clusterMonitor = this;
 
-        Runnable checkClusterStatus = new Runnable() {
-            @Override
-            public void run() {
-                boolean clusterActive = false;
-                for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
-                    //minimum check per partition
-                    for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                        if(partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
-                           clusterActive = true;
-                        }
-                        clusterActive = false;
-                    }
-
-                }
-                // if active then notify upper layer
-
-                if(clusterActive) {
-                   clusterMonitor.setStatus(ClusterStatus.Active);
-                }
-
-            }
-        };*/
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
             // store primary members in the network partition context
             List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();

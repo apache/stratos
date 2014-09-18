@@ -177,6 +177,9 @@ public class AutoscalerUtil {
                 log.debug("Set the lb reference type: "+value);
             }
         }
+
+        //register a status Checker
+
         
         // set hasPrimary property
         // hasPrimary is true if there are primary members available in that cluster

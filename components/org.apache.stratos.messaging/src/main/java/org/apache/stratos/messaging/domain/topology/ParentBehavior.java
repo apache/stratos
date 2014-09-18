@@ -31,6 +31,10 @@ public interface ParentBehavior extends Serializable {
 
     public Group getGroup (String groupName);
 
+    public Map<String, Group> getGroupMap();
+
+    public Map<String, String> getClusterMap();
+
     public Group getGroupRecursively (String groupAlias);
 
     public Collection<Group> getGroups ();

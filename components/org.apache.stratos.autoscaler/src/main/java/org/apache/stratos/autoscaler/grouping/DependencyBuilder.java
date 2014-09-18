@@ -18,9 +18,48 @@
  */
 package org.apache.stratos.autoscaler.grouping;
 
+import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.DependencyOrder;
+import org.apache.stratos.messaging.domain.topology.StartupOrder;
+
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
 /**
  * This is to build the startup/termination dependencies
  * across all the groups and clusters
  */
 public class DependencyBuilder {
+
+    public static Queue<String> getStartupOrder(Application application) {
+
+        Queue<String> startup = new LinkedList<String>();
+        DependencyOrder dependencyOrder = application.getDependencyOrder();
+        Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
+        for (StartupOrder startupOrder : startupOrderSet) {
+
+            String start = startupOrder.getStart();
+            String after = startupOrder.getAfter();
+
+            if (!startup.contains(start)) {
+                startup.add(start);
+                if (!startup.contains(after)) {
+                    startup.add(after);
+
+                } else {
+                    //TODO throw exception since after is there before start
+                }
+            } else {
+                if (!startup.contains(after)) {
+                    startup.add(after);
+                } else {
+                    //TODO throw exception since start and after already there
+                }
+            }
+        }
+        return startup;
+
+    }
+
 }

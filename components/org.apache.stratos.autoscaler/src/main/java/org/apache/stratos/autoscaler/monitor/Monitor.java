@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
@@ -29,6 +30,7 @@ import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.event.Event;
 
 import java.util.Map;
 import java.util.Observable;
@@ -60,6 +62,14 @@ public abstract class Monitor implements Observer, Runnable {
         return abstractClusterMonitors;
     }
 
+    public void addAbstractMonitor(AbstractClusterMonitor monitor) {
+       this.abstractClusterMonitors.put(monitor.getClusterId(), monitor);
+    }
+
+    public AbstractClusterMonitor getAbstractMonitor(String clusterId) {
+        return this.abstractClusterMonitors.get(clusterId);
+    }
+
     public void setAbstractClusterMonitors(Map<String, AbstractClusterMonitor> abstractClusterMonitors) {
         this.abstractClusterMonitors = abstractClusterMonitors;
     }
@@ -67,9 +77,21 @@ public abstract class Monitor implements Observer, Runnable {
     public abstract void monitor();
 
     @Override
-    public void update(Observable observable, Object o) {
-
+    public void update(Observable observable, Object arg) {
+        if(arg instanceof Event) {
+            Event event = (Event) arg;
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Event received: %s", event.getClass().getName()));
+            }
+            onEvent(event);
+        }
     }
+
+    /**
+     * Triggered when an event is received.
+     * @param event
+     */
+    protected abstract void onEvent(Event event);
 
     public String getId() {
         return this.id;
@@ -171,7 +193,7 @@ public abstract class Monitor implements Observer, Runnable {
             Thread th = new Thread(monitor);
             th.start();
 
-            //AutoscalerContext.getInstance().addMonitor(monitor);
+            AutoscalerContext.getInstance().addMonitor(monitor);
             abstractClusterMonitors.put(cluster.getClusterId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster monitor has been added successfully: [cluster] %s",
@@ -268,7 +290,7 @@ public abstract class Monitor implements Observer, Runnable {
 
             Thread th = new Thread(monitor);
             th.start();
-            //AutoscalerContext.getInstance().addLbMonitor(monitor);
+            AutoscalerContext.getInstance().addLbMonitor(monitor);
             abstractClusterMonitors.put(cluster.getClusterId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("LB Cluster monitor has been added successfully: [cluster] %s",

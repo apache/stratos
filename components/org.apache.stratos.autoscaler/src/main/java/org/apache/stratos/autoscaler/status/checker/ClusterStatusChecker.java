@@ -18,22 +18,28 @@
  */
 package org.apache.stratos.autoscaler.status.checker;
 
+
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
+import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * Cluster status checker will periodically check the cluster status
  * and notify the interested parties
  */
-public class ClusterStatusChecker extends StatusChecker {
-    private String appId;
-    private String groupId;
-    private String clsuterId;
+public class ClusterStatusChecker {
 
-    public ClusterStatusChecker(String appId, String groupId, String clusterId) {
-        this.appId = appId;
-        this.groupId = groupId;
-        this.clsuterId = clusterId;
-    }
-    @Override
-    public void run() {
 
-    }
+    
+
 }

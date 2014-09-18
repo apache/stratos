@@ -47,7 +47,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
     private GroupActivatedProcessor groupActivatedProcessor;
-    private CompositeApplicationCreatedMessageProcessor compositeApplicationCreatedMessageProcessor;
     private CompositeApplicationRemovedMessageProcessor compositeApplicationRemovedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
@@ -105,9 +104,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         applicationRemovedMessageProcessor = new ApplicationRemovedMessageProcessor();
         add(applicationRemovedMessageProcessor);
 
-        compositeApplicationCreatedMessageProcessor = new CompositeApplicationCreatedMessageProcessor();
-        add(applicationCreatedMessageProcessor);
-
         compositeApplicationRemovedMessageProcessor = new CompositeApplicationRemovedMessageProcessor();
         add(applicationRemovedMessageProcessor);
 
@@ -156,8 +152,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationRemovedEventListener) {
             applicationRemovedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof  CompositeApplicationCreatedEventListener) {
-            compositeApplicationCreatedMessageProcessor.addEventListener(eventListener);
         	if (log.isDebugEnabled()) {
                 log.debug("Grouping: added eventlistener to applicationCreatedMessageProcessor: " + eventListener);
             }
