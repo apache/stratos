@@ -41,6 +41,7 @@ public class HAProxyContext {
     private String thriftReceiverIp;
     private String thriftReceiverPort;
     private String networkPartitionId;
+    private String clusterId;
 
     private HAProxyContext() {
         this.haProxyPrivateIp = System.getProperty(Constants.HAPROXY_PRIVATE_IP);
@@ -54,6 +55,7 @@ public class HAProxyContext {
         this.thriftReceiverIp = System.getProperty(Constants.THRIFT_RECEIVER_IP);
         this.thriftReceiverPort = System.getProperty(Constants.THRIFT_RECEIVER_PORT);
         this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
+        this.clusterId = System.getProperty(Constants.CLUSTER_ID);
 
         if (log.isDebugEnabled()) {
             log.debug(Constants.HAPROXY_PRIVATE_IP + " = " + haProxyPrivateIp);
@@ -67,6 +69,7 @@ public class HAProxyContext {
             log.debug(Constants.THRIFT_RECEIVER_IP + " = " + thriftReceiverIp);
             log.debug(Constants.THRIFT_RECEIVER_PORT + " = " + thriftReceiverPort);
             log.debug(Constants.NETWORK_PARTITION_ID + " = " + networkPartitionId);
+            log.debug(Constants.CLUSTER_ID + " = " + clusterId);
         }
     }
 
@@ -90,6 +93,7 @@ public class HAProxyContext {
         validateSystemProperty(Constants.CONF_FILE_PATH);
         validateSystemProperty(Constants.STATS_SOCKET_FILE_PATH);
         validateSystemProperty(Constants.CEP_STATS_PUBLISHER_ENABLED);
+        validateSystemProperty(Constants.CLUSTER_ID);
 
         if(cepStatsPublisherEnabled) {
             validateSystemProperty(Constants.THRIFT_RECEIVER_IP);
@@ -136,4 +140,8 @@ public class HAProxyContext {
     public boolean isCEPStatsPublisherEnabled() {
         return cepStatsPublisherEnabled;
     }
+
+    public String getNetworkPartitionId() { return networkPartitionId; };
+
+    public String getClusterId() { return clusterId; };
 }
