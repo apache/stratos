@@ -37,6 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This Class provides the operations related to adding/updating/deleting and listing users using
+ * the carbon UserStoreManager in the particular tenant space
+ */
 public class StratosUserManager {
 
     private transient static final Log log = LogFactory.getLog(StratosUserManager.class);
@@ -44,7 +48,7 @@ public class StratosUserManager {
     private static final String GET_ALL_USERS_WILD_CARD = "*";
 
     /**
-     * Add a user to the user-store
+     * Add a user to the user-store of the particular tenant
      *
      * @param userStoreManager
      * @param userInfoBean
@@ -79,7 +83,7 @@ public class StratosUserManager {
     }
 
     /**
-     * Delete the user with the given username
+     * Delete the user with the given username in the relevant tenant space
      *
      * @param userStoreManager
      * @param userName
@@ -98,7 +102,7 @@ public class StratosUserManager {
 
 
     /**
-     * Updates the user info
+     * Updates the user info given the new UserInfoBean
      *
      * @param userStoreManager
      * @param userInfoBean
@@ -136,7 +140,7 @@ public class StratosUserManager {
     }
 
     /**
-     * Get a List of usernames and associated Roles
+     * Get a List of usernames and associated Roles as a UserInfoBean
      *
      * @param userStoreManager UserStoreManager
      * @return List<UserInfoBean>
