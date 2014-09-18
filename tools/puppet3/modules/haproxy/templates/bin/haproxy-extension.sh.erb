@@ -39,8 +39,8 @@ properties="-Dhaproxy.private.ip=0.0.0.0
             -Dthrift.receiver.ip=<%= @cep_ip %>
             -Dthrift.receiver.port=<%= @cep_port %>
             -Dnetwork.partition.id=<%= @network_partition_id %>
-            <% if @stratos_lb_category == 'service.aware.load.balancer' %>-Dstratos.topology.service.filter=service-name=<%= @service_filter %><% end %>            
-            -Dcep.stats.publisher.enabled=true"
+            -Dcluster.id=<%= @cluster_id %>
+	    -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

@@ -22,6 +22,7 @@
 class haproxy(
   $network_partition_id = $stratos_network_partition_id,
   $service_filter       = $stratos_load_balanced_service_type,
+  $cluster_id           = $stratos_cluster_id,
   $version              = '4.0.0',
   $owner                = 'root',
   $group                = 'root',
