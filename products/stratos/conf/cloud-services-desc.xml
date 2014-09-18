@@ -23,6 +23,16 @@
      given here. 
   -->
 <cloudServices xmlns="http://wso2.com/carbon/cloud/mgt/services">
+     <cloudService name="Apache Stratos" default="true">
+        <key>STRATOS</key>
+        <label>Apache Stratos</label>
+        <link>https://stratos.cloud.wso2.com</link>
+        <!--icon>
+            https://localhost:9443/cloud-services-icons/esb.gif
+        </icon-->
+        <productPageURL>http://wso2.com/cloud/stratos</productPageURL>
+        <description>Apache stratos</description>
+    </cloudService>
      <cloudService name="WSO2 Stratos Controller" default="true">
 	<key>SCC</key>
         <label>WSO2 Stratos Controller</label>
