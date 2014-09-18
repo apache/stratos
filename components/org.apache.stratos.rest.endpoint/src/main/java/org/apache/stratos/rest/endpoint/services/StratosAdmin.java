@@ -184,22 +184,22 @@ public class StratosAdmin extends AbstractAdmin {
     }
     
 
-    
-    @DELETE
-    @Path("/application/definition/{applicationAlias}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    @SuperTenantService(true)
-    // Grouping
-    public Response unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
-            throws RestAPIException {
-
-         ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
-                 getTenantDomain());
-        return Response.noContent().build();
-
-    }
+//
+//    @DELETE
+//    @Path("/application/definition/{applicationAlias}")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+//    @SuperTenantService(true)
+//    // Grouping
+//    public Response unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
+//            throws RestAPIException {
+//
+//         ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
+//                 getTenantDomain());
+//        return Response.noContent().build();
+//
+//    }
     
     
     

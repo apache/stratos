@@ -88,9 +88,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
                 try {
                     TopologyManager.acquireReadLock();
-                    for (Application application : TopologyManager.getTopology().getApplications()) {
-                        startApplicationMonitor(application);
-                    }
+                   // for (Application application : TopologyManager.getTopology().getApplications()) {
+                   //     startApplicationMonitor(application);
+                   // }
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
@@ -117,7 +117,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO build dependency and organize the application
 
                     //start the application monitor
-                    startApplicationMonitor(applicationCreatedEvent.getApplication());
+                    //startApplicationMonitor(applicationCreatedEvent.getApplication());
 
                 } finally {
                     //release read lock
