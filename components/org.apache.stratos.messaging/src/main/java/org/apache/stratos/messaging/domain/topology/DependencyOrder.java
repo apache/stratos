@@ -19,10 +19,11 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DependencyOrder {
+public class DependencyOrder implements Serializable {
 
     private Set<StartupOrder> startupOrders;
 

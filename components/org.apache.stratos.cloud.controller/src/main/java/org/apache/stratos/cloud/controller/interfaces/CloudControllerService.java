@@ -169,11 +169,19 @@ public interface CloudControllerService {
     public ClusterContext getClusterContext (String clusterId);
 
     /**
-     * deployed an Application Definition
+     * deploys an Application Definition
      *
      * @param applicationContext {@link org.apache.stratos.cloud.controller.pojo.application.ApplicationContext} object
      * @throws ApplicationDefinitionException if an error is encountered
      */
     public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
+
+    /**
+     * undeploys an Application Definition
+     *
+     * @param applicationId Id of the Application to be undeployed
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void unDeployApplicationDefinition (String applicationId) throws ApplicationDefinitionException;
 
 }

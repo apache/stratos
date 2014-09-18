@@ -19,7 +19,9 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-public class StartupOrder {
+import java.io.Serializable;
+
+public class StartupOrder implements Serializable {
 
     private String start;
 

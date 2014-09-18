@@ -124,6 +124,10 @@ public class Group implements ParentBehavior {
         return clusterIdMap.values();
     }
 
+    public Map<String, String> getClusterIdMap () {
+        return clusterIdMap;
+    }
+
     public String getName() {
         return name;
     }

@@ -1432,6 +1432,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleApplicationDeployed(applicationDataHolder);
     }
 
+    @Override
+    public void unDeployApplicationDefinition(String applicationId) throws ApplicationDefinitionException {
+
+        TopologyBuilder.handleApplicationUndeployed(applicationId);
+    }
+
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
         List<ConfigCompositeApplication> apps = this.dataHolder.getConfigCompositeApplication();
         if (apps == null) {

@@ -282,45 +282,18 @@ public class ServiceUtils {
         }
     }
     
-    static void unDeployApplication(String configCompositeApplicationAlias, ConfigurationContext ctxt,
+    static void unDeployApplication(String appId, ConfigurationContext ctxt,
             String userName, String tenantDomain) throws RestAPIException {
 
-    		log.info("Starting to undeploy a composite application definition " + configCompositeApplicationAlias);
-    		
-    		CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-            
-            if (cloudControllerServiceClient != null) {
-            	try {
-            		if (log.isDebugEnabled()) {
-                		log.debug("trying to undeploy composite application definition " + configCompositeApplicationAlias);
-                	}
-					cloudControllerServiceClient.unDeployCompositeApplicationDefinition(configCompositeApplicationAlias);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					String message = "Remote ExceptionException";
-    				log.error(message, e);
-    				throw new RestAPIException(message, e);
-				} catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					String message = "CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException";
-    				log.error(message, e);
-    				throw new RestAPIException(message, e);
-				} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					String message = "CloudControllerServiceInvalidIaasProviderExceptionException";
-    				log.error(message, e);
-    				throw new RestAPIException(message, e);
-				}
-            } else {
-            	if (log.isDebugEnabled()) {
-            		log.debug("cloud controller client is null while trying to undeploy composite application definition");
-            	}
-            }
-    		
-    		log.info(String.format("[type] %s", configCompositeApplicationAlias));
+        try {
+            CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId);
+
+        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
+            throw new RestAPIException(e);
+        } catch (RemoteException e) {
+            throw new RestAPIException(e);
+        }
+
     }
 
     @SuppressWarnings("unused")

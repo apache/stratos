@@ -60,6 +60,10 @@ public class Topology implements Serializable {
         return applicationMap.get(applicationId);
     }
 
+    public void removeApplication (String applicationId) {
+        applicationMap.remove(applicationId);
+    }
+
     public Collection<Application> getApplications () {
         return applicationMap.values();
     }

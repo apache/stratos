@@ -22,10 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.CompositeApplicationDefinition;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.pojo.*;
@@ -41,10 +39,8 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.Constants;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -626,12 +622,54 @@ public class TopologyBuilder {
 
             for (Cluster cluster : applicationDataHolder.getClusters()) {
                 String cartridgeType = cluster.getServiceName();
-                topology.getService(cartridgeType).addCluster(cluster);
-                log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + applicationDataHolder.getApplication().getId());
+                Service service = topology.getService(cartridgeType);
+                if (service != null) {
+                    topology.getService(cartridgeType).addCluster(cluster);
+                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + applicationDataHolder.getApplication().getId());
+                } else {
+                    log.error("Service " + cartridgeType + " not found");
+                    return;
+                }
             }
+            // add to Topology and update
+            topology.addApplication(applicationDataHolder.getApplication());
             TopologyManager.updateTopology(topology);
+            log.info("Application with id [ " + applicationDataHolder.getApplication().getId() + " ] added to Topology successfully");
 
             TopologyEventPublisher.sendApplicationCreatedEvent(applicationDataHolder.getApplication());
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+    }
+
+    public static void handleApplicationUndeployed (String applicationId) {
+
+        Topology topology = TopologyManager.getTopology();
+
+        try {
+            TopologyManager.acquireWriteLock();
+
+            if (!topology.applicationExists(applicationId)) {
+                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
+
+            } else {
+                Application application = topology.getApplication(applicationId);
+                // remove clusters
+                for (Map.Entry<String,String> clusterIdMapEntry : application.getClusterIdMap().entrySet()) {
+                    Service service = topology.getService(clusterIdMapEntry.getKey());
+                    service.removeCluster(clusterIdMapEntry.getValue());
+                }
+
+                // remove application
+                topology.removeApplication(applicationId);
+
+                TopologyManager.updateTopology(topology);
+
+                log.info("Removed application [ " + applicationId + " ] from Topology");
+
+                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId);
+            }
 
         } finally {
             TopologyManager.releaseWriteLock();

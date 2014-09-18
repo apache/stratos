@@ -128,6 +128,10 @@ public class Application implements ParentBehavior {
         return clusterIdMap.values();
     }
 
+    public Map<String, String> getClusterIdMap () {
+        return clusterIdMap;
+    }
+
     public String getId() {
         return id;
     }

@@ -24,13 +24,16 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
  * This processor will act upon the Group activation events
  */
 public class GroupActivatedProcessor extends MessageProcessor {
+
+    private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
-        return false;
+        return nextProcessor.process(type, message, object);
     }
 }

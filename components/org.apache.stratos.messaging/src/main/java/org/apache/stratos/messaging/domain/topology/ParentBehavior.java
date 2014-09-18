@@ -46,4 +46,6 @@ public interface ParentBehavior extends Serializable {
     public String getClusterId (String serviceName);
 
     public Collection<String> getClusterIds ();
+
+    public Map<String, String> getClusterIdMap ();
 }

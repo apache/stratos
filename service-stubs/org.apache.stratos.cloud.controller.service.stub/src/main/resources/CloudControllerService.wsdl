@@ -91,6 +91,11 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="ApplicationDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="InvalidMemberException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
@@ -107,11 +112,6 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidCartridgeDefinitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ApplicationDefinitionException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -218,6 +218,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="appAlias" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceApplicationDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax219:ApplicationDefinitionException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unDeployApplicationDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -405,13 +419,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax221:CartridgeConfig"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceApplicationDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax219:ApplicationDefinitionException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -692,6 +699,12 @@
     <wsdl:message name="CloudControllerServiceUnregisteredCartridgeException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="unDeployApplicationDefinitionRequest">
+        <wsdl:part name="parameters" element="ns:unDeployApplicationDefinition"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceApplicationDefinitionException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceApplicationDefinitionException"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="getServiceGroupDependenciesRequest">
         <wsdl:part name="parameters" element="ns:getServiceGroupDependencies"></wsdl:part>
     </wsdl:message>
@@ -730,9 +743,6 @@
     </wsdl:message>
     <wsdl:message name="deployApplicationDefinitionRequest">
         <wsdl:part name="parameters" element="ns:deployApplicationDefinition"></wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceApplicationDefinitionException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceApplicationDefinitionException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="unregisterServiceRequest">
         <wsdl:part name="parameters" element="ns:unregisterService"></wsdl:part>
@@ -805,6 +815,10 @@
             <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"></wsdl:input>
             <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"></wsdl:output>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:registerServiceCloudControllerServiceUnregisteredCartridgeException"></wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <wsdl:input message="ns:unDeployApplicationDefinitionRequest" wsaw:Action="urn:unDeployApplicationDefinition"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceApplicationDefinitionException" name="CloudControllerServiceApplicationDefinitionException" wsaw:Action="urn:unDeployApplicationDefinitionCloudControllerServiceApplicationDefinitionException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getServiceGroupDependencies">
             <wsdl:input message="ns:getServiceGroupDependenciesRequest" wsaw:Action="urn:getServiceGroupDependencies"></wsdl:input>
@@ -945,8 +959,17 @@
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroup">
-            <soap:operation soapAction="urn:getServiceGroup" style="document"></soap:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap:operation soapAction="urn:unDeployApplicationDefinition" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceApplicationDefinitionException">
+                <soap:fault use="literal" name="CloudControllerServiceApplicationDefinitionException"></soap:fault>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroupDependencies">
+            <soap:operation soapAction="urn:getServiceGroupDependencies" style="document"></soap:operation>
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
@@ -957,8 +980,20 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroupDependencies">
-            <soap:operation soapAction="urn:getServiceGroupDependencies" style="document"></soap:operation>
+        <wsdl:operation name="getServiceGroupSubGroups">
+            <soap:operation soapAction="urn:getServiceGroupSubGroups" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap:fault>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <soap:operation soapAction="urn:getServiceGroup" style="document"></soap:operation>
             <wsdl:input>
                 <soap:body use="literal"></soap:body>
             </wsdl:input>
@@ -979,18 +1014,6 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap:fault>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getServiceGroupSubGroups">
-            <soap:operation soapAction="urn:getServiceGroupSubGroups" style="document"></soap:operation>
-            <wsdl:input>
-                <soap:body use="literal"></soap:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"></soap:body>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="undeployServiceGroup">
@@ -1182,8 +1205,17 @@
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroup">
-            <soap12:operation soapAction="urn:getServiceGroup" style="document"></soap12:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap12:operation soapAction="urn:unDeployApplicationDefinition" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceApplicationDefinitionException">
+                <soap12:fault use="literal" name="CloudControllerServiceApplicationDefinitionException"></soap12:fault>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroupDependencies">
+            <soap12:operation soapAction="urn:getServiceGroupDependencies" style="document"></soap12:operation>
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
@@ -1194,8 +1226,20 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroupDependencies">
-            <soap12:operation soapAction="urn:getServiceGroupDependencies" style="document"></soap12:operation>
+        <wsdl:operation name="getServiceGroupSubGroups">
+            <soap12:operation soapAction="urn:getServiceGroupSubGroups" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap12:fault>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <soap12:operation soapAction="urn:getServiceGroup" style="document"></soap12:operation>
             <wsdl:input>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:input>
@@ -1216,18 +1260,6 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"></soap12:fault>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getServiceGroupSubGroups">
-            <soap12:operation soapAction="urn:getServiceGroupSubGroups" style="document"></soap12:operation>
-            <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="undeployServiceGroup">
@@ -1398,8 +1430,14 @@
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroup">
-            <http:operation location="getServiceGroup"></http:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <http:operation location="unDeployApplicationDefinition"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroupDependencies">
+            <http:operation location="getServiceGroupDependencies"></http:operation>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
@@ -1407,8 +1445,17 @@
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getServiceGroupDependencies">
-            <http:operation location="getServiceGroupDependencies"></http:operation>
+        <wsdl:operation name="getServiceGroupSubGroups">
+            <http:operation location="getServiceGroupSubGroups"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <http:operation location="getServiceGroup"></http:operation>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
@@ -1421,15 +1468,6 @@
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
-        </wsdl:operation>
-        <wsdl:operation name="getServiceGroupSubGroups">
-            <http:operation location="getServiceGroupSubGroups"></http:operation>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"></mime:content>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="undeployServiceGroup">
             <http:operation location="undeployServiceGroup"></http:operation>

@@ -36,6 +36,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.wml.WMLStrongElement;
 
 import java.util.List;
 import java.util.Properties;
@@ -97,6 +98,15 @@ public class TopologyEventPublisher {
         }
 
         publishEvent(new ApplicationCreatedEvent(application));
+    }
+
+    public static void sendApplicationRemovedEvent(String applicationId) {
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing Application removed event: " + applicationId);
+        }
+
+        publishEvent(new ApplicationRemovedEvent(applicationId));
     }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {
