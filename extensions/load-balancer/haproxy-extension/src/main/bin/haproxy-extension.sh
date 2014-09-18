@@ -40,6 +40,7 @@ properties="-Dhaproxy.private.ip=127.0.0.1
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=network-partition-1
             -Dcluster.id=cluster
+            -Dcep.stats.publisher.enabled=true"
 
 
 # Uncomment below line to enable remote debugging

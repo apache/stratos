@@ -141,7 +141,11 @@ public class HAProxyContext {
         return cepStatsPublisherEnabled;
     }
 
-    public String getNetworkPartitionId() { return networkPartitionId; };
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
 
-    public String getClusterId() { return clusterId; };
+    public String getClusterId() {
+        return clusterId;
+    }
 }
