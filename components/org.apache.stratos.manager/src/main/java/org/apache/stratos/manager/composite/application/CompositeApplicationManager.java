@@ -13,7 +13,7 @@ import org.apache.stratos.manager.composite.application.structure.SubscribableCo
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 
@@ -39,11 +39,11 @@ public class CompositeApplicationManager {
                 + compositeAppDefinition.getAlias() + " ] parsed successfully");
 
         // create the CompositeAppSubscription
-        CompositeAppSubscription compositeAppSubscription;
+        ApplicationSubscription compositeAppSubscription;
         try {
-            compositeAppSubscription = cartridgeSubscriptionManager.createCompositeAppSubscription(compositeAppContext.getAppId(), tenantId);
+            compositeAppSubscription = cartridgeSubscriptionManager.createApplicationSubscription(compositeAppContext.getAppId(), tenantId);
 
-        } catch (CompositeAppSubscriptionException e) {
+        } catch (ApplicationSubscriptionException e) {
             throw new CompositeApplicationDefinitionException(e);
         }
 
@@ -257,7 +257,7 @@ public class CompositeApplicationManager {
 
     private synchronized void persistSubscriptions(Collection<CartridgeSubscription> cartridgeSubscriptions,
                                                    Collection<GroupSubscription> groupSubscriptions,
-                                                   CompositeAppSubscription compositeAppSubscription)
+                                                   ApplicationSubscription compositeAppSubscription)
         throws CompositeApplicationException {
 
         persistCartridgeSubscriptions(cartridgeSubscriptions);
@@ -297,7 +297,7 @@ public class CompositeApplicationManager {
         }
     }
 
-    private void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription) throws CompositeApplicationException {
+    private void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription) throws CompositeApplicationException {
 
         if (compositeAppSubscription != null) {
             try {

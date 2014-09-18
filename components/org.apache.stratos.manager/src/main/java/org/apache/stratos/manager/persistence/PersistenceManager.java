@@ -23,7 +23,7 @@ import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
 
 import java.util.Collection;
@@ -51,10 +51,10 @@ public abstract class PersistenceManager {
     public abstract Collection<CartridgeSubscription> getCartridgeSubscriptions(int tenantId)
             throws PersistenceManagerException;
 
-    public abstract void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription)
+    public abstract void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription)
             throws PersistenceManagerException;
 
-    public abstract CompositeAppSubscription getCompositeAppSubscription (int tenantId, String compositeAppId)
+    public abstract ApplicationSubscription getCompositeAppSubscription (int tenantId, String compositeAppId)
             throws PersistenceManagerException;
 
     public abstract void removeCompositeAppSubscription (int tenantId, String compositeAppId)

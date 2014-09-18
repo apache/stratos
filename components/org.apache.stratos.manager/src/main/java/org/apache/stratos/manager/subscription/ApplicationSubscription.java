@@ -30,9 +30,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class CompositeAppSubscription implements Serializable {
+public class ApplicationSubscription implements Serializable {
 
-    private static Log log = LogFactory.getLog(CompositeAppSubscription.class);
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3380699449827682550L;
+
+	private static Log log = LogFactory.getLog(ApplicationSubscription.class);
 
     private String appId;
 
@@ -40,7 +45,7 @@ public class CompositeAppSubscription implements Serializable {
 
     private Set<String> groupSubscriptionAliases;
 
-    public CompositeAppSubscription (String appId) {
+    public ApplicationSubscription (String appId) {
 
         this.appId = appId;
         cartridgeSubscriptionAliases = new HashSet<String>();

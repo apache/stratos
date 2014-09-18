@@ -22,11 +22,11 @@ package org.apache.stratos.manager.topology.receiver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.CompositeAppSubscriptionException;
+import org.apache.stratos.manager.exception.ApplicationSubscriptionException;
 import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
 import org.apache.stratos.manager.exception.CompositeApplicationException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -291,17 +291,21 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     
                     // create and persist Application subscritpion
                     CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
-                    CompositeAppSubscription compositeAppSubscription;
+                    ApplicationSubscription compositeAppSubscription;
                     Application app = appCreateEvent.getApplication();
                     String appId = app.getId();
                     int tenantId = app.getTenantId();
+                    
+                    if (log.isDebugEnabled()) {
+                    	log.debug("received application created event for app: " + appId + " and tenant: " + tenantId);
+                    }
                     try {
-                        compositeAppSubscription = cartridgeSubscriptionManager.createCompositeAppSubscription(appId, tenantId);
+                        compositeAppSubscription = cartridgeSubscriptionManager.createApplicationSubscription(appId, tenantId);
                         cartridgeSubscriptionManager.persistCompositeAppSubscription(compositeAppSubscription);
-                    } catch (CompositeAppSubscriptionException e) {
-                        //throw new CompositeApplicationDefinitionException(e);
+                    } catch (ApplicationSubscriptionException e) {
+                        log.error("failed to persist application subscription, caught exception: " + e);
                     } catch (ADCException e) {
-                        //throw new CompositeApplicationException(e);
+                    	log.error("failed to persist application subscription, caught exception: " + e);
                     }
                 } finally {
                     TopologyManager.releaseReadLock();

@@ -19,25 +19,29 @@
 
 package org.apache.stratos.manager.exception;
 
-public class CompositeAppSubscriptionException extends Exception {
+public class ApplicationSubscriptionException extends Exception {
 
-    private String message;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 603387881177162687L;
+	private String message;
 
-    public CompositeAppSubscriptionException() {
+    public ApplicationSubscriptionException() {
         super();
     }
 
-    public CompositeAppSubscriptionException(String message, Throwable cause) {
+    public ApplicationSubscriptionException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public CompositeAppSubscriptionException(String message) {
+    public ApplicationSubscriptionException(String message) {
         super(message);
         this.message = message;
     }
 
-    public CompositeAppSubscriptionException(Throwable cause) {
+    public ApplicationSubscriptionException(Throwable cause) {
         super(cause);
     }
 

@@ -89,27 +89,27 @@ public class CartridgeSubscriptionManager {
         return new GroupSubscription(groupName, groupAlias);
     }
 
-    public CompositeAppSubscription createCompositeAppSubscription (String appId, int tenantId)  throws CompositeAppSubscriptionException {
+    public ApplicationSubscription createApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
 
     	if (log.isDebugEnabled()) {
-            log.debug("createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
+            log.debug("create Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
         }
     	
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
-        CompositeAppSubscription compositeAppSubscription;
+        ApplicationSubscription compositeAppSubscription;
 
         try {
             compositeAppSubscription = dataInsertionAndRetrievalMgr.getCompositeAppSubscription(tenantId, appId);
 
         } catch (PersistenceManagerException e) {
-            log.error("failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
-            throw new CompositeAppSubscriptionException(e);
+            log.error("failed to Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
+            throw new ApplicationSubscriptionException(e);
         }
 
         if (compositeAppSubscription != null) {
             // Composite App Subscription already exists with same app id
            log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
-           throw new CompositeAppSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
+           throw new ApplicationSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
         } else {
         	// persist 
         	try {
@@ -122,7 +122,7 @@ public class CartridgeSubscriptionManager {
 			}
         }
 
-        return new CompositeAppSubscription(appId);
+        return new ApplicationSubscription(appId);
     }
 
     public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,
@@ -185,7 +185,7 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    public void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription) throws ADCException {
+    public void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription) throws ADCException {
 
         try {
             new DataInsertionAndRetrievalManager().persistCompositeAppSubscription(compositeAppSubscription);

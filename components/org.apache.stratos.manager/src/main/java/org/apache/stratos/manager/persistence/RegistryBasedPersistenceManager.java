@@ -26,7 +26,7 @@ import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.manager.utils.Deserializer;
 import org.apache.stratos.manager.utils.Serializer;
@@ -365,7 +365,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     @Override
-    public void persistCompositeAppSubscription(CompositeAppSubscription compositeAppSubscription) throws PersistenceManagerException {
+    public void persistCompositeAppSubscription(ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
 
         int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
         if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
@@ -387,7 +387,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
     }
 
-    private void persistSubscription (int tenantId, CompositeAppSubscription compositeAppSubscription) throws PersistenceManagerException {
+    private void persistSubscription (int tenantId, ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
 
         // persist
         try {
@@ -408,7 +408,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     @Override
-    public CompositeAppSubscription getCompositeAppSubscription(int tenantId, String compositeAppId) throws PersistenceManagerException {
+    public ApplicationSubscription getCompositeAppSubscription(int tenantId, String compositeAppId) throws PersistenceManagerException {
 
         if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
             // TODO: This is only a workaround. Proper fix is to write to tenant registry
@@ -430,7 +430,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
         }
     }
 
-    public CompositeAppSubscription getSubscription (int tenantId, String appId) throws PersistenceManagerException {
+    public ApplicationSubscription getSubscription (int tenantId, String appId) throws PersistenceManagerException {
 
         Object byteObj;
 
@@ -455,8 +455,8 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             throw new PersistenceManagerException(e);
         }
 
-        if (compositeAppSubscriptionObj instanceof CompositeAppSubscription) {
-            return (CompositeAppSubscription) compositeAppSubscriptionObj;
+        if (compositeAppSubscriptionObj instanceof ApplicationSubscription) {
+            return (ApplicationSubscription) compositeAppSubscriptionObj;
         }
 
         return null;

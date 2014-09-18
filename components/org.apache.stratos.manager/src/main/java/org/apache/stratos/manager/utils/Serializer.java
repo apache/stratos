@@ -24,7 +24,7 @@ import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.ClusterIdToSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
@@ -81,7 +81,7 @@ public class Serializer {
 
     }
 
-    public static byte[] serializeCompositeAppSubscriptionToByteArray (CompositeAppSubscription compositeAppSubscription)
+    public static byte[] serializeCompositeAppSubscriptionToByteArray (ApplicationSubscription compositeAppSubscription)
             throws IOException {
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

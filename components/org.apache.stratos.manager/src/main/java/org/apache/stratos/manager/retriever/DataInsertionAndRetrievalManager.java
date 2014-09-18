@@ -29,7 +29,7 @@ import org.apache.stratos.manager.lookup.LookupDataHolder;
 import org.apache.stratos.manager.persistence.PersistenceManager;
 import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.CompositeAppSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
@@ -395,12 +395,12 @@ public class DataInsertionAndRetrievalManager {
         persistenceManager.removeGroupSubscription(tenantId, groupName, groupAlias);
     }
 
-    public void persistCompositeAppSubscription (CompositeAppSubscription compositeAppSubscription) throws PersistenceManagerException {
+    public void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
 
         persistenceManager.persistCompositeAppSubscription(compositeAppSubscription);
     }
 
-    public CompositeAppSubscription getCompositeAppSubscription (int tenantId, String appId) throws PersistenceManagerException {
+    public ApplicationSubscription getCompositeAppSubscription (int tenantId, String appId) throws PersistenceManagerException {
 
         return persistenceManager.getCompositeAppSubscription(tenantId, appId);
     }
