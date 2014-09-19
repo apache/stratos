@@ -36,14 +36,10 @@ import java.util.*;
  */
 public class ApplicationMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
-    private Application application;
-    private Queue<String> preOrderTraverse = new LinkedList<String>();
 
     public ApplicationMonitor(Application application) {
-        this.application = application;
-        //TODO build dependencies and keep them here
-        startDependency();
-
+        super(application);
+        //TODO keep track of the parallel applications
     }
 
     @Override
@@ -59,28 +55,7 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
-    public void startDependency() {
-        preOrderTraverse = DependencyBuilder.getStartupOrder(application);
 
-        //TODO find out the parallel ones
-
-        //start the first dependency
-        String dependency = preOrderTraverse.poll();
-        if(dependency.contains("group")) {
-            startGroupMonitor(application.getGroup(dependency));
-        } else if(dependency.contains("cartridge")) {
-            String clusterId = application.getClusterId(dependency);
-            Cluster cluster = null;
-            TopologyManager.acquireReadLock();
-            cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
-            TopologyManager.releaseReadLock();
-            if(cluster != null) {
-                startClusterMonitor(cluster);
-            } else {
-                //TODO throw exception since Topology is inconsistent
-            }
-        }
-    }
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.

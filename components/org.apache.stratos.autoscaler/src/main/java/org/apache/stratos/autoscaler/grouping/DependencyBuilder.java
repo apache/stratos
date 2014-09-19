@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.grouping;
 
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.DependencyOrder;
+import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 import org.apache.stratos.messaging.domain.topology.StartupOrder;
 
 import java.util.LinkedList;
@@ -32,10 +33,10 @@ import java.util.Set;
  */
 public class DependencyBuilder {
 
-    public static Queue<String> getStartupOrder(Application application) {
+    public static Queue<String> getStartupOrder(ParentBehavior component) {
 
         Queue<String> startup = new LinkedList<String>();
-        DependencyOrder dependencyOrder = application.getDependencyOrder();
+        DependencyOrder dependencyOrder = component.getDependencyOrder();
         Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
         for (StartupOrder startupOrder : startupOrderSet) {
 

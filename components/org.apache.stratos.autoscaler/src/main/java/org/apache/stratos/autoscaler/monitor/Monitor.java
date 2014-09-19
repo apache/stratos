@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
@@ -30,11 +31,11 @@ import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 /**
  * Monitor is to monitor it's child monitors and
@@ -48,7 +49,16 @@ public abstract class Monitor implements Observer, Runnable {
 
     protected Map<String, GroupMonitor> groupMonitors;
     protected Map<String, AbstractClusterMonitor> abstractClusterMonitors;
-    protected Map<String, StatusChecker> statusCheckers;
+
+    protected Queue<String> preOrderTraverse = new LinkedList<String>();
+
+    protected ParentBehavior component;
+
+    public Monitor(ParentBehavior component) {
+        this.component = component;
+        startDependency();
+    }
+
 
     public Map<String, GroupMonitor> getGroupMonitors() {
         return groupMonitors;
@@ -101,7 +111,28 @@ public abstract class Monitor implements Observer, Runnable {
         this.id = id;
     }
 
+    public void startDependency() {
+        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
 
+        //TODO find out the parallel ones
+
+        //start the first dependency
+        String dependency = preOrderTraverse.poll();
+        if(dependency.contains("group")) {
+            startGroupMonitor(component.getGroup(dependency));
+        } else if(dependency.contains("cartridge")) {
+            String clusterId = component.getClusterId(dependency);
+            Cluster cluster = null;
+            TopologyManager.acquireReadLock();
+            cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
+            TopologyManager.releaseReadLock();
+            if(cluster != null) {
+                startClusterMonitor(cluster);
+            } else {
+                //TODO throw exception since Topology is inconsistent
+            }
+        }
+    }
     protected synchronized void startClusterMonitor(Cluster cluster) {
         Thread th = null;
         if (cluster.isLbCluster()

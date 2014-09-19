@@ -34,6 +34,8 @@ public class GroupMonitor extends Monitor {
 
 
     public GroupMonitor(Group group) {
+        super(group);
+        //TODO build dependencies and keep them here
 
     }
 

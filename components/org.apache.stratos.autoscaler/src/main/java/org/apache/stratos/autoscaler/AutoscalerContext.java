@@ -41,6 +41,7 @@ public class AutoscalerContext {
         try {
             setMonitors(new HashMap<String, ClusterMonitor>());
             setLbMonitors(new HashMap<String, LbClusterMonitor>());
+            setAppMonitors(new HashMap<String, ApplicationMonitor>());
         } catch (Exception e) {
             log.error("Rule evaluateMinCheck error", e);
         }
@@ -54,7 +55,6 @@ public class AutoscalerContext {
     // Map<LBClusterId, LBClusterMonitor>
     private Map<String, LbClusterMonitor> lbMonitors;
 
-    private Map<String, GroupMonitor> groupMonitors;
 
     private Map<String, ApplicationMonitor> appMonitors;
 
@@ -68,14 +68,6 @@ public class AutoscalerContext {
 
     public void setAppMonitors(Map<String, ApplicationMonitor> appMonitors) {
         this.appMonitors = appMonitors;
-    }
-
-    public Map<String, GroupMonitor> getGroupMonitors() {
-        return groupMonitors;
-    }
-
-    public void setGroupMonitors(Map<String, GroupMonitor> groupMonitors) {
-        this.groupMonitors = groupMonitors;
     }
 
     public Map<String, StatusChecker> getStatusCheckers() {
