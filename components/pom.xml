@@ -104,7 +104,8 @@
         <module>org.apache.stratos.manager.styles</module>
 		
 	<module>org.apache.stratos.metadataservice</module>
-	
+	<!-- meta data client -->
+        <module>org.apache.stratos.metadata.client</module>	
     </modules>
 	    
 	    <build>
