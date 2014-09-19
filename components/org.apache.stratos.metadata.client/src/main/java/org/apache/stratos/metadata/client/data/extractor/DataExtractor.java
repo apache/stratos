@@ -28,7 +28,7 @@ public interface DataExtractor {
 
     public void initialize ();
 
-    public Collection<DataContext> getData () throws DataExtractorException;
+    public Collection<DataContext> getData (Object object) throws DataExtractorException;
 
     public void terminate () throws DataExtractorException;
 }

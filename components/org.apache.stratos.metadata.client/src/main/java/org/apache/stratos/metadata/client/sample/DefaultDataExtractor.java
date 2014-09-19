@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.apache.stratos.metadata.client.data.extractor;
+package org.apache.stratos.metadata.client.sample;
 
+import org.apache.stratos.metadata.client.data.extractor.DataExtractor;
 import org.apache.stratos.metadata.client.exception.DataExtractorException;
 import org.apache.stratos.metadata.client.pojo.DataContext;
 
@@ -30,7 +31,7 @@ public class DefaultDataExtractor implements DataExtractor {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<DataContext> getData() throws DataExtractorException {
+    public Collection<DataContext> getData(Object object) throws DataExtractorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
