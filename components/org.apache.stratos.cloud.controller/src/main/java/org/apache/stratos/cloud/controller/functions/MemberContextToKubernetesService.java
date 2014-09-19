@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Selector;
 import org.apache.stratos.kubernetes.client.model.Service;
+
 import com.google.common.base.Function;
 
 /**
@@ -48,7 +49,7 @@ public class MemberContextToKubernetesService implements Function<MemberContext,
         
         Service service = new Service();
         service.setApiVersion("v1beta1");
-        service.setId(clusterId);
+        service.setId(getCompatibleId(clusterId));
         service.setKind("Service");
         service.setPort(kubClusterContext.getAnAvailableHostPort());
         Selector selector = new Selector();
@@ -56,6 +57,13 @@ public class MemberContextToKubernetesService implements Function<MemberContext,
         service.setSelector(selector);
         
 		return service;
+	}
+
+	private String getCompatibleId(String clusterId) {
+		if (clusterId.indexOf('.') != -1) {
+			clusterId = clusterId.replace('.', '-');
+		}
+		return clusterId;
 	}
 
 }
