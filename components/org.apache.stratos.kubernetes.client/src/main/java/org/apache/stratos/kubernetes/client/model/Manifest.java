@@ -22,14 +22,11 @@ package org.apache.stratos.kubernetes.client.model;
 
 import java.util.Arrays;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/manifest-schema.json
  * @author nirmal
  *
  */
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class Manifest {
 
 	private String version;

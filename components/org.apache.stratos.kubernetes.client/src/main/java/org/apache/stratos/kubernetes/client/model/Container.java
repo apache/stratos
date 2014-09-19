@@ -22,9 +22,6 @@ package org.apache.stratos.kubernetes.client.model;
 
 import java.util.Arrays;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class Container {
 
 	private String name;

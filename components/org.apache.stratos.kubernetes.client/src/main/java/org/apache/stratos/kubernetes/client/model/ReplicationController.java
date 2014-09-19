@@ -22,14 +22,11 @@ package org.apache.stratos.kubernetes.client.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 /**
  * @author nirmal
  *
  */
 @XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class ReplicationController {
 
 	private String kind;

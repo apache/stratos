@@ -45,14 +45,15 @@ public class KubernetesClusterContext implements Serializable {
     // available list of ports
     private List<Integer> availableHostPorts;
     // kubernetes client API instance
-    private KubernetesApiClient kubernetesApiClient;
+    private transient KubernetesApiClient kubApi;
     
     public KubernetesClusterContext(String id, String portRange, String masterIp) {
     	availableHostPorts = new ArrayList<Integer>();
     	this.kubernetesClusterId = id;
     	this.hostPortRange = portRange;
     	this.masterIp = masterIp;
-    	kubernetesApiClient = new KubernetesApiClient(getEndpoint(masterIp));
+    	this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp)));
+    	
 	}
     
 	private String getEndpoint(String ip) {
@@ -116,20 +117,20 @@ public class KubernetesClusterContext implements Serializable {
 		}
 	}
 
-	public KubernetesApiClient getKubernetesApiClient() {
-		return kubernetesApiClient;
-	}
-
-	public void setKubernetesApiClient(KubernetesApiClient kubernetesApiClient) {
-		this.kubernetesApiClient = kubernetesApiClient;
-	}
-
 	public String getMasterIp() {
 		return masterIp;
 	}
 
 	public void setMasterIp(String masterIp) {
 		this.masterIp = masterIp;
+	}
+
+	public KubernetesApiClient getKubApi() {
+		return kubApi;
+	}
+
+	public void setKubApi(KubernetesApiClient kubApi) {
+		this.kubApi = kubApi;
 	}
 
 	@Override
@@ -173,5 +174,5 @@ public class KubernetesClusterContext implements Serializable {
 			return false;
 		return true;
 	}
-    
+
 }

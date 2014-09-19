@@ -20,9 +20,6 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class Volume {
 
 	private String name;
