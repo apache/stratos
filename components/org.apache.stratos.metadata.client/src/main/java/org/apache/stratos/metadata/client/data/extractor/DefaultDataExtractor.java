@@ -26,7 +26,7 @@ import java.util.Collection;
 
 public class DefaultDataExtractor implements DataExtractor {
 
-    public void initialize() throws DataExtractorException {
+    public void initialize() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

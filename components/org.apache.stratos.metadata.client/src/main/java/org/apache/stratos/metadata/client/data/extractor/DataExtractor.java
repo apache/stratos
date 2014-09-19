@@ -26,7 +26,7 @@ import java.util.Collection;
 
 public interface DataExtractor {
 
-    public void initialize () throws DataExtractorException;
+    public void initialize ();
 
     public Collection<DataContext> getData () throws DataExtractorException;
 

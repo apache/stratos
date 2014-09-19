@@ -46,7 +46,6 @@ public class MetaDataServiceClientManager {
 
         readConfigurations();
         init();
-        this.metaDataServiceClient = new DefaultMetaDataServiceClient(baseUrl);
     }
 
     private void readConfigurations () {
@@ -55,10 +54,12 @@ public class MetaDataServiceClientManager {
 
     private void init () {
 
+        metaDataServiceClient = new DefaultMetaDataServiceClient(baseUrl);
         metaDataServiceClient.initialize();
         //TODO:  load the relevant customized class
         // currently only the default DataExtractor is used
         dataExtractor = new DefaultDataExtractor();
+        dataExtractor.initialize();
     }
 
     public void addExtractedData () {
