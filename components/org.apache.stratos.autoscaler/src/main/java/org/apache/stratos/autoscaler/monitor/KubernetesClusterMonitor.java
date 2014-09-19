@@ -28,6 +28,9 @@ public class KubernetesClusterMonitor implements Runnable{
     private String lbReferenceType;
     private boolean hasPrimary;
     private int numberOfReplicasInServiceCluster = 0;
+    // is container created successfully?
+	boolean success = false;
+	int retryInterval = 60000;
 	
     public KubernetesClusterMonitor(KubernetesClusterContext kubernetesClusterCtxt, String serviceClusterID, String serviceId, 
     		AutoscalePolicy autoscalePolicy) {
@@ -92,17 +95,20 @@ public class KubernetesClusterMonitor implements Runnable{
 
 			if (this.numberOfReplicasInServiceCluster < minReplicas) {
 				
-				int numOfAdditionalReplicas = minReplicas - this.numberOfReplicasInServiceCluster;
-
-				for (int i = 0; i < numOfAdditionalReplicas; i++) {
+				while (success) {
 					try {
 						CloudControllerClient.getInstance().createContainer(kubernetesClusterId, clusterId);
-						this.numberOfReplicasInServiceCluster++;
+						success = true;
+						numberOfReplicasInServiceCluster = minReplicas;
 					} catch (Throwable e) {
-			            String message = "Cannot create a container";
-			            log.error(message, e);
-			            throw new RuntimeException(message, e);
+						String message = "Cannot create a container, will retry in "+(retryInterval/1000)+"s";
+						log.debug(message, e);
 					}
+					
+	                try {
+	                    Thread.sleep(retryInterval);
+	                } catch (InterruptedException e1) {
+	                }
 				}
 			}
 		} finally {
