@@ -111,6 +111,12 @@ public class CartridgeSubscriptionManager {
            log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
            throw new ApplicationSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
         } else {
+        	
+        	if (log.isDebugEnabled()) {
+        		log.debug("creating new application subscription for app:" + appId );
+        	}
+        	
+        	compositeAppSubscription = new ApplicationSubscription(appId);
         	// persist 
         	try {
 				persistCompositeAppSubscription(compositeAppSubscription);
