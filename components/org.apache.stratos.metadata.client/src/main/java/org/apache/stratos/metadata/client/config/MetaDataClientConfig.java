@@ -23,7 +23,7 @@ public class MetaDataClientConfig {
 
     private String metaDataServiceBaseUrl;
 
-    private String customExtractorClassName;
+    private String extractorClassName;
 
     private static volatile MetaDataClientConfig metaDataClientConfig;
 
@@ -31,8 +31,8 @@ public class MetaDataClientConfig {
         readConfig();
     }
 
-    private void readConfig () {
-        // TODO: read all configurations; metaDataServiceBaseUrl, customExtractorClassName
+    private void readConfig () throws RuntimeException{
+        // TODO: read all configurations; metaDataServiceBaseUrl, extractorClassName. cannot be empty
     }
 
     public static MetaDataClientConfig getInstance () {
@@ -52,7 +52,7 @@ public class MetaDataClientConfig {
         return metaDataServiceBaseUrl;
     }
 
-    public String getCustomExtractorClassName() {
-        return customExtractorClassName;
+    public String getExtractorClassName() {
+        return extractorClassName;
     }
 }
