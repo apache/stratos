@@ -54,7 +54,7 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
         
 		Container container = new Container();
-		container.setName(clusterContext.getHostName());
+		container.setName(getCompatibleName(clusterContext.getHostName()));
 
 		Cartridge cartridge = dataHolder.getCartridge(clusterContext
 				.getCartridgeType());
@@ -74,6 +74,13 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
 		return container;
 	}
 	
+	private String getCompatibleName(String hostName) {
+		if (hostName.indexOf('.') != -1) {
+			hostName = hostName.replace('.', '-');
+		}
+		return hostName;
+	}
+
 	private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
 //		String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
 //        		StratosConstants.KUBERNETES_CLUSTER_ID);
@@ -85,7 +92,8 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
 			Port p = new Port();
 			p.setContainerPort(Integer.parseInt(portMapping.getPort()));
 //			p.setHostPort(kubClusterContext.getAnAvailableHostPort());
-			p.setProtocol(portMapping.getProtocol());
+			// In kubernetes transport protocol always be 'tcp'
+			p.setProtocol("tcp");
 			p.setName(p.getProtocol()+p.getContainerPort());
 			portList.add(p);
 		}
@@ -100,6 +108,7 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
         		StratosConstants.KUBERNETES_CLUSTER_ID);
 		
 		List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
+		addToEnvironment(envVars, ctxt.getPayload());
 		//FIXME member id, should it be unique for a container?
 		addToEnvironment(envVars, StratosConstants.MEMBER_ID, memberCtxt.getMemberId());
 		addToEnvironment(envVars, StratosConstants.LB_CLUSTER_ID, memberCtxt.getLbClusterId());
@@ -118,6 +127,21 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
         
         return envVars.toArray(vars);
         
+	}
+
+	private void addToEnvironment(List<EnvironmentVariable> envVars,
+			String payload) {
+
+		if (payload != null) {
+			String[] entries = payload.split(",");
+			for (String entry : entries) {
+				String[] var = entry.split("=");
+				if(var.length != 2) {
+					continue;
+				}
+				addToEnvironment(envVars, var[0], var[1]);
+			}
+		}
 	}
 
 	private void addToEnvironment(List<EnvironmentVariable> envVars,
