@@ -44,6 +44,9 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
+import org.apache.stratos.kubernetes.client.api.KubernetesClientAPI;
+import org.apache.stratos.kubernetes.client.api.ReplicationControllerAPI;
+import org.apache.stratos.kubernetes.client.api.ServiceAPI;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -1354,8 +1357,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				throw new IllegalArgumentException(msg);
 			}
 
-			KubernetesApiClient client = kubClusterContext.getKubernetesApiClient();
-			
+			KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 			
 			// first let's create a replication controller.
 			MemberContextToReplicationController controllerFunction = new MemberContextToReplicationController();
@@ -1366,7 +1368,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						" for "+ memberContext + " to Kubernetes layer.");
 			}
 			
-			client.createReplicationController(controller);
+			kubApi.createReplicationController(controller);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller successfully starte the controller "
@@ -1382,7 +1384,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						" for "+ memberContext + " to Kubernetes layer.");
 			}
 			
-			client.createService(service);
+			kubApi.createService(service);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller successfully starte the controller "
@@ -1429,12 +1431,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		KubernetesClusterContext origCtxt = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
 		KubernetesClusterContext newCtxt = new KubernetesClusterContext(kubernetesClusterId, kubernetesPortRange, kubernetesMasterIp);
 		
+		if (origCtxt == null) {
+			dataHolder.addKubernetesClusterContext(newCtxt);
+			return newCtxt;
+		}
+		
 		if (!origCtxt.equals(newCtxt)) {
 			// if for some reason master IP etc. have changed
 			newCtxt.setAvailableHostPorts(origCtxt.getAvailableHostPorts());
 			dataHolder.addKubernetesClusterContext(newCtxt);
 			return newCtxt;
-		} else {
+		}  else {
 			return origCtxt;
 		}
 	}
