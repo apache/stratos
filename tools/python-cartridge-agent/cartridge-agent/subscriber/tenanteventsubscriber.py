@@ -2,13 +2,13 @@ import logging
 import threading
 import paho.mqtt.client as mqtt
 
-from ..util import cartridgeagentconstants
+from ..util import cartridgeagentconstants,extensionutils
 from ..config import cartridgeagentconfiguration
 from ..extensions import defaultextensionhandler
-from ..event.instance.notifier import *
+from ..event.tenant import *
 
 
-class InstanceEventSubscriber(threading.Thread):
+class TenantEventSubscriber(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -16,9 +16,8 @@ class InstanceEventSubscriber(threading.Thread):
         self.cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
-        self.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
-        self.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
-        self.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
+        self.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
+        self.register_handler("SubscriptionDomainsRemovedEventListener", self.on_subscription_domain_removed)
 
         logging.basicConfig(level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
@@ -47,8 +46,8 @@ class InstanceEventSubscriber(threading.Thread):
 
     def on_connect(self, client, userdata, flags, rc):
         self.log.debug("Connected to message broker.")
-        self.__mb_client.subscribe(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
-        self.log.debug("Subscribed to %r" % cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
+        self.__mb_client.subscribe(cartridgeagentconstants.TENANT_TOPIC)
+        self.log.debug("Subscribed to %r" % cartridgeagentconstants.TENANT_TOPIC)
 
     def on_message(self, client, userdata, msg):
         self.log.debug("Message received: %r:\n%r" % (msg.topic, msg.payload))
@@ -62,24 +61,23 @@ class InstanceEventSubscriber(threading.Thread):
         except:
             self.log.exception("Error processing %r event" % event)
 
-    def on_artifact_updated(self, msg):
-        event_obj = artifactupdatedevent.create_from_json(msg.payload)
-        self.extension_handler.on_artifact_updated_event(event_obj)
+    def on_subscription_domain_added(self, msg):
+        event_obj = subscriptiondomainaddedevent.create_from_json(msg.payload)
+        extensionutils.execute_subscription_domain_added_extension(
+            event_obj.tenant_id,
+            self.find_tenant_domain(event_obj.tenant_id),
+            event_obj.domain_name,
+            event_obj.application_context
+        )
 
-    def on_instance_cleanup_member(self, msg):
-        member_in_payload = self.cartridge_agent_config.get_member_id()
-        event_obj = instancecleanupmemberevent.InstanceCleanupMemberEvent.create_from_json(msg.payload)
-        member_in_event = event_obj.member_id
-        if member_in_payload == member_in_event:
-            self.extension_handler.onInstanceCleanupMemberEvent(event_obj)
+    def on_subscription_domain_removed(self, msg):
+        event_obj = subscriptiondomainremovedevent.create_from_json(msg.payload)
+        extensionutils.execute_subscription_domain_removed_extension(
+            event_obj.tenant_id,
+            self.find_tenant_domain(event_obj.tenant_id),
+            event_obj.domain_name
+        )
 
-    def on_instance_cleanup_cluster(self, msg):
-        event_obj = instancecleanupclusterevent.create_from_json(msg.payload)
-        cluster_in_payload = self.cartridge_agent_config.get_cluster_id()
-        cluster_in_event = event_obj.cluster_id
-
-        if cluster_in_event == cluster_in_payload:
-            self.extension_handler.onInstanceCleanupClusterEvent(event_obj)
-
-    def is_subscribed(self):
-        return self.__subscribed
+    def find_tenant_domain(self, tenant_id):
+        #TODO: call to REST Api and get tenant information
+        raise NotImplementedError
