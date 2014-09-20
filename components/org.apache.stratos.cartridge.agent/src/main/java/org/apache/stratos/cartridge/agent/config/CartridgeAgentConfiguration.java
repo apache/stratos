@@ -93,8 +93,8 @@ public class CartridgeAgentConfiguration {
             listenAddress = System.getProperty(CartridgeAgentConstants.LISTEN_ADDRESS);
             isInternalRepo = readInternalRepo(CartridgeAgentConstants.PROVIDER);
             tenantId = readParameterValue(CartridgeAgentConstants.TENANT_ID);
-            lbClusterId = readParameterValue(CartridgeAgentConstants.LB_CLUSTER_ID);
-            minCount = readParameterValue(CartridgeAgentConstants.MIN_INSTANCE_COUNT);
+            lbClusterId = readLBClusterIdValue(CartridgeAgentConstants.LB_CLUSTER_ID);
+            minCount = readMinCountValue(CartridgeAgentConstants.MIN_INSTANCE_COUNT);
             // not mandatory
             lbPrivateIp = System.getProperty(CartridgeAgentConstants.LB_PRIVATE_IP);
             lbPublicIp = System.getProperty(CartridgeAgentConstants.LB_PUBLIC_IP);
@@ -135,6 +135,36 @@ public class CartridgeAgentConfiguration {
         return null;
     }
 
+	private String readLBClusterIdValue(String lbClusterId) {
+		String lbClusterIdValue = null;
+		if (parameters.containsKey(lbClusterId)) {
+			lbClusterIdValue = parameters.get(lbClusterId);
+		}
+
+		if (System.getProperty(lbClusterId) != null) {
+			lbClusterIdValue = System.getProperty(lbClusterId);
+		}
+		return lbClusterIdValue;
+	}
+    
+	private String readMinCountValue(String minCountParam) throws ParameterNotFoundException {
+
+		String minCountValue = null;
+		if (parameters.containsKey(minCountParam)) {
+			minCountValue = parameters.get(minCountParam);
+		}
+		if (System.getProperty(minCountParam) != null) {
+			minCountValue = System.getProperty(minCountParam);
+		}
+
+		if (Boolean.parseBoolean(isClustered)) {
+			 String message = "Cannot find the value of required parameter: " + minCountParam;
+			throw new ParameterNotFoundException(message);
+		}
+		return minCountValue;
+	}
+
+		
     private String readManagerServiceType(){
 
         if (deployment == null) {
