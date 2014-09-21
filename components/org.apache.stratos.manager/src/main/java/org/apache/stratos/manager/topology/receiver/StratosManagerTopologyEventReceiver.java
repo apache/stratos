@@ -37,6 +37,7 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 public class StratosManagerTopologyEventReceiver implements Runnable {
 
@@ -295,17 +296,26 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     Application app = appCreateEvent.getApplication();
                     String appId = app.getId();
                     int tenantId = app.getTenantId();
+                    String domain = app.getTenantDomain();
                     
                     if (log.isDebugEnabled()) {
-                    	log.debug("received application created event for app: " + appId + " and tenant: " + tenantId);
+                    	log.debug("received application created event for app: " + appId + " and tenant: " + tenantId + 
+                    			" domain:" + domain);
                     }
                     try {
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                        carbonContext.setTenantDomain(domain);
+                        carbonContext.setTenantId(tenantId);
+                       // create Application Subscription and persist
                         compositeAppSubscription = cartridgeSubscriptionManager.createApplicationSubscription(appId, tenantId);
                         cartridgeSubscriptionManager.persistCompositeAppSubscription(compositeAppSubscription);
                     } catch (ApplicationSubscriptionException e) {
                         log.error("failed to persist application subscription, caught exception: " + e);
                     } catch (ADCException e) {
                     	log.error("failed to persist application subscription, caught exception: " + e);
+                    } finally {
+                    	PrivilegedCarbonContext.endTenantFlow();
                     }
                 } finally {
                     TopologyManager.releaseReadLock();
