@@ -252,6 +252,49 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
 	@Override
+	public void updateReplicationController(String controllerId, int replicas)
+			throws KubernetesClientException {
+		ReplicationController controller = null;
+		
+		// gets the current controller
+		controller = getReplicationController(controllerId);
+		
+		try {
+
+			// update the number of replicas
+			controller.getDesiredState().setReplicas(replicas);
+			
+			GsonBuilder gsonBuilder = new GsonBuilder();
+			Gson gson = gsonBuilder.create();
+			String content = gson.toJson(controller);
+			if (log.isDebugEnabled()) {
+				log.debug("UpdateReplicationController Request Body : "
+						+ content);
+			}
+			HttpResponse res = restClient.doPut("replicationControllers/"+controller.getId(),
+					content);
+
+			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED
+					&& res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+				String msg = "Replication Controller [" + controller
+						+ "] update failed. Error: "
+						+ res.getStatusLine().getReasonPhrase();
+				log.error(msg);
+				throw new KubernetesClientException(msg);
+			}
+
+		} catch (KubernetesClientException e) {
+			throw e;
+		} catch (Exception e) {
+			String msg = "Error while updating Replication Controller: "
+					+ controller;
+			log.error(msg, e);
+			throw new KubernetesClientException(msg, e);
+
+		}
+	}
+	
+	@Override
 	public void deleteReplicationController(String controllerId)
 			throws KubernetesClientException {
 		
