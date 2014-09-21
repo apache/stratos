@@ -31,7 +31,11 @@ public class DefaultDataExtractor implements DataExtractor {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<DataContext> getData(Object object) throws DataExtractorException {
+    public Collection<DataContext> getAllData(Object object) throws DataExtractorException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public DataContext getData(Object object) throws DataExtractorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

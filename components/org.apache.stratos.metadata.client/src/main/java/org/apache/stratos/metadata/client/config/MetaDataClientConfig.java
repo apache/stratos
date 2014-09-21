@@ -19,11 +19,25 @@
 
 package org.apache.stratos.metadata.client.config;
 
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.metadata.client.sample.MetaDataServiceClientSample;
+import org.apache.stratos.metadata.client.util.MetaDataClientConstants;
+
+
+import java.io.File;
+
 public class MetaDataClientConfig {
+
+    private static final Log log = LogFactory.getLog(MetaDataServiceClientSample.class);
 
     private String metaDataServiceBaseUrl;
 
-    private String extractorClassName;
+    private String dataExtractorClass;
+
+    private XMLConfiguration config;
 
     private static volatile MetaDataClientConfig metaDataClientConfig;
 
@@ -32,7 +46,45 @@ public class MetaDataClientConfig {
     }
 
     private void readConfig () throws RuntimeException{
-        // TODO: read all configurations; metaDataServiceBaseUrl, extractorClassName. cannot be empty
+
+        // the config file path is found from a system property
+        String configFilePath = System.getProperty(MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
+        if (configFilePath == null) {
+            throw new RuntimeException("Unable to load the configuration file; no System Property found for " + MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
+        }
+        loadConfig(configFilePath);
+
+        // read configurations
+        metaDataServiceBaseUrl = config.getString(MetaDataClientConstants.METADATA_SERVICE_BASE_URL);
+        if (metaDataServiceBaseUrl == null) {
+            throw new RuntimeException("Unable to find metadata service base URL [ " +
+                    MetaDataClientConstants.METADATA_SERVICE_BASE_URL  + " ] in the config file");
+        }
+
+        dataExtractorClass = config.getString(MetaDataClientConstants.METADATA_CLIENT_DATA_EXTRACTOR_CLASS);
+        if (dataExtractorClass == null) {
+            log.info("No custom Data Extractor class detected in the configuration");
+        }
+    }
+
+    private void  loadConfig (String configFilePath) {
+
+        try {
+
+            File confFile;
+            if (configFilePath != null && !configFilePath.isEmpty()) {
+                confFile = new File(configFilePath);
+
+            } else {
+                confFile = new File(configFilePath);
+            }
+
+            config = new XMLConfiguration(confFile);
+
+        } catch (ConfigurationException e) {
+            String errorMsg = "Unable to load configuration file at " + configFilePath;
+            throw new RuntimeException(errorMsg);
+        }
     }
 
     public static MetaDataClientConfig getInstance () {
@@ -52,7 +104,22 @@ public class MetaDataClientConfig {
         return metaDataServiceBaseUrl;
     }
 
-    public String getExtractorClassName() {
-        return extractorClassName;
+    public String getDataExtractorClass() {
+        return dataExtractorClass;
     }
+
+
+/*
+Sample Configuration file:
+
+    <configuration>
+        <metadataService>
+            <baseUrl>xx.xx.xx.xx</baseUrl>
+        </metadataService>
+        <metadataClient>
+            <dataExtractorClass>org.foo.MyDataExtractor</dataExtractorClass>
+        </metadataClient>
+    </configuration>
+
+*/
 }

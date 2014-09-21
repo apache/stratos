@@ -26,7 +26,6 @@ import org.apache.stratos.metadata.client.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.data.extractor.DataExtractor;
 import org.apache.stratos.metadata.client.exception.DataExtractorException;
-import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
 import org.apache.stratos.metadata.client.factory.MetaDataExtractorFactory;
 import org.apache.stratos.metadata.client.pojo.DataContext;
 
@@ -53,34 +52,40 @@ public class MetaDataServiceClientSample {
         metaDataServiceClient = new DefaultMetaDataServiceClient(metaDataClientConfig.
                 getMetaDataServiceBaseUrl());
         metaDataServiceClient.initialize();
-        dataExtractor = MetaDataExtractorFactory.getMetaDataServiceClient(metaDataClientConfig.
-                getExtractorClassName());
+
+        if (MetaDataClientConfig.getInstance().getDataExtractorClass() != null) {
+            dataExtractor = MetaDataExtractorFactory.getMetaDataServiceClient(metaDataClientConfig.
+                getDataExtractorClass());
+            dataExtractor.initialize();
+        }
     }
 
-    public void addExtractedData (Object someObj) {
+    public Collection<DataContext> getAllData (Object someObj) {
 
         Collection<DataContext> dataContexts = null;
 
         try {
-            dataContexts = dataExtractor.getData(someObj);
+            dataContexts = dataExtractor.getAllData(someObj);
 
         } catch (DataExtractorException e) {
             log.error("Unable to get extracted data", e);
         }
 
-        for (DataContext dataContext : dataContexts) {
-            if (dataContext.getPropertyValues() != null) {
-                for (String propertyValue : dataContext.getPropertyValues()) {
-                    try {
-                        metaDataServiceClient.addProperty(dataContext.getAppId(), dataContext.getClusterId(),
-                                dataContext.getPropertyKey(), propertyValue);
+        return dataContexts;
+    }
 
-                    } catch (MetaDataServiceClientExeption e) {
-                        log.error("Unable to add extracted data meta data service", e);
-                    }
-                }
-            }
+    public DataContext getData (Object someObj) {
+
+        DataContext dataContext = null;
+
+        try {
+            dataContext = dataExtractor.getData(someObj);
+
+        } catch (DataExtractorException e) {
+            log.error("Unable to get extracted data", e);
         }
+
+        return dataContext;
     }
 
 }

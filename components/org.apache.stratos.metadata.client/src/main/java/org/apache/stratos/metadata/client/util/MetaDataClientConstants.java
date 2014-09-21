@@ -17,20 +17,13 @@
  * under the License.
  */
 
-package org.apache.stratos.metadata.client.data.extractor;
+package org.apache.stratos.metadata.client.util;
 
-import org.apache.stratos.metadata.client.exception.DataExtractorException;
-import org.apache.stratos.metadata.client.pojo.DataContext;
+public class MetaDataClientConstants {
 
-import java.util.Collection;
+    public static String METADATA_CLIENT_CONFIG_FILE = "METADATA_CLIENT_CONFIG_FILE";
 
-public interface DataExtractor {
+    public static String METADATA_SERVICE_BASE_URL = "metadataService.baseUrl";
 
-    public void initialize ();
-
-    public Collection<DataContext> getAllData (Object object) throws DataExtractorException;
-
-    public DataContext getData (Object object) throws DataExtractorException;
-
-    public void terminate () throws DataExtractorException;
+    public static String METADATA_CLIENT_DATA_EXTRACTOR_CLASS = "metadataClient.dataExtractorClass";
 }

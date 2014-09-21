@@ -31,13 +31,38 @@ public class DataContext {
 
     private Set<String> propertyValues;
 
+    private String propertyValue;
+
 
     public DataContext (String appId, String propertyKey, Set<String> propertyValues) {
+
+        this.appId = appId;
+        this.propertyKey = propertyKey;
+        this.propertyValues = propertyValues;
 
     }
 
     public DataContext (String appId, String clusterId, String propertyKey, Set<String> propertyValues) {
 
+        this.appId = appId;
+        this.clusterId = clusterId;
+        this.propertyKey = propertyKey;
+        this.propertyValues = propertyValues;
+    }
+
+    public DataContext (String appId, String propertyKey, String propertyValue) {
+
+        this.appId = appId;
+        this.propertyKey = propertyKey;
+        this.propertyValue = propertyValue;
+    }
+
+    public DataContext (String appId, String clusterId, String propertyKey, String propertyValue) {
+
+        this.appId = appId;
+        this.clusterId = clusterId;
+        this.propertyKey = propertyKey;
+        this.propertyValue = propertyValue;
     }
 
     public String getAppId() {
@@ -54,5 +79,9 @@ public class DataContext {
 
     public Set<String> getPropertyValues() {
         return propertyValues;
+    }
+
+    public String getPropertyValue() {
+        return propertyValue;
     }
 }

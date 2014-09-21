@@ -20,11 +20,18 @@
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.3.5</version>
-    </dependency>
+      <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+          <version>4.3.5</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>commons-configuration</groupId>
+          <artifactId>commons-configuration</artifactId>
+          <version>1.9</version>
+          <scope>provided</scope>
+      </dependency>
   </dependencies>
 
     <build>
@@ -46,8 +53,9 @@
                             org.apache.stratos.metadata.client.*,
                         </Export-Package>
                         <Import-Package>
-                            !org.apache.commons.logging,
+                            !org.apache.stratos.metadata.client,
                             org.apache.commons.logging; version=0.0.0,
+                            org.apache.commons.configuration; version=0.0.0,
                             *;resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
