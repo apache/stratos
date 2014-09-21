@@ -21,17 +21,16 @@ package org.apache.stratos.metadata.client.factory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.metadata.client.data.extractor.DataExtractor;
-import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
+import org.apache.stratos.metadata.client.data.extractor.MetaDataExtractor;
 
 public class MetaDataExtractorFactory {
 
     private static final Log log = LogFactory.getLog(MetaDataExtractorFactory.class);
 
-    public static DataExtractor getMetaDataServiceClient (String clazzName) throws RuntimeException {
+    public static MetaDataExtractor getMetaDataServiceClient (String clazzName) throws RuntimeException {
 
         try {
-            return (DataExtractor) DataExtractor.class.getClassLoader().loadClass(clazzName).newInstance();
+            return (MetaDataExtractor) MetaDataExtractor.class.getClassLoader().loadClass(clazzName).newInstance();
 
         } catch (InstantiationException e) {
             String errorMsg = "Unable to instatiate class " + clazzName;

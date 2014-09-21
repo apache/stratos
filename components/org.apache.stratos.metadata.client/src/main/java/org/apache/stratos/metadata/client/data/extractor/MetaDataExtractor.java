@@ -17,31 +17,20 @@
  * under the License.
  */
 
-package org.apache.stratos.metadata.client.exception;
+package org.apache.stratos.metadata.client.data.extractor;
 
-public class DataExtractorException extends Exception {
+import org.apache.stratos.metadata.client.exception.MetaDataExtractorException;
+import org.apache.stratos.metadata.client.pojo.DataContext;
 
-    private String message;
+import java.util.Collection;
 
-    public DataExtractorException() {
-        super();
-    }
+public interface MetaDataExtractor {
 
-    public DataExtractorException(String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
-    }
+    public void initialize ();
 
-    public DataExtractorException(String message) {
-        super(message);
-        this.message = message;
-    }
+    public Collection<DataContext> getAllData (Object object) throws MetaDataExtractorException;
 
-    public DataExtractorException(Throwable cause) {
-        super(cause);
-    }
+    public DataContext getData (Object object) throws MetaDataExtractorException;
 
-    public String getMessage() {
-        return message;
-    }
+    public void terminate () throws MetaDataExtractorException;
 }

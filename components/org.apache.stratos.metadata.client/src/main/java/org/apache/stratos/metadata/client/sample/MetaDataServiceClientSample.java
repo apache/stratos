@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadata.client.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
-import org.apache.stratos.metadata.client.data.extractor.DataExtractor;
-import org.apache.stratos.metadata.client.exception.DataExtractorException;
+import org.apache.stratos.metadata.client.data.extractor.MetaDataExtractor;
+import org.apache.stratos.metadata.client.exception.MetaDataExtractorException;
 import org.apache.stratos.metadata.client.factory.MetaDataExtractorFactory;
 import org.apache.stratos.metadata.client.pojo.DataContext;
 
@@ -37,7 +37,7 @@ public class MetaDataServiceClientSample {
 
     private MetaDataServiceClient metaDataServiceClient;
 
-    private DataExtractor dataExtractor;
+    private MetaDataExtractor metaDataExtractor;
 
     private MetaDataClientConfig metaDataClientConfig;
 
@@ -54,9 +54,9 @@ public class MetaDataServiceClientSample {
         metaDataServiceClient.initialize();
 
         if (MetaDataClientConfig.getInstance().getDataExtractorClass() != null) {
-            dataExtractor = MetaDataExtractorFactory.getMetaDataServiceClient(metaDataClientConfig.
+            metaDataExtractor = MetaDataExtractorFactory.getMetaDataServiceClient(metaDataClientConfig.
                 getDataExtractorClass());
-            dataExtractor.initialize();
+            metaDataExtractor.initialize();
         }
     }
 
@@ -65,9 +65,9 @@ public class MetaDataServiceClientSample {
         Collection<DataContext> dataContexts = null;
 
         try {
-            dataContexts = dataExtractor.getAllData(someObj);
+            dataContexts = metaDataExtractor.getAllData(someObj);
 
-        } catch (DataExtractorException e) {
+        } catch (MetaDataExtractorException e) {
             log.error("Unable to get extracted data", e);
         }
 
@@ -79,9 +79,9 @@ public class MetaDataServiceClientSample {
         DataContext dataContext = null;
 
         try {
-            dataContext = dataExtractor.getData(someObj);
+            dataContext = metaDataExtractor.getData(someObj);
 
-        } catch (DataExtractorException e) {
+        } catch (MetaDataExtractorException e) {
             log.error("Unable to get extracted data", e);
         }
 

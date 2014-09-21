@@ -19,27 +19,27 @@
 
 package org.apache.stratos.metadata.client.sample;
 
-import org.apache.stratos.metadata.client.data.extractor.DataExtractor;
-import org.apache.stratos.metadata.client.exception.DataExtractorException;
+import org.apache.stratos.metadata.client.data.extractor.MetaDataExtractor;
+import org.apache.stratos.metadata.client.exception.MetaDataExtractorException;
 import org.apache.stratos.metadata.client.pojo.DataContext;
 
 import java.util.Collection;
 
-public class DefaultDataExtractor implements DataExtractor {
+public class DefaultMetaDataExtractor implements MetaDataExtractor {
 
     public void initialize() {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public Collection<DataContext> getAllData(Object object) throws DataExtractorException {
+    public Collection<DataContext> getAllData(Object object) throws MetaDataExtractorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public DataContext getData(Object object) throws DataExtractorException {
+    public DataContext getData(Object object) throws MetaDataExtractorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void terminate() throws DataExtractorException {
+    public void terminate() throws MetaDataExtractorException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }
