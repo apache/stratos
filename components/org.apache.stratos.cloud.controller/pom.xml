@@ -76,6 +76,7 @@
                             org.apache.commons.logging; version=0.0.0,
                             org.apache.commons.io.*,
                             org.wso2.carbon.utils.*,
+                            org.apache.stratos.metadata.client.*; version=0.0.0,
                             <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
                             org.jclouds*;version="${jclouds.version}",-->
                             *; resolution:=optional
@@ -282,6 +283,11 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core</artifactId>
             <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.metadata.client</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>
