@@ -6,9 +6,9 @@ from ..util import cartridgeagentconstants
 from ..config import cartridgeagentconfiguration
 
 
-class TenantEventSubscriber(threading.Thread):
+class EventSubscriber(threading.Thread):
 
-    def __init__(self):
+    def __init__(self, topic):
         threading.Thread.__init__(self)
 
         self.cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
@@ -17,8 +17,10 @@ class TenantEventSubscriber(threading.Thread):
 
         logging.basicConfig(level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
+
         self.__mb_client = None
 
+        self.__topic = topic
 
         self.__subscribed = False
 
@@ -41,8 +43,8 @@ class TenantEventSubscriber(threading.Thread):
 
     def on_connect(self, client, userdata, flags, rc):
         self.log.debug("Connected to message broker.")
-        self.__mb_client.subscribe(cartridgeagentconstants.TENANT_TOPIC)
-        self.log.debug("Subscribed to %r" % cartridgeagentconstants.TENANT_TOPIC)
+        self.__mb_client.subscribe(self.__topic)
+        self.log.debug("Subscribed to %r" % self.__topic)
 
     def on_message(self, client, userdata, msg):
         self.log.debug("Message received: %r:\n%r" % (msg.topic, msg.payload))
@@ -55,3 +57,6 @@ class TenantEventSubscriber(threading.Thread):
             handler(msg)
         except:
             self.log.exception("Error processing %r event" % event)
+
+    def is_subscribed(self):
+        return self.__subscribed

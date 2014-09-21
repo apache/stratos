@@ -6,7 +6,7 @@ import time
 from config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from util import cartridgeagentconstants, cartridgeagentutils, extensionutils
 from exception import ParameterNotFoundException
-from subscriber import instanceeventsubscriber, tenanteventsubscriber
+from subscriber.eventsubscriber import EventSubscriber
 from extensions.defaultextensionhandler import DefaultExtensionHandler
 from publisher import cartridgeagentpublisher
 from event.instance.notifier import artifactupdatedevent, instancecleanupmemberevent, instancecleanupclusterevent
@@ -21,8 +21,10 @@ class CartridgeAgent(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self.__instance_event_subscriber = instanceeventsubscriber.InstanceEventSubscriber()
-        self.__tenant_event_subscriber = tenanteventsubscriber.TenantEventSubscriber()
+        self.__instance_event_subscriber = EventSubscriber(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
+        self.__tenant_event_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC)
+        self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
+
         self.extension_handler = DefaultExtensionHandler()
 
     def run(self):
@@ -90,22 +92,15 @@ class CartridgeAgent(threading.Thread):
     def subscribe_to_topics_and_register_listeners(self):
         self.log.debug("Starting instance notifier event message receiver thread")
 
-        #ArtifactUpdateEventListener
-        #InstanceCleanupMemberEventListener
-        #InstanceCleanupClusterEventListener
-        #start instanceeventreceiverthread
         self.__instance_event_subscriber.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
         self.__instance_event_subscriber.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
         self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
         self.__instance_event_subscriber.start()
         self.log.info("Instance notifier event message receiver thread started")
 
-        #SubscriptionDomainsAddedEventListener
-        #SubscriptionDomainsRemovedEventListener
-        #start tenanteventreceiverthread
         self.log.debug("Starting tenant event message receiver thread")
         self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
-        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEventListener", self.on_subscription_domain_removed)
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent", self.on_subscription_domain_removed)
         self.__tenant_event_subscriber.start()
         self.log.info("Tenant event message receiver thread started")
 
@@ -152,6 +147,34 @@ class CartridgeAgent(threading.Thread):
     def find_tenant_domain(self, tenant_id):
         #TODO: call to REST Api and get tenant information
         raise NotImplementedError
+
+    def register_topology_event_listeners(self):
+        self.log.debug("Starting topology event message receiver thread")
+
+        self.__topology_event_subscriber.register_handler("MemberActivatedEvent", self.on_member_activated)
+        self.__topology_event_subscriber.register_handler("MemberTerminatedEvent", self.on_member_terminated)
+        self.__topology_event_subscriber.register_handler("MemberSuspendedEvent", self.on_member_suspended)
+        self.__topology_event_subscriber.register_handler("CompleteTopologyEvent", self.on_complete_topology)
+        self.__topology_event_subscriber.register_handler("MemberStartedEvent", self.on_member_started)
+
+        self.__topology_event_subscriber.start()
+        self.log.info("Cartridge Agent topology receiver thread started")
+
+    def on_member_activated(self, msg):
+        raise NotImplementedError
+
+    def on_member_terminated(self, msg):
+        raise NotImplementedError
+
+    def on_member_suspended(self, msg):
+        raise NotImplementedError
+
+    def on_complete_topology(self, msg):
+        raise NotImplementedError
+
+    def on_member_started(self, msg):
+        raise NotImplementedError
+
 
 def main():
     cartridge_agent = CartridgeAgent()
