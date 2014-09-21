@@ -4,8 +4,6 @@ import paho.mqtt.client as mqtt
 
 from ..util import cartridgeagentconstants
 from ..config import cartridgeagentconfiguration
-from ..extensions import defaultextensionhandler
-from ..event.instance.notifier import *
 
 
 class InstanceEventSubscriber(threading.Thread):
@@ -16,15 +14,10 @@ class InstanceEventSubscriber(threading.Thread):
         self.cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
-        self.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
-        self.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
-        self.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
 
         logging.basicConfig(level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
         self.__mb_client = None
-
-        self.extension_handler = defaultextensionhandler.DefaultExtensionHandler()
 
         self.__subscribed = False
 
@@ -61,25 +54,6 @@ class InstanceEventSubscriber(threading.Thread):
             handler(msg)
         except:
             self.log.exception("Error processing %r event" % event)
-
-    def on_artifact_updated(self, msg):
-        event_obj = artifactupdatedevent.create_from_json(msg.payload)
-        self.extension_handler.on_artifact_updated_event(event_obj)
-
-    def on_instance_cleanup_member(self, msg):
-        member_in_payload = self.cartridge_agent_config.get_member_id()
-        event_obj = instancecleanupmemberevent.InstanceCleanupMemberEvent.create_from_json(msg.payload)
-        member_in_event = event_obj.member_id
-        if member_in_payload == member_in_event:
-            self.extension_handler.onInstanceCleanupMemberEvent(event_obj)
-
-    def on_instance_cleanup_cluster(self, msg):
-        event_obj = instancecleanupclusterevent.create_from_json(msg.payload)
-        cluster_in_payload = self.cartridge_agent_config.get_cluster_id()
-        cluster_in_event = event_obj.cluster_id
-
-        if cluster_in_event == cluster_in_payload:
-            self.extension_handler.onInstanceCleanupClusterEvent(event_obj)
 
     def is_subscribed(self):
         return self.__subscribed

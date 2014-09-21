@@ -2,10 +2,8 @@ import logging
 import threading
 import paho.mqtt.client as mqtt
 
-from ..util import cartridgeagentconstants,extensionutils
+from ..util import cartridgeagentconstants
 from ..config import cartridgeagentconfiguration
-from ..extensions import defaultextensionhandler
-from ..event.tenant import *
 
 
 class TenantEventSubscriber(threading.Thread):
@@ -16,14 +14,11 @@ class TenantEventSubscriber(threading.Thread):
         self.cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
-        self.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
-        self.register_handler("SubscriptionDomainsRemovedEventListener", self.on_subscription_domain_removed)
 
         logging.basicConfig(level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
         self.__mb_client = None
 
-        self.extension_handler = defaultextensionhandler.DefaultExtensionHandler()
 
         self.__subscribed = False
 
@@ -60,24 +55,3 @@ class TenantEventSubscriber(threading.Thread):
             handler(msg)
         except:
             self.log.exception("Error processing %r event" % event)
-
-    def on_subscription_domain_added(self, msg):
-        event_obj = subscriptiondomainaddedevent.create_from_json(msg.payload)
-        extensionutils.execute_subscription_domain_added_extension(
-            event_obj.tenant_id,
-            self.find_tenant_domain(event_obj.tenant_id),
-            event_obj.domain_name,
-            event_obj.application_context
-        )
-
-    def on_subscription_domain_removed(self, msg):
-        event_obj = subscriptiondomainremovedevent.create_from_json(msg.payload)
-        extensionutils.execute_subscription_domain_removed_extension(
-            event_obj.tenant_id,
-            self.find_tenant_domain(event_obj.tenant_id),
-            event_obj.domain_name
-        )
-
-    def find_tenant_domain(self, tenant_id):
-        #TODO: call to REST Api and get tenant information
-        raise NotImplementedError
