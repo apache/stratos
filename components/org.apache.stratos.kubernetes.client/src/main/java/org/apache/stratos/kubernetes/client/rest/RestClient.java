@@ -26,6 +26,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
@@ -154,8 +155,31 @@ public class RestClient {
         }
     }
 
-    public void doPut() {
-        // Not implemented
+    public HttpResponse doPut(String resourcePath, String jsonParamString) throws Exception {
+
+		try {
+			httpClient = new DefaultHttpClient();
+			System.out.println(baseURL + resourcePath);
+			System.out.println(jsonParamString);
+			HttpPut putRequest = new HttpPut(baseURL + resourcePath);
+
+			StringEntity input = new StringEntity(jsonParamString);
+			input.setContentType("application/json");
+			putRequest.setEntity(input);
+
+			HttpResponse response = httpClient.execute(putRequest);
+
+			return response;
+		} catch (ClientProtocolException e) {
+			throw new ClientProtocolException();
+		} catch (ConnectException e) {
+			throw new ConnectException();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			httpClient.getConnectionManager().shutdown();
+		}
     }
 
 }
