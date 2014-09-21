@@ -4,11 +4,13 @@ import threading
 import time
 
 from config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from util import cartridgeagentconstants, cartridgeagentutils
+from util import cartridgeagentconstants, cartridgeagentutils, extensionutils
 from exception import ParameterNotFoundException
 from subscriber import instanceeventsubscriber, tenanteventsubscriber
 from extensions.defaultextensionhandler import DefaultExtensionHandler
 from publisher import cartridgeagentpublisher
+from event.instance.notifier import artifactupdatedevent, instancecleanupmemberevent, instancecleanupclusterevent
+from event.tenant import subscriptiondomainremovedevent, subscriptiondomainaddedevent
 
 
 class CartridgeAgent(threading.Thread):
@@ -92,6 +94,9 @@ class CartridgeAgent(threading.Thread):
         #InstanceCleanupMemberEventListener
         #InstanceCleanupClusterEventListener
         #start instanceeventreceiverthread
+        self.__instance_event_subscriber.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
+        self.__instance_event_subscriber.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
+        self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
         self.__instance_event_subscriber.start()
         self.log.info("Instance notifier event message receiver thread started")
 
@@ -99,6 +104,8 @@ class CartridgeAgent(threading.Thread):
         #SubscriptionDomainsRemovedEventListener
         #start tenanteventreceiverthread
         self.log.debug("Starting tenant event message receiver thread")
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEventListener", self.on_subscription_domain_removed)
         self.__tenant_event_subscriber.start()
         self.log.info("Tenant event message receiver thread started")
 
@@ -106,14 +113,53 @@ class CartridgeAgent(threading.Thread):
         while not self.__instance_event_subscriber.is_subscribed():
             time.sleep(.2000)
 
+    def on_artifact_updated(self, msg):
+        event_obj = artifactupdatedevent.create_from_json(msg.payload)
+        self.extension_handler.on_artifact_updated_event(event_obj)
 
-def Main():
+    def on_instance_cleanup_member(self, msg):
+        member_in_payload = self.cart_config.get_member_id()
+        event_obj = instancecleanupmemberevent.InstanceCleanupMemberEvent.create_from_json(msg.payload)
+        member_in_event = event_obj.member_id
+        if member_in_payload == member_in_event:
+            self.extension_handler.onInstanceCleanupMemberEvent(event_obj)
+
+    def on_instance_cleanup_cluster(self, msg):
+        event_obj = instancecleanupclusterevent.create_from_json(msg.payload)
+        cluster_in_payload = self.cart_config.get_cluster_id()
+        cluster_in_event = event_obj.cluster_id
+
+        if cluster_in_event == cluster_in_payload:
+            self.extension_handler.onInstanceCleanupClusterEvent(event_obj)
+
+    def on_subscription_domain_added(self, msg):
+        event_obj = subscriptiondomainaddedevent.create_from_json(msg.payload)
+        extensionutils.execute_subscription_domain_added_extension(
+            event_obj.tenant_id,
+            self.find_tenant_domain(event_obj.tenant_id),
+            event_obj.domain_name,
+            event_obj.application_context
+        )
+
+    def on_subscription_domain_removed(self, msg):
+        event_obj = subscriptiondomainremovedevent.create_from_json(msg.payload)
+        extensionutils.execute_subscription_domain_removed_extension(
+            event_obj.tenant_id,
+            self.find_tenant_domain(event_obj.tenant_id),
+            event_obj.domain_name
+        )
+
+    def find_tenant_domain(self, tenant_id):
+        #TODO: call to REST Api and get tenant information
+        raise NotImplementedError
+
+def main():
     cartridge_agent = CartridgeAgent()
     cartridge_agent.start()
 
 
 if __name__ == "__main__":
-    Main()
+    main()
 #========================================================
 #
 #
