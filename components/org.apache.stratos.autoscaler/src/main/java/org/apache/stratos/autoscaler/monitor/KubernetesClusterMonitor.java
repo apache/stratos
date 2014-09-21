@@ -95,7 +95,7 @@ public class KubernetesClusterMonitor implements Runnable{
 
 			if (this.numberOfReplicasInServiceCluster < minReplicas) {
 				
-				while (success) {
+				while (!success) {
 					try {
 						CloudControllerClient.getInstance().createContainer(kubernetesClusterId, clusterId);
 						success = true;
