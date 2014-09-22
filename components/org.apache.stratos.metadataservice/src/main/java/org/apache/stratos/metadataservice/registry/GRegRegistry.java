@@ -222,11 +222,11 @@ public class GRegRegistry implements DataStore {
 		return false;
 	}
 
-    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws Exception {
+    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws RegistryException {
 
     }
 
-    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws Exception {
+    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws RegistryException {
         return null;
     }
 
@@ -238,7 +238,7 @@ public class GRegRegistry implements DataStore {
 
     }
 
-    public void addPropertyToApplication(String applicationId, NewProperty property) {
+    public void addPropertyToApplication(String applicationId, NewProperty property) throws RegistryException {
 
     }
 

@@ -182,7 +182,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
 
 
-    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws Exception {
+    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws RegistryException {
         Registry tempRegistry = getGovernanceUserRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
         if(!tempRegistry.resourceExists(resourcePath)){
@@ -205,7 +205,6 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
             property.setValues(values.toArray(valueArr));
 
             newProperties.add(property);
-
         }
 
         return newProperties;
@@ -222,29 +221,20 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
     }
 
     @Override
-    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws Exception {
+    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws RegistryException {
         Registry tempRegistry = getGovernanceUserRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
         Resource regResource;
         regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
-        try {
-            for(NewProperty property : properties){
-                regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
 
-            }
-            tempRegistry.put(resourcePath, regResource);
-            if(log.isDebugEnabled()){
-                log.debug("A resource added to: " + resourcePath);
-            }
-
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("addCartridgeMetaDataDetails", e);
-            }
-        } finally {
-            // Close the session
+        for(NewProperty property : properties){
+            regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
 
         }
+        tempRegistry.put(resourcePath, regResource);
+        if(log.isDebugEnabled()){
+            log.debug("A resource added to: " + resourcePath);
+    }
     }
 
     public void addPropertiesToApplication(String applicationId, NewProperty[] properties) throws RegistryException {
@@ -264,6 +254,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
         String resourcePath = mainResource + applicationId;
         Resource regResource = createOrGetResourceforApplication(tempRegistry, resourcePath);
         regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
+        tempRegistry.put(regResource.getPath(), regResource);
     }
 
     public List<NewProperty> getPropertiesOfApplication(String applicationId) throws RegistryException {

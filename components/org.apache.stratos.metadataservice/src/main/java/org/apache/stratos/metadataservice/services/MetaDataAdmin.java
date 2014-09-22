@@ -146,6 +146,9 @@ public class MetaDataAdmin {
         try {
             properties = DataRegistryFactory.getDataRegistryFactory(registryType)
                     .getPropertiesOfCluster(applicationId, clusterId);
+            if(properties == null){
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
             for(NewProperty p : properties){
                 if(propertyName.equals(p.getKey())){
                     property = p;
