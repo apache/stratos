@@ -16,16 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.messaging.event.group.status;
-
-import org.apache.stratos.messaging.event.Event;
+package org.apache.stratos.messaging.event.application.status;
 
 import java.io.Serializable;
 
-/**
- * Represents all instance status events.
- */
-public abstract class GroupStatusEvent extends Event implements Serializable {
-    private static final long serialVersionUID = -4790128084271867615L;
+public class ClusterMaintenanceModeEvent extends ClusterStatusEvent implements Serializable {
+    private final String serviceName;
+    private final String clusterId;
+    private String appId;
+
+    public ClusterMaintenanceModeEvent(String appId, String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.appId = appId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+
+    public String getAppId() {
+        return appId;
+    }
 }

@@ -49,7 +49,7 @@ public class Cluster implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
 
-    private ClusterStatus status;
+    private Status status;
 
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
@@ -203,11 +203,11 @@ public class Cluster implements Serializable {
         return partitionIds.keySet();
     }
 
-    public ClusterStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(ClusterStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

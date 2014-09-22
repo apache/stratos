@@ -16,23 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.listener.application.status;
 
-package org.apache.stratos.messaging.domain.topology;
+import org.apache.stratos.messaging.listener.EventListener;
 
-public enum Status {
-
-    Created(1),
-    In_Maintenance(2),
-    Running(3),
-    Activated(4);
-
-    private int code;
-
-    private Status(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
+/**
+ * Created by reka on 9/22/14.
+ */
+public abstract class GroupActivatedEventListener extends EventListener {
 }

@@ -16,16 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.cluster.status;
+package org.apache.stratos.messaging.event.application.status;
 
 import java.io.Serializable;
 
-public class ClusterMaintenanceModeEvent extends ClusterStatusEvent implements Serializable {
+/**
+ *  This event is fired by cartridge agent when it has cleaned up the data and
+ *  ready to shutdown.
+ */
+public class ClusterReadyToShutdownEvent extends ClusterStatusEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;
     private String appId;
 
-    public ClusterMaintenanceModeEvent(String appId, String serviceName, String clusterId) {
+    public ClusterReadyToShutdownEvent(String appId, String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;

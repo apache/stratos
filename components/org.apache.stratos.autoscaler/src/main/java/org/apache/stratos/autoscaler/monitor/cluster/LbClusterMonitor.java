@@ -27,8 +27,8 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Status;
 
-import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LbClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
-    private ClusterStatus status;
+    private Status status;
 
     public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                             AutoscalePolicy autoscalePolicy) {
@@ -117,11 +117,11 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
     }
 
 
-    public ClusterStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(ClusterStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

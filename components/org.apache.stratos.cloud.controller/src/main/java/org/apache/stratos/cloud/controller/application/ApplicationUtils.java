@@ -19,6 +19,14 @@
 
 package org.apache.stratos.cloud.controller.application;
 
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
+import org.apache.stratos.cloud.controller.pojo.application.SubscribableInfoContext;
+import org.apache.stratos.cloud.controller.pojo.payload.PayloadDataHolder;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class ApplicationUtils {
@@ -38,5 +46,86 @@ public class ApplicationUtils {
         } else {
             return true;
         }
+    }
+
+    public static Properties getGlobalPayloadData () {
+
+        Properties globalProperties = new Properties();
+
+        if (System.getProperty("puppet.ip") != null) {
+            globalProperties.setProperty("PUPPET_IP", System.getProperty("puppet.ip"));
+        }
+        if (System.getProperty("puppet.hostname") != null) {
+            globalProperties.setProperty("PUPPET_HOSTNAME", System.getProperty("puppet.hostname"));
+        }
+        if (System.getProperty("puppet.env") != null) {
+            globalProperties.setProperty("PUPPET_ENV", System.getProperty("puppet.env"));
+        }
+        if (System.getProperty("puppet.dns.available") != null) {
+            globalProperties.setProperty("PUPPET_DNS_AVAILABLE", System.getProperty("puppet.dns.available"));
+        }
+
+        return globalProperties;
+    }
+
+    public static PayloadDataHolder getClusterLevelPayloadData (String appId, Cluster cluster,
+                                                                SubscribableContext subscribableCtxt,
+                                                                SubscribableInfoContext subscribableInfoCtxt, Cartridge cartridge) {
+
+        PayloadDataHolder payloadDataHolder = new PayloadDataHolder(appId, subscribableCtxt.getType(), cluster.getClusterId());
+
+        Properties clusterLevelPayloadProperties = new Properties();
+        // service name
+        if (subscribableCtxt.getType() != null) {
+            clusterLevelPayloadProperties.put("SERVICE_NAME", subscribableCtxt.getType());
+        }
+        // host name
+        if  (cluster.getHostNames().get(0) != null) {
+            clusterLevelPayloadProperties.put("HOST_NAME", cluster.getHostNames().get(0));
+        }
+        // multi tenant
+        clusterLevelPayloadProperties.put("MULTITENANT", String.valueOf(cartridge.isMultiTenant()));
+        // tenant range
+        if (cluster.getTenantRange() != null) {
+            clusterLevelPayloadProperties.put("TENANT_RANGE", cluster.getTenantRange());
+        }
+        // cartridge alias
+        if (subscribableCtxt.getAlias() != null) {
+            clusterLevelPayloadProperties.put("CARTRIDGE_ALIAS", subscribableCtxt.getAlias());
+        }
+        // cluster id
+        if (cluster.getClusterId() != null) {
+            clusterLevelPayloadProperties.put("CLUSTER_ID", cluster.getClusterId());
+        }
+        // repo url
+        if (subscribableInfoCtxt.getRepoUrl() != null) {
+            clusterLevelPayloadProperties.put("REPO_URL", subscribableInfoCtxt.getRepoUrl());
+        }
+        // ports
+        if (createPortMappingPayloadString(cartridge) != null) {
+            clusterLevelPayloadProperties.put("PORTS", createPortMappingPayloadString(cartridge));
+        }
+        // provider
+        if (cartridge.getProvider() != null) {
+            clusterLevelPayloadProperties.put("PROVIDER", cartridge.getProvider());
+        }
+
+        payloadDataHolder.setProperties(clusterLevelPayloadProperties);
+        return payloadDataHolder;
+    }
+
+    private static String createPortMappingPayloadString (Cartridge cartridge) {
+
+        // port mappings
+        StringBuilder portMapBuilder = new StringBuilder();
+        List<PortMapping> portMappings = cartridge.getPortMappings();
+        for (PortMapping portMapping : portMappings) {
+            String port = portMapping.getPort();
+            portMapBuilder.append(port).append("|");
+        }
+
+        // remove last "|" character
+
+        return portMapBuilder.toString().replaceAll("\\|$", "");
     }
 }

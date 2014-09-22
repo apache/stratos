@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,25 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.group.status;
+package org.apache.stratos.messaging.listener.application.status;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.listener.EventListener;
 
-public class GroupMaintenanceModeEvent extends GroupStatusEvent implements Serializable {
-    private String groupId;
-    private String appId;
-
-    public GroupMaintenanceModeEvent(String appId, String groupId) {
-        this.appId = appId;
-        this.groupId = groupId;
-    }
-
-    public String getGroupId(String groupId) {
-        return this.groupId;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
+public abstract class ClusterActivatedEventListener extends EventListener{
 }

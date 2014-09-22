@@ -5,10 +5,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.cluster.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.cluster.status.ClusterMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.group.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.group.status.GroupMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.GroupMaintenanceModeEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 /**

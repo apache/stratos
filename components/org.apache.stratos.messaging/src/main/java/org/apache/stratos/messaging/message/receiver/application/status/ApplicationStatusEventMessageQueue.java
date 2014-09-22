@@ -16,23 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.message.receiver.application.status;
 
-package org.apache.stratos.messaging.domain.topology;
 
-public enum Status {
+import javax.jms.TextMessage;
+import java.util.concurrent.LinkedBlockingQueue;
 
-    Created(1),
-    In_Maintenance(2),
-    Running(3),
-    Activated(4);
-
-    private int code;
-
-    private Status(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
+public class ApplicationStatusEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
 }
