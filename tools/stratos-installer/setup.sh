@@ -529,14 +529,15 @@ fi
 if [[ !(-d $stratos_extract_path) ]]; then
     echo "Extracting Apache Stratos"
     unzip -q $stratos_pack_zip -d $stratos_path
-    mv -f $stratos_path/apache-stratos-4.1.0-SNAPSHOT $stratos_extract_path
+    extracted_folder=${stratos_pack_zip%.zip}
+    mv -f $extracted_folder $stratos_extract_path
 fi
 
 if [[ ($profile = "default" && $config_mb = "true") ]]; then
     echo "Extracting ActiveMQ"
     tar -xzf $activemq_pack -C $stratos_path
     # disable amqp connector to prevent conflicts with openstack
-    sed -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $stratos_path/apache-activemq-5.9.1/conf/activemq.xml
+    sed -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $activemq_path/conf/activemq.xml
 fi
 
 general_setup
