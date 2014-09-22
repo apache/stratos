@@ -4,13 +4,13 @@ import threading
 import time
 
 from config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from util import cartridgeagentconstants, cartridgeagentutils, extensionutils
-from exception import ParameterNotFoundException
+from util import *
+from exception.parameternotfoundexception import ParameterNotFoundException
 from subscriber.eventsubscriber import EventSubscriber
 from extensions.defaultextensionhandler import DefaultExtensionHandler
 from publisher import cartridgeagentpublisher
-from event.instance.notifier import artifactupdatedevent, instancecleanupmemberevent, instancecleanupclusterevent
-from event.tenant import subscriptiondomainremovedevent, subscriptiondomainaddedevent
+from event.instance.notifier.events import *
+from event.tenant.events import *
 
 
 class CartridgeAgent(threading.Thread):
@@ -26,6 +26,8 @@ class CartridgeAgent(threading.Thread):
         self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
 
         self.extension_handler = DefaultExtensionHandler()
+
+        self.__complete_tenant_initialized = False
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -43,7 +45,7 @@ class CartridgeAgent(threading.Thread):
         cartridgeagentpublisher.publish_instance_started_event()
 
         try:
-            self.extension_handler.startServerExtension()
+            self.extension_handler.start_server_extension()
         except:
             self.log.exception("Error processing start servers event")
 
@@ -64,14 +66,14 @@ class CartridgeAgent(threading.Thread):
 
         persistence_mappping_payload = self.cart_config.get_persistance_mappings()
         if persistence_mappping_payload is not None:
-            self.extension_handler.volumeMountExtension(persistence_mappping_payload)
+            self.extension_handler.volume_mount_extension(persistence_mappping_payload)
 
-        #TODO: logpublisher shceduled event
+            # TODO: logpublisher shceduled event
 
-        #TODO: wait until terminated is true
+            #TODO: wait until terminated is true
 
     def validate_required_properties(self):
-        #JNDI_PROPERTIES_DIR
+        # JNDI_PROPERTIES_DIR
         try:
             self.cart_config.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
         except ParameterNotFoundException:
@@ -94,59 +96,33 @@ class CartridgeAgent(threading.Thread):
 
         self.__instance_event_subscriber.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
         self.__instance_event_subscriber.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
-        self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
+        self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent",
+                                                          self.on_instance_cleanup_cluster)
         self.__instance_event_subscriber.start()
         self.log.info("Instance notifier event message receiver thread started")
 
-        self.log.debug("Starting tenant event message receiver thread")
-        self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
-        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent", self.on_subscription_domain_removed)
-        self.__tenant_event_subscriber.start()
-        self.log.info("Tenant event message receiver thread started")
-
-        #wait till subscribed to continue
+        # wait till subscribed to continue
         while not self.__instance_event_subscriber.is_subscribed():
-            time.sleep(.2000)
+            time.sleep(2)
 
     def on_artifact_updated(self, msg):
-        event_obj = artifactupdatedevent.create_from_json(msg.payload)
+        event_obj = ArtifactUpdatedEvent.create_from_json(msg.payload)
         self.extension_handler.on_artifact_updated_event(event_obj)
 
     def on_instance_cleanup_member(self, msg):
         member_in_payload = self.cart_config.get_member_id()
-        event_obj = instancecleanupmemberevent.InstanceCleanupMemberEvent.create_from_json(msg.payload)
+        event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
             self.extension_handler.onInstanceCleanupMemberEvent(event_obj)
 
     def on_instance_cleanup_cluster(self, msg):
-        event_obj = instancecleanupclusterevent.create_from_json(msg.payload)
+        event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)
         cluster_in_payload = self.cart_config.get_cluster_id()
         cluster_in_event = event_obj.cluster_id
 
         if cluster_in_event == cluster_in_payload:
-            self.extension_handler.onInstanceCleanupClusterEvent(event_obj)
-
-    def on_subscription_domain_added(self, msg):
-        event_obj = subscriptiondomainaddedevent.create_from_json(msg.payload)
-        extensionutils.execute_subscription_domain_added_extension(
-            event_obj.tenant_id,
-            self.find_tenant_domain(event_obj.tenant_id),
-            event_obj.domain_name,
-            event_obj.application_context
-        )
-
-    def on_subscription_domain_removed(self, msg):
-        event_obj = subscriptiondomainremovedevent.create_from_json(msg.payload)
-        extensionutils.execute_subscription_domain_removed_extension(
-            event_obj.tenant_id,
-            self.find_tenant_domain(event_obj.tenant_id),
-            event_obj.domain_name
-        )
-
-    def find_tenant_domain(self, tenant_id):
-        #TODO: call to REST Api and get tenant information
-        raise NotImplementedError
+            self.extension_handler.on_instance_cleanup_cluster_event(event_obj)
 
     def register_topology_event_listeners(self):
         self.log.debug("Starting topology event message receiver thread")
@@ -175,6 +151,77 @@ class CartridgeAgent(threading.Thread):
     def on_member_started(self, msg):
         raise NotImplementedError
 
+    def register_tenant_event_listeners(self):
+        self.log.debug("Starting tenant event message receiver thread")
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent",self.on_subscription_domain_added)
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent",self.on_subscription_domain_removed)
+        self.__tenant_event_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
+        self.__tenant_event_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
+        self.__tenant_event_subscriber.register_handler("TenantUnSubscribedEvent", self.on_tenant_unsubscribed)
+
+        self.__tenant_event_subscriber.start()
+        self.log.info("Tenant event message receiver thread started")
+
+    def on_subscription_domain_added(self, msg):
+        self.log.debug("Subscription domain added event received")
+        event_obj = SubscriptionDomainAddedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.onSubscriptionDomainAddedEvent(event_obj)
+        except:
+            self.log.exception("Error processing subscription domains added event")
+        # extensionutils.execute_subscription_domain_added_extension(
+        #     event_obj.tenant_id,
+        #     self.find_tenant_domain(event_obj.tenant_id),
+        #     event_obj.domain_name,
+        #     event_obj.application_context
+        # )
+
+    def on_subscription_domain_removed(self, msg):
+        self.log.debug("Subscription domain removed event received")
+        event_obj = SubscriptionDomainRemovedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.onSubscriptionDomainRemovedEvent(event_obj)
+        except:
+            self.log.exception("Error processing subscription domains removed event")
+        # extensionutils.execute_subscription_domain_removed_extension(
+        #     event_obj.tenant_id,
+        #     self.find_tenant_domain(event_obj.tenant_id),
+        #     event_obj.domain_name
+        # )
+
+    def on_complete_tenant(self, msg):
+        if not self.__complete_tenant_initialized:
+            self.log.debug("Complete tenant event received")
+            event_obj = CompleteTenantEvent.create_from_json(msg.payload)
+
+            try:
+                self.extension_handler.onCompleteTenantEvent(event_obj)
+                self.__complete_tenant_initialized = True
+            except:
+                self.log.exception("Error processing complete tenant event")
+        else:
+            self.log.info("Complete tenant event updating task disabled")
+
+    def on_tenant_subscribed(self, msg):
+        self.log.debug("Tenant subscribed event received")
+        event_obj = TenantSubscribedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.onTenantSubscribedEvent(event_obj)
+        except:
+            self.log.exception("Error processing tenant subscribed event")
+
+    def on_tenant_unsubscribed(self, msg):
+        self.log.debug("Tenant unSubscribed event received")
+        event_obj = TenantUnsubscribedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.onTenantUnSubscribedEvent(event_obj)
+        except:
+            self.log.exception("Error processing tenant unSubscribed event")
+
+    def find_tenant_domain(self, tenant_id):
+        # TODO: call to REST Api and get tenant information
+        raise NotImplementedError
+
 
 def main():
     cartridge_agent = CartridgeAgent()
@@ -183,7 +230,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-#========================================================
+# ========================================================
 #
 #
 # def runningSuspendScript():

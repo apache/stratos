@@ -1,7 +1,6 @@
 import logging
 
 from ..artifactmgt.git.agentgithandler import AgentGitHandler
-from ..artifactmgt.git.gitrepository import GitRepositoryContext
 from ..artifactmgt.repositoryinformation import RepositoryInformation
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ..util import extensionutils, cartridgeagentconstants, cartridgeagentutils
@@ -81,12 +80,10 @@ class DefaultExtensionHandler:
 
             #TODO: set artifact update task
 
-
-
-    def onArtifactUpdateSchedulerEvent(self, tenantId):
+    def on_artifact_update_scheduler_event(self, tenantId):
         pass
 
-    def onInstanceCleanupClusterEvent(self, instanceCleanupClusterEvent):
+    def on_instance_cleanup_cluster_event(self, instanceCleanupClusterEvent):
         pass
 
     def onInstanceCleanupMemberEvent(self, instanceCleanupMemberEvent):
@@ -110,11 +107,30 @@ class DefaultExtensionHandler:
     def onMemberStartedEvent(self, memberStartedEvent):
         pass
 
-    def startServerExtension(self):
-        pass
+    def start_server_extension(self):
+        raise NotImplementedError
+        # extensionutils.wait_for_complete_topology()
+        # self.log.info("[start server extension] complete topology event received")
+        #
+        # service_name_in_payload = self.cartridge_agent_config.get_service_name()
+        # cluster_id_in_payload = self.cartridge_agent_config.get_cluster_id()
+        # member_id_in_payload = self.cartridge_agent_config.get_member_id()
+        #
+        # try:
+        #     consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        #
+        #     if not consistant:
+        #         self.log.error("Topology is inconsistent...failed to execute start server event")
+        #         return
+        #
+        #
+        # except:
+        #     self.log.exception("Error processing start servers event")
+        # finally:
+        #     pass
 
-    def volumeMountExtension(self, persistenceMappingsPayload):
-        pass
+    def volume_mount_extension(self, persistence_mappings_payload):
+        extensionutils.execute_volume_mount_extension(persistence_mappings_payload)
 
     def onSubscriptionDomainAddedEvent(self, subscriptionDomainAddedEvent):
         pass

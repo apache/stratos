@@ -1,9 +1,8 @@
 from git import *
 import gitrepository
 import logging
-import os
 
-from ...config import cartridgeagentconfiguration
+from ...config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ...util import cartridgeagentutils
 
 
@@ -15,7 +14,7 @@ class AgentGitHandler:
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
+    cartridge_agent_config = CartridgeAgentConfiguration()
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)

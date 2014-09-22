@@ -3,7 +3,7 @@ import threading
 import paho.mqtt.client as mqtt
 
 from ..util import cartridgeagentconstants
-from ..config import cartridgeagentconfiguration
+from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 
 
 class EventSubscriber(threading.Thread):
@@ -11,7 +11,7 @@ class EventSubscriber(threading.Thread):
     def __init__(self, topic):
         threading.Thread.__init__(self)
 
-        self.cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
 
