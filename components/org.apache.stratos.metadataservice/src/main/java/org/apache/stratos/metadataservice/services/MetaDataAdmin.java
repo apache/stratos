@@ -108,7 +108,7 @@ public class MetaDataAdmin {
         String registryType =
                 conf.getString("metadataservice.govenanceregistrytype",
                         defaultRegType);
-        List<NewProperty> properties = null;
+        List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
         try {
             properties = DataRegistryFactory.getDataRegistryFactory(registryType)
