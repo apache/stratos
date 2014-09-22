@@ -1,1 +1,1 @@
-__all__ = ['subscriptiondomainaddedevent', 'subscriptiondomainremovedevent']
+__all__=['events']

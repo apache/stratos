@@ -1,1 +1,1 @@
-__all__ = ['instancecleanupmemberevent', 'artifactupdatedevent', 'instancecleanupclusterevent']
+__all__ = ['events']

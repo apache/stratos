@@ -24,3 +24,27 @@ class ArtifactUpdatedEvent:
         instance.commit_enabled = json_obj["commitEnabled"] if "commitEnabled" in json_obj else None
 
         return instance
+
+
+class InstanceCleanupClusterEvent:
+    def __init__(self, cluster_id):
+        self.cluster_id = cluster_id
+
+    @staticmethod
+    def create_from_json(json_str):
+        json_obj = json.loads(json_str)
+        c_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+
+        return InstanceCleanupClusterEvent(c_id)
+
+
+class InstanceCleanupMemberEvent:
+    def __init__(self, member_id):
+        self.member_id = member_id
+
+    @staticmethod
+    def create_from_json(json_str):
+        json_obj = json.loads(json_str)
+        m_id = json_obj["memberId"] if "memberId" in json_obj else None
+
+        return InstanceCleanupMemberEvent(m_id)

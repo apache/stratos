@@ -2,7 +2,7 @@ import ConfigParser
 import logging
 
 from ..util import cartridgeagentconstants
-from ..exception import ParameterNotFoundException
+from ..exception.parameternotfoundexception import ParameterNotFoundException
 
 
 class CartridgeAgentConfiguration:
