@@ -1429,6 +1429,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ApplicationParser applicationParser = new DefaultApplicationParser();
         ApplicationDataHolder applicationDataHolder = applicationParser.parse(applicationContext);
 
+        //TODO: publish the data to the meta data service
+        applicationDataHolder.getPayloadDataHolders();
+
         TopologyBuilder.handleApplicationDeployed(applicationDataHolder);
     }
 

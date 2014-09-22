@@ -19,7 +19,9 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.cloud.controller.pojo.payload.PayloadDataHolder;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.metadata.client.pojo.DataContext;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +34,9 @@ public class ClusterDataHolder {
     // Cluster object collection
     private Set<Cluster> clusters;
 
+    // payload related information
+    private Set<PayloadDataHolder> payloadDataHolders;
+
    public ClusterDataHolder (Map<String, String> clusterIdMap, Set<Cluster> clusters) {
        this.clusterIdMap = clusterIdMap;
        this.clusters = clusters;
@@ -43,5 +48,14 @@ public class ClusterDataHolder {
 
     public Set<Cluster> getClusters() {
         return clusters;
+    }
+
+
+    public Set<PayloadDataHolder> getPayloadDataHolders() {
+        return payloadDataHolders;
+    }
+
+    public void setPayloadDataHolders(Set<PayloadDataHolder> payloadDataHolders) {
+        this.payloadDataHolders = payloadDataHolders;
     }
 }
