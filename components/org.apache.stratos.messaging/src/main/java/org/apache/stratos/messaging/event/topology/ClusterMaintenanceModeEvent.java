@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.io.Serializable;
 
@@ -27,7 +27,7 @@ public class ClusterMaintenanceModeEvent extends TopologyEvent implements Serial
 
 	private final String serviceName;
 	private final String clusterId;
-    private ClusterStatus status;
+    private Status status;
 
     public ClusterMaintenanceModeEvent(String serviceName, String clusterId) {
         this.serviceName = serviceName;
@@ -48,11 +48,11 @@ public class ClusterMaintenanceModeEvent extends TopologyEvent implements Serial
         return clusterId;
     }
 
-    public ClusterStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(ClusterStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 }

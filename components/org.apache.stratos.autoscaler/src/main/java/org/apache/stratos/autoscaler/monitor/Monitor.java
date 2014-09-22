@@ -112,9 +112,11 @@ public abstract class Monitor extends Observable implements Observer {
     }
 
     public void startDependency() {
-        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
+        //Need to get the order every time as group/cluster might already been started
+        //TODO breadth first search in a tree and find the parallel one
+        //TODO build up the tree with ordered manner
 
-        //TODO find out the parallel ones
+        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
 
         //start the first dependency
         if(!preOrderTraverse.isEmpty()) {

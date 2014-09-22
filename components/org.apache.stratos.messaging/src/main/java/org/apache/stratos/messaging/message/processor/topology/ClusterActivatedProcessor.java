@@ -18,13 +18,24 @@
  */
 package org.apache.stratos.messaging.message.processor.topology;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterMaintenanceModeEvent;
+import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
+import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.util.Util;
 
 /**
  * This processor will act upon the cluster activated event
  */
 public class ClusterActivatedProcessor extends MessageProcessor {
-
+    private static final Log log = LogFactory.getLog(ClusterActivatedProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -34,6 +45,75 @@ public class ClusterActivatedProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        return nextProcessor.process(type, message, object);
+        Topology topology = (Topology) object;
+
+        if (ClusterActivatedEvent.class.getName().equals(type)) {
+            // Return if topology has not been initialized
+            if (!topology.isInitialized())
+                return false;
+
+            // Parse complete message and build event
+            ClusterActivatedEvent event = (ClusterActivatedEvent) Util.
+                    jsonToObject(message, ClusterActivatedEvent.class);
+
+            // Apply service filter
+            if (TopologyServiceFilter.getInstance().isActive()) {
+                if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
+                    // Service is excluded, do not update topology or fire event
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    }
+                    return false;
+                }
+            }
+
+            // Apply cluster filter
+            if (TopologyClusterFilter.getInstance().isActive()) {
+                if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
+                    // Cluster is excluded, do not update topology or fire event
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
+                    }
+                    return false;
+                }
+            }
+
+            // Validate event against the existing topology
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Service does not exist: [service] %s",
+                            event.getServiceName()));
+                }
+                return false;
+            }
+            Cluster cluster = service.getCluster(event.getClusterId());
+
+            if (cluster == null) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
+                            event.getClusterId()));
+                }
+            } else {
+                // Apply changes to the topology
+                cluster.setStatus(Status.Activated);
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Cluster updated as activated : %s",
+                            cluster.toString()));
+                }
+            }
+
+            // Notify event listeners
+            notifyEventListeners(event);
+            return true;
+
+        } else {
+            if (nextProcessor != null) {
+                // ask the next processor to take care of the message.
+                return nextProcessor.process(type, message, topology);
+            } else {
+                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+            }
+        }
     }
 }

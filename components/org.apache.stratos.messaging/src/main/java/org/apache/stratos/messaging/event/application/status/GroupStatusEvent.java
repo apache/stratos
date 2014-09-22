@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.cluster.status;
+package org.apache.stratos.messaging.event.application.status;
 
 import org.apache.stratos.messaging.event.Event;
 
@@ -26,6 +26,6 @@ import java.io.Serializable;
 /**
  * Represents all instance status events.
  */
-public abstract class ClusterStatusEvent extends Event implements Serializable {
+public abstract class GroupStatusEvent extends Event implements Serializable {
     private static final long serialVersionUID = -4790128084271867615L;
 }

@@ -119,7 +119,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO build dependency and organize the application
 
                     //start the application monitor
-                    //startApplicationMonitor(applicationCreatedEvent.getApplication());
+                    startApplicationMonitor(applicationCreatedEvent.getApplication());
 
                 } finally {
                     //release read lock

@@ -18,10 +18,7 @@
  */
 package org.apache.stratos.autoscaler.grouping;
 
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.DependencyOrder;
-import org.apache.stratos.messaging.domain.topology.ParentBehavior;
-import org.apache.stratos.messaging.domain.topology.StartupOrder;
+import org.apache.stratos.messaging.domain.topology.*;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -37,28 +34,44 @@ public class DependencyBuilder {
 
         Queue<String> startup = new LinkedList<String>();
         DependencyOrder dependencyOrder = component.getDependencyOrder();
-        Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
-        for (StartupOrder startupOrder : startupOrderSet) {
+        if(dependencyOrder != null) {
+            Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
+            for (StartupOrder startupOrder : startupOrderSet) {
 
-            String start = startupOrder.getStart();
-            String after = startupOrder.getAfter();
+                String start = startupOrder.getStart();
+                String after = startupOrder.getAfter();
 
-            if (!startup.contains(start)) {
-                startup.add(start);
-                if (!startup.contains(after)) {
-                    startup.add(after);
+                if (!startup.contains(start)) {
+                    startup.add(start);
+                    if (!startup.contains(after)) {
+                        startup.add(after);
 
+                    } else {
+                        //TODO throw exception since after is there before start
+                    }
                 } else {
-                    //TODO throw exception since after is there before start
-                }
-            } else {
-                if (!startup.contains(after)) {
-                    startup.add(after);
-                } else {
-                    //TODO throw exception since start and after already there
+                    if (!startup.contains(after)) {
+                        startup.add(after);
+                    } else {
+                        //TODO throw exception since start and after already there
+                    }
                 }
             }
         }
+        //TODO adding all the missed groups or clusters as the top child to the list
+        for(Group group: component.getGroupMap().values()) {
+            if(!startup.contains(group.getAlias())) {
+                startup.add(group.getAlias());
+            }
+        }
+
+        for(String clusterId: component.getClusterIdMap().values()) {
+            if(!startup.contains(clusterId)) {
+                startup.add(clusterId);
+            }
+        }
+
+
         return startup;
 
     }

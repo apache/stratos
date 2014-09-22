@@ -30,7 +30,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String lbReferenceType;
     private boolean hasPrimary;
-    private ClusterStatus status;
+    private Status status;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
@@ -76,7 +76,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
             Thread.sleep(60000);
         } catch (InterruptedException ignore) {
         }*/
-        this.status = ClusterStatus.Running;
+        this.status = Status.Running;
             while (!isDestroyed() && status.getCode() >= ClusterStatus.Running.getCode()) {
                 if (log.isDebugEnabled()) {
                     log.debug("Cluster monitor is running.. " + this.toString());
@@ -242,11 +242,11 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         this.hasPrimary = hasPrimary;
     }
 
-    public ClusterStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(ClusterStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 }

@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,23 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.application.status;
 
-package org.apache.stratos.messaging.domain.topology;
+import java.io.Serializable;
 
-public enum Status {
+public class GroupMaintenanceModeEvent extends GroupStatusEvent implements Serializable {
+    private String groupId;
+    private String appId;
 
-    Created(1),
-    In_Maintenance(2),
-    Running(3),
-    Activated(4);
-
-    private int code;
-
-    private Status(int code) {
-        this.code = code;
+    public GroupMaintenanceModeEvent(String appId, String groupId) {
+        this.appId = appId;
+        this.groupId = groupId;
     }
 
-    public int getCode() {
-        return code;
+    public String getGroupId(String groupId) {
+        return this.groupId;
     }
+
+    public String getAppId() {
+        return appId;
+    }
+
 }

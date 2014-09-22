@@ -16,29 +16,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.messaging.event.group.status;
+package org.apache.stratos.messaging.event.application.status;
 
 import java.io.Serializable;
 
 /**
- * This event is fired by cartridge agent when it has started the server and
- * applications are ready to serve the incoming requests.
+ *  This event is fired by cartridge agent when it has cleaned up the data and
+ *  ready to shutdown.
  */
-public class GroupActivatedEvent extends GroupStatusEvent implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
-
+public class GroupReadyToShutdownEvent extends GroupStatusEvent implements Serializable {
     private String groupId;
     private String appId;
 
-    public GroupActivatedEvent(String appId, String groupId) {
+    public GroupReadyToShutdownEvent(String appId, String groupId) {
         this.appId = appId;
         this.groupId = groupId;
     }
 
     public String getGroupId(String groupId) {
-		return this.groupId;
-	}
+        return this.groupId;
+    }
 
     public String getAppId() {
         return appId;
