@@ -275,6 +275,7 @@
                                 </bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-bouncycastle:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.driver:jclouds-sshj:${jclouds.version}</bundleDef>
+                                <!--bundleDef>org.apache.jclouds.driver:jclouds-log4j:${jclouds.version}</bundleDef-->
                                 <bundleDef>org.apache.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-core:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
@@ -288,12 +289,14 @@
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:aws-ec2:1.8.0-stratos</bundleDef>
                                 <bundleDef>com.google.guava:guava:17.0</bundleDef>
+
+
                                 <bundleDef>
                                     org.apache.servicemix.bundles:org.apache.servicemix.bundles.jsch-agentproxy-jsch:0.0.7_1
                                 </bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.connector-factory:0.0.7</bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.sshagent:0.0.7</bundleDef>
-                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-nc:0.0.7</bundleDef>
+                                <bundleDef>com.jcraft:jsch.agentproxy.usocket-jna:0.0.7</bundleDef>
                                 <bundleDef>com.jcraft:jsch.agentproxy.core:0.0.7</bundleDef>
                                 <bundleDef>net.java.dev.jna:jna:4.1.0</bundleDef>
                                 <bundleDef>
@@ -302,6 +305,7 @@
                                 <bundleDef>net.schmizz:sshj:0.9.0</bundleDef>
                                 <bundleDef>org.apache.servicemix.bundles:org.apache.servicemix.bundles.jzlib:1.1.1_1
                                 </bundleDef>
+
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>com.google.guice.wso2:guice:${google.guice.wso2.version}</bundleDef>
                                 <bundleDef>
@@ -323,6 +327,7 @@
                                 </bundleDef>
                                 <bundleDef>jdom.wso2:jdom:1.0.0.wso2v1</bundleDef>
                                 <bundleDef>org.json.wso2:json:1.0.0.wso2v1</bundleDef>
+                                <!--bundleDef>org.jaggeryjs:0.9.0.ALPHA2-wso2v2</bundleDef-->
                                 <bundleDef>org.apache.jclouds.api:sts:${jclouds.version}</bundleDef>
                                 <bundleDef>javax.ws.rs:jsr311-api:1.1.1</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.messaging:${project.version}

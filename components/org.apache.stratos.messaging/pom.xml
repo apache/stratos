@@ -73,7 +73,21 @@
     		<artifactId>java-xmlbuilder</artifactId>
     		<version>0.6</version>
   		</dependency>
-        
+         <dependency>
+		        <groupId>org.eclipse.paho</groupId>
+		        <artifactId>mqtt-client</artifactId>
+		        <version>0.4.0</version>
+   		 </dependency>
+   		     <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-core</artifactId>
+            <version>5.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.9.1</version>
+        </dependency>
     </dependencies>
 
     <build>
