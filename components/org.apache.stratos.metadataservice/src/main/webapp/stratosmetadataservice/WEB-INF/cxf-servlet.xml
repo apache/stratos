@@ -59,6 +59,7 @@
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
+	<property name="dropRootElement" value="true" />
         <property name="arrayKeys">
             <list>
                 <value>partitions</value>

@@ -30,10 +30,13 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.metadataservice.definition.ApplicationBean;
 import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
+import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.definition.PropertyBean;
 import org.apache.stratos.metadataservice.util.ConfUtil;
 import org.wso2.carbon.registry.api.Registry;
+import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Comment;
 import org.wso2.carbon.registry.ws.client.registry.WSRegistryServiceClient;
@@ -218,5 +221,29 @@ public class GRegRegistry implements DataStore {
 		registry.delete(resourcePath);
 		return false;
 	}
+
+    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws Exception {
+
+    }
+
+    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws Exception {
+        return null;
+    }
+
+    public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException {
+        
+    }
+
+    public void addPropertiesToApplication(String applicationId, NewProperty[] properties) throws RegistryException {
+
+    }
+
+    public void addPropertyToApplication(String applicationId, NewProperty property) {
+
+    }
+
+    public List<NewProperty> getPropertiesOfApplication(String applicationId) throws RegistryException {
+        return null;
+    }
 
 }
