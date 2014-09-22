@@ -575,32 +575,4 @@ public class ExtensionUtils {
         }
         return true;
     }
-
-    public static void executeSubscriptionDomainAddedExtension(int tenantId, String tenantDomain, String domainName, String applicationContext) {
-        try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Executing subscription domain added extension: [tenant-id] %d [tenant-domain] %s " +
-                        "[domain-name] %s [application-context] %s", tenantId, tenantDomain, domainName, applicationContext));
-            }
-            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SH + " " + domainName + " " + applicationContext);
-            CommandUtils.executeCommand(command);
-        }
-        catch (Exception e) {
-            log.error("Could not execute subscription domain added extension", e);
-        }
-    }
-
-    public static void executeSubscriptionDomainRemovedExtension(int tenantId, String tenantDomain, String domainName) {
-        try {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Executing subscription domain removed extension: [tenant-id] %d [tenant-domain] %s " +
-                        "[domain-name] %s [application-context] %s", tenantId, tenantDomain, domainName));
-            }
-            String command = prepareCommand(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_REMOVED_SH + " " + domainName);
-            CommandUtils.executeCommand(command);
-        }
-        catch (Exception e) {
-            log.error("Could not execute subscription domain removed extension", e);
-        }
-    }
 }
