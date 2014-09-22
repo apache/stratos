@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,37 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.group;
+package org.apache.stratos.messaging.event.cluster.status;
 
-import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.event.Event;
+import java.io.Serializable;
 
-import java.util.List;
-import java.util.Map;
+public class ClusterMaintenanceModeEvent extends ClusterStatusEvent implements Serializable {
+    private final String serviceName;
+    private final String clusterId;
+    private String appId;
 
-/**
- * This is GroupMonitor to monitor the group which consists of
- * groups and clusters
- */
-public class GroupMonitor extends Monitor {
-
-
-
-    public GroupMonitor(Group group) {
-        super(group);
-        //TODO build dependencies and keep them here
-
+    public ClusterMaintenanceModeEvent(String appId, String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.appId = appId;
     }
 
-    //monitor the status of the cluster and the groups
-    public void monitor() {
-
-
+    public String getServiceName() {
+        return serviceName;
     }
 
-    @Override
-    protected void onEvent(Event event) {
+    public String getClusterId() {
+        return clusterId;
+    }
 
+
+    public String getAppId() {
+        return appId;
     }
 }

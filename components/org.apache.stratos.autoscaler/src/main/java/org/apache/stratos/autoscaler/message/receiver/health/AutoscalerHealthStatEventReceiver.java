@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -93,19 +94,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Avg load avg event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -116,6 +105,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
 
             }
@@ -135,19 +126,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Avg Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
 
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
@@ -159,6 +138,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -177,19 +158,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -200,6 +169,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -217,19 +188,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Grad of load avg event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -240,6 +199,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -258,19 +219,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Grad of Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                };
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -281,6 +230,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -298,19 +249,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Gradient of Rif event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -321,6 +260,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -459,19 +400,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Second Derivation of load avg event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -482,6 +411,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
@@ -500,19 +431,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -523,6 +442,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
 
             }
@@ -540,19 +461,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     log.debug(String.format("Second derivative of Rif event: [cluster] %s [network-partition] %s [value] %s",
                             clusterId, networkPartitionId, floatValue));
                 }
-                AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
-
-                if(asCtx.monitorExist(clusterId)){
-                    monitor = asCtx.getMonitor(clusterId);
-                }else if(asCtx.lbMonitorExist(clusterId)){
-                    monitor = asCtx.getLBMonitor(clusterId);
-                }else{
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                    }
-                    return;
-                }
+                AbstractClusterMonitor monitor = getMonitor(clusterId);
                 if(null != monitor){
                     NetworkPartitionContext networkPartitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId);
                     if(null != networkPartitionContext){
@@ -563,10 +472,29 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                    " [network partition] %s", networkPartitionId));
                         }
                     }
+                } else {
+                    return;
                 }
             }
 
         });
+    }
+
+    private AbstractClusterMonitor getMonitor(String clusterId) {
+        AutoscalerContext asCtx = AutoscalerContext.getInstance();
+        AbstractClusterMonitor monitor;
+
+        if(asCtx.monitorExist(clusterId)){
+            monitor = asCtx.getMonitor(clusterId);
+        }else if(asCtx.lbMonitorExist(clusterId)){
+            monitor = asCtx.getLBMonitor(clusterId);
+        }else{
+            if(log.isDebugEnabled()){
+                log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+            }
+            return null;
+        }
+        return null;
     }
 
 
@@ -582,26 +510,31 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         }
         String clusterId = member.getClusterId();
 
-        AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        AbstractClusterMonitor monitor;
+        AbstractClusterMonitor monitor = getMonitor(clusterId);
+        MemberStatsContext  memberStatsContext;
 
-        if(asCtx.monitorExist(clusterId)){
-            monitor = asCtx.getMonitor(clusterId);
-        }else if(asCtx.lbMonitorExist(clusterId)){
-            monitor = asCtx.getLBMonitor(clusterId);
-        }else{
-            if(log.isDebugEnabled()){
-                log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-            }
+        if(monitor != null) {
+          memberStatsContext = getMemberStatContext(memberId, monitor, member);
+        } else {
             return null;
         }
+        LoadAverage loadAverage;
+        if(memberStatsContext == null) {
+            return null;
+        } else {
+            loadAverage = memberStatsContext.getLoadAverage();
+        }
+        return loadAverage;
+    }
+
+    private MemberStatsContext getMemberStatContext(String memberId, AbstractClusterMonitor monitor, Member member) {
         String networkPartitionId = findNetworkPartitionId(memberId);
         MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
-                        .getPartitionCtxt(member.getPartitionId())
-                        .getMemberStatsContext(memberId);
+                .getPartitionCtxt(member.getPartitionId())
+                .getMemberStatsContext(memberId);
         if(null == memberStatsContext){
             if(log.isDebugEnabled()) {
-               log.debug(String.format("Member context is not available for : [member] %s", memberId));
+                log.debug(String.format("Member context is not available for : [member] %s", memberId));
             }
             return null;
         }
@@ -612,9 +545,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
             return null;
         }
-
-        LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-        return loadAverage;
+        return memberStatsContext;
     }
 
     private MemoryConsumption findMemoryConsumption(String memberId) {
@@ -639,23 +570,13 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             return null;
         }
 
-        String networkPartitionId = findNetworkPartitionId(memberId);
-        MemberStatsContext memberStatsContext = monitor.getNetworkPartitionCtxt(networkPartitionId)
-                        .getPartitionCtxt(member.getPartitionId())
-                        .getMemberStatsContext(memberId);
-        if(null == memberStatsContext){
-            if(log.isDebugEnabled()) {
-               log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
+        MemberStatsContext  memberStatsContext = getMemberStatContext(memberId, monitor, member);
+        MemoryConsumption memoryConsumption;
+        if(memberStatsContext == null) {
             return null;
-        }else if(!member.isActive()){
-            if(log.isDebugEnabled()){
-                log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
-                        " the health stat", memberId));
-            }
-            return null;
+        } else {
+            memoryConsumption = memberStatsContext.getMemoryConsumption();
         }
-        MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
 
         return memoryConsumption;
     }
@@ -690,21 +611,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
 
     private void handleMemberFaultEvent(String clusterId, String memberId) {
         try {
-        	AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        	AbstractClusterMonitor monitor;
-        	
-        	if(asCtx.monitorExist(clusterId)){
-        		monitor = asCtx.getMonitor(clusterId);
-        	}else if(asCtx.lbMonitorExist(clusterId)){
-        		monitor = asCtx.getLBMonitor(clusterId);
-        	}else{
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
-                }
-                return;
-        	}
-        	
-        	NetworkPartitionContext nwPartitionCtxt;
+            AbstractClusterMonitor monitor = getMonitor(clusterId);
+            NetworkPartitionContext nwPartitionCtxt;
             try{
             	TopologyManager.acquireReadLock();
             	Member member = findMember(memberId);
@@ -719,9 +627,12 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                     }
                     return;
                 }
-	            
-	            nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
-	            
+	            if(monitor != null) {
+                    nwPartitionCtxt = monitor.getNetworkPartitionCtxt(member);
+                } else {
+                    return;
+                }
+
             }finally{
             	TopologyManager.releaseReadLock();
             }
@@ -741,6 +652,9 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
 
             // remove from active member list
             partitionCtxt.removeActiveMemberById(memberId);
+            //Check the clusterStatus as part of the member fault event
+            StatusChecker.getInstance().onMemberFaultEvent(clusterId, "appId", partitionCtxt);
+
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Faulty member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",

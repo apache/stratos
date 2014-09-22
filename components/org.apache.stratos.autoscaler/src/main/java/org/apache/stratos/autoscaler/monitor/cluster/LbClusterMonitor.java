@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
+import java.util.Observable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -123,6 +124,7 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
     public void setStatus(ClusterStatus status) {
         this.status = status;
     }
+
 
 
 }

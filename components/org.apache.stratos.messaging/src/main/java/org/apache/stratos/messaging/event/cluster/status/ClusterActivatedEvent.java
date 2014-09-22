@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,15 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.event.Event;
+package org.apache.stratos.messaging.event.cluster.status;
+
+import java.io.Serializable;
 
 /**
- * Cluster activated event will be sent by Autoscaler
+ * This event is fired by cartridge agent when it has started the server and
+ * applications are ready to serve the incoming requests.
  */
-public class ClusterActivatedEvent extends Event {
+public class ClusterActivatedEvent extends ClusterStatusEvent implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
 
     private final String serviceName;
     private final String clusterId;
@@ -40,12 +42,6 @@ public class ClusterActivatedEvent extends Event {
         return serviceName;
     }
 
-    @Override
-    public String toString() {
-        return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
-                "]";
-    }
-
     public String getClusterId() {
         return clusterId;
     }
@@ -53,5 +49,4 @@ public class ClusterActivatedEvent extends Event {
     public String getAppId() {
         return appId;
     }
-
 }

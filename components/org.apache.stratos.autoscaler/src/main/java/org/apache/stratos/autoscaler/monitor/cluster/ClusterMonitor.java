@@ -47,7 +47,6 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     private String lbReferenceType;
     private boolean hasPrimary;
     private ClusterStatus status;
-    private Group parent;
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {

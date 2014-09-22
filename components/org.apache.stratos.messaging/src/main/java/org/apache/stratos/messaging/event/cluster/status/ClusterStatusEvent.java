@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,37 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.group;
 
-import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.messaging.domain.topology.Group;
+package org.apache.stratos.messaging.event.cluster.status;
+
 import org.apache.stratos.messaging.event.Event;
 
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 /**
- * This is GroupMonitor to monitor the group which consists of
- * groups and clusters
+ * Represents all instance status events.
  */
-public class GroupMonitor extends Monitor {
-
-
-
-    public GroupMonitor(Group group) {
-        super(group);
-        //TODO build dependencies and keep them here
-
-    }
-
-    //monitor the status of the cluster and the groups
-    public void monitor() {
-
-
-    }
-
-    @Override
-    protected void onEvent(Event event) {
-
-    }
+public abstract class ClusterStatusEvent extends Event implements Serializable {
+    private static final long serialVersionUID = -4790128084271867615L;
 }

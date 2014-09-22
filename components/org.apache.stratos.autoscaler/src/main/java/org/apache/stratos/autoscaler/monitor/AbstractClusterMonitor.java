@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.monitor;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
@@ -42,7 +44,7 @@ import org.drools.runtime.rule.FactHandle;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-abstract public class AbstractClusterMonitor implements Runnable {
+abstract public class AbstractClusterMonitor extends Observable implements Observer, Runnable {
 
     private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
     // Map<NetworkpartitionId, Network Partition Context>
@@ -62,6 +64,7 @@ abstract public class AbstractClusterMonitor implements Runnable {
 
     protected String clusterId;
     protected String serviceId;
+    protected String appId;
 
     protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
@@ -159,6 +162,14 @@ abstract public class AbstractClusterMonitor implements Runnable {
         this.clusterId = clusterId;
     }
 
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
     public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
         return networkPartitionCtxts;
     }
@@ -215,6 +226,11 @@ abstract public class AbstractClusterMonitor implements Runnable {
     public void setTerminateDependencyFactHandle(
             FactHandle terminateDependencyFactHandle) {
         this.terminateDependencyFactHandle = terminateDependencyFactHandle;
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+
     }
 
     public int getMonitorInterval() {

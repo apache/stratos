@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.monitor.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
@@ -37,9 +38,9 @@ import java.util.*;
 public class ApplicationMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
-    public ApplicationMonitor(Application application) {
+    public ApplicationMonitor(ParentBehavior application) {
         super(application);
-        //TODO keep track of the parallel applications
+        //keep
     }
 
     @Override
@@ -83,11 +84,11 @@ public class ApplicationMonitor extends Monitor {
     }
 
 
-    public Monitor findParentOfGroup(String groupId) {
-      return findParentMonitor(groupId, this);
+    public Monitor findParentMonitorOfGroup(String groupId) {
+      return findParentMonitorForGroup(groupId, this);
     }
 
-    private Monitor findParentMonitor(String groupId, Monitor monitor) {
+    private Monitor findParentMonitorForGroup(String groupId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
         if(monitor.getGroupMonitors().containsKey(groupId)) {
             return monitor;
@@ -95,7 +96,7 @@ public class ApplicationMonitor extends Monitor {
             if(monitor.getGroupMonitors() != null) {
                 //check whether the children has the group and find its parent
                 for(GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
-                    return findParentMonitor(groupId, groupMonitor);
+                    return findParentMonitorForGroup(groupId, groupMonitor);
 
                 }
             }
@@ -104,22 +105,26 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
-
-    @Override
-    public void run() {
-        while (true) {
-            if (log.isDebugEnabled()) {
-                log.debug("Application monitor is running.. " + this.toString());
-            }
-                    monitor();
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+    public Monitor findParentMonitorOfCluster(String clusterId) {
+        return findParentMonitorForCluster(clusterId, this);
     }
 
+    private Monitor findParentMonitorForCluster(String clusterId, Monitor monitor) {
+        //if this monitor has the group, return it as the parent
+        if(monitor.getAbstractClusterMonitors().containsKey(clusterId)) {
+            return monitor;
+        } else {
+            if(monitor.getGroupMonitors() != null) {
+                //check whether the children has the group and find its parent
+                for(GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                    return findParentMonitorForCluster(clusterId, groupMonitor);
+
+                }
+            }
+        }
+        return null;
+
+    }
 
     @Override
     public void monitor() {

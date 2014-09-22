@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,37 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.group;
+package org.apache.stratos.messaging.event.group.status;
 
-import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.event.Event;
-
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 /**
- * This is GroupMonitor to monitor the group which consists of
- * groups and clusters
+ *  This event is fired by cartridge agent when it has cleaned up the data and
+ *  ready to shutdown.
  */
-public class GroupMonitor extends Monitor {
+public class GroupReadyToShutdownEvent extends GroupStatusEvent implements Serializable {
+    private String groupId;
+    private String appId;
 
-
-
-    public GroupMonitor(Group group) {
-        super(group);
-        //TODO build dependencies and keep them here
-
+    public GroupReadyToShutdownEvent(String appId, String groupId) {
+        this.appId = appId;
+        this.groupId = groupId;
     }
 
-    //monitor the status of the cluster and the groups
-    public void monitor() {
-
-
+    public String getGroupId(String groupId) {
+        return this.groupId;
     }
 
-    @Override
-    protected void onEvent(Event event) {
-
+    public String getAppId() {
+        return appId;
     }
 }
