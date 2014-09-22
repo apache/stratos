@@ -20,21 +20,17 @@ package org.apache.stratos.autoscaler.monitor;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
-import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -42,50 +38,24 @@ import org.drools.runtime.rule.FactHandle;
  * rules engine.
  *
  */
-   abstract public class AbstractMonitor implements Runnable{
+   abstract public class VMClusterMonitor extends AbstractClusterMonitor{
 
-	private static final Log log = LogFactory.getLog(AbstractMonitor.class);
+	private static final Log log = LogFactory.getLog(VMClusterMonitor.class);
 	// Map<NetworkpartitionId, Network Partition Context>
 	protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
 	protected DeploymentPolicy deploymentPolicy;
 	protected AutoscalePolicy autoscalePolicy;
 	
-
-	protected FactHandle minCheckFactHandle;
-	protected FactHandle scaleCheckFactHandle;
-	
-	protected StatefulKnowledgeSession minCheckKnowledgeSession;
-	protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
-	protected boolean isDestroyed;
-	
-	protected String clusterId;
-	protected String serviceId;
-	
-	protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-
-    // time intereval between two runs of the Monitor. Default is 90000ms.
-    protected int monitorInterval;
-
-    public AbstractMonitor() {
-        readConfigurations();
+    protected VMClusterMonitor(String clusterId, String serviceId, ClusterType clusterType, 
+    		AutoscalerRuleEvaluator autoscalerRuleEvaluator, 
+    		DeploymentPolicy deploymentPolicy, AutoscalePolicy autoscalePolicy, 
+    		Map<String, NetworkPartitionContext> networkPartitionCtxts) {
+    	super(clusterId, serviceId, clusterType, autoscalerRuleEvaluator);
+    	this.deploymentPolicy = deploymentPolicy;
+    	this.autoscalePolicy = autoscalePolicy;
+    	this.networkPartitionCtxts = networkPartitionCtxts;
     }
 
-    private void readConfigurations () {
-
-        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
-        if (log.isDebugEnabled()) {
-            log.debug("Cluster Monitor task interval: " + getMonitorInterval());
-        }
-    }
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	    
    	public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
    		log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
 		String networkPartitionId = member.getNetworkPartitionId();
@@ -108,31 +78,6 @@ import org.drools.runtime.rule.FactHandle;
         return null;
    	}
     
-    public void destroy() {
-        minCheckKnowledgeSession.dispose();
-        scaleCheckKnowledgeSession.dispose();
-        setDestroyed(true);
-        if(log.isDebugEnabled()) {
-            log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
-        }
-    }
-    
-    public boolean isDestroyed() {
-        return isDestroyed;
-    }
-
-    public void setDestroyed(boolean isDestroyed) {
-        this.isDestroyed = isDestroyed;
-    }
-
-    public String getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
-
     public DeploymentPolicy getDeploymentPolicy() {
         return deploymentPolicy;
     }
@@ -148,14 +93,6 @@ import org.drools.runtime.rule.FactHandle;
     public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
         this.autoscalePolicy = autoscalePolicy;
     }    
-    
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
 
     public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
         return networkPartitionCtxts;
@@ -179,25 +116,5 @@ import org.drools.runtime.rule.FactHandle;
     
     public NetworkPartitionContext getPartitionCtxt(String id) {
         return this.networkPartitionCtxts.get(id);
-    }
-
-    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
-        return minCheckKnowledgeSession;
-    }
-
-    public void setMinCheckKnowledgeSession(StatefulKnowledgeSession minCheckKnowledgeSession) {
-        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
-    }
-
-    public FactHandle getMinCheckFactHandle() {
-        return minCheckFactHandle;
-    }
-
-    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
-        this.minCheckFactHandle = minCheckFactHandle;
-    }
-
-    public int getMonitorInterval() {
-        return monitorInterval;
     }
 }

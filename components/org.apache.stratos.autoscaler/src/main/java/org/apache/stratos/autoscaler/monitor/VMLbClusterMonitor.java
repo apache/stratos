@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.monitor;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -27,6 +28,9 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
@@ -35,23 +39,16 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
  * rules engine.
  *
  */
-public class LbClusterMonitor extends AbstractMonitor{
+public class VMLbClusterMonitor extends VMClusterMonitor{
 
-    private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
-    private ClusterStatus status;
+    private static final Log log = LogFactory.getLog(VMLbClusterMonitor.class);
 
-    public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
+    public VMLbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                             AutoscalePolicy autoscalePolicy) {
-        this.clusterId = clusterId;
-        this.serviceId = serviceId;
-
-        this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
-        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
-        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
-
-        this.deploymentPolicy = deploymentPolicy;
-        this.deploymentPolicy = deploymentPolicy;
-        networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
+    	super(clusterId, serviceId, ClusterType.VMLbCluster, new AutoscalerRuleEvaluator(), 
+    			deploymentPolicy, autoscalePolicy, 
+    			new ConcurrentHashMap<String, NetworkPartitionContext>());
+        readConfigurations();
     }
 
     @Override
@@ -62,7 +59,7 @@ public class LbClusterMonitor extends AbstractMonitor{
                 log.debug("Cluster monitor is running.. "+this.toString());
             }
             try {
-                if( !ClusterStatus.In_Maintenance.equals(status)) {
+                if( !ClusterStatus.In_Maintenance.equals(getStatus())) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
@@ -74,13 +71,14 @@ public class LbClusterMonitor extends AbstractMonitor{
                 log.error("Cluster monitor: Monitor failed. "+this.toString(), e);
             }
             try {
-                Thread.sleep(monitorInterval);
+                Thread.sleep(getMonitorInterval());
             } catch (InterruptedException ignore) {
             }
         }
     }
     
-    private void monitor() {
+    @Override
+    protected void monitor() {
         // TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
 
@@ -89,8 +87,8 @@ public class LbClusterMonitor extends AbstractMonitor{
                                                                             .values()) {
 
                 if (partitionContext != null) {
-                    minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                    minCheckKnowledgeSession.setGlobal("isPrimary", false);
+                    getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                    getMinCheckKnowledgeSession().setGlobal("isPrimary", false);
                     
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Running minimum check for partition %s ",
@@ -98,7 +96,7 @@ public class LbClusterMonitor extends AbstractMonitor{
                     }
 
                     minCheckFactHandle =
-                                         AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession,
+                                         AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
                                                                                   minCheckFactHandle,
                                                                                   partitionContext);
                     // start only in the first partition context
@@ -108,19 +106,30 @@ public class LbClusterMonitor extends AbstractMonitor{
             }
 
         }
-    }       
+    }     
+    
+	@Override
+    public void destroy() {
+        getMinCheckKnowledgeSession().dispose();
+        getMinCheckKnowledgeSession().dispose();
+        setDestroyed(true);
+        if(log.isDebugEnabled()) {
+            log.debug("LbClusterMonitor Drools session has been disposed. "+this.toString());
+        }
+    }
+    
+    @Override
+    protected void readConfigurations () {
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
+        setMonitorInterval(monitorInterval);
+        if (log.isDebugEnabled()) {
+            log.debug("LbClusterMonitor task interval: " + getMonitorInterval());
+        }
+    }
 
     @Override
     public String toString() {
-        return "LbClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId + "]";
-    }
-
-
-    public ClusterStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
+        return "LbClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() + "]";
     }
 }

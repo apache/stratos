@@ -18,6 +18,11 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
@@ -25,14 +30,13 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -40,28 +44,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * rules engine.
  *
  */
-public class ClusterMonitor extends AbstractMonitor {
+public class VMServiceClusterMonitor extends VMClusterMonitor {
 
-    private static final Log log = LogFactory.getLog(ClusterMonitor.class);
+    private static final Log log = LogFactory.getLog(VMServiceClusterMonitor.class);
     private String lbReferenceType;
     private boolean hasPrimary;
-    private ClusterStatus status;
 
-    public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
+    public VMServiceClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
-        this.clusterId = clusterId;
-        this.serviceId = serviceId;
-
-        this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
-        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
-        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
-
-        this.deploymentPolicy = deploymentPolicy;
-        this.autoscalePolicy = autoscalePolicy;
-        networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
+    	super(clusterId, serviceId, ClusterType.VMServiceCluster, new AutoscalerRuleEvaluator(), 
+    			deploymentPolicy, autoscalePolicy, 
+    			new ConcurrentHashMap<String, NetworkPartitionContext>());
+        readConfigurations();
     }
-
-
 
     @Override
     public void run() {
@@ -78,7 +73,7 @@ public class ClusterMonitor extends AbstractMonitor {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if(!ClusterStatus.In_Maintenance.equals(status)) {
+                if(!ClusterStatus.In_Maintenance.equals(getStatus())) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
@@ -90,32 +85,14 @@ public class ClusterMonitor extends AbstractMonitor {
                 log.error("Cluster monitor: Monitor failed." + this.toString(), e);
             }
             try {
-                Thread.sleep(monitorInterval);
+                Thread.sleep(getMonitorInterval());
             } catch (InterruptedException ignore) {
             }
         }
     }
 
-    private boolean isPrimaryMember(MemberContext memberContext){
-        Properties props = memberContext.getProperties();
-        if (log.isDebugEnabled()) {
-            log.debug(" Properties [" + props + "] ");
-        }
-        if (props != null && props.getProperties() != null) {
-            for (Property prop : props.getProperties()) {
-                if (prop.getName().equals("PRIMARY")) {
-                    if (Boolean.parseBoolean(prop.getValue())) {
-                        log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
-                                "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private void monitor() {
+    @Override
+    protected void monitor() {
 
         //TODO make this concurrent
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
@@ -139,16 +116,16 @@ public class ClusterMonitor extends AbstractMonitor {
                     }
                 }
                 primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
-                minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                minCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
-                minCheckKnowledgeSession.setGlobal("isPrimary", hasPrimary);
-                minCheckKnowledgeSession.setGlobal("primaryMemberCount", primaryMemberListInPartition.size());
+                getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+                getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                getMinCheckKnowledgeSession().setGlobal("primaryMemberCount", primaryMemberListInPartition.size());
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
                 }
 
-                minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(minCheckKnowledgeSession
+                minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession()
                         , minCheckFactHandle, partitionContext);
 
             }
@@ -161,22 +138,22 @@ public class ClusterMonitor extends AbstractMonitor {
                         + " flag of loadAverageReset" + loadAverageReset);
             }
             if (rifReset || memoryConsumptionReset || loadAverageReset) {
-                scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
+            	getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
-                scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-                scaleCheckKnowledgeSession.setGlobal("rifReset", rifReset);
-                scaleCheckKnowledgeSession.setGlobal("mcReset", memoryConsumptionReset);
-                scaleCheckKnowledgeSession.setGlobal("laReset", loadAverageReset);
-                scaleCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
-                scaleCheckKnowledgeSession.setGlobal("isPrimary", false);
-                scaleCheckKnowledgeSession.setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
+            	getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
+            	getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+            	getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+            	getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+            	getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+            	getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+            	getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
                     log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
                 }
 
-                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
+                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
                         , scaleCheckFactHandle, networkPartitionContext);
 
                 networkPartitionContext.setRifReset(false);
@@ -188,10 +165,49 @@ public class ClusterMonitor extends AbstractMonitor {
             }
         }
     }
+    
+    private boolean isPrimaryMember(MemberContext memberContext){
+        Properties props = memberContext.getProperties();
+        if (log.isDebugEnabled()) {
+            log.debug(" Properties [" + props + "] ");
+        }
+        if (props != null && props.getProperties() != null) {
+            for (Property prop : props.getProperties()) {
+                if (prop.getName().equals("PRIMARY")) {
+                    if (Boolean.parseBoolean(prop.getValue())) {
+                        log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
+                                "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    protected void readConfigurations () {
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
+        setMonitorInterval(monitorInterval);
+        if (log.isDebugEnabled()) {
+            log.debug("Cluster Monitor task interval: " + getMonitorInterval());
+        }
+    }
+    
+	@Override
+    public void destroy() {
+        getMinCheckKnowledgeSession().dispose();
+        getScaleCheckKnowledgeSession().dispose();
+        setDestroyed(true);
+        if(log.isDebugEnabled()) {
+            log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
+        }
+    }
 
     @Override
     public String toString() {
-        return "ClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId +
+        return "ClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() +
                 ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
                 ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
@@ -211,13 +227,5 @@ public class ClusterMonitor extends AbstractMonitor {
 
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
-    }
-
-    public ClusterStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
     }
 }

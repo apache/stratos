@@ -20,14 +20,12 @@
  */
 package org.apache.stratos.autoscaler;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.monitor.ClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.KubernetesClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.LbClusterMonitor;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 
 /**
  * This class is there for accumulating cluster details which are not there in Topology
@@ -37,20 +35,14 @@ public class AutoscalerContext {
     private static final Log log = LogFactory.getLog(AutoscalerContext.class);
     private AutoscalerContext() {
         try {
-            setMonitors(new HashMap<String, ClusterMonitor>());
-            setLbMonitors(new HashMap<String, LbClusterMonitor>());
-            setKubernetesClusterMonitors(new HashMap<String, KubernetesClusterMonitor>());
+            setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
         } catch (Exception e) {
             log.error("Rule evaluateMinCheck error", e);
         }
     }
     
-    // Map<ClusterId, ClusterMonitor>
-    private Map<String, ClusterMonitor> monitors;
-    // Map<LBClusterId, LBClusterMonitor>
-    private Map<String, LbClusterMonitor> lbMonitors;
-    // Map<ClusterId, KubernetesClusterMonitor>
-    private Map<String, KubernetesClusterMonitor> kubernetesClusterMonitors;
+    // Map<ClusterId, AbstractClusterMonitor>
+    private Map<String, AbstractClusterMonitor> clusterMonitors;
 
 	private static class Holder {
 		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
@@ -60,86 +52,32 @@ public class AutoscalerContext {
 		return Holder.INSTANCE;
 	}
 
-    public void addMonitor(ClusterMonitor monitor) {
-        monitors.put(monitor.getClusterId(), monitor);
+    public void addClusterMonitor(AbstractClusterMonitor clusterMonitor) {
+        clusterMonitors.put(clusterMonitor.getClusterId(), clusterMonitor);
     }
 
-    public ClusterMonitor getMonitor(String clusterId) {
-        return monitors.get(clusterId);
+    public AbstractClusterMonitor getClusterMonitor(String clusterId) {
+        return clusterMonitors.get(clusterId);
     }
     
-    public boolean monitorExist(String clusterId) {
-        return monitors.containsKey(clusterId);
+    public boolean clusterMonitorExist(String clusterId) {
+        return clusterMonitors.containsKey(clusterId);
     }
     
-    public boolean lbMonitorExist(String clusterId) {
-        return lbMonitors.containsKey(clusterId);
-    }
-    
-    public LbClusterMonitor getLBMonitor(String clusterId) {
-        return lbMonitors.get(clusterId);
+    public Map<String, AbstractClusterMonitor> getClusterMonitors() {
+        return clusterMonitors;
     }
 
-    public ClusterMonitor removeMonitor(String clusterId) {
-    	if(!monitorExist(clusterId)) {
-    		log.fatal("Cluster monitor not found for cluster id: "+clusterId);
+    public void setClusterMonitors(Map<String, AbstractClusterMonitor> clusterMonitors) {
+        this.clusterMonitors = clusterMonitors;
+    }
+    
+    public AbstractClusterMonitor removeClusterMonitor(String clusterId) {
+    	if(!clusterMonitorExist(clusterId)) {
+    		log.fatal("ClusterMonitor not found for cluster id: "+clusterId);
     		return null;
     	}
-    	log.info("Removed monitor [cluster id]: " + clusterId);
-        return monitors.remove(clusterId);
-    }
-    public LbClusterMonitor removeLbMonitor(String clusterId) {
-    	if(!lbMonitorExist(clusterId)) {
-    		log.fatal("LB monitor not found for cluster id: "+clusterId);
-    		return null;
-    	}
-    	log.info("Removed LB monitor [cluster id]: " + clusterId);
-        return lbMonitors.remove(clusterId);
-    }
-
-    public Map<String, ClusterMonitor> getMonitors() {
-        return monitors;
-    }
-
-
-    public void setMonitors(Map<String, ClusterMonitor> monitors) {
-        this.monitors = monitors;
-    }
-
-    public void setLbMonitors(Map<String, LbClusterMonitor> monitors) {
-        this.lbMonitors = monitors;
-    }
-
-    public void addLbMonitor(LbClusterMonitor monitor) {
-        lbMonitors.put(monitor.getClusterId(), monitor);
-    }
-    
-    public void addKubernetesClusterMonitor(KubernetesClusterMonitor kubernetesClusterMonitor) {
-        kubernetesClusterMonitors.put(kubernetesClusterMonitor.getClusterId(), kubernetesClusterMonitor);
-    }
-
-    public KubernetesClusterMonitor getKubernetesClusterMonitor(String clusterId) {
-        return kubernetesClusterMonitors.get(clusterId);
-    }
-    
-    public boolean kubernetesClusterMonitorExist(String clusterId) {
-        return kubernetesClusterMonitors.containsKey(clusterId);
-    }
-    
-    public Map<String, KubernetesClusterMonitor> getKubernetesClusterMonitors() {
-        return kubernetesClusterMonitors;
-    }
-
-    public void setKubernetesClusterMonitors(Map<String, KubernetesClusterMonitor> kubernetesClusterMonitors) {
-        this.kubernetesClusterMonitors = kubernetesClusterMonitors;
-    }
-    
-    public KubernetesClusterMonitor removeKubernetesClusterMonitor(String clusterId) {
-    	if(!kubernetesClusterMonitorExist(clusterId)) {
-    		log.fatal("Kubernetes cluster monitor not found for cluster id: "+clusterId);
-    		return null;
-    	}
-    	log.info("Removed KubernetesClusterMonitor [cluster id]: " + clusterId);
-        return kubernetesClusterMonitors.remove(clusterId);
+    	log.info("Removed ClusterMonitor [cluster id]: " + clusterId);
+        return clusterMonitors.remove(clusterId);
     }
 }

@@ -45,20 +45,11 @@ public class MemberStatsContext {
         this.memberId = memberId;
     }
 
-
     public LoadAverage getLoadAverage() {
         return loadAverage;
     }
-//
-//    public void setLoadAverage(LoadAverage loadAverage) {
-//        this.loadAverage = loadAverage;
-//    }
 
     public MemoryConsumption getMemoryConsumption() {
         return memoryConsumption;
     }
-//
-//    public void setMemoryConsumption(MemoryConsumption memoryConsumption) {
-//        this.memoryConsumption = memoryConsumption;
-//    }
 }

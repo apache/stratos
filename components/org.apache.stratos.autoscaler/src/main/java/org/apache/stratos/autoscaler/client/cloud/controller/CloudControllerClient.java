@@ -276,5 +276,31 @@ public class CloudControllerClient {
             throw new SpawningException(e.getMessage(), e);
         }
     }
+    
+    public synchronized void terminateContainer(String memberId) throws TerminationException {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Terminating container via cloud controller: [member] %s", memberId));
+            }
+            long startTime = System.currentTimeMillis();
+            stub.terminateInstance(memberId);
+            if(log.isDebugEnabled()) {
+                long endTime = System.currentTimeMillis();
+                log.debug(String.format("Service call terminateContainer() returned in %dms", (endTime - startTime)));
+            }
+        } catch (RemoteException e) {
+        	String msg = e.getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+        } catch (CloudControllerServiceInvalidMemberExceptionException e) {
+        	String msg = e.getFaultMessage().getInvalidMemberException().getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+        	String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+        }
+    }
 
 }
