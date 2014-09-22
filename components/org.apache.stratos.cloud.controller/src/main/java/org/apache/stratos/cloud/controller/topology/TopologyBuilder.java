@@ -32,6 +32,8 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
+import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -150,7 +152,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setStatus(ClusterStatus.Created);
+                cluster.setStatus(Status.Created);
                 service.addCluster(cluster);
             }
             TopologyManager.updateTopology(topology);
@@ -209,7 +211,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.getCluster(ctxt.getClusterId());
-            cluster.setStatus(ClusterStatus.In_Maintenance);
+            cluster.setStatus(Status.In_Maintenance);
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
@@ -699,6 +701,76 @@ public class TopologyBuilder {
         log.info("TopolgyBuilder: sending sendConfigApplicationRemovedEventEvent ");
         TopologyEventPublisher.sendConfigApplicationRemovedEventEvent(alias);
     }
+
+    public static void handleClusterActivatedEvent(ClusterActivatedEvent clusterActivatedEvent) {
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(clusterActivatedEvent.getServiceName());
+        //update the status of the cluster
+        if (service == null) {
+            log.warn(String.format("Service %s does not exist",
+                    clusterActivatedEvent.getServiceName()));
+            return;
+        }
+
+        Cluster cluster = service.getCluster(clusterActivatedEvent.getClusterId());
+        if (cluster == null) {
+            log.warn(String.format("Cluster %s does not exist",
+                    clusterActivatedEvent.getClusterId()));
+            return;
+        }
+
+        org.apache.stratos.messaging.event.topology.ClusterActivatedEvent clusterActivatedEvent1 =
+                new org.apache.stratos.messaging.event.topology.ClusterActivatedEvent(
+                        clusterActivatedEvent.getAppId(),
+                        clusterActivatedEvent.getServiceName(),
+                        clusterActivatedEvent.getClusterId());
+        try {
+            TopologyManager.acquireWriteLock();
+            cluster.setStatus(Status.Activated);
+            log.info("Cluster activated adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendClusterActivatedEvent(clusterActivatedEvent1);
+    }
+
+    public static void handleGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(groupActivatedEvent.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    groupActivatedEvent.getAppId()));
+            return;
+        }
+
+        Group group = application.getGroup(groupActivatedEvent.getGroupId());
+        if (group == null) {
+            log.warn(String.format("Group %s does not exist",
+                    groupActivatedEvent.getGroupId()));
+            return;
+        }
+
+        org.apache.stratos.messaging.event.topology.GroupActivatedEvent groupActivatedEvent1 =
+                new org.apache.stratos.messaging.event.topology.GroupActivatedEvent(
+                        groupActivatedEvent.getAppId(),
+                        groupActivatedEvent.getGroupId());
+        try {
+            TopologyManager.acquireWriteLock();
+            group.setStatus(Status.Activated);
+            log.info("Group activated adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendGroupActivatedEvent(groupActivatedEvent1);
+    }
+
 
 
     /*public static  ConfigCompositeApplication convertCompositeApplication(CompositeApplicationDefinition compositeApplicationDefinition) {

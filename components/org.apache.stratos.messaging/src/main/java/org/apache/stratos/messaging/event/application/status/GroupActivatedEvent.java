@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,20 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker;
 
-import org.apache.stratos.autoscaler.monitor.Monitor;
+package org.apache.stratos.messaging.event.application.status;
+
+import java.io.Serializable;
 
 /**
- * Group status checker will check the group status and
- * notify the interested parties on behalf of the status changes
+ * This event is fired by cartridge agent when it has started the server and
+ * applications are ready to serve the incoming requests.
  */
-public class GroupStatusChecker  {
+public class GroupActivatedEvent extends GroupStatusEvent implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
+
     private String groupId;
     private String appId;
 
-    public GroupStatusChecker(String groupId, String appId) {
-        this.groupId = groupId;
+    public GroupActivatedEvent(String appId, String groupId) {
         this.appId = appId;
+        this.groupId = groupId;
+    }
+
+    public String getGroupId() {
+		return this.groupId;
+	}
+
+    public String getAppId() {
+        return appId;
     }
 }

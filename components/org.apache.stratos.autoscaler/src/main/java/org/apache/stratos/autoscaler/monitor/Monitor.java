@@ -41,7 +41,7 @@ import java.util.*;
  * Monitor is to monitor it's child monitors and
  * control them according to the dependencies respectively.
  */
-public abstract class Monitor implements Observer, Runnable {
+public abstract class Monitor extends Observable implements Observer {
 
     private static final Log log = LogFactory.getLog(Monitor.class);
 
@@ -112,25 +112,32 @@ public abstract class Monitor implements Observer, Runnable {
     }
 
     public void startDependency() {
+        //Need to get the order every time as group/cluster might already been started
+        //TODO breadth first search in a tree and find the parallel one
+        //TODO build up the tree with ordered manner
+
         preOrderTraverse = DependencyBuilder.getStartupOrder(component);
 
-        //TODO find out the parallel ones
-
         //start the first dependency
-        String dependency = preOrderTraverse.poll();
-        if(dependency.contains("group")) {
-            startGroupMonitor(component.getGroup(dependency));
-        } else if(dependency.contains("cartridge")) {
-            String clusterId = component.getClusterId(dependency);
-            Cluster cluster = null;
-            TopologyManager.acquireReadLock();
-            cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
-            TopologyManager.releaseReadLock();
-            if(cluster != null) {
-                startClusterMonitor(cluster);
-            } else {
-                //TODO throw exception since Topology is inconsistent
+        if(!preOrderTraverse.isEmpty()) {
+            String dependency = preOrderTraverse.poll();
+            if (dependency.contains("group")) {
+                startGroupMonitor(this, dependency, component);
+            } else if (dependency.contains("cartridge")) {
+                String clusterId = component.getClusterId(dependency);
+                Cluster cluster = null;
+                TopologyManager.acquireReadLock();
+                cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
+                TopologyManager.releaseReadLock();
+                if (cluster != null) {
+                    startClusterMonitor(cluster);
+                } else {
+                    //TODO throw exception since Topology is inconsistent
+                }
             }
+        } else {
+            //all the groups/clusters have been started and waiting for activation
+            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
         }
     }
     protected synchronized void startClusterMonitor(Cluster cluster) {
@@ -158,11 +165,11 @@ public abstract class Monitor implements Observer, Runnable {
         }
     }
 
-    protected synchronized void startGroupMonitor(Group group) {
+    protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentBehavior component) {
         Thread th = null;
-        if (!this.groupMonitors.containsKey(group.getAlias())) {
+        if (!this.groupMonitors.containsKey(dependency)) {
             th = new Thread(
-                    new GroupMonitorAdder(group));
+                    new GroupMonitorAdder(parent, dependency, component));
         }
 
         if (th != null) {
@@ -175,7 +182,7 @@ public abstract class Monitor implements Observer, Runnable {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Group monitor thread has been started successfully: [group] %s ",
-                                group.getAlias()));
+                                dependency));
             }
         }
     }
@@ -234,10 +241,14 @@ public abstract class Monitor implements Observer, Runnable {
     }
 
     private class GroupMonitorAdder implements Runnable {
-        private Group group;
+        private ParentBehavior group;
+        private String dependency;
+        private Monitor parent;
 
-        public GroupMonitorAdder(Group group) {
+        public GroupMonitorAdder(Monitor parent, String dependency, ParentBehavior group) {
             this.group = group;
+            this.dependency = dependency;
+            this.parent = parent;
         }
 
         public void run() {
@@ -251,11 +262,12 @@ public abstract class Monitor implements Observer, Runnable {
                 }
 
                 try {
-                    monitor = AutoscalerUtil.getGroupMonitor(group);
+                    monitor = AutoscalerUtil.getGroupMonitor(group.getGroup(dependency));
+                    monitor.addObserver(parent);
                     success = true;
 
                 } catch (Exception e) {
-                    String msg = "Group monitor creation failed for group: " + group.getAlias();
+                    String msg = "Group monitor creation failed for group: " + dependency;
                     log.debug(msg, e);
                     retries--;
 
@@ -264,18 +276,17 @@ public abstract class Monitor implements Observer, Runnable {
 
             if (monitor == null) {
                 String msg = "Group monitor creation failed, even after retrying for 5 times, "
-                        + "for group: " + group.getAlias();
+                        + "for group: " + dependency;
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
 
-            Thread th = new Thread(monitor);
-            th.start();
+            groupMonitors.put(dependency, monitor);
+            parent.addObserver(monitor);
 
-            groupMonitors.put(group.getAlias(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Group monitor has been added successfully: [group] %s",
-                        group.getAlias()));
+                        dependency));
             }
         }
     }

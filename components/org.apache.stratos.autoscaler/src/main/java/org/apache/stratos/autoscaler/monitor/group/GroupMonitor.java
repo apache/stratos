@@ -49,10 +49,4 @@ public class GroupMonitor extends Monitor {
     protected void onEvent(Event event) {
 
     }
-
-
-    @Override
-    public void run() {
-
-    }
 }

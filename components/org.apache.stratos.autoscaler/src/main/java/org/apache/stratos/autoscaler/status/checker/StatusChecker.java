@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
@@ -62,14 +63,18 @@ public class StatusChecker {
                     for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                         if(partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
                             clusterActive = true;
+                        } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
+                            log.info("cluster already activated...");
+                            clusterActive = true;
                         }
                         clusterActive = false;
                     }
-
                 }
                 // if active then notify upper layer
                 if(clusterActive) {
                     //send event to cluster status topic
+                    StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
+                            monitor.getServiceId(), monitor.getClusterId());
 
                 }
 
@@ -80,35 +85,74 @@ public class StatusChecker {
 
     /**
      *
-     * @param id
+     * @param groupId
      * @param appId
      */
-    public void onGroupStatusChange(final String id, final String appId) {
-
-        Runnable exGroup = new Runnable() {
-            public void run() {
-                /**
-                 *
-                 */
-                Application application = TopologyManager.getTopology().getApplication(appId);
-                Map<String, String> clusterIds = application.getClusterMap();
-                Map<String, Group> groups = application.getGroupMap();
-                updateChildStatus(id, groups, clusterIds, application);
-            }
-        };
+    public void onGroupStatusChange(final String groupId, final String appId) {
+        updateChild(groupId, appId);
     }
 
-    public void onClusterStatusChange(final String id, final String appId) {
+    /**
+     *
+     * @param clusterId
+     * @param appId
+     */
+    public void onClusterStatusChange(final String clusterId, final String appId) {
+        updateChild(clusterId, appId);
+    }
 
+    private void updateChild(final String clusterId, final String appId) {
         Runnable exGroup = new Runnable() {
             public void run() {
                 Application application = TopologyManager.getTopology().getApplication(appId);
                 Map<String, String> clusterIds = application.getClusterMap();
                 Map<String, Group> groups = application.getGroupMap();
-                updateChildStatus(id, groups, clusterIds, application);
+                updateChildStatus(clusterId, groups, clusterIds, application);
             }
         };
     }
+
+    /**
+     *
+     * @param clusterId
+     * @param appId
+     * @param partitionContext is to decide in which partition has less members while others have active members
+     */
+    public void onMemberFaultEvent(final String clusterId, final String appId, final PartitionContext partitionContext) {
+        Runnable exCluster = new Runnable() {
+            public void run() {
+                ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                boolean clusterActive = false;
+                boolean clusterInMaintenance = false;
+                for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+                    for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
+                        if(partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
+                                partition.getActiveMemberCount() < partition.getMinimumMemberCount()) {
+                            clusterInMaintenance = true;
+                        } else {
+                            log.info(String.format("Hence the [partition] %s, in [networkpartition], " +
+                                            "%s has exceeded the [minimum], %d with current active " +
+                                            "[members], %d the [cluster], %s is still in active mode."
+                                    , partition.getPartitionId(), partition.getNetworkPartitionId(),
+                                    partition.getMinimumMemberCount(), partition.getActiveMemberCount(), clusterId));
+                        }
+                        if(partitionContext.getMinimumMemberCount() >= partitionContext.getActiveMemberCount()) {
+                            clusterActive = true;
+                        }
+                        clusterActive = false;
+                    }
+
+                }
+                // if in maintenance then notify upper layer
+                if(clusterActive && clusterInMaintenance) {
+                    //send clusterInmaintenance event to cluster status topic
+
+                }
+
+            }
+        };
+    }
+
 
     private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, String> clusterIds, ParentBehavior parent) {
         boolean groupActive = false;

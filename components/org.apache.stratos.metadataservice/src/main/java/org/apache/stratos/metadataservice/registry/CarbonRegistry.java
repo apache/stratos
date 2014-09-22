@@ -18,8 +18,7 @@
  */
 package org.apache.stratos.metadataservice.registry;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -27,10 +26,10 @@ import javax.ws.rs.core.Context;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
-import org.apache.stratos.metadataservice.definition.PropertyBean;
+import org.apache.stratos.metadataservice.definition.*;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.api.Registry;
+import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.api.Resource;
 import org.wso2.carbon.registry.core.Comment;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -180,5 +179,147 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 		registry.delete(resourcePath);
 		return false;
 	}
+
+
+
+    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws Exception {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationName + "/" + clusterId;
+        if(!tempRegistry.resourceExists(resourcePath)){
+            return null;
+            //throw new RegistryException("Cluster does not exist at " + resourcePath);
+        }
+        Resource regResource = tempRegistry.get(resourcePath);
+
+        ArrayList<NewProperty> newProperties = new ArrayList<NewProperty>();
+
+        Properties props = regResource.getProperties();
+        Enumeration<?> x = props.propertyNames();
+        while(x.hasMoreElements())
+        {
+            String key = (String) x.nextElement();
+            List<String>  values = regResource.getPropertyValues(key);
+            NewProperty property = new NewProperty();
+            property.setKey(key);
+            String[] valueArr = new String[values.size()];
+            property.setValues(values.toArray(valueArr));
+
+            newProperties.add(property);
+
+        }
+
+        return newProperties;
+    }
+
+    public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationId + "/" + clusterId;
+        Resource regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
+
+        regResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
+        tempRegistry.put(regResource.getPath(), regResource);
+
+    }
+
+    @Override
+    public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws Exception {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationName + "/" + clusterId;
+        Resource regResource;
+        regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
+        try {
+            for(NewProperty property : properties){
+                regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
+
+            }
+            tempRegistry.put(resourcePath, regResource);
+            if(log.isDebugEnabled()){
+                log.debug("A resource added to: " + resourcePath);
+            }
+
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("addCartridgeMetaDataDetails", e);
+            }
+        } finally {
+            // Close the session
+
+        }
+    }
+
+    public void addPropertiesToApplication(String applicationId, NewProperty[] properties) throws RegistryException {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationId;
+        Resource regResource = createOrGetResourceforApplication(tempRegistry, resourcePath);
+
+        for(NewProperty property : properties){
+            regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
+
+        }
+        tempRegistry.put(resourcePath, regResource);
+    }
+
+    public void addPropertyToApplication(String applicationId, NewProperty property) throws RegistryException {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationId;
+        Resource regResource = createOrGetResourceforApplication(tempRegistry, resourcePath);
+        regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
+    }
+
+    public List<NewProperty> getPropertiesOfApplication(String applicationId) throws RegistryException {
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationId;
+        if(!tempRegistry.resourceExists(resourcePath)){
+            return null;
+            //throw new RegistryException("Cluster does not exist at " + resourcePath);
+        }
+        Resource regResource = tempRegistry.get(resourcePath);
+
+        ArrayList<NewProperty> newProperties = new ArrayList<NewProperty>();
+
+        Properties props = regResource.getProperties();
+        Enumeration<?> x = props.propertyNames();
+        while(x.hasMoreElements())
+        {
+            String key = (String) x.nextElement();
+            List<String>  values = regResource.getPropertyValues(key);
+            NewProperty property = new NewProperty();
+            property.setKey(key);
+            String[] valueArr = new String[values.size()];
+            property.setValues(values.toArray(valueArr));
+
+            newProperties.add(property);
+
+        }
+        if(newProperties.size() == 0){
+            return null;
+        }
+        return newProperties;
+    }
+
+
+    private Resource createOrGetResourceforApplication(Registry tempRegistry, String resourcePath) throws RegistryException {
+        Resource regResource;
+        if(tempRegistry.resourceExists(resourcePath)) {
+            regResource = tempRegistry.get(resourcePath);
+        }else{
+            regResource = tempRegistry.newCollection();
+        }
+        return regResource;
+    }
+
+    private Resource createOrGetResourceforCluster(Registry tempRegistry, String resourcePath) throws RegistryException {
+
+        int index = resourcePath.lastIndexOf('/');
+        String applicationResourcePath = resourcePath.substring(0,index);
+        createOrGetResourceforApplication(tempRegistry, applicationResourcePath);
+        Resource regResource;
+        if(tempRegistry.resourceExists(resourcePath)) {
+            regResource = tempRegistry.get(resourcePath);
+        }else{
+            regResource = tempRegistry.newResource();
+        }
+        return regResource;
+    }
 
 }

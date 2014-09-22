@@ -36,7 +36,6 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.util.Constants;
-import org.apache.wml.WMLStrongElement;
 
 import java.util.List;
 import java.util.Properties;
@@ -123,7 +122,7 @@ public class TopologyEventPublisher {
     public static void sendClusterMaintenanceModeEvent(ClusterContext ctxt) {
 
         ClusterMaintenanceModeEvent clusterMaintenanceModeEvent = new ClusterMaintenanceModeEvent(ctxt.getCartridgeType(), ctxt.getClusterId());
-        clusterMaintenanceModeEvent.setStatus(ClusterStatus.In_Maintenance);
+        clusterMaintenanceModeEvent.setStatus(Status.In_Maintenance);
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster maintenance mode event: [service] %s [cluster] %s",
                     clusterMaintenanceModeEvent.getServiceName(), clusterMaintenanceModeEvent.getClusterId()));
@@ -194,6 +193,22 @@ public class TopologyEventPublisher {
         }
 
         publishEvent(memberMaintenanceModeEvent);
+    }
+
+    public static void sendGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing group activated event: [appId] %s [group] %s",
+                    groupActivatedEvent.getAppId(), groupActivatedEvent.getGroupId()));
+        }
+        publishEvent(groupActivatedEvent);
+    }
+
+    public static void sendClusterActivatedEvent(ClusterActivatedEvent clusterActivatedEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing cluster activated event: [service] %s [cluster] %s [appId] %s",
+                    clusterActivatedEvent.getServiceName(), clusterActivatedEvent.getClusterId() , clusterActivatedEvent.getAppId()));
+        }
+        publishEvent(clusterActivatedEvent);
     }
 
 

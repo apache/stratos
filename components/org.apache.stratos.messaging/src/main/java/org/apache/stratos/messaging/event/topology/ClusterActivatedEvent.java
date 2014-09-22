@@ -28,12 +28,12 @@ public class ClusterActivatedEvent extends Event {
 
     private final String serviceName;
     private final String clusterId;
-    private ClusterStatus status;
     private String appId;
 
-    public ClusterActivatedEvent(String serviceName, String clusterId) {
+    public ClusterActivatedEvent(String appId, String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.appId = appId;
     }
 
     public String getServiceName() {
@@ -43,26 +43,15 @@ public class ClusterActivatedEvent extends Event {
     @Override
     public String toString() {
         return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
-                status.toString() + "]";
+                "]";
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public ClusterStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
-    }
-
     public String getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
 }

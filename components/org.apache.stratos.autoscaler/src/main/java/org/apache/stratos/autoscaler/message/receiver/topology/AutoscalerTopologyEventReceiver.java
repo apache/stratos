@@ -26,9 +26,11 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -106,7 +108,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ApplicationCreatedEventListener] Received: " + event.getClass());
+                log.info("[ApplicationCreatedEvent] Received: " + event.getClass());
 
                 ApplicationCreatedEvent applicationCreatedEvent = (ApplicationCreatedEvent) event;
 
@@ -117,7 +119,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO build dependency and organize the application
 
                     //start the application monitor
-                    //startApplicationMonitor(applicationCreatedEvent.getApplication());
+                    startApplicationMonitor(applicationCreatedEvent.getApplication());
 
                 } finally {
                     //release read lock
@@ -126,6 +128,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
             }
         });
+
+        topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+
+                ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
+                String appId = clusterActivatedEvent.getAppId();
+                String clusterId = clusterActivatedEvent.getClusterId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                Monitor monitor = appMonitor.findParentMonitorOfCluster(clusterId);
+                monitor.notify();
+                //starting the status checker to decide on the status of it's parent
+                StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
 
         topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
             @Override
@@ -391,58 +412,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
-        topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    MemberReadyToShutdownEvent memberReadyToShutdownEvent =
-                                                                (MemberReadyToShutdownEvent) event;
-                    AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                    AbstractClusterMonitor monitor;
-                    String clusterId = memberReadyToShutdownEvent.getClusterId();
-                    String memberId = memberReadyToShutdownEvent.getMemberId();
-
-                    if (asCtx.monitorExist(clusterId)) {
-                        monitor = asCtx.getMonitor(clusterId);
-                    } else if (asCtx.lbMonitorExist(clusterId)) {
-                        monitor = asCtx.getLBMonitor(clusterId);
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("A cluster monitor is not found in autoscaler " +
-                                    "context [cluster] %s", clusterId));
-                        }
-                        return;
-                    }
-
-                    NetworkPartitionContext nwPartitionCtxt;
-                    nwPartitionCtxt = monitor.getNetworkPartitionCtxt(memberReadyToShutdownEvent.
-                                                                            getNetworkPartitionId());
-
-                    // start a new member in the same Partition
-                    String partitionId = monitor.getPartitionOfMember(memberId);
-                    PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
-
-
-                    // terminate the shutdown ready member
-                    CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                    ccClient.terminate(memberId);
-
-                    // remove from active member list
-                    partitionCtxt.removeActiveMemberById(memberId);
-
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Member is terminated and removed from the active " +
-                                        "members list: [member] %s [partition] %s [cluster] %s ",
-                                memberId, partitionId, clusterId));
-                    }
-                } catch (TerminationException e) {
-                    log.error(e);
-                }
-            }
-
-        });
-
-
         topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
@@ -552,8 +521,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 throw new RuntimeException(msg);
             }
 
-            Thread th = new Thread(applicationMonitor);
-            th.start();
+            AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+            //TODO should start the appMonitor
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application monitor has been added successfully: " +

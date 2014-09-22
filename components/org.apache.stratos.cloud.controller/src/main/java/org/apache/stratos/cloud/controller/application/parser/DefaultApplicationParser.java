@@ -500,7 +500,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         cluster.addHostName(hostname);
         cluster.setLbCluster(false);
-        cluster.setStatus(ClusterStatus.Created);
+        cluster.setStatus(Status.Created);
 
         return cluster;
     }

@@ -23,7 +23,8 @@ public enum Status {
 
     Created(1),
     In_Maintenance(2),
-    Activated(3);
+    Running(3),
+    Activated(4);
 
     private int code;
 
