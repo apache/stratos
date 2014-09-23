@@ -68,6 +68,8 @@ public class CartridgeAgentConfiguration {
     private String workerServiceName;
     private String superTenantRepositoryPath;
     private String tenantRepositoryPath;
+    private String kubernetesClusterId;
+        
 
     private CartridgeAgentConfiguration() {
         parameters = loadParametersFile();
@@ -79,7 +81,7 @@ public class CartridgeAgentConfiguration {
             clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
             networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
             partitionId = readParameterValue(CartridgeAgentConstants.PARTITION_ID);
-            memberId = readParameterValue(CartridgeAgentConstants.MEMBER_ID);
+            memberId = readOrGenerateMemberIdValue(CartridgeAgentConstants.MEMBER_ID,clusterId);
             cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
             appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
             repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
@@ -105,6 +107,8 @@ public class CartridgeAgentConfiguration {
             managerServiceName = readManagerServiceType();
             workerServiceName = readWorkerServiceType();
             isPrimary = readIsPrimary();
+            kubernetesClusterId = readKubernetesClusterIdValue(CartridgeAgentConstants.KUBERNETES_CLUSTER_ID);
+            
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -128,7 +132,32 @@ public class CartridgeAgentConfiguration {
         }
     }
 
-    private String readDeployment(){
+    private String readKubernetesClusterIdValue(String kubernetesClusterId) {
+		String kubernetesClusterIdValue = null;
+		if (parameters.containsKey(kubernetesClusterId)) {
+			kubernetesClusterIdValue = parameters.get(kubernetesClusterId);
+		}
+
+		if (System.getProperty(kubernetesClusterId) != null) {
+			kubernetesClusterIdValue = System.getProperty(kubernetesClusterId);
+		}
+		return kubernetesClusterIdValue;
+	}
+
+	private String readOrGenerateMemberIdValue(String memberId, String clusterId) {
+		String memberIdValue = null;
+		if (parameters.containsKey(memberId) && parameters.get(memberId) != null) {
+			memberIdValue = parameters.get(memberId);
+		} else if (System.getProperty(memberId) != null) {
+			memberIdValue = System.getProperty(memberId);
+		} else {			
+			memberIdValue = clusterId + UUID.randomUUID().toString();
+			log.debug(" MemberId generated as ["+memberIdValue+"] ");
+		}
+		return memberIdValue;
+	}
+
+	private String readDeployment(){
         if (parameters.containsKey(CartridgeAgentConstants.DEPLOYMENT)) {
             return parameters.get(CartridgeAgentConstants.DEPLOYMENT);
         }
@@ -535,4 +564,10 @@ public class CartridgeAgentConfiguration {
     public void setInitialized(boolean initialized) {
     	this.initialized = initialized;
     }
+
+	public String getKubernetesClusterId() {
+		return kubernetesClusterId;
+	}
+    
+    
 }
