@@ -1,8 +1,8 @@
 import ConfigParser
 import logging
 
-from ..util import cartridgeagentconstants
-from ..exception.parameternotfoundexception import ParameterNotFoundException
+from .. util import cartridgeagentconstants
+from .. exception.parameternotfoundexception import ParameterNotFoundException
 
 
 class CartridgeAgentConfiguration:
@@ -13,6 +13,7 @@ class CartridgeAgentConfiguration:
             logging.basicConfig(level=logging.DEBUG)
             self.log = logging.getLogger(__name__)
 
+            self.payload_params = {}
             self.__read_conf_file()
             self.__read_parameter_file()
 

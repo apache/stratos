@@ -2,9 +2,9 @@ import logging
 
 from ..artifactmgt.git.agentgithandler import AgentGitHandler
 from ..artifactmgt.repositoryinformation import RepositoryInformation
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import extensionutils, cartridgeagentconstants, cartridgeagentutils
-from ..publisher import cartridgeagentpublisher
+from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from .. util import extensionutils, cartridgeagentconstants, cartridgeagentutils
+from .. publisher import cartridgeagentpublisher
 
 
 class DefaultExtensionHandler:

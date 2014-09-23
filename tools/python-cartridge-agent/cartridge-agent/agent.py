@@ -3,14 +3,14 @@ import logging
 import threading
 import time
 
-from config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from util import *
-from exception.parameternotfoundexception import ParameterNotFoundException
-from subscriber.eventsubscriber import EventSubscriber
-from extensions.defaultextensionhandler import DefaultExtensionHandler
-from publisher import cartridgeagentpublisher
-from event.instance.notifier.events import *
-from event.tenant.events import *
+from modules.config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from modules.util import *
+from modules.exception.parameternotfoundexception import ParameterNotFoundException
+from modules.subscriber.eventsubscriber import EventSubscriber
+from modules.extensions.defaultextensionhandler import DefaultExtensionHandler
+from modules.publisher import cartridgeagentpublisher
+from modules.event.instance.notifier.events import *
+from modules.event.tenant.events import *
 
 
 class CartridgeAgent(threading.Thread):

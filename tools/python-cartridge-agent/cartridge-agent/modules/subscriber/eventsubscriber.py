@@ -2,8 +2,8 @@ import logging
 import threading
 import paho.mqtt.client as mqtt
 
-from ..util import cartridgeagentconstants
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from .. util import cartridgeagentconstants
+from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 
 
 class EventSubscriber(threading.Thread):

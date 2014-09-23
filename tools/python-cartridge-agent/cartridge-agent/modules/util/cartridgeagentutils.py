@@ -5,7 +5,7 @@ import os
 import time
 import socket
 
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 
 unpad = lambda s : s[0:-ord(s[-1])]
 logging.basicConfig(level=logging.DEBUG)
