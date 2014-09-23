@@ -139,10 +139,10 @@ public class CloudControllerServiceClient {
 
 	}
 
-    public void undeployApplicationDefinition (String applicationId) throws CloudControllerServiceApplicationDefinitionExceptionException,
+    public void undeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws CloudControllerServiceApplicationDefinitionExceptionException,
             RemoteException {
 
-        stub.unDeployApplicationDefinition(applicationId);
+        stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
     }
 	
 	public void unDeployCompositeApplicationDefinition(String appAlias) throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException, CloudControllerServiceInvalidIaasProviderExceptionException   {

@@ -35,11 +35,6 @@ public class PayloadDataHolder {
 
     private Properties properties;
 
-    public PayloadDataHolder (String appId) {
-
-        this.appId = appId;
-    }
-
     public PayloadDataHolder (String appId, String groupName, String clusterId) {
 
         this.appId = appId;
@@ -70,12 +65,22 @@ public class PayloadDataHolder {
         }
 
         PayloadDataHolder that = (PayloadDataHolder)other;
-        return this.appId.equals(that.appId) && this.groupName.equals(that.groupName) &&
-                this.clusterId.equals(that.clusterId);
+
+        if (this.groupName == null || that.groupName == null) {
+            return this.appId.equals(that.appId) && this.clusterId.equals(that.clusterId);
+        } else {
+            return this.appId.equals(that.appId) && this.groupName.equals(that.groupName) &&
+                    this.clusterId.equals(that.clusterId);
+        }
     }
 
     public int hashCode () {
-        return appId.hashCode() + groupName.hashCode() + clusterId.hashCode();
+
+        if (this.getGroupName() == null) {
+            return this.appId.hashCode() + this.clusterId.hashCode();
+        } else {
+            return this.appId.hashCode() + this.groupName.hashCode() + this.clusterId.hashCode();
+        }
     }
 
     public Properties getProperties() {

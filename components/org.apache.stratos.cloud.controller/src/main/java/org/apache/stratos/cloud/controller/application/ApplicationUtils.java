@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableInfoContext;
 import org.apache.stratos.cloud.controller.pojo.payload.PayloadDataHolder;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -68,13 +69,21 @@ public class ApplicationUtils {
         return globalProperties;
     }
 
-    public static PayloadDataHolder getClusterLevelPayloadData (String appId, Cluster cluster,
+    public static PayloadDataHolder getClusterLevelPayloadData (String appId, String groupName, int tenantId, String key,
+                                                                Cluster cluster,
                                                                 SubscribableContext subscribableCtxt,
-                                                                SubscribableInfoContext subscribableInfoCtxt, Cartridge cartridge) {
+                                                                SubscribableInfoContext subscribableInfoCtxt,
+                                                                Cartridge cartridge) {
 
         PayloadDataHolder payloadDataHolder = new PayloadDataHolder(appId, subscribableCtxt.getType(), cluster.getClusterId());
 
         Properties clusterLevelPayloadProperties = new Properties();
+        // app id
+        clusterLevelPayloadProperties.setProperty("APP_ID", appId);
+        // group name
+        if (groupName != null) {
+            clusterLevelPayloadProperties.setProperty("GROUP_NAME", groupName);
+        }
         // service name
         if (subscribableCtxt.getType() != null) {
             clusterLevelPayloadProperties.put("SERVICE_NAME", subscribableCtxt.getType());
@@ -109,6 +118,12 @@ public class ApplicationUtils {
         if (cartridge.getProvider() != null) {
             clusterLevelPayloadProperties.put("PROVIDER", cartridge.getProvider());
         }
+        // tenant id
+        clusterLevelPayloadProperties.setProperty("TENANT_ID", String.valueOf(tenantId));
+        // cartridge key
+        clusterLevelPayloadProperties.setProperty("CARTRIDGE_KEY", key);
+        // get global payload params
+        clusterLevelPayloadProperties.putAll(ApplicationUtils.getGlobalPayloadData());
 
         payloadDataHolder.setProperties(clusterLevelPayloadProperties);
         return payloadDataHolder;
@@ -127,5 +142,24 @@ public class ApplicationUtils {
         // remove last "|" character
 
         return portMapBuilder.toString().replaceAll("\\|$", "");
+    }
+
+    public static StringBuilder getTextPayload (String appId, String groupName, String clusterId) {
+
+        StringBuilder payloadBuilder = new StringBuilder();
+        payloadBuilder.append("APP_ID=" + appId);
+        if (groupName != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("GROUP_NAME=" + groupName);
+        }
+        payloadBuilder.append(",");
+        payloadBuilder.append("CLUSTER_ID=" + clusterId);
+        // meta data endpoint
+        if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
+        }
+
+        return payloadBuilder;
     }
 }

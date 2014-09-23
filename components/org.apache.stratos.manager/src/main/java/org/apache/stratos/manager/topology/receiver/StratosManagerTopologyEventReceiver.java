@@ -309,11 +309,53 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                         carbonContext.setTenantId(tenantId);
                        // create Application Subscription and persist
                         compositeAppSubscription = cartridgeSubscriptionManager.createApplicationSubscription(appId, tenantId);
-                        cartridgeSubscriptionManager.persistCompositeAppSubscription(compositeAppSubscription);
+                        cartridgeSubscriptionManager.persistApplicationSubscription(compositeAppSubscription);
                     } catch (ApplicationSubscriptionException e) {
                         log.error("failed to persist application subscription, caught exception: " + e);
                     } catch (ADCException e) {
                     	log.error("failed to persist application subscription, caught exception: " + e);
+                    } finally {
+                    	PrivilegedCarbonContext.endTenantFlow();
+                    }
+                } finally {
+                    TopologyManager.releaseReadLock();
+                }
+            }
+        });
+        
+        //add listener 
+        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+            	ApplicationRemovedEvent appRemovedEvent = (ApplicationRemovedEvent) event;
+
+                log.info("[ApplicationRemovedEventListener] Received: " + event.getClass());
+
+                try {
+                    TopologyManager.acquireReadLock();
+                    
+                    // create and persist Application subscritpion
+                    CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
+                    String appId = appRemovedEvent.getApplicationId();
+                    
+                    int tenantId = appRemovedEvent.getTenantId();
+                    String domain = appRemovedEvent.getTenantDomain();
+                    
+                    if (log.isDebugEnabled()) {
+                    	log.debug("received application created event for app: " + appId + " and tenant: " + tenantId + 
+                    			" domain:" + domain);
+                    }
+                    try {
+                        PrivilegedCarbonContext.startTenantFlow();
+                        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                        carbonContext.setTenantDomain(domain);
+                        carbonContext.setTenantId(tenantId);
+                       // create Application Subscription and persist
+                        cartridgeSubscriptionManager.removeApplicationSubscription(appId, tenantId);
+                        
+                    } catch (ApplicationSubscriptionException e) {
+                        log.error("failed to persist application subscription, caught exception: " + e);
                     } finally {
                     	PrivilegedCarbonContext.endTenantFlow();
                     }

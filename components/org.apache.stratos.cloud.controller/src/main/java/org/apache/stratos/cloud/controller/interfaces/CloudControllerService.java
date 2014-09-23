@@ -182,6 +182,6 @@ public interface CloudControllerService {
      * @param applicationId Id of the Application to be undeployed
      * @throws ApplicationDefinitionException if an error is encountered
      */
-    public void unDeployApplicationDefinition (String applicationId) throws ApplicationDefinitionException;
+    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException;
 
 }

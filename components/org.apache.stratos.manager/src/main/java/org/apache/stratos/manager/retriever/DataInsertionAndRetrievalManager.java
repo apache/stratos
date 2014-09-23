@@ -395,17 +395,17 @@ public class DataInsertionAndRetrievalManager {
         persistenceManager.removeGroupSubscription(tenantId, groupName, groupAlias);
     }
 
-    public void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
+    public void persistApplicationSubscription (ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
 
         persistenceManager.persistCompositeAppSubscription(compositeAppSubscription);
     }
 
-    public ApplicationSubscription getCompositeAppSubscription (int tenantId, String appId) throws PersistenceManagerException {
+    public ApplicationSubscription getApplicationSubscription (int tenantId, String appId) throws PersistenceManagerException {
 
         return persistenceManager.getCompositeAppSubscription(tenantId, appId);
     }
 
-    public void removeCompositeAppSubscription (int tenantId, String appId) throws PersistenceManagerException {
+    public void removeApplicationSubscription (int tenantId, String appId) throws PersistenceManagerException {
 
         persistenceManager.removeCompositeAppSubscription(tenantId, appId);
     }

@@ -301,7 +301,7 @@ public class CompositeApplicationManager {
 
         if (compositeAppSubscription != null) {
             try {
-                cartridgeSubscriptionManager.persistCompositeAppSubscription(compositeAppSubscription);
+                cartridgeSubscriptionManager.persistApplicationSubscription(compositeAppSubscription);
 
             } catch (ADCException e) {
                 throw new CompositeApplicationException(e);

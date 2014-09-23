@@ -96,19 +96,19 @@ public class CartridgeSubscriptionManager {
         }
     	
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
-        ApplicationSubscription compositeAppSubscription;
+        ApplicationSubscription appSubscription;
 
         try {
-            compositeAppSubscription = dataInsertionAndRetrievalMgr.getCompositeAppSubscription(tenantId, appId);
+            appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
 
         } catch (PersistenceManagerException e) {
             log.error("failed to Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
             throw new ApplicationSubscriptionException(e);
         }
 
-        if (compositeAppSubscription != null) {
+        if (appSubscription != null) {
             // Composite App Subscription already exists with same app id
-           log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + " and tenantId: " + tenantId);
+           log.error("app Id already exists, failed to createappSubscription for appId: " + appId + " and tenantId: " + tenantId);
            throw new ApplicationSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
         } else {
         	
@@ -116,10 +116,10 @@ public class CartridgeSubscriptionManager {
         		log.debug("creating new application subscription for app:" + appId );
         	}
         	
-        	compositeAppSubscription = new ApplicationSubscription(appId);
+        	appSubscription = new ApplicationSubscription(appId);
         	// persist 
         	try {
-				persistCompositeAppSubscription(compositeAppSubscription);
+				this.persistApplicationSubscription(appSubscription);
 			} catch (ADCException e) {
 				// TODO Auto-generated catch block
 				log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + 
@@ -129,6 +129,58 @@ public class CartridgeSubscriptionManager {
         }
 
         return new ApplicationSubscription(appId);
+    }
+    
+    public void removeApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
+
+    	if (log.isDebugEnabled()) {
+            log.debug("remove Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        ApplicationSubscription appSubscription = null;
+
+        try {
+        	appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            log.error("failed to retrieve Application Subscription for appId: " + appId + " and tenantId: " + tenantId + "with exception:" + e);
+            throw new ApplicationSubscriptionException(e);
+        }
+
+        if (appSubscription != null) {
+        	
+        	try {
+				dataInsertionAndRetrievalMgr.removeApplicationSubscription(tenantId, appId);
+			} catch (PersistenceManagerException e) {
+				log.error("failed to remove Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " with exception:" + e);
+				throw new ApplicationSubscriptionException(e);
+			}
+        	
+        	if (log.isDebugEnabled()) {
+                log.debug("successfully removed Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+            }
+        	
+        } 
+    }
+    
+    public ApplicationSubscription getApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
+    	if (log.isDebugEnabled()) {
+            log.debug("get Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        ApplicationSubscription appSubscription = null;
+
+        try {
+            appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            log.error("failed to Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
+            throw new ApplicationSubscriptionException(e);
+        }
+        
+        return appSubscription;
     }
 
     public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,
@@ -191,10 +243,10 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    public void persistCompositeAppSubscription (ApplicationSubscription compositeAppSubscription) throws ADCException {
+    public void persistApplicationSubscription (ApplicationSubscription compositeAppSubscription) throws ADCException {
 
         try {
-            new DataInsertionAndRetrievalManager().persistCompositeAppSubscription(compositeAppSubscription);
+            new DataInsertionAndRetrievalManager().persistApplicationSubscription(compositeAppSubscription);
 
         } catch (PersistenceManagerException e) {
             throw new ADCException(e);

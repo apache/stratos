@@ -263,10 +263,28 @@ public class ServiceUtils {
 //            throw new RestAPIException(e);
 //        }
 
+    	// check if an application with same id already exists
+    	
+    	
         ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(compositeAppDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);
+        
+        // check if application with same appId / tenant already exists
+        CartridgeSubscriptionManager subscriptionMgr = new CartridgeSubscriptionManager();
+        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+        String appId = applicationContext.getApplicationId();
+        
+        
+        try {
+			if (subscriptionMgr.getApplicationSubscription(appId, tenantId) != null) {
+				String msg = "Duplicate application appId: " + appId + " for tenant " + tenantId;
+				throw new RestAPIException(msg);
+			}
+		} catch (ApplicationSubscriptionException e1) {
+			throw new RestAPIException(e1);
+		}
 
         try {
             CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
@@ -286,7 +304,8 @@ public class ServiceUtils {
             String userName, String tenantDomain) throws RestAPIException {
 
         try {
-            CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId);
+        	int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
+            CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId, tenantId, tenantDomain);
 
         } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
