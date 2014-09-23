@@ -645,15 +645,16 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed (String applicationId) {
+    public static void handleApplicationUndeployed (String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
-
+ 
         try {
             TopologyManager.acquireWriteLock();
 
             if (!topology.applicationExists(applicationId)) {
                 log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
+                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
 
             } else {
                 Application application = topology.getApplication(applicationId);
@@ -670,7 +671,7 @@ public class TopologyBuilder {
 
                 log.info("Removed application [ " + applicationId + " ] from Topology");
 
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId);
+                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
             }
 
         } finally {

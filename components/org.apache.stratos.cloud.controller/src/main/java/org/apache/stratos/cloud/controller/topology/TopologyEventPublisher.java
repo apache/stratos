@@ -99,13 +99,13 @@ public class TopologyEventPublisher {
         publishEvent(new ApplicationCreatedEvent(application));
     }
 
-    public static void sendApplicationRemovedEvent(String applicationId) {
+    public static void sendApplicationRemovedEvent(String applicationId, int tenantId, String tenantDomain) {
 
-        if(log.isInfoEnabled()) {
-            log.info("Publishing Application removed event: " + applicationId);
+        if(log.isInfoEnabled() || log.isDebugEnabled()) {
+            log.info("Publishing Application removed event: " + applicationId + " tenantId: " + tenantId);
         }
-
-        publishEvent(new ApplicationRemovedEvent(applicationId));
+        
+        publishEvent(new ApplicationRemovedEvent(applicationId, tenantId, tenantDomain));
     }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {

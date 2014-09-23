@@ -21,13 +21,29 @@ package org.apache.stratos.messaging.event.topology;
 
 public class ApplicationRemovedEvent extends TopologyEvent {
 
-    private String applicationId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -5499420725533165623L;
+	private String applicationId;
+    private String tenantDomain;
+    private int tenantId;
 
-    public ApplicationRemovedEvent (String applicationId) {
+    public ApplicationRemovedEvent (String applicationId, int tenantId, String tenantDomain) {
         this.applicationId = applicationId;
+        this.tenantId = tenantId;
+        this.tenantDomain = tenantDomain;
     }
 
     public String getApplicationId() {
         return applicationId;
+    }
+    
+    public int getTenantId() {
+        return tenantId;
+    }
+    
+    public String getTenantDomain() {
+        return tenantDomain;
     }
 }

@@ -1436,9 +1436,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void unDeployApplicationDefinition(String applicationId) throws ApplicationDefinitionException {
+    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
 
-        TopologyBuilder.handleApplicationUndeployed(applicationId);
+        TopologyBuilder.handleApplicationUndeployed(applicationId, tenantId, tenantDomain);
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
