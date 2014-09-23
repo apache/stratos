@@ -20,10 +20,17 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
-import org.apache.stratos.cloud.controller.pojo.ApplicationDataHolder;
+import org.apache.stratos.cloud.controller.pojo.ApplicationClusterContext;
+import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.messaging.domain.topology.Application;
+
+import java.util.Set;
 
 public interface ApplicationParser {
 
-    public ApplicationDataHolder parse (Object obj) throws ApplicationDefinitionException;
+    public Application parse (Object obj) throws ApplicationDefinitionException;
+
+    public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException;
+
+    public Set<MetaDataHolder> getPayloadData () throws ApplicationDefinitionException;
 }

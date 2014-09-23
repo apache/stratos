@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -612,34 +613,45 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationDeployed(ApplicationDataHolder applicationDataHolder) {
+    public static void handleApplicationDeployed(Application application,
+                                                 Set<ApplicationClusterContext> applicationClusterContexts,
+                                                 Set<MetaDataHolder> metaDataHolders) {
+
+
 
         Topology topology = TopologyManager.getTopology();
         try {
             TopologyManager.acquireWriteLock();
 
-            if (topology.applicationExists(applicationDataHolder.getApplication().getId())) {
-                log.warn("Application with id [ " + applicationDataHolder.getApplication().getId() + " ] already exists in Topology");
+            if (topology.applicationExists(application.getId())) {
+                log.warn("Application with id [ " + application.getId() + " ] already exists in Topology");
                 return;
             }
 
-            for (Cluster cluster : applicationDataHolder.getClusters()) {
-                String cartridgeType = cluster.getServiceName();
-                Service service = topology.getService(cartridgeType);
+            for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
+                Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
+                        applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
+                        applicationClusterContext.getAutoscalePolicyName());
+                cluster.setStatus(Status.Created);
+                cluster.addHostName(applicationClusterContext.getHostName());
+                cluster.setTenantRange(applicationClusterContext.getTenantRange());
+
+                Service service = topology.getService(applicationClusterContext.getCartridgeType());
                 if (service != null) {
-                    topology.getService(cartridgeType).addCluster(cluster);
-                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + applicationDataHolder.getApplication().getId());
+                    service.addCluster(cluster);
+                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + application.getId());
                 } else {
-                    log.error("Service " + cartridgeType + " not found");
+                    log.error("Service " + applicationClusterContext.getCartridgeType() + " not found");
                     return;
                 }
             }
-            // add to Topology and update
-            topology.addApplication(applicationDataHolder.getApplication());
-            TopologyManager.updateTopology(topology);
-            log.info("Application with id [ " + applicationDataHolder.getApplication().getId() + " ] added to Topology successfully");
 
-            TopologyEventPublisher.sendApplicationCreatedEvent(applicationDataHolder.getApplication());
+            // add to Topology and update
+            topology.addApplication(application);
+            TopologyManager.updateTopology(topology);
+            log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
+
+            TopologyEventPublisher.sendApplicationCreatedEvent(application);
 
         } finally {
             TopologyManager.releaseWriteLock();

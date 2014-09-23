@@ -43,6 +43,7 @@ import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
@@ -1427,12 +1428,21 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
-        ApplicationDataHolder applicationDataHolder = applicationParser.parse(applicationContext);
+        Application application = applicationParser.parse(applicationContext);
 
-        //TODO: publish the data to the meta data service
-        applicationDataHolder.getPayloadDataHolders();
+        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
+            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
+                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
+        }
 
-        TopologyBuilder.handleApplicationDeployed(applicationDataHolder);
+        //TODO: publish data to meta data service
+        applicationParser.getPayloadData();
+
+        TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
+                applicationParser.getPayloadData());
+
+        persist();
     }
 
     @Override

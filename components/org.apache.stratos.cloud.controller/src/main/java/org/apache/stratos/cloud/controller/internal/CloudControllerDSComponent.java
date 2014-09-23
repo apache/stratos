@@ -89,6 +89,8 @@ public class CloudControllerDSComponent {
 			TopologySynchronizerTaskScheduler
 						.schedule(ServiceReferenceHolder.getInstance()
 								.getTaskService());
+
+
 			
         } catch (Throwable e) {
             log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
