@@ -52,8 +52,7 @@ public class CartridgeAgentEventPublisher {
 			InstanceStartedEvent event = new InstanceStartedEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance()
-							.getNetworkPartitionId(),
+					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
 
@@ -80,8 +79,7 @@ public class CartridgeAgentEventPublisher {
 			InstanceActivatedEvent event = new InstanceActivatedEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance()
-							.getNetworkPartitionId(),
+					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
 
@@ -117,8 +115,7 @@ public class CartridgeAgentEventPublisher {
 			InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance()
-							.getNetworkPartitionId(),
+					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
 
@@ -144,8 +141,7 @@ public class CartridgeAgentEventPublisher {
 			InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance()
-							.getNetworkPartitionId(),
+					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
 

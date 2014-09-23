@@ -41,21 +41,21 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
  * Registering Cloud Controller Service.
- * 
+ *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
  * @scr.reference name="ntask.component"
- *                interface="org.wso2.carbon.ntask.core.service.TaskService"
- *                cardinality="1..1" policy="dynamic" bind="setTaskService"
- *                unbind="unsetTaskService"
+ * interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService"
+ * unbind="unsetTaskService"
  * @scr.reference name="registry.service" interface=
- *                "org.wso2.carbon.registry.core.service.RegistryService"
- *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
- *                unbind="unsetRegistryService"
+ * "org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService"
+ * unbind="unsetRegistryService"
  * @scr.reference name="config.context.service"
- *                interface="org.wso2.carbon.utils.ConfigurationContextService"
- *                cardinality="1..1" policy="dynamic"
- *                bind="setConfigurationContextService"
- *                unbind="unsetConfigurationContextService"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic"
+ * bind="setConfigurationContextService"
+ * unbind="unsetConfigurationContextService"
  */
 public class CloudControllerDSComponent {
 
@@ -68,28 +68,28 @@ public class CloudControllerDSComponent {
 			// Start instance status event message listener
 			TopicSubscriber subscriber = new TopicSubscriber(
 					CloudControllerConstants.INSTANCE_TOPIC);
-			subscriber
-					.setMessageListener(new InstanceStatusEventMessageListener());
+			subscriber.setMessageListener(
+					new InstanceStatusEventMessageListener());
 			Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
 
 			// Start instance status message delegator
-			InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
+			InstanceStatusEventMessageDelegator delegator =
+					new InstanceStatusEventMessageDelegator();
 			Thread tdelegator = new Thread(delegator);
 			tdelegator.start();
 
 			// Register cloud controller service
 			BundleContext bundleContext = context.getBundleContext();
-			bundleContext.registerService(
-					CloudControllerService.class.getName(),
-					new CloudControllerServiceImpl(), null);
+			bundleContext.registerService(CloudControllerService.class.getName(),
+			                              new CloudControllerServiceImpl(), null);
 
 			if (log.isInfoEnabled()) {
 				log.info("Scheduling tasks");
 			}
 
 			TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder
-					.getInstance().getTaskService());
+					                                           .getInstance().getTaskService());
 
 		} catch (Throwable e) {
 			log.error(

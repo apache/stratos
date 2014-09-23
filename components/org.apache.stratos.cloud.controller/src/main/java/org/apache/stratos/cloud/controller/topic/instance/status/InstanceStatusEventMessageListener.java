@@ -33,7 +33,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * this is to handle the topology subscription
  */
 public class InstanceStatusEventMessageListener implements MqttCallback {
-	public static final String ORG_APACHE_STRATOS_MESSAGING_EVENT = "org.apache.stratos.messaging.event.";
+	public static final String ORG_APACHE_STRATOS_MESSAGING_EVENT =
+			"org.apache.stratos.messaging.event.";
 	private static final Log log = LogFactory
 			.getLog(InstanceStatusEventMessageListener.class);
 
@@ -61,8 +62,9 @@ public class InstanceStatusEventMessageListener implements MqttCallback {
 
 			receivedMessage.setText(new String(message.getPayload()));
 			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-					ORG_APACHE_STRATOS_MESSAGING_EVENT.concat(arg0.replace("/",
-							".")));
+			                                  ORG_APACHE_STRATOS_MESSAGING_EVENT
+					                                  .concat(arg0.replace("/",
+					                                                       ".")));
 
 			try {
 				if (log.isDebugEnabled()) {
