@@ -47,8 +47,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService"
  *                unbind="unsetTaskService"
- * @scr.reference name="registry.service"
- *                interface=
+ * @scr.reference name="registry.service" interface=
  *                "org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
  *                unbind="unsetRegistryService"
@@ -60,39 +59,42 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  */
 public class CloudControllerDSComponent {
 
-	private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
+	private static final Log log = LogFactory
+			.getLog(CloudControllerDSComponent.class);
 
 	protected void activate(ComponentContext context) {
 		try {
 
 			// Start instance status event message listener
-			TopicSubscriber subscriber =
-			                             new TopicSubscriber(
-			                                                 CloudControllerConstants.INSTANCE_TOPIC);
-			subscriber.setMessageListener(new InstanceStatusEventMessageListener());
+			TopicSubscriber subscriber = new TopicSubscriber(
+					CloudControllerConstants.INSTANCE_TOPIC);
+			subscriber
+					.setMessageListener(new InstanceStatusEventMessageListener());
 			Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
 
 			// Start instance status message delegator
-			InstanceStatusEventMessageDelegator delegator =
-			                                                new InstanceStatusEventMessageDelegator();
+			InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
 			Thread tdelegator = new Thread(delegator);
 			tdelegator.start();
 
 			// Register cloud controller service
 			BundleContext bundleContext = context.getBundleContext();
-			bundleContext.registerService(CloudControllerService.class.getName(),
-			                              new CloudControllerServiceImpl(), null);
+			bundleContext.registerService(
+					CloudControllerService.class.getName(),
+					new CloudControllerServiceImpl(), null);
 
 			if (log.isInfoEnabled()) {
 				log.info("Scheduling tasks");
 			}
 
-			TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance()
-			                                                                 .getTaskService());
+			TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder
+					.getInstance().getTaskService());
 
 		} catch (Throwable e) {
-			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
+			log.error(
+					"******* Cloud Controller Service bundle is failed to activate ****",
+					e);
 		}
 	}
 
@@ -116,7 +118,8 @@ public class CloudControllerDSComponent {
 		}
 
 		try {
-			UserRegistry registry = registryService.getGovernanceSystemRegistry();
+			UserRegistry registry = registryService
+					.getGovernanceSystemRegistry();
 			ServiceReferenceHolder.getInstance().setRegistry(registry);
 		} catch (RegistryException e) {
 			String msg = "Failed when retrieving Governance System Registry.";
@@ -132,13 +135,14 @@ public class CloudControllerDSComponent {
 		ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
 
-	protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
-		ServiceReferenceHolder.getInstance()
-		                      .setAxisConfiguration(cfgCtxService.getServerConfigContext()
-		                                                         .getAxisConfiguration());
+	protected void setConfigurationContextService(
+			ConfigurationContextService cfgCtxService) {
+		ServiceReferenceHolder.getInstance().setAxisConfiguration(
+				cfgCtxService.getServerConfigContext().getAxisConfiguration());
 	}
 
-	protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
+	protected void unsetConfigurationContextService(
+			ConfigurationContextService cfgCtxService) {
 		ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
 	}
 
