@@ -254,7 +254,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
         String resourcePath = mainResource + applicationId;
         Resource regResource = createOrGetResourceforApplication(tempRegistry, resourcePath);
         regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
-        tempRegistry.put(regResource.getPath(), regResource);
+        tempRegistry.put(resourcePath, regResource);
     }
 
     public List<NewProperty> getPropertiesOfApplication(String applicationId) throws RegistryException {
