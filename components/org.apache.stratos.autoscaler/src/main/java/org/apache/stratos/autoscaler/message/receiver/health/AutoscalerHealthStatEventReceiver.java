@@ -913,41 +913,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                                            memberId, partitionId, clusterId));
                 }
             } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                try{
-                	TopologyManager.acquireReadLock();
-                	Member member = findMember(memberId);
-                	
-                	if(null == member){
-                		return;
-                	}
-                    if(!member.isActive()){
-                        if(log.isDebugEnabled()){
-                            log.debug(String.format("Member activated event has not received for the member %s. Therefore ignoring" +
-                                    " the member fault health stat", memberId));
-                        }
-                        return;
-                    }
-                }finally{
-                	TopologyManager.releaseReadLock();
-                }
-                
-                KubernetesClusterContext kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-                if (!kubernetesClusterContext.activeMemberExist(memberId)) {
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("Could not find the active member in partition context, [member] %s ", memberId));
-                    }
-                    return;
-				}
-                //terminate the faulty member
-                CloudControllerClient.getInstance().terminateContainer(memberId);
-                //remove from active member list
-                kubernetesClusterContext.removeActiveMemberById(memberId);
-                
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Faulty member is terminated and removed from the active members list: [member] %s [kub cluster] %s [cluster] %s ",
-                                           memberId, kubernetesClusterContext.getKubernetesClusterID(), clusterId));
-                }
-                
+            	// no need to do anything
             }
             
         } catch (TerminationException e) {

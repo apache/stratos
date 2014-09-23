@@ -174,16 +174,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                                    memberId, partitionId, clusterId));
                         }
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                    	KubernetesClusterContext kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-                    	//terminate the shutdown ready container
-                    	CloudControllerClient.getInstance().terminateContainer(memberId);
-                    	//remove from active member list
-                    	kubernetesClusterContext.removeActiveMemberById(memberId);
-                    	
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Member is terminated and removed from the active members list: [member] %s [kub cluster] %s [cluster] %s ",
-                                                   memberId, kubernetesClusterContext.getKubernetesClusterID(), clusterId));
-                        }
+                    	// no need to do anything
                     }
 
                 } catch (TerminationException e) {
@@ -351,29 +342,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             log.info(String.format("Member stat context has been removed successfully: [member] %s", memberId));
                         }
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                    	
-                    	KubernetesClusterContext kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-                    	kubernetesClusterContext.removeMemberStatsContext(memberId);
-                    	
-                        if (kubernetesClusterContext.removeTerminationPendingMember(memberId)) {
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Member is removed from termination pending members list: [member] %s", memberId));
-                            }
-                        } else if (kubernetesClusterContext.removePendingMember(memberId)) {
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Member is removed from pending members list: [member] %s", memberId));
-                            }
-                        } else if (kubernetesClusterContext.removeActiveMemberById(memberId)) {
-                            log.warn(String.format("Member is in the wrong list and it is removed from active members list", memberId));
-                        } else if (kubernetesClusterContext.removeObsoleteMember(memberId)){
-                        	log.warn(String.format("Member's obsolated timeout has been expired and it is removed from obsolated members list", memberId));
-                        } else {
-                            log.warn(String.format("Member is not available in any of the list active, pending and termination pending", memberId));
-                        }
-
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Member stat context has been removed successfully: [member] %s", memberId));
-                        }
+                    	// no need to do anything
                     }
                     
                 } catch (Exception e) {
@@ -480,17 +449,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                                   memberId, partitionId, clusterId));
                        }
                    } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	   KubernetesClusterContext kubernetesClusterContext;
-                	   kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	   // terminate the shutdown ready member
-                	   CloudControllerClient.getInstance().terminateContainer(memberId);
-                	   // remove from active member list
-                	   kubernetesClusterContext.removeActiveMemberById(memberId);
-                	   
-                       if (log.isInfoEnabled()) {
-                           log.info(String.format("Member is terminated and removed from the active members list: [member] %s [kub cluster] %s [cluster] %s ",
-                                                  memberId, kubernetesClusterContext.getKubernetesClusterID(), clusterId));
-                       }
+                	   // no need to do anything
                    }
 
                } catch (TerminationException e) {
@@ -537,13 +496,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         }
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                    	KubernetesClusterContext kubernetesClusterContext;
-                    	kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-                    	kubernetesClusterContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Member has been moved as pending termination: [member] %s", memberId));
-                        }
-                    	kubernetesClusterContext.moveActiveMemberToTerminationPendingMembers(memberId);
+                    	// no need to do anything
                     }
 
                 } catch (Exception e) {
