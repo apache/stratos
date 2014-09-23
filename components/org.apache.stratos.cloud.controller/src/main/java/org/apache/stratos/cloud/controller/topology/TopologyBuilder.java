@@ -192,7 +192,6 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.removeCluster(ctxt.getClusterId());
-            ctxt.setKubernetesCluster(cluster.isKubernetesCluster());
             deploymentPolicy = cluster.getDeploymentPolicyName();
             TopologyManager.updateTopology(topology);
         } finally {

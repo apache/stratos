@@ -135,12 +135,18 @@ public interface CloudControllerService {
      * @throws InvalidClusterException
      */
     public void terminateAllKubernetesUnits(String clusterId) throws InvalidClusterException;
+    
+    /**
+     * Unregister a docker service identified by the given cluster id.
+     * @param clusterId service cluster id.
+     * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
+     */
+    public void unregisterDockerService(String clusterId) throws UnregisteredClusterException;
 
     /**
-     * Unregister the service cluster which represents by this domain and sub domain.
-     * @param clusterId service cluster domain
-     * @return whether the unregistration was successful or not.
-     * @throws org.apache.stratos.cloud.controller.exception.UnregisteredClusterException if the service cluster requested is not a registered one.
+     * Unregister the service cluster identified by the given cluster id.
+     * @param clusterId service cluster id.
+     * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
      */
     public void unregisterService(String clusterId) throws UnregisteredClusterException;
     

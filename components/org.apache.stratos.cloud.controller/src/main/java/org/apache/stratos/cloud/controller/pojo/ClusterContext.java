@@ -37,7 +37,6 @@ public class ClusterContext implements Serializable{
     private String payload;
     private String hostName;
     private boolean isLbCluster;
-    private boolean isKubernetesCluster;
     private boolean isVolumeRequired;
     private Volume[] volumes;
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
@@ -89,14 +88,6 @@ public class ClusterContext implements Serializable{
 		this.isLbCluster = isLbCluster;
 	}
 	
-	public boolean isKubernetesCluster() {
-		return isKubernetesCluster;
-	}
-
-	public void setKubernetesCluster(boolean isKubernetesCluster) {
-		this.isKubernetesCluster = isKubernetesCluster;
-	}
-
 	public boolean isVolumeRequired() {
 		return isVolumeRequired;
 	}
@@ -127,5 +118,13 @@ public class ClusterContext implements Serializable{
 
 	public void setProperties(Properties properties) {
 		this.properties = properties;
+	}
+	
+	public void addProperty(String key, int value) {
+		this.properties.put(key, value);
+	}
+	
+	public void addProperty(String key, String value) {
+		this.properties.put(key, value);
 	}
 }

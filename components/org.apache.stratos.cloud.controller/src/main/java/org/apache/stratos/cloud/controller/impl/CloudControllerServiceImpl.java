@@ -44,6 +44,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
+import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -1043,105 +1044,144 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
 	public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
-        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
-
-        Runnable terminateInTimeout = new Runnable() {
-            @Override
-            public void run() {
-                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
-                 if(ctxt == null) {
-                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                     log.error(msg);
-                 }
-                 Collection<Member> members = TopologyManager.getTopology().
-                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 //finding the responding members from the existing members in the topology.
-                int sizeOfRespondingMembers = 0;
-                for(Member member : members) {
-                    if(member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
-                        sizeOfRespondingMembers ++;
-                    }
-                }
-
-                long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
-                while(System.currentTimeMillis()< endTime) {
-                    CloudControllerUtil.sleep(1000);
-
-                }
-
-                 // if there're still alive members
-                 if(members.size() > 0) {
-                     //forcefully terminate them
-                     for (Member member : members) {
-
-                         try {
-                            terminateInstance(member.getMemberId());
-                        } catch (Exception e) {
-                            // we are not gonna stop the execution due to errors.
-                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
-                        }
-                    }
-                 }
-            }
-        };
-        Runnable unregister = new Runnable() {
-             public void run() {
-                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
-                 if(ctxt == null) {
-                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-                     log.error(msg);
-                 }
-                 Collection<Member> members = TopologyManager.getTopology().
-                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                 // TODO why end time is needed?
-                 // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
-
-                 while(members.size() > 0) {
-                    //waiting until all the members got removed from the Topology/ timed out
-                    CloudControllerUtil.sleep(1000);
-                 }
-
-                 log.info("Unregistration of service cluster: " + clusterId_);
-                 deleteVolumes(ctxt);
-                 TopologyBuilder.handleClusterRemoved(ctxt);
-                 dataHolder.removeClusterContext(clusterId_);
-                 dataHolder.removeMemberContextsOfCluster(clusterId_);
-                 persist();
-             }
-
-            private void deleteVolumes(ClusterContext ctxt) {
-                if(ctxt.isVolumeRequired()) {
-                     Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
-                     if(cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
-                         for (Volume volume : ctxt.getVolumes()) {
-                            if(volume.getId() != null) {
-                                String iaasType = volume.getIaasType();
-                                //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
-                                Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
-                                if(iaas != null) {
-                                    try {
-                                    // delete the volumes if remove on unsubscription is true.
-                                    if(volume.isRemoveOntermination())
-                                    {
-                                        iaas.deleteVolume(volume.getId());
-                                        volume.setId(null);
-                                    }
-                                    } catch(Exception ignore) {
-                                        if(log.isErrorEnabled()) {
-                                            log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                     }
-                 }
-            }
-        };
-        new Thread(terminateInTimeout).start();
-        new Thread(unregister).start();
         
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+
+        if (ctxt == null) {
+            String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String cartridgeType = ctxt.getCartridgeType();
+
+        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+
+        if (cartridge == null) {
+            String msg =
+                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". ";
+            log.error(msg);
+            throw new UnregisteredClusterException(msg);
+        }
+        
+        // if it's a kubernetes cluster
+        if (StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
+        	unregisterDockerService(clusterId_);
+        	
+        } else {
+        
+	        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
+	
+	        Runnable terminateInTimeout = new Runnable() {
+	            @Override
+	            public void run() {
+	                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+	                 if(ctxt == null) {
+	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+	                     log.error(msg);
+	                 }
+	                 Collection<Member> members = TopologyManager.getTopology().
+	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+	                 //finding the responding members from the existing members in the topology.
+	                int sizeOfRespondingMembers = 0;
+	                for(Member member : members) {
+	                    if(member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
+	                        sizeOfRespondingMembers ++;
+	                    }
+	                }
+	
+	                long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * sizeOfRespondingMembers;
+	                while(System.currentTimeMillis()< endTime) {
+	                    CloudControllerUtil.sleep(1000);
+	
+	                }
+	
+	                 // if there're still alive members
+	                 if(members.size() > 0) {
+	                     //forcefully terminate them
+	                     for (Member member : members) {
+	
+	                         try {
+	                            terminateInstance(member.getMemberId());
+	                        } catch (Exception e) {
+	                            // we are not gonna stop the execution due to errors.
+	                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
+	                        }
+	                    }
+	                 }
+	            }
+	        };
+	        Runnable unregister = new Runnable() {
+	             public void run() {
+	                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+	                 if(ctxt == null) {
+	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+	                     log.error(msg);
+	                 }
+	                 Collection<Member> members = TopologyManager.getTopology().
+	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
+	                 // TODO why end time is needed?
+	                 // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
+	
+	                 while(members.size() > 0) {
+	                    //waiting until all the members got removed from the Topology/ timed out
+	                    CloudControllerUtil.sleep(1000);
+	                 }
+	
+	                 log.info("Unregistration of service cluster: " + clusterId_);
+	                 deleteVolumes(ctxt);
+	                 onClusterRemoval(clusterId_);
+	             }
+	
+	            private void deleteVolumes(ClusterContext ctxt) {
+	                if(ctxt.isVolumeRequired()) {
+	                     Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+	                     if(cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
+	                         for (Volume volume : ctxt.getVolumes()) {
+	                            if(volume.getId() != null) {
+	                                String iaasType = volume.getIaasType();
+	                                //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+	                                Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
+	                                if(iaas != null) {
+	                                    try {
+	                                    // delete the volumes if remove on unsubscription is true.
+	                                    if(volume.isRemoveOntermination())
+	                                    {
+	                                        iaas.deleteVolume(volume.getId());
+	                                        volume.setId(null);
+	                                    }
+	                                    } catch(Exception ignore) {
+	                                        if(log.isErrorEnabled()) {
+	                                            log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
+	                                        }
+	                                    }
+	                                }
+	                            }
+	                        }
+	
+	                     }
+	                 }
+	            }
+	        };
+	        new Thread(terminateInTimeout).start();
+	        new Thread(unregister).start();
+        }
+	}
+    
+    @Override
+	public void unregisterDockerService(String clusterId)
+			throws UnregisteredClusterException {
+
+    	// terminate all kubernetes units
+    	try {
+			terminateAllKubernetesUnits(clusterId);
+		} catch (InvalidClusterException e) {
+			String msg = "Docker instance termination fails for cluster: "+clusterId;
+			log.error(msg, e);
+			throw new UnregisteredClusterException(msg, e);
+		}
+    	// send cluster removal notifications and update the state
+		onClusterRemoval(clusterId);
 	}
 
 
@@ -1223,6 +1263,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         return true;
     }
+    
+    private void onClusterRemoval(final String clusterId) {
+		ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+		TopologyBuilder.handleClusterRemoved(ctxt);
+		dataHolder.removeClusterContext(clusterId);
+		dataHolder.removeMemberContextsOfCluster(clusterId);
+		persist();
+	}
 
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
@@ -1314,8 +1362,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String memberID = generateMemberId(clusterId);
             memberContext.setMemberId(memberID);
 
-			
-			
 			String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
 					StratosConstants.KUBERNETES_CLUSTER_ID);
 			
@@ -1447,6 +1493,74 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	public void terminateAllKubernetesUnits(String clusterId)
 			throws InvalidClusterException {
 		
+		ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        if (ctxt == null) {
+            String msg = "Kubernetes units temrination failed. Invalid cluster id. "+clusterId;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+				StratosConstants.KUBERNETES_CLUSTER_ID);
+		
+		if (kubernetesClusterId == null) {
+			String msg = "Kubernetes units termination failed. Cannot find '"+
+					StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt;
+			log.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
+        
+        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+		
+		if (kubClusterContext == null) {
+			String msg = "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: " 
+							+kubernetesClusterId;
+			log.error(msg);
+			throw new IllegalArgumentException(msg);
+		}
+
+		KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+		// delete the service
+		try {
+			kubApi.deleteService(clusterId);
+		} catch (KubernetesClientException e) {
+			// we're not going to throw this error, but proceed with other deletions
+			log.error("Failed to delete Kubernetes service with id: "+clusterId, e);
+		}
+		
+		// set replicas=0 for the replication controller
+		try {
+			kubApi.updateReplicationController(clusterId, 0);
+		} catch (KubernetesClientException e) {
+			// we're not going to throw this error, but proceed with other deletions
+			log.error("Failed to update Kubernetes Controller with id: "+clusterId, e);
+		}
+		// delete the replication controller.
+		try {
+			kubApi.deleteReplicationController(clusterId);
+		} catch (KubernetesClientException e) {
+			String msg = "Failed to delete Kubernetes Controller with id: "+clusterId;
+			log.error(msg, e);
+			throw new InvalidClusterException(msg, e);
+		}
+		
+		String allocatedPort = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+				StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+		
+		if (allocatedPort != null) {
+			kubClusterContext.deallocateHostPort(Integer
+					.parseInt(allocatedPort));
+		} else {
+			log.warn("Host port dealloacation failed due to a missing property: "
+					+ StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+		}
+		
+		dataHolder.removeMemberContextsOfCluster(clusterId);
+		
+		// persist
+		persist();
 	}
+
 }
 

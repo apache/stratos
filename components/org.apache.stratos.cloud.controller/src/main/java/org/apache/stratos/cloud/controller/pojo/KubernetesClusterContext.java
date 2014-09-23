@@ -109,6 +109,12 @@ public class KubernetesClusterContext implements Serializable {
 		
 		return availableHostPorts.remove(0);
 	}
+	
+	public void deallocateHostPort (int port) {
+		if (!availableHostPorts.contains(port)) {
+			availableHostPorts.add(port);
+		}
+	}
 
 	private void populatePorts(int i, int j) {
 
