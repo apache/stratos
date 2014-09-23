@@ -76,7 +76,6 @@
                             org.apache.commons.logging; version=0.0.0,
                             org.apache.commons.io.*,
                             org.wso2.carbon.utils.*,
-                            org.apache.stratos.metadata.client.*; version=0.0.0,
                             <!--org.jclouds.compute*;version="${jclouds.version}";resolution:=optional,
                             org.jclouds*;version="${jclouds.version}",-->
                             *; resolution:=optional
