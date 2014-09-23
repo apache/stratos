@@ -26,6 +26,15 @@
 # Die on any error:
 set -e
 
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform  
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+else
+    # Do something else under some other platform
+    SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
+fi
+
 SLEEP=60
 export LOG=$log_path/stratos-vcloud.log
 
@@ -41,14 +50,14 @@ pushd $stratos_extract_path
 
 echo "Set vCloud provider specific info in repository/conf/cloud-controller.xml" >> $LOG
 
-sed -i "s@VCLOUD_PROVIDER_START@@g" repository/conf/cloud-controller.xml
-sed -i "s/VCLOUD_IDENTITY/$vcloud_identity/g" repository/conf/cloud-controller.xml
-sed -i "s/VCLOUD_CREDENTIAL/$vcloud_credential/g" repository/conf/cloud-controller.xml
-sed -i "s@VCLOUD_ENDPOINT@$vcloud_jclouds_endpoint@g" repository/conf/cloud-controller.xml
-sed -i "s@VCLOUD_PROVIDER_END@@g" repository/conf/cloud-controller.xml
-sed -i "s@EC2_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
-sed -i "s@EC2_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_START@@g" repository/conf/cloud-controller.xml
+${SED} -i "s/VCLOUD_IDENTITY/$vcloud_identity/g" repository/conf/cloud-controller.xml
+${SED} -i "s/VCLOUD_CREDENTIAL/$vcloud_credential/g" repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_ENDPOINT@$vcloud_jclouds_endpoint@g" repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_END@@g" repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
 
 popd

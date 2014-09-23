@@ -26,6 +26,15 @@
 # Die on any error:
 set -e
 
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform  
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+else
+    # Do something else under some other platform
+    SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
+fi
+
 source "./conf/setup.conf"
 export LOG=$log_path/stratos-setup.log
 
@@ -138,10 +147,10 @@ function general_setup() {
 
     pushd $stratos_extract_path
     echo "In repository/conf/carbon.xml"
-    sed -i "s@<Offset>0</Offset>@<Offset>${offset}</Offset>@g" repository/conf/carbon.xml
+    ${SED} -i "s@<Offset>0</Offset>@<Offset>${offset}</Offset>@g" repository/conf/carbon.xml
 
     echo "In repository/conf/jndi.properties"
-    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
+    ${SED} -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/conf/jndi.properties
     popd
 
 }
@@ -290,10 +299,10 @@ function as_setup() {
     pushd $stratos_extract_path
 
     echo "In repository/conf/autoscaler.xml"
-    sed -i "s@CC_HOSTNAME@$cc_hostname@g" repository/conf/autoscaler.xml
-    sed -i "s@CC_LISTEN_PORT@$as_cc_https_port@g" repository/conf/autoscaler.xml
-    sed -i "s@SM_HOSTNAME@$sm_hostname@g" repository/conf/autoscaler.xml
-    sed -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
+    ${SED} -i "s@CC_HOSTNAME@$cc_hostname@g" repository/conf/autoscaler.xml
+    ${SED} -i "s@CC_LISTEN_PORT@$as_cc_https_port@g" repository/conf/autoscaler.xml
+    ${SED} -i "s@SM_HOSTNAME@$sm_hostname@g" repository/conf/autoscaler.xml
+    ${SED} -i "s@SM_LISTEN_PORT@$as_sm_https_port@g" repository/conf/autoscaler.xml
 
     popd
     echo "End configuring the Autoscaler"
@@ -381,18 +390,18 @@ function sm_setup() {
     pushd $stratos_extract_path
 
     echo "In repository/conf/cartridge-config.properties"
-    sed -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
-    sed -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
-    sed -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@CC_HOSTNAME:CC_HTTPS_PORT@$cc_hostname:$sm_cc_https_port@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@AS_HOSTNAME:AS_HTTPS_PORT@$as_hostname:$sm_as_https_port@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@PUPPET_IP@$puppet_ip@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@PUPPET_HOSTNAME@$puppet_hostname@g" repository/conf/cartridge-config.properties
+    ${SED} -i "s@PUPPET_ENV@$puppet_environment@g" repository/conf/cartridge-config.properties
 
     echo "In repository/conf/datasources/master-datasources.xml"
-    sed -i "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_PORT@$userstore_db_port@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_USER@$userstore_db_user@g" repository/conf/datasources/master-datasources.xml
-    sed -i "s@USERSTORE_DB_PASS@$userstore_db_pass@g" repository/conf/datasources/master-datasources.xml
+    ${SED} -i "s@USERSTORE_DB_HOSTNAME@$userstore_db_hostname@g" repository/conf/datasources/master-datasources.xml
+    ${SED} -i "s@USERSTORE_DB_PORT@$userstore_db_port@g" repository/conf/datasources/master-datasources.xml
+    ${SED} -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" repository/conf/datasources/master-datasources.xml
+    ${SED} -i "s@USERSTORE_DB_USER@$userstore_db_user@g" repository/conf/datasources/master-datasources.xml
+    ${SED} -i "s@USERSTORE_DB_PASS@$userstore_db_pass@g" repository/conf/datasources/master-datasources.xml
 
     popd
 
@@ -402,7 +411,7 @@ function sm_setup() {
     echo "Creating userstore database"
 
     pushd $resource_path
-    sed -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" mysql.sql
+    ${SED} -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" mysql.sql
 
     popd
 
@@ -420,8 +429,8 @@ function cep_setup() {
 
     echo "In outputeventadaptors"
 
-    sed -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
-    sed -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+    ${SED} -i "s@CEP_HOME@$stratos_extract_path@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
+    ${SED} -i "s@MB_HOSTNAME:MB_LISTEN_PORT@$mb_ip:$mb_port@g" repository/deployment/server/outputeventadaptors/JMSOutputAdaptor.xml
 
     echo "End configuring the Complex Event Processor"
     popd
@@ -537,7 +546,7 @@ if [[ ($profile = "default" && $config_mb = "true") ]]; then
     echo "Extracting ActiveMQ"
     tar -xzf $activemq_pack -C $stratos_path
     # disable amqp connector to prevent conflicts with openstack
-    sed -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $activemq_path/conf/activemq.xml
+    ${SED} -r -i -e 's@^(\s*)(<transportConnector name="amqp".*\s*)$@\1<!--\2-->@g' $activemq_path/conf/activemq.xml
 fi
 
 general_setup
@@ -578,7 +587,7 @@ mv -f ./hosts.tmp /etc/hosts
 # Starting the servers
 # ------------------------------------------------
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
-chown $host_user:$host_user $stratos_path -R
+chown -R $host_user:$host_user $stratos_path
 
 echo "Apache Stratos configuration completed successfully"
 
@@ -593,7 +602,7 @@ echo "Starting the servers" >> $LOG
 
 echo "Starting up servers. This may take time. Look at $LOG file for server startup details"
 
-chown -R $host_user.$host_user $log_path
+chown -R $host_user:$host_user $log_path
 chmod -R 777 $log_path
 
 export setup_dir=$PWD
