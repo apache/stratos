@@ -82,7 +82,7 @@ public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
 
 			if (nonTerminatedMembers == 0) {
 				
-				while (success) {
+				while (!success) {
 					try {
 
 						MemberContext memberContext = CloudControllerClient.getInstance().createContainer(kubernetesClusterId, getClusterId());
