@@ -34,7 +34,9 @@ public class DeploymentPolicy implements Serializable{
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
     private String description;
+    private boolean isPublic;
     private PartitionGroup[] partitionGroups;
+    private int tenantId;
 
     /**
      * Gets the value of the id property.
@@ -84,6 +86,46 @@ public class DeploymentPolicy implements Serializable{
         this.description = value;
     }
     
+    /**
+     * Gets the value of the isPublic property.
+     * 
+     * @return
+     *     possible object is boolean
+     *     
+     */
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+
+	 /**
+     * Sets the value of the isPublic property.
+     * 
+     * @param description
+     *     allowed object is boolean
+     *     
+     */
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	
+	/**
+     * Gets the value of the tenantId property.
+     * 
+     *          
+     */
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	 /**
+     * Sets the value of the tenantId property.
+     * 
+     *     
+     */
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
+    
     public void setPartitionGroups(PartitionGroup[] groups) {
         this.partitionGroups = groups;
     }
@@ -125,7 +167,9 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public String toString() {
-        return "Deployment Policy [id]" + this.id + " Description " +  this.description +" [partitions] " + Arrays.toString(this.getAllPartitions());
+        return "Deployment Policy [id]" + this.id + " Description " +  this.description 
+        		+ " isPublic " +  this.isPublic 
+        		+" [partitions] " + Arrays.toString(this.getAllPartitions());
     }
 
 }

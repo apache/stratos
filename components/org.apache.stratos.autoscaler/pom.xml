@@ -176,6 +176,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+	<dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
 	</dependencies>
 

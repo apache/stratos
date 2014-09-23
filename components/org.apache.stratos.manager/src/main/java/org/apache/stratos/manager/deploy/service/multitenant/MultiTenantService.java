@@ -27,7 +27,7 @@ public class MultiTenantService extends Service {
 	private static final long serialVersionUID = 3038272784193474660L;
 
     public MultiTenantService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
-    		String tenantRange) {
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+    		String tenantRange, boolean isPublic) {
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
     }
 }

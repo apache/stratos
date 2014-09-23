@@ -44,9 +44,9 @@ public class DefaultLBService extends LBService {
     private boolean defaultLBServiceExists = false;
 
     public DefaultLBService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
-                            CartridgeInfo cartridgeInfo, String tenantRange) {
+                            CartridgeInfo cartridgeInfo, String tenantRange, boolean isPublic) {
 
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
     }
 
     public PayloadData create(String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,

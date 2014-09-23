@@ -46,6 +46,8 @@ public class CartridgeInfo {
     
     private boolean multiTenant;
     
+    private boolean isPublic;
+    
     private String baseDir;
     
     private Property[] properties;
@@ -137,6 +139,14 @@ public class CartridgeInfo {
 
 	public void setMultiTenant(boolean multiTenant) {
 		this.multiTenant = multiTenant;
+	}
+	
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 
 	public String getBaseDir() {

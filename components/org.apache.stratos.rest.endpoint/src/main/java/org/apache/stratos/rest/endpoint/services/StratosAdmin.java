@@ -30,6 +30,7 @@ import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
@@ -47,6 +48,7 @@ import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -941,13 +943,13 @@ public class StratosAdmin extends AbstractAdmin {
     public Response deployService(ServiceDefinitionBean serviceDefinitionBean)
             throws RestAPIException {
 
-        log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
-        // super tenant Deploying service (MT)
-        // here an alias is generated
-        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
-                serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
-                serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
-                serviceDefinitionBean.getTenantRange());
+    	log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
+    	// super tenant Deploying service (MT) 
+    	// here an alias is generated
+       ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
+               serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
+               serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
+               serviceDefinitionBean.getTenantRange(), serviceDefinitionBean.getIsPublic());
 
         URI url = uriInfo.getAbsolutePathBuilder().path(serviceDefinitionBean.getServiceName()).build();
         return Response.created(url).build();

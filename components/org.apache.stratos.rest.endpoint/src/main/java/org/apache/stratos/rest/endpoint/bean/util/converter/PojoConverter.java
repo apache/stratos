@@ -54,6 +54,7 @@ public class PojoConverter {
         cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
         cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
         cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
+        cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic);
         cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
         cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
         cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
@@ -61,6 +62,7 @@ public class PojoConverter {
         cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
         cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
 
+        
         //deployment information
         if (cartridgeDefinitionBean.deployment != null) {
             cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
@@ -260,6 +262,7 @@ public class PojoConverter {
 
         partition.setId(partitionBean.id);
         partition.setDescription(partitionBean.description);
+        partition.setIsPublic(partitionBean.isPublic);
         partition.setProvider(partitionBean.provider);
         partition.setPartitionMin(partitionBean.partitionMin);
         partition.setPartitionMax(partitionBean.partitionMax);
@@ -279,6 +282,7 @@ public class PojoConverter {
 
         autoscalePolicy.setId(autoscalePolicyBean.getId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
+        autoscalePolicy.setIsPublic(autoscalePolicyBean.getIsPublic());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
 
         if (autoscalePolicyBean.getLoadThresholds() != null) {
@@ -332,7 +336,8 @@ public class PojoConverter {
 
         deploymentPolicy.setId(deploymentPolicyBean.id);
         deploymentPolicy.setDescription(deploymentPolicyBean.description);
-        if (deploymentPolicyBean.partitionGroup != null && !deploymentPolicyBean.partitionGroup.isEmpty()) {
+        deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
+        if(deploymentPolicyBean.partitionGroup != null && !deploymentPolicyBean.partitionGroup.isEmpty()) {
             deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.partitionGroup));
         }
 
@@ -421,17 +426,7 @@ public class PojoConverter {
         }
 
         partitionBeans = new Partition[partitions.length];
-        for (int i = 0; i < partitions.length; i++) {
-            /*Partition partition = new Partition();
-            partition.id = partitions[i].getId();
-            partition.provider = partitions[i].getProvider();
-            partition.partitionMin = partitions[i].getPartitionMin();
-            partition.partitionMax = partitions[i].getPartitionMax();*/
-            //properties are not added currently, TODO if required
-            //if(partitions[i].getProperties() != null) {
-            //    List<PropertyBean> propertyBeans = getPropertyBeans(partitions[i].getProperties());
-            //    partition.property = propertyBeans;
-            //}
+        for (int i = 0 ; i < partitions.length ; i++) {
             partitionBeans[i] = populatePartitionPojo(partitions[i]);
         }
         return partitionBeans;
@@ -447,6 +442,7 @@ public class PojoConverter {
 
         partitionBeans.id = partition.getId();
         partitionBeans.description = partition.getDescription();
+        partitionBeans.isPublic = partition.getIsPublic();
         partitionBeans.provider = partition.getProvider();
         partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();
@@ -458,6 +454,8 @@ public class PojoConverter {
 
         return partitionBeans;
     }
+    
+	public static List<SubscriptionDomainBean> populateSubscriptionDomainPojos(List<SubscriptionDomain> subscriptionDomains) {
 
     public static List<SubscriptionDomainBean> populateSubscriptionDomainPojos(List<SubscriptionDomain> subscriptionDomains) {
 
@@ -536,6 +534,7 @@ public class PojoConverter {
 
         autoscalePolicyBean.setId(autoscalePolicy.getId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
+        autoscalePolicyBean.setIsPublic(autoscalePolicy.getIsPublic());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         if (autoscalePolicy.getLoadThresholds() != null) {
@@ -579,15 +578,7 @@ public class PojoConverter {
         }
 
         deploymentPolicyBeans = new DeploymentPolicy[deploymentPolicies.length];
-        for (int i = 0; i < deploymentPolicies.length; i++) {
-            //DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
-            //deploymentPolicy.id = deploymentPolicies[i].getId();
-
-            //if(deploymentPolicies[i].getPartitionGroups() != null &&
-            //        deploymentPolicies[i].getPartitionGroups().length > 0) {
-            //    deploymentPolicy.partitionGroup = getPartitionGroups(deploymentPolicies[i].getPartitionGroups());
-            //}
-
+        for (int i = 0 ; i < deploymentPolicies.length ; i++) {
             deploymentPolicyBeans[i] = populateDeploymentPolicyPojo(deploymentPolicies[i]);
         }
 
@@ -604,6 +595,7 @@ public class PojoConverter {
 
         deploymentPolicyBean.id = deploymentPolicy.getId();
         deploymentPolicyBean.description = deploymentPolicy.getDescription();
+        deploymentPolicyBean.isPublic = deploymentPolicy.getIsPublic();
 
         if (deploymentPolicy.getPartitionGroups() != null && deploymentPolicy.getPartitionGroups().length > 0) {
             deploymentPolicyBean.partitionGroup = Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups()));
@@ -681,6 +673,7 @@ public class PojoConverter {
         serviceDefinitionBean.setCartridgeType(service.getType());
         serviceDefinitionBean.setTenantRange(service.getTenantRange());
         serviceDefinitionBean.setClusterDomain(service.getClusterId());
+        serviceDefinitionBean.setIsPublic(service.getIsPublic());
         serviceDefinitionBean.setAutoscalingPolicyName(service.getAutoscalingPolicyName());
         serviceDefinitionBean.setDeploymentPolicyName(service.getDeploymentPolicyName());
 
@@ -690,6 +683,7 @@ public class PojoConverter {
     public static List<ServiceDefinitionBean> convertToServiceDefinitionBeans(Collection<Service> services) {
 
         List<ServiceDefinitionBean> serviceDefinitionBeans = new ArrayList<ServiceDefinitionBean>();
+
         for (Service service : services) {
             serviceDefinitionBeans.add(convertToServiceDefinitionBean(service));
         }

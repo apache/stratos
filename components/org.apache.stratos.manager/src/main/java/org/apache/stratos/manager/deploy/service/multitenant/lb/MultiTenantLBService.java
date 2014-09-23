@@ -33,9 +33,9 @@ public class MultiTenantLBService extends Service {
     private LoadBalancerCategory loadBalancerCategory;
 
     public MultiTenantLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
-                                CartridgeInfo cartridgeInfo, String tenantRange, LoadBalancerCategory loadBalancerCategory) {
+                                CartridgeInfo cartridgeInfo, String tenantRange, boolean isPublic, LoadBalancerCategory loadBalancerCategory) {
 
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
         this.loadBalancerCategory = loadBalancerCategory;
     }
 
