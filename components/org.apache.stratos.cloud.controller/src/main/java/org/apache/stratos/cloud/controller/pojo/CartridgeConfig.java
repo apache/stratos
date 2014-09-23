@@ -42,6 +42,8 @@ public class CartridgeConfig implements Serializable {
     private String version;
 
     private boolean multiTenant;
+    
+    private boolean isPublic;
 
     private String baseDir;
 
@@ -119,6 +121,14 @@ public class CartridgeConfig implements Serializable {
     public void setMultiTenant(boolean multiTenant) {
         this.multiTenant = multiTenant;
     }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setisPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public String getBaseDir() {
         return baseDir;
@@ -163,7 +173,7 @@ public class CartridgeConfig implements Serializable {
     public String toString () {
 
         return "Type: " + type + ", Provider: " + provider + ", Host: " + hostName + ", Display Name: " + displayName +
-                ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant +
+                ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant + ", IsPublic " + isPublic +
                 "\n Deployment: " + getDeploymentDetails() + "\n PortMapping: " + getPortMappingDetails() +
                 "\n IaaS: " +  getIaasConfigDetails() + "\n Properties: " + getPropertyDetails();
     }

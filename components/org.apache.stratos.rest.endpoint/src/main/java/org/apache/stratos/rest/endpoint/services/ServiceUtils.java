@@ -64,6 +64,7 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -249,7 +250,7 @@ public class ServiceUtils {
     }
 
     public static Partition[] getAvailablePartitions() throws RestAPIException {
-
+    	
         org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -262,7 +263,7 @@ public class ServiceUtils {
                 throw new RestAPIException(errorMsg, e);
             }
         }
-
+        
         return PojoConverter.populatePartitionPojos(partitions);
     }
 
@@ -1134,10 +1135,10 @@ public class ServiceUtils {
      * @param clusterSubdomain
      */
     static void deployService(String cartridgeType, String alias, String autoscalingPolicy, String deploymentPolicy,
-                                              String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange) throws RestAPIException {
+                                              String tenantDomain, String tenantUsername, int tenantId, String clusterDomain, String clusterSubdomain, String tenantRange, boolean isPublic) throws RestAPIException {
         log.info("Deploying service..");
         try {
-            serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername);
+            serviceDeploymentManager.deployService(cartridgeType, autoscalingPolicy, deploymentPolicy, tenantId, tenantRange, tenantDomain, tenantUsername, isPublic);
 
         } catch (Exception e) {
             String msg = String.format("Failed to deploy the Service [Cartridge type] %s [alias] %s . Cause: %s", cartridgeType, alias, e.getMessage());

@@ -47,7 +47,7 @@ public class ServiceDeploymentManager {
     private static Log log = LogFactory.getLog(ServiceDeploymentManager.class);
     
     public Service deployService (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, String tenantRange,
-    		String tenantDomain, String userName)
+    		String tenantDomain, String userName, boolean isPublic)
             throws ADCException, UnregisteredCartridgeException, ServiceAlreadyDeployedException {
 
         //check if already we have a Multitenant service deployed for the same type
@@ -319,7 +319,7 @@ public class ServiceDeploymentManager {
             deployLBCluster(type, lbDataCtxt, tenantRange);
         }
 
-        Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        Service service = new MultiTenantService(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
 
         Properties serviceClusterProperties = null;
         if (lbDataCtxt != null) {
@@ -353,17 +353,17 @@ public class ServiceDeploymentManager {
         if (lbDataCtxt.getLbCategory().equals(Constants.EXISTING_LOAD_BALANCERS)) {
             lbService = new ExistingLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
-                    tenantRange);
+                    tenantRange, false);
 
         } else if (lbDataCtxt.getLbCategory().equals(Constants.DEFAULT_LOAD_BALANCER)) {
             lbService = new DefaultLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
-                    tenantRange);
+                    tenantRange, false);
 
         } else if (lbDataCtxt.getLbCategory().equals(Constants.SERVICE_AWARE_LOAD_BALANCER)) {
             lbService = new ServiceAwareLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
-                    tenantRange);
+                    tenantRange, false);
         }
 
         if (lbService == null) {

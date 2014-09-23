@@ -31,6 +31,8 @@ public class AutoscalePolicy implements Serializable {
 	private String id;
 	private String displayName;
 	private String description;
+	private boolean isPublic;
+	private int tenantId;
 
     /**
      * Gets the value of the loadThresholds property.
@@ -127,11 +129,51 @@ public class AutoscalePolicy implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	 /**
+     * Gets the value of the isPublic property.
+     * 
+     * @return
+     *     possible object is boolean
+     *     
+     */
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+
+	 /**
+     * Sets the value of the isPublic property.
+     * 
+     * @param description
+     *     allowed object is boolean
+     *     
+     */
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	
+	/**
+     * Gets the value of the tenantId property.
+     * 
+     *          
+     */
+	public int getTenantId() {
+		return tenantId;
+	}
+
+	 /**
+     * Sets the value of the tenantId property.
+     * 
+     *     
+     */
+	public void setTenantId(int tenantId) {
+		this.tenantId = tenantId;
+	}
     
 	@Override
 	public String toString() {
 		return "ASPolicy [id=" + id + ", displayName=" + displayName
-				+ ", description=" + description + "]";
+				+ ", description=" + description + ", isPublic=" + isPublic + "]";
 	}
 	
 }

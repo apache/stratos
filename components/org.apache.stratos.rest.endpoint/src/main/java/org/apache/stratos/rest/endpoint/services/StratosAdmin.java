@@ -955,7 +955,7 @@ public class StratosAdmin extends AbstractAdmin {
        ServiceUtils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
                serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
                serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
-               serviceDefinitionBean.getTenantRange());
+               serviceDefinitionBean.getTenantRange(), serviceDefinitionBean.getIsPublic());
 
         URI url =  uriInfo.getAbsolutePathBuilder().path(serviceDefinitionBean.getServiceName()).build();
         return Response.created(url).build();

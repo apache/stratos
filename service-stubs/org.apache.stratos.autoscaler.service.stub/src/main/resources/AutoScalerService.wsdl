@@ -336,6 +336,7 @@
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax214:LoadThresholds"/>
                 </xs:sequence>
             </xs:complexType>
@@ -373,6 +374,7 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax27:Partition"/>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax28:PartitionGroup"/>
                 </xs:sequence>
             </xs:complexType>
@@ -381,8 +383,12 @@
             <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
             <xs:complexType name="Partition">
                 <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="descriptionSpecified" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="isPublicSpecified" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
                     <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
@@ -1135,22 +1141,22 @@
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
+            <http:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
