@@ -1,5 +1,6 @@
 import ConfigParser
 import logging
+import os
 
 from .. util import cartridgeagentconstants
 from .. exception.parameternotfoundexception import ParameterNotFoundException
@@ -148,8 +149,11 @@ class CartridgeAgentConfiguration:
             :return:
             """
 
+            base_working_dir = os.path.abspath(os.path.dirname(__file__)).replace("modules/config", "")
+            conf_file_path = base_working_dir + "agent.conf"
+            self.log.debug("Config file path : %r" % conf_file_path)
             self.properties = ConfigParser.SafeConfigParser()
-            self.properties.read('agent.conf')
+            self.properties.read(conf_file_path)
 
         def __read_parameter_file(self):
             """
@@ -173,6 +177,7 @@ class CartridgeAgentConfiguration:
         def read_property(self, property_key):
 
             if self.properties.has_option("agent", property_key):
+                self.log.debug("Has key: %r" % property_key)
                 temp_str = self.properties.get("agent", property_key)
                 if temp_str != "" and temp_str is not None:
                     return temp_str
