@@ -216,16 +216,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     AbstractMonitor monitor = null;
                     KubernetesClusterMonitor kubernetesClusterMonitor = null;
 
-                    if (e.isKubernetesCluster()) {
-                    	
-                    	kubernetesClusterMonitor = 
-                    			AutoscalerContext.getInstance().removeKubernetesClusterMonitor(clusterId);
-                    	if(kubernetesClusterMonitor != null) {
-                    		// destroy drools sessions
-                            log.info(String.format("Kubernetes cluster monitor has been removed successfully: [cluster] %s ",
-                                    clusterId));
-                    	}
-                    } else if (e.isLbCluster()) {
+                    if (e.isLbCluster()) {
                         DeploymentPolicy depPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicy);
                         if (depPolicy != null) {
                             List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
