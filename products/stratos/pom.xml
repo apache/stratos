@@ -303,6 +303,10 @@
         <carbon.platform.patch.version.4.2.2>4.2.2</carbon.platform.patch.version.4.2.2>
         <carbon.platform.patch.version.4.2.3>4.2.3</carbon.platform.patch.version.4.2.3>
         <carbon.platform.patch.version.4.2.4>4.2.4</carbon.platform.patch.version.4.2.4>
+	<carbon.platform.patch.version.4.2.5>4.2.5</carbon.platform.patch.version.4.2.5>
+        <carbon.platform.patch.version.4.2.6>4.2.6</carbon.platform.patch.version.4.2.6>
+        <carbon.platform.patch.version.4.2.7>4.2.7</carbon.platform.patch.version.4.2.7>
+        <carbon.platform.patch.version.4.2.8>4.2.8</carbon.platform.patch.version.4.2.8>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <opencsv.version>1.8</opencsv.version>
         <poi.version>3.0-FINAL</poi.version>
