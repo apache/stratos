@@ -28,8 +28,8 @@ import java.util.Set;
 
 public class ClusterDataHolder {
 
-    // Cluster Id map, key = service name
-    private Map<String, String> clusterIdMap;
+    // Cluster Ids map, key = service name
+    private Map<String, Set<String>> clusterIdMap;
 
     // Cluster object collection
     private Set<Cluster> clusters;
@@ -37,12 +37,12 @@ public class ClusterDataHolder {
     // payload related information
     private Set<PayloadDataHolder> payloadDataHolders;
 
-   public ClusterDataHolder (Map<String, String> clusterIdMap, Set<Cluster> clusters) {
+   public ClusterDataHolder (Map<String, Set<String>> clusterIdMap, Set<Cluster> clusters) {
        this.clusterIdMap = clusterIdMap;
        this.clusters = clusters;
    }
 
-    public Map<String, String> getClusterIdMap() {
+    public Map<String, Set<String>> getClusterIdMap() {
         return clusterIdMap;
     }
 

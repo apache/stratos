@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.domain.topology;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 public interface ParentBehavior extends Serializable {
 
@@ -31,9 +32,9 @@ public interface ParentBehavior extends Serializable {
 
     public Group getGroup (String groupName);
 
-    public Map<String, Group> getGroupMap();
+    public Map<String, Group> getAliasToGroupMap();
 
-    public Map<String, String> getClusterMap();
+    public Map<String,Set<String>> getClusterMap();
 
     public Group getGroupRecursively (String groupAlias);
 
@@ -43,13 +44,11 @@ public interface ParentBehavior extends Serializable {
 
     public DependencyOrder getDependencyOrder ();
 
-    public void addClusterId (String serviceName, String clusterId);
+//    public void addClusterId (String serviceName, String clusterId);
 
-    public void setClusterIds (Map<String,String> serviceNameToClusterId);
+    public void setClusterIds (Map<String,Set<String>> serviceNameToClusterIds);
 
-    public String getClusterId (String serviceName);
+    public Set<String> getClusterIds(String serviceName);
 
-    public Collection<String> getClusterIds ();
-
-    public Map<String, String> getClusterIdMap ();
+    public Map<String, Set<String>> getServiceNameToClusterIdsMap();
 }

@@ -252,10 +252,11 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         for (GroupContext groupCtxt : groupCtxts) {
             Group group = getGroup(appId, tenantId, key, clusterDataHolder, groupCtxt, subscribableInformation, definedGroupCtxts);
-            if(groupNameToGroup.put(group.getName(), group) != null) {
-                // Application Definition has same Group multiple times at the top-level
-                handleError("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
-            }
+            groupNameToGroup.put(group.getName(), group);
+//            if(groupNameToGroup.put(group.getName(), group) != null) {
+//                // Application Definition has same Group multiple times at the top-level
+//                handleError("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
+//            }
         }
 
         //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupNameToGroup);
@@ -447,7 +448,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                      Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
 
-        Map<String, String> clusterIdMap = new HashMap<String, String>();
+        Map<String, Set<String>> clusterIdMap = new HashMap<String, Set<String>>();
         Set<Cluster> clusters = new HashSet<Cluster>();
         Set<PayloadDataHolder> payloadDataHolders = new HashSet<PayloadDataHolder>();
 
@@ -473,11 +474,13 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
 
             Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
+            addClusterId(clusterIdMap, subscribableCtxt.getType(), cluster.getClusterId());
+            //clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId());
             clusters.add(cluster);
-            if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
-                // Application Definition has same cartridge multiple times at the top-level
-                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
-            }
+//            if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
+//                // Application Definition has same cartridge multiple times at the top-level
+//                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
+//            }
 
             payloadDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key, cluster,
                     subscribableCtxt, subscribableInfoCtxt, cartridge));
@@ -489,6 +492,19 @@ public class DefaultApplicationParser implements ApplicationParser {
         clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
 
         return clusterDataHolder;
+    }
+
+    public void addClusterId (Map<String, Set<String>> serviceNameToClusterIdsMap, String serviceName, String clusterId) {
+
+        if (serviceNameToClusterIdsMap.get(serviceName) == null) {
+            // not found, create
+            Set<String> clusterIds = new HashSet<String>();
+            clusterIds.add(clusterId);
+            serviceNameToClusterIdsMap.put(serviceName, clusterIds);
+        } else {
+            // the cluster id set already exists, update
+            serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
+        }
     }
 
     private void createClusterContext (String appId, String groupName, String serviceType, String clusterId,

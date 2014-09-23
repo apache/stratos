@@ -27,10 +27,8 @@ import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -124,15 +122,18 @@ public abstract class Monitor extends Observable implements Observer {
             if (dependency.contains("group")) {
                 startGroupMonitor(this, dependency, component);
             } else if (dependency.contains("cartridge")) {
-                String clusterId = component.getClusterId(dependency);
-                Cluster cluster = null;
-                TopologyManager.acquireReadLock();
-                cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
-                TopologyManager.releaseReadLock();
-                if (cluster != null) {
-                    startClusterMonitor(cluster);
-                } else {
-                    //TODO throw exception since Topology is inconsistent
+
+                Set<String> clusterIds = component.getClusterIds(dependency);
+                for (String clusterId : clusterIds) {
+                    Cluster cluster = null;
+                    TopologyManager.acquireReadLock();
+                    cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
+                    TopologyManager.releaseReadLock();
+                    if (cluster != null) {
+                        startClusterMonitor(cluster);
+                    } else {
+                        //TODO throw exception since Topology is inconsistent
+                    }
                 }
             }
         } else {

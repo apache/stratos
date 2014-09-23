@@ -19,9 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Group implements ParentBehavior {
 
@@ -36,10 +34,10 @@ public class Group implements ParentBehavior {
     private String autoscalingPolicy;
     // Dependency Order
     private DependencyOrder dependencyOrder;
-    // Sub Group Map, key = Group.name
-    private Map<String, Group> groupMap;
+    // Sub Group Map, key = Group.alias
+    private Map<String, Group> aliasToGroupMap;
     // Cluster id map, key = service name
-    private Map<String, String> clusterIdMap;
+    private Map<String, Set<String>> serviceNameToClusterIdsMap;
     // Group status
     private Status status;
 
@@ -47,52 +45,52 @@ public class Group implements ParentBehavior {
         this.name = name;
         this.alias = alias;
         this.status = Status.Created;
-        groupMap = new HashMap<String, Group>();
-        clusterIdMap = new HashMap<String, String>();
+        aliasToGroupMap = new HashMap<String, Group>();
+        serviceNameToClusterIdsMap = new HashMap<String, Set<String>>();
     }
 
     @Override
     public void addGroup(Group group) {
-        groupMap.put(group.name, group);
+        aliasToGroupMap.put(group.name, group);
     }
 
     @Override
     public void setGroups(Map<String, Group> groupNameToGroup) {
-        groupMap.putAll(groupNameToGroup);
+        aliasToGroupMap.putAll(groupNameToGroup);
     }
 
     @Override
     public Group getGroup(String groupName) {
-        return groupMap.get(groupName);
+        return aliasToGroupMap.get(groupName);
     }
 
     @Override
-    public Map<String, Group> getGroupMap() {
-        return this.groupMap;
+    public Map<String, Group> getAliasToGroupMap() {
+        return this.aliasToGroupMap;
     }
 
     @Override
-    public Map<String, String> getClusterMap() {
-        return this.clusterIdMap;
+    public Map<String,Set<String>> getClusterMap() {
+        return this.serviceNameToClusterIdsMap;
     }
 
     @Override
     public Group getGroupRecursively(String groupAlias) {
 
-        return travereAndCheckRecursively(groupMap.values(), groupAlias);
+        return travereAndCheckRecursively(aliasToGroupMap, groupAlias);
     }
 
-    private Group travereAndCheckRecursively (Collection<Group> groups, String groupAlias) {
+    private Group travereAndCheckRecursively (Map<String,Group> aliasToGroupMap, String groupAlias) {
 
-        for (Group group : groups) {
-            // check if alias is equal, if so, return
-            if (groupAlias.equals(group.getAlias())) {
-                return group;
-            } else {
-                // check if this Group has nested sub Groups. If so, traverse them as well
-                if (group.getGroups() != null) {
-                    return travereAndCheckRecursively(group.getGroups(), groupAlias);
+        if (aliasToGroupMap.containsKey(groupAlias)) {
+            synchronized (aliasToGroupMap) {
+                if (aliasToGroupMap.containsKey(groupAlias)) {
+                    return aliasToGroupMap.get(groupAlias);
                 }
+            }
+        } else {
+            for (Group group : aliasToGroupMap.values()) {
+                travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
             }
         }
 
@@ -101,7 +99,7 @@ public class Group implements ParentBehavior {
 
     @Override
     public Collection<Group> getGroups() {
-        return groupMap.values();
+        return aliasToGroupMap.values();
     }
 
     @Override
@@ -114,28 +112,34 @@ public class Group implements ParentBehavior {
         return dependencyOrder;
     }
 
+//    @Override
+//    public void addClusterId(String serviceName, String clusterId) {
+//
+//        synchronized (serviceNameToClusterIdsMap) {
+//            if (serviceNameToClusterIdsMap.get(serviceName) == null) {
+//                // not found, create
+//                Set<String> clusterIds = new HashSet<String>();
+//                clusterIds.add(clusterId);
+//                serviceNameToClusterIdsMap.put(serviceName, clusterIds);
+//            } else {
+//                // the cluster id set already exists, update
+//                serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
+//            }
+//        }
+//    }
+
     @Override
-    public void addClusterId(String serviceName, String clusterId) {
-        clusterIdMap.put(serviceName, clusterId);
+    public void setClusterIds(Map<String, Set<String>> serviceNameToClusterIds) {
+        serviceNameToClusterIdsMap.putAll(serviceNameToClusterIds);
     }
 
     @Override
-    public void setClusterIds(Map<String, String> serviceNameToClusterId) {
-        clusterIdMap.putAll(serviceNameToClusterId);
+    public Set<String> getClusterIds(String serviceName) {
+        return serviceNameToClusterIdsMap.get(serviceName);
     }
 
-    @Override
-    public String getClusterId(String serviceName) {
-        return clusterIdMap.get(serviceName);
-    }
-
-    @Override
-    public Collection<String> getClusterIds() {
-        return clusterIdMap.values();
-    }
-
-    public Map<String, String> getClusterIdMap () {
-        return clusterIdMap;
+    public Map<String, Set<String>> getServiceNameToClusterIdsMap() {
+        return serviceNameToClusterIdsMap;
     }
 
     public String getName() {

@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This will be used to evaluate the status of a group
@@ -105,8 +106,8 @@ public class StatusChecker {
         Runnable exGroup = new Runnable() {
             public void run() {
                 Application application = TopologyManager.getTopology().getApplication(appId);
-                Map<String, String> clusterIds = application.getClusterMap();
-                Map<String, Group> groups = application.getGroupMap();
+                Map<String, Set<String>> clusterIds = application.getClusterMap();
+                Map<String, Group> groups = application.getAliasToGroupMap();
                 updateChildStatus(clusterId, groups, clusterIds, application);
             }
         };
@@ -154,7 +155,7 @@ public class StatusChecker {
     }
 
 
-    private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, String> clusterIds, ParentBehavior parent) {
+    private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, Set<String>> clusterIds, ParentBehavior parent) {
         boolean groupActive = false;
         boolean clustersActive = false;
         boolean groupsActive = false;
@@ -185,7 +186,7 @@ public class StatusChecker {
         } else {
             if(!groups.isEmpty()) {
                 for(Group group: groups.values()) {
-                    return updateChildStatus(id, group.getGroupMap(), group.getClusterMap(), group);
+                    return updateChildStatus(id, group.getAliasToGroupMap(), group.getClusterMap(), group);
 
                 }
             }
@@ -206,14 +207,16 @@ public class StatusChecker {
 
     }
 
-    private boolean getClusterStatus(Map<String, String> clusterIds) {
+    private boolean getClusterStatus(Map<String, Set<String>> clusterIds) {
         boolean clusterActiveStatus = false;
-        for(Map.Entry<String, String> clusterId: clusterIds.entrySet()) {
-            Service service = TopologyManager.getTopology().getService(clusterId.getKey());
-            if(service.getCluster(clusterId.getValue()).getStatus().equals(ClusterStatus.Active)) {
-                clusterActiveStatus = true;
-            } else {
-                clusterActiveStatus = false;
+        for(Map.Entry<String, Set<String>> clusterIdsEntry: clusterIds.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterIdsEntry.getKey());
+            for (String clusterId : clusterIdsEntry.getValue()) {
+                if(service.getCluster(clusterId).getStatus().equals(ClusterStatus.Active)) {
+                    clusterActiveStatus = true;
+                } else {
+                    clusterActiveStatus = false;
+                }
             }
         }
         return clusterActiveStatus;

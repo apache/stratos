@@ -46,6 +46,7 @@ import org.apache.stratos.messaging.util.Constants;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * this is to manipulate the received events by cloud controller
@@ -659,14 +660,16 @@ public class TopologyBuilder {
             } else {
                 Application application = topology.getApplication(applicationId);
                 // remove clusters
-                for (Map.Entry<String,String> clusterIdMapEntry : application.getClusterIdMap().entrySet()) {
-                    Service service = topology.getService(clusterIdMapEntry.getKey());
-                    service.removeCluster(clusterIdMapEntry.getValue());
+                for (Map.Entry<String, Set<String>> serviceNameToClusterIdEntry:
+                        application.getServiceNameToClusterIdsMap().entrySet()) {
+                    Service service = topology.getService(serviceNameToClusterIdEntry.getKey());
+                    for (String clusterId : serviceNameToClusterIdEntry.getValue()) {
+                        service.removeCluster(clusterId);
+                    }
                 }
 
                 // remove application
                 topology.removeApplication(applicationId);
-
                 TopologyManager.updateTopology(topology);
 
                 log.info("Removed application [ " + applicationId + " ] from Topology");
