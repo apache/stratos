@@ -1,9 +1,10 @@
-from git import *
-import gitrepository
 import logging
 
-from ...config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ...util import cartridgeagentutils
+from git import *
+
+from gitrepository import GitRepositoryContext
+from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from ... util import cartridgeagentutils
 
 
 class AgentGitHandler:
@@ -78,7 +79,7 @@ class AgentGitHandler:
 
     @staticmethod
     def create_git_repo_context(repo_info):
-        repo_context = gitrepository.GitRepositoryContext()
+        repo_context = GitRepositoryContext()
         repo_context.tenant_id = repo_info.tenant_id
         repo_context.local_repo_path = AgentGitHandler.get_repo_path_for_tenant(
             repo_info.tenant_id, repo_info.repo_path, repo_info.is_multitenant)

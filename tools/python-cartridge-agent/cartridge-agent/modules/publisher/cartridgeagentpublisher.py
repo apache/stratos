@@ -1,8 +1,10 @@
 import logging
-from ..event.instance.status.events import *
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import cartridgeagentconstants
+
 import paho.mqtt.publish as publish
+
+from .. event.instance.status.events import *
+from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from .. util import cartridgeagentconstants
 
 
 logging.basicConfig(level=logging.DEBUG)
