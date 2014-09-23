@@ -51,7 +51,9 @@ public class MemberContextToKubernetesService implements Function<MemberContext,
         service.setApiVersion("v1beta1");
         service.setId(getCompatibleId(clusterId));
         service.setKind("Service");
-        service.setPort(kubClusterContext.getAnAvailableHostPort());
+        int hostPort = kubClusterContext.getAnAvailableHostPort();
+        clusterContext.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, hostPort);
+		service.setPort(hostPort);
         Selector selector = new Selector();
         selector.setName(clusterId);
         service.setSelector(selector);
