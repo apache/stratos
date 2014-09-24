@@ -79,7 +79,7 @@ public class HAProxyConfigWriter {
         frontEndHttpsAdded = false;
 
         for (Service service : topology.getServices()) {
-            if (service.getServiceName().equals(HAProxyContext.getInstance().getServiceName())) {
+            if (service.getServiceName().equals("haproxy")) {
                 for (Cluster cluster : service.getClusters()) {
                     if (cluster.getClusterId().equals(HAProxyContext.getInstance().getClusterId())) {
                         if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER) != null) && (cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF) != null)) {
@@ -88,8 +88,7 @@ public class HAProxyConfigWriter {
                                 loadBalancedServiceType = cluster.getProperties().getProperty(Constants.LB_SERVICE_TYPE);
                             break;
                         } else {
-                            loadBalancerType = Constants.STATIC_LOAD_BALANCER;
-                            log.debug("Static load balancer");
+                            loadBalancerType = cluster.getProperties().getProperty(Constants.STATIC_LOAD_BALANCER);
                             break;
                         }
                     }
@@ -102,7 +101,7 @@ public class HAProxyConfigWriter {
                 if (cluster.getProperties().getProperty(Constants.LOAD_BALANCER) == null) {
                     if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF) != null)) {
                         if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF).equals(Constants.NO_LOAD_BALANCER)) &&
-                                Constants.STATIC_LOAD_BALANCER.equals(loadBalancerType) && cluster.getServiceName().equals(HAProxyContext.getInstance().getLbserviceType()))  {
+                                Constants.STATIC_LOAD_BALANCER.equals(loadBalancerType)) {
                             createConfig(service, cluster);
                         } else if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF).equals(Constants.DEFAULT_LOAD_BALANCER)) &&
                                 Constants.DEFAULT_LOAD_BALANCER.equals(loadBalancerType)) {
