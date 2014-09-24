@@ -44,7 +44,7 @@ public class MetaDataServiceClientSample {
 
 
     public MetaDataServiceClientSample() throws RestClientException {
-        initialize();
+        //initialize();
     }
 
     private void initialize() throws RestClientException {
