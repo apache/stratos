@@ -39,7 +39,9 @@ properties="-Dhaproxy.private.ip=127.0.0.1
             -Dthrift.receiver.ip=127.0.0.1
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=network-partition-1
-            -Dstratos.messaging.topology.member.filter="
+            -Dcluster.id=cluster
+            -Dcep.stats.publisher.enabled=true"
+
 
 # Uncomment below line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"

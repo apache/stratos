@@ -34,4 +34,15 @@ public class Constants {
     public static final String THRIFT_RECEIVER_IP = "thrift.receiver.ip";
     public static final String THRIFT_RECEIVER_PORT = "thrift.receiver.port";
     public static final String NETWORK_PARTITION_ID = "network.partition.id";
+    public static final String CLUSTER_ID = "cluster.id";
+
+    public static final String LOAD_BALANCER = "load.balancer";
+    public static final String LOAD_BALANCER_REF = "load.balancer.ref";
+
+    public static final String LB_SERVICE_TYPE ="load.balanced.service.type";
+
+    public static final String DEFAULT_LOAD_BALANCER ="default.load.balancer";
+    public static final String STATIC_LOAD_BALANCER ="static.load.balancer";
+    public static final String SERVICE_LOAD_BALANCER = "service.aware.load.balancer";
+    public static final String NO_LOAD_BALANCER = "no.load.balancer";
 }

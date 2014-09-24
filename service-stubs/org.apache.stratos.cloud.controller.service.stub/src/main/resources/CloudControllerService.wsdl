@@ -186,14 +186,14 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="startContainer">
+            <xs:element name="startContainers">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="memberContext" nillable="true" type="ax223:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="startContainerResponse">
+            <xs:element name="startContainersResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax223:MemberContext"/>
@@ -336,7 +336,6 @@
                     <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesCluster" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax229:Properties"/>
@@ -475,6 +474,15 @@
     <wsdl:message name="CloudControllerServiceInvalidCartridgeTypeException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeTypeException"/>
     </wsdl:message>
+    <wsdl:message name="startContainersRequest">
+        <wsdl:part name="parameters" element="ns:startContainers"/>
+    </wsdl:message>
+    <wsdl:message name="startContainersResponse">
+        <wsdl:part name="parameters" element="ns:startContainersResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceUnregisteredCartridgeException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"/>
+    </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateInstance"/>
     </wsdl:message>
@@ -486,9 +494,6 @@
     </wsdl:message>
     <wsdl:message name="registerServiceResponse">
         <wsdl:part name="parameters" element="ns:registerServiceResponse"/>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceUnregisteredCartridgeException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"/>
     </wsdl:message>
     <wsdl:message name="deployCartridgeDefinitionRequest">
         <wsdl:part name="parameters" element="ns:deployCartridgeDefinition"/>
@@ -547,12 +552,6 @@
     <wsdl:message name="getClusterContextResponse">
         <wsdl:part name="parameters" element="ns:getClusterContextResponse"/>
     </wsdl:message>
-    <wsdl:message name="startContainerRequest">
-        <wsdl:part name="parameters" element="ns:startContainer"/>
-    </wsdl:message>
-    <wsdl:message name="startContainerResponse">
-        <wsdl:part name="parameters" element="ns:startContainerResponse"/>
-    </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="validatePartition">
             <wsdl:input message="ns:validatePartitionRequest" wsaw:Action="urn:validatePartition"/>
@@ -564,6 +563,11 @@
             <wsdl:output message="ns:validateDeploymentPolicyResponse" wsaw:Action="urn:validateDeploymentPolicyResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidPartitionException" name="CloudControllerServiceInvalidPartitionException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidPartitionException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:validateDeploymentPolicyCloudControllerServiceInvalidCartridgeTypeException"/>
+        </wsdl:operation>
+        <wsdl:operation name="startContainers">
+            <wsdl:input message="ns:startContainersRequest" wsaw:Action="urn:startContainers"/>
+            <wsdl:output message="ns:startContainersResponse" wsaw:Action="urn:startContainersResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startContainersCloudControllerServiceUnregisteredCartridgeException"/>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
@@ -622,11 +626,6 @@
             <wsdl:input message="ns:getClusterContextRequest" wsaw:Action="urn:getClusterContext"/>
             <wsdl:output message="ns:getClusterContextResponse" wsaw:Action="urn:getClusterContextResponse"/>
         </wsdl:operation>
-        <wsdl:operation name="startContainer">
-            <wsdl:input message="ns:startContainerRequest" wsaw:Action="urn:startContainer"/>
-            <wsdl:output message="ns:startContainerResponse" wsaw:Action="urn:startContainerResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startContainerCloudControllerServiceUnregisteredCartridgeException"/>
-        </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
@@ -657,18 +656,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="registerService">
-            <soap:operation soapAction="urn:registerService" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <soap:operation soapAction="urn:terminateInstance" style="document"/>
             <wsdl:input>
@@ -679,6 +666,30 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="startContainers">
+            <soap:operation soapAction="urn:startContainers" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="registerService">
+            <soap:operation soapAction="urn:registerService" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
@@ -792,18 +803,6 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="startContainer">
-            <soap:operation soapAction="urn:startContainer" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
@@ -834,18 +833,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="registerService">
-            <soap12:operation soapAction="urn:registerService" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <soap12:operation soapAction="urn:terminateInstance" style="document"/>
             <wsdl:input>
@@ -856,6 +843,30 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidCartridgeTypeException">
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="startContainers">
+            <soap12:operation soapAction="urn:startContainers" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="registerService">
+            <soap12:operation soapAction="urn:registerService" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
+                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
@@ -969,18 +980,6 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="startContainer">
-            <soap12:operation soapAction="urn:startContainer" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
-                <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
         <http:binding verb="POST"/>
@@ -1002,6 +1001,21 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="terminateInstance">
+            <http:operation location="terminateInstance"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="startContainers">
+            <http:operation location="startContainers"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <http:operation location="registerService"/>
             <wsdl:input>
@@ -1010,12 +1024,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="terminateInstance">
-            <http:operation location="terminateInstance"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="deployCartridgeDefinition">
             <http:operation location="deployCartridgeDefinition"/>
@@ -1091,15 +1099,6 @@
         </wsdl:operation>
         <wsdl:operation name="getClusterContext">
             <http:operation location="getClusterContext"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="startContainer">
-            <http:operation location="startContainer"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

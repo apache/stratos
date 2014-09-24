@@ -257,7 +257,7 @@ public class CloudControllerClient {
             memberContextProps.addProperties(kubernetesClusterPortRangeProps);
             member.setProperties(memberContextProps);
             long startTime = System.currentTimeMillis();
-            MemberContext memberContext = stub.startContainer(member);
+            MemberContext memberContext = stub.startContainers(member);
             
             if(log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();

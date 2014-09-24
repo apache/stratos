@@ -32,8 +32,6 @@ import org.apache.stratos.cartridge.agent.extensions.DefaultExtensionHandler;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
-import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
-import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
@@ -48,30 +46,18 @@ import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsRemovedEv
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
-import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsAddedEventListener;
-import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsRemovedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Cartridge agent runnable.
@@ -252,64 +238,6 @@ public class CartridgeAgent implements Runnable {
         eventReceiverThread.start();
         if(log.isInfoEnabled()) {
             log.info("Instance notifier event message receiver thread started");
-        }
-
-        if(log.isDebugEnabled()) {
-            log.debug("Starting tenant event message receiver thread");
-        }
-        TenantEventReceiver tenantEventReceiver = new TenantEventReceiver();
-
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent) event;
-                    ExtensionUtils.executeSubscriptionDomainAddedExtension(
-                            subscriptionDomainAddedEvent.getTenantId(),
-                            findTenantDomain(subscriptionDomainAddedEvent.getTenantId()),
-                            subscriptionDomainAddedEvent.getDomainName(),
-                            subscriptionDomainAddedEvent.getApplicationContext());
-                }
-                catch (Exception e) {
-                    if(log.isErrorEnabled()) {
-                        log.error("Could not process subscription domain added event", e);
-                    }
-                }
-            }
-        });
-
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent) event;
-                    ExtensionUtils.executeSubscriptionDomainRemovedExtension(
-                            subscriptionDomainRemovedEvent.getTenantId(),
-                            findTenantDomain(subscriptionDomainRemovedEvent.getTenantId()),
-                            subscriptionDomainRemovedEvent.getDomainName());
-                }
-                catch (Exception e) {
-                    if(log.isErrorEnabled()) {
-                        log.error("Could not process subscription domain removed event", e);
-                    }
-                }
-            }
-        });
-
-        Thread tenantEventReceiverThread = new Thread(tenantEventReceiver);
-        tenantEventReceiverThread.start();
-        if(log.isInfoEnabled()) {
-            log.info("Tenant event message receiver thread started");
-        }
-        
-        Thread instanceNotifierEventReceiverThread = new Thread(instanceNotifierEventReceiver);
-        instanceNotifierEventReceiverThread.start();
-        if (log.isInfoEnabled()) {
-            log.info("Instance notifier event message receiver thread started");
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting tenant event message receiver thread");
         }
 
         // Wait until message receiver is subscribed to the topic to send the instance started event
@@ -664,20 +592,4 @@ public class CartridgeAgent implements Runnable {
     public void terminate() {
         terminated = true;
     }
-
-            private String findTenantDomain(int tenantId) {
-                try {
-                    TenantManager.acquireReadLock();
-                    Tenant tenant = TenantManager.getInstance().getTenant(tenantId);
-                    if(tenant == null) {
-                        throw new RuntimeException(String.format("Tenant could not be found: [tenant-id] %d", tenantId));
-                    }
-                    return tenant.getTenantDomain();
-                }
-                finally {
-                    TenantManager.releaseReadLock();
-                }
-            }
-
-
 }

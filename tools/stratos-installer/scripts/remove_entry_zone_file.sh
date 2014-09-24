@@ -22,6 +22,15 @@
 zone_file=$2
 subdomain=$1
 
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform  
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+else
+    # Do something else under some other platform
+    SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
+fi
+
 # check the file
 if [ -f {$zone_file} ]; then
 	echo "Error: zone does not exist"
@@ -67,7 +76,7 @@ if [ $serialdate = $date ]
 fi
 
 echo "Adding subdomain $1 and ip $2 to $3"
-sed -i "s/.*Serial.*/ \t\t\t\t$newserial ; Serial./" $zone_file
+${SED} -i "s/.*Serial.*/ \t\t\t\t$newserial ; Serial./" $zone_file
 
 
 
