@@ -4,7 +4,6 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.annotation.AuthorizationAction;
-import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
 import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.exception.RestAPIException;
 import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
@@ -39,45 +38,7 @@ public class MetaDataAdmin {
 		conf = ConfUtil.getInstance(null).getConfiguration();
 	}
 
-	@POST
-	@Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
-	public String addCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
-	                                          @PathParam("cartridgetype") String cartridgeType,
-	                                          CartridgeMetaData cartridgeMetaData) throws Exception {
-
-		conf = ConfUtil.getInstance(null).getConfiguration();
-
-		String registryType =
-		                      conf.getString("metadataservice.govenanceregistrytype",
-		                                     defaultRegType);
-		return DataRegistryFactory.getDataRegistryFactory(registryType)
-		                          .addCartridgeMetaDataDetails(applicationName, cartridgeType,
-		                                                          cartridgeMetaData);
-
-	}
-
-	@GET
-	@Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
-	public String getCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
-	                                          @PathParam("cartridgetype") String cartridgeType)
-
-	throws Exception {
-		conf = ConfUtil.getInstance(null).getConfiguration();
-		String registryType =
-		                      conf.getString("metadataservice.govenanceregistrytype",
-		                                     defaultRegType);
-		return DataRegistryFactory.getDataRegistryFactory(registryType)
-		                          .getCartridgeMetaDataDetails(applicationName, cartridgeType);
-
-	}
-
-	public boolean removeCartridgeMetaDataDetails(String applicationName, String cartridgeType)
+    public boolean removeCartridgeMetaDataDetails(String applicationName, String cartridgeType)
 	                                                                                           throws Exception {
 		conf = ConfUtil.getInstance(null).getConfiguration();
 		String registryType =
