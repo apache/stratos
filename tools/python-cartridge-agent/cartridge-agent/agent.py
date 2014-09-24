@@ -4,14 +4,16 @@ import threading
 import time
 
 from modules.config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from modules.util import *
+from modules.util import cartridgeagentconstants, cartridgeagentutils
 from modules.exception.parameternotfoundexception import ParameterNotFoundException
 from modules.subscriber.eventsubscriber import EventSubscriber
 from modules.extensions.defaultextensionhandler import DefaultExtensionHandler
 from modules.publisher import cartridgeagentpublisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
+from modules.event.topology.events import *
 from modules.tenant.tenantcontext import *
+from modules.topology.topologycontext import *
 
 
 class CartridgeAgent(threading.Thread):
@@ -28,7 +30,8 @@ class CartridgeAgent(threading.Thread):
 
         self.extension_handler = DefaultExtensionHandler()
 
-        self.__complete_tenant_event_received = False
+        self.__tenant_context_initialized = False
+        self.__topology_context_initialized = False
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -147,7 +150,18 @@ class CartridgeAgent(threading.Thread):
         raise NotImplementedError
 
     def on_complete_topology(self, msg):
-        raise NotImplementedError
+        if not self.__topology_context_initialized:
+            self.log.debug("Complete topology event received")
+            event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
+            TopologyContext.update(event_obj.topology)
+            self.__topology_context_initialized = True
+            try:
+                self.extension_handler.onCompleteTopologyEvent(event_obj)
+            except:
+                self.log.exception("Error processing complete topology event")
+        else:
+            self.log.info("Complete topology event updating task disabled")
+
 
     def on_member_started(self, msg):
         raise NotImplementedError
@@ -191,14 +205,14 @@ class CartridgeAgent(threading.Thread):
         # )
 
     def on_complete_tenant(self, msg):
-        if not self.__complete_tenant_event_received:
+        if not self.__tenant_context_initialized:
             self.log.debug("Complete tenant event received")
             event_obj = CompleteTenantEvent.create_from_json(msg.payload)
             TenantContext.update(event_obj.tenants)
 
             try:
                 self.extension_handler.onCompleteTenantEvent(event_obj)
-                self.__complete_tenant_event_received = True
+                self.__tenant_context_initialized = True
             except:
                 self.log.exception("Error processing complete tenant event")
         else:
