@@ -37,6 +37,10 @@ public class MetaDataClientConfig {
 
     private String dataExtractorClass;
 
+    private String username;
+
+    private String password;
+
     private XMLConfiguration config;
 
     private static volatile MetaDataClientConfig metaDataClientConfig;
@@ -61,9 +65,21 @@ public class MetaDataClientConfig {
                     MetaDataClientConstants.METADATA_SERVICE_BASE_URL  + " ] in the config file");
         }
 
+        username = config.getString(MetaDataClientConstants.METADATA_SERVICE_USERNAME);
+        if (username == null) {
+            throw new RuntimeException("Meta data service username not defined in the configuration");
+        }
+
+        password = config.getString(MetaDataClientConstants.METADATA_SERVICE_PASSWORD);
+        if (password == null) {
+            throw new RuntimeException("Meta data service password not defined in the configuration");
+        }
+
         dataExtractorClass = config.getString(MetaDataClientConstants.METADATA_CLIENT_DATA_EXTRACTOR_CLASS);
         if (dataExtractorClass == null) {
-            log.info("No custom Data Extractor class detected in the configuration");
+            if(log.isDebugEnabled()) {
+                log.debug("No custom Data Extractor class detected in the configuration");
+            }
         }
     }
 
@@ -108,13 +124,23 @@ public class MetaDataClientConfig {
         return dataExtractorClass;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
 
 /*
 Sample Configuration file:
 
     <configuration>
         <metadataService>
-            <baseUrl>xx.xx.xx.xx</baseUrl>
+            <baseUrl>localhost</baseUrl>
+            <username>admin</username>
+            <password>admin</password>
         </metadataService>
         <metadataClient>
             <dataExtractorClass>org.foo.MyDataExtractor</dataExtractorClass>
