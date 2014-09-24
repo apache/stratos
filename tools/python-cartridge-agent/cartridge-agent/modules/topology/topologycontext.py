@@ -53,6 +53,7 @@ class Service:
         self.service_type = service_type
         self.cluster_id_cluster_map = {}
         self.port_map = {}
+        self.properties = {}
 
     def get_clusters(self):
         return self.cluster_id_cluster_map.values()
