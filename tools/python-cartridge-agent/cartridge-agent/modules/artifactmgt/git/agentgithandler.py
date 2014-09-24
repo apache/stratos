@@ -1,11 +1,13 @@
 import logging
+from threading import current_thread
 
 from git import *
 
 from gitrepository import GitRepository
 from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ... util import cartridgeagentutils
-
+from ... artifactmgt.repositoryinformation import RepositoryInformation
+from ... extensions.defaultextensionhandler import DefaultExtensionHandler
 
 class AgentGitHandler:
     logging.basicConfig(level=logging.DEBUG)
@@ -16,6 +18,7 @@ class AgentGitHandler:
     TENANT_REPO_PATH = "/repository/tenants/"
 
     cartridge_agent_config = CartridgeAgentConfiguration()
+    extension_handler = DefaultExtensionHandler()
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
@@ -39,9 +42,6 @@ class AgentGitHandler:
                         AgentGitHandler.pull(repo_context)
                     else:
                         repo_context = None
-
-            #TODO: handle conflicts and errors using repo.git.pull(), status(), checkout() outputs
-
         else:
             #subscribing run.. need to clone
             subscribe_run = True
@@ -93,25 +93,82 @@ class AgentGitHandler:
 
     @staticmethod
     def pull(repo_context):
-        #create repo object
         repo = Repo(repo_context.local_repo_path)
-        repo.remotes.origin.pull()
+        try:
+            repo.git.checkout("master")
+            pull_output = repo.git.pull()
+            if "Already up-to-date." not in pull_output:
+                AgentGitHandler.log.debug("Artifacts were updated as a result of the pull operation, thread: %r - %r" % (current_thread().getName(), current_thread().ident))
 
-        # TODO: handle conflict errors
+            AgentGitHandler.extension_handler.on_artifact_update_scheduler_event(repo_context.tenant_id)
+        except GitCommandError as ex:
+            if "fatal: Could not read from remote repository." in ex:
+                #invalid configuration, need to delete and reclone
+                AgentGitHandler.log.warn("Git pull unsuccessful for tenant %r, invalid configuration. %r" % (repo_context.tenant_id, ex))
+                cartridgeagentutils.delete_folder_tree(repo_context.local_repo_path)
+                AgentGitHandler.clone(RepositoryInformation(
+                    repo_context.repo_url,
+                    repo_context.repo_username,
+                    repo_context.repo_password,
+                    repo_context.local_repo_path,
+                    repo_context.tenant_id,
+                    repo_context.is_multitenant,
+                    repo_context.commit_enabled
+                ))
+                AgentGitHandler.extension_handler.on_artifact_update_scheduler_event(repo_context.tenant_id)
+            elif "error: Your local changes to the following files would be overwritten by merge:" in ex:
+                #conflict error
+                AgentGitHandler.log.warn("Git pull unsuccessful for tenant %r, conflicts detected." % repo_context.tenant_id)
+                #raise ex
 
+                """
+                0:'git pull' returned exit status 1: error: Your local changes to the following files would be overwritten by merge:
+                1:    README.md
+                2:    index.php
+                3:Please, commit your changes or stash them before you can merge.
+                4:Aborting
+                """
+                conflict_list = []
+                files_arr = str(ex).split("\n")
+                for file_index in range (1, len(files_arr)-2):
+                    file_name = files_arr[file_index].strip()
+                    conflict_list.append(file_name)
+                    AgentGitHandler.log.debug("Added the file path %r to checkout from the remote repository" % file_name)
+
+                AgentGitHandler.checkout_individually(conflict_list, repo)
+            elif "fatal: unable to access " in ex:
+                #transport error
+                AgentGitHandler.log.exception("Accessing remote git repository %r failed for tenant %r" % (repo_context.repo_url, repo_context.tenant_id))
+            else:
+                AgentGitHandler.log.exception("Git pull operation for tenant %r failed" % repo_context.tenant_id)
+
+    @staticmethod
+    def checkout_individually(conflict_list, repo):
+        try:
+            for conflicted_file in conflict_list:
+                repo.git.checkout(conflicted_file)
+                AgentGitHandler.log.info("Checked out the conflicting files from the remote repository successfully")
+        except:
+            AgentGitHandler.log.exception("Checking out artifacts from index failed")
 
     @staticmethod
     def clone(repo_info):
+        #TODO: credential management
         repo_context = None
         try:
             repo_context = AgentGitHandler.create_git_repo_context(repo_info)
+            #create the directory if it doesn't exist
+            if not os.path.isdir(repo_context.local_repo_path):
+                cartridgeagentutils.create_dir(repo_context.local_repo_path)
+
             repo = Repo.clone_from(repo_context.repo_url, repo_context.local_repo_path)
+
             repo_context.cloned = True
             repo_context.repo = repo
             AgentGitHandler.add_repo_context(repo_context)
             AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
         except GitCommandError as ex:
-            if "remote: Repository not found." in ex.message:
+            if "remote: Repository not found." in ex:
                 AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
                 #GitPython deletes the target folder if remote not found
                 cartridgeagentutils.create_dir(repo_context.local_repo_path)
@@ -145,6 +202,8 @@ class AgentGitHandler:
         repo_context.repo_url = repo_info.repo_url
         repo_context.repo_username = repo_info.repo_username
         repo_context.repo_password = repo_info.repo_password
+        repo_context.is_multitenant = repo_info.is_multitenant
+        repo_context.commit_enabled = repo_info.commit_enabled
 
         # TODO: push
         # push not implemented
