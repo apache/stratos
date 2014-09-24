@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -124,17 +125,19 @@ public abstract class Monitor extends Observable implements Observer {
             if (dependency.contains("group")) {
                 startGroupMonitor(this, dependency.substring(6), component);
             } else if (dependency.contains("cartridge")) {
-                /*String clusterId = component.findClusterId(dependency.substring(10));
-                    Cluster cluster = null;
-                    TopologyManager.acquireReadLock();
+                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceName = clusterDataHolder.getServiceType();
+                Cluster cluster = null;
+                TopologyManager.acquireReadLock();
+                cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
+                TopologyManager.releaseReadLock();
+                if (cluster != null) {
+                    startClusterMonitor(cluster);
+                } else {
+                    //TODO throw exception since Topology is inconsistent
+                }
 
-                    cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
-                    TopologyManager.releaseReadLock();
-                    if (cluster != null) {
-                        startClusterMonitor(cluster);
-                    } else {
-                        //TODO throw exception since Topology is inconsistent
-                    }*/
             }
         } else {
             //all the groups/clusters have been started and waiting for activation

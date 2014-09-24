@@ -40,8 +40,8 @@ public class Application implements ParentBehavior {
     private DependencyOrder dependencyOrder;
     // Group Map, key = Group.alias
     private Map<String, Group> aliasToGroupMap;
-    // Cluster Id map, key = service name
-    private Map<String, Set<String>> serviceNameToClusterIdsMap;
+    // Cluster Id map, key = subscription alias for the cartridge type
+    private Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Application status
     private Status status;
 
@@ -50,7 +50,7 @@ public class Application implements ParentBehavior {
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.status = Status.Created;
         aliasToGroupMap = new HashMap<String, Group>();
-        serviceNameToClusterIdsMap = new HashMap<String, Set<String>>();
+        aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
 
     @Override
@@ -74,8 +74,8 @@ public class Application implements ParentBehavior {
     }
 
     @Override
-    public Map<String, Set<String>> getClusterMap() {
-        return this.serviceNameToClusterIdsMap;
+    public Map<String, ClusterDataHolder> getClusterDataMap() {
+        return this.aliasToClusterDataMap;
     }
 
     @Override
@@ -116,6 +116,16 @@ public class Application implements ParentBehavior {
         return dependencyOrder;
     }
 
+    @Override
+    public void setClusterData(Map<String, ClusterDataHolder> aliasToClusterData) {
+        this.aliasToClusterDataMap.putAll(aliasToClusterData);
+    }
+
+    @Override
+    public ClusterDataHolder getClusterData(String alias) {
+        return aliasToClusterDataMap.get(alias);
+    }
+
 //    @Override
 //    public void addClusterId(String serviceName, String clusterId) {
 //
@@ -131,20 +141,6 @@ public class Application implements ParentBehavior {
 //            }
 //        }
 //    }
-
-    @Override
-    public void setClusterIds(Map<String, Set<String>> serviceNameToClusterIds) {
-        serviceNameToClusterIdsMap.putAll(serviceNameToClusterIds);
-    }
-
-    @Override
-    public Set<String> getClusterIds(String serviceName) {
-        return serviceNameToClusterIdsMap.get(serviceName);
-    }
-
-    public Map<String, Set<String>> getServiceNameToClusterIdsMap() {
-        return serviceNameToClusterIdsMap;
-    }
 
     public String getId() {
         return id;

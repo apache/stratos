@@ -672,11 +672,10 @@ public class TopologyBuilder {
             } else {
                 Application application = topology.getApplication(applicationId);
                 // remove clusters
-                for (Map.Entry<String, Set<String>> serviceNameToClusterIdEntry:
-                        application.getServiceNameToClusterIdsMap().entrySet()) {
-                    Service service = topology.getService(serviceNameToClusterIdEntry.getKey());
-                    for (String clusterId : serviceNameToClusterIdEntry.getValue()) {
-                        service.removeCluster(clusterId);
+                for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : application.getClusterDataMap().entrySet()) {
+                    Service service = topology.getService(clusterDataHolderEntry.getValue().getServiceType());
+                    if (service != null) {
+                        service.removeCluster(clusterDataHolderEntry.getValue().getClusterId());
                     }
                 }
 

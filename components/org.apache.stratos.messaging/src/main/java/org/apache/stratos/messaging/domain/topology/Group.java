@@ -36,8 +36,8 @@ public class Group implements ParentBehavior {
     private DependencyOrder dependencyOrder;
     // Sub Group Map, key = Group.alias
     private Map<String, Group> aliasToGroupMap;
-    // Cluster id map, key = service name
-    private Map<String, Set<String>> serviceNameToClusterIdsMap;
+    // Cluster Id map, key = subscription alias for the cartridge type
+    private Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group status
     private Status status;
 
@@ -46,7 +46,7 @@ public class Group implements ParentBehavior {
         this.alias = alias;
         this.status = Status.Created;
         aliasToGroupMap = new HashMap<String, Group>();
-        serviceNameToClusterIdsMap = new HashMap<String, Set<String>>();
+        aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class Group implements ParentBehavior {
     }
 
     @Override
-    public Map<String,Set<String>> getClusterMap() {
-        return this.serviceNameToClusterIdsMap;
+    public Map<String, ClusterDataHolder> getClusterDataMap() {
+        return this.aliasToClusterDataMap;
     }
 
     @Override
@@ -129,17 +129,13 @@ public class Group implements ParentBehavior {
 //    }
 
     @Override
-    public void setClusterIds(Map<String, Set<String>> serviceNameToClusterIds) {
-        serviceNameToClusterIdsMap.putAll(serviceNameToClusterIds);
+    public void setClusterData(Map<String, ClusterDataHolder> aliasToClusterData) {
+        this.aliasToClusterDataMap.putAll(aliasToClusterData);
     }
 
     @Override
-    public Set<String> getClusterIds(String serviceName) {
-        return serviceNameToClusterIdsMap.get(serviceName);
-    }
-
-    public Map<String, Set<String>> getServiceNameToClusterIdsMap() {
-        return serviceNameToClusterIdsMap;
+    public ClusterDataHolder getClusterData(String alias) {
+        return aliasToClusterDataMap.get(alias);
     }
 
     public String getName() {

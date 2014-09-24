@@ -35,6 +35,11 @@ public class MetaDataHolder {
 
     private Properties properties;
 
+    public MetaDataHolder (String appId) {
+
+        this.appId = appId;
+    }
+
     public MetaDataHolder(String appId, String groupName, String clusterId) {
 
         this.appId = appId;
