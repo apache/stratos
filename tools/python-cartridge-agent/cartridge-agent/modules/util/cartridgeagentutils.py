@@ -4,6 +4,7 @@ import logging
 import os
 import time
 import socket
+import shutil
 
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 import cartridgeagentconstants
@@ -51,6 +52,13 @@ def create_dir(path):
 
     return False
 
+
+def delete_folder_tree(path):
+    try:
+        shutil.rmtree(path)
+        log.debug("Directory [%r] deleted." % path)
+    except OSError:
+        log.exception("Deletion of folder path %r failed." % path)
 
 def wait_until_ports_active(ip_address, ports):
     ports_check_timeout = cartridge_agent_config.read_property("port.check.timeout")

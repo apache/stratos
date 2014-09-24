@@ -9,4 +9,6 @@ class GitRepository:
         self.key_based_auth = False
         self.repo_username = None
         self.repo_password = None
-        #scheduled update service
+        self.is_multitenant = False
+        self.commit_enabled = False
+        #scheduled update servicef
