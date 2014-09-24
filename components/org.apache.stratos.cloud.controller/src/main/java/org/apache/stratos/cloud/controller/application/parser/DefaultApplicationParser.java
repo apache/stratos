@@ -363,7 +363,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 Group nestedGroup = parseGroup(appId, tenantId, key, subGroupCtxt,
                         subscribableInfoCtxts,
                         definedGroupCtxts);
-                nestedGroups.put(nestedGroup.getName(), nestedGroup);
+                nestedGroups.put(nestedGroup.getAlias(), nestedGroup);
             }
 
             group.setGroups(nestedGroups);
