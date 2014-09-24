@@ -57,6 +57,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
 import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 import org.wso2.carbon.context.CarbonContext;
 import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
 
@@ -386,13 +387,13 @@ public class CartridgeSubscriptionManager {
         log.info("Successfully added domains to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
                 " [domain-name] " + domainName + " [application-context] " +applicationContext);
 
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
 
         Set<String> clusterIds = new HashSet<String>();
         clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
         SubscriptionDomainAddedEvent event = new SubscriptionDomainAddedEvent(tenantId, cartridgeSubscription.getType(),
                 clusterIds, domainName, applicationContext);
-
+	    String topic = Util.getMessageTopicName(event);
+	    EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }
 
@@ -416,12 +417,14 @@ public class CartridgeSubscriptionManager {
         log.info("Successfully removed domain from cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
                 " [domain-name] " + domainName);
 
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TENANT_TOPIC);
+
 
         Set<String> clusterIds = new HashSet<String>();
         clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
         SubscriptionDomainRemovedEvent event = new SubscriptionDomainRemovedEvent(tenantId, cartridgeSubscription.getType(),
                 clusterIds, domainName);
+	    String topic = Util.getMessageTopicName(event);
+	    EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }
 

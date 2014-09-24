@@ -55,9 +55,9 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
-
+			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
+					.getPublisher(topic);
 			eventPublisher.publish(event);
 			setStarted(true);
 			if (log.isInfoEnabled()) {
@@ -84,8 +84,9 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getMemberId());
 
 			// Event publisher connection will
+			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
+					.getPublisher(topic);
 			eventPublisher.publish(event);
 			if (log.isInfoEnabled()) {
 				log.info("Instance activated event published");
@@ -118,9 +119,9 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
-
+			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(Util.getMessageTopicName(event));
+					.getPublisher(topic);
 			eventPublisher.publish(event);
 			setReadyToShutdown(true);
 			if (log.isInfoEnabled()) {
@@ -144,9 +145,9 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId());
-
+			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
+					.getPublisher(topic);
 			eventPublisher.publish(event);
 			setMaintenance(true);
 			if (log.isInfoEnabled()) {
