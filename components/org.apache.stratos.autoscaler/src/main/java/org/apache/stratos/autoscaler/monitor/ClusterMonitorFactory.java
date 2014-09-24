@@ -307,7 +307,8 @@ public class ClusterMonitorFactory {
         AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
         java.util.Properties props = cluster.getProperties();
         String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
-		KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID);
+		KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID, 
+				cluster.getClusterId());
 
         DockerServiceClusterMonitor dockerClusterMonitor = new DockerServiceClusterMonitor(
         		kubernetesClusterCtxt, 
