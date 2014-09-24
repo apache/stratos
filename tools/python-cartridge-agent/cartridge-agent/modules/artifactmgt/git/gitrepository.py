@@ -1,4 +1,4 @@
-class GitRepositoryContext:
+class GitRepository:
 
     def __init__(self):
         self.repo_url = None
