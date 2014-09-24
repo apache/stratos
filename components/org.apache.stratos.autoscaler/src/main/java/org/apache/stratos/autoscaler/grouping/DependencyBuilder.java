@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.grouping;
 
 import org.apache.stratos.messaging.domain.topology.*;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -59,15 +60,18 @@ public class DependencyBuilder {
             }
         }
         //TODO adding all the missed groups or clusters as the top child to the list
-        for(Group group: component.getGroupMap().values()) {
-            if(!startup.contains(group.getAlias())) {
-                startup.add(group.getAlias());
+        for(String grpAlias: component.getAliasToGroupMap().keySet()) {
+            if(!startup.contains("group." + grpAlias)) {
+                startup.add("group." + grpAlias);
             }
         }
 
-        for(String clusterId: component.getClusterIdMap().values()) {
-            if(!startup.contains(clusterId)) {
-                startup.add(clusterId);
+        Set<String> cartridgeAliases = component.getClusterDataMap().keySet();
+
+        for(String carAlias : cartridgeAliases) {
+                if(!startup.contains("cartridge." + carAlias)) {
+                    startup.add("cartridge." + carAlias);
+
             }
         }
 

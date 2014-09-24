@@ -26,30 +26,35 @@ import org.apache.stratos.cloud.controller.application.ClusterInformation;
 import org.apache.stratos.cloud.controller.application.MTClusterInformation;
 import org.apache.stratos.cloud.controller.application.STClusterInformation;
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.application.*;
-import org.apache.stratos.cloud.controller.pojo.payload.PayloadDataHolder;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.StartupOrder;
-import org.apache.stratos.messaging.util.Constants;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
-import java.util.Properties;
 
 public class DefaultApplicationParser implements ApplicationParser {
 
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
-    private static FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+//    private static FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+
+    private Set<ApplicationClusterContext> applicationClusterContexts;
+
+    private Set<MetaDataHolder> metaDataHolders;
+
+    public DefaultApplicationParser () {
+
+        this.applicationClusterContexts = new HashSet<ApplicationClusterContext>();
+        this.metaDataHolders = new HashSet<MetaDataHolder>();
+    }
 
     @Override
-    public ApplicationDataHolder parse(Object obj) throws ApplicationDefinitionException {
+    public Application parse(Object obj) throws ApplicationDefinitionException {
 
         ApplicationContext applicationCtxt = null;
 
@@ -97,6 +102,16 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         return buildCompositeAppStructure (applicationCtxt, definedGroups, subscribablesInfo);
+    }
+
+    @Override
+    public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException {
+        return applicationClusterContexts;
+    }
+
+    @Override
+    public Set<MetaDataHolder> getPayloadData() throws ApplicationDefinitionException {
+        return metaDataHolders;
     }
 
     private Map<String, GroupContext> getDefinedGroups (ApplicationContext appCtxt) throws
@@ -180,7 +195,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         return FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName) != null;
     }
 
-    private ApplicationDataHolder buildCompositeAppStructure (ApplicationContext appCtxt,
+    private Application buildCompositeAppStructure (ApplicationContext appCtxt,
                                                             Map<String, GroupContext> definedGroupCtxts,
                                                             Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
@@ -194,24 +209,24 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         // following keeps track of all Clusters created for this application
         //Set<Cluster> clusters = new HashSet<Cluster>();
-        ClusterDataHolder clusterDataHolder = null;
+        //ClusterDataHolder clusterDataHolder = null;
+        Map<String, ClusterDataHolder> clusterDataMap;
 
         if (appCtxt.getComponents() != null) {
             // get top level Subscribables
             if (appCtxt.getComponents().getSubscribableContexts() != null) {
-                clusterDataHolder = getClusterInformation(appCtxt.getApplicationId(), appCtxt.getTenantId(),
+                clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
                         application.getKey(), null, Arrays.asList(appCtxt.getComponents().getSubscribableContexts()),
                         subscribableInfoCtxts);
-                application.setClusterIds(clusterDataHolder.getClusterIdMap());
-                //clusters.addAll(clusterDataHolder.getClusters());
+                application.setClusterData(clusterDataMap);
+                //clusters.addAll(clusterDataHolder.getApplicationClusterContexts());
             }
 
             // get Groups
             if (appCtxt.getComponents().getGroupContexts() != null) {
-                application.setGroups(getGroupInfo(appCtxt.getApplicationId(), appCtxt.getTenantId(),
-                        application.getKey(), clusterDataHolder,
-                        Arrays.asList(appCtxt.getComponents().getGroupContexts()), subscribableInfoCtxts,
-                        definedGroupCtxts));
+                application.setGroups(parseGroups(appCtxt.getApplicationId(), appCtxt.getTenantId(),
+                        application.getKey(), Arrays.asList(appCtxt.getComponents().getGroupContexts()),
+                        subscribableInfoCtxts, definedGroupCtxts));
             }
 
             // get top level Dependency definitions
@@ -230,40 +245,38 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
 
-        ApplicationDataHolder applicationDataHolder = new ApplicationDataHolder();
-        assert clusterDataHolder != null;
-        applicationDataHolder.setClusters(clusterDataHolder.getClusters());
-        applicationDataHolder.setPayloadDataHolders(clusterDataHolder.getPayloadDataHolders());
-        applicationDataHolder.setApplication(application);
+        return application;
+
+        //ApplicationDataHolder applicationDataHolder = new ApplicationDataHolder();
+        //assert clusterDataHolder != null;
+        //applicationDataHolder.setClusters(clusterDataHolder.getApplicationClusterContexts());
+        //applicationDataHolder.setPayloadDataHolders(clusterDataHolder.getPayloadDataHolders());
+        //applicationDataHolder.setApplication(application);
 
         // persist the information in FasterLookUpDataHolder
-        persist(dataHolder);
+        //persist(dataHolder);
 
-        return applicationDataHolder;
+        //return applicationDataHolder;
     }
 
-    private Map<String, Group> getGroupInfo (String appId, int tenantId, String key,
-                                             ClusterDataHolder clusterDataHolder,  List<GroupContext> groupCtxts,
-                                         Map<String, SubscribableInfoContext> subscribableInformation,
-                                         Map<String, GroupContext> definedGroupCtxts)
+    private Map<String, Group> parseGroups (String appId, int tenantId, String key, List<GroupContext> groupCtxts,
+                                           Map<String, SubscribableInfoContext> subscribableInformation,
+                                           Map<String, GroupContext> definedGroupCtxts)
             throws ApplicationDefinitionException {
 
-        Map<String, Group> groupNameToGroup = new HashMap<String, Group>();
+        Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
 
         for (GroupContext groupCtxt : groupCtxts) {
-            Group group = getGroup(appId, tenantId, key, clusterDataHolder, groupCtxt, subscribableInformation, definedGroupCtxts);
-            if(groupNameToGroup.put(group.getName(), group) != null) {
-                // Application Definition has same Group multiple times at the top-level
-                handleError("Group [ " + group.getName() + " ] appears twice in the Application Definition's top level");
-            }
+            Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, definedGroupCtxts);
+            groupAliasToGroup.put(group.getAlias(), group);
         }
 
-        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupNameToGroup);
+        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupAliasToGroup);
         Set<Group> nestedGroups = new HashSet<Group>();
-        getNestedGroupContexts(nestedGroups, groupNameToGroup.values());
-        filterDuplicatedGroupContexts(groupNameToGroup.values(), nestedGroups);
+        getNestedGroupContexts(nestedGroups, groupAliasToGroup.values());
+        filterDuplicatedGroupContexts(groupAliasToGroup.values(), nestedGroups);
 
-        return groupNameToGroup;
+        return groupAliasToGroup;
     }
 
     private void getNestedGroupContexts (Set<Group> nestedGroups, Collection<Group> groups) {
@@ -298,9 +311,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
     }
 
-    private Group getGroup(String appId, int tenantId, String key, ClusterDataHolder clusterDataHolder,
-                           GroupContext groupCtxt, Map<String,SubscribableInfoContext> subscribableInfoCtxts,
-                           Map<String, GroupContext> definedGroupCtxts)
+    private Group parseGroup (String appId, int tenantId, String key, GroupContext groupCtxt,
+                             Map<String, SubscribableInfoContext> subscribableInfoCtxts,
+                             Map<String, GroupContext> definedGroupCtxts)
             throws ApplicationDefinitionException {
 
         // check if are in the defined Group set
@@ -323,21 +336,21 @@ public class DefaultApplicationParser implements ApplicationParser {
         dependencyOrder.setKillbehavior(getKillbehaviour(groupCtxt.getName()));
         group.setDependencyOrder(dependencyOrder);
 
-        ClusterDataHolder clusterDataHolderOfGroup;
+        Map<String, ClusterDataHolder> clusterDataMap;
 
         // get group level Subscribables
         if (groupCtxt.getSubscribableContexts() != null) {
-            clusterDataHolderOfGroup = getClusterInformation(appId, tenantId, key, groupCtxt.getName(),
+            clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
                     Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts);
-            group.setClusterIds(clusterDataHolderOfGroup.getClusterIdMap());
-            //clusters.addAll(clusterDataHolderOfGroup.getClusters());
-            if (clusterDataHolder == null) {
-                clusterDataHolder = clusterDataHolderOfGroup;
-            } else {
-                clusterDataHolder.getClusters().addAll(clusterDataHolderOfGroup.getClusters());
-                clusterDataHolder.getClusterIdMap().putAll(clusterDataHolderOfGroup.getClusterIdMap());
-                clusterDataHolder.getPayloadDataHolders().addAll(clusterDataHolderOfGroup.getPayloadDataHolders());
-            }
+            group.setClusterData(clusterDataMap);
+            //clusters.addAll(clusterDataHolderOfGroup.getApplicationClusterContexts());
+//            if (clusterDataHolder == null) {
+//                clusterDataHolder = clusterDataHolderOfGroup;
+//            } else {
+//                clusterDataHolder.getApplicationClusterContexts().addAll(clusterDataHolderOfGroup.getApplicationClusterContexts());
+//                clusterDataHolder.getClusterIdMap().putAll(clusterDataHolderOfGroup.getClusterIdMap());
+//                //clusterDataHolder.getPayloadDataHolders().addAll(clusterDataHolderOfGroup.getPayloadDataHolders());
+//            }
         }
 
         // get nested groups
@@ -347,7 +360,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             for (GroupContext subGroupCtxt : groupCtxt.getGroupContexts()) {
                 // get the complete Group Definition
                 subGroupCtxt = definedGroupCtxts.get(subGroupCtxt.getAlias());
-                Group nestedGroup = getGroup(appId, tenantId, key, clusterDataHolder, subGroupCtxt,
+                Group nestedGroup = parseGroup(appId, tenantId, key, subGroupCtxt,
                         subscribableInfoCtxts,
                         definedGroupCtxts);
                 nestedGroups.put(nestedGroup.getName(), nestedGroup);
@@ -442,16 +455,17 @@ public class DefaultApplicationParser implements ApplicationParser {
 //        return subscribableContexts;
 //    }
 
-    private ClusterDataHolder getClusterInformation (String appId, int tenantId, String key, String groupName,
-                                                     List<SubscribableContext> subscribableCtxts,
-                                                     Map<String, SubscribableInfoContext> subscribableInfoCtxts)
+    private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions (String appId, int tenantId, String key, String groupName,
+                                                                 List<SubscribableContext> subscribableCtxts,
+                                                                 Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
 
-        Map<String, String> clusterIdMap = new HashMap<String, String>();
-        Set<Cluster> clusters = new HashSet<Cluster>();
-        Set<PayloadDataHolder> payloadDataHolders = new HashSet<PayloadDataHolder>();
+        Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
+//        Set<Cluster> clusters = new HashSet<Cluster>();
+        //Set<PayloadDataHolder> payloadDataHolders = new HashSet<PayloadDataHolder>();
 
         for (SubscribableContext subscribableCtxt : subscribableCtxts) {
+
             // check is there is a related Subscribable Information
             SubscribableInfoContext subscribableInfoCtxt = subscribableInfoCtxts.get(subscribableCtxt.getAlias());
             if (subscribableInfoCtxt == null) {
@@ -472,114 +486,164 @@ public class DefaultApplicationParser implements ApplicationParser {
                         " ] for Composite Application");
             }
 
-            Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
-            clusters.add(cluster);
-            if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
-                // Application Definition has same cartridge multiple times at the top-level
-                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
+            // get hostname and cluster id
+            ClusterInformation clusterInfo;
+            assert cartridge != null;
+            if (cartridge.isMultiTenant()) {
+                clusterInfo = new MTClusterInformation();
+            } else {
+                clusterInfo = new STClusterInformation();
             }
 
-            payloadDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key, cluster,
-                    subscribableCtxt, subscribableInfoCtxt, cartridge));
-            createClusterContext(appId, groupName, subscribableCtxt.getType(), cluster.getClusterId(),
-                    cluster.getHostNames().get(0));
+            String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridge.getHostName());
+            String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
+
+            // create and collect this cluster's information
+            assert subscribableInfoCtxt != null;
+            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(subscribableCtxt.getType(),
+                    appId, groupName, clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false);
+            this.applicationClusterContexts.add(appClusterCtxt);
+
+            // create cluster level meta data
+            this.metaDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key,
+                    hostname, appClusterCtxt.getTenantRange(), clusterId, subscribableCtxt, subscribableInfoCtxt, cartridge));
+
+            // add relevant information to the map
+            clusterDataMap.put(subscribableCtxt.getAlias(), new ClusterDataHolder(subscribableCtxt.getType(), clusterId));
+
+            ////////////
+            //Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
+            //addClusterId(clusterDataMap, subscribableCtxt.getType(), clusterId);
+            //clusterDataMap.put(subscribableCtxt.getType(), cluster.getClusterId());
+            //clusters.add(cluster);
+//            if (clusterDataMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
+//                // Application Definition has same cartridge multiple times at the top-level
+//                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
+//            }
+            ///////////////
+
+//            createClusterContext(appId, groupName, subscribableCtxt.getType(), cluster.getClusterId(),
+//                    cluster.getHostNames().get(0));
         }
 
-        ClusterDataHolder clusterDataHolder = new ClusterDataHolder(clusterIdMap, clusters);
-        clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
-
-        return clusterDataHolder;
+        return clusterDataMap;
+        //return new ClusterDataHolder(clusterDataMap, clusters);
+        //clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
     }
 
-    private void createClusterContext (String appId, String groupName, String serviceType, String clusterId,
-                                              String hostName) throws ApplicationDefinitionException {
+    private ApplicationClusterContext createApplicationClusterContext (String serviceType, String appId,
+                                                                       String groupName, String clusterId,
+                                                                       String hostname, String deploymentPolicy,
+                                                                       boolean isLB) {
 
-        Cartridge cartridge;
-        if ((cartridge = dataHolder.getCartridge(serviceType)) == null) {
+        // Create text payload
+        String textPayload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
 
-            String msg = "Unregistered Cartridge type: " + serviceType;
-            log.error(msg);
-            throw new ApplicationDefinitionException(msg);
-        }
-
-        //Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-        //String property = props.getProperty(Constants.IS_LOAD_BALANCER);
-        //boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
-        String payload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
-
-        ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
-                payload, hostName, null, false, null);
-
-        dataHolder.addClusterContext(ctxt);
+        return new ApplicationClusterContext(serviceType, clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
-    private void persist(FasterLookUpDataHolder dataHolder) {
-        try {
-            RegistryManager.getInstance().persist(
-                    dataHolder);
-        } catch (RegistryException e) {
+//    public void addClusterId (Map<String, Set<String>> serviceNameToClusterIdsMap, String serviceName, String clusterId) {
+//
+//        if (serviceNameToClusterIdsMap.get(serviceName) == null) {
+//            // not found, create
+//            Set<String> clusterIds = new HashSet<String>();
+//            clusterIds.add(clusterId);
+//            serviceNameToClusterIdsMap.put(serviceName, clusterIds);
+//        } else {
+//            // the cluster id set already exists, update
+//            serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
+//        }
+//    }
 
-            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-            log.fatal(msg);
-            throw new CloudControllerException(msg, e);
-        }
-    }
-
-    private ClusterContext buildClusterContext(Cartridge cartridge,
-                                               String clusterId, String payload, String hostName,
-                                               Properties props, boolean isLb, Persistence persistence) {
-
-
-        // initialize ClusterContext
-        ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload,
-                hostName, isLb);
-
-        String property = null;
-        if (props != null) {
-            property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
-        }
-
-        long timeout = property != null ? Long.parseLong(property) : 30000;
-
-        boolean persistanceRequired = false;
-        if(persistence != null){
-            persistanceRequired = persistence.isPersistanceRequired();
-        }
-
-        if(persistanceRequired){
-            ctxt.setVolumes(persistence.getVolumes());
-            ctxt.setVolumeRequired(true);
-        }else{
-            ctxt.setVolumeRequired(false);
-        }
-        ctxt.setTimeoutInMillis(timeout);
-        return ctxt;
-    }
-
-    private Cluster getCluster (SubscribableContext subscribableCtxt, SubscribableInfoContext subscribableInfoCtxt, Cartridge cartridge)
-
-            throws ApplicationDefinitionException {
-
-        // get hostname and cluster id
-        ClusterInformation clusterInfo;
-        if (cartridge.isMultiTenant()) {
-            clusterInfo = new MTClusterInformation();
-        } else {
-            clusterInfo = new STClusterInformation();
-        }
-
-        String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridge.getHostName());
-        String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
-
-        Cluster cluster = new Cluster(subscribableCtxt.getType(), clusterId, subscribableInfoCtxt.getDeploymentPolicy(),
-                subscribableInfoCtxt.getAutoscalingPolicy());
-
-        cluster.addHostName(hostname);
-        cluster.setLbCluster(false);
-        cluster.setStatus(Status.Created);
-
-        return cluster;
-    }
+//    private void createClusterContext (String appId, String groupName, String serviceType, String clusterId,
+//                                              String hostName) throws ApplicationDefinitionException {
+//
+//        Cartridge cartridge;
+//        if ((cartridge = dataHolder.getCartridge(serviceType)) == null) {
+//
+//            String msg = "Unregistered Cartridge type: " + serviceType;
+//            log.error(msg);
+//            throw new ApplicationDefinitionException(msg);
+//        }
+//
+//        //Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+//        //String property = props.getProperty(Constants.IS_LOAD_BALANCER);
+//        //boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
+//        String payload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
+//
+//        ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
+//                payload, hostName, null, false, null);
+//
+//        dataHolder.addClusterContext(ctxt);
+//    }
+//
+//    private void persist(FasterLookUpDataHolder dataHolder) {
+//        try {
+//            RegistryManager.getInstance().persist(
+//                    dataHolder);
+//        } catch (RegistryException e) {
+//
+//            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
+//            log.fatal(msg);
+//            throw new CloudControllerException(msg, e);
+//        }
+//    }
+//
+//    private ClusterContext buildClusterContext(Cartridge cartridge,
+//                                               String clusterId, String payload, String hostName,
+//                                               Properties props, boolean isLb, Persistence persistence) {
+//
+//
+//        // initialize ClusterContext
+//        ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload,
+//                hostName, isLb);
+//
+//        String property = null;
+//        if (props != null) {
+//            property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+//        }
+//
+//        long timeout = property != null ? Long.parseLong(property) : 30000;
+//
+//        boolean persistanceRequired = false;
+//        if(persistence != null){
+//            persistanceRequired = persistence.isPersistanceRequired();
+//        }
+//
+//        if(persistanceRequired){
+//            ctxt.setVolumes(persistence.getVolumes());
+//            ctxt.setVolumeRequired(true);
+//        }else{
+//            ctxt.setVolumeRequired(false);
+//        }
+//        ctxt.setTimeoutInMillis(timeout);
+//        return ctxt;
+//    }
+//
+//    private Cluster getCluster (SubscribableContext subscribableCtxt, SubscribableInfoContext subscribableInfoCtxt, Cartridge cartridge)
+//
+//            throws ApplicationDefinitionException {
+//
+//        // get hostname and cluster id
+//        ClusterInformation clusterInfo;
+//        if (cartridge.isMultiTenant()) {
+//            clusterInfo = new MTClusterInformation();
+//        } else {
+//            clusterInfo = new STClusterInformation();
+//        }
+//
+//        String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridge.getHostName());
+//        String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
+//
+//        Cluster cluster = new Cluster(subscribableCtxt.getType(), clusterId, subscribableInfoCtxt.getDeploymentPolicy(),
+//                subscribableInfoCtxt.getAutoscalingPolicy());
+//                                                                                                          Clo
+//        cluster.addHostName(hostname);
+//        cluster.setLbCluster(false);
+//        cluster.setStatus(Status.Created);
+//
+//        return cluster;
+//    }
 
 //    private GroupDataHolder getGroupInformation (List<GroupContext> groupCtxts,
 //                                                 Map<String, SubscribableInfoContext> subscribableInformation,
@@ -589,7 +653,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 //        Set<GroupContext> groupContexts = new HashSet<GroupContext>();
 //
 //        for (GroupContext groupCtxt : groupCtxts) {
-//            groupContexts.add(getGroup(groupCtxt, subscribableInformation, definedGroupCtxts));
+//            groupContexts.add(parseGroup(groupCtxt, subscribableInformation, definedGroupCtxts));
 //        }
 //
 //        //Set<GroupContext> topLevelGroupContexts = getTopLevelGroupContexts(groupContexts);

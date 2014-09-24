@@ -25,7 +25,7 @@ import java.util.Properties;
  * Holds payload/meta data related to a cluster
  */
 
-public class PayloadDataHolder {
+public class MetaDataHolder {
 
     private String appId;
 
@@ -35,7 +35,13 @@ public class PayloadDataHolder {
 
     private Properties properties;
 
-    public PayloadDataHolder (String appId, String groupName, String clusterId) {
+    public MetaDataHolder (String appId, String clusterId) {
+
+        this.appId = appId;
+        this.clusterId = clusterId;
+    }
+
+    public MetaDataHolder(String appId, String groupName, String clusterId) {
 
         this.appId = appId;
         this.groupName = groupName;
@@ -56,7 +62,7 @@ public class PayloadDataHolder {
 
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof PayloadDataHolder)) {
+        if(other == null || !(other instanceof MetaDataHolder)) {
             return false;
         }
 
@@ -64,7 +70,7 @@ public class PayloadDataHolder {
             return true;
         }
 
-        PayloadDataHolder that = (PayloadDataHolder)other;
+        MetaDataHolder that = (MetaDataHolder)other;
 
         if (this.groupName == null || that.groupName == null) {
             return this.appId.equals(that.appId) && this.clusterId.equals(that.clusterId);

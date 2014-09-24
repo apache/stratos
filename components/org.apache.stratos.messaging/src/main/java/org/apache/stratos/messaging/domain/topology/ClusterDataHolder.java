@@ -17,20 +17,28 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.interfaces;
+package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
-import org.apache.stratos.cloud.controller.pojo.ApplicationClusterContext;
-import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
-import org.apache.stratos.messaging.domain.topology.Application;
+import java.io.Serializable;
 
-import java.util.Set;
+public class ClusterDataHolder implements Serializable {
 
-public interface ApplicationParser {
+    private String serviceType;
 
-    public Application parse (Object obj) throws ApplicationDefinitionException;
+    private String clusterId;
 
-    public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException;
+    public ClusterDataHolder (String serviceType, String clusterId) {
 
-    public Set<MetaDataHolder> getPayloadData () throws ApplicationDefinitionException;
+        this.serviceType = serviceType;
+        this.clusterId = clusterId;
+    }
+
+
+    public String getServiceType() {
+        return serviceType;
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
 }

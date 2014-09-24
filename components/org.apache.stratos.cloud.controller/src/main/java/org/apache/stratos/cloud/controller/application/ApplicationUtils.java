@@ -23,8 +23,7 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableInfoContext;
-import org.apache.stratos.cloud.controller.pojo.payload.PayloadDataHolder;
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 
 import java.util.*;
@@ -69,13 +68,18 @@ public class ApplicationUtils {
         return globalProperties;
     }
 
-    public static PayloadDataHolder getClusterLevelPayloadData (String appId, String groupName, int tenantId, String key,
-                                                                Cluster cluster,
+    public static MetaDataHolder getClusterLevelPayloadData (String appId, String groupName, int tenantId, String key,
+                                                                String hostname, String tenantRange, String clusterId,
                                                                 SubscribableContext subscribableCtxt,
                                                                 SubscribableInfoContext subscribableInfoCtxt,
                                                                 Cartridge cartridge) {
 
-        PayloadDataHolder payloadDataHolder = new PayloadDataHolder(appId, subscribableCtxt.getType(), cluster.getClusterId());
+        MetaDataHolder metaDataHolder;
+        if (groupName != null) {
+            metaDataHolder = new MetaDataHolder(appId, groupName, clusterId);
+        } else {
+            metaDataHolder = new MetaDataHolder(appId, clusterId);
+        }
 
         Properties clusterLevelPayloadProperties = new Properties();
         // app id
@@ -89,22 +93,22 @@ public class ApplicationUtils {
             clusterLevelPayloadProperties.put("SERVICE_NAME", subscribableCtxt.getType());
         }
         // host name
-        if  (cluster.getHostNames().get(0) != null) {
-            clusterLevelPayloadProperties.put("HOST_NAME", cluster.getHostNames().get(0));
+        if  (hostname != null) {
+            clusterLevelPayloadProperties.put("HOST_NAME", hostname);
         }
         // multi tenant
         clusterLevelPayloadProperties.put("MULTITENANT", String.valueOf(cartridge.isMultiTenant()));
         // tenant range
-        if (cluster.getTenantRange() != null) {
-            clusterLevelPayloadProperties.put("TENANT_RANGE", cluster.getTenantRange());
+        if (tenantRange != null) {
+            clusterLevelPayloadProperties.put("TENANT_RANGE", tenantRange);
         }
         // cartridge alias
         if (subscribableCtxt.getAlias() != null) {
             clusterLevelPayloadProperties.put("CARTRIDGE_ALIAS", subscribableCtxt.getAlias());
         }
         // cluster id
-        if (cluster.getClusterId() != null) {
-            clusterLevelPayloadProperties.put("CLUSTER_ID", cluster.getClusterId());
+        if (clusterId != null) {
+            clusterLevelPayloadProperties.put("CLUSTER_ID", clusterId);
         }
         // repo url
         if (subscribableInfoCtxt.getRepoUrl() != null) {
@@ -125,8 +129,8 @@ public class ApplicationUtils {
         // get global payload params
         clusterLevelPayloadProperties.putAll(ApplicationUtils.getGlobalPayloadData());
 
-        payloadDataHolder.setProperties(clusterLevelPayloadProperties);
-        return payloadDataHolder;
+        metaDataHolder.setProperties(clusterLevelPayloadProperties);
+        return metaDataHolder;
     }
 
     private static String createPortMappingPayloadString (Cartridge cartridge) {
@@ -156,9 +160,11 @@ public class ApplicationUtils {
         payloadBuilder.append("CLUSTER_ID=" + clusterId);
         // meta data endpoint
         if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
-            payloadBuilder.append(",");
-            payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
+            // TODO
+            //payloadBuilder.append(",");
+            //payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
         }
+        payloadBuilder.append(",");
 
         return payloadBuilder;
     }
