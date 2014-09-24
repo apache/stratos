@@ -34,6 +34,10 @@ public class ServiceGroup implements Serializable {
     private String [] cartridges;
 
     private Dependencies dependencies;
+    
+    private String [] dynamicProperties;
+    
+    private Property [] staticProperties;
 
     public String getName() {
         return name;
@@ -66,4 +70,20 @@ public class ServiceGroup implements Serializable {
     public void setDependencies(Dependencies dependencies) {
         this.dependencies = dependencies;
     }
+
+	public String[] getDynamicProperties() {
+		return dynamicProperties;
+	}
+
+	public void setDynamicProperties(String[] dynamicProperties) {
+		this.dynamicProperties = dynamicProperties;
+	}
+
+	public Property[] getStaticProperties() {
+		return staticProperties;
+	}
+
+	public void setStaticProperties(Property[] staticProperties) {
+		this.staticProperties = staticProperties;
+	}
 }

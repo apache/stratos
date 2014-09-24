@@ -56,7 +56,7 @@ import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
-import java.util.Properties;
+//import ;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -391,6 +391,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	}
     	return serviceGroup.getDependencies();
     }
+    
+    public String [] getServiceGroupDynamicProperties (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	return serviceGroup.getDynamicProperties();
+    }
+    
+    public org.apache.stratos.cloud.controller.pojo.Property [] getServiceGroupStaticProperties (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	return serviceGroup.getStaticProperties();
+    } 
 
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws
@@ -1071,7 +1087,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new UnregisteredCartridgeException(msg);
         }
 
-        Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+        java.util.Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
@@ -1091,7 +1107,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     private ClusterContext buildClusterContext(Cartridge cartridge,
                                                String clusterId, String payload, String hostName,
-                                               Properties props, boolean isLb, Persistence persistence) {
+                                               java.util.Properties props, boolean isLb, Persistence persistence) {
 
 
         // initialize ClusterContext

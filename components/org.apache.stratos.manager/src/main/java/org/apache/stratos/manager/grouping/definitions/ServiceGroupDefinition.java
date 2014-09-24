@@ -31,6 +31,10 @@ public class ServiceGroupDefinition implements Serializable {
     private List<String> subGroups;
 
     private List<String> cartridges;
+    
+    private List<String> dynamicProperties;
+    
+    private List<StaticProperty> staticProperties;
 
     private DependencyDefinitions dependencies;
 
@@ -65,4 +69,20 @@ public class ServiceGroupDefinition implements Serializable {
     public void setDependencies(DependencyDefinitions dependencies) {
         this.dependencies = dependencies;
     }
+
+	public List<String> getDynamicProperties() {
+		return dynamicProperties;
+	}
+
+	public void setDynamicProperties(List<String> dynamicProperties) {
+		this.dynamicProperties = dynamicProperties;
+	}
+
+	public List<StaticProperty> getStaticProperties() {
+		return staticProperties;
+	}
+
+	public void setStaticProperties(List<StaticProperty> staticProperties) {
+		this.staticProperties = staticProperties;
+	}
 }
