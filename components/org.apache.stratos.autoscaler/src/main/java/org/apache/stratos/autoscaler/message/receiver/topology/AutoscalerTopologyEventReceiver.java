@@ -90,9 +90,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 try {
+                    TopologyManager.acquireReadLock();
                     if(!topologyInitialized) {
                         topologyInitialized = true;
-                        TopologyManager.acquireReadLock();
                         for (Application application : TopologyManager.getTopology().getApplications()) {
                             startApplicationMonitor(application);
                         }
@@ -500,9 +500,16 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             ApplicationMonitor applicationMonitor = null;
             int retries = 5;
             boolean success = false;
-            while (!success && retries != 0) {
+             do {
+                 try {
+                     Thread.sleep(5000);
+                 } catch (InterruptedException e1) {
+                 }
                 try {
+                    long start = System.currentTimeMillis();
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
+                    long end = System.currentTimeMillis();
+                    log.info("***********************time taken to start app mon: " + (end - start)/1000);
                     success = true;
                     //TODO exception handling
                 } catch (Exception e) {
@@ -510,13 +517,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                     application.getId();
                     log.debug(msg, e);
                     retries--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                    }
+
 
                 }
-            }
+            } while (!success && retries != 0);
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "

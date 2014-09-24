@@ -60,6 +60,8 @@ public abstract class Monitor extends Observable implements Observer {
         startDependency();
     }
 
+    protected abstract void startDependency();
+
 
     public Map<String, GroupMonitor> getGroupMonitors() {
         return groupMonitors;
@@ -112,38 +114,7 @@ public abstract class Monitor extends Observable implements Observer {
         this.id = id;
     }
 
-    public void startDependency() {
-        //Need to get the order every time as group/cluster might already been started
-        //TODO breadth first search in a tree and find the parallel one
-        //TODO build up the tree with ordered manner
-
-        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
-
-        //start the first dependency
-        if(!preOrderTraverse.isEmpty()) {
-            String dependency = preOrderTraverse.poll();
-            if (dependency.contains("group")) {
-                startGroupMonitor(this, dependency.substring(6), component);
-            } else if (dependency.contains("cartridge")) {
-                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
-                String clusterId = clusterDataHolder.getClusterId();
-                String serviceName = clusterDataHolder.getServiceType();
-                Cluster cluster = null;
-                TopologyManager.acquireReadLock();
-                cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
-                TopologyManager.releaseReadLock();
-                if (cluster != null) {
-                    startClusterMonitor(cluster);
-                } else {
-                    //TODO throw exception since Topology is inconsistent
-                }
-
-            }
-        } else {
-            //all the groups/clusters have been started and waiting for activation
-            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
-        }
-    }
+    
     protected synchronized void startClusterMonitor(Cluster cluster) {
         Thread th = null;
         if (cluster.isLbCluster()
@@ -156,10 +127,10 @@ public abstract class Monitor extends Observable implements Observer {
         }
         if (th != null) {
             th.start();
-            try {
+            /*try {
                 th.join();
             } catch (InterruptedException ignore) {
-            }
+            }*/
 
             if (log.isDebugEnabled()) {
                 log.debug(String
@@ -178,10 +149,10 @@ public abstract class Monitor extends Observable implements Observer {
 
         if (th != null) {
             th.start();
-            try {
+            /*try {
                 th.join();
             } catch (InterruptedException ignore) {
-            }
+            }*/
 
             if (log.isDebugEnabled()) {
                 log.debug(String
@@ -203,7 +174,11 @@ public abstract class Monitor extends Observable implements Observer {
             ClusterMonitor monitor = null;
             int retries = 5;
             boolean success = false;
-            while (!success && retries != 0) {
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
                 try {
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
                     success = true;
@@ -212,24 +187,19 @@ public abstract class Monitor extends Observable implements Observer {
                     String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
                     log.debug(msg, e);
                     retries--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                    }
+
 
                 } catch (PartitionValidationException e) {
                     String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
                     log.debug(msg, e);
                     retries--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                    }
+
                 }
 
-            }
+            } while (!success && retries != 0);
 
-            if (monitor == null) {
+
+                    if (monitor == null) {
                 String msg = "Cluster monitor creation failed, even after retrying for 5 times, "
                         + "for cluster: " + cluster.getClusterId();
                 log.error(msg);
@@ -263,7 +233,12 @@ public abstract class Monitor extends Observable implements Observer {
             GroupMonitor monitor = null;
             int retries = 5;
             boolean success = false;
-            while (!success && retries != 0) {
+             do {
+                 try {
+                     Thread.sleep(5000);
+                 } catch (InterruptedException e1) {
+                 }
+
                 try {
                     monitor = AutoscalerUtil.getGroupMonitor(group.getGroup(dependency));
                     monitor.addObserver(parent);
@@ -273,13 +248,10 @@ public abstract class Monitor extends Observable implements Observer {
                     String msg = "Group monitor creation failed for group: " + dependency;
                     log.debug(msg, e);
                     retries--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                    }
+
 
                 }
-            }
+            } while (!success && retries != 0);
 
             if (monitor == null) {
                 String msg = "Group monitor creation failed, even after retrying for 5 times, "

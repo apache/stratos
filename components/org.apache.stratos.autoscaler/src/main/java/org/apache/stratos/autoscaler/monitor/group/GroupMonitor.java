@@ -18,9 +18,15 @@
  */
 package org.apache.stratos.autoscaler.monitor.group;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +36,8 @@ import java.util.Map;
  * groups and clusters
  */
 public class GroupMonitor extends Monitor {
+    private static final Log log = LogFactory.getLog(GroupMonitor.class);
+
 
 
 
@@ -37,6 +45,48 @@ public class GroupMonitor extends Monitor {
         super(group);
         //TODO build dependencies and keep them here
 
+    }
+
+    @Override
+    public void startDependency() {
+        //Need to get the order every time as group/cluster might already been started
+        //TODO breadth first search in a tree and find the parallel one
+        //TODO build up the tree with ordered manner
+
+        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
+
+        //start the first dependency
+        if(!preOrderTraverse.isEmpty()) {
+            String dependency = preOrderTraverse.poll();
+            if (dependency.contains("group")) {
+                for(Group group: component.getAliasToGroupMap().values()) {
+                    if(group.getName().equals(dependency.substring(6))) {
+                        startGroupMonitor(this, group.getAlias(), component);
+                    }
+                }
+            } else if (dependency.contains("cartridge")) {
+                for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+                    if(dataHolder.getServiceType().equals(dependency.substring(10))) {
+                        String clusterId = dataHolder.getClusterId();
+                        String serviceName = dataHolder.getServiceType();
+                        Cluster cluster = null;
+                        TopologyManager.acquireReadLock();
+                        cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
+                        TopologyManager.releaseReadLock();
+                        if (cluster != null) {
+                            startClusterMonitor(cluster);
+                        } else {
+                            //TODO throw exception since Topology is inconsistent
+                        }
+                    }
+                }
+
+
+            }
+        } else {
+            //all the groups/clusters have been started and waiting for activation
+            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
+        }
     }
 
     //monitor the status of the cluster and the groups

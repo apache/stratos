@@ -56,6 +56,41 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
+    @Override
+    protected void startDependency() {
+        //Need to get the order every time as group/cluster might already been started
+        //TODO breadth first search in a tree and find the parallel one
+        //TODO build up the tree with ordered manner
+
+        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
+
+        //start the first dependency
+        if(!preOrderTraverse.isEmpty()) {
+            String dependency = preOrderTraverse.poll();
+            if (dependency.contains("group")) {
+                startGroupMonitor(this, dependency.substring(6), component);
+            } else if (dependency.contains("cartridge")) {
+                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceName = clusterDataHolder.getServiceType();
+                Cluster cluster = null;
+                TopologyManager.acquireReadLock();
+                cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
+                TopologyManager.releaseReadLock();
+                if (cluster != null) {
+                    startClusterMonitor(cluster);
+                } else {
+                    //TODO throw exception since Topology is inconsistent
+                }
+
+            }
+        } else {
+            //all the groups/clusters have been started and waiting for activation
+            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
+        }
+
+
+    }
 
 
     /**

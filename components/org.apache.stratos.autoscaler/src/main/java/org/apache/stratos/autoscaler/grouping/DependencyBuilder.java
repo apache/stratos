@@ -60,22 +60,36 @@ public class DependencyBuilder {
             }
         }
         //TODO adding all the missed groups or clusters as the top child to the list
-        for(String grpAlias: component.getAliasToGroupMap().keySet()) {
-            if(!startup.contains("group." + grpAlias)) {
-                startup.add("group." + grpAlias);
+        //TODO handle by application and group itself groupName and serviceName
+
+        if(component instanceof Application) {
+            for(Group group: component.getAliasToGroupMap().values()) {
+                if(!startup.contains("group." + group.getAlias())) {
+                    startup.add("group." + group.getAlias());
+                }
             }
-        }
 
-        Set<String> cartridgeAliases = component.getClusterDataMap().keySet();
+            Set<String> cartridgeAliases = component.getClusterDataMap().keySet();
 
-        for(String carAlias : cartridgeAliases) {
+            for(String carAlias : cartridgeAliases) {
                 if(!startup.contains("cartridge." + carAlias)) {
                     startup.add("cartridge." + carAlias);
 
+                }
+            }
+        } else if(component instanceof Group) {
+            for(Group group: component.getAliasToGroupMap().values()) {
+                if(!startup.contains("group." + group.getName())) {
+                    startup.add("group." + group.getName());
+                }
+            }
+            for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+                if(!startup.contains("cartridge." + dataHolder.getServiceType())) {
+                    startup.add("cartridge." + dataHolder.getServiceType());
+
+                }
             }
         }
-
-
         return startup;
 
     }
