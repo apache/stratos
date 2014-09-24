@@ -1174,7 +1174,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     	// terminate all kubernetes units
     	try {
-			terminateAllKubernetesUnits(clusterId);
+			terminateAllContainers(clusterId);
 		} catch (InvalidClusterException e) {
 			String msg = "Docker instance termination fails for cluster: "+clusterId;
 			log.error(msg, e);
@@ -1490,7 +1490,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public void terminateAllKubernetesUnits(String clusterId)
+	public void terminateAllContainers(String clusterId)
 			throws InvalidClusterException {
 		
 		ClusterContext ctxt = dataHolder.getClusterContext(clusterId);

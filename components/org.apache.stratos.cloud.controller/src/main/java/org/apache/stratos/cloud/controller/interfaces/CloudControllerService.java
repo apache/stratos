@@ -130,11 +130,11 @@ public interface CloudControllerService {
     public void terminateAllInstances(String clusterId) throws InvalidClusterException;
     
     /**
-     * Terminate all Kubernetes units created for the given cluster.
-     * @param clusterId
+     * Terminate all containers of the given cluster.
+     * @param clusterId id of the subjected cluster.
      * @throws InvalidClusterException
      */
-    public void terminateAllKubernetesUnits(String clusterId) throws InvalidClusterException;
+    public void terminateAllContainers(String clusterId) throws InvalidClusterException;
     
     /**
      * Unregister a docker service identified by the given cluster id.
