@@ -32,6 +32,7 @@ import org.apache.stratos.messaging.message.JsonMessage;
 
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
+	public static final int BEGIN_INDEX = 35;
 
 	public static Properties getProperties(String filePath) {
 		Properties props = new Properties();
@@ -157,7 +158,7 @@ public class Util {
 	}
 
 	public static String getMessageTopicName(Event event) {
-		return event.getClass().getName().substring(35).replace(".", "/");
+		return event.getClass().getName().substring(BEGIN_INDEX).replace(".", "/");
 	}
 
 	public static String getEventNameForTopic(String arg0) {
