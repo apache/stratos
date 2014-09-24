@@ -1316,7 +1316,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public MemberContext startContainer(MemberContext memberContext)
+	public MemberContext startContainers(MemberContext memberContext)
 			throws UnregisteredCartridgeException {
 		
 		if(log.isDebugEnabled()) {
