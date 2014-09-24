@@ -52,6 +52,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
+    private boolean topologyInitialized;
 
     public AutoscalerTopologyEventReceiver() {
         this.topologyEventReceiver = new TopologyEventReceiver();
@@ -89,10 +90,14 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 try {
-                    TopologyManager.acquireReadLock();
-                   // for (Application application : TopologyManager.getTopology().getApplications()) {
-                   //     startApplicationMonitor(application);
-                   // }
+                    if(!topologyInitialized) {
+                        topologyInitialized = true;
+                        TopologyManager.acquireReadLock();
+                        for (Application application : TopologyManager.getTopology().getApplications()) {
+                            startApplicationMonitor(application);
+                        }
+                    }
+
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
@@ -495,12 +500,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             ApplicationMonitor applicationMonitor = null;
             int retries = 5;
             boolean success = false;
-            do {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                }
-
+            while (!success && retries != 0) {
                 try {
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
                     success = true;
@@ -510,9 +510,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                     application.getId();
                     log.debug(msg, e);
                     retries--;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e1) {
+                    }
 
                 }
-            } while (!success && retries != 0);
+            }
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "

@@ -59,16 +59,16 @@ public class DependencyBuilder {
             }
         }
         //TODO adding all the missed groups or clusters as the top child to the list
-        for(Group group: component.getAliasToGroupMap().values()) {
-            if(!startup.contains(group.getAlias())) {
-                startup.add(group.getAlias());
+        for(String grpAlias: component.getAliasToGroupMap().keySet()) {
+            if(!startup.contains("group." + grpAlias)) {
+                startup.add("group." + grpAlias);
             }
         }
 
         for(Set<String> clusterIds: component.getServiceNameToClusterIdsMap().values()) {
             for (String clusterId : clusterIds) {
-                if(!startup.contains(clusterId)) {
-                    startup.add(clusterId);
+                if(!startup.contains("cartridge." + clusterId)) {
+                    startup.add("cartridge." + clusterId);
                 }
             }
         }
