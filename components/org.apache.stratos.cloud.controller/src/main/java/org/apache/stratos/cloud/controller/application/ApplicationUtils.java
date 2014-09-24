@@ -159,11 +159,11 @@ public class ApplicationUtils {
         payloadBuilder.append(",");
         payloadBuilder.append("CLUSTER_ID=" + clusterId);
         // meta data endpoint
-        if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
+       // if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
             // TODO
             //payloadBuilder.append(",");
             //payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
-        }
+       // }
         payloadBuilder.append(",");
 
         return payloadBuilder;
