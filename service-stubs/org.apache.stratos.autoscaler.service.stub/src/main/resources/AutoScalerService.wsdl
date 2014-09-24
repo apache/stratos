@@ -338,6 +338,7 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax214:LoadThresholds"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
@@ -376,6 +377,7 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax28:PartitionGroup"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -1140,23 +1142,14 @@
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
-        <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
-        </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
-        </wsdl:port>
-        <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
-        </wsdl:port>
-        <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://192.168.0.100:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
+            <soap12:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://192.168.0.100:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
+            <http:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
