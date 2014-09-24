@@ -26,6 +26,7 @@ import org.apache.stratos.metadata.client.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.data.extractor.MetaDataExtractor;
 import org.apache.stratos.metadata.client.exception.MetaDataExtractorException;
+import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.apache.stratos.metadata.client.factory.MetaDataExtractorFactory;
 import org.apache.stratos.metadata.client.pojo.DataContext;
 
@@ -42,11 +43,11 @@ public class MetaDataServiceClientSample {
     private MetaDataClientConfig metaDataClientConfig;
 
 
-    public MetaDataServiceClientSample() {
+    public MetaDataServiceClientSample() throws RestClientException {
         initialize();
     }
 
-    private void initialize() {
+    private void initialize() throws RestClientException {
 
         metaDataClientConfig = MetaDataClientConfig.getInstance();
         metaDataServiceClient = new DefaultMetaDataServiceClient(metaDataClientConfig.

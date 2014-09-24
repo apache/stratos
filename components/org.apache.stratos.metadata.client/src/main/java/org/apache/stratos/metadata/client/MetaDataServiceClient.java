@@ -41,7 +41,7 @@ public interface MetaDataServiceClient {
      * @param propertyValue Value of the Property
      * @throws MetaDataServiceClientExeption
      */
-    public void addProperty (String appId, String clusterId, String propertyKey, String propertyValue) throws MetaDataServiceClientExeption;
+    public void addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue) throws MetaDataServiceClientExeption;
 
 //    /**
 //     * Adds a property key value pair for the specified app
@@ -51,7 +51,7 @@ public interface MetaDataServiceClient {
 //     * @param propertyValue Value of the Property
 //     * @throws MetaDataServiceClientExeption
 //     */
-//    public void addProperty (String appId, String propertyKey, String propertyValue) throws MetaDataServiceClientExeption;
+//    public void addPropertyToCluster (String appId, String propertyKey, String propertyValue) throws MetaDataServiceClientExeption;
 //
 //    /**
 //     * Retrieves the property key value pairs for the relevant cluster of the specified app

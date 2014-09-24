@@ -216,7 +216,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
         Resource regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
 
         regResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
-        tempRegistry.put(regResource.getPath(), regResource);
+        tempRegistry.put(resourcePath, regResource);
 
     }
 

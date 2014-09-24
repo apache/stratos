@@ -1,31 +1,22 @@
 package org.apache.stratos.metadataservice.services;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.annotation.AuthorizationAction;
-import org.apache.stratos.metadataservice.definition.ApplicationBean;
 import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
-import org.apache.stratos.metadataservice.definition.ClusterBean;
 import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.exception.RestAPIException;
 import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
 import org.apache.stratos.metadataservice.util.ConfUtil;
 import org.wso2.carbon.registry.api.RegistryException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @Path("/")
@@ -118,7 +109,7 @@ public class MetaDataAdmin {
                 propertiesArr = properties.toArray(propertiesArr);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while getting properties ", e);
         }
 
         Response.ResponseBuilder rb=null;
@@ -156,7 +147,7 @@ public class MetaDataAdmin {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while getting property ", e);
         }
 
         Response.ResponseBuilder rb=null;
@@ -194,7 +185,7 @@ public class MetaDataAdmin {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while getting properties ", e);
         }
         Response.ResponseBuilder rb=null;
         if(property == null){
@@ -226,7 +217,7 @@ public class MetaDataAdmin {
                 propertiesArr = properties.toArray(propertiesArr);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while getting properties ", e);
         }
 
         Response.ResponseBuilder rb=null;
@@ -263,8 +254,8 @@ public class MetaDataAdmin {
                     break;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RegistryException e) {
+            log.error("Error occurred while getting property", e);
         }
 
         Response.ResponseBuilder rb=null;
@@ -294,7 +285,7 @@ public class MetaDataAdmin {
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error("Error occurred while adding dependencies ", e);
         }
         return Response.created(url).build();
     }
@@ -314,7 +305,7 @@ public class MetaDataAdmin {
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
-            e.printStackTrace();
+            log.error("Error occurred while adding property", e);
         }
 
         return Response.created(url).build();
@@ -338,7 +329,7 @@ public class MetaDataAdmin {
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToCluster(applicationId, clusterId, properties);
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error("Error occurred while adding properties ", e);
         }
 
 
@@ -362,7 +353,7 @@ public class MetaDataAdmin {
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToApplication(applicationId, properties);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while adding properties ", e);
         }
 
 
@@ -386,7 +377,7 @@ public class MetaDataAdmin {
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToApplication(applicationId, property);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error occurred while adding property ", e);
         }
 
 

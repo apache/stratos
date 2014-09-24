@@ -21,7 +21,10 @@ package org.apache.stratos.metadata.client;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpResponse;
+import org.apache.stratos.metadata.client.beans.PropertyBean;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
+import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.apache.stratos.metadata.client.rest.DefaultRestClient;
 import org.apache.stratos.metadata.client.rest.RestClient;
 
@@ -36,7 +39,7 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
     private RestClient restClient;
     private String baseUrl;
 
-    public DefaultMetaDataServiceClient (String baseUrl) {
+    public DefaultMetaDataServiceClient (String baseUrl) throws RestClientException {
         this.baseUrl = baseUrl;
         restClient = new DefaultRestClient();
     }
@@ -45,12 +48,30 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
         // initialization, if any
     }
 
-    public void addProperty(String appId, String clusterId, String propertyKey, String propertyValue)
+    public void addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue)
             throws MetaDataServiceClientExeption {
-        //To change body of implemented methods use File | Settings | File Templates.
+        String applicationPath = baseUrl.concat("application/").concat(appId).concat("/cluster/").concat(clusterId).concat("/property");
+        PropertyBean property = new PropertyBean(propertyKey, propertyValue);
+        try {
+            restClient.doPost(applicationPath, property);
+        } catch (RestClientException e) {
+            log.error(String.format("Error occurred while adding property %s", propertyKey));
+        }
     }
 
-//    public void addProperty(String appId, String propertyKey, String propertyValue)
+    public void addPropertyToApplication(String appId, String propertyKey, String propertyValue)
+            throws MetaDataServiceClientExeption {
+        String applicationPath = baseUrl.concat("application/").concat(appId).concat("/property");
+        PropertyBean property = new PropertyBean(propertyKey, propertyValue);
+        HttpResponse x;
+        try {
+            x = restClient.doPost(applicationPath, property);
+        } catch (RestClientException e) {
+            log.error(String.format("Error occurred while adding property %s", propertyKey));
+        }
+    }
+
+//    public void addPropertyToCluster(String appId, String propertyKey, String propertyValue)
 //            throws MetaDataServiceClientExeption {
 //        //To change body of implemented methods use File | Settings | File Templates.
 //    }
