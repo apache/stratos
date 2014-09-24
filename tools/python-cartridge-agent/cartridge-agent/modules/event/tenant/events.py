@@ -1,4 +1,5 @@
 import json
+from ... tenant.tenantcontext import *
 
 
 class SubscriptionDomainAddedEvent():
@@ -48,14 +49,26 @@ class SubscriptionDomainRemovedEvent:
 class CompleteTenantEvent:
 
     def __init__(self):
-        self.tenants = None
+        self.tenants = []
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         instance = CompleteTenantEvent()
+        instance.tenants = []
 
-        instance.tenants = json_obj["tenants"] if "tenants" in json_obj else None
+        temp_tenants = json_obj["tenants"] if "tenants" in json_obj else None
+        if temp_tenants is not None:
+            for tenant_str in temp_tenants:
+                tenant_obj = Tenant(int(tenant_str["tenantId"]), tenant_str["tenantDomain"])
+                for service_name in tenant_str["serviceNameSubscriptionMap"]:
+                    sub_str = tenant_str["serviceNameSubscriptionMap"][service_name]
+                    sub = Subscription(sub_str["serviceName"], sub_str["clusterIds"])
+                    for domain_name in sub_str["subscriptionDomainMap"]:
+                        subdomain_str = sub_str["subscriptionDomainMap"][domain_name]
+                        sub.add_subscription_domain(domain_name, subdomain_str["applicationContext"])
+                    tenant_obj.add_subscription(sub);
+                instance.tenants.append(tenant_obj)
 
         return instance
 

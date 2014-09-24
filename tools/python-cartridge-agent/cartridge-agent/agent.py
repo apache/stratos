@@ -11,6 +11,7 @@ from modules.extensions.defaultextensionhandler import DefaultExtensionHandler
 from modules.publisher import cartridgeagentpublisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
+from modules.tenant.tenantcontext import *
 
 
 class CartridgeAgent(threading.Thread):
@@ -27,7 +28,7 @@ class CartridgeAgent(threading.Thread):
 
         self.extension_handler = DefaultExtensionHandler()
 
-        self.__complete_tenant_initialized = False
+        self.__complete_tenant_event_received = False
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -96,8 +97,8 @@ class CartridgeAgent(threading.Thread):
 
         self.__instance_event_subscriber.register_handler("ArtifactUpdatedEvent", self.on_artifact_updated)
         self.__instance_event_subscriber.register_handler("InstanceCleanupMemberEvent", self.on_instance_cleanup_member)
-        self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent",
-                                                          self.on_instance_cleanup_cluster)
+        self.__instance_event_subscriber.register_handler("InstanceCleanupClusterEvent", self.on_instance_cleanup_cluster)
+
         self.__instance_event_subscriber.start()
         self.log.info("Instance notifier event message receiver thread started")
 
@@ -153,8 +154,8 @@ class CartridgeAgent(threading.Thread):
 
     def register_tenant_event_listeners(self):
         self.log.debug("Starting tenant event message receiver thread")
-        self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent",self.on_subscription_domain_added)
-        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent",self.on_subscription_domain_removed)
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainAddedEvent", self.on_subscription_domain_added)
+        self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent", self.on_subscription_domain_removed)
         self.__tenant_event_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
         self.__tenant_event_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
         self.__tenant_event_subscriber.register_handler("TenantUnSubscribedEvent", self.on_tenant_unsubscribed)
@@ -190,13 +191,14 @@ class CartridgeAgent(threading.Thread):
         # )
 
     def on_complete_tenant(self, msg):
-        if not self.__complete_tenant_initialized:
+        if not self.__complete_tenant_event_received:
             self.log.debug("Complete tenant event received")
             event_obj = CompleteTenantEvent.create_from_json(msg.payload)
+            TenantContext.update(event_obj.tenants)
 
             try:
                 self.extension_handler.onCompleteTenantEvent(event_obj)
-                self.__complete_tenant_initialized = True
+                self.__complete_tenant_event_received = True
             except:
                 self.log.exception("Error processing complete tenant event")
         else:
