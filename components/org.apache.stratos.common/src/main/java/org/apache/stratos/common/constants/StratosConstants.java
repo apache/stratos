@@ -24,7 +24,7 @@ public class StratosConstants {
     public static final String CLOUD_SERVICE_IS_ACTIVE_PROP_KEY = "active";
 
     public static final String CLOUD_SERVICE_INFO_STORE_PATH =
-            "/repository/components/org.wso2.stratos/cloud-manager/cloud-services";
+            "/repository/components/org.apache.stratos/cloud-manager/cloud-services";
 
     public static final String TENANT_USER_VALIDATION_STORE_PATH =
             "/repository/components/org.wso2.carbon.validations";

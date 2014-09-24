@@ -450,9 +450,6 @@
 	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
-            <includes>
-                <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
-            </includes>
         </fileSet>
 
     <!-- autoscaler -->

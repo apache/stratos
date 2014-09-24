@@ -25,7 +25,7 @@ import org.apache.stratos.common.util.StratosConfiguration;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 /**
- * @scr.component name="org.wso2.stratos.tenant.activity.ui" immediate="true"
+ * @scr.component name="org.apache.stratos.tenant.activity.ui" immediate="true"
  * @scr.reference name="config.context.service"
  * interface="org.wso2.stratos.utils.ConfigurationContextService"
  * cardinality="1..1" policy="dynamic"  bind="setConfigurationContextService"
