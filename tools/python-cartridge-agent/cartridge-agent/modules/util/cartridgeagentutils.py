@@ -6,6 +6,7 @@ import time
 import socket
 
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+import cartridgeagentconstants
 
 unpad = lambda s : s[0:-ord(s[-1])]
 logging.basicConfig(level=logging.DEBUG)
@@ -92,3 +93,19 @@ def check_ports_active(ip_address, ports):
             return False
 
     return True
+
+
+def validate_tenant_range(tenant_range):
+    valid = False
+    if tenant_range == "*":
+        valid = True
+    else:
+        arr = tenant_range.split(cartridgeagentconstants.TENANT_RANGE_DELIMITER)
+        if len(arr) == 2:
+            if arr[0].isdigit() and arr[1].isdigit():
+                valid = True
+            elif arr[0].isdigit() and arr[1] == "*":
+                valid = True
+
+    if not valid:
+        raise RuntimeError("Tenant range %r is not valid" % tenant_range)

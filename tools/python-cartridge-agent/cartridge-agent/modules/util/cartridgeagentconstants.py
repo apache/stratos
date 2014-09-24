@@ -86,3 +86,7 @@ HEALTH_STAT_TOPIC = "health/#"
 TOPOLOGY_TOPIC = "topology/#"
 TENANT_TOPIC = "tenant/#"
 INSTANCE_STATUS_TOPIC = "instance/#"
+
+
+#Messaging Model
+TENANT_RANGE_DELIMITER = "-"
