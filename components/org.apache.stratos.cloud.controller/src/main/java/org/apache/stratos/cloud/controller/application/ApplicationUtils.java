@@ -78,7 +78,7 @@ public class ApplicationUtils {
         if (groupName != null) {
             metaDataHolder = new MetaDataHolder(appId, groupName, clusterId);
         } else {
-            metaDataHolder = new MetaDataHolder(appId);
+            metaDataHolder = new MetaDataHolder(appId, clusterId);
         }
 
         Properties clusterLevelPayloadProperties = new Properties();

@@ -113,4 +113,25 @@ public class ApplicationClusterContext {
     public void setTenantRange(String tenantRange) {
         this.tenantRange = tenantRange;
     }
+
+    public boolean equals(Object other) {
+
+        if(other == null || !(other instanceof ApplicationClusterContext)) {
+            return false;
+        }
+
+        if(this == other) {
+            return true;
+        }
+
+        ApplicationClusterContext that = (ApplicationClusterContext)other;
+
+        return this.cartridgeType.equals(that.cartridgeType) &&
+                this.clusterId.equals(that.clusterId);
+    }
+
+    public int hashCode () {
+        return this.cartridgeType.hashCode() + this.clusterId.hashCode();
+    }
+
 }
