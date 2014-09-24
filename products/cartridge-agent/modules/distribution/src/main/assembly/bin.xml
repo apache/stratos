@@ -54,6 +54,14 @@
             <outputDirectory>/conf</outputDirectory>
             <fileMode>0600</fileMode>
             <includes>
+                <include>mqtttopic.properties</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
                 <include>jndi.properties</include>
             </includes>
         </fileSet>
