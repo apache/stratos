@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.grouping;
 
 import org.apache.stratos.messaging.domain.topology.*;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -65,11 +66,11 @@ public class DependencyBuilder {
             }
         }
 
-        for(Set<String> clusterIds: component.getServiceNameToClusterIdsMap().values()) {
-            for (String clusterId : clusterIds) {
-                if(!startup.contains(clusterId)) {
-                    startup.add(clusterId);
-                }
+        Collection<ClusterDataHolder> clusterDataHolders = component.getClusterDataMap().values();
+
+        for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+                if(!startup.contains(clusterDataHolder.getClusterId())) {
+                    startup.add(clusterDataHolder.getClusterId());
             }
         }
 

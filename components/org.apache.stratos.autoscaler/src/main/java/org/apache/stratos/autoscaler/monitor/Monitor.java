@@ -123,17 +123,15 @@ public abstract class Monitor extends Observable implements Observer {
                 startGroupMonitor(this, dependency, component);
             } else if (dependency.contains("cartridge")) {
 
-                Set<String> clusterIds = component.getClusterIds(dependency);
-                for (String clusterId : clusterIds) {
-                    Cluster cluster = null;
-                    TopologyManager.acquireReadLock();
-                    cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
-                    TopologyManager.releaseReadLock();
-                    if (cluster != null) {
-                        startClusterMonitor(cluster);
-                    } else {
-                        //TODO throw exception since Topology is inconsistent
-                    }
+                String clusterId = component.getClusterData(dependency).getClusterId();
+                Cluster cluster = null;
+                TopologyManager.acquireReadLock();
+                cluster = TopologyManager.getTopology().getService(dependency).getCluster(clusterId);
+                TopologyManager.releaseReadLock();
+                if (cluster != null) {
+                    startClusterMonitor(cluster);
+                } else {
+                    //TODO throw exception since Topology is inconsistent
                 }
             }
         } else {

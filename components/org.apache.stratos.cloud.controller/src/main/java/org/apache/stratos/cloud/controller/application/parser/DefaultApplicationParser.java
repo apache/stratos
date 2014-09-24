@@ -210,15 +210,15 @@ public class DefaultApplicationParser implements ApplicationParser {
         // following keeps track of all Clusters created for this application
         //Set<Cluster> clusters = new HashSet<Cluster>();
         //ClusterDataHolder clusterDataHolder = null;
-        Map<String, Set<String>> serviceNameToClusterIds;
+        Map<String, ClusterDataHolder> clusterDataMap;
 
         if (appCtxt.getComponents() != null) {
             // get top level Subscribables
             if (appCtxt.getComponents().getSubscribableContexts() != null) {
-                serviceNameToClusterIds = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
+                clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
                         application.getKey(), null, Arrays.asList(appCtxt.getComponents().getSubscribableContexts()),
                         subscribableInfoCtxts);
-                application.setClusterIds(serviceNameToClusterIds);
+                application.setClusterData(clusterDataMap);
                 //clusters.addAll(clusterDataHolder.getApplicationClusterContexts());
             }
 
@@ -336,14 +336,13 @@ public class DefaultApplicationParser implements ApplicationParser {
         dependencyOrder.setKillbehavior(getKillbehaviour(groupCtxt.getName()));
         group.setDependencyOrder(dependencyOrder);
 
-        //ClusterDataHolder clusterDataHolderOfGroup;
-        Map<String, Set<String>> serviceNameToClusterIds;
+        Map<String, ClusterDataHolder> clusterDataMap;
 
         // get group level Subscribables
         if (groupCtxt.getSubscribableContexts() != null) {
-            serviceNameToClusterIds = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
+            clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
                     Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts);
-            group.setClusterIds(serviceNameToClusterIds);
+            group.setClusterData(clusterDataMap);
             //clusters.addAll(clusterDataHolderOfGroup.getApplicationClusterContexts());
 //            if (clusterDataHolder == null) {
 //                clusterDataHolder = clusterDataHolderOfGroup;
@@ -456,12 +455,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 //        return subscribableContexts;
 //    }
 
-    private Map<String, Set<String>> parseLeafLevelSubscriptions (String appId, int tenantId, String key, String groupName,
+    private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions (String appId, int tenantId, String key, String groupName,
                                                                  List<SubscribableContext> subscribableCtxts,
                                                                  Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
 
-        Map<String, Set<String>> clusterIdMap = new HashMap<String, Set<String>>();
+        Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
 //        Set<Cluster> clusters = new HashSet<Cluster>();
         //Set<PayloadDataHolder> payloadDataHolders = new HashSet<PayloadDataHolder>();
 
@@ -508,12 +507,16 @@ public class DefaultApplicationParser implements ApplicationParser {
             // create cluster level meta data
             this.metaDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key,
                     hostname, appClusterCtxt.getTenantRange(), clusterId, subscribableCtxt, subscribableInfoCtxt, cartridge));
+
+            // add relevant information to the map
+            clusterDataMap.put(subscribableCtxt.getAlias(), new ClusterDataHolder(subscribableCtxt.getType(), clusterId));
+
             ////////////
             //Cluster cluster = getCluster(subscribableCtxt, subscribableInfoCtxt, cartridge);
-            addClusterId(clusterIdMap, subscribableCtxt.getType(), clusterId);
-            //clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId());
+            //addClusterId(clusterDataMap, subscribableCtxt.getType(), clusterId);
+            //clusterDataMap.put(subscribableCtxt.getType(), cluster.getClusterId());
             //clusters.add(cluster);
-//            if (clusterIdMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
+//            if (clusterDataMap.put(subscribableCtxt.getType(), cluster.getClusterId()) != null) {
 //                // Application Definition has same cartridge multiple times at the top-level
 //                handleError("Cartridge [ " + subscribableCtxt.getType() + " ] appears twice in the Application Definition's top level");
 //            }
@@ -523,8 +526,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 //                    cluster.getHostNames().get(0));
         }
 
-        return clusterIdMap;
-        //return new ClusterDataHolder(clusterIdMap, clusters);
+        return clusterDataMap;
+        //return new ClusterDataHolder(clusterDataMap, clusters);
         //clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
     }
 
@@ -539,18 +542,18 @@ public class DefaultApplicationParser implements ApplicationParser {
         return new ApplicationClusterContext(serviceType, clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
-    public void addClusterId (Map<String, Set<String>> serviceNameToClusterIdsMap, String serviceName, String clusterId) {
-
-        if (serviceNameToClusterIdsMap.get(serviceName) == null) {
-            // not found, create
-            Set<String> clusterIds = new HashSet<String>();
-            clusterIds.add(clusterId);
-            serviceNameToClusterIdsMap.put(serviceName, clusterIds);
-        } else {
-            // the cluster id set already exists, update
-            serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
-        }
-    }
+//    public void addClusterId (Map<String, Set<String>> serviceNameToClusterIdsMap, String serviceName, String clusterId) {
+//
+//        if (serviceNameToClusterIdsMap.get(serviceName) == null) {
+//            // not found, create
+//            Set<String> clusterIds = new HashSet<String>();
+//            clusterIds.add(clusterId);
+//            serviceNameToClusterIdsMap.put(serviceName, clusterIds);
+//        } else {
+//            // the cluster id set already exists, update
+//            serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
+//        }
+//    }
 
 //    private void createClusterContext (String appId, String groupName, String serviceType, String clusterId,
 //                                              String hostName) throws ApplicationDefinitionException {

@@ -34,7 +34,7 @@ public interface ParentBehavior extends Serializable {
 
     public Map<String, Group> getAliasToGroupMap();
 
-    public Map<String,Set<String>> getClusterMap();
+    public Map<String, ClusterDataHolder> getClusterDataMap();
 
     public Group getGroupRecursively (String groupAlias);
 
@@ -44,11 +44,7 @@ public interface ParentBehavior extends Serializable {
 
     public DependencyOrder getDependencyOrder ();
 
-//    public void addClusterId (String serviceName, String clusterId);
+    public void setClusterData (Map<String, ClusterDataHolder> aliasToClusterData);
 
-    public void setClusterIds (Map<String,Set<String>> serviceNameToClusterIds);
-
-    public Set<String> getClusterIds(String serviceName);
-
-    public Map<String, Set<String>> getServiceNameToClusterIdsMap();
+    public ClusterDataHolder getClusterData (String alias);
 }

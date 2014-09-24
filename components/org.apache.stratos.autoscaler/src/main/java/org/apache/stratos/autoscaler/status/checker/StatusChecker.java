@@ -106,7 +106,7 @@ public class StatusChecker {
         Runnable exGroup = new Runnable() {
             public void run() {
                 Application application = TopologyManager.getTopology().getApplication(appId);
-                Map<String, Set<String>> clusterIds = application.getClusterMap();
+                Map<String, ClusterDataHolder> clusterIds = application.getClusterDataMap();
                 Map<String, Group> groups = application.getAliasToGroupMap();
                 updateChildStatus(clusterId, groups, clusterIds, application);
             }
@@ -155,23 +155,23 @@ public class StatusChecker {
     }
 
 
-    private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, Set<String>> clusterIds, ParentBehavior parent) {
+    private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, ClusterDataHolder> clusterData, ParentBehavior parent) {
         boolean groupActive = false;
         boolean clustersActive = false;
         boolean groupsActive = false;
         boolean childFound = false;
 
-        if(clusterIds.containsValue(id) || groups.containsKey(id)) {
+        if(clusterData.containsValue(id) || groups.containsKey(id)) {
             childFound = true;
-            if(!clusterIds.isEmpty() && !groups.isEmpty()) {
-                clustersActive = getClusterStatus(clusterIds);
+            if(!clusterData.isEmpty() && !groups.isEmpty()) {
+                clustersActive = getClusterStatus(clusterData);
                 groupsActive = getGroupStatus(groups);
                 groupActive = clustersActive && groupsActive;
             } else if (!groups.isEmpty()){
                 groupsActive = getGroupStatus(groups);
                 groupActive = groupsActive;
-            } else if (!clusterIds.isEmpty()){
-                clustersActive = getClusterStatus(clusterIds);
+            } else if (!clusterData.isEmpty()){
+                clustersActive = getClusterStatus(clusterData);
                 groupActive = clustersActive;
             } else {
                 //TODO warn log
@@ -186,7 +186,7 @@ public class StatusChecker {
         } else {
             if(!groups.isEmpty()) {
                 for(Group group: groups.values()) {
-                    return updateChildStatus(id, group.getAliasToGroupMap(), group.getClusterMap(), group);
+                    return updateChildStatus(id, group.getAliasToGroupMap(), group.getClusterDataMap(), group);
 
                 }
             }
@@ -207,17 +207,16 @@ public class StatusChecker {
 
     }
 
-    private boolean getClusterStatus(Map<String, Set<String>> clusterIds) {
+    private boolean getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
         boolean clusterActiveStatus = false;
-        for(Map.Entry<String, Set<String>> clusterIdsEntry: clusterIds.entrySet()) {
-            Service service = TopologyManager.getTopology().getService(clusterIdsEntry.getKey());
-            for (String clusterId : clusterIdsEntry.getValue()) {
-                if(service.getCluster(clusterId).getStatus().equals(ClusterStatus.Active)) {
+        for(Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry: clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+                if(service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
+                        getStatus().equals(ClusterStatus.Active)) {
                     clusterActiveStatus = true;
                 } else {
                     clusterActiveStatus = false;
                 }
-            }
         }
         return clusterActiveStatus;
     }

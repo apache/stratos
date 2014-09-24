@@ -17,24 +17,28 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.stratos.messaging.domain.topology.Application;
+import java.io.Serializable;
 
-public class ApplicationCreatedEvent extends TopologyEvent {
+public class ClusterDataHolder implements Serializable {
 
-    private Application application;
+    private String serviceType;
 
-    public ApplicationCreatedEvent (Application application) {
-        this.application = application;
+    private String clusterId;
+
+    public ClusterDataHolder (String serviceType, String clusterId) {
+
+        this.serviceType = serviceType;
+        this.clusterId = clusterId;
     }
 
-    public Application getApplication() {
-        return application;
+
+    public String getServiceType() {
+        return serviceType;
     }
 
-    public String toString() {
-        return "ApplicationCreatedEvent [app id= " + application.getId() + ", groups= " + application.getGroups() + ", clusters= " +
-                application.getClusterDataMap().values() + "]";
+    public String getClusterId() {
+        return clusterId;
     }
 }

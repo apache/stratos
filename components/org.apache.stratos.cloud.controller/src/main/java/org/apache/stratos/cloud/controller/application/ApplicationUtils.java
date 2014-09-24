@@ -74,7 +74,12 @@ public class ApplicationUtils {
                                                                 SubscribableInfoContext subscribableInfoCtxt,
                                                                 Cartridge cartridge) {
 
-        MetaDataHolder metaDataHolder = new MetaDataHolder(appId, subscribableCtxt.getType(), clusterId);
+        MetaDataHolder metaDataHolder;
+        if (groupName != null) {
+            metaDataHolder = new MetaDataHolder(appId, groupName, clusterId);
+        } else {
+            metaDataHolder = new MetaDataHolder(appId);
+        }
 
         Properties clusterLevelPayloadProperties = new Properties();
         // app id
