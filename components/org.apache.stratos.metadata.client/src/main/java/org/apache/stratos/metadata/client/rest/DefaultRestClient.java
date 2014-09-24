@@ -34,6 +34,7 @@ import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.exception.RestClientException;
 
 import java.io.IOException;
@@ -91,11 +92,11 @@ public class DefaultRestClient implements RestClient {
     }
 
     private String getUsername() {
-        return null;
+        return MetaDataClientConfig.getInstance().getUsername();
     }
 
     private String getPassword() {
-        return null;
+        return MetaDataClientConfig.getInstance().getPassword();
     }
 
     private void addPayloadJsonString(Object payload, HttpPost post) {

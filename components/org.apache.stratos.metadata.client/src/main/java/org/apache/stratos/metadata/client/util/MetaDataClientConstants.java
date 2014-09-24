@@ -21,9 +21,14 @@ package org.apache.stratos.metadata.client.util;
 
 public class MetaDataClientConstants {
 
-    public static String METADATA_CLIENT_CONFIG_FILE = "METADATA_CLIENT_CONFIG_FILE";
+    public static final String METADATA_CLIENT_CONFIG_FILE = "METADATA_CLIENT_CONFIG_FILE";
 
-    public static String METADATA_SERVICE_BASE_URL = "metadataService.baseUrl";
+    public static final String METADATA_SERVICE_BASE_URL = "metadataService.baseUrl";
 
-    public static String METADATA_CLIENT_DATA_EXTRACTOR_CLASS = "metadataClient.dataExtractorClass";
+    public static final String METADATA_SERVICE_USERNAME = "metadataService.username";
+
+    public static final String METADATA_SERVICE_PASSWORD = "metadataService.password";
+
+    public static final String METADATA_CLIENT_DATA_EXTRACTOR_CLASS = "metadataClient.dataExtractorClass";
+
 }
