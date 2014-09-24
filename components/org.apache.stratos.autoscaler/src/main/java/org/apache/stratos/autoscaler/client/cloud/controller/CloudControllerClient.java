@@ -277,13 +277,13 @@ public class CloudControllerClient {
         }
     }
     
-    public synchronized void terminateContainer(String memberId) throws TerminationException {
+    public synchronized void terminateAllContainers(String clusterId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Terminating container via cloud controller: [member] %s", memberId));
+                log.info(String.format("Terminating containers via cloud controller: [cluster] %s", clusterId));
             }
             long startTime = System.currentTimeMillis();
-            stub.terminateInstance(memberId);
+            stub.terminateAllContainers(clusterId);
             if(log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call terminateContainer() returned in %dms", (endTime - startTime)));
@@ -292,15 +292,11 @@ public class CloudControllerClient {
         	String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceInvalidMemberExceptionException e) {
-        	String msg = e.getFaultMessage().getInvalidMemberException().getMessage();
+        } catch (CloudControllerServiceInvalidClusterExceptionException e) {
+        	String msg = e.getFaultMessage().getInvalidClusterException().getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-        	String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        }
+		} 
     }
 
 }
