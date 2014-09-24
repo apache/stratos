@@ -217,6 +217,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
         regResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
         tempRegistry.put(resourcePath, regResource);
+        log.info(String.format("Property %s is added to cluster %s of application %s", property.getKey(), clusterId, applicationId));
 
     }
 
@@ -232,9 +233,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
         }
         tempRegistry.put(resourcePath, regResource);
-        if(log.isDebugEnabled()){
-            log.debug("A resource added to: " + resourcePath);
-    }
+        log.info(String.format("Properties  are added to cluster %s of application %s", clusterId, applicationName));
     }
 
     public void addPropertiesToApplication(String applicationId, NewProperty[] properties) throws RegistryException {
@@ -247,6 +246,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 
         }
         tempRegistry.put(resourcePath, regResource);
+        log.info(String.format("Properties  are added to application %s", applicationId));
     }
 
     public void addPropertyToApplication(String applicationId, NewProperty property) throws RegistryException {
@@ -255,6 +255,7 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
         Resource regResource = createOrGetResourceforApplication(tempRegistry, resourcePath);
         regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
         tempRegistry.put(resourcePath, regResource);
+        log.info(String.format("Property %s is added to application %s ", property.getKey(), applicationId));
     }
 
     public List<NewProperty> getPropertiesOfApplication(String applicationId) throws RegistryException {
@@ -295,6 +296,9 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
             regResource = tempRegistry.get(resourcePath);
         }else{
             regResource = tempRegistry.newCollection();
+            if(log.isDebugEnabled()){
+                log.debug("Registry resource is create at path " + regResource.getPath() + " for application");
+            }
         }
         return regResource;
     }
@@ -309,6 +313,9 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
             regResource = tempRegistry.get(resourcePath);
         }else{
             regResource = tempRegistry.newResource();
+            if(log.isDebugEnabled()){
+                log.debug("Registry resource is create at path for cluster" + regResource.getPath() + " for cluster");
+            }
         }
         return regResource;
     }
