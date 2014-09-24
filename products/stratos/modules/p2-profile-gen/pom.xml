@@ -247,6 +247,8 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.cassandra.mgt.feature:${carbon.platform.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.cassandra.dataaccess.feature:${carbon.platform.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.cassandra.common.feature:${carbon.platform.version}</featureArtifactDef>
+				<!-- Common features -->
+				<featureArtifactDef>org.apache.stratos:org.apache.stratos.metadata.client.feature:${project.version}</featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -312,6 +314,8 @@
                             <profile>cc</profile>
                         </configuration>
                     </execution>
+
+
 
                     <execution>
                         <id>p2 profile generation for sm</id>
@@ -449,6 +453,8 @@
                     </execution>
 
 
+
+
                     <execution>
                     <id>p2 profile generation for as</id>
                     <phase>package</phase>
@@ -500,13 +506,15 @@
                              <id>org.apache.stratos.metadataservice.feature.group</id>
                              <version>${project.version}</version>
                         </feature>
-                          <feature>
-                                    <id>org.apache.stratos.metadataservice.feature.group</id>
-                                    <version>${project.version}</version>
-                                </feature>
+			<feature>
+                             <id>org.apache.stratos.metadata.client.feature.group</id>
+                             <version>${project.version}</version>
+                        </feature>
                     </features>
                     </configuration>
                     </execution>
+
+
 
                     <execution>
                     <id>p2 profile generation for CC</id>
@@ -590,9 +598,16 @@
                                     <id>org.apache.stratos.metadataservice.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
+			<feature>
+                                    <id>org.apache.stratos.metadata.client.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
                     </features>
                     </configuration>
                     </execution>
+
+
+
                     <execution>
                         <id>3-p2-profile-generation</id>
                         <phase>package</phase>
@@ -833,6 +848,12 @@
                                     <id>org.apache.stratos.metadataservice.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
+				<!-- Common features -->
+				<feature>
+                                    <id>org.apache.stratos.metadata.client.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+
                             </features>
                         </configuration>
                     </execution>
