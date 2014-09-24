@@ -144,7 +144,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateAllKubernetesUnits">
+            <xs:element name="terminateAllContainers">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
@@ -511,8 +511,8 @@
     <wsdl:message name="getCartridgeInfoResponse">
         <wsdl:part name="parameters" element="ns:getCartridgeInfoResponse"/>
     </wsdl:message>
-    <wsdl:message name="terminateAllKubernetesUnitsRequest">
-        <wsdl:part name="parameters" element="ns:terminateAllKubernetesUnits"/>
+    <wsdl:message name="terminateAllContainersRequest">
+        <wsdl:part name="parameters" element="ns:terminateAllContainers"/>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidClusterException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
@@ -590,9 +590,9 @@
             <wsdl:output message="ns:getCartridgeInfoResponse" wsaw:Action="urn:getCartridgeInfoResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:getCartridgeInfoCloudControllerServiceUnregisteredCartridgeException"/>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllKubernetesUnits">
-            <wsdl:input message="ns:terminateAllKubernetesUnitsRequest" wsaw:Action="urn:terminateAllKubernetesUnits"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllKubernetesUnitsCloudControllerServiceInvalidClusterException"/>
+        <wsdl:operation name="terminateAllContainers">
+            <wsdl:input message="ns:terminateAllContainersRequest" wsaw:Action="urn:terminateAllContainers"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllContainersCloudControllerServiceInvalidClusterException"/>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
             <wsdl:input message="ns:unregisterServiceRequest" wsaw:Action="urn:unregisterService"/>
@@ -731,8 +731,8 @@
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllKubernetesUnits">
-            <soap:operation soapAction="urn:terminateAllKubernetesUnits" style="document"/>
+        <wsdl:operation name="terminateAllContainers">
+            <soap:operation soapAction="urn:terminateAllContainers" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
@@ -908,8 +908,8 @@
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllKubernetesUnits">
-            <soap12:operation soapAction="urn:terminateAllKubernetesUnits" style="document"/>
+        <wsdl:operation name="terminateAllContainers">
+            <soap12:operation soapAction="urn:terminateAllContainers" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
@@ -1052,8 +1052,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllKubernetesUnits">
-            <http:operation location="terminateAllKubernetesUnits"/>
+        <wsdl:operation name="terminateAllContainers">
+            <http:operation location="terminateAllContainers"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
