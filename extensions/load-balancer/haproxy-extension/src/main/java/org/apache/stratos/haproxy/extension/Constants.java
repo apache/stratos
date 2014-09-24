@@ -35,7 +35,6 @@ public class Constants {
     public static final String THRIFT_RECEIVER_PORT = "thrift.receiver.port";
     public static final String NETWORK_PARTITION_ID = "network.partition.id";
     public static final String CLUSTER_ID = "cluster.id";
-    public static final String SERVICE_NAME = "service.name";
 
     public static final String LOAD_BALANCER = "load.balancer";
     public static final String LOAD_BALANCER_REF = "load.balancer.ref";

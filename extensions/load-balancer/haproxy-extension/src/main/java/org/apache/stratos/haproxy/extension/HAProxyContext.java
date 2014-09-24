@@ -42,8 +42,6 @@ public class HAProxyContext {
     private String thriftReceiverPort;
     private String networkPartitionId;
     private String clusterId;
-    private String serviceName;
-    private String lbserviceType;
 
     private HAProxyContext() {
         this.haProxyPrivateIp = System.getProperty(Constants.HAPROXY_PRIVATE_IP);
@@ -58,8 +56,6 @@ public class HAProxyContext {
         this.thriftReceiverPort = System.getProperty(Constants.THRIFT_RECEIVER_PORT);
         this.networkPartitionId = System.getProperty(Constants.NETWORK_PARTITION_ID);
         this.clusterId = System.getProperty(Constants.CLUSTER_ID);
-        this.serviceName = System.getProperty(Constants.SERVICE_NAME);
-        this.lbserviceType = System.getProperty(Constants.LB_SERVICE_TYPE);
 
         if (log.isDebugEnabled()) {
             log.debug(Constants.HAPROXY_PRIVATE_IP + " = " + haProxyPrivateIp);
@@ -99,7 +95,7 @@ public class HAProxyContext {
         validateSystemProperty(Constants.CEP_STATS_PUBLISHER_ENABLED);
         validateSystemProperty(Constants.CLUSTER_ID);
 
-        if (cepStatsPublisherEnabled) {
+        if(cepStatsPublisherEnabled) {
             validateSystemProperty(Constants.THRIFT_RECEIVER_IP);
             validateSystemProperty(Constants.THRIFT_RECEIVER_PORT);
             validateSystemProperty(Constants.NETWORK_PARTITION_ID);
@@ -108,7 +104,7 @@ public class HAProxyContext {
 
     private void validateSystemProperty(String propertyName) {
         String value = System.getProperty(propertyName);
-        if (StringUtils.isEmpty(value)) {
+        if(StringUtils.isEmpty(value)) {
             throw new RuntimeException("System property was not found: " + propertyName);
         }
     }
@@ -152,10 +148,4 @@ public class HAProxyContext {
     public String getClusterId() {
         return clusterId;
     }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public String getLbserviceType() { return  lbserviceType;}
 }
