@@ -74,7 +74,7 @@ class DefaultExtensionHandler:
             extensionutils.execute_artifacts_updated_extension(env_params)
 
             #if !cloneExists publish instanceActivatedEvent
-            if not checkout_result["cloned"]:
+            if checkout_result["subscribe_run"]:
                 #publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 

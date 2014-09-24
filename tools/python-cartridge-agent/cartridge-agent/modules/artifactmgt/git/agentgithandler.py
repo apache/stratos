@@ -2,7 +2,7 @@ import logging
 
 from git import *
 
-from gitrepository import GitRepositoryContext
+from gitrepository import GitRepository
 from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ... util import cartridgeagentutils
 
@@ -25,17 +25,71 @@ class AgentGitHandler:
         repo_context = AgentGitHandler.get_repo_context(repo_info.tenant_id)
         if repo_context is not None:
             #has been previously cloned, this is not the subscription run
-            cloned = True
+            subscribe_run = False
+            if AgentGitHandler.is_valid_git_repository(repo_context):
+                AgentGitHandler.log.debug("Existing git repository detected for tenant %r, no clone required" % repo_info.tenant_id)
+                AgentGitHandler.pull(repo_context)
+            else:
+                if not os.listdir(repo_context.local_repo_path):
+                    #empty dir, clone
+                    repo_context.repo = AgentGitHandler.clone(repo_info)
+                else:
+                    #not empty
+                    if AgentGitHandler.sync_initial_local_artifacts(repo_context):
+                        AgentGitHandler.pull(repo_context)
+                    else:
+                        repo_context = None
+
             #TODO: handle conflicts and errors using repo.git.pull(), status(), checkout() outputs
-            AgentGitHandler.log.debug("Existing git repository detected for tenant %r, no clone required" % repo_info.tenant_id)
-            AgentGitHandler.pull(repo_context)
+
         else:
             #subscribing run.. need to clone
-            cloned = False
-            repo_context = AgentGitHandler.create_git_repo_context(repo_info)
-            AgentGitHandler.clone(repo_context)
+            subscribe_run = True
+            repo_context = AgentGitHandler.clone(repo_context)
 
-        return {"cloned": cloned, "repo_context": repo_context}
+        return {"subscribe_run": subscribe_run, "repo_context": repo_context}
+
+    @staticmethod
+    def sync_initial_local_artifacts(repo_context):
+        #init git repo
+        AgentGitHandler.init(repo_context.local_repo_path)
+
+        # add remote repos
+        return AgentGitHandler.add_remote(repo_context)
+
+    @staticmethod
+    def add_remote(repo_context):
+        try:
+            repo_context.repo.create_remote("origin", repo_context.repo_url)
+            repo_context.repo.git.fetch()
+            repo_context.repo.git.branch("-f", "--track", "master", "origin/master")
+            return True
+        except:
+            AgentGitHandler.log.exception("Error in adding remote origin %r for local repository %r" % (repo_context.repo_url, repo_context.local_repo_path))
+            return False
+
+    @staticmethod
+    def init(path):
+        try:
+            repo = Repo.init(path, mkdir=True)
+            repo.git.init()
+        except:
+            AgentGitHandler.log.exception("Initializing local repo at %r failed" % path)
+            raise Exception("Initializing local repo at %r failed" % path)
+
+    @staticmethod
+    def is_valid_git_repository(repo_context):
+        if repo_context.cloned:
+            return True
+
+        for ref in repo_context.repo.refs:
+            try:
+                ref._get_object()
+            except ValueError:
+                #corrupt sha in the reference
+                return False
+
+        return True
 
     @staticmethod
     def pull(repo_context):
@@ -47,10 +101,13 @@ class AgentGitHandler:
 
 
     @staticmethod
-    def clone(repo_context):
+    def clone(repo_info):
+        repo_context = None
         try:
+            repo_context = AgentGitHandler.create_git_repo_context(repo_info)
             repo = Repo.clone_from(repo_context.repo_url, repo_context.local_repo_path)
             repo_context.cloned = True
+            repo_context.repo = repo
             AgentGitHandler.add_repo_context(repo_context)
             AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
         except GitCommandError as ex:
@@ -60,6 +117,8 @@ class AgentGitHandler:
                 cartridgeagentutils.create_dir(repo_context.local_repo_path)
             else:
                 AgentGitHandler.log.exception("Git clone operation for tenant %r failed" % repo_context.tenant_id)
+        finally:
+            return repo_context
 
     @staticmethod
     def add_repo_context(repo_context):
@@ -79,7 +138,7 @@ class AgentGitHandler:
 
     @staticmethod
     def create_git_repo_context(repo_info):
-        repo_context = GitRepositoryContext()
+        repo_context = GitRepository()
         repo_context.tenant_id = repo_info.tenant_id
         repo_context.local_repo_path = AgentGitHandler.get_repo_path_for_tenant(
             repo_info.tenant_id, repo_info.repo_path, repo_info.is_multitenant)
@@ -96,6 +155,8 @@ class AgentGitHandler:
         #     repo.key_based_auth = False
 
         repo_context.cloned = False
+
+        repo_context.repo = None
 
         return repo_context
 
