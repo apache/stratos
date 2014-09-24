@@ -26,7 +26,6 @@ import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
-import org.apache.stratos.manager.grouping.definitions.StaticProperty;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
@@ -242,8 +241,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	servicegroup.setName(serviceGroupDefinition.getName());
     	List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
     	List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
-    	List<String> dynamicPropertiesDef = serviceGroupDefinition.getDynamicProperties();
-    	List<StaticProperty> staticPropertiesDef = serviceGroupDefinition.getStaticProperties();
     	
     	if (subGroupsDef == null) {
     		subGroupsDef = new ArrayList<String>(0);
@@ -255,15 +252,12 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
     	String [] subGroups = new String[subGroupsDef.size()];
     	String [] cartridges = new String[cartridgesDef.size()];
-    	String [] dynamicProperties = new String[dynamicPropertiesDef.size()];
     	
     	subGroups = subGroupsDef.toArray(subGroups);
     	cartridges = cartridgesDef.toArray(cartridges);
-    	dynamicProperties = dynamicPropertiesDef.toArray(dynamicProperties);
     	
     	servicegroup.setSubGroups(subGroups);
     	servicegroup.setCartridges(cartridges);
-    	servicegroup.setDynamicProperties(dynamicProperties);
     	
     	DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
         if (depDefs != null) {
@@ -284,20 +278,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             deps.setKillBehaviour(depDefs.getKillBehaviour());
             servicegroup.setDependencies(deps);
         }
-        
-        List<StaticProperty> propDefs = serviceGroupDefinition.getStaticProperties();
-        org.apache.stratos.cloud.controller.stub.pojo.Property[] props = 
-        		                   new  org.apache.stratos.cloud.controller.stub.pojo.Property [propDefs.size()];
-        
-        int i = 0;
-        for (StaticProperty propDef : propDefs) {
-        	org.apache.stratos.cloud.controller.stub.pojo.Property prop = 
-        			new org.apache.stratos.cloud.controller.stub.pojo.Property();
-        	prop.setName(propDef.getName());
-        	prop.setValue(propDef.getValue());
-        	props[i] = prop;
-        }
-        servicegroup.setStaticProperties(props);
     	
     	return servicegroup;
     }
@@ -308,7 +288,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	String [] cartridges = serviceGroup.getCartridges();
     	String [] subGroups = serviceGroup.getSubGroups();
     	Dependencies deps = serviceGroup.getDependencies();
-    	org.apache.stratos.cloud.controller.stub.pojo.Property [] props = serviceGroup.getStaticProperties();
 
         if (deps != null) {
             DependencyDefinitions depsDef = new DependencyDefinitions();
@@ -329,16 +308,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
             depsDef.setKillBehaviour(deps.getKillBehaviour());
             servicegroupDef.setDependencies(depsDef);
-        }
-        
-        if (props != null) {
-        	List<StaticProperty> propDefs = new ArrayList<StaticProperty>();
-        	for (org.apache.stratos.cloud.controller.stub.pojo.Property prop : props) {
-        		StaticProperty propDef = new StaticProperty();
-        		propDef.setName(prop.getName());
-        		propDef.setValue(prop.getValue());
-        	}
-        	servicegroupDef.setStaticProperties(propDefs);
         }
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));

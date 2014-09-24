@@ -58,10 +58,6 @@ public interface CloudControllerService {
     public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
     
     public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
-    
-    public String [] getServiceGroupDynamicProperties (String name) throws InvalidServiceGroupException;
-    
-    public org.apache.stratos.cloud.controller.pojo.Property [] getServiceGroupStaticProperties (String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
