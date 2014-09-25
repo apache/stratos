@@ -130,11 +130,9 @@ public abstract class Monitor extends Observable implements Observer {
             } catch (InterruptedException ignore) {
             }*/
 
-            if (log.isDebugEnabled()) {
-                log.error(String
+                log.info(String
                         .format("Cluster monitor thread has been started successfully: [cluster] %s ",
                                 cluster.getClusterId()));
-            }
         }
     }
 
@@ -157,11 +155,9 @@ public abstract class Monitor extends Observable implements Observer {
             } catch (InterruptedException ignore) {
             }*/
 
-            if (log.isDebugEnabled()) {
-                log.debug(String
+                log.info(String
                         .format("Group monitor thread has been started successfully: [group] %s ",
                                 dependency));
-            }
         }
     }
 
