@@ -26,13 +26,13 @@ import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.ParentBehavior;
+import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.*;
 
@@ -53,10 +53,13 @@ public abstract class Monitor extends Observable implements Observer {
 
     protected ParentBehavior component;
 
+    protected Status status;
+
     public Monitor(ParentBehavior component) {
         groupMonitors = new HashMap<String, GroupMonitor>();
         abstractClusterMonitors = new HashMap<String, AbstractClusterMonitor>();
         this.component = component;
+        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
         startDependency();
     }
 
@@ -88,17 +91,6 @@ public abstract class Monitor extends Observable implements Observer {
     }
 
     public abstract void monitor();
-
-    @Override
-    public void update(Observable observable, Object arg) {
-        if(arg instanceof Event) {
-            Event event = (Event) arg;
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Event received: %s", event.getClass().getName()));
-            }
-            onEvent(event);
-        }
-    }
 
     /**
      * Triggered when an event is received.
@@ -162,6 +154,9 @@ public abstract class Monitor extends Observable implements Observer {
         }
     }
 
+    public Status getStatus() {
+        return status;
+    }
 
     private class ClusterMonitorAdder implements Runnable {
         private Cluster cluster;

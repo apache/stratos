@@ -46,7 +46,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     private static final Log log = LogFactory.getLog(ClusterMonitor.class);
     private String lbReferenceType;
     private boolean hasPrimary;
-    private Status status;
+
 
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
@@ -240,13 +240,5 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 }

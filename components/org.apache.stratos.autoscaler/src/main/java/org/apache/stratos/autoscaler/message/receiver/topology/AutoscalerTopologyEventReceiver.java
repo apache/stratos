@@ -146,11 +146,49 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
                 Monitor monitor = appMonitor.findParentMonitorOfCluster(clusterId);
-                monitor.notify();
+                AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //TODO monitor.notify();
                 //starting the status checker to decide on the status of it's parent
                 StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
+
+        topologyEventReceiver.addEventListener(new GroupActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[GroupActivatedEvent] Received: " + event.getClass());
+
+                GroupActivatedEvent groupActivatedEvent = (GroupActivatedEvent) event;
+                String appId = groupActivatedEvent.getAppId();
+                String groupId = groupActivatedEvent.getGroupId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                Monitor monitor = appMonitor.findParentMonitorOfGroup(groupId);
+
+                //TODO monitor.notify();
+                //starting the status checker to decide on the status of it's parent
+                StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ApplicationActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ApplicationActivatedEvent] Received: " + event.getClass());
+
+                ApplicationActivatedEvent applicationActivatedEvent = (ApplicationActivatedEvent) event;
+                String appId = applicationActivatedEvent.getAppId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                //TODO update appmonitor
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
 
 
         topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
@@ -408,6 +446,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
 //                partitionContext.incrementCurrentActiveMemberCount(1);
                     partitionContext.movePendingMemberToActiveMembers(memberId);
+                    //triggering the status checker
+                    StatusChecker.getInstance().onMemberStatusChange(e.getClusterId());
 
                 } catch (Exception e) {
                     log.error("Error processing event", e);

@@ -117,14 +117,5 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
     }
 
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-
 
 }
