@@ -538,7 +538,8 @@ fi
 if [[ !(-d $stratos_extract_path) ]]; then
     echo "Extracting Apache Stratos"
     unzip -q $stratos_pack_zip -d $stratos_path
-    extracted_folder=${stratos_pack_zip%.zip}
+    target=$stratos_path/$stratos_pack_zip_name
+    extracted_folder=${target%.zip}
     mv -f $extracted_folder $stratos_extract_path
 fi
 
