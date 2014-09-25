@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
+import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -48,6 +49,11 @@ import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.metadata.client.DefaultMetaDataServiceClient;
+import org.apache.stratos.metadata.client.MetaDataServiceClient;
+import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
+import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
+import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
@@ -1436,8 +1442,35 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
         }
 
-        //TODO: publish data to meta data service
-        applicationParser.getPayloadData();
+        //TODO: improve
+//        Set<MetaDataHolder> medaDataHolders = applicationParser.getPayloadData();
+//        if (medaDataHolders != null) {
+//
+//            MetaDataServiceClient metaDataServiceClient;
+//            try {
+//
+//                metaDataServiceClient = new DefaultMetaDataServiceClient(MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
+//                metaDataServiceClient.initialize();
+//
+//            } catch (RestClientException e) {
+//                log.error("Error creating instance of Metadata Service Client", e);
+//                throw new ApplicationDefinitionException(e);
+//            }
+//
+//            for (MetaDataHolder metaDataHolder : medaDataHolders) {
+//                for (Map.Entry<Object, Object> metaDataEntry : metaDataHolder.getProperties().entrySet()) {
+//                    try {
+//                        metaDataServiceClient.addPropertyToCluster(metaDataHolder.getAppId(), metaDataHolder.getClusterId(),
+//                                (String)metaDataEntry.getKey(), (String)metaDataEntry.getValue());
+//
+//                    } catch (MetaDataServiceClientExeption e) {
+//                        log.error("Error publishing data to Metadata Service", e);
+//                        throw new ApplicationDefinitionException(e);
+//                    }
+//                }
+//            }
+//        }
+
 
         TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
                 applicationParser.getPayloadData());

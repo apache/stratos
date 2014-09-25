@@ -78,6 +78,35 @@ public class Application implements ParentBehavior {
         return this.aliasToClusterDataMap;
     }
 
+    public Set<ClusterDataHolder> getClusterDataRecursively () {
+
+        Set<ClusterDataHolder> appClusterData = new HashSet<ClusterDataHolder>();
+
+        // get top level Cluster Data
+        if (this.aliasToClusterDataMap != null && !this.aliasToClusterDataMap.isEmpty()) {
+            appClusterData.addAll(this.aliasToClusterDataMap.values());
+        }
+
+        // find other nested Cluster Data (in the Groups)
+        if (getGroups() != null) {
+            getClusterData(appClusterData, getGroups());
+        }
+
+        return appClusterData;
+    }
+
+    private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
+
+        for (Group group : groups) {
+            if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
+                clusterData.addAll(group.getClusterDataMap().values());
+                if (group.getGroups() != null) {
+                    getClusterData(clusterData, group.getGroups());
+                }
+            }
+        }
+    }
+
     @Override
     public Group getGroupRecursively(String groupAlias) {
 

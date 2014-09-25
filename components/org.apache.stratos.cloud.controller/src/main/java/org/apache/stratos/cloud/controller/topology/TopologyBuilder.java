@@ -672,10 +672,16 @@ public class TopologyBuilder {
             } else {
                 Application application = topology.getApplication(applicationId);
                 // remove clusters
-                for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : application.getClusterDataMap().entrySet()) {
-                    Service service = topology.getService(clusterDataHolderEntry.getValue().getServiceType());
+                for (ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
+                    Service service = topology.getService(clusterDataHolder.getServiceType());
                     if (service != null) {
-                        service.removeCluster(clusterDataHolderEntry.getValue().getClusterId());
+                        service.removeCluster(clusterDataHolder.getClusterId());
+                        if (log.isDebugEnabled()) {
+                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
+                        }
+                    } else {
+                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
                     }
                 }
 
