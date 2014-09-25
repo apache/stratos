@@ -11,4 +11,4 @@ class GitRepository:
         self.repo_password = None
         self.is_multitenant = False
         self.commit_enabled = False
-        #scheduled update servicef
+        self.scheduled_update_task = None

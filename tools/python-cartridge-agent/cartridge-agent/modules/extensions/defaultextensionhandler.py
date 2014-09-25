@@ -5,6 +5,7 @@ from ..artifactmgt.repositoryinformation import RepositoryInformation
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. util import extensionutils, cartridgeagentconstants, cartridgeagentutils
 from .. publisher import cartridgeagentpublisher
+from .. exception.parameternotfoundexception import ParameterNotFoundException
 
 
 class DefaultExtensionHandler:
@@ -63,6 +64,7 @@ class DefaultExtensionHandler:
 
             #checkout code
             checkout_result = AgentGitHandler.checkout(repo_info)
+            #repo_context = checkout_result["repo_context"]
             #execute artifact updated extension
             env_params = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": event.cluster_id,
                           "STRATOS_ARTIFACT_UPDATED_TENANT_ID": event.tenant_id,
@@ -73,12 +75,31 @@ class DefaultExtensionHandler:
 
             extensionutils.execute_artifacts_updated_extension(env_params)
 
-            #if !cloneExists publish instanceActivatedEvent
             if checkout_result["subscribe_run"]:
                 #publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 
-            #TODO: set artifact update task
+            update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE)
+            update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
+            if update_artifacts:
+                auto_commit = self.cartridge_agent_config.is_commits_enabled()
+                auto_checkout = self.cartridge_agent_config.is_checkout_enabled()
+
+                try:
+                    update_interval = len(self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
+                except ParameterNotFoundException:
+                    self.log.exception("Invalid artifact sync interval specified ")
+                    update_interval = 10
+                except ValueError:
+                    self.log.exception("Invalid artifact sync interval specified ")
+                    update_interval = 10
+
+                self.log.info("Artifact updating task enabled, update interval: %r seconds" % update_interval)
+
+                self.log.info("Auto Commit is turned %r " % "on" if auto_commit else "off")
+                self.log.info("Auto Checkout is turned %r " % "on" if auto_checkout else "off")
+
+                AgentGitHandler.schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit, update_interval)
 
     def on_artifact_update_scheduler_event(self, tenantId):
         pass

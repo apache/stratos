@@ -1,13 +1,15 @@
 import logging
-from threading import current_thread
+from threading import current_thread, Thread
 
 from git import *
 
 from gitrepository import GitRepository
 from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ... util import cartridgeagentutils
+from ... util.asyncscheduledtask import AsyncScheduledTask
 from ... artifactmgt.repositoryinformation import RepositoryInformation
 from ... extensions.defaultextensionhandler import DefaultExtensionHandler
+
 
 class AgentGitHandler:
     logging.basicConfig(level=logging.DEBUG)
@@ -130,7 +132,7 @@ class AgentGitHandler:
                 """
                 conflict_list = []
                 files_arr = str(ex).split("\n")
-                for file_index in range (1, len(files_arr)-2):
+                for file_index in range(1, len(files_arr)-2):
                     file_name = files_arr[file_index].strip()
                     conflict_list.append(file_name)
                     AgentGitHandler.log.debug("Added the file path %r to checkout from the remote repository" % file_name)
@@ -266,3 +268,47 @@ class AgentGitHandler:
 
         AgentGitHandler.log.debug("Repo path returned : %r" % repo_path)
         return repo_path
+
+    @staticmethod
+    def commit(repo_info):
+        raise NotImplementedError
+
+    @staticmethod
+    def schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit, update_interval):
+        repo_context = AgentGitHandler.get_repo_context(repo_info.tenant_id)
+
+        if repo_context is None:
+            AgentGitHandler.log.error("Unable to schedule artifact sync task, repositoryContext null for tenant %r" % repo_info.tenant_id)
+            return
+
+        if repo_context.scheduled_update_task is None:
+            #TODO: make thread safe
+            artifact_update_task = ArtifactUpdateTask(repo_info, auto_checkout, auto_commit)
+            async_task = AsyncScheduledTask(update_interval, artifact_update_task)
+
+            repo_context.scheduled_update_task = async_task
+            async_task.start()
+            AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %r" % repo_context.local_repo_path)
+        else:
+            AgentGitHandler.log.info("Artifact Synchronization Task for path %r already scheduled" % repo_context.local_repo_path)
+            
+
+class ArtifactUpdateTask(Thread):
+
+    def __init__(self, repo_info, auto_checkout, auto_commit):
+        logging.basicConfig(level=logging.DEBUG)
+        self.log = logging.getLogger(__name__)
+        Thread.__init__(self)
+        self.repo_info = repo_info
+        self.auto_checkout = auto_checkout
+        self.auto_commit = auto_commit
+
+    def run(self):
+        try:
+            if self.auto_checkout:
+                AgentGitHandler.checkout(self.repo_info)
+        except:
+            self.log.exception()
+
+        if self.auto_commit:
+            AgentGitHandler.commit(self.repo_info)
