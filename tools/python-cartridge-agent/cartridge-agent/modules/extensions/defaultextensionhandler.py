@@ -10,28 +10,22 @@ from .. exception.parameternotfoundexception import ParameterNotFoundException
 
 class DefaultExtensionHandler:
     log = None
-    cartridge_agent_config = None
 
     def __init__(self):
         logging.basicConfig(level=logging.DEBUG)
         self.log = logging.getLogger(__name__)
 
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
-
-        pass
-
     def on_instance_started_event(self):
         try:
             self.log.debug("Processing instance started event...")
-            if self.cartridge_agent_config.is_multitenant():
-                artifact_source = "%r/repository/deployment/server/" % self.cartridge_agent_config.get_app_path()
+            if CartridgeAgentConfiguration.is_multitenant:
+                artifact_source = "%r/repository/deployment/server/" % CartridgeAgentConfiguration.app_path
                 artifact_dest = cartridgeagentconstants.SUPERTENANT_TEMP_PATH
                 extensionutils.execute_copy_artifact_extension(artifact_source, artifact_dest)
 
             env_params = {}
-            extensionutils.execute_instance_started_extention(env_params)
-
-        except Exception:
+            extensionutils.execute_instance_started_extension(env_params)
+        except:
             self.log.exception("Error processing instance started event")
 
     def on_instance_activated_event(self):
@@ -42,18 +36,18 @@ class DefaultExtensionHandler:
                       (event.tenant_id, event.cluster_id, event.status))
 
         cluster_id_event = str(event.cluster_id).strip()
-        cluster_id_payload = self.cartridge_agent_config.get_cluster_id()
+        cluster_id_payload = CartridgeAgentConfiguration.cluster_id
         repo_url = str(event.repo_url).strip()
 
         if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
-            local_repo_path = self.cartridge_agent_config.get_app_path()
+            local_repo_path = CartridgeAgentConfiguration.app_path
 
-            secret = self.cartridge_agent_config.get_cartridge_key()
+            secret = CartridgeAgentConfiguration.cartridge_key
             repo_password = cartridgeagentutils.decrypt_password(event.repo_password, secret)
 
             repo_username = event.repo_username
             tenant_id = event.tenant_id
-            is_multitenant = self.cartridge_agent_config.is_multitenant()
+            is_multitenant = CartridgeAgentConfiguration.is_multitenant()
             commit_enabled = event.commit_enabled
 
             self.log.info("Executing git checkout")
@@ -79,14 +73,14 @@ class DefaultExtensionHandler:
                 #publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 
-            update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE)
+            update_artifacts = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE)
             update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
             if update_artifacts:
-                auto_commit = self.cartridge_agent_config.is_commits_enabled()
-                auto_checkout = self.cartridge_agent_config.is_checkout_enabled()
+                auto_commit = CartridgeAgentConfiguration.is_commits_enabled()
+                auto_checkout = CartridgeAgentConfiguration.is_checkout_enabled()
 
                 try:
-                    update_interval = len(self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
+                    update_interval = len(CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
                 except ParameterNotFoundException:
                     self.log.exception("Invalid artifact sync interval specified ")
                     update_interval = 10
@@ -133,9 +127,9 @@ class DefaultExtensionHandler:
         # extensionutils.wait_for_complete_topology()
         # self.log.info("[start server extension] complete topology event received")
         #
-        # service_name_in_payload = self.cartridge_agent_config.get_service_name()
-        # cluster_id_in_payload = self.cartridge_agent_config.get_cluster_id()
-        # member_id_in_payload = self.cartridge_agent_config.get_member_id()
+        # service_name_in_payload = CartridgeAgentConfiguration.service_name()
+        # cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id()
+        # member_id_in_payload = CartridgeAgentConfiguration.member_id()
         #
         # try:
         #     consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)

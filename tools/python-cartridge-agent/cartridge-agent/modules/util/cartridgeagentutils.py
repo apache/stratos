@@ -13,8 +13,6 @@ unpad = lambda s : s[0:-ord(s[-1])]
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-cartridge_agent_config = CartridgeAgentConfiguration()
-
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 
@@ -60,8 +58,9 @@ def delete_folder_tree(path):
     except OSError:
         log.exception("Deletion of folder path %r failed." % path)
 
+
 def wait_until_ports_active(ip_address, ports):
-    ports_check_timeout = cartridge_agent_config.read_property("port.check.timeout")
+    ports_check_timeout = CartridgeAgentConfiguration.read_property("port.check.timeout")
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
