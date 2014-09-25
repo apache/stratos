@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,26 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.messaging.event.application.status;
+package org.apache.stratos.messaging.event.topology;
 
 /**
- * This event is fired by cartridge agent when it has started the server and
- * applications are ready to serve the incoming requests.
+ * This event will be sent to Topology upon activation of application
  */
-public class GroupActivatedEvent extends StatusEvent {
-    private static final long serialVersionUID = 2625412714611885089L;
-
-    private String groupId;
+public class ApplicationActivatedEvent extends TopologyEvent {
     private String appId;
 
-    public GroupActivatedEvent(String appId, String groupId) {
+    public ApplicationActivatedEvent(String appId) {
         this.appId = appId;
-        this.groupId = groupId;
-    }
-
-    public String getGroupId() {
-        return this.groupId;
     }
 
     public String getAppId() {

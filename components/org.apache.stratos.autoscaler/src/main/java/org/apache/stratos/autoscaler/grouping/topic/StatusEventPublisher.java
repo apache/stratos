@@ -5,10 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
@@ -52,6 +49,17 @@ public class StatusEventPublisher {
         GroupActivatedEvent groupActivatedEvent = new GroupActivatedEvent(appId, groupId);
 
         publishEvent(groupActivatedEvent);
+    }
+
+    public static void sendApplicationActivatedEvent (String appId) {
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing Application activated event for [application]: " + appId);
+        }
+
+        ApplicationActivatedEvent applicationActivatedEvent = new ApplicationActivatedEvent(appId);
+
+        publishEvent(applicationActivatedEvent);
     }
 
     public static void sendGroupInMaintenanceEvent (String appId, String groupId) {

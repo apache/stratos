@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.processor.application.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
@@ -34,6 +35,7 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
 
     private ApplicationStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
     private ApplicationStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
+    private ApplicationStatusAppActivatedMessageProcessor appActivatedMessageProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
@@ -41,6 +43,8 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
         add(clusterActivatedMessageProcessor);
         groupActivatedMessageProcessor = new ApplicationStatusGroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
+        appActivatedMessageProcessor = new ApplicationStatusAppActivatedMessageProcessor();
+        add(appActivatedMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Instance notifier message processor chain initialized");
@@ -52,6 +56,8 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
             clusterActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationActivatedEventListener) {
+            appActivatedMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
         }

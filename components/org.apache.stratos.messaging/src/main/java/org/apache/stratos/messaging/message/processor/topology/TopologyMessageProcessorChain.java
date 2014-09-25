@@ -50,6 +50,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private CompositeApplicationRemovedMessageProcessor compositeApplicationRemovedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
+    private ApplicationActivatedMessageProcessor applicationActivatedMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -104,8 +105,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         applicationRemovedMessageProcessor = new ApplicationRemovedMessageProcessor();
         add(applicationRemovedMessageProcessor);
 
-        compositeApplicationRemovedMessageProcessor = new CompositeApplicationRemovedMessageProcessor();
-        add(applicationRemovedMessageProcessor);
+        applicationActivatedMessageProcessor = new ApplicationActivatedMessageProcessor();
+        add(applicationActivatedMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Grouping: added applicationCreatedMessageProcessor, applicationRemovedMessageProcessor: " +
@@ -155,13 +156,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         	if (log.isDebugEnabled()) {
                 log.debug("Grouping: added eventlistener to applicationCreatedMessageProcessor: " + eventListener);
             }
-
-        } else if (eventListener instanceof  CompositeApplicationRemovedEventListener) {
-        	compositeApplicationRemovedMessageProcessor.addEventListener(eventListener);
-        	if (log.isDebugEnabled()) {
-                log.debug("Grouping: added eventlistener to applicationCreatedMessageProcessor: " + eventListener);
-            }
-
+        } else if (eventListener instanceof ApplicationActivatedEventListener) {
+            applicationActivatedMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");
         }

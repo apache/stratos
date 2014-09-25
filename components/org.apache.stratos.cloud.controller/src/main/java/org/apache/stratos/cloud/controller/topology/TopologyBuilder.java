@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -784,6 +785,34 @@ public class TopologyBuilder {
         }
         //publishing data
         TopologyEventPublisher.sendGroupActivatedEvent(groupActivatedEvent1);
+    }
+
+    public static void handleApplicationActivatedEvent(ApplicationActivatedEvent applicationActivatedEvent) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(applicationActivatedEvent.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    applicationActivatedEvent.getAppId()));
+            return;
+        }
+
+
+
+        org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent applicationActivatedEvent1 =
+                new org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent(
+                        applicationActivatedEvent.getAppId());
+        try {
+            TopologyManager.acquireWriteLock();
+            application.setStatus(Status.Activated);
+            log.info("Application activated adding status started for Topology");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
     }
 
 
