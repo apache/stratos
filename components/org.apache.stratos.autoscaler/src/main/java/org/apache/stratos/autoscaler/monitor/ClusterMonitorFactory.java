@@ -318,6 +318,21 @@ public class ClusterMonitorFactory {
                                         
         dockerClusterMonitor.setStatus(ClusterStatus.Created);
         
+		for (Member member : cluster.getMembers()) {
+			String memberId = member.getMemberId();
+			String clusterId = member.getClusterId();
+			MemberContext memberContext = new MemberContext();
+			memberContext.setMemberId(memberId);
+			memberContext.setClusterId(clusterId);
+
+			if (MemberStatus.Activated.equals(member.getStatus())) {
+				dockerClusterMonitor.getKubernetesClusterCtxt().addActiveMember(memberContext);
+			} else if (MemberStatus.Created.equals(member.getStatus())
+					|| MemberStatus.Starting.equals(member.getStatus())) {
+				dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
+			}
+		}
+
         // find lb reference type
         if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
             String value = props.getProperty(Constants.LOAD_BALANCER_REF);
