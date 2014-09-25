@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
@@ -35,6 +36,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
@@ -97,7 +99,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             startApplicationMonitor(application);
                         }
                     }
-
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
@@ -119,17 +120,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //acquire read lock
                 TopologyManager.acquireReadLock();
-
-                try {
-                    //TODO build dependency and organize the application
-
-                    //start the application monitor
-                    startApplicationMonitor(applicationCreatedEvent.getApplication());
-
-                } finally {
-                    //release read lock
-                    TopologyManager.releaseReadLock();
-                }
+                //start the application monitor
+                //TODO catch exception by ApplicationMonitor
+                startApplicationMonitor(applicationCreatedEvent.getApplication());
+                //release read lock
+                TopologyManager.releaseReadLock();
 
             }
         });
@@ -143,12 +138,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
                 String appId = clusterActivatedEvent.getAppId();
                 String clusterId = clusterActivatedEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        AutoscalerContext.getInstance().getMonitor(clusterId);
 
-                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
-                Monitor monitor = appMonitor.findParentMonitorOfCluster(clusterId);
-                AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(Status.Activated);
 
-                //TODO monitor.notify();
                 //starting the status checker to decide on the status of it's parent
                 StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
@@ -165,9 +160,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 String groupId = groupActivatedEvent.getGroupId();
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
-                Monitor monitor = appMonitor.findParentMonitorOfGroup(groupId);
+                GroupMonitor monitor = appMonitor.findGroupMonitorWithId(groupId);
 
-                //TODO monitor.notify();
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(Status.Activated);
+
                 //starting the status checker to decide on the status of it's parent
                 StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
@@ -183,6 +180,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 String appId = applicationActivatedEvent.getAppId();
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                appMonitor.setStatus(Status.Activated);
                 //TODO update appmonitor
                 //starting the status checker to decide on the status of it's parent
                 //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
@@ -547,6 +545,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                  }
                 try {
                     long start = System.currentTimeMillis();
+                    if(log.isDebugEnabled()) {
+                        log.debug("application monitor is going to be started for [application] " +
+                                application.getId());
+                    }
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
                     long end = System.currentTimeMillis();
                     log.info("Time taken to start app monitor: " + (end - start)/1000);

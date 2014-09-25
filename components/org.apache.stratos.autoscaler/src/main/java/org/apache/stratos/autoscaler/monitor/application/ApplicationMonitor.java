@@ -39,8 +39,14 @@ import java.util.*;
 public class ApplicationMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
-    public ApplicationMonitor(ParentBehavior application) {
+    public ApplicationMonitor(Application application) {
         super(application);
+        this.id = application.getId();
+        if(preOrderTraverse.isEmpty()) {
+            log.warn("the child group/cluster cannot be found for the Application " + id);
+        } else {
+            startDependency();
+        }
         //keep
     }
 
@@ -73,10 +79,19 @@ public class ApplicationMonitor extends Monitor {
         //TODO build up the tree with ordered manner
 
         // start the first dependency
+
+
         if(!preOrderTraverse.isEmpty()) {
             String dependency = preOrderTraverse.poll();
+            if(log.isDebugEnabled()) {
+                log.debug("Dependency check for the [group] " + dependency + " started");
+            }
             if (dependency.contains("group")) {
-                startGroupMonitor(this, dependency.substring(6), component);
+                String groupId = dependency.substring(6);
+                if(log.isDebugEnabled()) {
+                    log.debug("Dependency check starting the [group]" + groupId);
+                }
+                startGroupMonitor(this, groupId, component);
             } else if (dependency.contains("cartridge")) {
                 ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
                 String clusterId = clusterDataHolder.getClusterId();
@@ -86,6 +101,9 @@ public class ApplicationMonitor extends Monitor {
                 cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
                 //TopologyManager.releaseReadLock();
                 if (cluster != null) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Dependency check starting the [cluster]" + clusterId);
+                    }
                     startClusterMonitor(this,cluster);
                 } else {
                     //TODO throw exception since Topology is inconsistent
@@ -106,7 +124,7 @@ public class ApplicationMonitor extends Monitor {
      * @param groupId the unique alias of the Group
      * @return the found GroupMonitor
      */
-    public Monitor findGroupMonitorWithId(String groupId) {
+    public GroupMonitor findGroupMonitorWithId(String groupId) {
         return findGroupMonitor(groupId, groupMonitors.values());
 
     }
@@ -140,7 +158,7 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
-    private Monitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
+    private GroupMonitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
         for (GroupMonitor monitor : monitors) {
             // check if alias is equal, if so, return
             if (monitor.equals(id)) {
@@ -203,6 +221,12 @@ public class ApplicationMonitor extends Monitor {
         startDependency();
 
         //evaluate dependency
+    }
+
+    public void setStatus(Status status) {
+        log.info(String.format("[ApplicationMonitor] %s " +
+                "state changes from %s to %s", id, this.status, status));
+        this.status = status;
     }
 
     public Queue<String> getPreOrderTraverse() {

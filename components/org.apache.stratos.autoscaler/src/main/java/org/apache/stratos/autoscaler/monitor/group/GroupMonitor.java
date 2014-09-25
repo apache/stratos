@@ -23,10 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -41,13 +38,14 @@ import java.util.Observable;
 public class GroupMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
 
-
-
-
     public GroupMonitor(Group group) {
         super(group);
-        //TODO build dependencies and keep them here
-
+        this.id = group.getAlias();
+        if(preOrderTraverse.isEmpty()) {
+            log.warn("the child group/cluster cannot be found for the Group " + id);
+        } else {
+            startDependency();
+        }
     }
 
     @Override
@@ -88,6 +86,9 @@ public class GroupMonitor extends Monitor {
         //start the first dependency
         if(!preOrderTraverse.isEmpty()) {
             String dependency = preOrderTraverse.poll();
+            if(log.isDebugEnabled()) {
+                log.debug("Dependency check for the Group " + dependency + " started");
+            }
             if (dependency.contains("group")) {
                 for(Group group: component.getAliasToGroupMap().values()) {
                     if(group.getName().equals(dependency.substring(6))) {

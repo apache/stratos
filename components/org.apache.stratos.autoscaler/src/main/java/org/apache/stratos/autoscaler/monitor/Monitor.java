@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.event.Event;
@@ -59,7 +60,8 @@ public abstract class Monitor extends Observable implements Observer {
         abstractClusterMonitors = new HashMap<String, AbstractClusterMonitor>();
         this.component = component;
         preOrderTraverse = DependencyBuilder.getStartupOrder(component);
-        startDependency();
+
+        //startDependency();
     }
 
     protected abstract void startDependency();
@@ -115,6 +117,11 @@ public abstract class Monitor extends Observable implements Observer {
         } else if (!cluster.isLbCluster() && !this.abstractClusterMonitors.containsKey(cluster.getClusterId())) {
             th = new Thread(
                     new ClusterMonitorAdder(parent, cluster));
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Cluster monitor Adder has been added: [cluster] %s ",
+                                cluster.getClusterId()));
+            }
         }
         if (th != null) {
             th.start();
@@ -134,6 +141,11 @@ public abstract class Monitor extends Observable implements Observer {
     protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentBehavior component) {
         Thread th = null;
         if (!this.groupMonitors.containsKey(dependency)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Group monitor Adder has been added: [group] %s ",
+                                dependency));
+            }
             th = new Thread(
                     new GroupMonitorAdder(parent, dependency, component));
         }
@@ -176,6 +188,10 @@ public abstract class Monitor extends Observable implements Observer {
                 } catch (InterruptedException e1) {
                 }
                 try {
+                    if(log.isDebugEnabled()) {
+                        log.debug("CLuster monitor is going to be started for [cluster] "
+                                + cluster.getClusterId());
+                    }
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
                     monitor.addObserver(parent);
                     success = true;
@@ -217,12 +233,12 @@ public abstract class Monitor extends Observable implements Observer {
     }
 
     private class GroupMonitorAdder implements Runnable {
-        private ParentBehavior group;
+        private Group group;
         private String dependency;
         private Monitor parent;
 
         public GroupMonitorAdder(Monitor parent, String dependency, ParentBehavior group) {
-            this.group = group;
+            this.group = (Group)group;
             this.dependency = dependency;
             this.parent = parent;
         }
@@ -238,6 +254,10 @@ public abstract class Monitor extends Observable implements Observer {
                  }
 
                 try {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Group monitor is going to be started for [group] "
+                                + group.getAlias());
+                    }
                     monitor = AutoscalerUtil.getGroupMonitor(group.getGroup(dependency));
                     monitor.addObserver(parent);
                     success = true;

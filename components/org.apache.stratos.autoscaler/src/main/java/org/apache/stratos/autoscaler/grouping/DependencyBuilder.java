@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler.grouping;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
 
 import java.util.LinkedList;
@@ -29,6 +31,7 @@ import java.util.Set;
  * across all the groups and clusters
  */
 public class DependencyBuilder {
+    private static final Log log = LogFactory.getLog(DependencyBuilder.class);
 
     public static Queue<String> getStartupOrder(ParentBehavior component) {
 
@@ -62,6 +65,10 @@ public class DependencyBuilder {
         //TODO handle by application and group itself groupName and serviceName
 
         if (component instanceof Application) {
+            if(log.isDebugEnabled()) {
+                log.debug("Building dependency for the Application/Group " +
+                        ((Application) component).getId());
+            }
             for (Group group : component.getAliasToGroupMap().values()) {
                 if (!startup.contains("group." + group.getAlias())) {
                     startup.add("group." + group.getAlias());
@@ -77,6 +84,10 @@ public class DependencyBuilder {
                 }
             }
         } else if (component instanceof Group) {
+            if(log.isDebugEnabled()) {
+                log.debug("Building dependency for the Application/Group " +
+                        ((Group) component).getAlias());
+            }
             for (Group group : component.getAliasToGroupMap().values()) {
                 if (!startup.contains("group." + group.getName())) {
                     startup.add("group." + group.getName());
