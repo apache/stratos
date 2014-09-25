@@ -35,7 +35,7 @@ public class KubernetesClusterContext implements Serializable{
     private Properties properties;
     
     // 15 mints as the default
-    private long expiryTime = 300000;
+    private long expiryTime;
     // pending members
     private List<MemberContext> pendingMembers;
     
@@ -74,7 +74,7 @@ public class KubernetesClusterContext implements Serializable{
         
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 900000);
+        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 300000);
         if (log.isDebugEnabled()) {
             log.debug("Member expiry time is set to: " + expiryTime);
         }
