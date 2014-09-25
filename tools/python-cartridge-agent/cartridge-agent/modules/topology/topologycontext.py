@@ -17,6 +17,9 @@ class TopologyContext:
         #     TopologyContext.topology = topology
         #     #TODO: persist in registry
 
+    @staticmethod
+    def update(topology):
+        TopologyContext.topology = topology
 
 class Topology:
     def __init__(self):
@@ -124,6 +127,12 @@ class Cluster:
             self.member_map.pop(member_id)
 
     def get_member(self, member_id):
+        """
+
+        :param member_id:
+        :return:
+        :rtype: Member
+        """
         if self.member_exists(member_id):
             return self.member_map[member_id]
 

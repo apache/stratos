@@ -19,7 +19,6 @@ class AgentGitHandler:
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    cartridge_agent_config = CartridgeAgentConfiguration()
     extension_handler = DefaultExtensionHandler()
 
     __git_repositories = {}
@@ -232,7 +231,7 @@ class AgentGitHandler:
         if is_multitenant:
             if tenant_id == AgentGitHandler.SUPER_TENANT_ID:
                 #super tenant, /repository/deploy/server/
-                super_tenant_repo_path = AgentGitHandler.cartridge_agent_config.get_super_tenant_repo_path()
+                super_tenant_repo_path = CartridgeAgentConfiguration.super_tenant_repository_path
                 #"app_path"
                 repo_path += git_local_repo_path
 
@@ -247,7 +246,7 @@ class AgentGitHandler:
 
             else:
                 #normal tenant, /repository/tenants/tenant_id
-                tenant_repo_path = AgentGitHandler.cartridge_agent_config.get_tenant_repo_path()
+                tenant_repo_path = CartridgeAgentConfiguration.tenant_repository_path
                 #"app_path"
                 repo_path += git_local_repo_path
 
@@ -291,7 +290,7 @@ class AgentGitHandler:
             AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %r" % repo_context.local_repo_path)
         else:
             AgentGitHandler.log.info("Artifact Synchronization Task for path %r already scheduled" % repo_context.local_repo_path)
-            
+
 
 class ArtifactUpdateTask(Thread):
 

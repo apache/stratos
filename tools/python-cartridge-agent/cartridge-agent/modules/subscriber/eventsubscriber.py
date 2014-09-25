@@ -11,7 +11,6 @@ class EventSubscriber(threading.Thread):
     def __init__(self, topic):
         threading.Thread.__init__(self)
 
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
 
@@ -29,8 +28,8 @@ class EventSubscriber(threading.Thread):
         self.__mb_client.on_connect = self.on_connect
         self.__mb_client.on_message = self.on_message
 
-        mb_ip = self.cartridge_agent_config.read_property(cartridgeagentconstants.MB_IP)
-        mb_port = self.cartridge_agent_config.read_property(cartridgeagentconstants.MB_PORT)
+        mb_ip = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_IP)
+        mb_port = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_PORT)
 
         self.log.debug("Connecting to the message broker with address %r:%r" % (mb_ip, mb_port))
         self.__mb_client.connect(mb_ip, mb_port, 60)

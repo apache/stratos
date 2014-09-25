@@ -20,10 +20,9 @@ class CartridgeAgent(threading.Thread):
     logging.basicConfig(level=logging.DEBUG)
     log = logging.getLogger(__name__)
 
-    cart_config = CartridgeAgentConfiguration()
-
     def __init__(self):
         threading.Thread.__init__(self)
+        CartridgeAgentConfiguration.initialize_configuration()
         self.__instance_event_subscriber = EventSubscriber(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
         self.__tenant_event_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC)
         self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
@@ -54,11 +53,11 @@ class CartridgeAgent(threading.Thread):
             self.log.exception("Error processing start servers event")
 
         cartridgeagentutils.wait_until_ports_active(
-            self.cart_config.get_listen_address(),
-            self.cart_config.get_ports()
+            CartridgeAgentConfiguration.listen_address,
+            CartridgeAgentConfiguration.ports
         )
 
-        repo_url = self.cart_config.get_repo_url()
+        repo_url = CartridgeAgentConfiguration.repo_url
 
         if repo_url is None or str(repo_url).strip() == "":
             self.log.info("No artifact repository found")
@@ -68,7 +67,7 @@ class CartridgeAgent(threading.Thread):
         else:
             pass
 
-        persistence_mappping_payload = self.cart_config.get_persistance_mappings()
+        persistence_mappping_payload = CartridgeAgentConfiguration.persistence_mappings
         if persistence_mappping_payload is not None:
             self.extension_handler.volume_mount_extension(persistence_mappping_payload)
 
@@ -79,19 +78,19 @@ class CartridgeAgent(threading.Thread):
     def validate_required_properties(self):
         # JNDI_PROPERTIES_DIR
         try:
-            self.cart_config.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
+            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.JNDI_PROPERTIES_DIR)
 
         #PARAM_FILE_PATH
         try:
-            self.cart_config.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.PARAM_FILE_PATH)
 
         #EXTENSIONS_DIR
         try:
-            self.cart_config.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
+            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.EXTENSIONS_DIR)
 
@@ -114,7 +113,7 @@ class CartridgeAgent(threading.Thread):
         self.extension_handler.on_artifact_updated_event(event_obj)
 
     def on_instance_cleanup_member(self, msg):
-        member_in_payload = self.cart_config.get_member_id()
+        member_in_payload = CartridgeAgentConfiguration.member_id
         event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
@@ -122,7 +121,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_instance_cleanup_cluster(self, msg):
         event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)
-        cluster_in_payload = self.cart_config.get_cluster_id()
+        cluster_in_payload = CartridgeAgentConfiguration.cluster_id
         cluster_in_event = event_obj.cluster_id
 
         if cluster_in_event == cluster_in_payload:
