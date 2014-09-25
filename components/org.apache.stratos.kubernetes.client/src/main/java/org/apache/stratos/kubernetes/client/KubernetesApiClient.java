@@ -149,7 +149,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED) {
+			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Pod ["+podId+"] deletion failed. Error: "+
 						res.getStatusLine().getReasonPhrase();
 				log.error(msg);
@@ -307,7 +308,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED) {
+			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Replication Controller ["+controllerId+"] deletion failed. Error: "+
 						res.getStatusLine().getReasonPhrase();
 				log.error(msg);
@@ -414,7 +416,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED) {
+			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Service ["+serviceId+"] deletion failed. Error: "+
 						res.getStatusLine().getReasonPhrase();
 				log.error(msg);
