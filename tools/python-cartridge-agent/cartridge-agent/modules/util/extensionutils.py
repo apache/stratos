@@ -29,7 +29,15 @@ def execute_instance_started_extension(env_params):
 
 
 def execute_instance_activated_extension():
-    raise NotImplementedError
+    try:
+        log.debug("Executing instance started extension")
+        script_name = cartridgeagentconstants.INSTANCE_ACTIVATED_SCRIPT
+        command = prepare_command(script_name)
+
+        output, error = execute_command(command)
+        log.debug("Instance activated script returned: %r" % output)
+    except:
+        log.exception("Could not execute instance activated extension")
 
 
 def execute_artifacts_updated_extension(env_params):
@@ -147,7 +155,7 @@ def get_lb_member_ip(lb_cluster_id):
     return None
 
 
-def execute_command(command, env_params):
+def execute_command(command, env_params=None):
     """
 
     :param str command:
@@ -156,7 +164,9 @@ def execute_command(command, env_params):
     :rtype: tuple
     """
     os_env = os.environ.copy()
-    os_env.update(env_params)
+    if env_params is not None:
+        os_env.update(env_params)
+
     p = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env)
     output, errors = p.communicate()
     log.debug("output = %r" % output)
