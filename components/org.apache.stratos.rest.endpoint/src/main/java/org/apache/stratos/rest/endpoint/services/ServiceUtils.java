@@ -24,17 +24,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
-import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
-import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
+import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
@@ -44,6 +44,7 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.manager.ServiceGroupingManager;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
@@ -70,7 +71,6 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -296,6 +296,15 @@ public class ServiceUtils {
         } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
             throw new RestAPIException(e);
         } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
+            throw new RestAPIException(e);
+        }
+    }
+
+    static ApplicationSubscription getApplicationSubscriptions(String appId, ConfigurationContext ctxt) throws RestAPIException {
+        CartridgeSubscriptionManager subscriptionMgr = new CartridgeSubscriptionManager();
+        try {
+            return subscriptionMgr.getApplicationSubscription(appId, ApplicationManagementUtil.getTenantId(ctxt));
+        } catch (ApplicationSubscriptionException e) {
             throw new RestAPIException(e);
         }
     }

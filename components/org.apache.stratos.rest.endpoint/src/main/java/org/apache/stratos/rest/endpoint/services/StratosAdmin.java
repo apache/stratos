@@ -31,8 +31,8 @@ import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -46,7 +46,6 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.Deploy
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -71,7 +70,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -435,6 +433,20 @@ public class StratosAdmin extends AbstractAdmin {
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
         return rb.build();
+    }
+
+
+    @GET
+    @Path("/subsscriptions/{application_id}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getSubscriptionsOfApplication(@PathParam("application_id") String applicationId) throws RestAPIException {
+        ApplicationSubscription subscriptions = ServiceUtils.getApplicationSubscriptions(applicationId, getConfigContext());
+        if(subscriptions  == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return  Response.ok().entity(subscriptions).build();
     }
 
     @GET
