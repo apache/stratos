@@ -54,7 +54,9 @@ public class ApplicationMonitor extends Monitor {
                     "on its state change from %s to %s", id, notifier, this.status, status));
             if(childStatus == Status.Activated) {
                 //start the next dependency
-                startDependency();
+                if(!preOrderTraverse.isEmpty()) {
+                    startDependency();
+                }
             }
         }
     }

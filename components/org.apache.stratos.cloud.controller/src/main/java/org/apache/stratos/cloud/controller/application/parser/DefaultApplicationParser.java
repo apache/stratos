@@ -503,6 +503,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
                     clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false);
+            appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
             this.applicationClusterContexts.add(appClusterCtxt);
 
             // TODO: I will bring you back when meta data service is completed B-)
