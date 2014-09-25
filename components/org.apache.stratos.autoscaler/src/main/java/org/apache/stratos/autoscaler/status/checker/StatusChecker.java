@@ -158,8 +158,8 @@ public class StatusChecker {
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentBehavior parent) {
         boolean groupActive = false;
-        boolean clustersActive = false;
-        boolean groupsActive = false;
+        boolean clustersActive;
+        boolean groupsActive;
         boolean childFound = false;
 
         if (clusterData.containsValue(id) || groups.containsKey(id)) {
@@ -175,7 +175,7 @@ public class StatusChecker {
                 clustersActive = getClusterStatus(clusterData);
                 groupActive = clustersActive;
             } else {
-                //TODO warn log
+                log.warn("Clusters/groups not found in this [component] "+ appId);
             }
             //send the activation event
             if (parent instanceof Application && groupActive) {
