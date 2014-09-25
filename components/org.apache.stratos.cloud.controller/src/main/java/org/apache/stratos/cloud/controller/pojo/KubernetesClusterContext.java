@@ -132,6 +132,9 @@ public class KubernetesClusterContext implements Serializable {
 	}
 
 	public KubernetesApiClient getKubApi() {
+		if (kubApi == null) {
+			kubApi = new KubernetesApiClient(getEndpoint(masterIp));
+		}
 		return kubApi;
 	}
 
