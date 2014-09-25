@@ -168,7 +168,7 @@ public class AutoscalerUtil {
         
         
         // find lb reference type
-        java.util.Properties props = cluster.getProperties();
+        /*java.util.Properties props = cluster.getProperties();
         
         if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
             String value = props.getProperty(Constants.LOAD_BALANCER_REF);
@@ -176,14 +176,16 @@ public class AutoscalerUtil {
             if(log.isDebugEnabled()) {
                 log.debug("Set the lb reference type: "+value);
             }
-        }
+        }*/
 
         //register a status Checker
 
         
         // set hasPrimary property
         // hasPrimary is true if there are primary members available in that cluster
-        clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
+        if(cluster.getProperties() != null) {
+            clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
+        }
 
         log.info("Cluster monitor created: "+clusterMonitor.toString());
         return clusterMonitor;

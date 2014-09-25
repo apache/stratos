@@ -115,7 +115,7 @@ public abstract class Monitor extends Observable implements Observer {
     }
 
     
-    protected synchronized void startClusterMonitor(Cluster cluster) {
+    protected synchronized void startClusterMonitor(Monitor parent, Cluster cluster) {
         Thread th = null;
         if (cluster.isLbCluster()
                 && !this.abstractClusterMonitors.containsKey(cluster.getClusterId())) {
@@ -123,7 +123,7 @@ public abstract class Monitor extends Observable implements Observer {
                     cluster));
         } else if (!cluster.isLbCluster() && !this.abstractClusterMonitors.containsKey(cluster.getClusterId())) {
             th = new Thread(
-                    new ClusterMonitorAdder(cluster));
+                    new ClusterMonitorAdder(parent, cluster));
         }
         if (th != null) {
             th.start();
@@ -165,8 +165,10 @@ public abstract class Monitor extends Observable implements Observer {
 
     private class ClusterMonitorAdder implements Runnable {
         private Cluster cluster;
+        private Monitor parent;
 
-        public ClusterMonitorAdder(Cluster cluster) {
+        public ClusterMonitorAdder(Monitor parent, Cluster cluster) {
+            this.parent = parent;
             this.cluster = cluster;
         }
 
@@ -181,6 +183,7 @@ public abstract class Monitor extends Observable implements Observer {
                 }
                 try {
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
+                    monitor.addObserver(parent);
                     success = true;
                     //TODO start the status checker
                 } catch (PolicyValidationException e) {
@@ -203,6 +206,7 @@ public abstract class Monitor extends Observable implements Observer {
                 String msg = "Cluster monitor creation failed, even after retrying for 5 times, "
                         + "for cluster: " + cluster.getClusterId();
                 log.error(msg);
+                //TODO parent.notify();
                 throw new RuntimeException(msg);
             }
 
@@ -257,6 +261,7 @@ public abstract class Monitor extends Observable implements Observer {
                 String msg = "Group monitor creation failed, even after retrying for 5 times, "
                         + "for group: " + dependency;
                 log.error(msg);
+                //TODO parent.notify();
                 throw new RuntimeException(msg);
             }
 
