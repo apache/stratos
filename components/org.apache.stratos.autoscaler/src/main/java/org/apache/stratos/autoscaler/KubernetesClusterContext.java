@@ -35,7 +35,7 @@ public class KubernetesClusterContext implements Serializable{
     private Properties properties;
     
     // 15 mints as the default
-    private long expiryTime = 900000;
+    private long expiryTime = 300000;
     // pending members
     private List<MemberContext> pendingMembers;
     
