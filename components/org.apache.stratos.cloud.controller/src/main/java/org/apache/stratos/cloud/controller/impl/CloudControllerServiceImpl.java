@@ -1562,5 +1562,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		persist();
 	}
 
+	@Override
+	public void updateKubernetesController(String clusterId, int replicas)
+			throws InvalidClusterException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
 

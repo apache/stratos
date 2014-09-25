@@ -137,6 +137,14 @@ public interface CloudControllerService {
     public void terminateAllContainers(String clusterId) throws InvalidClusterException;
     
     /**
+     * Update the Kubernetes controller created for the given cluster with the specified number of replicas.
+     * @param clusterId id of the subjected cluster.
+     * @param replicas total number of replicas to be set to the controller.
+     * @throws InvalidClusterException
+     */
+    public void updateKubernetesController(String clusterId, int replicas) throws InvalidClusterException;
+    
+    /**
      * Unregister a docker service identified by the given cluster id.
      * @param clusterId service cluster id.
      * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
