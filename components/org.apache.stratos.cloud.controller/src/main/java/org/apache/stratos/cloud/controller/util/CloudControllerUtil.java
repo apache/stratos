@@ -381,4 +381,11 @@ public class CloudControllerUtil {
 		String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length()-2);
 		return "[" +partitionStr+ "]";
 	}
+	
+	public static String getCompatibleId(String clusterId) {
+		if (clusterId.indexOf('.') != -1) {
+			clusterId = clusterId.replace('.', '-');
+		}
+		return clusterId;
+	}
 }

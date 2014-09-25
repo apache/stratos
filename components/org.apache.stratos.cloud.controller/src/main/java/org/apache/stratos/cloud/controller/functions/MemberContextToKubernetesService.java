@@ -49,7 +49,7 @@ public class MemberContextToKubernetesService implements Function<MemberContext,
         
         Service service = new Service();
         service.setApiVersion("v1beta1");
-        service.setId(getCompatibleId(clusterId));
+        service.setId(CloudControllerUtil.getCompatibleId(clusterId));
         service.setKind("Service");
         int hostPort = kubClusterContext.getAnAvailableHostPort();
         clusterContext.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, hostPort);
@@ -59,13 +59,6 @@ public class MemberContextToKubernetesService implements Function<MemberContext,
         service.setSelector(selector);
         
 		return service;
-	}
-
-	private String getCompatibleId(String clusterId) {
-		if (clusterId.indexOf('.') != -1) {
-			clusterId = clusterId.replace('.', '-');
-		}
-		return clusterId;
 	}
 
 }

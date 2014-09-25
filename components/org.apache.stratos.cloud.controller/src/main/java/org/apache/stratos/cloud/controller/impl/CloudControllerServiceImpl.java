@@ -1523,7 +1523,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 		// delete the service
 		try {
-			kubApi.deleteService(clusterId);
+			kubApi.deleteService(CloudControllerUtil.getCompatibleId(clusterId));
 		} catch (KubernetesClientException e) {
 			// we're not going to throw this error, but proceed with other deletions
 			log.error("Failed to delete Kubernetes service with id: "+clusterId, e);
