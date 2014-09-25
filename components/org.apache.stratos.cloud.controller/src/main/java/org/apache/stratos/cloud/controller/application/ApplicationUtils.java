@@ -127,7 +127,7 @@ public class ApplicationUtils {
         // cartridge key
         clusterLevelPayloadProperties.setProperty("CARTRIDGE_KEY", key);
         // get global payload params
-        clusterLevelPayloadProperties.putAll(ApplicationUtils.getGlobalPayloadData());
+        //clusterLevelPayloadProperties.putAll(ApplicationUtils.getGlobalPayloadData());
 
         metaDataHolder.setProperties(clusterLevelPayloadProperties);
         return metaDataHolder;
@@ -158,6 +158,23 @@ public class ApplicationUtils {
         }
         payloadBuilder.append(",");
         payloadBuilder.append("CLUSTER_ID=" + clusterId);
+        // puppet related
+        if (System.getProperty("puppet.ip") != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("PUPPET_IP=" + System.getProperty("puppet.ip"));
+        }
+        if (System.getProperty("puppet.hostname") != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("PUPPET_HOSTNAME=" + System.getProperty("puppet.hostname"));
+        }
+        if (System.getProperty("puppet.env") != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("PUPPET_ENV=" + System.getProperty("puppet.env"));
+        }
+        if (System.getProperty("puppet.dns.available") != null) {
+            payloadBuilder.append(",");
+            payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty("puppet.dns.available"));
+        }
         // meta data endpoint
        // if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
             // TODO
