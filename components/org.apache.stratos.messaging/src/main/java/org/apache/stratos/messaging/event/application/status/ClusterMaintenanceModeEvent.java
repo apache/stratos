@@ -20,7 +20,10 @@ package org.apache.stratos.messaging.event.application.status;
 
 import java.io.Serializable;
 
-public class ClusterMaintenanceModeEvent extends ClusterStatusEvent implements Serializable {
+/**
+ * This will be fired upon the cluster instability detection by either cep/autoscaler.
+ */
+public class ClusterMaintenanceModeEvent extends StatusEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;
     private String appId;

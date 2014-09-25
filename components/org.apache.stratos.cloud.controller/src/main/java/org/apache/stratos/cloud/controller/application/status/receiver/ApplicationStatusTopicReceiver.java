@@ -22,8 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.listener.application.status.ApplicationActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
 import org.apache.stratos.messaging.message.receiver.application.status.ApplicationStatusEventReceiver;
@@ -82,7 +84,19 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
+        statusEventReceiver.addEventListener(new ApplicationActivatedEventListener() {
+
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleApplicationActivatedEvent((ApplicationActivatedEvent) event);
+
+            }
+        });
+
 
     }
 
+    public void setTerminated(boolean terminated) {
+        this.terminated = terminated;
+    }
 }

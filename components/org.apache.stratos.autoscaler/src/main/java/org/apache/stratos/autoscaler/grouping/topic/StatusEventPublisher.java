@@ -5,48 +5,45 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
- * Created by reka on 9/21/14.
+ * This will publish application related events to application status topic.
  */
 public class StatusEventPublisher {
     private static final Log log = LogFactory.getLog(StatusEventPublisher.class);
 
-    public static void sendClusterActivatedEvent (String appId, String serviceName, String clusterId) {
+    public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Publishing Cluster activated event for [application]: " + appId +
-                    " [cluster]: " + clusterId );
+                    " [cluster]: " + clusterId);
         }
 
-        ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId,serviceName, clusterId);
+        ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
 
         publishEvent(clusterActivatedEvent);
     }
 
-    public static void sendClusterInMaintenanceEvent (String appId, String serviceName, String clusterId) {
+    public static void sendClusterInMaintenanceEvent(String appId, String serviceName, String clusterId) {
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Publishing Cluster in_maintenance event for [application]: " + appId +
-                    " [cluster]: " + clusterId );
+                    " [cluster]: " + clusterId);
         }
 
         ClusterMaintenanceModeEvent clusterInMaintenanceEvent =
-                                    new ClusterMaintenanceModeEvent(appId,serviceName, clusterId);
+                new ClusterMaintenanceModeEvent(appId, serviceName, clusterId);
 
         publishEvent(clusterInMaintenanceEvent);
     }
 
-    public static void sendGroupActivatedEvent (String appId, String groupId) {
+    public static void sendGroupActivatedEvent(String appId, String groupId) {
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Publishing Group activated event for [application]: " + appId +
-                    " [group]: " + groupId );
+                    " [group]: " + groupId);
         }
 
         GroupActivatedEvent groupActivatedEvent = new GroupActivatedEvent(appId, groupId);
@@ -54,11 +51,22 @@ public class StatusEventPublisher {
         publishEvent(groupActivatedEvent);
     }
 
-    public static void sendGroupInMaintenanceEvent (String appId, String groupId) {
+    public static void sendApplicationActivatedEvent(String appId) {
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application activated event for [application]: " + appId);
+        }
+
+        ApplicationActivatedEvent applicationActivatedEvent = new ApplicationActivatedEvent(appId);
+
+        publishEvent(applicationActivatedEvent);
+    }
+
+    public static void sendGroupInMaintenanceEvent(String appId, String groupId) {
+
+        if (log.isInfoEnabled()) {
             log.info("Publishing Group in_maintenance event for [application]: " + appId +
-                    " [group]: " + groupId );
+                    " [group]: " + groupId);
         }
 
         GroupMaintenanceModeEvent groupMaintenanceModeEvent =
@@ -68,8 +76,8 @@ public class StatusEventPublisher {
     }
 
     public static void publishEvent(Event event) {
-        //TODO change the topics for cluster and group accordingly
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.INSTANCE_STATUS_TOPIC);
+        //publishing events to application status topic
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.APPLICATION_STATUS_TOPIC);
         eventPublisher.publish(event);
     }
 

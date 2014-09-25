@@ -22,17 +22,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.Registrant;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -134,10 +132,10 @@ public class TopologyBuilder {
                 // update the cluster
                 cluster = service.getCluster(clusterId);
                 cluster.addHostName(registrant.getHostName());
-                if(service.getServiceType() == ServiceType.MultiTenant) {
+                if (service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
                 }
-                if(service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
+                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
                     props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
                 }
                 cluster.setProperties(props);
@@ -146,10 +144,10 @@ public class TopologyBuilder {
                 cluster = new Cluster(cartridgeType, clusterId,
                         registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
                 cluster.addHostName(registrant.getHostName());
-                if(service.getServiceType() == ServiceType.MultiTenant) {
+                if (service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
                 }
-                if(service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
+                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
                     props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
                 }
                 cluster.setProperties(props);
@@ -296,10 +294,10 @@ public class TopologyBuilder {
                 log.debug("TopologyBuilder found composite app for " + appAlias);
             }
             String clusterId = instanceStartedEvent.getClusterId();
-            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
             instanceStartedEvent.setGroupId(groupAlias);
             if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance started event for cluster " + clusterId);
+                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance started event for cluster " + clusterId);
             }
         }
 
@@ -350,13 +348,12 @@ public class TopologyBuilder {
                 log.debug("TopologyBuilder found composite app for member activated " + appAlias);
             }
             String clusterId = instanceActivatedEvent.getClusterId();
-            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
             instanceActivatedEvent.setGroupId(groupAlias);
             if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance activated event for cluster " + clusterId);
+                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance activated event for cluster " + clusterId);
             }
         }
-
 
 
         Member member = cluster.getMember(instanceActivatedEvent.getMemberId());
@@ -440,10 +437,10 @@ public class TopologyBuilder {
                 log.debug("TopologyBuilder found composite app for " + appAlias);
             }
             String clusterId = instanceReadyToShutdownEvent.getClusterId();
-            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
             instanceReadyToShutdownEvent.setGroupId(groupAlias);
             if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
+                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance ready shutdown event for cluster " + clusterId);
             }
         }
 
@@ -521,10 +518,10 @@ public class TopologyBuilder {
             }
             String clusterId = instanceMaintenanceModeEvent.getClusterId();
 
-            String groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
             instanceMaintenanceModeEvent.setGroupId(groupAlias);
             if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for instance ready shutdown event for cluster " + clusterId);
+                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance ready shutdown event for cluster " + clusterId);
             }
         }
 
@@ -582,14 +579,14 @@ public class TopologyBuilder {
         String appAlias = "compositeApplicationAlias";
         CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
 
-        String groupAlias =  null;
+        String groupAlias = null;
         if (app != null) {
             if (log.isDebugEnabled()) {
                 log.debug("TopologyBuilder found composite app for " + appAlias);
             }
-            groupAlias =  app.extractClusterGroupFromClusterId(clusterId);
+            groupAlias = app.extractClusterGroupFromClusterId(clusterId);
             if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " +  groupAlias + " for member terminated event for cluster " + clusterId);
+                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for member terminated event for cluster " + clusterId);
             }
         }
 
@@ -616,7 +613,6 @@ public class TopologyBuilder {
     public static void handleApplicationDeployed(Application application,
                                                  Set<ApplicationClusterContext> applicationClusterContexts,
                                                  Set<MetaDataHolder> metaDataHolders) {
-
 
 
         Topology topology = TopologyManager.getTopology();
@@ -658,10 +654,10 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed (String applicationId, int tenantId, String tenantDomain) {
+    public static void handleApplicationUndeployed(String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
- 
+
         try {
             TopologyManager.acquireWriteLock();
 
@@ -707,10 +703,9 @@ public class TopologyBuilder {
 
             TopologyManager.acquireWriteLock();
             String key = "compositeApplicationAlias"; //app.getAlias()
-            topology.addConfigCompositeApplication(key ,messConfigApp);
+            topology.addConfigCompositeApplication(key, messConfigApp);
             TopologyManager.updateTopology(topology);
-        }
-        finally {
+        } finally {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendConfigApplicationCreatedEventEvent(messConfigApp);
@@ -792,206 +787,30 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendGroupActivatedEvent(groupActivatedEvent1);
     }
 
-
-
-    /*public static  ConfigCompositeApplication convertCompositeApplication(CompositeApplicationDefinition compositeApplicationDefinition) {
-    	ConfigCompositeApplication messApp = new ConfigCompositeApplication();
-    	String alias = compositeApplicationDefinition.getAlias();
-    	messApp.setAlias(alias);
-    	String applicationId = compositeApplicationDefinition.getApplicationId();
-    	messApp.setApplicationId(applicationId);
-    	org.apache.stratos.cloud.controller.pojo.ConfigCartridge[] arrayMessCartridges = compositeApplicationDefinition.getCartridges();
-    	org.apache.stratos.cloud.controller.pojo.ConfigGroup [] messConfigGroup = compositeApplicationDefinition.getComponents();
-
-    	List<ConfigCartridge> cartridges = new ArrayList<ConfigCartridge>();
-    	List<ConfigGroup> messGroups = new ArrayList<ConfigGroup>();
-    	List<ConfigDependencies.Pair> messDependencies= new ArrayList<ConfigDependencies.Pair>();
-
-    	for (org.apache.stratos.cloud.controller.pojo.ConfigCartridge cfg : arrayMessCartridges) {
-    		ConfigCartridge cartridge = new ConfigCartridge();
-    		cartridge.setAlias(cfg.getAlias());
-
-    		cartridges.add(cartridge);
-    	}
-    	messApp.setCartridges(cartridges);
-    	if (log.isDebugEnabled()) {
-    		log.debug("TopolgyBuilder:  messConfigGroup size: " + messConfigGroup.length);
-    	}
-    	for (org.apache.stratos.cloud.controller.pojo.ConfigGroup gr : messConfigGroup) {
-    		ConfigGroup group = new ConfigGroup();
-
-    		// alias
-    		group.setAlias(gr.getAlias());
-    		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder:  messConfigGroup group alias " + gr.getAlias());
-        	}
-    		// subscribables
-    		String  [] arraySub = gr.getSubscribables();
-    		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder:  messConfigGroup group nr of subscribables " + arraySub.length);
-        	}
-    		List<String> subscribables = new ArrayList<String>();
-    		if (arraySub != null) {
-    			int i = 0;
-    			for (String sub : arraySub) {
-    				subscribables.add(arraySub[i]);
-    				i++;
-    			}
-    		} else {
-    			if (log.isDebugEnabled()) {
-            		log.debug("TopolgyBuilder:  messConfigGroup group nr no subscribables is null");
-            	}
-    		}
-    		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder:  adding subscribables to  group: " + group.getAlias() +
-        				" and nr of subscribables " + subscribables.size());
-        	}
-    		group.setSubscribables(subscribables);
-    		// dependencies
-    		org.apache.stratos.cloud.controller.pojo.ConfigDependencies dep = gr.getDependencies();
-    		ConfigDependencies messDep = new ConfigDependencies();
-    		org.apache.stratos.cloud.controller.pojo.ConfigDependencyPair [] pairs = dep.getStartup_order();
-    		List<ConfigDependencies.Pair> startup_order;
-    		if (pairs != null) {
-    			log.debug("TopolgyBuilder:  number of startup pairs " + pairs.length);
-     			startup_order = new ArrayList<ConfigDependencies.Pair>(pairs.length);
-    			//for (org.apache.stratos.cloud.controller.pojo.ConfigDependencyPair pair : pairs) {
-    			for (int i = 0; i < pairs.length; i++) {
-    				org.apache.stratos.cloud.controller.pojo.ConfigDependencyPair pair = pairs[i];
-    				if (pair != null) {
-	        			ConfigDependencies.Pair messPair = new ConfigDependencies.Pair(pair.getKey(), pair.getValue());
-	        			startup_order.add(messPair);
-	        			if (log.isDebugEnabled()) {
-	                		log.debug("TopolgyBuilder:  adding dep pairs to  group: " + pair.getKey() + " / " +
-	                						pair.getValue() + " at " + i);
-	                	}
-	    			} else {
-	    				if (log.isDebugEnabled()) {
-	                		log.debug("TopolgyBuilder: Error while adding pair, pair is null");
-	                	}
-	    			}
-        		}
-    		} else {
-    			if (log.isDebugEnabled()) {
-            		log.debug("TopolgyBuilder:  no dependencies added");
-            	}
-    			startup_order = new ArrayList<ConfigDependencies.Pair>(0);
-    		}
-
-    		messDep.setStartup_order(startup_order);
-    		messDep.setKill_behavior(dep.getKill_behavior());
-    		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder: added kill behavior " + dep.getKill_behavior());
-        	}
-    		group.setDependencies(messDep);
-
-    		messGroups.add(group);
-    		if (log.isDebugEnabled()) {
-        		log.debug("TopolgyBuilder: number of groups " + messGroups.size());
-        	}
-    	}
-    	messApp.setComponents(messGroups);
-    	if (log.isDebugEnabled()) {
-    		if (messApp.getComponents() != null) {
-    			log.debug("TopolgyBuilder: added total nr of groups to application  " + messApp.getComponents().size());
-    		}
-			else {
-				log.debug("TopolgyBuilder: added total nr of groups to application  is null");
-			}
-    	}
-
-
-    	/* test
-    	ConfigGroup grX = new ConfigGroup();
-    	grX.setAlias("hug");
-    	List<String> subX = new ArrayList<String>();
-    	subX.add("cone");
-    	grX.setSubscribables(subX);
-    	ConfigDependencies cgX = new ConfigDependencies();
-    	cgX.setKill_behavior("kill-all");
-    	log.debug("verifying cgX object serialization : " + Util.ObjectToJson(cgX));
-    	ConfigDependencies.Pair startup_orderX = new ConfigDependencies.Pair("eins", "zwei");
-    	List<ConfigDependencies.Pair> depspairsX = new ArrayList<ConfigDependencies.Pair>();
-    	depspairsX.add(startup_orderX);
-    	log.debug("verifying depspairsX object serialization : " + Util.ObjectToJson(depspairsX));
-    	cgX.setStartup_order(depspairsX);
-    	grX.setDependencies(cgX);
-    	log.debug("verifying grX object serialization : " + Util.ObjectToJson(grX));
-    	messGroups.add(grX);
-    	messApp.setComponents(messGroups);
-    	log.debug("verifying messApp object serialization : " + Util.ObjectToJson(messApp));
-    	//
-    	test end */
-    	/*
-    	return messApp;
-    }*/
-
-    /*
-         public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology) object;
-
-        if (log.isDebugEnabled()) {
-        	log.debug("processing application event of type " + type +
-        			" / topology:" +  topology + " msg: " + message);
+    public static void handleApplicationActivatedEvent(ApplicationActivatedEvent applicationActivatedEvent) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(applicationActivatedEvent.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    applicationActivatedEvent.getAppId()));
+            return;
         }
 
-        if (CompositeApplicationCreatedEvent.class.getName().equals(type)) {
-            // Return if topology has not been initialized
-            if (!topology.isInitialized()) {
+        org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent applicationActivatedEvent1 =
+                new org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent(
+                        applicationActivatedEvent.getAppId());
+        try {
+            TopologyManager.acquireWriteLock();
+            application.setStatus(Status.Activated);
+            log.info("Application activated adding status started for Topology");
 
-            	if (log.isDebugEnabled()) {
-                	log.debug("topology is not initialized .... need to add check ... Grouping");
-                }
-
-            	//return false;
-            }
-
-            // Parse complete message and build event
-            CompositeApplicationCreatedEvent event =
-            		(CompositeApplicationCreatedEvent) Util.jsonToObject(message, CompositeApplicationCreatedEvent.class);
-
-            if (log.isDebugEnabled()) {
-            	log.debug("processing application created event with application id: " + event.getApplicationAlias());
-            }
-
-         // Validate event against the existing topology
-            if (topology.compositeApplicationExists(event.getApplicationAlias())) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("CompositeApplication already created: [com app] %s", event.getApplicationAlias()));
-                }
-            } else {
-
-            	ConfigCompositeApplication configApp = event.getCompositeApplication();
-            	CompositeApplicationBuilder builder = new CompositeApplicationBuilder(configApp);
-            	CompositeApplication app = new CompositeApplication();
-            	app.setAlias(configApp.getAlias());
-            	app.setTop_level(builder.buildApplication());
-            	String key = "compositeApplicationAlias"; //app.getAlias()
-                topology.addCompositeApplication(key ,app);
-
-            	if (log.isInfoEnabled()) {
-            		log.info("CompositeApplication created with alias" +app.getAlias() + " and saved with key " + "compositeApplicationAlias" );
-            		log.info(String.format("CompositeApplication created: [app] %s", app.getTop_level()));
-            		if (log.isDebugEnabled()) {
-            			log.debug("verifying CompositeApplication object serialization : " + Util.ObjectToJson(app));
-            		}
-            	}
-            }
-
-            // Notify event listeners
-            notifyEventListeners(event);
-            return true;
-
-        } else {
-            if (nextProcessor != null) {
-                // ask the next processor to take care of the message.
-                return nextProcessor.process(type, message, topology);
-            } else {
-                throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
-            }
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
         }
+        //publishing data
+        TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
     }
-     */
-
 
 }

@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.application.status;
+package org.apache.stratos.cloud.controller.application.payload;
 
-import org.apache.stratos.messaging.event.Event;
+public class DataCartridgePayloadData extends PayloadData {
 
-import java.io.Serializable;
-
-/**
- * Represents all instance status events.
- */
-public abstract class GroupStatusEvent extends Event implements Serializable {
-    private static final long serialVersionUID = -4790128084271867615L;
+    public DataCartridgePayloadData(BasicPayloadData basicPayloadData) {
+        super(basicPayloadData);
+    }
 }

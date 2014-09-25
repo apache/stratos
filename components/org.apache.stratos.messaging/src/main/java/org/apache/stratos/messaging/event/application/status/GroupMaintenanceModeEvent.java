@@ -18,9 +18,10 @@
  */
 package org.apache.stratos.messaging.event.application.status;
 
-import java.io.Serializable;
-
-public class GroupMaintenanceModeEvent extends GroupStatusEvent implements Serializable {
+/**
+ * This event will be fired upon the instability of group detection by autoscaler.
+ */
+public class GroupMaintenanceModeEvent extends StatusEvent {
     private String groupId;
     private String appId;
 

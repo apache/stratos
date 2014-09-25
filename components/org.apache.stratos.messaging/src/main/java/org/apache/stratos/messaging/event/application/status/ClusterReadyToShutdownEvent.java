@@ -18,13 +18,10 @@
  */
 package org.apache.stratos.messaging.event.application.status;
 
-import java.io.Serializable;
-
 /**
- *  This event is fired by cartridge agent when it has cleaned up the data and
- *  ready to shutdown.
+ * This event is fired by autoscaler before actually terminate a cluster.
  */
-public class ClusterReadyToShutdownEvent extends ClusterStatusEvent implements Serializable {
+public class ClusterReadyToShutdownEvent extends StatusEvent {
     private final String serviceName;
     private final String clusterId;
     private String appId;

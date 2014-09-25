@@ -500,13 +500,15 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // create and collect this cluster's information
             assert subscribableInfoCtxt != null;
-            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(subscribableCtxt.getType(),
-                    appId, groupName, clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false);
+            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
+                    key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
+                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false);
             this.applicationClusterContexts.add(appClusterCtxt);
 
+            // TODO: I will bring you back when meta data service is completed B-)
             // create cluster level meta data
-            this.metaDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key,
-                    hostname, appClusterCtxt.getTenantRange(), clusterId, subscribableCtxt, subscribableInfoCtxt, cartridge));
+            //this.metaDataHolders.add(ApplicationUtils.getClusterLevelPayloadData(appId, groupName, tenantId, key,
+            //        hostname, appClusterCtxt.getTenantRange(), clusterId, subscribableCtxt, subscribableInfoCtxt, cartridge));
 
             // add relevant information to the map
             clusterDataMap.put(subscribableCtxt.getAlias(), new ClusterDataHolder(subscribableCtxt.getType(), clusterId));
@@ -531,15 +533,19 @@ public class DefaultApplicationParser implements ApplicationParser {
         //clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
     }
 
-    private ApplicationClusterContext createApplicationClusterContext (String serviceType, String appId,
-                                                                       String groupName, String clusterId,
-                                                                       String hostname, String deploymentPolicy,
-                                                                       boolean isLB) {
+    private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, Cartridge cartridge,
+                                                                       String subscriptionKey, int tenantId, String repoUrl,
+                                                                       String alias, String clusterId, String hostname,
+                                                                       String deploymentPolicy, boolean isLB)
+            throws ApplicationDefinitionException {
 
         // Create text payload
-        String textPayload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
+        //String textPayload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
 
-        return new ApplicationClusterContext(serviceType, clusterId, hostname, textPayload, deploymentPolicy, isLB);
+        String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
+                hostname, repoUrl, alias, null).toString();
+
+        return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
 //    public void addClusterId (Map<String, Set<String>> serviceNameToClusterIdsMap, String serviceName, String clusterId) {

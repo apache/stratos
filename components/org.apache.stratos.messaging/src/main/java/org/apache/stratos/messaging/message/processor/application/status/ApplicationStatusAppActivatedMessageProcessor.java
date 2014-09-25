@@ -18,33 +18,38 @@
  */
 package org.apache.stratos.messaging.message.processor.application.status;
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ApplicationStatusGroupActivatedMessageProcessor extends MessageProcessor {
+/**
+ * Created by reka on 9/25/14.
+ */
+public class ApplicationStatusAppActivatedMessageProcessor extends MessageProcessor {
     private static final Log log =
-            LogFactory.getLog(ApplicationStatusGroupActivatedMessageProcessor.class);
-    private MessageProcessor nextProcessor;
+            LogFactory.getLog(ApplicationStatusAppActivatedMessageProcessor.class);
 
+
+    private MessageProcessor nextProcessor;
     @Override
     public void setNext(MessageProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
+
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ClusterActivatedEvent.class.getName().equals(type)) {
+        if (ApplicationActivatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            GroupActivatedEvent event =
-                    (GroupActivatedEvent) Util.jsonToObject(message, GroupActivatedEvent.class);
+            ApplicationActivatedEvent event =
+                    (ApplicationActivatedEvent) Util.jsonToObject(message, ApplicationActivatedEvent.class);
 
             if (log.isDebugEnabled()) {
-                log.debug("Received GroupActivatedEvent: " + event.toString());
+                log.debug("Received ApplicationActivatedEvent in application status topic: " + event.toString());
             }
             // Notify event listeners
             notifyEventListeners(event);

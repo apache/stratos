@@ -30,7 +30,6 @@ import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This will be used to evaluate the status of a group
@@ -44,15 +43,15 @@ public class StatusChecker {
 
     }
 
-    private static class Holder {
-        private static final StatusChecker INSTANCE = new StatusChecker();
-    }
-
     public static StatusChecker getInstance() {
         //TODO synchronized
         return Holder.INSTANCE;
     }
 
+    /**
+     *
+     * @param clusterId1
+     */
     public void onMemberStatusChange(String clusterId1) {
         final String clusterId = clusterId1;
         Runnable exCluster = new Runnable() {
@@ -62,7 +61,7 @@ public class StatusChecker {
                 for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
                     //minimum check per partition
                     for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                        if(partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
+                        if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
                             clusterActive = true;
                         } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
                             log.info("cluster already activated...");
@@ -72,7 +71,7 @@ public class StatusChecker {
                     }
                 }
                 // if active then notify upper layer
-                if(clusterActive) {
+                if (clusterActive) {
                     //send event to cluster status topic
                     StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                             monitor.getServiceId(), monitor.getClusterId());
@@ -81,11 +80,11 @@ public class StatusChecker {
 
             }
         };
+        Thread clusterThread = new Thread(exCluster);
+        clusterThread.start();
     }
 
-
     /**
-     *
      * @param groupId
      * @param appId
      */
@@ -94,7 +93,6 @@ public class StatusChecker {
     }
 
     /**
-     *
      * @param clusterId
      * @param appId
      */
@@ -103,31 +101,32 @@ public class StatusChecker {
     }
 
     private void updateChild(final String clusterId, final String appId) {
-        Runnable exGroup = new Runnable() {
+        Runnable group = new Runnable() {
             public void run() {
                 Application application = TopologyManager.getTopology().getApplication(appId);
                 Map<String, ClusterDataHolder> clusterIds = application.getClusterDataMap();
                 Map<String, Group> groups = application.getAliasToGroupMap();
-                updateChildStatus(clusterId, groups, clusterIds, application);
+                updateChildStatus(appId, clusterId, groups, clusterIds, application);
             }
         };
+        Thread groupThread = new Thread(group);
+        groupThread.start();
     }
 
     /**
-     *
      * @param clusterId
      * @param appId
      * @param partitionContext is to decide in which partition has less members while others have active members
      */
     public void onMemberFaultEvent(final String clusterId, final String appId, final PartitionContext partitionContext) {
-        Runnable exCluster = new Runnable() {
+        Runnable memberFault = new Runnable() {
             public void run() {
                 ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                 boolean clusterActive = false;
                 boolean clusterInMaintenance = false;
                 for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
                     for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
-                        if(partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
+                        if (partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
                                 partition.getActiveMemberCount() < partition.getMinimumMemberCount()) {
                             clusterInMaintenance = true;
                         } else {
@@ -137,7 +136,7 @@ public class StatusChecker {
                                     , partition.getPartitionId(), partition.getNetworkPartitionId(),
                                     partition.getMinimumMemberCount(), partition.getActiveMemberCount(), clusterId));
                         }
-                        if(partitionContext.getMinimumMemberCount() >= partitionContext.getActiveMemberCount()) {
+                        if (partitionContext.getMinimumMemberCount() >= partitionContext.getActiveMemberCount()) {
                             clusterActive = true;
                         }
                         clusterActive = false;
@@ -145,48 +144,52 @@ public class StatusChecker {
 
                 }
                 // if in maintenance then notify upper layer
-                if(clusterActive && clusterInMaintenance) {
+                if (clusterActive && clusterInMaintenance) {
                     //send clusterInmaintenance event to cluster status topic
 
                 }
 
             }
         };
+        Thread faultHandlingThread = new Thread(memberFault);
+        faultHandlingThread.start();
     }
 
-
-    private boolean updateChildStatus(String id, Map<String, Group> groups, Map<String, ClusterDataHolder> clusterData, ParentBehavior parent) {
+    private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
+                                      Map<String, ClusterDataHolder> clusterData, ParentBehavior parent) {
         boolean groupActive = false;
         boolean clustersActive = false;
         boolean groupsActive = false;
         boolean childFound = false;
 
-        if(clusterData.containsValue(id) || groups.containsKey(id)) {
+        if (clusterData.containsValue(id) || groups.containsKey(id)) {
             childFound = true;
-            if(!clusterData.isEmpty() && !groups.isEmpty()) {
+            if (!clusterData.isEmpty() && !groups.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
                 groupsActive = getGroupStatus(groups);
                 groupActive = clustersActive && groupsActive;
-            } else if (!groups.isEmpty()){
+            } else if (!groups.isEmpty()) {
                 groupsActive = getGroupStatus(groups);
                 groupActive = groupsActive;
-            } else if (!clusterData.isEmpty()){
+            } else if (!clusterData.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
                 groupActive = clustersActive;
             } else {
                 //TODO warn log
             }
             //send the activation event
-            if(parent instanceof Application && groupActive) {
-                //TODO send application activated event
-            } else if(parent instanceof Group && groupActive) {
-                //TODO send Group activated event
+            if (parent instanceof Application && groupActive) {
+                //send application activated event
+                StatusEventPublisher.sendApplicationActivatedEvent(appId);
+            } else if (parent instanceof Group && groupActive) {
+                //send activation to the parent
+                StatusEventPublisher.sendGroupActivatedEvent(appId, ((Group) parent).getAlias());
             }
             return childFound;
         } else {
-            if(!groups.isEmpty()) {
-                for(Group group: groups.values()) {
-                    return updateChildStatus(id, group.getAliasToGroupMap(), group.getClusterDataMap(), group);
+            if (!groups.isEmpty()) {
+                for (Group group : groups.values()) {
+                    return updateChildStatus(appId, id, group.getAliasToGroupMap(), group.getClusterDataMap(), group);
 
                 }
             }
@@ -196,8 +199,8 @@ public class StatusChecker {
 
     private boolean getGroupStatus(Map<String, Group> groups) {
         boolean groupActiveStatus = false;
-        for(Group group: groups.values()) {
-            if(group.getStatus().equals(GroupStatus.Active)) {
+        for (Group group : groups.values()) {
+            if (group.getStatus().equals(GroupStatus.Active)) {
                 groupActiveStatus = true;
             } else {
                 groupActiveStatus = false;
@@ -209,16 +212,20 @@ public class StatusChecker {
 
     private boolean getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
         boolean clusterActiveStatus = false;
-        for(Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry: clusterData.entrySet()) {
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
-                if(service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
-                        getStatus().equals(ClusterStatus.Active)) {
-                    clusterActiveStatus = true;
-                } else {
-                    clusterActiveStatus = false;
-                }
+            if (service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
+                    getStatus().equals(ClusterStatus.Active)) {
+                clusterActiveStatus = true;
+            } else {
+                clusterActiveStatus = false;
+            }
         }
         return clusterActiveStatus;
+    }
+
+    private static class Holder {
+        private static final StatusChecker INSTANCE = new StatusChecker();
     }
 
 }
