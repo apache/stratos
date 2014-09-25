@@ -100,9 +100,9 @@ public class GroupMonitor extends Monitor {
                         String clusterId = dataHolder.getClusterId();
                         String serviceName = dataHolder.getServiceType();
                         Cluster cluster = null;
-                        TopologyManager.acquireReadLock();
+                        //TopologyManager.acquireReadLock();
                         cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
-                        TopologyManager.releaseReadLock();
+                        //TopologyManager.releaseReadLock();
                         if (cluster != null) {
                             startClusterMonitor(this, cluster);
                         } else {

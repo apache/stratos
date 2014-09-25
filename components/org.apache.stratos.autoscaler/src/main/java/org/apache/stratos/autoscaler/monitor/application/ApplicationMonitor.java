@@ -82,9 +82,9 @@ public class ApplicationMonitor extends Monitor {
                 String clusterId = clusterDataHolder.getClusterId();
                 String serviceName = clusterDataHolder.getServiceType();
                 Cluster cluster = null;
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
                 cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
-                TopologyManager.releaseReadLock();
+                //TopologyManager.releaseReadLock();
                 if (cluster != null) {
                     startClusterMonitor(this,cluster);
                 } else {
