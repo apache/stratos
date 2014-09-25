@@ -97,6 +97,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
 					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
 					currentData.setCartridges(serializedObj.getCartridges());
+					currentData.setKubClusterIdToKubClusterContext(serializedObj.getKubClusterIdToKubClusterContext());
 
 					if(log.isDebugEnabled()) {
 					    
