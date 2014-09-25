@@ -6,34 +6,80 @@ from ... topology.topologycontext import *
 class MemberActivatedEvent:
 
     def __init__(self):
-        pass
+        self.service_name = None
+        self.cluster_id = None
+        self.network_partition_id = None
+        self.partition_id = None
+        self.member_id = None
+        self.port_map = {}
+        self.member_ip = None
+
+    def get_port(self, proxy_port):
+        if proxy_port in self.port_map:
+            return self.port_map[proxy_port]
+
+        return None
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         instance = MemberActivatedEvent()
 
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        #instance.port_map = json_obj["portMap"] if "portMap" in json_obj else {}
+        instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None
+
+        for port_proxy in json_obj["portMap"]:
+            port_str = json_obj["portMap"][port_proxy]
+            port_obj = Port(port_str["protocol"], port_str["value"], port_proxy)
+            instance.port_map[port_proxy] = port_obj
+
 
 class MemberTerminatedEvent:
 
     def __init__(self):
-        pass
+        self.service_name = None
+        self.cluster_id = None
+        self.network_partition_id = None
+        self.partition_id = None
+        self.member_id = None
+        self.properties = {}
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         instance = MemberTerminatedEvent()
 
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+
 
 class MemberSuspendedEvent:
 
     def __init__(self):
-        pass
+        self.service_name = None
+        self.cluster_id = None
+        self.network_partition_id = None
+        self.partition_id = None
+        self.member_id = None
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         instance = MemberSuspendedEvent()
+
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
 
 
 class CompleteTopologyEvent:
@@ -49,6 +95,7 @@ class CompleteTopologyEvent:
         topology_str = json_obj["topology"] if "topology" in json_obj else None
         if topology_str is not None:
             topology_obj = Topology()
+            topology_obj.json_str = topology_str
 
             #add service map
             for service_name in topology_str["serviceMap"]:
@@ -91,6 +138,7 @@ class CompleteTopologyEvent:
                         member_obj.member_ip = member_str["memberIp"]
                         member_obj.properties = member_str["properties"]
                         member_obj.lb_cluster_id = member_str["lbClusterId"]
+                        member_obj.json_str = member_str
 
                         #add port map
                         for mm_port_proxy in member_str["portMap"]:
@@ -108,11 +156,22 @@ class CompleteTopologyEvent:
 class MemberStartedEvent:
 
     def __init__(self):
-        pass
+        self.service_name = None
+        self.cluster_id = None
+        self.network_partition_id = None
+        self.partition_id = None
+        self.member_id = None
+        self.status = None
+        self.properties = {}
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         instance = MemberStartedEvent()
 
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
 
