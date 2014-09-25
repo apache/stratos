@@ -18,8 +18,25 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
+import org.apache.stratos.messaging.domain.topology.Status;
+
 /**
- * This will use to notify observers upon a cluster maintenance events received in Topology.
+ * Created by reka on 9/25/14.
  */
-public class ClusterInMaintenanceEvent extends MonitorEvent {
+public class MonitorStatusEvent extends MonitorEvent {
+    private Status status;
+    private String notifierId;
+
+    public MonitorStatusEvent(Status status, String notifierId) {
+        this.status = status;
+        this.notifierId = notifierId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getNotifierId() {
+        return notifierId;
+    }
 }

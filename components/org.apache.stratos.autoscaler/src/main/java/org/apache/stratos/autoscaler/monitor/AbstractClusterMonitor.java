@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
@@ -65,6 +67,8 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
     protected String clusterId;
     protected String serviceId;
     protected String appId;
+
+    protected Status status;
 
     protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
@@ -230,10 +234,22 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
 
     @Override
     public void update(Observable observable, Object o) {
-
+            //get the update from parent monitor
     }
 
     public int getMonitorInterval() {
         return monitorInterval;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        log.info(String.format("[Monitor] %s is notifying the parent" +
+                "on its state change from %s to %s", clusterId, this.status, status));
+        this.status = status;
+        setChanged();
+        notifyObservers(new MonitorStatusEvent(status, clusterId));
     }
 }

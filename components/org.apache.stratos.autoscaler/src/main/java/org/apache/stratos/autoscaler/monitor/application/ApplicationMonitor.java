@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -44,11 +45,18 @@ public class ApplicationMonitor extends Monitor {
     }
 
     @Override
-    public void update(Observable observable, Object arg) {
-        if(arg instanceof Event) {
-
+    public void update(Observable observable, Object event) {
+        if(event instanceof MonitorStatusEvent) {
+            MonitorStatusEvent statusEvent = (MonitorStatusEvent) event;
+            Status childStatus = statusEvent.getStatus();
+            String notifier = statusEvent.getNotifierId();
+            log.info(String.format("[Monitor] %s got notified from the [child] %s" +
+                    "on its state change from %s to %s", id, notifier, this.status, status));
+            if(childStatus == Status.Activated) {
+                //start the next dependency
+                startDependency();
+            }
         }
-
     }
 
     @Override
@@ -62,9 +70,7 @@ public class ApplicationMonitor extends Monitor {
         //TODO breadth first search in a tree and find the parallel one
         //TODO build up the tree with ordered manner
 
-        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
-
-        //start the first dependency
+        // start the first dependency
         if(!preOrderTraverse.isEmpty()) {
             String dependency = preOrderTraverse.poll();
             if (dependency.contains("group")) {
@@ -95,11 +101,40 @@ public class ApplicationMonitor extends Monitor {
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
-     * @param id the unique alias of the Group
+     * @param groupId the unique alias of the Group
      * @return the found GroupMonitor
      */
-    public Monitor findGroupMonitorWithId(String id) {
-        return findGroupMonitor(id, groupMonitors.values());
+    public Monitor findGroupMonitorWithId(String groupId) {
+        return findGroupMonitor(groupId, groupMonitors.values());
+
+    }
+
+    /**
+     * Find the cluster monitor by traversing recursively in the hierarchical monitors.
+     * @param clusterId
+     * @return
+     */
+    public AbstractClusterMonitor findClusterMonitorWithId(String clusterId) {
+        return findClusterMonitor(clusterId, abstractClusterMonitors.values(), groupMonitors.values());
+
+    }
+
+    private AbstractClusterMonitor findClusterMonitor(String clusterId,
+                                                      Collection<AbstractClusterMonitor> clusterMonitors,
+                                                      Collection<GroupMonitor> groupMonitors) {
+        for (AbstractClusterMonitor monitor : clusterMonitors) {
+            // check if alias is equal, if so, return
+            if (monitor.equals(clusterId)) {
+                return monitor;
+            }
+        }
+
+        for(GroupMonitor groupMonitor : groupMonitors) {
+            return findClusterMonitor(clusterId,
+                    groupMonitor.getAbstractClusterMonitors().values(),
+                    groupMonitor.getGroupMonitors().values());
+        }
+        return null;
 
     }
 

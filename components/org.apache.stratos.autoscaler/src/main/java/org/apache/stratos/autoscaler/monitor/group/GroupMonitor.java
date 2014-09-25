@@ -22,14 +22,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -45,6 +48,31 @@ public class GroupMonitor extends Monitor {
         super(group);
         //TODO build dependencies and keep them here
 
+    }
+
+    @Override
+    public void update(Observable observable, Object event) {
+        if(event instanceof MonitorStatusEvent) {
+            MonitorStatusEvent statusEvent = (MonitorStatusEvent) event;
+            Status childStatus = statusEvent.getStatus();
+            String notifier = statusEvent.getNotifierId();
+            log.info(String.format("[Monitor] %s got notified from the [child] %s" +
+                    "on its state change from %s to %s", id, notifier, this.status, status));
+            if(childStatus == Status.Activated) {
+                //start the next dependency
+                startDependency();
+            }
+
+        }
+
+    }
+
+    public void setStatus(Status status) {
+        log.info(String.format("[Monitor] %s is notifying the parent" +
+                "on its state change from %s to %s", id, this.status, status));
+        this.status = status;
+        setChanged();
+        notifyObservers(new MonitorStatusEvent(status, id));
     }
 
     @Override
