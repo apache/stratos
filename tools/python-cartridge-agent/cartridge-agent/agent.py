@@ -117,7 +117,7 @@ class CartridgeAgent(threading.Thread):
         event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
-            self.extension_handler.onInstanceCleanupMemberEvent(event_obj)
+            self.extension_handler.on_instance_cleanup_member_event(event_obj)
 
     def on_instance_cleanup_cluster(self, msg):
         event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)

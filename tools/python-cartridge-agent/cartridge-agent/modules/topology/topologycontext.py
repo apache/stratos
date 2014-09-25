@@ -21,10 +21,12 @@ class TopologyContext:
     def update(topology):
         TopologyContext.topology = topology
 
+
 class Topology:
     def __init__(self):
         self.service_map = {}
         self.initialized = False
+        self.json_str = None
 
     def get_services(self):
         return self.service_map.values()
@@ -180,6 +182,7 @@ class Member:
         self.member_ip = None
         self.properties = {}
         self.lb_cluster_id = None
+        self.json_str = None
 
     def is_active(self):
         return self.status == MemberStatus.Activated

@@ -30,18 +30,29 @@ def execute_instance_started_extension(env_params):
 
 def execute_instance_activated_extension():
     try:
-        log.debug("Executing instance started extension")
+        log.debug("Executing instance activated extension")
         script_name = cartridgeagentconstants.INSTANCE_ACTIVATED_SCRIPT
         command = prepare_command(script_name)
 
-        output, error = execute_command(command)
+        output, errors = execute_command(command)
         log.debug("Instance activated script returned: %r" % output)
     except:
         log.exception("Could not execute instance activated extension")
 
 
 def execute_artifacts_updated_extension(env_params):
-    raise NotImplementedError
+    try:
+        log.debug("Executing artifacts updated extension")
+
+        script_name = cartridgeagentconstants.ARTIFACTS_UPDATED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Artifacts updated script returned: %r" % output)
+    except:
+        log.exception("Could not execute artifacts updated extension")
 
 
 def execute_subscription_domain_added_extension(tenant_id, tenant_domain, domain_name, application_context):
@@ -57,11 +68,96 @@ def wait_for_complete_topology():
 
 
 def check_topology_consistency(service_name, cluster_id, member_id):
-    raise NotImplementedError
+    topology = TopologyContext.get_topology()
+    service = topology.service_map[service_name]
+    if service is None:
+        log.error("Service not found in topology [service] %r" % service_name)
+        return False
+
+    cluster = service.get_cluster(cluster_id)
+    if cluster is None:
+        log.error("Cluster id not found in topology [cluster] %r" % cluster_id)
+        return False
+
+    activated_member = cluster.get_member(member_id)
+    if activated_member is None:
+        log.error("Member id not found in topology [member] %r" % member_id)
+        return False
+
+    return True
+
+
+def is_relevant_member_event(service_name, cluster_id, lb_cluster_id):
+    cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
+    if cluster_id_in_payload is None:
+        return False
+
+    topology = TopologyContext.get_topology()
+    if topology is None or not topology.initialized:
+        return False
+
+    if cluster_id_in_payload == cluster_id:
+        return True
+
+    if cluster_id_in_payload == lb_cluster_id:
+        return True
+
+    service_group_in_payload = CartridgeAgentConfiguration.service_group
+    if service_group_in_payload is not None:
+        service_properties = topology.service_map[service_name].properties
+        if service_properties is None:
+            return False
+
+        member_service_group = service_properties[cartridgeagentconstants.SERVICE_GROUP_TOPOLOGY_KEY]
+        if member_service_group is not None and member_service_group == service_group_in_payload:
+            if service_name == CartridgeAgentConfiguration.service_name:
+                log.debug("Service names are same")
+                return True
+            elif "apistore" == CartridgeAgentConfiguration.service_name and service_name == "publisher":
+                log.debug("Service name in payload is [store]. Serivce name in event is [%r] " % service_name)
+                return True
+            elif "publisher" == CartridgeAgentConfiguration.service_name and service_name == "apistore":
+                log.debug("Service name in payload is [publisher]. Serivce name in event is [%r] " % service_name)
+                return True
+            elif cartridgeagentconstants.DEPLOYMENT_WORKER == CartridgeAgentConfiguration.deployment and service_name == CartridgeAgentConfiguration.manager_service_name:
+                log.debug("Deployment is worker. Worker's manager service name & service name in event are same")
+                return True
+            elif cartridgeagentconstants.DEPLOYMENT_MANAGER == CartridgeAgentConfiguration.deployment  and service_name == CartridgeAgentConfiguration.worker_service_name:
+                log.debug("Deployment is manager. Manager's worker service name & service name in event are same")
+                return True
+
+    return False
 
 
 def execute_volume_mount_extension(persistance_mappings_payload):
     raise NotImplementedError
+
+
+def execute_cleanup_extension():
+    try:
+        log.debug("Executing cleanup extension")
+        script_name = cartridgeagentconstants.CLEAN_UP_SCRIPT
+        command = prepare_command(script_name)
+
+        output, errors = execute_command(command)
+        log.debug("Cleanup script returned: %r" % output)
+    except:
+        log.exception("Could not execute Cleanup extension")
+
+
+def execute_member_activated_extension(env_params):
+    try:
+        log.debug("Executing member activated extension")
+
+        script_name = cartridgeagentconstants.MEMBER_ACTIVATED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Member activated script returned: %r" % output)
+    except:
+        log.exception("Could not execute member activated extension")
 
 
 def prepare_command(script_name):
