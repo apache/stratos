@@ -214,7 +214,7 @@ public class RestCommandLineService {
 
     public Cartridge listCartridge(String cartridgeType) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = null;
+        HttpResponse response;
 
         try {
             String endpoint = restClient.getBaseURL() + getListAvailableCartridgeInfoRestEndPoint + "/" + cartridgeType;
@@ -766,8 +766,7 @@ public class RestCommandLineService {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 
-		Cluster cluster = gson.fromJson(resultString, Cluster.class);
-		return cluster;
+        return gson.fromJson(resultString, Cluster.class);
 	}
 	
 	private ArrayList<Cluster> getClusterListObjectFromString(String resultString) {
@@ -954,7 +953,7 @@ public class RestCommandLineService {
 
             System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
 
-            String repoURL = null;
+            String repoURL;
             String hostnames = null;
             String hostnamesLabel = null;
             if (subcriptionInfo != null) {
@@ -1010,7 +1009,6 @@ public class RestCommandLineService {
             	String resultString = getHttpResponseString(response);
             	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
             	System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1039,7 +1037,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1068,7 +1065,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1097,7 +1093,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1193,7 +1188,6 @@ public class RestCommandLineService {
                  String resultString = getHttpResponseString(response);
                  ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                  System.out.println(exception);
-                 return;
             }
 
         } catch ( Exception e) {
@@ -1222,7 +1216,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1251,7 +1244,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1309,7 +1301,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1338,7 +1329,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1367,7 +1357,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1463,7 +1452,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1823,7 +1811,6 @@ public class RestCommandLineService {
 				String resultString = getHttpResponseString(response);
 				ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
 				System.out.println(exception);
-				return;
 			}
 
 		} catch (Exception e) {
@@ -2104,11 +2091,7 @@ public class RestCommandLineService {
                 }
             }
 
-            if (multiTenetCartridge.size() > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return multiTenetCartridge.size() > 0;
 
         } catch (Exception e) {
             handleException("Exception in listing available cartridges", e);
