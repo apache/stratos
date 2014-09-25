@@ -26,7 +26,6 @@ import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -125,7 +124,7 @@ public abstract class Monitor extends Observable implements Observer {
             }*/
 
             if (log.isDebugEnabled()) {
-                log.debug(String
+                log.error(String
                         .format("Cluster monitor thread has been started successfully: [cluster] %s ",
                                 cluster.getClusterId()));
             }
@@ -183,13 +182,13 @@ public abstract class Monitor extends Observable implements Observer {
                     //TODO start the status checker
                 } catch (PolicyValidationException e) {
                     String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
-                    log.debug(msg, e);
+                    log.warn(msg, e);
                     retries--;
 
 
                 } catch (PartitionValidationException e) {
                     String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
-                    log.debug(msg, e);
+                    log.warn(msg, e);
                     retries--;
 
                 }
@@ -245,7 +244,7 @@ public abstract class Monitor extends Observable implements Observer {
 
                 } catch (Exception e) {
                     String msg = "Group monitor creation failed for group: " + dependency;
-                    log.debug(msg, e);
+                    log.warn(msg, e);
                     retries--;
 
 
@@ -292,12 +291,12 @@ public abstract class Monitor extends Observable implements Observer {
 
                 } catch (PolicyValidationException e) {
                     String msg = "LB Cluster monitor creation failed for cluster: " + cluster.getClusterId();
-                    log.debug(msg, e);
+                    log.warn(msg, e);
                     retries--;
 
                 } catch (PartitionValidationException e) {
                     String msg = "LB Cluster monitor creation failed for cluster: " + cluster.getClusterId();
-                    log.debug(msg, e);
+                    log.warn(msg, e);
                     retries--;
                 }
             } while (!success && retries <= 0);
