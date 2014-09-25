@@ -549,7 +549,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     long start = System.currentTimeMillis();
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
                     long end = System.currentTimeMillis();
-                    log.info("***********************time taken to start app mon: " + (end - start)/1000);
+                    log.info("Time taken to start app monitor: " + (end - start)/1000);
                     success = true;
                     //TODO exception handling
                 } catch (Exception e) {

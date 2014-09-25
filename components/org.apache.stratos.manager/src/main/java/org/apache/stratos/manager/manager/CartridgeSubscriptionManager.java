@@ -102,7 +102,7 @@ public class CartridgeSubscriptionManager {
             appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
 
         } catch (PersistenceManagerException e) {
-            log.error("failed to Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
+            log.error("failed to retrieve application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
             throw new ApplicationSubscriptionException(e);
         }
 
@@ -122,9 +122,8 @@ public class CartridgeSubscriptionManager {
 				this.persistApplicationSubscription(appSubscription);
 			} catch (ADCException e) {
 				// TODO Auto-generated catch block
-				log.error("app Id already exists, failed to createCompositeAppSubscription for appId: " + appId + 
+				log.error("Failed to persist applicaiton subscription for appId: " + appId +
 																			" and tenantId: " + tenantId + " e:" + e);
-				e.printStackTrace();
 			}
         }
 
