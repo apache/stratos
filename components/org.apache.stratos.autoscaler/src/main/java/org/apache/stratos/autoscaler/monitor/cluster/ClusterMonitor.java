@@ -77,7 +77,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         } catch (InterruptedException ignore) {
         }*/
         //this.status = Status.Running;
-            while (!isDestroyed() && status.getCode() >= Status.Running.getCode()) {
+            while (!isDestroyed()) {
                 if (log.isDebugEnabled()) {
                     log.debug("Cluster monitor is running.. " + this.toString());
                 }

@@ -78,7 +78,7 @@ public class ApplicationMonitor extends Monitor {
                 cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
                 TopologyManager.releaseReadLock();
                 if (cluster != null) {
-                    startClusterMonitor(cluster);
+                    startClusterMonitor(this,cluster);
                 } else {
                     //TODO throw exception since Topology is inconsistent
                 }
