@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,16 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.listener.application.status;
 
-package org.apache.stratos.messaging.event.application.status;
-
-import org.apache.stratos.messaging.event.Event;
-
-import java.io.Serializable;
+import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- * Represents all instance status events.
+ * This listener will get triggered upon the application activated event.
  */
-public abstract class ClusterStatusEvent extends Event implements Serializable {
-    private static final long serialVersionUID = -4790128084271867615L;
+public abstract class ApplicationActivatedEventListener extends EventListener {
 }

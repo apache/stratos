@@ -25,7 +25,7 @@ import java.io.Serializable;
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class ClusterActivatedEvent extends ClusterStatusEvent implements Serializable {
+public class ClusterActivatedEvent extends StatusEvent {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private final String serviceName;

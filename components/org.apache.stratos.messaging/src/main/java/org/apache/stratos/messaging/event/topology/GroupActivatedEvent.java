@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.event.topology;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- * Group Activated Event which will be sent by Autoscaler
+ * Group Activated Event which will be sent to Topology upon group activation
  */
 public class GroupActivatedEvent extends Event {
     private String appId;
@@ -36,15 +36,8 @@ public class GroupActivatedEvent extends Event {
         return appId;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
     public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
 }

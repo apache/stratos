@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.grouping;
 
 import org.apache.stratos.messaging.domain.topology.*;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
@@ -35,7 +34,7 @@ public class DependencyBuilder {
 
         Queue<String> startup = new LinkedList<String>();
         DependencyOrder dependencyOrder = component.getDependencyOrder();
-        if(dependencyOrder != null) {
+        if (dependencyOrder != null) {
             Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
             for (StartupOrder startupOrder : startupOrderSet) {
 
@@ -62,29 +61,29 @@ public class DependencyBuilder {
         //TODO adding all the missed groups or clusters as the top child to the list
         //TODO handle by application and group itself groupName and serviceName
 
-        if(component instanceof Application) {
-            for(Group group: component.getAliasToGroupMap().values()) {
-                if(!startup.contains("group." + group.getAlias())) {
+        if (component instanceof Application) {
+            for (Group group : component.getAliasToGroupMap().values()) {
+                if (!startup.contains("group." + group.getAlias())) {
                     startup.add("group." + group.getAlias());
                 }
             }
 
             Set<String> cartridgeAliases = component.getClusterDataMap().keySet();
 
-            for(String carAlias : cartridgeAliases) {
-                if(!startup.contains("cartridge." + carAlias)) {
+            for (String carAlias : cartridgeAliases) {
+                if (!startup.contains("cartridge." + carAlias)) {
                     startup.add("cartridge." + carAlias);
 
                 }
             }
-        } else if(component instanceof Group) {
-            for(Group group: component.getAliasToGroupMap().values()) {
-                if(!startup.contains("group." + group.getName())) {
+        } else if (component instanceof Group) {
+            for (Group group : component.getAliasToGroupMap().values()) {
+                if (!startup.contains("group." + group.getName())) {
                     startup.add("group." + group.getName());
                 }
             }
-            for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
-                if(!startup.contains("cartridge." + dataHolder.getServiceType())) {
+            for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+                if (!startup.contains("cartridge." + dataHolder.getServiceType())) {
                     startup.add("cartridge." + dataHolder.getServiceType());
 
                 }

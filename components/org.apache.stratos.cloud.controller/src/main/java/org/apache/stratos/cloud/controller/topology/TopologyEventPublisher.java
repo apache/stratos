@@ -256,6 +256,14 @@ public class TopologyEventPublisher {
         publishEvent(compositeApplicationCreatedEvent);
     }
 
+    public static void sendApplicationActivatedEvent(ApplicationActivatedEvent applicationActivatedEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing application activated event: [appId] %s",
+                    applicationActivatedEvent.getAppId()));
+        }
+        publishEvent(applicationActivatedEvent);
+    }
+
     public static void publishEvent(Event event) {
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TOPOLOGY_TOPIC);
         eventPublisher.publish(event);
