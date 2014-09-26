@@ -9,7 +9,7 @@ import shutil
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 import cartridgeagentconstants
 
-unpad = lambda s : s[0:-ord(s[-1])]
+unpad = lambda s: s[0:-ord(s[-1])]
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def wait_until_ports_active(ip_address, ports):
         log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
         active = check_ports_active(ip_address, ports)
         end_time = current_milli_time()
-        duration  = end_time - start_time
+        duration = end_time - start_time
         if duration > ports_check_timeout:
             return
 

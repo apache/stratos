@@ -131,7 +131,7 @@ class AgentGitHandler:
                 """
                 conflict_list = []
                 files_arr = str(ex).split("\n")
-                for file_index in range(1, len(files_arr)-2):
+                for file_index in range(1, len(files_arr) - 2):
                     file_name = files_arr[file_index].strip()
                     conflict_list.append(file_name)
                     AgentGitHandler.log.debug("Added the file path %r to checkout from the remote repository" % file_name)
@@ -222,7 +222,6 @@ class AgentGitHandler:
 
     # @staticmethod
     # def is_key_based_auth(repo_url, tenant_id):
-
 
     @staticmethod
     def get_repo_path_for_tenant(tenant_id, git_local_repo_path, is_multitenant):

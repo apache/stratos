@@ -1,40 +1,3 @@
-class TenantContext:
-    tenants = {}
-    initialized = False
-    tenant_domains = {"carbon.super": Tenant(-1234, "carbon.super")}
-
-    @staticmethod
-    def add_tenant(tenant):
-        TenantContext.tenants[tenant.tenant_id] = tenant
-        TenantContext.tenant_domains[tenant.tenant_domain] = tenant
-
-    @staticmethod
-    def remove_tenant(tenant_id):
-        if tenant_id in TenantContext.tenants:
-            tenant = TenantContext.get_tenant(tenant_id)
-            TenantContext.tenants.pop(tenant.tenant_id)
-            TenantContext.tenant_domains.pop(tenant.tenant_domain)
-
-    @staticmethod
-    def update(tenants):
-        for tenant in tenants:
-            TenantContext.add_tenant(tenant)
-
-    @staticmethod
-    def get_tenant(tenant_id):
-        if tenant_id in TenantContext.tenants:
-            return TenantContext.tenants[tenant_id]
-
-        return None
-
-    @staticmethod
-    def get_tenant(tenant_domain):
-        if tenant_domain in TenantContext.tenant_domains:
-            return TenantContext.tenant_domains[tenant_domain]
-
-        return None
-
-
 class Tenant:
 
     def __init__(self, tenant_id,  tenant_domain):
@@ -86,3 +49,39 @@ class SubscriptionDomain:
         self.domain_name = domain_name
         self.application_context = application_context
 
+
+class TenantContext:
+    tenants = {}
+    initialized = False
+    tenant_domains = {"carbon.super": Tenant(-1234, "carbon.super")}
+
+    @staticmethod
+    def add_tenant(tenant):
+        TenantContext.tenants[tenant.tenant_id] = tenant
+        TenantContext.tenant_domains[tenant.tenant_domain] = tenant
+
+    @staticmethod
+    def remove_tenant(tenant_id):
+        if tenant_id in TenantContext.tenants:
+            tenant = TenantContext.get_tenant(tenant_id)
+            TenantContext.tenants.pop(tenant.tenant_id)
+            TenantContext.tenant_domains.pop(tenant.tenant_domain)
+
+    @staticmethod
+    def update(tenants):
+        for tenant in tenants:
+            TenantContext.add_tenant(tenant)
+
+    @staticmethod
+    def get_tenant(tenant_id):
+        if tenant_id in TenantContext.tenants:
+            return TenantContext.tenants[tenant_id]
+
+        return None
+
+    @staticmethod
+    def get_tenant_by_domain(tenant_domain):
+        if tenant_domain in TenantContext.tenant_domains:
+            return TenantContext.tenant_domains[tenant_domain]
+
+        return None

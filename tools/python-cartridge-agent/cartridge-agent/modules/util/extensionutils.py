@@ -11,7 +11,15 @@ log = logging.getLogger(__name__)
 
 
 def execute_copy_artifact_extension(source, destination):
-    raise NotImplementedError
+    try:
+        log.debug("Executing artifacts copy extension")
+        script_name = cartridgeagentconstants.ARTIFACTS_COPY_SCRIPT
+        command = prepare_command(script_name)
+
+        output, errors = execute_command(command + " " + source + " " + destination)
+        log.debug("Artifacts copy script returned: %r" % output)
+    except:
+        log.exception("Could not execute artifacts copy extension")
 
 
 def execute_instance_started_extension(env_params):
@@ -148,7 +156,15 @@ def is_relevant_member_event(service_name, cluster_id, lb_cluster_id):
 
 
 def execute_volume_mount_extension(persistance_mappings_payload):
-    raise NotImplementedError
+    try:
+        log.debug("Executing volume mounting extension: [payload] %r" % persistance_mappings_payload)
+        script_name = cartridgeagentconstants.MOUNT_VOLUMES_SCRIPT
+        command = prepare_command(script_name)
+
+        output, errors = execute_command(command + " " + persistance_mappings_payload)
+        log.debug("Volume mount script returned: %r" % output)
+    except:
+        log.exception("Could not execute Volume mount extension")
 
 
 def execute_cleanup_extension():
@@ -251,7 +267,7 @@ def add_properties(properties, params, prefix):
 
     for key in properties:
         params["STRATOS_" + prefix + "_" + key] = properties[key]
-        log.debug("Property added: [key] STRATOS_ " +  prefix + "_" + key + "[value] " + properties[key])
+        log.debug("Property added: [key] STRATOS_ " + prefix + "_" + key + "[value] " + properties[key])
 
 
 def get_lb_member_ip(lb_cluster_id):

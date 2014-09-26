@@ -67,7 +67,7 @@ class CompleteTenantEvent:
                     for domain_name in sub_str["subscriptionDomainMap"]:
                         subdomain_str = sub_str["subscriptionDomainMap"][domain_name]
                         sub.add_subscription_domain(domain_name, subdomain_str["applicationContext"])
-                    tenant_obj.add_subscription(sub);
+                    tenant_obj.add_subscription(sub)
                 instance.tenants.append(tenant_obj)
 
         return instance
