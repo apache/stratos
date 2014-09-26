@@ -66,8 +66,9 @@ public class StatusChecker {
                         } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
                             log.info("cluster already activated...");
                             clusterActive = true;
+                        } else {
+                            clusterActive = false;
                         }
-                        clusterActive = false;
                     }
                 }
                 // if active then notify upper layer

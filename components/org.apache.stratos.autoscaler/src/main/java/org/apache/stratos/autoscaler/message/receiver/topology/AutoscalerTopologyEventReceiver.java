@@ -94,7 +94,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 try {
                     TopologyManager.acquireReadLock();
                     if(!topologyInitialized) {
-                        topologyInitialized = true;
+                          topologyInitialized = true;
                         for (Application application : TopologyManager.getTopology().getApplications()) {
                             startApplicationMonitor(application);
                         }
@@ -446,9 +446,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
 
                     MemberActivatedEvent e = (MemberActivatedEvent) event;
+                    String networkPartitionId = e.getNetworkPartitionId();
+                    String clusterId = e.getClusterId();
+                    String partitionId = e.getPartitionId();
                     String memberId = e.getMemberId();
 
-                    PartitionContext partitionContext = null;
+                    AbstractClusterMonitor monitor;
+
+                    if (AutoscalerContext.getInstance().monitorExist(clusterId)) {
+                        monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+                    } else {
+                        //This is LB member
+                        monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
+                    }
+
+                    NetworkPartitionContext networkPartitionContext = monitor.
+                            getNetworkPartitionCtxt(networkPartitionId);
+
+                    PartitionContext partitionContext = networkPartitionContext.
+                            getPartitionCtxt(partitionId);
 
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                     // TODO starting the pending clusters which are waiting for this member activation in a cluster
