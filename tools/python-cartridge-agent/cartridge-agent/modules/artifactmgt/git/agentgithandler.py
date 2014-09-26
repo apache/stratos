@@ -5,7 +5,7 @@ from git import *
 
 from gitrepository import GitRepository
 from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ... util import cartridgeagentutils
+from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
 from ... util.asyncscheduledtask import AsyncScheduledTask
 from ... artifactmgt.repositoryinformation import RepositoryInformation
 from ... extensions.defaultextensionhandler import DefaultExtensionHandler
@@ -184,6 +184,12 @@ class AgentGitHandler:
 
     @staticmethod
     def get_repo_context(tenant_id):
+        """
+
+        :param int tenant_id:
+        :return: GitRepository object
+        :rtype: GitRepository
+        """
         if tenant_id in AgentGitHandler.__git_repositories:
             return AgentGitHandler.__git_repositories[tenant_id]
 
@@ -289,6 +295,29 @@ class AgentGitHandler:
             AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %r" % repo_context.local_repo_path)
         else:
             AgentGitHandler.log.info("Artifact Synchronization Task for path %r already scheduled" % repo_context.local_repo_path)
+
+    @staticmethod
+    def remove_repo(tenant_id):
+        repo_context = AgentGitHandler.get_repo_context(tenant_id)
+
+        #stop artifact update task
+        repo_context.scheduled_update_task.terminate()
+
+        #remove git contents
+        cartridgeagentutils.delete_folder_tree(repo_context.local_repo_path)
+
+        AgentGitHandler.remove_repo_context(tenant_id)
+
+        if tenant_id == -1234:
+            if CartridgeAgentConfiguration.is_multitenant:
+                extensionutils.execute_copy_artifact_extension(
+                    cartridgeagentconstants.SUPERTENANT_TEMP_PATH,
+                    CartridgeAgentConfiguration.app_path + "/repository/deployment/server/"
+                )
+
+        AgentGitHandler.log.info("git repository deleted for tenant %r" % repo_context.tenant_id)
+
+        return True
 
 
 class ArtifactUpdateTask(Thread):

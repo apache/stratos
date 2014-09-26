@@ -64,12 +64,34 @@ def execute_artifacts_updated_extension(env_params):
         log.exception("Could not execute artifacts updated extension")
 
 
-def execute_subscription_domain_added_extension(tenant_id, tenant_domain, domain_name, application_context):
-    raise NotImplementedError
+def execute_subscription_domain_added_extension(env_params):
+    try:
+        log.debug("Executing subscription domain added extension")
+
+        script_name = cartridgeagentconstants.SUBSCRIPTION_DOMAIN_ADDED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Subscription domain added script returned: %r" % output)
+    except:
+        log.exception("Could not execute subscription domain added extension")
 
 
-def execute_subscription_domain_removed_extension(tenant_id, tenant_domain, domain_name):
-    raise NotImplementedError
+def execute_subscription_domain_removed_extension(env_params):
+    try:
+        log.debug("Executing subscription domain removed extension")
+
+        script_name = cartridgeagentconstants.SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Subscription domain removed script returned: %r" % output)
+    except:
+        log.exception("Could not execute subscription domain removed extension")
 
 
 def execute_start_servers_extension(env_params):
@@ -85,6 +107,110 @@ def execute_start_servers_extension(env_params):
         log.debug("Start servers script returned: %r" % output)
     except:
         log.exception("Could not execute start servers extension")
+
+
+def execute_complete_topology_extension(env_params):
+    try:
+        log.debug("Executing complete topology extension")
+
+        script_name = cartridgeagentconstants.COMPLETE_TOPOLOGY_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Complete topology script returned: %r" % output)
+    except:
+        log.exception("Could not execute complete topology extension")
+
+
+def execute_complete_tenant_extension(env_params):
+    try:
+        log.debug("Executing complete tenant extension")
+
+        script_name = cartridgeagentconstants.COMPLETE_TENANT_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Complete tenant script returned: %r" % output)
+    except:
+        log.exception("Could not execute complete tenant extension")
+
+
+def execute_tenant_subscribed_extension(env_params):
+    try:
+        log.debug("Executing tenant subscribed extension")
+
+        script_name = cartridgeagentconstants.TENANT_SUBSCRIBED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Tenant subscribed script returned: %r" % output)
+    except:
+        log.exception("Could not execute tenant subscribed extension")
+
+
+def execute_tenant_unsubscribed_extension(env_params):
+    try:
+        log.debug("Executing tenant unsubscribed extension")
+
+        script_name = cartridgeagentconstants.TENANT_UNSUBSCRIBED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Tenant unsubscribed script returned: %r" % output)
+    except:
+        log.exception("Could not execute tenant unsubscribed extension")
+
+
+def execute_member_terminated_extension(env_params):
+    try:
+        log.debug("Executing member terminated extension")
+
+        script_name = cartridgeagentconstants.MEMBER_TERMINATED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Member terminated script returned: %r" % output)
+    except:
+        log.exception("Could not execute member terminated extension")
+
+
+def execute_member_suspended_extension(env_params):
+    try:
+        log.debug("Executing member suspended extension")
+
+        script_name = cartridgeagentconstants.MEMBER_SUSPENDED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Member suspended script returned: %r" % output)
+    except:
+        log.exception("Could not execute member suspended extension")
+
+def execute_member_started_extension(env_params):
+    try:
+        log.debug("Executing member started extension")
+
+        script_name = cartridgeagentconstants.MEMBER_STARTED_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Member started script returned: %r" % output)
+    except:
+        log.exception("Could not execute member started extension")
 
 
 def wait_for_complete_topology():
@@ -221,38 +347,38 @@ def clean_process_parameters(params):
     return params
 
 
-def add_payload_parameters(params):
-    params["STRATOS_APP_PATH"] = CartridgeAgentConfiguration.app_path
-    params["STRATOS_PARAM_FILE_PATH"] = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
-    params["STRATOS_SERVICE_NAME"] = CartridgeAgentConfiguration.service_name
-    params["STRATOS_TENANT_ID"] = CartridgeAgentConfiguration.tenant_id
-    params["STRATOS_CARTRIDGE_KEY"] = CartridgeAgentConfiguration.cartridge_key
-    params["STRATOS_LB_CLUSTER_ID"] = CartridgeAgentConfiguration.lb_cluster_id
-    params["STRATOS_CLUSTER_ID"] = CartridgeAgentConfiguration.cluster_id
-    params["STRATOS_NETWORK_PARTITION_ID"] = CartridgeAgentConfiguration.network_partition_id
-    params["STRATOS_PARTITION_ID"] = CartridgeAgentConfiguration.partition_id
-    params["STRATOS_PERSISTENCE_MAPPINGS"] = CartridgeAgentConfiguration.persistence_mappings
-    params["STRATOS_REPO_URL"] = CartridgeAgentConfiguration.repo_url
+def add_payload_parameters(env_params):
+    env_params["STRATOS_APP_PATH"] = CartridgeAgentConfiguration.app_path
+    env_params["STRATOS_PARAM_FILE_PATH"] = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+    env_params["STRATOS_SERVICE_NAME"] = CartridgeAgentConfiguration.service_name
+    env_params["STRATOS_TENANT_ID"] = CartridgeAgentConfiguration.tenant_id
+    env_params["STRATOS_CARTRIDGE_KEY"] = CartridgeAgentConfiguration.cartridge_key
+    env_params["STRATOS_LB_CLUSTER_ID"] = CartridgeAgentConfiguration.lb_cluster_id
+    env_params["STRATOS_CLUSTER_ID"] = CartridgeAgentConfiguration.cluster_id
+    env_params["STRATOS_NETWORK_PARTITION_ID"] = CartridgeAgentConfiguration.network_partition_id
+    env_params["STRATOS_PARTITION_ID"] = CartridgeAgentConfiguration.partition_id
+    env_params["STRATOS_PERSISTENCE_MAPPINGS"] = CartridgeAgentConfiguration.persistence_mappings
+    env_params["STRATOS_REPO_URL"] = CartridgeAgentConfiguration.repo_url
 
     lb_cluster_id_in_payload = CartridgeAgentConfiguration.lb_cluster_id
     member_ips = get_lb_member_ip(lb_cluster_id_in_payload)
     if member_ips is not None:
-        params["STRATOS_LB_IP"] = member_ips[0]
-        params["STRATOS_LB_PUBLIC_IP"] = member_ips[1]
+        env_params["STRATOS_LB_IP"] = member_ips[0]
+        env_params["STRATOS_LB_PUBLIC_IP"] = member_ips[1]
     else:
-        params["STRATOS_LB_IP"] = CartridgeAgentConfiguration.lb_private_ip
-        params["STRATOS_LB_PUBLIC_IP"] = CartridgeAgentConfiguration.lb_public_ip
+        env_params["STRATOS_LB_IP"] = CartridgeAgentConfiguration.lb_private_ip
+        env_params["STRATOS_LB_PUBLIC_IP"] = CartridgeAgentConfiguration.lb_public_ip
 
     topology = TopologyContext.get_topology()
     if topology.initialized:
         service = topology.get_service(CartridgeAgentConfiguration.service_name)
         cluster = service.get_cluster(CartridgeAgentConfiguration.cluster_id)
         member_id_in_payload = CartridgeAgentConfiguration.member_id
-        add_properties(service.properties, params, "SERVICE_PROPERTY")
-        add_properties(cluster.properties, params, "CLUSTER_PROPERTY")
-        add_properties(cluster.get_member(member_id_in_payload).properties, params, "MEMBER_PROPERTY")
+        add_properties(service.properties, env_params, "SERVICE_PROPERTY")
+        add_properties(cluster.properties, env_params, "CLUSTER_PROPERTY")
+        add_properties(cluster.get_member(member_id_in_payload).properties, env_params, "MEMBER_PROPERTY")
 
-    return params
+    return env_params
 
 
 def add_properties(properties, params, prefix):

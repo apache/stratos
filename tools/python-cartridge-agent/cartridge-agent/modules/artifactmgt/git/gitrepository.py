@@ -1,3 +1,5 @@
+from ...util.asyncscheduledtask import AsyncScheduledTask
+
 class GitRepository:
 
     def __init__(self):
@@ -12,3 +14,4 @@ class GitRepository:
         self.is_multitenant = False
         self.commit_enabled = False
         self.scheduled_update_task = None
+        """:type : AsyncScheduledTask """

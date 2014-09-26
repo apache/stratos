@@ -1,12 +1,14 @@
 import logging
+import time
 
 from ..artifactmgt.git.agentgithandler import AgentGitHandler
 from ..artifactmgt.repositoryinformation import RepositoryInformation
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import extensionutils, cartridgeagentconstants, cartridgeagentutils
+from ..util import extensionutils
 from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *
+from ..tenant.tenantcontext import *
 
 
 class DefaultExtensionHandler:
@@ -101,9 +103,8 @@ class DefaultExtensionHandler:
                                                                         update_interval)
 
     def on_artifact_update_scheduler_event(self, tenant_id):
-        env_params = {}
-        env_params["STRATOS_ARTIFACT_UPDATED_TENANT_ID"] = tenant_id
-        env_params["STRATOS_ARTIFACT_UPDATED_SCHEDULER"] = True
+        env_params = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": tenant_id, "STRATOS_ARTIFACT_UPDATED_SCHEDULER": True}
+
         extensionutils.execute_artifacts_updated_extension(env_params)
 
     def on_instance_cleanup_cluster_event(self, instanceCleanupClusterEvent):
@@ -114,13 +115,12 @@ class DefaultExtensionHandler:
 
     def on_member_activated_event(self, member_activated_event):
         self.log.info("Member activated event received: [service] %r [cluster] %r [member] %r"
-                      % (
-            member_activated_event.service_name, member_activated_event.cluster_id, member_activated_event.member_id))
+            % (member_activated_event.service_name, member_activated_event.cluster_id, member_activated_event.member_id))
 
-        consistant = extensionutils.check_topology_consistency(member_activated_event.service_name,
+        topology_consistent = extensionutils.check_topology_consistency(member_activated_event.service_name,
                                                                member_activated_event.cluster_id,
                                                                member_activated_event.member_id)
-        if not consistant:
+        if not topology_consistent:
             self.log.error("Topology is inconsistent...failed to execute member activated event")
             return
 
@@ -132,13 +132,13 @@ class DefaultExtensionHandler:
 
         if extensionutils.is_relevant_member_event(member_activated_event.service_name,
                                                    member_activated_event.cluster_id, lb_cluster_id):
-            env_params = {}
-            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_IP"] = member_activated_event.member_ip
-            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_ID"] = member_activated_event.member_id
-            env_params["STRATOS_MEMBER_ACTIVATED_CLUSTER_ID"] = member_activated_event.cluster_id
-            env_params["STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID"] = lb_cluster_id
-            env_params["STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID"] = member_activated_event.network_partition_id
-            env_params["STRATOS_MEMBER_ACTIVATED_SERVICE_NAME"] = member_activated_event.service_name
+
+            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": member_activated_event.member_ip,
+                          "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": member_activated_event.member_id,
+                          "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": member_activated_event.cluster_id,
+                          "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": lb_cluster_id,
+                          "STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID": member_activated_event.network_partition_id,
+                          "STRATOS_MEMBER_ACTIVATED_SERVICE_NAME": member_activated_event.service_name}
 
             ports = member_activated_event.port_map.values()
             ports_str = ""
@@ -147,11 +147,7 @@ class DefaultExtensionHandler:
 
             env_params["STRATOS_MEMBER_ACTIVATED_PORTS"] = ports_str
 
-            members = cluster.get_members()
-            member_list_json = ""
-            for member in members:
-                member_list_json += member.json_str + ","
-            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_LIST_JSON"] = member_list_json[:-1]  # removing last comma
+            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_LIST_JSON"] = cluster.member_list_json
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
@@ -167,7 +163,8 @@ class DefaultExtensionHandler:
             clustered = CartridgeAgentConfiguration.is_clustered
 
             if member.properties is not None and member.properties[
-                cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" and clustered is not None and clustered:
+                    cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" and clustered is not None and clustered:
+
                 self.log.debug(" If WK member is re-spawned, update axis2.xml ")
 
                 has_wk_ip_changed = True
@@ -194,20 +191,179 @@ class DefaultExtensionHandler:
         else:
             self.log.debug("Member activated event is not relevant...skipping agent extension")
 
-    def onCompleteTopologyEvent(self, completeTopologyEvent):
-        pass
+    def on_complete_topology_event(self, complete_topology_event):
+        self.log.debug("Complete topology event received")
 
-    def onCompleteTenantEvent(self, completeTenantEvent):
-        pass
+        service_name_in_payload = CartridgeAgentConfiguration.service_name
+        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
+        member_id_in_payload = CartridgeAgentConfiguration.member_id
 
-    def onMemberTerminatedEvent(self, memberTerminatedEvent):
-        pass
+        extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
-    def onMemberSuspendedEvent(self, memberSuspendedEvent):
-        pass
+        topology = complete_topology_event.get_topology()
+        service = topology.get_service(service_name_in_payload)
+        cluster = service.get_cluster(cluster_id_in_payload)
 
-    def onMemberStartedEvent(self, memberStartedEvent):
-        pass
+        env_params = {"STRATOS_TOPOLOGY_JSON": topology.json_str, "STRATOS_MEMBER_LIST_JSON": cluster.member_list_json}
+
+        extensionutils.execute_complete_topology_extension(env_params)
+
+    def on_complete_tenant_event(self, complete_tenant_event):
+        self.log.debug("Complete tenant event received")
+
+        tenant_list_json = complete_tenant_event.tenant_list_json
+        self.log.debug("Complete tenants:" + tenant_list_json)
+
+        env_params = {"STRATOS_TENANT_LIST_JSON": tenant_list_json}
+
+        extensionutils.execute_complete_tenant_extension(env_params)
+
+    def on_member_terminated_event(self, member_terminated_event):
+        self.log.info("Member terminated event received: [service] " + member_terminated_event.service_name +
+                      " [cluster] " + member_terminated_event.cluster_id + " [member] " + member_terminated_event.member_id)
+
+        topology_consistent = extensionutils.check_topology_consistency(
+            member_terminated_event.service_name,
+            member_terminated_event.cluster_id,
+            member_terminated_event.member_id
+        )
+
+        if not topology_consistent:
+            self.log.error("Topology is inconsistent...failed to execute member terminated event")
+            return
+
+        topology = TopologyContext.get_topology()
+        service = topology.get_service(member_terminated_event.service_name)
+        cluster = service.get_cluster(member_terminated_event.cluster_id)
+        terminated_member = cluster.get_member(member_terminated_event.member_id)
+        lb_cluster_id = cluster.get_member(member_terminated_event.cluster_id).lb_cluster_id
+
+        #check whether terminated member is within the same cluster, LB cluster or service group
+        if extensionutils.is_relevant_member_event(
+                member_terminated_event.service_name,
+                member_terminated_event.cluster_id,
+                lb_cluster_id):
+
+            env_params = {"STRATOS_MEMBER_TERMINATED_MEMBER_IP": terminated_member.member_ip,
+                          "STRATOS_MEMBER_TERMINATED_MEMBER_ID": member_terminated_event.member_id,
+                          "STRATOS_MEMBER_TERMINATED_CLUSTER_ID": member_terminated_event.cluster_id,
+                          "STRATOS_MEMBER_TERMINATED_LB_CLUSTER_ID": lb_cluster_id,
+                          "STRATOS_MEMBER_TERMINATED_NETWORK_PARTITION_ID": member_terminated_event.network_partition_id,
+                          "STRATOS_MEMBER_TERMINATED_SERVICE_NAME": member_terminated_event.service_name,
+                          "STRATOS_MEMBER_TERMINATED_MEMBER_LIST_JSON": cluster.member_list_json,
+                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+
+            member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
+            if member_ips is not None and len(member_ips) > 1:
+                env_params["STRATOS_MEMBER_TERMINATED_LB_IP"] = member_ips[0]
+                env_params["STRATOS_MEMBER_TERMINATED_LB_PUBLIC_IP"] = member_ips[1]
+
+            extensionutils.add_properties(service.properties, env_params, "MEMBER_TERMINATED_SERVICE_PROPERTY")
+            extensionutils.add_properties(cluster.properties, env_params, "MEMBER_TERMINATED_CLUSTER_PROPERTY")
+            extensionutils.add_properties(terminated_member.properties, env_params, "MEMBER_TERMINATED_MEMBER_PROPERTY")
+
+            extensionutils.execute_member_terminated_extension(env_params)
+
+        else:
+            self.log.debug("Member terminated event is not relevant...skipping agent extension")
+
+    def on_member_suspended_event(self, member_suspended_event):
+        self.log.info("Member suspended event received: [service] " + member_suspended_event.service_name +
+                      " [cluster] " + member_suspended_event.cluster_id + " [member] " + member_suspended_event.member_id)
+
+        topology_consistent = extensionutils.check_topology_consistency(
+            member_suspended_event.service_name,
+            member_suspended_event.cluster_id,
+            member_suspended_event.member_id
+        )
+
+        if not topology_consistent:
+            self.log.error("Topology is inconsistent...failed to execute member suspended event")
+            return
+
+        topology = TopologyContext.get_topology()
+        service = topology.get_service(member_suspended_event.service_name)
+        cluster = service.get_cluster(member_suspended_event.cluster_id)
+        suspended_member = cluster.get_member(member_suspended_event.member_id)
+        lb_cluster_id = cluster.get_member(member_suspended_event.cluster_id).lb_cluster_id
+
+        #check whether suspended member is within the same cluster, LB cluster or service group
+        if extensionutils.is_relevant_member_event(
+                member_suspended_event.service_name,
+                member_suspended_event.cluster_id,
+                lb_cluster_id):
+
+            env_params = {"STRATOS_MEMBER_SUSPENDED_MEMBER_IP": member_suspended_event.member_ip,
+                          "STRATOS_MEMBER_SUSPENDED_MEMBER_ID": member_suspended_event.member_id,
+                          "STRATOS_MEMBER_SUSPENDED_CLUSTER_ID": member_suspended_event.cluster_id,
+                          "STRATOS_MEMBER_SUSPENDED_LB_CLUSTER_ID": lb_cluster_id,
+                          "STRATOS_MEMBER_SUSPENDED_NETWORK_PARTITION_ID": member_suspended_event.network_partition_id,
+                          "STRATOS_MEMBER_SUSPENDED_SERVICE_NAME": member_suspended_event.service_name,
+                          "STRATOS_MEMBER_SUSPENDED_MEMBER_LIST_JSON": cluster.member_list_json,
+                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+
+            member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
+            if member_ips is not None and len(member_ips) > 1:
+                env_params["STRATOS_MEMBER_SUSPENDED_LB_IP"] = member_ips[0]
+                env_params["STRATOS_MEMBER_SUSPENDED_LB_PUBLIC_IP"] = member_ips[1]
+
+            extensionutils.add_properties(service.properties, env_params, "MEMBER_SUSPENDED_SERVICE_PROPERTY")
+            extensionutils.add_properties(cluster.properties, env_params, "MEMBER_SUSPENDED_CLUSTER_PROPERTY")
+            extensionutils.add_properties(suspended_member.properties, env_params, "MEMBER_SUSPENDED_MEMBER_PROPERTY")
+
+            extensionutils.execute_member_suspended_extension(env_params)
+
+        else:
+            self.log.debug("Member suspended event is not relevant...skipping agent extension")
+
+    def on_member_started_event(self, member_started_event):
+        self.log.info("Member started event received: [service] " + member_started_event.service_name +
+                      " [cluster] " + member_started_event.cluster_id + " [member] " + member_started_event.member_id)
+
+        topology_consistent = extensionutils.check_topology_consistency(
+            member_started_event.service_name,
+            member_started_event.cluster_id,
+            member_started_event.member_id
+        )
+
+        if not topology_consistent:
+            self.log.error("Topology is inconsistent...failed to execute member started event")
+            return
+
+        topology = TopologyContext.get_topology()
+        service = topology.get_service(member_started_event.service_name)
+        cluster = service.get_cluster(member_started_event.cluster_id)
+        started_member = cluster.get_member(member_started_event.member_id)
+        lb_cluster_id = cluster.get_member(member_started_event.cluster_id).lb_cluster_id
+
+        #check whether started member is within the same cluster, LB cluster or service group
+        if extensionutils.is_relevant_member_event(
+                member_started_event.service_name,
+                member_started_event.cluster_id,
+                lb_cluster_id):
+
+            env_params = {"STRATOS_MEMBER_STARTED_MEMBER_IP": member_started_event.member_ip,
+                          "STRATOS_MEMBER_STARTED_MEMBER_ID": member_started_event.member_id,
+                          "STRATOS_MEMBER_STARTED_CLUSTER_ID": member_started_event.cluster_id,
+                          "STRATOS_MEMBER_STARTED_LB_CLUSTER_ID": lb_cluster_id,
+                          "STRATOS_MEMBER_STARTED_NETWORK_PARTITION_ID": member_started_event.network_partition_id,
+                          "STRATOS_MEMBER_STARTED_SERVICE_NAME": member_started_event.service_name,
+                          "STRATOS_MEMBER_STARTED_MEMBER_LIST_JSON": cluster.member_list_json,
+                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+
+            member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
+            if member_ips is not None and len(member_ips) > 1:
+                env_params["STRATOS_MEMBER_STARTED_LB_IP"] = member_ips[0]
+                env_params["STRATOS_MEMBER_STARTED_LB_PUBLIC_IP"] = member_ips[1]
+
+            extensionutils.add_properties(service.properties, env_params, "MEMBER_STARTED_SERVICE_PROPERTY")
+            extensionutils.add_properties(cluster.properties, env_params, "MEMBER_STARTED_CLUSTER_PROPERTY")
+            extensionutils.add_properties(started_member.properties, env_params, "MEMBER_STARTED_MEMBER_PROPERTY")
+
+            extensionutils.execute_member_started_extension(env_params)
+
+        else:
+            self.log.debug("Member started event is not relevant...skipping agent extension")
 
     def start_server_extension(self):
         #wait until complete topology message is received to get LB IP
@@ -254,20 +410,59 @@ class DefaultExtensionHandler:
     def volume_mount_extension(self, persistence_mappings_payload):
         extensionutils.execute_volume_mount_extension(persistence_mappings_payload)
 
-    def onSubscriptionDomainAddedEvent(self, subscriptionDomainAddedEvent):
-        pass
+    def on_subscription_domain_added_event(self, subscription_domain_added_event):
+        tenant_domain = self.find_tenant_domain(subscription_domain_added_event.tenant_id)
+        self.log.info(
+            "Subscription domain added event received: [tenant-id] " + subscription_domain_added_event.tenant_id +
+            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_added_event.domain_name +
+            " [application-context] " + subscription_domain_added_event.application_context
+        )
 
-    def onSubscriptionDomainRemovedEvent(self, subscriptionDomainRemovedEvent):
-        pass
+        env_params = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscription_domain_added_event.service_name,
+                      "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscription_domain_added_event.domain_name,
+                      "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscription_domain_added_event.tenant_id),
+                      "STRATOS_SUBSCRIPTION_TENANT_DOMAIN": tenant_domain,
+                      "STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT": subscription_domain_added_event.application_context}
 
-    def onCopyArtifactsExtension(self, src, des):
-        pass
+        extensionutils.execute_subscription_domain_added_extension(env_params)
 
-    def onTenantSubscribedEvent(self, tenantSubscribedEvent):
-        pass
+    def on_subscription_domain_removed_event(self, subscriptionDomainRemovedEvent):
+        tenant_domain = self.find_tenant_domain(subscriptionDomainRemovedEvent.tenant_id)
+        self.log.info(
+            "Subscription domain removed event received: [tenant-id] " + subscriptionDomainRemovedEvent.tenant_id +
+            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscriptionDomainRemovedEvent.domain_name
+        )
 
-    def onTenantUnSubscribedEvent(self, tenantUnSubscribedEvent):
-        pass
+        env_params = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscriptionDomainRemovedEvent.service_name,
+                      "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscriptionDomainRemovedEvent.domain_name,
+                      "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscriptionDomainRemovedEvent.tenant_id),
+                      "STRATOS_SUBSCRIPTION_TENANT_DOMAIN": tenant_domain}
+
+        extensionutils.execute_subscription_domain_removed_extension(env_params)
+
+    def on_copy_artifacts_extension(self, src, des):
+        extensionutils.execute_copy_artifact_extension(src, des)
+
+    def on_tenant_subscribed_event(self, tenant_subscribed_event):
+        self.log.info(
+            "Tenant subscribed event received: [tenant] " + tenant_subscribed_event.tenant_id +
+            " [service] " + tenant_subscribed_event.service_name + " [cluster] " + tenant_subscribed_event.cluster_ids
+        )
+
+        extensionutils.execute_tenant_subscribed_extension({})
+
+    def on_tenant_unsubscribed_event(self, tenant_unsubscribed_event):
+        self.log.info(
+            "Tenant unsubscribed event received: [tenant] " + tenant_unsubscribed_event.tenant_id +
+            " [service] " + tenant_unsubscribed_event.service_name + " [cluster] " + tenant_unsubscribed_event.cluster_ids
+        )
+
+        try:
+            if CartridgeAgentConfiguration.service_name == tenant_unsubscribed_event.service_name:
+                AgentGitHandler.remove_repo(tenant_unsubscribed_event.tenant_id)
+        except:
+            self.log.exception()
+        extensionutils.execute_tenant_unsubscribed_extension({})
 
     def cleanup(self):
         self.log.info("Executing cleaning up the data in the cartridge instance...")
@@ -518,3 +713,20 @@ class DefaultExtensionHandler:
             return int(member.properties["MIN_COUNT"])
 
         return 1
+
+    def find_tenant_domain(self, tenant_id):
+        tenant = TenantContext.get_tenant(tenant_id)
+        if tenant is None:
+            raise RuntimeError("Tenant could not be found: [tenant-id] %r" % tenant_id)
+
+        return tenant.tenant_domain
+
+    def wait_for_wk_members(self, env_params):
+        min_count = int(CartridgeAgentConfiguration.min_count)
+        is_wk_member_group_ready = False
+        while not is_wk_member_group_ready:
+            self.log.info("Waiting for %r well known members..." % min_count)
+
+            time.sleep(5)
+
+            is_wk_member_group_ready = self.is_wk_member_group_ready(env_params, min_count)
