@@ -25,10 +25,11 @@ public class AutoscalePolicy {
     private String displayName;
 
     private String description;
+    
+    private boolean isPublic;
 
     private LoadThresholds loadThresholds;
-
-
+    
     public String getId() {
         return id;
     }
@@ -59,5 +60,13 @@ public class AutoscalePolicy {
 
     public void setLoadThresholds(LoadThresholds loadThresholds) {
         this.loadThresholds = loadThresholds;
+    }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }
