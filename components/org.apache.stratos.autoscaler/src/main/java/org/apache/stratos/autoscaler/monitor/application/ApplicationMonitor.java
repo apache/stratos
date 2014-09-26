@@ -129,6 +129,18 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
+    public List<String> findClustersOfApplication(String appId) {
+        List<String> clusters = new ArrayList<String>();
+        //considering only one level
+        for(AbstractClusterMonitor monitor : this.abstractClusterMonitors.values()) {
+            clusters.add(monitor.getClusterId());
+        }
+        //TODO rest
+        return clusters;
+
+    }
+
+
     /**
      * Find the cluster monitor by traversing recursively in the hierarchical monitors.
      * @param clusterId

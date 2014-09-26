@@ -229,14 +229,14 @@ public abstract class Monitor extends Observable implements Observer {
     }
 
     private class GroupMonitorAdder implements Runnable {
-        private Group group;
         private String dependency;
         private Monitor parent;
+        private ParentBehavior component;
 
         public GroupMonitorAdder(Monitor parent, String dependency, ParentBehavior group) {
-            this.group = (Group)group;
             this.dependency = dependency;
             this.parent = parent;
+            this.component = group;
         }
 
         public void run() {
@@ -252,9 +252,9 @@ public abstract class Monitor extends Observable implements Observer {
                 try {
                     if(log.isDebugEnabled()) {
                         log.debug("Group monitor is going to be started for [group] "
-                                + group.getAlias());
+                                + dependency);
                     }
-                    monitor = AutoscalerUtil.getGroupMonitor(group.getGroup(dependency));
+                    monitor = AutoscalerUtil.getGroupMonitor(component.getGroup(dependency));
                     monitor.addObserver(parent);
                     success = true;
 

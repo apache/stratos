@@ -193,17 +193,22 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ApplicationCreatedEventListener] Received: " + event.getClass());
+                log.info("[ApplicationRemovedEvent] Received: " + event.getClass());
 
-                ApplicationRemovedEvent applicationCreatedEvent = (ApplicationRemovedEvent) event;
+                ApplicationRemovedEvent applicationRemovedEvent = (ApplicationRemovedEvent) event;
 
                 //acquire read lock
                 TopologyManager.acquireReadLock();
 
                 try {
-                    //TODO build dependency and organize the application
-
-                    //remove monitors by checking the termination
+                    //TODO remove monitors as well as any starting or pending threads
+                    ApplicationMonitor monitor = AutoscalerContext.getInstance().
+                            getAppMonitor(applicationRemovedEvent.getApplicationId());
+                    List<String> clusters = monitor.findClustersOfApplication(applicationRemovedEvent.getApplicationId());
+                    for(String clusterId: clusters) {
+                        AutoscalerContext.getInstance().getMonitor(clusterId).setDestroyed(true);
+                        AutoscalerContext.getInstance().removeMonitor(clusterId);
+                    }
 
                 } finally {
                     //release read lock
