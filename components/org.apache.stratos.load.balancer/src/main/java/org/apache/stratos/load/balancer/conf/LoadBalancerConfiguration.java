@@ -441,7 +441,7 @@ public class LoadBalancerConfiguration {
 
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
-                        Cluster cluster = new Cluster(service.getServiceName(), clusterId, null, null);
+                        Cluster cluster = new Cluster(service.getServiceName(), clusterId, null, null, null);
 
                         String tenantRange = clusterNode.getProperty(Constants.CONF_PROPERTY_TENANT_RANGE);
                         if (StringUtils.isNotBlank(tenantRange)) {
