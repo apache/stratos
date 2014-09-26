@@ -50,6 +50,7 @@ class CompleteTenantEvent:
 
     def __init__(self):
         self.tenants = []
+        self.tenant_list_json = None
 
     @staticmethod
     def create_from_json(json_str):
@@ -57,9 +58,10 @@ class CompleteTenantEvent:
         instance = CompleteTenantEvent()
         instance.tenants = []
 
-        temp_tenants = json_obj["tenants"] if "tenants" in json_obj else None
-        if temp_tenants is not None:
-            for tenant_str in temp_tenants:
+        tenants_str = json_obj["tenants"] if "tenants" in json_obj else None
+        instance.tenant_list_json = tenants_str
+        if tenants_str is not None:
+            for tenant_str in tenants_str:
                 tenant_obj = Tenant(int(tenant_str["tenantId"]), tenant_str["tenantDomain"])
                 for service_name in tenant_str["serviceNameSubscriptionMap"]:
                     sub_str = tenant_str["serviceNameSubscriptionMap"][service_name]

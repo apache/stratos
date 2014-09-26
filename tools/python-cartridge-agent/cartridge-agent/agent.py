@@ -63,8 +63,6 @@ class CartridgeAgent(threading.Thread):
             self.extension_handler.on_instance_activated_event()
 
             cartridgeagentpublisher.publish_instance_activated_event()
-        else:
-            pass
 
         persistence_mappping_payload = CartridgeAgentConfiguration.persistence_mappings
         if persistence_mappping_payload is not None:
@@ -139,13 +137,28 @@ class CartridgeAgent(threading.Thread):
         self.log.info("Cartridge Agent topology receiver thread started")
 
     def on_member_activated(self, msg):
-        raise NotImplementedError
+        self.log.debug("Member activated event received: %r" % msg.payload)
+        event_obj = MemberActivatedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.on_member_activated_event(event_obj)
+        except:
+            self.log.exception("Error processing member terminated event")
 
     def on_member_terminated(self, msg):
-        raise NotImplementedError
+        self.log.debug("Member terminated event received: %r" % msg.payload)
+        event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.on_member_terminated_event(event_obj)
+        except:
+            self.log.exception("Error processing member terminated event")
 
     def on_member_suspended(self, msg):
-        raise NotImplementedError
+        self.log.debug("Member suspended event received: %r" % msg.payload)
+        event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.on_member_suspended_event(event_obj)
+        except:
+            self.log.exception("Error processing member suspended event")
 
     def on_complete_topology(self, msg):
         if not self.__topology_context_initialized:
@@ -154,14 +167,19 @@ class CartridgeAgent(threading.Thread):
             TopologyContext.update(event_obj.topology)
             self.__topology_context_initialized = True
             try:
-                self.extension_handler.onCompleteTopologyEvent(event_obj)
+                self.extension_handler.on_complete_topology_event(event_obj)
             except:
                 self.log.exception("Error processing complete topology event")
         else:
             self.log.info("Complete topology event updating task disabled")
 
     def on_member_started(self, msg):
-        raise NotImplementedError
+        self.log.debug("Member started event received: %r" % msg.payload)
+        event_obj = MemberStartedEvent.create_from_json(msg.payload)
+        try:
+            self.extension_handler.on_member_started_event(event_obj)
+        except:
+            self.log.exception("Error processing member started event")
 
     def register_tenant_event_listeners(self):
         self.log.debug("Starting tenant event message receiver thread")
@@ -175,31 +193,20 @@ class CartridgeAgent(threading.Thread):
         self.log.info("Tenant event message receiver thread started")
 
     def on_subscription_domain_added(self, msg):
-        self.log.debug("Subscription domain added event received")
+        self.log.debug("Subscription domain added event received : %r" % msg.payload)
         event_obj = SubscriptionDomainAddedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.onSubscriptionDomainAddedEvent(event_obj)
+            self.extension_handler.on_subscription_domain_added_event(event_obj)
         except:
             self.log.exception("Error processing subscription domains added event")
-        # extensionutils.execute_subscription_domain_added_extension(
-        #     event_obj.tenant_id,
-        #     self.find_tenant_domain(event_obj.tenant_id),
-        #     event_obj.domain_name,
-        #     event_obj.application_context
-        # )
 
     def on_subscription_domain_removed(self, msg):
-        self.log.debug("Subscription domain removed event received")
+        self.log.debug("Subscription domain removed event received : %r" % msg.payload)
         event_obj = SubscriptionDomainRemovedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.onSubscriptionDomainRemovedEvent(event_obj)
+            self.extension_handler.on_subscription_domain_removed_event(event_obj)
         except:
             self.log.exception("Error processing subscription domains removed event")
-        # extensionutils.execute_subscription_domain_removed_extension(
-        #     event_obj.tenant_id,
-        #     self.find_tenant_domain(event_obj.tenant_id),
-        #     event_obj.domain_name
-        # )
 
     def on_complete_tenant(self, msg):
         if not self.__tenant_context_initialized:
@@ -208,7 +215,7 @@ class CartridgeAgent(threading.Thread):
             TenantContext.update(event_obj.tenants)
 
             try:
-                self.extension_handler.onCompleteTenantEvent(event_obj)
+                self.extension_handler.on_complete_tenant_event(event_obj)
                 self.__tenant_context_initialized = True
             except:
                 self.log.exception("Error processing complete tenant event")
@@ -216,18 +223,18 @@ class CartridgeAgent(threading.Thread):
             self.log.info("Complete tenant event updating task disabled")
 
     def on_tenant_subscribed(self, msg):
-        self.log.debug("Tenant subscribed event received")
+        self.log.debug("Tenant subscribed event received: %r" % msg.payload)
         event_obj = TenantSubscribedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.onTenantSubscribedEvent(event_obj)
+            self.extension_handler.on_tenant_subscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant subscribed event")
 
     def on_tenant_unsubscribed(self, msg):
-        self.log.debug("Tenant unSubscribed event received")
+        self.log.debug("Tenant unSubscribed event received: %r" % msg.payload)
         event_obj = TenantUnsubscribedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.onTenantUnSubscribedEvent(event_obj)
+            self.extension_handler.on_tenant_unsubscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant unSubscribed event")
 
