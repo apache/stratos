@@ -111,6 +111,7 @@ public class AutoscalerUtil {
                                         new ClusterMonitor(cluster.getClusterId(),
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
+        clusterMonitor.setAppId(cluster.getAppId());
         clusterMonitor.setStatus(Status.Created);
         
         for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){

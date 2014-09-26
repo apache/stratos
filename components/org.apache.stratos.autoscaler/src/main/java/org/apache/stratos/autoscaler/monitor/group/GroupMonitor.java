@@ -96,23 +96,28 @@ public class GroupMonitor extends Monitor {
                     }
                 }
             } else if (dependency.contains("cartridge")) {
-                for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
-                    if(dataHolder.getServiceType().equals(dependency.substring(10))) {
-                        String clusterId = dataHolder.getClusterId();
-                        String serviceName = dataHolder.getServiceType();
-                        Cluster cluster = null;
-                        //TopologyManager.acquireReadLock();
-                        cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
-                        //TopologyManager.releaseReadLock();
-                        if (cluster != null) {
-                            startClusterMonitor(this, cluster);
-                        } else {
-                            //TODO throw exception since Topology is inconsistent
+                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceName = clusterDataHolder.getServiceType();
+                Cluster cluster = null;
+                //TopologyManager.acquireReadLock();
+                Topology topology = TopologyManager.getTopology();
+                if (topology.serviceExists(serviceName)) {
+                    Service service = topology.getService(serviceName);
+                    if (service.clusterExists(clusterId)) {
+                        cluster = service.getCluster(clusterId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Dependency check starting the [cluster]" + clusterId);
                         }
+                        startClusterMonitor(this, cluster);
+                    } else {
+                        log.warn("[Cluster] " + clusterId + " cannot be found in the " +
+                                "Topology for [service] " + serviceName);
                     }
+                } else {
+                    log.warn("[Service] " + serviceName + " cannot be found in the Topology");
                 }
-
-
+                //TopologyManager.releaseReadLock();
             }
         } else {
             //all the groups/clusters have been started and waiting for activation

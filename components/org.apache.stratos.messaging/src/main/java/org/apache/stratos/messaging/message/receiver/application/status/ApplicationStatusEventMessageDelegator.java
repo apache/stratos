@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.application.status.ApplicationStatusMessageProcessorChain;
+import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
 
@@ -53,17 +54,11 @@ public class ApplicationStatusEventMessageDelegator implements Runnable {
                 try {
                     TextMessage message = messageQueue.take();
 
-                    String messageText = message.getText();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Application status event message received: [message] " + messageText);
-                    }
-                    EventMessage eventMessage = jsonToEventMessage(messageText);
-                    if(eventMessage == null){
-                        log.error("Error occurred while extracting message");
-                        continue;
-                    }
-                    String type = eventMessage.getEventName();
-                    String json = eventMessage.getMessage();
+                    // Retrieve the header
+                    String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
+
+                    // Retrieve the actual message
+                    String json = message.getText();
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Application status event message received from queue: %s", type));
