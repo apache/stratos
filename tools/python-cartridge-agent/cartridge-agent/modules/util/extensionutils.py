@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import time
 
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. topology.topologycontext import *
@@ -63,8 +64,25 @@ def execute_subscription_domain_removed_extension(tenant_id, tenant_domain, doma
     raise NotImplementedError
 
 
+def execute_start_servers_extension(env_params):
+    try:
+        log.debug("Executing start servers extension")
+
+        script_name = cartridgeagentconstants.START_SERVERS_SCRIPT
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Start servers script returned: %r" % output)
+    except:
+        log.exception("Could not execute start servers extension")
+
+
 def wait_for_complete_topology():
-    raise NotImplementedError
+    while not TopologyContext.topology.initialized:
+        log.info("Waiting for complete topology event...")
+        time.sleep(5)
 
 
 def check_topology_consistency(service_name, cluster_id, member_id):
