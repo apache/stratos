@@ -31,6 +31,18 @@ class Topology:
     def get_services(self):
         return self.service_map.values()
 
+    def get_service(self, service_name):
+        """
+
+        :param str service_name: service name to be retrieved
+        :return: Service object of the service
+        :rtype: Service
+        """
+        if service_name in self.service_map:
+            return self.service_map[service_name]
+
+        return None
+
     def add_service(self, service):
         self.service_map[service.service_name] = service
 
