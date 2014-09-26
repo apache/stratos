@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
+import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
@@ -235,10 +236,10 @@ public class CloudControllerClient {
     public synchronized MemberContext createContainer(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
         	
-    		AutoScalerServiceInterface service = new AutoScalerServiceImpl();
-    		KubernetesMaster kubernetesMaster = service.getMasterForKubernetesGroup(kubernetesClusterId);
-    		String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
-    		KubernetesGroup kubernetesGroup = service.getKubernetesGroup(kubernetesClusterId);
+        	KubernetesManager kubernetesManager = KubernetesManager.getInstance();
+        	KubernetesMaster kubernetesMaster = kubernetesManager.getKubernetesMasterInGroup(kubernetesClusterId);
+        	String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
+        	KubernetesGroup kubernetesGroup = kubernetesManager.getKubernetesGroup(kubernetesClusterId);
     		int lower = kubernetesGroup.getPortRange().getLower();
     		int upper = kubernetesGroup.getPortRange().getUpper();
     		String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
