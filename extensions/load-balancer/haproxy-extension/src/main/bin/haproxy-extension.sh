@@ -41,6 +41,7 @@ properties="-Dhaproxy.private.ip=127.0.0.1
             -Dnetwork.partition.id=network-partition-1
             -Dcluster.id=cluster
             -Dservice.name=service
+            -Dload.balanced.service.type=lb-service-type
             -Dcep.stats.publisher.enabled=true"
 
 

@@ -40,6 +40,8 @@ properties="-Dhaproxy.private.ip=0.0.0.0
             -Dthrift.receiver.port=<%= @cep_port %>
             -Dnetwork.partition.id=<%= @network_partition_id %>
             -Dcluster.id=<%= @cluster_id %>
+            -Dservice.name=<%= @service_name %>
+            -Dload.balanced.service.type=<%= @lb_service_type %>
 	    -Dcep.stats.publisher.enabled=true"
 
 # Uncomment below line to enable remote debugging
