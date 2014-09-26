@@ -204,11 +204,22 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO remove monitors as well as any starting or pending threads
                     ApplicationMonitor monitor = AutoscalerContext.getInstance().
                             getAppMonitor(applicationRemovedEvent.getApplicationId());
-                    List<String> clusters = monitor.findClustersOfApplication(applicationRemovedEvent.getApplicationId());
-                    for(String clusterId: clusters) {
-                        AutoscalerContext.getInstance().getMonitor(clusterId).setDestroyed(true);
-                        AutoscalerContext.getInstance().removeMonitor(clusterId);
+                    if(monitor != null) {
+                        List<String> clusters = monitor.
+                                findClustersOfApplication(applicationRemovedEvent.getApplicationId());
+                        for(String clusterId: clusters) {
+                            //stopping the cluster monitor and remove it from the AS
+                            AutoscalerContext.getInstance().getMonitor(clusterId).setDestroyed(true);
+                            AutoscalerContext.getInstance().removeMonitor(clusterId);
+                        }
+                        //removing the application monitor
+                        AutoscalerContext.getInstance().
+                                removeAppMonitor(applicationRemovedEvent.getApplicationId());
+                    } else {
+                        log.warn("Application Monitor cannot be found for the removed [application] "
+                                + applicationRemovedEvent.getApplicationId());
                     }
+
 
                 } finally {
                     //release read lock

@@ -90,13 +90,13 @@ public class TopologyEventPublisher {
 
     }
 
-    public static void sendApplicationCreatedEvent (Application application) {
+    public static void sendApplicationCreatedEvent (Application application, List<Cluster> clusters) {
 
         if(log.isInfoEnabled()) {
             log.info("Publishing Application created event: " + application.toString());
         }
 
-        publishEvent(new ApplicationCreatedEvent(application));
+        publishEvent(new ApplicationCreatedEvent(application, clusters));
     }
 
     public static void sendApplicationRemovedEvent(String applicationId, int tenantId, String tenantDomain) {

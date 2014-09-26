@@ -42,10 +42,8 @@ import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.util.Constants;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * this is to manipulate the received events by cloud controller
@@ -623,7 +621,7 @@ public class TopologyBuilder {
                 log.warn("Application with id [ " + application.getId() + " ] already exists in Topology");
                 return;
             }
-
+            List<Cluster> clusters = new ArrayList<Cluster>();
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
@@ -631,6 +629,7 @@ public class TopologyBuilder {
                 cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
+                clusters.add(cluster);
 
                 Service service = topology.getService(applicationClusterContext.getCartridgeType());
                 if (service != null) {
@@ -647,7 +646,7 @@ public class TopologyBuilder {
             TopologyManager.updateTopology(topology);
             log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
 
-            TopologyEventPublisher.sendApplicationCreatedEvent(application);
+            TopologyEventPublisher.sendApplicationCreatedEvent(application ,clusters);
 
         } finally {
             TopologyManager.releaseWriteLock();

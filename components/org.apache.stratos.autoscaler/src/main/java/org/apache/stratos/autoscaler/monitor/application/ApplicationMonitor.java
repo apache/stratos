@@ -20,14 +20,11 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -42,7 +39,7 @@ public class ApplicationMonitor extends Monitor {
     public ApplicationMonitor(Application application) {
         super(application);
         this.id = application.getId();
-        if(preOrderTraverse.isEmpty()) {
+        if (preOrderTraverse.isEmpty()) {
             log.warn("the child group/cluster cannot be found for the Application " + id);
         } else {
             startDependency();
@@ -52,15 +49,15 @@ public class ApplicationMonitor extends Monitor {
 
     @Override
     public void update(Observable observable, Object event) {
-        if(event instanceof MonitorStatusEvent) {
+        if (event instanceof MonitorStatusEvent) {
             MonitorStatusEvent statusEvent = (MonitorStatusEvent) event;
             Status childStatus = statusEvent.getStatus();
             String notifier = statusEvent.getNotifierId();
             log.info(String.format("[Monitor] %s got notified from the [child] %s" +
                     "on its state change from %s to %s", id, notifier, this.status, status));
-            if(childStatus == Status.Activated) {
+            if (childStatus == Status.Activated) {
                 //start the next dependency
-                if(!preOrderTraverse.isEmpty()) {
+                if (!preOrderTraverse.isEmpty()) {
                     startDependency();
                 }
             }
@@ -79,16 +76,14 @@ public class ApplicationMonitor extends Monitor {
         //TODO build up the tree with ordered manner
 
         // start the first dependency
-
-
-        if(!preOrderTraverse.isEmpty()) {
+        if (!preOrderTraverse.isEmpty()) {
             String dependency = preOrderTraverse.poll();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Dependency check for the [group] " + dependency + " started");
             }
             if (dependency.contains("group")) {
                 String groupId = dependency.substring(6);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Dependency check starting the [group]" + groupId);
                 }
                 startGroupMonitor(this, groupId, component);
@@ -98,21 +93,27 @@ public class ApplicationMonitor extends Monitor {
                 String serviceName = clusterDataHolder.getServiceType();
                 Cluster cluster = null;
                 //TopologyManager.acquireReadLock();
-                cluster = TopologyManager.getTopology().getService(serviceName).getCluster(clusterId);
-                //TopologyManager.releaseReadLock();
-                if (cluster != null) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Dependency check starting the [cluster]" + clusterId);
+                Topology topology = TopologyManager.getTopology();
+                if (topology.serviceExists(serviceName)) {
+                    Service service = topology.getService(serviceName);
+                    if (service.clusterExists(clusterId)) {
+                        cluster = service.getCluster(clusterId);
+                        if (log.isDebugEnabled()) {
+                            log.debug("Dependency check starting the [cluster]" + clusterId);
+                        }
+                        startClusterMonitor(this, cluster);
+                    } else {
+                        log.warn("[Cluster] " + clusterId + " cannot be found in the " +
+                                "Topology for [service] " + serviceName);
                     }
-                    startClusterMonitor(this,cluster);
                 } else {
-                    //TODO throw exception since Topology is inconsistent
+                    log.warn("[Service] " + serviceName + " cannot be found in the Topology");
                 }
-
+                //TopologyManager.releaseReadLock();
             }
         } else {
             //all the groups/clusters have been started and waiting for activation
-            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
+            log.info("All the groups/clusters of the [Application]: " + this.id + " have been started.");
         }
 
 
@@ -121,6 +122,7 @@ public class ApplicationMonitor extends Monitor {
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
+     *
      * @param groupId the unique alias of the Group
      * @return the found GroupMonitor
      */
@@ -132,7 +134,7 @@ public class ApplicationMonitor extends Monitor {
     public List<String> findClustersOfApplication(String appId) {
         List<String> clusters = new ArrayList<String>();
         //considering only one level
-        for(AbstractClusterMonitor monitor : this.abstractClusterMonitors.values()) {
+        for (AbstractClusterMonitor monitor : this.abstractClusterMonitors.values()) {
             clusters.add(monitor.getClusterId());
         }
         //TODO rest
@@ -143,6 +145,7 @@ public class ApplicationMonitor extends Monitor {
 
     /**
      * Find the cluster monitor by traversing recursively in the hierarchical monitors.
+     *
      * @param clusterId
      * @return
      */
@@ -161,7 +164,7 @@ public class ApplicationMonitor extends Monitor {
             }
         }
 
-        for(GroupMonitor groupMonitor : groupMonitors) {
+        for (GroupMonitor groupMonitor : groupMonitors) {
             return findClusterMonitor(clusterId,
                     groupMonitor.getAbstractClusterMonitors().values(),
                     groupMonitor.getGroupMonitors().values());
@@ -187,17 +190,17 @@ public class ApplicationMonitor extends Monitor {
 
 
     public Monitor findParentMonitorOfGroup(String groupId) {
-      return findParentMonitorForGroup(groupId, this);
+        return findParentMonitorForGroup(groupId, this);
     }
 
     private Monitor findParentMonitorForGroup(String groupId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
-        if(monitor.getGroupMonitors().containsKey(groupId)) {
+        if (monitor.getGroupMonitors().containsKey(groupId)) {
             return monitor;
         } else {
-            if(monitor.getGroupMonitors() != null) {
+            if (monitor.getGroupMonitors() != null) {
                 //check whether the children has the group and find its parent
-                for(GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                for (GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
                     return findParentMonitorForGroup(groupId, groupMonitor);
 
                 }
@@ -213,12 +216,12 @@ public class ApplicationMonitor extends Monitor {
 
     private Monitor findParentMonitorForCluster(String clusterId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
-        if(monitor.getAbstractClusterMonitors().containsKey(clusterId)) {
+        if (monitor.getAbstractClusterMonitors().containsKey(clusterId)) {
             return monitor;
         } else {
-            if(monitor.getGroupMonitors() != null) {
+            if (monitor.getGroupMonitors() != null) {
                 //check whether the children has the group and find its parent
-                for(GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                for (GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
                     return findParentMonitorForCluster(clusterId, groupMonitor);
 
                 }

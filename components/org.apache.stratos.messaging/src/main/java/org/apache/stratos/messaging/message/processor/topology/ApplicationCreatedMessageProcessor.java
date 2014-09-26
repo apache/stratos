@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -70,7 +71,10 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
                 log.warn("Application with id [ " + appCreatedEvent.getApplication().getId() + " ] already exists in Topology");
 
             } else {
-                // add to Topology
+                // add application and the clusters to Topology
+                for(Cluster cluster: appCreatedEvent.getClusterList()) {
+                    topology.getService(cluster.getServiceName()).addCluster(cluster);
+                }
                 topology.addApplication(appCreatedEvent.getApplication());
             }
 

@@ -20,13 +20,19 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+
+import java.util.List;
 
 public class ApplicationCreatedEvent extends TopologyEvent {
 
     private Application application;
 
-    public ApplicationCreatedEvent (Application application) {
+    private List<Cluster> clusterList;
+
+    public ApplicationCreatedEvent (Application application, List<Cluster> clusters) {
         this.application = application;
+        this.setClusterList(clusters);
     }
 
     public Application getApplication() {
@@ -36,5 +42,13 @@ public class ApplicationCreatedEvent extends TopologyEvent {
     public String toString() {
         return "ApplicationCreatedEvent [app id= " + application.getId() + ", groups= " + application.getGroups() + ", clusters= " +
                 application.getClusterDataMap().values() + "]";
+    }
+
+    public List<Cluster> getClusterList() {
+        return clusterList;
+    }
+
+    public void setClusterList(List<Cluster> clusterList) {
+        this.clusterList = clusterList;
     }
 }
