@@ -144,9 +144,7 @@ public class StratosConstants {
     public static final String MEMBER_ID= "MEMBER_ID";
     public static final String LB_CLUSTER_ID= "LB_CLUSTER_ID";
     public static final String NETWORK_PARTITION_ID= "NETWORK_PARTITION_ID";
-    
-    
-    
+
     // Kubernetes related constants
     public static final String KUBERNETES_CLUSTER_ID = "KUBERNETES_CLUSTER_ID";
     public static final String KUBERNETES_DEPLOYER_TYPE = "kubernetes";
@@ -154,5 +152,8 @@ public class StratosConstants {
     public static final String KUBERNETES_MIN_REPLICAS = "KUBERNETES_REPLICAS_MIN";
     public static final String KUBERNETES_PORT_RANGE = "KUBERNETES_PORT_RANGE";
     public static final String ALLOCATED_SERVICE_HOST_PORT = "ALLOCATED_SERVICE_HOST_PORT";
-    
+
+    // Policy and definition related constants
+    public static final int PUBLIC_DEFINITION = 0;
+
 }

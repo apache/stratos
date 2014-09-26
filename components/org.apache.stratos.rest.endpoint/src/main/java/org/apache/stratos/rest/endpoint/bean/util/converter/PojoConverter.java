@@ -509,14 +509,7 @@ public class PojoConverter {
         }
 
         autoscalePolicyBeans = new AutoscalePolicy[autoscalePolicies.length];
-        for (int i = 0; i < autoscalePolicies.length; i++) {
-            /*AutoscalePolicy autoscalePolicy = new AutoscalePolicy();
-            autoscalePolicy.id = autoscalePolicies[i].getId();
-            autoscalePolicy.displayName = autoscalePolicies[i].getDisplayName();
-            autoscalePolicy.description = autoscalePolicies[i].getDescription();
-            if(autoscalePolicies[i].getLoadThresholds() != null) {
-                autoscalePolicy.loadThresholds = populateLoadThresholds(autoscalePolicies[i].getLoadThresholds());
-            }*/
+        for (int i = 0 ; i < autoscalePolicies.length ; i++) {
             autoscalePolicyBeans[i] = populateAutoscalePojo(autoscalePolicies[i]);
         }
         return autoscalePolicyBeans;
@@ -632,14 +625,8 @@ public class PojoConverter {
         }
 
         partitionGroupsBeans = new PartitionGroup[partitionGroups.length];
-        for (int i = 0; i < partitionGroups.length; i++) {
-            /*PartitionGroup partitionGroup = new PartitionGroup();
-            partitionGroup.id = partitionGroups[i].getId();
-            partitionGroup.partitionAlgo = partitionGroups[i].getPartitionAlgo();
 
-            if(partitionGroups[i].getPartitions() != null && partitionGroups[i].getPartitions().length > 0){
-                partitionGroup.partition = getPartitionList(partitionGroups[i].getPartitions());
-            }*/
+        for (int i = 0 ; i < partitionGroups.length ; i ++) {
             partitionGroupsBeans[i] = populatePartitionGroupPojo(partitionGroups[i]);
         }
 

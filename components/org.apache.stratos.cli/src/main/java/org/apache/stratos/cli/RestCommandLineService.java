@@ -1493,7 +1493,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1589,7 +1588,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
