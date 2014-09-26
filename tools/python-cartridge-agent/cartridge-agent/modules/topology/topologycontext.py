@@ -122,6 +122,7 @@ class Cluster:
         self.status = None
         self.load_balancer_algorithm_name = None
         self.properties = {}
+        self.member_list_json = None
 
     def add_hostname(self, hostname):
         self.hostnames.append(hostname)

@@ -210,26 +210,47 @@ class DefaultExtensionHandler:
         pass
 
     def start_server_extension(self):
-        raise NotImplementedError
-        # extensionutils.wait_for_complete_topology()
-        # self.log.info("[start server extension] complete topology event received")
-        #
-        # service_name_in_payload = CartridgeAgentConfiguration.service_name()
-        # cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id()
-        # member_id_in_payload = CartridgeAgentConfiguration.member_id()
-        #
-        # try:
-        # consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
-        #
-        # if not consistant:
-        # self.log.error("Topology is inconsistent...failed to execute start server event")
-        # return
-        #
-        #
-        # except:
-        # self.log.exception("Error processing start servers event")
-        # finally:
-        #     pass
+        #wait until complete topology message is received to get LB IP
+        extensionutils.wait_for_complete_topology()
+        self.log.info("[start server extension] complete topology event received")
+
+        service_name_in_payload = CartridgeAgentConfiguration.service_name()
+        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id()
+        member_id_in_payload = CartridgeAgentConfiguration.member_id()
+
+        topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+
+        try:
+            if not topology_consistant:
+                self.log.error("Topology is inconsistent...failed to execute start server event")
+                return
+
+            topology = TopologyContext.get_topology()
+            service = topology.get_service(service_name_in_payload)
+            cluster = service.get_cluster(cluster_id_in_payload)
+
+            # store environment variable parameters to be passed to extension shell script
+            env_params = {}
+
+            # if clustering is enabled wait until all well known members have started
+            clustering_enabled = CartridgeAgentConfiguration.is_clustered
+            if clustering_enabled:
+                env_params["STRATOS_CLUSTERING"] = "true"
+                env_params["STRATOS_WK_MEMBER_COUNT"] = CartridgeAgentConfiguration.min_count
+
+
+                env_params["STRATOS_PRIMARY"] = "true" if CartridgeAgentConfiguration.is_primary else "false"
+
+                self.wait_for_wk_members(env_params)
+                self.log.info("All well known members have started! Resuming start server extension...")
+
+            env_params["STRATOS_TOPOLOGY_JSON"] = topology.json_str
+            env_params["STRATOS_MEMBER_LIST_JSON"] = cluster.member_list_json
+
+            extensionutils.execute_start_servers_extension(env_params)
+
+        except:
+            self.log.exception("Error processing start servers event")
 
     def volume_mount_extension(self, persistence_mappings_payload):
         extensionutils.execute_volume_mount_extension(persistence_mappings_payload)

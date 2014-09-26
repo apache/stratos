@@ -123,6 +123,7 @@ class CompleteTopologyEvent:
                     cluster_obj.status = cluster_str["status"]
                     cluster_obj.load_balancer_algorithm_name = cluster_str["loadBalanceAlgorithmName"]
                     cluster_obj.properties = cluster_str["properties"]
+                    cluster_obj.member_list_json = "["
 
                     #add member map
                     for member_id in cluster_str["memberMap"]:
@@ -139,6 +140,7 @@ class CompleteTopologyEvent:
                         member_obj.properties = member_str["properties"]
                         member_obj.lb_cluster_id = member_str["lbClusterId"]
                         member_obj.json_str = member_str
+                        cluster_obj.member_list_json += member_str + ","
 
                         #add port map
                         for mm_port_proxy in member_str["portMap"]:
@@ -146,6 +148,8 @@ class CompleteTopologyEvent:
                             mm_port_obj = Port(mm_port_str["protocol"], mm_port_str["value"], mm_port_proxy)
                             member_obj.add_port(mm_port_obj)
                         cluster_obj.add_member(member_obj)
+                    #remove final comma and close the square bracker of the json array
+                    cluster_obj.member_list_json = cluster_obj.member_list_json[:-1] + "]"
                     service_obj.add_cluster(cluster_obj)
                 topology_obj.add_service(service_obj)
             instance.topology = topology_obj
