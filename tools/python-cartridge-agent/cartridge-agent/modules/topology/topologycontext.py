@@ -1,27 +1,6 @@
 from ..util import cartridgeagentutils, cartridgeagentconstants
 
 
-class TopologyContext:
-    topology = None
-    # TODO: read write locks, Lock() and RLock()
-
-    @staticmethod
-    def get_topology():
-        #TODO: thread-safety missing
-        if TopologyContext.topology is None:
-            TopologyContext.topology = Topology()
-        return TopologyContext.topology
-
-        # @staticmethod
-        # def update(topology):
-        #     TopologyContext.topology = topology
-        #     #TODO: persist in registry
-
-    @staticmethod
-    def update(topology):
-        TopologyContext.topology = topology
-
-
 class Topology:
     def __init__(self):
         self.service_map = {}
@@ -248,3 +227,24 @@ class MemberStatus:
     Terminated = 6
     Suspended = 0
     ShuttingDown = 0
+
+
+class TopologyContext:
+    topology = None
+    # TODO: read write locks, Lock() and RLock()
+
+    @staticmethod
+    def get_topology():
+        #TODO: thread-safety missing
+        if TopologyContext.topology is None:
+            TopologyContext.topology = Topology()
+        return TopologyContext.topology
+
+        # @staticmethod
+        # def update(topology):
+        #     TopologyContext.topology = topology
+        #     #TODO: persist in registry
+
+    @staticmethod
+    def update(topology):
+        TopologyContext.topology = topology

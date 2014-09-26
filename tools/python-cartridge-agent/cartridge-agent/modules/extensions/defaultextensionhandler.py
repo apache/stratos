@@ -238,7 +238,6 @@ class DefaultExtensionHandler:
                 env_params["STRATOS_CLUSTERING"] = "true"
                 env_params["STRATOS_WK_MEMBER_COUNT"] = CartridgeAgentConfiguration.min_count
 
-
                 env_params["STRATOS_PRIMARY"] = "true" if CartridgeAgentConfiguration.is_primary else "false"
 
                 self.wait_for_wk_members(env_params)

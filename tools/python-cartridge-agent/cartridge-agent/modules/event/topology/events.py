@@ -144,7 +144,7 @@ class CompleteTopologyEvent:
 
                         #add port map
                         for mm_port_proxy in member_str["portMap"]:
-                            mm_port_str = member_str["portMap"][port_proxy]
+                            mm_port_str = member_str["portMap"][mm_port_proxy]
                             mm_port_obj = Port(mm_port_str["protocol"], mm_port_str["value"], mm_port_proxy)
                             member_obj.add_port(mm_port_obj)
                         cluster_obj.add_member(member_obj)
