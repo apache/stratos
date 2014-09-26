@@ -69,7 +69,7 @@ def wait_for_complete_topology():
 
 def check_topology_consistency(service_name, cluster_id, member_id):
     topology = TopologyContext.get_topology()
-    service = topology.service_map[service_name]
+    service = topology.get_service(service_name)
     if service is None:
         log.error("Service not found in topology [service] %r" % service_name)
         return False
@@ -104,7 +104,7 @@ def is_relevant_member_event(service_name, cluster_id, lb_cluster_id):
 
     service_group_in_payload = CartridgeAgentConfiguration.service_group
     if service_group_in_payload is not None:
-        service_properties = topology.service_map[service_name].properties
+        service_properties = topology.get_service(service_name).properties
         if service_properties is None:
             return False
 
@@ -211,7 +211,7 @@ def add_payload_parameters(params):
 
     topology = TopologyContext.get_topology()
     if topology.initialized:
-        service = topology.service_map[CartridgeAgentConfiguration.service_name]
+        service = topology.get_service(CartridgeAgentConfiguration.service_name)
         cluster = service.get_cluster(CartridgeAgentConfiguration.cluster_id)
         member_id_in_payload = CartridgeAgentConfiguration.member_id
         add_properties(service.properties, params, "SERVICE_PROPERTY")
