@@ -32,6 +32,7 @@ import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -58,6 +59,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
@@ -71,6 +74,8 @@ public class StratosTestAdmin {
     private static Log log = LogFactory.getLog(StratosTestAdmin.class);
     @Context
     HttpServletRequest httpServletRequest;
+    @Context
+    UriInfo uriInfo;
 
     @POST
     @Path("/init")
@@ -542,5 +547,47 @@ public class StratosTestAdmin {
 	public Response synchronizeRepository(String alias) throws RestAPIException {
 		return Response.noContent().build();
 	}
+    
+    @POST
+    @Path("/user")
+    @Consumes("application/json")
+    @Produces("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/users")
+    public Response addUser(UserInfoBean userInfoBean) throws RestAPIException {
+    	MockContext.getInstance().addUser(userInfoBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
+        return Response.created(url).build();
+    }
+
+    @DELETE
+    @Path("/user/{userName}")
+    @Consumes("application/json")
+    @Produces("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/users")
+    public Response deleteUser(@PathParam("userName") String userName) throws RestAPIException {
+    	MockContext.getInstance().deleteUser(userName);
+        return Response.noContent().build();
+    }
+
+    @PUT
+    @Path("/user")
+    @Consumes("application/json")
+    @Produces("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/users")
+    public Response updateUser(UserInfoBean userInfoBean) throws RestAPIException {
+    	MockContext.getInstance().updateUser(userInfoBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
+        return Response.created(url).build();
+    }
+
+    @GET
+    @Path("/user/list")
+    @Produces("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/users")
+    public UserInfoBean[] retrieveUsers() throws RestAPIException {
+        List<UserInfoBean> userList = null;
+        userList = MockContext.getInstance().getAllUsers();
+        return userList.toArray(new UserInfoBean[userList.size()]);
+    }
 
 }

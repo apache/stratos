@@ -94,47 +94,6 @@ public class StratosMockHandler extends AbstractAuthenticationAuthorizationHandl
             carbonContext.setUsername(username);
             
             return null;
-            /*RealmService realmService = ServiceHolder.getRealmService();
-            RegistryService registryService = ServiceHolder.getRegistryService();
-            String tenantDomain = MultitenantUtils.getTenantDomain(username);
-            int tenantId = realmService.getTenantManager().getTenantId(tenantDomain);
-            
-            UserRealm userRealm = null;
-            if (certObject == null) {
-                userRealm = AnonymousSessionUtil.getRealmByTenantDomain(registryService, realmService, tenantDomain);
-                if (userRealm == null) {
-                    log .error("Invalid domain or unactivated tenant login");
-                    // is this the correct HTTP code for this scenario ? (401)
-                    return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                            type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Tenant not found")).build();
-                }
-            }
-            username = MultitenantUtils.getTenantAwareUsername(username);
-            if (certObject != null || userRealm.getUserStoreManager().authenticate(username, password)) {  // if authenticated
-
-                // setting the correct tenant info for downstream code..
-                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-                carbonContext.setTenantDomain(tenantDomain);
-                carbonContext.setTenantId(tenantId);
-                carbonContext.setUsername(username);
-                //populate the secuirtyContext of authenticated user
-                SecurityContext securityContext = new StratosSecurityContext(username);
-                message.put(SecurityContext.class, securityContext);
-
-                // set the authenticated flag and let the request to continue
-                AuthenticationContext.setAuthenticated(true);
-                if (log.isDebugEnabled()) {
-                    log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
-                            username + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
-                }
-                return null;
-            } else {
-                log.warn("unable to authenticate the request");
-                // authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
-                return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
-                        type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Authentication failed. Please " +
-                        "check your username/password")).build();
-            }*/
         } catch (Exception exception) {
             log.error("Authentication failed",exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
