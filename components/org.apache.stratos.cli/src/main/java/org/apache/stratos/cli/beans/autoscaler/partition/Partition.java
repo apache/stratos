@@ -23,6 +23,10 @@ import java.util.List;
 public class Partition {
 
     private String id;
+       
+    private String description;
+    
+    private boolean isPublic;
 
     private int partitionMin;
 
@@ -70,6 +74,22 @@ public class Partition {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
 

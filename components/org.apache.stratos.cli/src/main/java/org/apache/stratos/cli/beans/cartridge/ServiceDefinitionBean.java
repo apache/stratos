@@ -21,6 +21,7 @@ package org.apache.stratos.cli.beans.cartridge;
 
 public class ServiceDefinitionBean {
     private String serviceName;
+    private boolean isPublic;
     private String cartridgeType;
     private String deploymentPolicyName;
     private String autoscalingPolicyName;
@@ -82,5 +83,13 @@ public class ServiceDefinitionBean {
 
     public void setTenantRange(String tenantRange) {
         this.tenantRange = tenantRange;
+    }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }
