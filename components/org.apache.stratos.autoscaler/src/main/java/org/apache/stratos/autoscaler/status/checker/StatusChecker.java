@@ -162,8 +162,14 @@ public class StatusChecker {
         boolean clustersActive;
         boolean groupsActive;
         boolean childFound = false;
+        boolean clusterFound = false;
 
-        if (clusterData.containsValue(id) || groups.containsKey(id)) {
+        for(ClusterDataHolder clusterDataHolder : clusterData.values()) {
+            if(clusterDataHolder.getClusterId().equals(id)) {
+                clusterFound = true;
+            }
+        }
+        if (clusterFound || groups.containsKey(id)) {
             childFound = true;
             if (!clusterData.isEmpty() && !groups.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
@@ -216,7 +222,7 @@ public class StatusChecker {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             if (service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
-                    getStatus().equals(ClusterStatus.Active)) {
+                    getStatus() == Status.Activated) {
                 clusterActiveStatus = true;
             } else {
                 clusterActiveStatus = false;
