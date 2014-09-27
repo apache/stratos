@@ -1395,12 +1395,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			
 			KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp, kubernetesPortRange);
 			
-			if (kubClusterContext == null) {
-				String msg = "Instance start-up failed. Cannot find a matching Kubernetes Cluster. " + memberContext;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
-
 			KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 			
 			// first let's create a replication controller.
