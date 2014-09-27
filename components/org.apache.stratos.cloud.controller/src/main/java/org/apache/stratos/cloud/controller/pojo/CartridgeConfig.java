@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * This class is used as the pojo for supporting the service at CC,
  * which is called by the Rest API in SM to deploy a cartridge definition
@@ -146,7 +148,7 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setDeploymentDirs(String[] deploymentDirs) {
-        this.deploymentDirs = deploymentDirs;
+        this.deploymentDirs = ArrayUtils.clone(deploymentDirs);
     }
 
     public PortMapping[] getPortMappings() {
@@ -154,7 +156,7 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setPortMappings(PortMapping[] portMappings) {
-        this.portMappings = portMappings;
+        this.portMappings = ArrayUtils.clone(portMappings);
     }
 
     public Properties getProperties() {
@@ -170,7 +172,7 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setIaasConfigs(IaasConfig[] iaasConfigs) {
-        this.iaasConfigs = iaasConfigs;
+        this.iaasConfigs = ArrayUtils.clone(iaasConfigs);
     }
 
     public String toString () {

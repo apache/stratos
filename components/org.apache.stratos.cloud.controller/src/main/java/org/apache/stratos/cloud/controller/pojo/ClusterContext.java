@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import java.io.Serializable;
 import java.util.Properties;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Holds runtime data of a Cluster.
  * @author nirmal
@@ -109,7 +111,7 @@ public class ClusterContext implements Serializable{
 	}
 
 	public void setVolumes(Volume[] volumes) {
-		this.volumes = volumes;
+		this.volumes = ArrayUtils.clone(volumes);
 	}
 
 	public Properties getProperties() {

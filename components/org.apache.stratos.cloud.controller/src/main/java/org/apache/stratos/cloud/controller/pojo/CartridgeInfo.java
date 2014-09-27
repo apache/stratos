@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Holds useful information for externals, regarding a Cartridge.
  */
@@ -162,7 +164,7 @@ public class CartridgeInfo {
     }
 
 	public void setPortMappings(PortMapping[] portMappings) {
-	    this.portMappings = portMappings;
+	    this.portMappings = ArrayUtils.clone(portMappings);
     }
 
 	public AppType[] getAppTypes() {
@@ -170,7 +172,7 @@ public class CartridgeInfo {
     }
 
 	public void setAppTypes(AppType[] appTypes) {
-	    this.appTypes = appTypes;
+	    this.appTypes = ArrayUtils.clone(appTypes);
     }
 
 	public Property[] getProperties() {
@@ -178,7 +180,7 @@ public class CartridgeInfo {
     }
 
 	public void setProperties(Property[] properties) {
-	    this.properties = properties;
+	    this.properties = ArrayUtils.clone(properties);
     }
 
     public String getDefaultAutoscalingPolicy() {

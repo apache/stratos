@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -239,7 +240,7 @@ public class IaasProvider implements Serializable{
     }
 
     public void setPayload(byte[] payload) {
-        this.payload = payload;
+        this.payload = ArrayUtils.clone(payload);
     }
 
     /**
@@ -253,7 +254,7 @@ public class IaasProvider implements Serializable{
      * @param networkInterfaces the networkInterfaces to set
      */
     public void setNetworkInterfaces(NetworkInterface[] networkInterfaces) {
-        this.networkInterfaces = networkInterfaces;
+        this.networkInterfaces = ArrayUtils.clone(networkInterfaces);
     }
 
     @Override
