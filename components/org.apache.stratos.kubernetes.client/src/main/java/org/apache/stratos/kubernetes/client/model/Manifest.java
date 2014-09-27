@@ -22,6 +22,8 @@ package org.apache.stratos.kubernetes.client.model;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/manifest-schema.json
  * @author nirmal
@@ -50,13 +52,13 @@ public class Manifest {
 		return containers;
 	}
 	public void setContainers(Container[] containers) {
-		this.containers = containers;
+		this.containers = ArrayUtils.clone(containers);
 	}
 	public Volume[] getVolumes() {
 		return volumes;
 	}
 	public void setVolumes(Volume[] volumes) {
-		this.volumes = volumes;
+		this.volumes = ArrayUtils.clone(volumes);
 	}
 	@Override
 	public String toString() {

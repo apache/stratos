@@ -24,6 +24,8 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 @XmlRootElement
 public class PodList {
 
@@ -47,7 +49,7 @@ public class PodList {
 		return items;
 	}
 	public void setItems(Pod[] items) {
-		this.items = items;
+		this.items = ArrayUtils.clone(items);
 	}
 	@Override
 	public String toString() {

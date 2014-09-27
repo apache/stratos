@@ -24,6 +24,8 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 @XmlRootElement
 public class ServiceList {
 
@@ -47,7 +49,7 @@ public class ServiceList {
 		return items;
 	}
 	public void setItems(Service[] items) {
-		this.items = items;
+		this.items = ArrayUtils.clone(items);
 	}
 	@Override
 	public String toString() {
