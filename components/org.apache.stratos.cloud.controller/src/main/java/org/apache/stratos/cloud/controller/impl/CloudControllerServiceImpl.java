@@ -369,8 +369,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaasProvider.setPayload(payload.toString().getBytes());
             iaas.setDynamicPayload();
 
-            // get the pre built ComputeService from provider or region or zone or host
-            computeService = iaasProvider.getComputeService();
             template = iaasProvider.getTemplate();
                         
             if (template == null) {
