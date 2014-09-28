@@ -40,72 +40,71 @@ import java.util.Properties;
  */
 public class MQTTConnector {
 
-    public static final String MQTTURL = "defaultValue";
-    public static final String CLIENT_ID = "Startos";
-    public static final String TMPFILELOCATION = "/tmp";
-    private static MqttClient topicClient;
+	public static final String MQTTURL = "defaultValue";
+	public static final String CLIENT_ID = "Startos";
+	public static final String TMPFILELOCATION = "/tmp";
+	private static MqttClient topicClient;
 
-    private static MqttClient topicClientSub;
-    private static final Log log = LogFactory.getLog(MQTTConnector.class);
-    private static String configFileLocation = System.getProperty("jndi.properties.dir");
-    private static Properties mqttProp =
-            Util.getProperties(configFileLocation + File.separator +
-                    "mqtttopic.properties");
+	private static MqttClient topicClientSub;
+	private static final Log log = LogFactory.getLog(MQTTConnector.class);
+	private static String configFileLocation = System.getProperty("jndi.properties.dir");
+	private static Properties mqttProp =
+			Util.getProperties(configFileLocation + File.separator +
+			                   "mqtttopic.properties");
 
-    public static synchronized MqttClient getMQTTConClient() {
+	public static synchronized MqttClient getMQTTConClient() {
 
-        if (topicClient == null) {
+		if (topicClient == null) {
 
+			String broker = mqttProp.getProperty("mqtturl", MQTTURL);
 
-            String broker = mqttProp.getProperty("mqtturl", MQTTURL);
+			String clientId = mqttProp.getProperty("clientID", CLIENT_ID);
+			MemoryPersistence persistence = new MemoryPersistence();
 
-            String clientId = mqttProp.getProperty("clientID", CLIENT_ID);
-            MemoryPersistence persistence = new MemoryPersistence();
+			try {
+				topicClient = new MqttClient(broker, clientId, persistence);
 
-            try {
-                topicClient = new MqttClient(broker, clientId, persistence);
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                connOpts.setCleanSession(true);
-                if (log.isDebugEnabled()) {
-                    log.debug("MQTT client connected");
-                }
+				if (log.isDebugEnabled()) {
+					log.debug("MQTT client connected");
+				}
 
-            } catch (MqttException me) {
+			} catch (MqttException me) {
 
-                log.error("Failed to initiate autoscaler service client. ", me);
-            }
+				log.error("Failed to initiate autoscaler service client. ", me);
+			}
 
-        }
-        return topicClient;
+		}
+		return topicClient;
 
-    }
+	}
 
-    public static synchronized MqttClient getMQTTSubClient(String identifier) {
-        // if (topicClientSub == null) {
+	public static synchronized MqttClient getMQTTSubClient(String identifier) throws MqttException {
+		//if (topicClientSub == null) {
 
-        String broker = mqttProp.getProperty("mqtturl", MQTTURL);
+			String broker = mqttProp.getProperty("mqtturl", MQTTURL);
 
-        String tempFile = mqttProp.getProperty("tempfilelocation", TMPFILELOCATION);
-        // Creating new default persistence for mqtt client
-        MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence(tempFile);
+			String tempFile = mqttProp.getProperty("tempfilelocation", TMPFILELOCATION);
+			// Creating new default persistence for mqtt client
+			MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence(tempFile);
 
-        try {
-            MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setCleanSession(true);
-            // mqtt client with specific url and a random client id
-            topicClientSub = new MqttClient(broker, identifier, persistence);
+			try {
 
-            if (log.isDebugEnabled()) {
-                log.debug("MQTT client connected");
-            }
+				// mqtt client with specific url and a random client id
+				topicClientSub = new MqttClient(broker, identifier, persistence);
+				MqttConnectOptions connOpts = new MqttConnectOptions();
+				connOpts.setCleanSession(true);
+				topicClientSub.connect(connOpts);
+				if (log.isDebugEnabled()) {
+					log.debug("MQTT client connected");
+				}
 
-        } catch (MqttException me) {
+			} catch (MqttException me) {
 
-            log.error("Failed to initiate autoscaler service client. ", me);
-        }
+				log.error("Failed to initiate autoscaler service client. ", me);
+			}
 
-        // }
-        return topicClientSub;
+		//}
+		return topicClientSub;
 
-    }
+	}
 }

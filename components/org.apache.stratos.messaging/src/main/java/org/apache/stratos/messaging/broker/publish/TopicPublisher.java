@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.google.gson.Gson;
@@ -46,6 +47,7 @@ public class TopicPublisher {
 	public static TopicPublisher topicPub;
 	private boolean initialized;
 	private final String topic;
+	MqttClient mqttClient;
 
 	/**
 	 * @param aTopicName
@@ -70,16 +72,16 @@ public class TopicPublisher {
 			Gson gson = new Gson();
 			String message = gson.toJson(messageObj);
 			boolean published = false;
-			while (!published) {
-
+			while (!published)
 				try {
-					MqttClient mqttClient = MQTTConnector.getMQTTConClient();
+					mqttClient = MQTTConnector.getMQTTConClient();
 
 					MqttMessage mqttMSG = new MqttMessage(message.getBytes());
 
 					mqttMSG.setQos(QOS);
-
-					mqttClient.connect();
+					MqttConnectOptions connOpts = new MqttConnectOptions();
+					connOpts.setCleanSession(true);
+					mqttClient.connect(connOpts);
 					mqttClient.publish(topic, mqttMSG);
 					mqttClient.disconnect();
 					published = true;
@@ -103,7 +105,9 @@ public class TopicPublisher {
 					} catch (InterruptedException ignore) {
 					}
 				}
-			}
+				finally {
+
+				}
 		}
 	}
 
