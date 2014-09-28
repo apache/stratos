@@ -61,8 +61,11 @@ class AgentGitHandler:
     @staticmethod
     def add_remote(repo_context):
         try:
+            #add origin remote
             repo_context.repo.create_remote("origin", repo_context.repo_url)
+            #fetch branch details from origin
             repo_context.repo.git.fetch()
+            #checkout master branch from origin/master as tracking
             repo_context.repo.git.branch("-f", "--track", "master", "origin/master")
             return True
         except:

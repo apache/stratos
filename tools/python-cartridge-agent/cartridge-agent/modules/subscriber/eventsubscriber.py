@@ -7,6 +7,10 @@ from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 
 
 class EventSubscriber(threading.Thread):
+    """
+    Provides functionality to subscribe to a given topic on the stratos MB and
+    register event handlers for various events.
+    """
 
     def __init__(self, topic):
         threading.Thread.__init__(self)
@@ -37,6 +41,13 @@ class EventSubscriber(threading.Thread):
         self.__mb_client.loop_forever()
 
     def register_handler(self, event, handler):
+        """
+        Adds an event handler function mapped to the provided event.
+        :param str event: Name of the event to attach the provided handler
+        :param handler: TODO
+        :return: void
+        :rtype: void
+        """
         self.__event_handlers[event] = handler
         self.log.debug("Registered handler for event %r" % event)
 
@@ -58,4 +69,9 @@ class EventSubscriber(threading.Thread):
             self.log.exception("Error processing %r event" % event)
 
     def is_subscribed(self):
+        """
+        Checks if this event subscriber is successfully subscribed to the provided topic
+        :return: True if subscribed, False if otherwise
+        :rtype: bool
+        """
         return self.__subscribed

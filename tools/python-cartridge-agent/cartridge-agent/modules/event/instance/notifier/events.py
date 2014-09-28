@@ -4,12 +4,19 @@ import json
 class ArtifactUpdatedEvent:
     def __init__(self):
         self.cluster_id = None
+        """ :type : str  """
         self.status = None
+        """ :type : str  """
         self.repo_username = None
+        """ :type : str  """
         self.repo_password = None
+        """ :type : str  """
         self.repo_url = None
+        """ :type : str  """
         self.tenant_id = None
+        """ :type : int  """
         self.commit_enabled = None
+        """ :type : bool  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -29,6 +36,7 @@ class ArtifactUpdatedEvent:
 class InstanceCleanupClusterEvent:
     def __init__(self, cluster_id):
         self.cluster_id = cluster_id
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -41,6 +49,7 @@ class InstanceCleanupClusterEvent:
 class InstanceCleanupMemberEvent:
     def __init__(self, member_id):
         self.member_id = member_id
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):

@@ -335,7 +335,7 @@ def prepare_command(script_name):
 
 def clean_process_parameters(params):
     """
-
+    Removes any null valued parameters before passing them to the extension scripts
     :param dict params:
     :return: cleaned parameters
     :rtype: dict
@@ -348,6 +348,12 @@ def clean_process_parameters(params):
 
 
 def add_payload_parameters(env_params):
+    """
+    Adds the common parameters to be used by the extension scripts
+    :param dict[str, str] env_params: Dictionary to be added
+    :return: Dictionary with updated parameters
+    :rtype: dict[str, str]
+    """
     env_params["STRATOS_APP_PATH"] = CartridgeAgentConfiguration.app_path
     env_params["STRATOS_PARAM_FILE_PATH"] = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
     env_params["STRATOS_SERVICE_NAME"] = CartridgeAgentConfiguration.service_name
@@ -383,10 +389,11 @@ def add_payload_parameters(env_params):
 
 def add_properties(properties, params, prefix):
     """
-    :param dict properties: service properties
-    :param dict params:
+    Adds the given property list to the parameters list with given prefix in the parameter name
+    :param dict[str, str] properties: service properties
+    :param dict[str, str] params:
     :param str prefix:
-    :return:
+    :return: dict[str, str]
     """
     if properties is None or properties.items() is None:
         return
@@ -413,11 +420,12 @@ def get_lb_member_ip(lb_cluster_id):
 
 def execute_command(command, env_params=None):
     """
-
-    :param str command:
-    :param dict env_params:
-    :return: output and error tuple
+    Executes the given command string with given environment parameters
+    :param str command: Command with arguments to be executed
+    :param dict[str, str] env_params: Environment variables to be used
+    :return: output and error string tuple, RuntimeError if errors occur
     :rtype: tuple
+    :exception: RuntimeError
     """
     os_env = os.environ.copy()
     if env_params is not None:
