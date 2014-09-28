@@ -16,6 +16,7 @@ ready_to_shutdown = False
 maintenance = False
 
 publishers = {}
+""" :type : dict[str, EventPublisher] """
 
 
 def publish_instance_started_event():
@@ -117,6 +118,9 @@ def get_publisher(topic):
 
 
 class EventPublisher:
+    """
+    TODO: provide abstraction
+    """
     def __init__(self, topic):
         self.__topic = topic
 

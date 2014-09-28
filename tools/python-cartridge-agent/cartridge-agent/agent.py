@@ -22,6 +22,7 @@ class CartridgeAgent(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
         CartridgeAgentConfiguration.initialize_configuration()
+
         self.__instance_event_subscriber = EventSubscriber(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
         self.__tenant_event_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC)
         self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
@@ -34,30 +35,38 @@ class CartridgeAgent(threading.Thread):
     def run(self):
         self.log.info("Starting Cartridge Agent...")
 
+        #Check if required prpoerties are set
         self.validate_required_properties()
 
+        #Start instance notifier listener thread
         self.subscribe_to_topics_and_register_listeners()
 
+        #Start topology event receiver thread
         self.register_topology_event_listeners()
 
+        #Start tenant event receiver thread
         self.register_tenant_event_listeners()
 
+        #Execute instance started shell script
         self.extension_handler.on_instance_started_event()
 
+        #Publish instance started event
         cartridgeagentpublisher.publish_instance_started_event()
 
+        #Execute start servers extension
         try:
             self.extension_handler.start_server_extension()
         except:
             self.log.exception("Error processing start servers event")
 
+        #Wait for all ports to be active
         cartridgeagentutils.wait_until_ports_active(
             CartridgeAgentConfiguration.listen_address,
             CartridgeAgentConfiguration.ports
         )
 
+        # check if artifact management is required before publishing instance activated event
         repo_url = CartridgeAgentConfiguration.repo_url
-
         if repo_url is None or str(repo_url).strip() == "":
             self.log.info("No artifact repository found")
             self.extension_handler.on_instance_activated_event()
@@ -73,6 +82,10 @@ class CartridgeAgent(threading.Thread):
             #TODO: wait until terminated is true
 
     def validate_required_properties(self):
+        """
+        Checks if required properties are set
+        :return: True if
+        """
         # JNDI_PROPERTIES_DIR
         try:
             CartridgeAgentConfiguration.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)

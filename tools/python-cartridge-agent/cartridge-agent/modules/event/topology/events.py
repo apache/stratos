@@ -7,14 +7,27 @@ class MemberActivatedEvent:
 
     def __init__(self):
         self.service_name = None
+        """ :type : str  """
         self.cluster_id = None
+        """ :type : str  """
         self.network_partition_id = None
+        """ :type : str  """
         self.partition_id = None
+        """ :type : str  """
         self.member_id = None
+        """ :type : str  """
         self.port_map = {}
+        """ :type : dict[str, Port]  """
         self.member_ip = None
+        """ :type : str  """
 
     def get_port(self, proxy_port):
+        """
+        Returns the port object of the provided port id
+        :param str proxy_port:
+        :return: Port object, None if the port id is invalid
+        :rtype: topology.topologycontext.Port
+        """
         if proxy_port in self.port_map:
             return self.port_map[proxy_port]
 
@@ -43,11 +56,17 @@ class MemberTerminatedEvent:
 
     def __init__(self):
         self.service_name = None
+        """ :type : str  """
         self.cluster_id = None
+        """ :type : str  """
         self.network_partition_id = None
+        """ :type : str  """
         self.partition_id = None
+        """ :type : str  """
         self.member_id = None
+        """ :type : str  """
         self.properties = {}
+        """ :type : dict[str, str]  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -65,10 +84,15 @@ class MemberSuspendedEvent:
 
     def __init__(self):
         self.service_name = None
+        """ :type : str  """
         self.cluster_id = None
+        """ :type : str  """
         self.network_partition_id = None
+        """ :type : str  """
         self.partition_id = None
+        """ :type : str  """
         self.member_id = None
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -86,6 +110,7 @@ class CompleteTopologyEvent:
 
     def __init__(self):
         self.topology = None
+        """ :type :  Topology """
 
     @staticmethod
     def create_from_json(json_str):
@@ -161,12 +186,19 @@ class MemberStartedEvent:
 
     def __init__(self):
         self.service_name = None
+        """ :type : str  """
         self.cluster_id = None
+        """ :type : str  """
         self.network_partition_id = None
+        """ :type : str  """
         self.partition_id = None
+        """ :type : str  """
         self.member_id = None
+        """ :type : str  """
         self.status = None
+        """ :type : str  """
         self.properties = {}
+        """ :type : dict[str, str]  """
 
     @staticmethod
     def create_from_json(json_str):

@@ -10,6 +10,7 @@ from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 import cartridgeagentconstants
 
 unpad = lambda s: s[0:-ord(s[-1])]
+
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -17,6 +18,15 @@ current_milli_time = lambda: int(round(time.time() * 1000))
 
 
 def decrypt_password(pass_str, secret):
+    """
+    Decrypts the given password using the given secret. The encryption is assumed to be done
+    without IV, in AES.
+    :param str pass_str: Encrypted password string in Base64 encoding
+    :param str secret: The secret string
+    :return: The decrypted password
+    :rtype: str
+    """
+
     if pass_str is None:
         return pass_str
 
@@ -40,6 +50,7 @@ def create_dir(path):
     mkdir the provided path
     :param path: The path to the directory to be made
     :return: True if mkdir was successful, False if dir already exists
+    :rtype: bool
     """
     try:
         os.mkdir(path)
@@ -52,6 +63,11 @@ def create_dir(path):
 
 
 def delete_folder_tree(path):
+    """
+    Completely deletes the provided folder
+    :param str path: Full path of the folder
+    :return: void
+    """
     try:
         shutil.rmtree(path)
         log.debug("Directory [%r] deleted." % path)
@@ -60,6 +76,12 @@ def delete_folder_tree(path):
 
 
 def wait_until_ports_active(ip_address, ports):
+    """
+    Blocks until the given list of ports become active
+    :param str ip_address: Ip address of the member to be checked
+    :param list[str] ports: List of ports to be checked
+    :return: void
+    """
     ports_check_timeout = CartridgeAgentConfiguration.read_property("port.check.timeout")
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
@@ -73,6 +95,7 @@ def wait_until_ports_active(ip_address, ports):
         active = check_ports_active(ip_address, ports)
         end_time = current_milli_time()
         duration = end_time - start_time
+
         if duration > ports_check_timeout:
             return
 
@@ -82,6 +105,13 @@ def wait_until_ports_active(ip_address, ports):
 
 
 def check_ports_active(ip_address, ports):
+    """
+    Checks the given list of port addresses for active state
+    :param str ip_address: Ip address of the member to be checked
+    :param list[str] ports: The list of ports to be checked
+    :return: True if the ports are active, False if at least one is not active
+    :rtype: bool
+    """
     if len(ports) < 1:
         raise RuntimeError("No ports found")
 
@@ -100,6 +130,12 @@ def check_ports_active(ip_address, ports):
 
 
 def validate_tenant_range(tenant_range):
+    """
+    Validates the tenant range to be either '*' or a delimeted range of numbers
+    :param str tenant_range: The tenant range string to be validated
+    :return: void if the provided tenant range is valid, RuntimeError if otherwise
+    :exception: RuntimeError if the tenant range is invalid
+    """
     valid = False
     if tenant_range == "*":
         valid = True

@@ -6,10 +6,15 @@ class SubscriptionDomainAddedEvent():
 
     def __init__(self):
         self.tenant_id = None
+        """ :type : int  """
         self.service_name = None
+        """ :type : str  """
         self.cluster_ids = None
+        """ :type : list[str]  """
         self.domain_name = None
+        """ :type : str  """
         self.application_context = None
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -29,9 +34,13 @@ class SubscriptionDomainRemovedEvent:
 
     def __init__(self, tenant_id, service_name, cluster_ids, domain_name):
         self.tenant_id = tenant_id
+        """ :type : int  """
         self.service_name = service_name
+        """ :type : str  """
         self.cluster_ids = cluster_ids
+        """ :type : list[str]  """
         self.domain_name = domain_name
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -50,7 +59,9 @@ class CompleteTenantEvent:
 
     def __init__(self):
         self.tenants = []
+        """ :type : list[Tenant]  """
         self.tenant_list_json = None
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -79,8 +90,11 @@ class TenantSubscribedEvent:
 
     def __init__(self):
         self.tenant_id = None
+        """ :type : int  """
         self.service_name = None
+        """ :type : str  """
         self.cluster_ids = None
+        """ :type : list[str]  """
 
     @staticmethod
     def create_from_json(json_str):
@@ -98,8 +112,11 @@ class TenantUnsubscribedEvent:
 
     def __init__(self):
         self.tenant_id = None
+        """ :type : int  """
         self.service_name = None
+        """ :type : str  """
         self.cluster_ids = None
+        """ :type : list[str]  """
 
     @staticmethod
     def create_from_json(json_str):

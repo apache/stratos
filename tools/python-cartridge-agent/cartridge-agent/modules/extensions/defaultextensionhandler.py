@@ -12,6 +12,9 @@ from ..tenant.tenantcontext import *
 
 
 class DefaultExtensionHandler:
+    """
+    TODO : Provide abstraction
+    """
     log = None
 
     def __init__(self):

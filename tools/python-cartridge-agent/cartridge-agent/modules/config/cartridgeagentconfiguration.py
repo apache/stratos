@@ -7,6 +7,9 @@ from ..exception.parameternotfoundexception import ParameterNotFoundException
 
 
 class CartridgeAgentConfiguration:
+    """
+    Handles the configuration information of the particular Cartridge Agent
+    """
     # set log level
     logging.basicConfig(level=logging.DEBUG)
     log = logging.getLogger(__name__)
@@ -15,37 +18,71 @@ class CartridgeAgentConfiguration:
     properties = None
 
     service_group = None
+    """ :type : str  """
     is_clustered = False
+    """ :type : bool  """
     service_name = None
+    """ :type : str  """
     cluster_id = None
+    """ :type : str  """
     network_partition_id = None
+    """ :type : str  """
     partition_id = None
+    """ :type : str  """
     member_id = None
+    """ :type : str  """
     cartridge_key = None
+    """ :type : str  """
     app_path = None
+    """ :type : str  """
     repo_url = None
+    """ :type : str  """
     ports = {}
+    """ :type : list[str]  """
     log_file_paths = {}
+    """ :type : list[str]  """
     is_multitenant = False
+    """ :type : bool  """
     persistence_mappings = None
+    """ :type : str  """
     is_commits_enabled = False
+    """ :type : bool  """
     is_checkout_enabled = False
+    """ :type : bool  """
     listen_address = None
+    """ :type : str  """
     is_internal_repo = False
+    """ :type : bool  """
     tenant_id = None
+    """ :type : str  """
     lb_cluster_id = None
+    """ :type : str  """
     min_count = None
+    """ :type : str  """
     lb_private_ip = None
+    """ :type : str  """
     lb_public_ip = None
+    """ :type : str  """
     tenant_repository_path = None
+    """ :type : str  """
     super_tenant_repository_path = None
+    """ :type : str  """
     deployment = None
+    """ :type : str  """
     manager_service_name = None
+    """ :type : str  """
     worker_service_name = None
+    """ :type : str  """
     is_primary = False
+    """ :type : bool  """
 
     @staticmethod
     def initialize_configuration():
+        """
+        Initializes the configuration by reading and parsing properties
+        from configuration file and payload parameter file
+        :return: void
+        """
 
         CartridgeAgentConfiguration.payload_params = {}
         CartridgeAgentConfiguration.__read_conf_file()
@@ -218,7 +255,7 @@ class CartridgeAgentConfiguration:
     def __read_conf_file():
         """
         Reads and stores the agent's configuration file
-        :return:
+        :return: void
         """
 
         base_working_dir = os.path.abspath(os.path.dirname(__file__)).replace("modules/config", "")
@@ -231,7 +268,7 @@ class CartridgeAgentConfiguration:
     def __read_parameter_file():
         """
         Reads the payload file of the cartridge and stores the values in a dictionary
-        :return:
+        :return: void
         """
 
         param_file = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
@@ -251,6 +288,13 @@ class CartridgeAgentConfiguration:
 
     @staticmethod
     def read_property(property_key):
+        """
+        Returns the value of the provided property
+        :param str property_key: the name of the property to be read
+        :return: Value of the property,
+        :rtype: str
+        :exception: ParameterNotFoundException if the provided property cannot be found
+        """
 
         if CartridgeAgentConfiguration.properties.has_option("agent", property_key):
             CartridgeAgentConfiguration.log.debug("Has key: %r" % property_key)
