@@ -31,13 +31,14 @@ import org.apache.stratos.messaging.message.processor.instance.notifier.Instance
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
  * object.
- * 
+ *
  * @author nirmal
- * 
  */
 public class TopicSubscriber implements Runnable {
 
@@ -54,8 +55,7 @@ public class TopicSubscriber implements Runnable {
 	private final MessageProcessorChain processorChain;
 
 	/**
-	 * @param aTopicName
-	 *            topic name of this subscriber instance.
+	 * @param aTopicName topic name of this subscriber instance.
 	 */
 	public TopicSubscriber(String aTopicName) {
 		topicName = aTopicName;
@@ -66,22 +66,24 @@ public class TopicSubscriber implements Runnable {
 		this.processorChain = new InstanceNotifierMessageProcessorChain();
 	}
 
-	private void doSubscribe() throws Exception, JMSException {
+	private void doSubscribe() throws MqttException {
 
 		MqttClient mqttClient = MQTTConnector.getMQTTSubClient(Util.getRandomString(5));
+
+		if (log.isDebugEnabled()) {
+			log.debug("Subscribing to topic '" + topicName + "' from " +
+			          mqttClient.getServerURI());
+		}
+		// Subscribing to specific topic
 		try {
 
-			mqttClient.connect();
-			if (log.isDebugEnabled()) {
-				log.debug("Subscribing to topic '" + topicName + "' from " +
-				          mqttClient.getServerURI());
-			}
-			// Subscribing to specific topic
-
+			MqttConnectOptions connOpts = new MqttConnectOptions();
+			connOpts.setCleanSession(true);
+			mqttClient.connect(connOpts);
+			// Continue waiting for messages
 			mqttClient.subscribe(topicName);
-
-			// Continue waiting for messages until the Enter is pressed
 			mqttClient.setCallback(messageListener);
+			subscribed = true;
 			while (true) {
 				try {
 					Thread.sleep(1000);
@@ -95,9 +97,8 @@ public class TopicSubscriber implements Runnable {
 	}
 
 	/**
-	 * @param messageListener
-	 *            this MessageListener will get triggered each time this
-	 *            subscription receives a message.
+	 * @param messageListener this MessageListener will get triggered each time this
+	 *                        subscription receives a message.
 	 */
 	public void setMessageListener(MqttCallback messageListener) {
 
