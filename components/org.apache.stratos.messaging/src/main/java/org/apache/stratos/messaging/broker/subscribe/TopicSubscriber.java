@@ -68,21 +68,28 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
+		MqttClient mqttClient = MQTTConnector.getMQTTSubClient(Util.getRandomString(5));
 
-			MqttClient mqttClient = MQTTConnector.getMQTTSubClient(Util.getRandomString(5));
-
-			if (log.isDebugEnabled()) {
-				log.debug("Subscribing to topic '" + topicName + "' from " +
-				          mqttClient.getServerURI());
-			}
-			// Subscribing to specific topic
+		if (log.isDebugEnabled()) {
+			log.debug("Subscribing to topic '" + topicName + "' from " +
+			          mqttClient.getServerURI());
+		}
+		// Subscribing to specific topic
 		try {
-			mqttClient.subscribe(topicName);
 
+			MqttConnectOptions connOpts = new MqttConnectOptions();
+			connOpts.setCleanSession(true);
+			mqttClient.connect(connOpts);
 			// Continue waiting for messages
+			mqttClient.subscribe(topicName);
 			mqttClient.setCallback(messageListener);
-			subscribed=true;
-
+			subscribed = true;
+			while (true) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+			}
 
 		} finally {
 			mqttClient.disconnect();
