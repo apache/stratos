@@ -91,19 +91,22 @@ class CartridgeAgent(threading.Thread):
             CartridgeAgentConfiguration.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.JNDI_PROPERTIES_DIR)
+            return
 
         #PARAM_FILE_PATH
         try:
             CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.PARAM_FILE_PATH)
+            return
 
         #EXTENSIONS_DIR
         try:
             CartridgeAgentConfiguration.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.EXTENSIONS_DIR)
-
+            return
+        
     def subscribe_to_topics_and_register_listeners(self):
         self.log.debug("Starting instance notifier event message receiver thread")
 

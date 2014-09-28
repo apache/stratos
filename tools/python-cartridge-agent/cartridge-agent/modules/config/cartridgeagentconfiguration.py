@@ -37,9 +37,9 @@ class CartridgeAgentConfiguration:
     """ :type : str  """
     repo_url = None
     """ :type : str  """
-    ports = {}
+    ports = []
     """ :type : list[str]  """
-    log_file_paths = {}
+    log_file_paths = []
     """ :type : list[str]  """
     is_multitenant = False
     """ :type : bool  """
