@@ -41,7 +41,7 @@ public class MemberMaintenanceModeEvent extends TopologyEvent implements Seriali
         this.memberId = memberId;
     }
 
-     public String getServiceName() {
+    public String getServiceName() {
         return serviceName;
     }
 
