@@ -81,27 +81,25 @@ public class MQTTConnector {
 	public static synchronized MqttClient getMQTTSubClient(String identifier) throws MqttException {
 		//if (topicClientSub == null) {
 
-			String broker = mqttProp.getProperty("mqtturl", MQTTURL);
+		String broker = mqttProp.getProperty("mqtturl", MQTTURL);
 
-			String tempFile = mqttProp.getProperty("tempfilelocation", TMPFILELOCATION);
-			// Creating new default persistence for mqtt client
-			MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence(tempFile);
+		String tempFile = mqttProp.getProperty("tempfilelocation", TMPFILELOCATION);
+		// Creating new default persistence for mqtt client
+		MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence(tempFile);
 
-			try {
+		try {
 
-				// mqtt client with specific url and a random client id
-				topicClientSub = new MqttClient(broker, identifier, persistence);
-				MqttConnectOptions connOpts = new MqttConnectOptions();
-				connOpts.setCleanSession(true);
-				topicClientSub.connect(connOpts);
-				if (log.isDebugEnabled()) {
-					log.debug("MQTT client connected");
-				}
+			// mqtt client with specific url and a random client id
+			topicClientSub = new MqttClient(broker, identifier, persistence);
 
-			} catch (MqttException me) {
-
-				log.error("Failed to initiate autoscaler service client. ", me);
+			if (log.isDebugEnabled()) {
+				log.debug("MQTT client connected");
 			}
+
+		} catch (MqttException me) {
+
+			log.error("Failed to initiate autoscaler service client. ", me);
+		}
 
 		//}
 		return topicClientSub;
