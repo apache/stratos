@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 def execute_copy_artifact_extension(source, destination):
     try:
         log.debug("Executing artifacts copy extension")
-        script_name = cartridgeagentconstants.ARTIFACTS_COPY_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACTS_COPY_SCRIPT, False)
         command = prepare_command(script_name)
 
         output, errors = execute_command(command + " " + source + " " + destination)
@@ -26,7 +26,7 @@ def execute_instance_started_extension(env_params):
     try:
         log.debug("Executing instance started extension")
 
-        script_name = cartridgeagentconstants.INSTANCE_STARTED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.INSTANCE_STARTED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -40,7 +40,7 @@ def execute_instance_started_extension(env_params):
 def execute_instance_activated_extension():
     try:
         log.debug("Executing instance activated extension")
-        script_name = cartridgeagentconstants.INSTANCE_ACTIVATED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.INSTANCE_ACTIVATED_SCRIPT, False)
         command = prepare_command(script_name)
 
         output, errors = execute_command(command)
@@ -53,7 +53,7 @@ def execute_artifacts_updated_extension(env_params):
     try:
         log.debug("Executing artifacts updated extension")
 
-        script_name = cartridgeagentconstants.ARTIFACTS_UPDATED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACTS_UPDATED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -68,7 +68,7 @@ def execute_subscription_domain_added_extension(env_params):
     try:
         log.debug("Executing subscription domain added extension")
 
-        script_name = cartridgeagentconstants.SUBSCRIPTION_DOMAIN_ADDED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.SUBSCRIPTION_DOMAIN_ADDED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -83,7 +83,7 @@ def execute_subscription_domain_removed_extension(env_params):
     try:
         log.debug("Executing subscription domain removed extension")
 
-        script_name = cartridgeagentconstants.SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -98,7 +98,7 @@ def execute_start_servers_extension(env_params):
     try:
         log.debug("Executing start servers extension")
 
-        script_name = cartridgeagentconstants.START_SERVERS_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.START_SERVERS_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -113,7 +113,7 @@ def execute_complete_topology_extension(env_params):
     try:
         log.debug("Executing complete topology extension")
 
-        script_name = cartridgeagentconstants.COMPLETE_TOPOLOGY_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.COMPLETE_TOPOLOGY_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -128,7 +128,7 @@ def execute_complete_tenant_extension(env_params):
     try:
         log.debug("Executing complete tenant extension")
 
-        script_name = cartridgeagentconstants.COMPLETE_TENANT_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.COMPLETE_TENANT_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -143,7 +143,7 @@ def execute_tenant_subscribed_extension(env_params):
     try:
         log.debug("Executing tenant subscribed extension")
 
-        script_name = cartridgeagentconstants.TENANT_SUBSCRIBED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.TENANT_SUBSCRIBED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -158,7 +158,7 @@ def execute_tenant_unsubscribed_extension(env_params):
     try:
         log.debug("Executing tenant unsubscribed extension")
 
-        script_name = cartridgeagentconstants.TENANT_UNSUBSCRIBED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.TENANT_UNSUBSCRIBED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -173,7 +173,7 @@ def execute_member_terminated_extension(env_params):
     try:
         log.debug("Executing member terminated extension")
 
-        script_name = cartridgeagentconstants.MEMBER_TERMINATED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MEMBER_TERMINATED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -188,7 +188,7 @@ def execute_member_suspended_extension(env_params):
     try:
         log.debug("Executing member suspended extension")
 
-        script_name = cartridgeagentconstants.MEMBER_SUSPENDED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MEMBER_SUSPENDED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -202,7 +202,7 @@ def execute_member_started_extension(env_params):
     try:
         log.debug("Executing member started extension")
 
-        script_name = cartridgeagentconstants.MEMBER_STARTED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MEMBER_STARTED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -284,7 +284,7 @@ def is_relevant_member_event(service_name, cluster_id, lb_cluster_id):
 def execute_volume_mount_extension(persistance_mappings_payload):
     try:
         log.debug("Executing volume mounting extension: [payload] %r" % persistance_mappings_payload)
-        script_name = cartridgeagentconstants.MOUNT_VOLUMES_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MOUNT_VOLUMES_SCRIPT, False)
         command = prepare_command(script_name)
 
         output, errors = execute_command(command + " " + persistance_mappings_payload)
@@ -296,7 +296,7 @@ def execute_volume_mount_extension(persistance_mappings_payload):
 def execute_cleanup_extension():
     try:
         log.debug("Executing cleanup extension")
-        script_name = cartridgeagentconstants.CLEAN_UP_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.CLEAN_UP_SCRIPT, False)
         command = prepare_command(script_name)
 
         output, errors = execute_command(command)
@@ -309,7 +309,7 @@ def execute_member_activated_extension(env_params):
     try:
         log.debug("Executing member activated extension")
 
-        script_name = cartridgeagentconstants.MEMBER_ACTIVATED_SCRIPT
+        script_name = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MEMBER_ACTIVATED_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
@@ -321,7 +321,7 @@ def execute_member_activated_extension(env_params):
 
 
 def prepare_command(script_name):
-    extensions_dir = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
+    extensions_dir = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.EXTENSIONS_DIR, False)
     if extensions_dir.strip() == "":
         raise RuntimeError("System property not found: %r" % cartridgeagentconstants.EXTENSIONS_DIR)
 
@@ -355,7 +355,7 @@ def add_payload_parameters(env_params):
     :rtype: dict[str, str]
     """
     env_params["STRATOS_APP_PATH"] = CartridgeAgentConfiguration.app_path
-    env_params["STRATOS_PARAM_FILE_PATH"] = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+    env_params["STRATOS_PARAM_FILE_PATH"] = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH, False)
     env_params["STRATOS_SERVICE_NAME"] = CartridgeAgentConfiguration.service_name
     env_params["STRATOS_TENANT_ID"] = CartridgeAgentConfiguration.tenant_id
     env_params["STRATOS_CARTRIDGE_KEY"] = CartridgeAgentConfiguration.cartridge_key

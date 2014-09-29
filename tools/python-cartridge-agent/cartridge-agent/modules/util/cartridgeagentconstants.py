@@ -85,7 +85,7 @@ INSTANCE_NOTIFIER_TOPIC = "instance/#"
 HEALTH_STAT_TOPIC = "health/#"
 TOPOLOGY_TOPIC = "topology/#"
 TENANT_TOPIC = "tenant/#"
-INSTANCE_STATUS_TOPIC = "instance/#"
+INSTANCE_STATUS_TOPIC = "instance/status/"
 
 
 #Messaging Model

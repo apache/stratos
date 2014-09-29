@@ -82,7 +82,7 @@ def wait_until_ports_active(ip_address, ports):
     :param list[str] ports: List of ports to be checked
     :return: void
     """
-    ports_check_timeout = CartridgeAgentConfiguration.read_property("port.check.timeout")
+    ports_check_timeout = CartridgeAgentConfiguration.read_property("port.check.timeout", critical=False)
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
@@ -119,7 +119,7 @@ def check_ports_active(ip_address, ports):
         s = socket.socket()
         s.settimeout(5)
         try:
-            s.connect(ip_address, port)
+            s.connect((ip_address, int(port)))
             log.debug("Port %r is active" % port)
             s.close()
         except socket.error:

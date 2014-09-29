@@ -60,13 +60,17 @@ class EventSubscriber(threading.Thread):
         self.log.debug("Message received: %r:\n%r" % (msg.topic, msg.payload))
 
         event = msg.topic.rpartition('/')[2]
-        handler = self.__event_handlers[event]
 
-        try:
-            self.log.debug("Executing handler for event %r" % event)
-            handler(msg)
-        except:
-            self.log.exception("Error processing %r event" % event)
+        if event in self.__event_handlers:
+            handler = self.__event_handlers[event]
+
+            try:
+                self.log.debug("Executing handler for event %r" % event)
+                handler(msg)
+            except:
+                self.log.exception("Error processing %r event" % event)
+        else:
+            self.log.debug("Event handler not found for event : %r" % event)
 
     def is_subscribed(self):
         """
