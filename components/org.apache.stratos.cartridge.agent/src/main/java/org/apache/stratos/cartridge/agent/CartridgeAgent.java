@@ -88,6 +88,7 @@ public class CartridgeAgent implements Runnable {
 		// wait till the member spawned event
 		while (!CartridgeAgentConfiguration.getInstance().isInitialized()) {
 			try {
+				log.debug("Waiting for Cartridge Agent to be initialized...");
 				Thread.sleep(1000);
 			} catch (InterruptedException ignore) {
 			}
