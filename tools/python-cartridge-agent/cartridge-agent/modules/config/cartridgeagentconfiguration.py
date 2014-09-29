@@ -11,7 +11,7 @@ class CartridgeAgentConfiguration:
     Handles the configuration information of the particular Cartridge Agent
     """
     # set log level
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
     log = logging.getLogger(__name__)
 
     payload_params = {}
@@ -154,12 +154,12 @@ class CartridgeAgentConfiguration:
                         "%r is not found and setting it to false" % cartridgeagentconstants.COMMIT_ENABLED)
                     CartridgeAgentConfiguration.is_commits_enabled = False
 
-            auto_checkout_str = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.AUTO_CHECKOUT)
+            auto_checkout_str = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.AUTO_CHECKOUT, False)
             CartridgeAgentConfiguration.is_checkout_enabled = True if str(
                 auto_checkout_str).lower().strip() == "true" else False
 
             CartridgeAgentConfiguration.listen_address = CartridgeAgentConfiguration.read_property(
-                cartridgeagentconstants.LISTEN_ADDRESS)
+                cartridgeagentconstants.LISTEN_ADDRESS, False)
 
             try:
                 int_repo_str = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PROVIDER)
@@ -176,13 +176,13 @@ class CartridgeAgentConfiguration:
             CartridgeAgentConfiguration.min_count = CartridgeAgentConfiguration.read_property(
                 cartridgeagentconstants.MIN_INSTANCE_COUNT)
             CartridgeAgentConfiguration.lb_private_ip = CartridgeAgentConfiguration.read_property(
-                cartridgeagentconstants.LB_PRIVATE_IP)
+                cartridgeagentconstants.LB_PRIVATE_IP, False)
             CartridgeAgentConfiguration.lb_public_ip = CartridgeAgentConfiguration.read_property(
-                cartridgeagentconstants.LB_PUBLIC_IP)
+                cartridgeagentconstants.LB_PUBLIC_IP, False)
             CartridgeAgentConfiguration.tenant_repository_path = CartridgeAgentConfiguration.read_property(
-                cartridgeagentconstants.TENANT_REPO_PATH)
+                cartridgeagentconstants.TENANT_REPO_PATH, False)
             CartridgeAgentConfiguration.super_tenant_repository_path = CartridgeAgentConfiguration.read_property(
-                cartridgeagentconstants.SUPER_TENANT_REPO_PATH)
+                cartridgeagentconstants.SUPER_TENANT_REPO_PATH, False)
 
             try:
                 CartridgeAgentConfiguration.deployment = CartridgeAgentConfiguration.read_property(
@@ -277,17 +277,22 @@ class CartridgeAgentConfiguration:
             if param_file is not None:
                 metadata_file = open(param_file)
                 metadata_payload_content = metadata_file.read()
-                CartridgeAgentConfiguration.payload_params = dict(
-                    param.split("=") for param in metadata_payload_content.split(","))
+                for param in metadata_payload_content.split(","):
+                    if param.strip() != "":
+                        param_value = param.strip().split("=")
+                        CartridgeAgentConfiguration.payload_params[param_value[0]] = param_value[1]
+
+                # CartridgeAgentConfiguration.payload_params = dict(
+                #     param.split("=") for param in metadata_payload_content.split(","))
                 metadata_file.close()
             else:
                 CartridgeAgentConfiguration.log.error("File not found: %r" % param_file)
         except:
-            CartridgeAgentConfiguration.log.error(
+            CartridgeAgentConfiguration.log.exception(
                 "Could not read launch parameter file, hence trying to read from System properties.")
 
     @staticmethod
-    def read_property(property_key):
+    def read_property(property_key, critical=True):
         """
         Returns the value of the provided property
         :param str property_key: the name of the property to be read
@@ -307,4 +312,5 @@ class CartridgeAgentConfiguration:
             if temp_str != "" and temp_str is not None:
                 return temp_str
 
-        raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
+        if critical:
+            raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)

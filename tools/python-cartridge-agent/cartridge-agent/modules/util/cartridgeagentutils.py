@@ -11,7 +11,7 @@ import cartridgeagentconstants
 
 unpad = lambda s: s[0:-ord(s[-1])]
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
 log = logging.getLogger(__name__)
 
 current_milli_time = lambda: int(round(time.time() * 1000))

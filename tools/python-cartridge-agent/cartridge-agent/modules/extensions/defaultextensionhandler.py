@@ -9,16 +9,17 @@ from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
+from abstractextensionhandler import AbstractExtensionHandler
 
 
-class DefaultExtensionHandler:
+class DefaultExtensionHandler(AbstractExtensionHandler):
     """
     TODO : Provide abstraction
     """
     log = None
 
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
         self.log = logging.getLogger(__name__)
         self.wk_members = []
 
