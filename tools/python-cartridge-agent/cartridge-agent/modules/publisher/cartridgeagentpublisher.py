@@ -31,7 +31,7 @@ def publish_instance_started_event():
 
         instance_started_event = InstanceStartedEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                       member_id)
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC)
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceStartedEvent")
         publisher.publish(instance_started_event)
         started = True
         log.info("Instance started event published")
@@ -51,7 +51,7 @@ def publish_instance_activated_event():
 
         instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC)
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceActivatedEvent")
         publisher.publish(instance_activated_event)
 
         log.info("Instance activated event published")
@@ -78,7 +78,7 @@ def publish_maintenance_mode_event():
         instance_maintenance_mode_event = InstanceMaintenanceModeEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC)
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceMaintenanceModeEvent")
         publisher.publish(instance_maintenance_mode_event)
 
         maintenance = True
@@ -101,7 +101,7 @@ def publish_instance_ready_to_shutdown_event():
         instance_shutdown_event = InstanceReadyToShutdownEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC)
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceReadyToShutdownEvent")
         publisher.publish(instance_shutdown_event)
 
         ready_to_shutdown = True

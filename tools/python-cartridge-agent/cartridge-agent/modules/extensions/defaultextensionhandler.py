@@ -56,7 +56,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             repo_username = artifacts_updated_event.repo_username
             tenant_id = artifacts_updated_event.tenant_id
-            is_multitenant = CartridgeAgentConfiguration.is_multitenant()
+            is_multitenant = CartridgeAgentConfiguration.is_multitenant
             commit_enabled = artifacts_updated_event.commit_enabled
 
             self.log.info("Executing git checkout")
@@ -82,15 +82,15 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 # publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 
-            update_artifacts = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE)
+            update_artifacts = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE, False)
             update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
             if update_artifacts:
-                auto_commit = CartridgeAgentConfiguration.is_commits_enabled()
-                auto_checkout = CartridgeAgentConfiguration.is_checkout_enabled()
+                auto_commit = CartridgeAgentConfiguration.is_commits_enabled
+                auto_checkout = CartridgeAgentConfiguration.is_checkout_enabled
 
                 try:
                     update_interval = len(
-                        CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
+                        CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL, False))
                 except ParameterNotFoundException:
                     self.log.exception("Invalid artifact sync interval specified ")
                     update_interval = 10
@@ -374,9 +374,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         extensionutils.wait_for_complete_topology()
         self.log.info("[start server extension] complete topology event received")
 
-        service_name_in_payload = CartridgeAgentConfiguration.service_name()
-        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id()
-        member_id_in_payload = CartridgeAgentConfiguration.member_id()
+        service_name_in_payload = CartridgeAgentConfiguration.service_name
+        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
+        member_id_in_payload = CartridgeAgentConfiguration.member_id
 
         topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 

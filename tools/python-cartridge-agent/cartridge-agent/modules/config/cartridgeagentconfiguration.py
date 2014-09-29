@@ -271,7 +271,7 @@ class CartridgeAgentConfiguration:
         :return: void
         """
 
-        param_file = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+        param_file = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH, False)
 
         try:
             if param_file is not None:
