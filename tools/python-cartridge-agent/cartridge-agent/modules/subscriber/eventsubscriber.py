@@ -18,7 +18,7 @@ class EventSubscriber(threading.Thread):
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
 
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
         self.log = logging.getLogger(__name__)
 
         self.__mb_client = None

@@ -16,7 +16,7 @@ from modules.topology.topologycontext import *
 
 
 class CartridgeAgent(threading.Thread):
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
     log = logging.getLogger(__name__)
 
     def __init__(self):

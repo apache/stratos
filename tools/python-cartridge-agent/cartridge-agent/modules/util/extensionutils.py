@@ -6,7 +6,7 @@ import time
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. topology.topologycontext import *
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
 log = logging.getLogger(__name__)
 
 

@@ -8,18 +8,18 @@ from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
 from ... util.asyncscheduledtask import AsyncScheduledTask
 from ... artifactmgt.repositoryinformation import RepositoryInformation
-from ... extensions.defaultextensionhandler import DefaultExtensionHandler
+from ... extensions.abstractextensionhandler import AbstractExtensionHandler
 
 
 class AgentGitHandler:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
     log = logging.getLogger(__name__)
 
     SUPER_TENANT_ID = -1234
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    extension_handler = DefaultExtensionHandler()
+    extension_handler = AbstractExtensionHandler()
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
@@ -326,7 +326,7 @@ class AgentGitHandler:
 class ArtifactUpdateTask(Thread):
 
     def __init__(self, repo_info, auto_checkout, auto_commit):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
         self.log = logging.getLogger(__name__)
         Thread.__init__(self)
         self.repo_info = repo_info

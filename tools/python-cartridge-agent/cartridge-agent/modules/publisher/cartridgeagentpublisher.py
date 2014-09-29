@@ -7,7 +7,7 @@ from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. util import cartridgeagentconstants
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
 log = logging.getLogger(__name__)
 
 started = False
