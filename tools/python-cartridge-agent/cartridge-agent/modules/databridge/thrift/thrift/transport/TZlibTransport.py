@@ -25,6 +25,7 @@ data compression.
 from __future__ import division
 import zlib
 from cStringIO import StringIO
+
 from TTransport import TTransportBase, CReadableTransport
 
 

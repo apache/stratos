@@ -13,6 +13,7 @@ from modules.event.tenant.events import *
 from modules.event.topology.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
+from modules.datapublisher.logpublisher import *
 
 
 class CartridgeAgent(threading.Thread):
@@ -31,6 +32,10 @@ class CartridgeAgent(threading.Thread):
 
         self.__tenant_context_initialized = False
         self.__topology_context_initialized = False
+
+        self.log_publish_manager = None
+
+        self.terminated = False
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -77,14 +82,33 @@ class CartridgeAgent(threading.Thread):
         if persistence_mappping_payload is not None:
             self.extension_handler.volume_mount_extension(persistence_mappping_payload)
 
-            # TODO: logpublisher shceduled event
+        # start log publishing thread
+        if DataPublisherConfiguration.get_instance().enabled:
+            log_file_paths = CartridgeAgentConfiguration.log_file_paths
+            if log_file_paths is None:
+                self.log.exception("No valid log file paths found, no logs will be published")
+            else:
+                self.log_publish_manager = LogPublisherManager(log_file_paths)
+                self.log_publish_manager.start()
 
-            #TODO: wait until terminated is true
+        while not self.terminated:
+            time.sleep(1)
+
+        if DataPublisherConfiguration.get_instance().enabled:
+            self.log_publish_manager.terminate_all_publishers()
+
+    def terminate(self):
+        """
+        Allows the CartridgeAgent thread to be terminated
+
+        :return: void
+        """
+        self.terminated = True
 
     def validate_required_properties(self):
         """
         Checks if required properties are set
-        :return: True if
+        :return: void
         """
         # JNDI_PROPERTIES_DIR
         try:
@@ -256,8 +280,11 @@ class CartridgeAgent(threading.Thread):
 
 
 def main():
-    cartridge_agent = CartridgeAgent()
-    cartridge_agent.start()
+    try:
+        cartridge_agent = CartridgeAgent()
+        cartridge_agent.start()
+    except:
+        cartridge_agent.terminate()
 
 
 if __name__ == "__main__":

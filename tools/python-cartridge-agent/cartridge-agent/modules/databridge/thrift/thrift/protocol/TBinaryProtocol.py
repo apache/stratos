@@ -17,8 +17,9 @@
 # under the License.
 #
 
-from TProtocol import *
 from struct import pack, unpack
+
+from TProtocol import *
 
 
 class TBinaryProtocol(TProtocolBase):

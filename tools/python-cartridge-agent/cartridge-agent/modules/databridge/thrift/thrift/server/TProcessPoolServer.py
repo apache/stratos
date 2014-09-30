@@ -19,7 +19,7 @@
 
 
 import logging
-from multiprocessing import  Process, Value, Condition, reduction
+from multiprocessing import  Process, Value, Condition
 
 from TServer import TServer
 from thrift.transport.TTransport import TTransportException
