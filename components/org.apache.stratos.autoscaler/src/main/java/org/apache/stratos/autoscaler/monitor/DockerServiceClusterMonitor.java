@@ -44,19 +44,19 @@ public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
 
 		while (!isDestroyed()) {
 			if (log.isDebugEnabled()) {
-				log.debug("Kubernetes cluster monitor is running.. " + this.toString());
+				log.debug("KubernetesServiceClusterMonitor is running.. " + this.toString());
 			}
 			try {
 				if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
 					monitor();
 				} else {
 					if (log.isDebugEnabled()) {
-						log.debug("Kubernetes cluster monitor is suspended as the cluster is in "
+						log.debug("KubernetesServiceClusterMonitor is suspended as the cluster is in "
 								+ ClusterStatus.In_Maintenance + " mode......");
 					}
 				}
 			} catch (Exception e) {
-				log.error("Kubernetes cluster monitor: Monitor failed." + this.toString(),
+				log.error("KubernetesServiceClusterMonitor : Monitor failed." + this.toString(),
 						e);
 			}
 			try {
@@ -123,7 +123,7 @@ public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
         if(log.isDebugEnabled()) {
-            log.debug("DockerClusterMonitor Drools session has been disposed. "+this.toString());
+            log.debug("KubernetesServiceClusterMonitor Drools session has been disposed. "+this.toString());
         }		
 	}
 	
@@ -134,13 +134,13 @@ public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
         int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
         setMonitorInterval(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("Kubernetes Cluster Monitor task interval: " + getMonitorInterval());
+            log.debug("KubernetesServiceClusterMonitor task interval: " + getMonitorInterval());
         }
     }
 
     @Override
     public String toString() {
-        return "DockerClusterMonitor "
+        return "KubernetesServiceClusterMonitor "
         		+ "[ kubernetesHostClusterId=" + getKubernetesClusterCtxt().getKubernetesClusterID()
         		+ ", clusterId=" + getClusterId() 
         		+ ", serviceId=" + getServiceId() + "]";

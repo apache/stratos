@@ -70,19 +70,19 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running.. " + this.toString());
+                log.debug("VMServiceClusterMonitor is running.. " + this.toString());
             }
             try {
                 if(!ClusterStatus.In_Maintenance.equals(getStatus())) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("Cluster monitor is suspended as the cluster is in " +
+                        log.debug("VMServiceClusterMonitor is suspended as the cluster is in " +
                                     ClusterStatus.In_Maintenance + " mode......");
                     }
                 }
             } catch (Exception e) {
-                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+                log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
             }
             try {
                 Thread.sleep(getMonitorInterval());
@@ -191,7 +191,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
         setMonitorInterval(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("Cluster Monitor task interval: " + getMonitorInterval());
+            log.debug("VMServiceClusterMonitor task interval: " + getMonitorInterval());
         }
     }
     
@@ -201,13 +201,13 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
         if(log.isDebugEnabled()) {
-            log.debug("Cluster Monitor Drools session has been disposed. "+this.toString());
+            log.debug("VMServiceClusterMonitor Drools session has been disposed. "+this.toString());
         }
     }
 
     @Override
     public String toString() {
-        return "ClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() +
+        return "VMServiceClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() +
                 ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
                 ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
