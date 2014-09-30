@@ -551,19 +551,19 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     success = true;
                     clusterMonitorType = monitor.getClusterType().name();
                 } catch (PolicyValidationException e) {
-                    String msg = clusterMonitorType +" monitor creation failed for cluster: " + cluster.getClusterId();
+                    String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
                     log.debug(msg, e);
                     retries--;
 
                 } catch (PartitionValidationException e) {
-                    String msg = clusterMonitorType +" monitor creation failed for cluster: " + cluster.getClusterId();
+                    String msg = "Cluster monitor creation failed for cluster: " + cluster.getClusterId();
                     log.debug(msg, e);
                     retries--;
                 }
             } while (!success && retries != 0);
 
             if (monitor == null) {
-                String msg = clusterMonitorType +" monitor creation failed, even after retrying for 5 times, "
+                String msg = "Cluster monitor creation failed, even after retrying for 5 times, "
                         + "for cluster: " + cluster.getClusterId();
                 log.error(msg);
                 throw new RuntimeException(msg);

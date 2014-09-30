@@ -161,7 +161,7 @@ public class ClusterMonitorFactory {
         // hasPrimary is true if there are primary members available in that cluster
         clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
 
-        log.info("Cluster monitor created: "+clusterMonitor.toString());
+        log.info("VMServiceClusterMonitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
     
@@ -289,7 +289,7 @@ public class ClusterMonitorFactory {
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
         }
 
-        log.info("LB Cluster monitor created: "+clusterMonitor.toString());
+        log.info("VMLbClusterMonitor created: "+clusterMonitor.toString());
         return clusterMonitor;
     }
 	
@@ -346,7 +346,7 @@ public class ClusterMonitorFactory {
 //        // hasPrimary is true if there are primary members available in that cluster
 //        dockerClusterMonitor.setHasPrimary(Boolean.parseBoolean(props.getProperty(Constants.IS_PRIMARY)));
 
-        log.info("Docker cluster monitor created: "+ dockerClusterMonitor.toString());
+        log.info("KubernetesServiceClusterMonitor created: "+ dockerClusterMonitor.toString());
         return dockerClusterMonitor;
     }
 }
