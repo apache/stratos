@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.manager.subscription.filter;
 
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.logging.Log;
@@ -66,6 +67,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 		LBDataContext lbDataCtxt = null;
         CartridgeSubscription lbCartridgeSubscription = null;
         Properties lbCartridgeSubscriptionProperties  = new Properties();
+        Properties filterProperties = new Properties();
 
 		try {
 			// get lb config reference
@@ -92,6 +94,11 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 				lbCartridgeSubscription = subscribeToLB(subscriptionData,
 						lbDataCtxt, cartridgeInfo);
 
+                if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty()) {
+                    List<Property> lbProperperties = lbDataCtxt.getLbProperperties();
+                    lbCartridgeSubscriptionProperties.setProperties(lbProperperties.toArray(new Property[lbProperperties.size()]));
+                }
+
 				if (lbCartridgeSubscription != null) {
 					// determine the LB cluster id, if available
 					Property lbClusterIdProp = new Property();
@@ -100,6 +107,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 							.getClusterDomain());
 					lbCartridgeSubscriptionProperties
 							.addProperties(lbClusterIdProp);
+                    filterProperties.addProperties(lbClusterIdProp);
 
 					// register LB cartridge subscription
 					if (log.isDebugEnabled()) {
@@ -116,7 +124,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
         	throw new ADCException(e.getMessage(), e);
         }
         
-        return lbCartridgeSubscriptionProperties;
+        return filterProperties;
 	}
 	
 	private CartridgeSubscription subscribeToLB (SubscriptionData subscriptionData, LBDataContext lbDataContext,
