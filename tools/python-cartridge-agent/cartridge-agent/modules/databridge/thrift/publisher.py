@@ -1,15 +1,15 @@
 import time
 import sys
 
-sys.path.append("gen-py")
+sys.path.append("databridge/thrift/gen-py")
 
 from ThriftSecureEventTransmissionService import ThriftSecureEventTransmissionService
 from ThriftSecureEventTransmissionService.ttypes import *
 
-from thrift import Thrift
 from thrift.transport import TSSLSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+
 
 # Define publisher class
 class Publisher:

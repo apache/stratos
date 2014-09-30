@@ -17,10 +17,12 @@
 # under the License.
 #
 
-from TProtocol import TType, TProtocolBase, TProtocolException
 import base64
 import json
 import math
+
+from TProtocol import TType, TProtocolBase, TProtocolException
+
 
 __all__ = ['TJSONProtocol',
            'TJSONProtocolFactory',

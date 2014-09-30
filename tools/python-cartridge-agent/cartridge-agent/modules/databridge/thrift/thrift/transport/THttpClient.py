@@ -25,8 +25,6 @@ import urllib
 import urlparse
 import warnings
 
-from cStringIO import StringIO
-
 from TTransport import *
 
 
