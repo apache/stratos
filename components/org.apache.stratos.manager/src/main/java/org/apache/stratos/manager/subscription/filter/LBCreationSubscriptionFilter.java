@@ -92,12 +92,6 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 				lbCartridgeSubscription = subscribeToLB(subscriptionData,
 						lbDataCtxt, cartridgeInfo);
 
-				if (lbDataCtxt.getLbProperperties() != null
-						&& !lbDataCtxt.getLbProperperties().isEmpty()) {
-					lbCartridgeSubscriptionProperties.setProperties(lbDataCtxt
-							.getLbProperperties().toArray(new Property[0]));
-				}
-
 				if (lbCartridgeSubscription != null) {
 					// determine the LB cluster id, if available
 					Property lbClusterIdProp = new Property();
