@@ -256,7 +256,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         	log.debug("Received an instance spawn request : " + memberContext.toString());
         }
 
-        ComputeService computeService = null;
         Template template = null;
 
         if (partition == null) {
