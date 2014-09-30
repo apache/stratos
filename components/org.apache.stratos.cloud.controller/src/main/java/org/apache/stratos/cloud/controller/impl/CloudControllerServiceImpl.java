@@ -145,7 +145,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         List<IaasProvider> iaases = cartridge.getIaases();
         
-		if (!cartridge.getDeployerType().equals("kubernetes")) {
+		if (!StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
 			if (iaases == null || iaases.isEmpty()) {
 				String msg = "Invalid Cartridge Definition: Cartridge Type: "
 						+ cartridgeConfig.getType()
