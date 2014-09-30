@@ -92,7 +92,12 @@ public class RequestDelegator {
         return null;
     }
 
-    private Member findNextMemberInCluster(Cluster cluster) {
+	/**
+	 * This operation should be synchronized in order to find a member
+	 * correctly. This has no performance impact as per the load tests
+	 * carried out. 
+	 */
+    private synchronized Member findNextMemberInCluster(Cluster cluster) {
         // Find algorithm context of the cluster
         ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterIdClusterContextMap().getClusterContext(cluster.getClusterId());
         if (clusterContext == null) {
