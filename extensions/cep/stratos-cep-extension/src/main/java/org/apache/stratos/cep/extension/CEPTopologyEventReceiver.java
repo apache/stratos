@@ -58,9 +58,7 @@ public class CEPTopologyEventReceiver implements Runnable {
                 if (!initialized) {
                     try {
                         TopologyManager.acquireReadLock();
-                        if (log.isInfoEnabled()) {
-                            log.info("Complete topology event received to fault handling window processor.");
-                        }
+                        log.info("Complete topology event received to fault handling window processor.");
                         CompleteTopologyEvent completeTopologyEvent = (CompleteTopologyEvent) event;
                         initialized = faultHandler.loadTimeStampMapFromTopology(completeTopologyEvent.getTopology());
                     } catch (Exception e) {
@@ -78,10 +76,8 @@ public class CEPTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
                 faultHandler.getMemberTimeStampMap().remove(memberTerminatedEvent.getMemberId());
-                if (log.isInfoEnabled()){
-                    log.info("Member [member id] " + memberTerminatedEvent.getMemberId() +
+                log.info("Member [member id] " + memberTerminatedEvent.getMemberId() +
                             " was removed from the time stamp map.");
-                }
             }
         });
 
@@ -107,9 +103,7 @@ public class CEPTopologyEventReceiver implements Runnable {
         }
         Thread thread = new Thread(topologyEventReceiver);
         thread.start();
-        if (log.isInfoEnabled()) {
-            log.info("CEP topology receiver thread started");
-        }
+        log.info("CEP topology receiver thread started");
 
         // Keep the thread live until terminated
         while (!terminated) {
@@ -118,9 +112,7 @@ public class CEPTopologyEventReceiver implements Runnable {
             } catch (InterruptedException ignore) {
             }
         }
-        if (log.isInfoEnabled()) {
-            log.info("CEP topology receiver thread terminated");
-        }
+        log.info("CEP topology receiver thread terminated");
     }
 
     /**

@@ -155,9 +155,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
             }
         }
 
-        if  (log.isInfoEnabled()){
-            log.info("Member time stamp map was successfully loaded from the topology.");
-        }
+        log.info("Member time stamp map was successfully loaded from the topology.");
         if (log.isDebugEnabled()){
             log.debug("Member TimeStamp Map: " + memberTimeStampMap);
         }
@@ -200,9 +198,8 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                     " does not exist in topology");
             return;
         }
-        if (log.isInfoEnabled()){
-            log.info("Publishing member fault event for [member-id] " + memberId);
-        }
+        log.info("Publishing member fault event for [member-id] " + memberId);
+
         MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getMemberId(),
                 member.getPartitionId(), 0);
         memberFaultEventMessageMap.put("message", memberFaultEvent);
@@ -272,13 +269,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 
         Thread topologyTopicSubscriberThread = new Thread(cepTopologyEventReceiver);
         topologyTopicSubscriberThread.start();
-        if (log.isDebugEnabled()) {
-            log.debug("CEP topology receiver thread started");
-        }
 
         //Ordinary scheduling
         window.schedule();
-
         if (log.isDebugEnabled()){
             log.debug("Fault handling window processor initialized with [timeToKeep] " + timeToKeep +
                     ", [memberIdAttrName] " + memberIdAttrName + ", [memberIdAttrIndex] " + memberIdAttrIndex +
