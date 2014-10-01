@@ -390,7 +390,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         return;
                     }
                     
-                    if (monitor.getClusterType() == ClusterType.VMServiceCluster) {    
+                    if (monitor.getClusterType() == ClusterType.VMServiceCluster 
+                    		|| monitor.getClusterType() == ClusterType.VMLbCluster) {    
                     	PartitionContext partitionContext;
                         partitionContext = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                         partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
