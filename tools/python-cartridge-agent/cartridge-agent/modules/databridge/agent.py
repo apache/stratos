@@ -1,5 +1,5 @@
 from thrift.publisher import *
-import logging
+from ..util.log import *
 
 
 class StreamDefinition:
@@ -88,8 +88,7 @@ class ThriftPublisher:
     """
     Handles publishing events to BAM/CEP through thrift using the provided address and credentials
     """
-    logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger(__name__)
+    log = LogFactory().get_log(__name__)
 
     def __init__(self, ip, port, username, password, stream_definition):
         """

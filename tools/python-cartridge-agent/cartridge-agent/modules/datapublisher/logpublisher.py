@@ -1,6 +1,5 @@
 import os
 import datetime
-import logging
 from threading import Thread, current_thread
 
 from ..databridge.agent import *
@@ -14,8 +13,7 @@ class LogPublisher(Thread):
     def __init__(self, file_path, stream_definition, tenant_id, alias, date_time, member_id):
         Thread.__init__(self)
 
-        logging.basicConfig(level=logging.DEBUG)
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
 
         self.file_path = file_path
         self.thrift_publisher = ThriftPublisher(
@@ -192,8 +190,7 @@ class DataPublisherConfiguration:
     """
 
     __instance = None
-    logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger(__name__)
+    log = LogFactory().get_log(__name__)
 
     @staticmethod
     def get_instance():

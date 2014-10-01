@@ -1,6 +1,5 @@
 from threading import Thread
 import time
-import logging
 import psutil
 import os
 
@@ -23,8 +22,7 @@ class HealthStatisticsPublisherManager(Thread):
         """
         Thread.__init__(self)
 
-        logging.basicConfig(level=logging.DEBUG)
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
 
         self.publish_interval = publish_interval
         """:type : int"""
@@ -53,8 +51,7 @@ class HealthStatisticsPublisher:
     Publishes memory usage and load average to thrift server
     """
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG)
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
         self.ports = []
         self.ports.append(CEPPublisherConfiguration.get_instance().server_port)
         cartridgeagentutils.wait_until_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
@@ -154,8 +151,7 @@ class CEPPublisherConfiguration:
     """
 
     __instance = None
-    logging.basicConfig(level=logging.DEBUG)
-    log = logging.getLogger(__name__)
+    log = LogFactory().get_log(__name__)
 
     @staticmethod
     def get_instance():
