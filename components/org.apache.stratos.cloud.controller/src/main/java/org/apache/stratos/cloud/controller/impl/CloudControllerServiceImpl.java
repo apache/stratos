@@ -74,10 +74,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			.getLog(CloudControllerServiceImpl.class);
 	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
 			.getInstance();
-
+	
 	public CloudControllerServiceImpl() {
 		// acquire serialized data from registry
 		acquireData();
+	}
+	
+	/**
+	 * Used for testing.
+	 * @param test set to true
+	 */
+	public CloudControllerServiceImpl(boolean test) {
 	}
 
 	private void acquireData() {
