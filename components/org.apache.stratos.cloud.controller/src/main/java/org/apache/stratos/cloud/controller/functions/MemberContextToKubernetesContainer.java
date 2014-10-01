@@ -38,114 +38,110 @@ import org.apache.stratos.kubernetes.client.model.Port;
 import com.google.common.base.Function;
 
 /**
- *	Is responsible for converting a {@link MemberContext} object to a Kubernetes {@link Container}
- *	Object.
+ * Is responsible for converting a {@link MemberContext} object to a Kubernetes
+ * {@link Container} Object.
  */
-public class MemberContextToKubernetesContainer implements Function<MemberContext, Container>{
-	
-	private static final Log log = LogFactory.getLog(MemberContextToKubernetesContainer.class);
-	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+public class MemberContextToKubernetesContainer implements Function<MemberContext, Container> {
 
-	@Override
-	public Container apply(MemberContext memberContext) {
-		String clusterId = memberContext.getClusterId();
+    private static final Log log = LogFactory.getLog(MemberContextToKubernetesContainer.class);
+    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+
+    @Override
+    public Container apply(MemberContext memberContext) {
+        String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
-        
-		Container container = new Container();
-		container.setName(getCompatibleName(clusterContext.getHostName()));
 
-		Cartridge cartridge = dataHolder.getCartridge(clusterContext
-				.getCartridgeType());
-		
-		if (cartridge == null) {
-			log.error("Cannot find a Cartridge of type : "
-					+ clusterContext.getCartridgeType());
-			return null;
-		}
-		
-		container.setImage(cartridge.getContainer().getImageName());
+        Container container = new Container();
+        container.setName(getCompatibleName(clusterContext.getHostName()));
 
-		container.setPorts(getPorts(clusterContext, cartridge));
-		
-		container.setEnv(getEnvironmentVars(memberContext, clusterContext));
+        Cartridge cartridge = dataHolder.getCartridge(clusterContext.getCartridgeType());
 
-		return container;
-	}
-	
-	private String getCompatibleName(String hostName) {
-		if (hostName.indexOf('.') != -1) {
-			hostName = hostName.replace('.', '-');
-		}
-		return hostName;
-	}
+        if (cartridge == null) {
+            log.error("Cannot find a Cartridge of type : " + clusterContext.getCartridgeType());
+            return null;
+        }
 
-	private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
-		Port[] ports = new Port[cartridge.getPortMappings().size()];
-		List<Port> portList = new ArrayList<Port>();
-		
-		for (PortMapping portMapping : cartridge.getPortMappings()) {
-			Port p = new Port();
-			p.setContainerPort(Integer.parseInt(portMapping.getPort()));
-			p.setHostPort(Integer.parseInt(portMapping.getPort()));
-			// In kubernetes transport protocol always be 'tcp'
-			p.setProtocol("tcp");
-			p.setName(p.getProtocol()+p.getContainerPort());
-			portList.add(p);
-		}
-		
-		return portList.toArray(ports);
-	}
-	
-	private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, 
-			ClusterContext ctxt) {
-		
-		String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
-        		StratosConstants.KUBERNETES_CLUSTER_ID);
-		
-		List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
-		addToEnvironment(envVars, ctxt.getPayload());
-		//FIXME member id, should it be unique for a container?
-		addToEnvironment(envVars, StratosConstants.MEMBER_ID, memberCtxt.getMemberId());
-		addToEnvironment(envVars, StratosConstants.LB_CLUSTER_ID, memberCtxt.getLbClusterId());
-		addToEnvironment(envVars, StratosConstants.NETWORK_PARTITION_ID, memberCtxt.getNetworkPartitionId());
-		addToEnvironment(envVars, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
-        if(memberCtxt.getProperties() != null) {
-        	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberCtxt.getProperties();
+        container.setImage(cartridge.getContainer().getImageName());
+
+        container.setPorts(getPorts(clusterContext, cartridge));
+
+        container.setEnv(getEnvironmentVars(memberContext, clusterContext));
+
+        return container;
+    }
+
+    private String getCompatibleName(String hostName) {
+        if (hostName.indexOf('.') != -1) {
+            hostName = hostName.replace('.', '-');
+        }
+        return hostName;
+    }
+
+    private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
+        Port[] ports = new Port[cartridge.getPortMappings().size()];
+        List<Port> portList = new ArrayList<Port>();
+
+        for (PortMapping portMapping : cartridge.getPortMappings()) {
+            Port p = new Port();
+            p.setContainerPort(Integer.parseInt(portMapping.getPort()));
+            p.setHostPort(Integer.parseInt(portMapping.getPort()));
+            // In kubernetes transport protocol always be 'tcp'
+            p.setProtocol("tcp");
+            p.setName(p.getProtocol() + p.getContainerPort());
+            portList.add(p);
+        }
+
+        return portList.toArray(ports);
+    }
+
+    private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, ClusterContext ctxt) {
+
+        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
+                StratosConstants.KUBERNETES_CLUSTER_ID);
+
+        List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
+        addToEnvironment(envVars, ctxt.getPayload());
+        // FIXME member id, should it be unique for a container?
+        addToEnvironment(envVars, StratosConstants.MEMBER_ID, memberCtxt.getMemberId());
+        addToEnvironment(envVars, StratosConstants.LB_CLUSTER_ID, memberCtxt.getLbClusterId());
+        addToEnvironment(envVars, StratosConstants.NETWORK_PARTITION_ID,
+                memberCtxt.getNetworkPartitionId());
+        addToEnvironment(envVars, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
+        if (memberCtxt.getProperties() != null) {
+            org.apache.stratos.cloud.controller.pojo.Properties props1 = memberCtxt.getProperties();
             if (props1 != null) {
                 for (Property prop : props1.getProperties()) {
-                	addToEnvironment(envVars, prop.getName(), prop.getValue());
+                    addToEnvironment(envVars, prop.getName(), prop.getValue());
                 }
             }
         }
-        
+
         EnvironmentVariable[] vars = new EnvironmentVariable[envVars.size()];
-        
+
         return envVars.toArray(vars);
-        
-	}
 
-	private void addToEnvironment(List<EnvironmentVariable> envVars,
-			String payload) {
+    }
 
-		if (payload != null) {
-			String[] entries = payload.split(",");
-			for (String entry : entries) {
-				String[] var = entry.split("=");
-				if(var.length != 2) {
-					continue;
-				}
-				addToEnvironment(envVars, var[0], var[1]);
-			}
-		}
-	}
+    private void addToEnvironment(List<EnvironmentVariable> envVars, String payload) {
 
-	private void addToEnvironment(List<EnvironmentVariable> envVars,
-			String name, String value) {
+        if (payload != null) {
+            String[] entries = payload.split(",");
+            for (String entry : entries) {
+                String[] var = entry.split("=");
+                if (var.length != 2) {
+                    continue;
+                }
+                addToEnvironment(envVars, var[0], var[1]);
+            }
+        }
+    }
 
-		EnvironmentVariable var = new EnvironmentVariable();
-		var.setName(name);
-		var.setValue(value);
-		envVars.add(var);
-	}
+    private void addToEnvironment(List<EnvironmentVariable> envVars, String name, String value) {
+
+        EnvironmentVariable var = new EnvironmentVariable();
+        var.setName(name);
+        var.setValue(value);
+        envVars.add(var);
+    }
 
 }
