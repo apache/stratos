@@ -140,7 +140,7 @@ public class TopologyBuilder {
                 cluster.setLbCluster(isLb);
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
-                        registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
+                        registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName(), null);
                 cluster.addHostName(registrant.getHostName());
                 if (service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
@@ -625,7 +625,7 @@ public class TopologyBuilder {
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
-                        applicationClusterContext.getAutoscalePolicyName());
+                        applicationClusterContext.getAutoscalePolicyName(), application.getId());
                 cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());

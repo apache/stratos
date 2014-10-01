@@ -78,12 +78,16 @@ public class DefaultApplicationParser implements ApplicationParser {
         // get the defined groups
         Map<String, GroupContext> definedGroups = getDefinedGroups(applicationCtxt);
         if (log.isDebugEnabled()) {
-            Set<Map.Entry<String, GroupContext>> groupEntries = definedGroups.entrySet();
-            log.debug("Defined Groups: [ ");
-            for (Map.Entry<String, GroupContext> groupEntry : groupEntries) {
-                log.debug("Group alias: " + groupEntry.getKey());
+            if (definedGroups != null) {
+                Set<Map.Entry<String, GroupContext>> groupEntries = definedGroups.entrySet();
+                log.debug("Defined Groups: [ ");
+                for (Map.Entry<String, GroupContext> groupEntry : groupEntries) {
+                    log.debug("Group alias: " + groupEntry.getKey());
+                }
+                log.debug(" ]");
+            } else {
+                log.debug("No Group definitions found in app id " + applicationCtxt.getApplicationId());
             }
-            log.debug(" ]");
         }
 
         // get the Subscribables Information

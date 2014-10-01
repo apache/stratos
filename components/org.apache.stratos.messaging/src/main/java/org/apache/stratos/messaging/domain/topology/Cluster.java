@@ -51,17 +51,21 @@ public class Cluster implements Serializable {
 
     private Status status;
 
+    private String appId;
+
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
 
-    public Cluster(String serviceName, String clusterId, String deploymentPolicyName, String autoscalePolicyName) {
+    public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
+                   String autoscalePolicyName, String appId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.deploymentPolicyName = deploymentPolicyName;
         this.autoscalePolicyName = autoscalePolicyName;
         this.hostNames = new ArrayList<String>();
         this.memberMap = new HashMap<String, Member>();
+        this.appId = appId;
     }
 
     public String getServiceName() {
@@ -226,6 +230,10 @@ public class Cluster implements Serializable {
 
     public int hashCode () {
         return clusterId.hashCode();
+    }
+
+    public String getAppId() {
+        return appId;
     }
 }
 

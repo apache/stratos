@@ -176,8 +176,15 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
 	                                                                                           throws Exception {
 		Registry registry = getGovernanceUserRegistry();
 		String resourcePath = mainResource + applicationName + "/" + cartridgeType;
-		registry.delete(resourcePath);
-		return false;
+        if (registry != null) {
+		    registry.delete(resourcePath);
+            return true;
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Unable to delete the meta data since the Registry is NULL");
+            }
+            return false;
+        }
 	}
 
 
