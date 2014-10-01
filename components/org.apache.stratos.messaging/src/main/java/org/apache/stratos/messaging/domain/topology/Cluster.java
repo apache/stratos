@@ -45,6 +45,7 @@ public class Cluster implements Serializable {
     private List<String> hostNames;
     private String tenantRange;
     private boolean isLbCluster;
+    private boolean isKubernetesCluster; // TODO fix properly with an Enum
     // Key: Member.memberId
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
@@ -146,13 +147,21 @@ public class Cluster implements Serializable {
     public void setLbCluster(boolean isLbCluster) {
         this.isLbCluster = isLbCluster;
     }
-    
-    @Override
+        
+    public boolean isKubernetesCluster() {
+		return isKubernetesCluster;
+	}
+
+	public void setKubernetesCluster(boolean isKubernetesCluster) {
+		this.isKubernetesCluster = isKubernetesCluster;
+	}
+
+	@Override
     public String toString() {
         return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId +
                 ", autoscalePolicyName=" + autoscalePolicyName + ", deploymentPolicyName=" +
                 deploymentPolicyName + ", hostNames=" + hostNames + ", tenantRange=" + tenantRange +
-                ", isLbCluster=" + isLbCluster + ", properties=" + properties + "]";
+                ", isLbCluster=" + isLbCluster + ", isKubernetesCluster=" + isKubernetesCluster + ", properties=" + properties + "]";
     }
 
     /**

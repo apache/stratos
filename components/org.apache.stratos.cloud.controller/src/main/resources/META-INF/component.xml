@@ -34,4 +34,26 @@
             <class>org.apache.stratos.cloud.controller.deployers.ServiceDeployer</class>
         </deployer-->
     </deployers>
+    <ManagementPermissions>
+        <ManagementPermission>
+            <DisplayName>Cartridge Definition</DisplayName>
+            <ResourceId>/permission/admin/manage/add/cartridgeDefinition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Service</DisplayName>
+            <ResourceId>/permission/admin/manage/add/service</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>View</DisplayName>
+            <ResourceId>/permission/admin/manage/view</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Service</DisplayName>
+            <ResourceId>/permission/admin/manage/view/service</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Cartridge</DisplayName>
+            <ResourceId>/permission/admin/manage/view/cartridge</ResourceId>
+        </ManagementPermission>
+    </ManagementPermissions>
 </component>

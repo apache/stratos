@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in current 
  * stub generation.
@@ -35,7 +37,7 @@ public class Properties implements Serializable{
     }
 
     public void setProperties(Property[] properties) {
-        this.properties = properties;
+        this.properties = ArrayUtils.clone(properties);
     }
 
     @Override

@@ -42,9 +42,10 @@ public abstract class Service extends CartridgeMgtBehaviour {
     private CartridgeInfo cartridgeInfo;
     private PayloadData payloadData;
     private Cluster cluster;
+    private boolean isPublic;
 
     public Service (String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo,
-    		String tenantRange) {
+    		String tenantRange, boolean isPublic) {
 
         this.type = type;
         this.autoscalingPolicyName = autoscalingPolicyName;
@@ -54,6 +55,7 @@ public abstract class Service extends CartridgeMgtBehaviour {
         this.tenantRange = tenantRange;
         this.subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
         this.setCluster(new Cluster());
+        this.isPublic = isPublic;
     }
 
     public void create () throws ADCException {
@@ -178,5 +180,13 @@ public abstract class Service extends CartridgeMgtBehaviour {
 
     public void setCluster(Cluster cluster) {
         this.cluster = cluster;
+    }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
     }
 }

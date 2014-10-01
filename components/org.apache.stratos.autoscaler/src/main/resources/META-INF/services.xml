@@ -27,5 +27,76 @@
 		<messageReceiver mep="http://www.w3.org/ns/wsdl/in-only" class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver"/>
 		<messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
 	</messageReceivers>
+        <operation name="addAutoScalingPolicy">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/autoscalingPolicy</parameter>
+        </operation>
+
+        <operation name="addDeploymentPolicy">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/deploymentPolicy</parameter>
+        </operation>
+
+        <operation name="addPartition">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/partition</parameter>
+        </operation>
+
+        <operation name="getAllAutoScalingPolicy">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/autoscalingPolicy</parameter>
+        </operation>
+
+        <operation name="getAllDeploymentPolicies">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/deploymentPolicy</parameter>
+        </operation>
+
+        <operation name="getAllAvailablePartitions">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/partition</parameter>
+        </operation>
+
+        <operation name="getAutoscalingPolicy">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/autoscalingPolicy</parameter>
+        </operation>
+
+        <operation name="getDeploymentPolicy">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/deploymentPolicy</parameter>
+        </operation>
+
+        <operation name="getAllAvailablePartitions">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/partition</parameter>
+        </operation>
+
+        <operation name="addKubernetesGroup">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="addKubernetesHost">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="updateKubernetesHost">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="updateKubernetesMaster">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="removeKubernetesGroup">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="removeKubernetesHost">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
+        </operation>
+
+        <operation name="getAllKubernetesGroups">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
+        </operation>
+
+        <operation name="getHostsForKubernetesGroup">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
+        </operation>
+
+        <operation name="getMasterForKubernetesGroup">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
+        </operation>
     </service>
 </serviceGroup> 

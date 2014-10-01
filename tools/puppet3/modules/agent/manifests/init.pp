@@ -40,6 +40,7 @@ class agent(
     'bin/stratos.sh',
     'conf/jndi.properties',
     'conf/log4j.properties',   
+    'conf/mqtttopic.properties',   
     'extensions/clean.sh',
     'extensions/instance-activated.sh',
     'extensions/instance-started.sh',

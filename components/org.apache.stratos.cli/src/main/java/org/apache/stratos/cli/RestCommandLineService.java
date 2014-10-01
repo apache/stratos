@@ -47,6 +47,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
+import org.apache.stratos.cli.beans.UserInfoBean;
 import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
 import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
@@ -80,6 +81,7 @@ public class RestCommandLineService {
     private final String listClusterRestEndpoint = "/stratos/admin/cluster/";
     private final String subscribCartridgeRestEndpoint = "/stratos/admin/cartridge/subscribe";
     private final String addTenantEndPoint = "/stratos/admin/tenant";
+    private final String addUserEndPoint = "/stratos/admin/user";
     private final String unsubscribeTenantEndPoint = "/stratos/admin/cartridge/unsubscribe";
     private final String cartridgeDeploymentEndPoint = "/stratos/admin/cartridge/definition";
     private final String syncEndPoint = "/stratos/admin/cartridge/sync";
@@ -94,6 +96,7 @@ public class RestCommandLineService {
     private final String deactivateTenantRestEndPoint = "/stratos/admin/tenant/deactivate";
     private final String activateTenantRestEndPoint = "/stratos/admin/tenant/activate";
     private final String listAllTenantRestEndPoint = "/stratos/admin/tenant/list";
+    private final String listAllUserRestEndPoint = "/stratos/admin/user/list";
     private final String getListAvailableCartridgeInfoRestEndPoint = "/stratos/admin/cartridge/available/info";
 
 
@@ -214,7 +217,7 @@ public class RestCommandLineService {
 
     public Cartridge listCartridge(String cartridgeType) throws CommandException{
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpResponse response = null;
+        HttpResponse response;
 
         try {
             String endpoint = restClient.getBaseURL() + getListAvailableCartridgeInfoRestEndPoint + "/" + cartridgeType;
@@ -346,12 +349,13 @@ public class RestCommandLineService {
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = new String[5];
+                    String[] data = new String[6];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
                     data[2] = cartridge.getDescription();
                     data[3] = cartridge.getVersion();
                     data[4] = String.valueOf(cartridge.isMultiTenant());
+                    data[5] = cartridge.getIsPublic() ? "Public" : "Private";;
 
                     return data;
                 }
@@ -387,7 +391,7 @@ public class RestCommandLineService {
                 cartridges1 = singleTeneCartridgetList.getCartridge().toArray(cartridges1   );
 
                 System.out.println("Available Single-Tenant Cartridges:");
-                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Description", "Version", "Multitenanted");
+                CommandLineUtils.printTable(cartridges1, cartridgeMapper, "Type", "Name", "Description", "Version", "Multitenanted", "Accessibility");
                 System.out.println();
             }
         } catch (Exception e) {
@@ -488,18 +492,19 @@ public class RestCommandLineService {
             RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
 
                 public String[] getData(Cartridge cartridge) {
-                    String[] data = full ? new String[10] : new String[8];
+                    String[] data = full ? new String[11] : new String[9];
                     data[0] = cartridge.getCartridgeType();
                     data[1] = cartridge.getDisplayName();
-                    data[2] = cartridge.getVersion();
-                    data[3] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
-                    data[4] = cartridge.getCartridgeAlias();
-                    data[5] = cartridge.getStatus();
-                    data[6] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    data[7] = cartridge.getHostName();
+                    data[2] = cartridge.getIsPublic() ? "Public" : "Private";;
+                    data[3] = cartridge.getVersion();
+                    data[4] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+                    data[5] = cartridge.getCartridgeAlias();
+                    data[6] = cartridge.getStatus();
+                    data[7] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+                    data[8] = cartridge.getHostName();
                     if (full) {
-                        data[8] = getAccessURLs(cartridge);
-                        data[9] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+                        data[9] = getAccessURLs(cartridge);
+                        data[10] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
                     }
                     return data;
                 	
@@ -509,6 +514,7 @@ public class RestCommandLineService {
             List<String> headers = new ArrayList<String>();
             headers.add("Type");
             headers.add("Name");
+            headers.add("Accessibility");
             headers.add("Version");
             headers.add("Tenancy Model");
             headers.add("Alias");
@@ -571,6 +577,7 @@ public class RestCommandLineService {
             System.out.println("\tType : " + cartridge.getCartridgeType());
             System.out.println("\tName : "	+ cartridge.getDisplayName());
             System.out.println("\tVersion : "	+ cartridge.getVersion());
+            System.out.println("\tPublic : "	+ cartridge.getIsPublic());
             String tenancy  = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
             System.out.println("\tTenancy Model	: "	+ tenancy);
             System.out.println("\tAlias : "	+ cartridge.getCartridgeAlias());
@@ -766,8 +773,7 @@ public class RestCommandLineService {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		Gson gson = gsonBuilder.create();
 
-		Cluster cluster = gson.fromJson(resultString, Cluster.class);
-		return cluster;
+        return gson.fromJson(resultString, Cluster.class);
 	}
 	
 	private ArrayList<Cluster> getClusterListObjectFromString(String resultString) {
@@ -954,7 +960,7 @@ public class RestCommandLineService {
 
             System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
 
-            String repoURL = null;
+            String repoURL;
             String hostnames = null;
             String hostnamesLabel = null;
             if (subcriptionInfo != null) {
@@ -1010,11 +1016,50 @@ public class RestCommandLineService {
             	String resultString = getHttpResponseString(response);
             	ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
             	System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
             handleException("Exception in creating tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to create the new user
+    public void addUser(String userName, String credential, String role, String firstName, String lastName, String email, String profileName)
+            throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            UserInfoBean userInfoBean = new UserInfoBean();
+            userInfoBean.setUserName(userName);
+            userInfoBean.setCredential(credential);
+            userInfoBean.setRole(role);
+            userInfoBean.setFirstName(firstName);
+            userInfoBean.setLastName(lastName);
+            userInfoBean.setEmail(email);
+            userInfoBean.setProfileName(profileName);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(userInfoBean, UserInfoBean.class);
+
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+                                                                  + addUserEndPoint, jsonString);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            if (responseCode.equals(CliConstants.RESPONSE_CREATED)){
+                System.out.println("User added successfully");
+                return;
+            } else {
+                String resultString = getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in creating User", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -1039,11 +1084,38 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
             handleException("Exception in deleting " + tenantDomain + " tenant", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    // This method helps to delete the created user
+    public void deleteUser(String userName) throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
+                                                                    + addUserEndPoint + "/" + userName);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
+                System.out.println("You have succesfully deleted " + userName + " user");
+                return;
+            } else {
+                String resultString = getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+            }
+
+        } catch (Exception e) {
+            handleException("Exception in deleting " + userName + " user", e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -1068,7 +1140,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1097,7 +1168,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1175,6 +1245,71 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to list all users
+    public void listAllUsers() throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
+                                                                 + listAllUserRestEndPoint);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+            if (resultString == null) {
+                System.out.println("Response content is empty");
+                return;
+            }
+
+            UserInfoList userInfoList = gson.fromJson(resultString, UserInfoList.class);
+
+            if (userInfoList == null) {
+                System.out.println("User information list is empty");
+                return;
+            }
+
+            RowMapper<UserInfoBean> userInfoMapper = new RowMapper<UserInfoBean>() {
+
+                public String[] getData(UserInfoBean userInfo) {
+                    String[] data = new String[2];
+                    data[0] = userInfo.getUserName();
+                    data[1] = userInfo.getRole();
+                    return data;
+                }
+            };
+
+            UserInfoBean[] users = new UserInfoBean[userInfoList.getUserInfoBean().size()];
+            users = userInfoList.getUserInfoBean().toArray(users);
+
+            if (users.length == 0) {
+                String message = "Cannot find any User. "
+                                 + "Please create a new user using [" + CliConstants.ADD_USER + "] command.";
+                if (logger.isDebugEnabled()) {
+                    logger.debug(message);
+                }
+                System.out.println(message);
+                return;
+            }
+
+            System.out.println("Available Tenants:" );
+            CommandLineUtils.printTable(users, userInfoMapper, "Username", "Role");
+            System.out.println();
+
+        } catch (Exception e) {
+            handleException("Exception in listing partitions", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
     // This method helps to unsubscribe cartridges
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -1193,7 +1328,6 @@ public class RestCommandLineService {
                  String resultString = getHttpResponseString(response);
                  ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                  System.out.println(exception);
-                 return;
             }
 
         } catch ( Exception e) {
@@ -1222,7 +1356,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1251,7 +1384,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1309,7 +1441,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1338,7 +1469,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1367,7 +1497,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1411,12 +1540,13 @@ public class RestCommandLineService {
             RowMapper<ServiceDefinitionBean> deployServiceMapper = new RowMapper<ServiceDefinitionBean>() {
 
                 public String[] getData(ServiceDefinitionBean definition) {
-                    String[] data = new String[5];
+                    String[] data = new String[6];
                     data[0] = definition.getCartridgeType();
                     data[1] = definition.getDeploymentPolicyName();
                     data[2] = definition.getAutoscalingPolicyName();
                     data[3] = definition.getClusterDomain();
                     data[4] = definition.getTenantRange();
+                    data[5] = definition.getIsPublic() ? "Public" : "Private";;
                     return data;
                 }
             };
@@ -1434,7 +1564,7 @@ public class RestCommandLineService {
 
             System.out.println("Available Deploy Services :");
             CommandLineUtils.printTable(definitionArry, deployServiceMapper, "Cartridge Type", "Deployment Policy Name",
-                    "Autoscaling Policy Name", "Cluster Domain", "Tenant Range");
+                    "Autoscaling Policy Name", "Cluster Domain", "Tenant Range", "Accessibility");
             System.out.println();
 
         } catch (Exception e) {
@@ -1463,7 +1593,6 @@ public class RestCommandLineService {
                 String resultString = getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                 System.out.println(exception);
-                return;
             }
 
         } catch (Exception e) {
@@ -1507,9 +1636,10 @@ public class RestCommandLineService {
             RowMapper<Partition> partitionMapper = new RowMapper<Partition>() {
 
                 public String[] getData(Partition partition) {
-                    String[] data = new String[2];
+                    String[] data = new String[3];
                     data[0] = partition.getId();
                     data[1] = partition.getProvider();
+                    data[2] = partition.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
             };
@@ -1528,7 +1658,7 @@ public class RestCommandLineService {
             }
 
             System.out.println("Available Partitions:" );
-            CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider");
+            CommandLineUtils.printTable(partitions, partitionMapper, "ID", "Provider", "Accessibilty");
             System.out.println();
 
         } catch (Exception e) {
@@ -1574,8 +1704,9 @@ public class RestCommandLineService {
             RowMapper<AutoscalePolicy> partitionMapper = new RowMapper<AutoscalePolicy>() {
 
                 public String[] getData(AutoscalePolicy policy) {
-                    String[] data = new String[1];
+                    String[] data = new String[2];
                     data[0] = policy.getId();
+                    data[1] = policy.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
             };
@@ -1594,7 +1725,7 @@ public class RestCommandLineService {
             }
 
             System.out.println("Available Auto-scaling Policies:");
-            CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID", "Accessibility");
 
         } catch (Exception e) {
             handleException("Exception in listing autoscale policies", e);
@@ -1638,8 +1769,9 @@ public class RestCommandLineService {
             RowMapper<DeploymentPolicy> partitionMapper = new RowMapper<DeploymentPolicy>() {
 
                 public String[] getData(DeploymentPolicy policy) {
-                    String[] data = new String[1];
+                    String[] data = new String[2];
                     data[0] = policy.getId();
+                    data[1] = policy.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
             };
@@ -1658,7 +1790,7 @@ public class RestCommandLineService {
             }
 
             System.out.println("Available Deployment Policies:");
-            CommandLineUtils.printTable(policyArry, partitionMapper, "ID");
+            CommandLineUtils.printTable(policyArry, partitionMapper, "ID", "Accessibility");
             System.out.println();
 
         } catch (Exception e) {
@@ -1823,7 +1955,6 @@ public class RestCommandLineService {
 				String resultString = getHttpResponseString(response);
 				ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
 				System.out.println(exception);
-				return;
 			}
 
 		} catch (Exception e) {
@@ -1918,6 +2049,22 @@ public class RestCommandLineService {
         }
     }
 
+    // This class convert JSON string to UserInfoBean object
+    private class UserInfoList {
+        private ArrayList<UserInfoBean> userInfoBean;
+
+        public ArrayList<UserInfoBean> getUserInfoBean() {
+            return userInfoBean;
+        }
+
+        public void setUserInfoBean(ArrayList<UserInfoBean> userInfoBean) {
+            this.userInfoBean = userInfoBean;
+        }
+
+        UserInfoList() {
+            userInfoBean = new ArrayList<UserInfoBean>();
+        }
+    }
     // This class is for convert JSON string to CartridgeList object
     private class CartridgeList  {
         private ArrayList<Cartridge> cartridge;
@@ -2104,11 +2251,7 @@ public class RestCommandLineService {
                 }
             }
 
-            if (multiTenetCartridge.size() > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return multiTenetCartridge.size() > 0;
 
         } catch (Exception e) {
             handleException("Exception in listing available cartridges", e);

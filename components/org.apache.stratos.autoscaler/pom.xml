@@ -40,7 +40,6 @@
 		    <version>${carbon.platform.version}</version>
 		    <scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-core</artifactId>
@@ -153,6 +152,12 @@
 			<scope>provided</scope>
 		</dependency>
         <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
             <version>4.2.0</version>
@@ -170,7 +175,6 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-
 	</dependencies>
 
 	<build>
@@ -201,6 +205,22 @@
 					</instructions>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+                <configuration>
+                    <className>org.apache.stratos.autoscaler.api.AutoScalerServiceImpl</className>
+                    <outputFileName>target/generated-resources/wsdl/AutoScalerService.wsdl</outputFileName>
+                    <serviceName>AutoScalerService</serviceName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java2wsdl</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
         <resources>
            <resource>

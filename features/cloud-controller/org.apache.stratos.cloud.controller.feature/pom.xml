@@ -200,6 +200,26 @@
             <artifactId>andes-client</artifactId>
             <version>0.13.wso2v8</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jsch-agentproxy-jsch</artifactId>
+            <version>0.0.7_1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch.agentproxy.usocket-nc</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jsch-agentproxy-sshj</artifactId>
+            <version>0.0.7_1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jzlib</artifactId>
+            <version>1.1.1_1</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -1,0 +1,3 @@
+[submodule "cartridge_agent"]
+	path = cartridge_agent
+	url = ./python-cartridge-agent/cartridge_agent

@@ -25,6 +25,15 @@
 # Die on any error:
 set -e
 
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform  
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+else
+    # Do something else under some other platform
+    SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
+fi
+
 source "./conf/setup.conf"
 SLEEP=40
 export LOG=$log_path/stratos-ec2-user-data.log
@@ -101,19 +110,19 @@ if  [ -z "$DOMAIN" ]; then
 fi
 
 echo "Updating conf/setup.conf with user data"
-sed -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
+${SED} -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
 
-sed -i "s@export ec2_keypair_name=\"*.*\"@export ec2_keypair_name=\"$KEY_PAIR_NAME\"@g" conf/setup.conf
+${SED} -i "s@export ec2_keypair_name=\"*.*\"@export ec2_keypair_name=\"$KEY_PAIR_NAME\"@g" conf/setup.conf
 
-sed -i "s@export ec2_identity=\"*.*\"@export ec2_identity=\"$ACCESS_KEY\"@g" conf/setup.conf
+${SED} -i "s@export ec2_identity=\"*.*\"@export ec2_identity=\"$ACCESS_KEY\"@g" conf/setup.conf
 
-sed -i "s@export ec2_credential=\"*.*\"@export ec2_credential=\"$SECRET_KEY\"@g" conf/setup.conf
+${SED} -i "s@export ec2_credential=\"*.*\"@export ec2_credential=\"$SECRET_KEY\"@g" conf/setup.conf
 
-sed -i "s@export ec2_owner_id=\"*.*\"@export ec2_owner_id=\"$OWNER_ID\"@g" conf/setup.conf
+${SED} -i "s@export ec2_owner_id=\"*.*\"@export ec2_owner_id=\"$OWNER_ID\"@g" conf/setup.conf
 
-sed -i "s@export ec2_availability_zone=\"*.*\"@export ec2_availability_zone=\"$AVAILABILITY_ZONE\"@g" conf/setup.conf
+${SED} -i "s@export ec2_availability_zone=\"*.*\"@export ec2_availability_zone=\"$AVAILABILITY_ZONE\"@g" conf/setup.conf
 
-sed -i "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" conf/setup.conf
+${SED} -i "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECURITY_GROUP\"@g" conf/setup.conf
 
 
 # Updating conf/setup.conf with relevent data
@@ -122,17 +131,17 @@ sed -i "s@export ec2_security_groups=\"*.*\"@export ec2_security_groups=\"$SECUR
 ip=`facter ipaddress`
 echo "Setting private ip addresses $ip" >> $LOG
 
-sed -i "s@export host_ip=\"*.*\"@export host_ip=\"$ip\"@g" conf/setup.conf
+${SED} -i "s@export host_ip=\"*.*\"@export host_ip=\"$ip\"@g" conf/setup.conf
 
-sed -i "s@export mb_ip=\"*.*\"@export mb_ip=\"$ip\"@g" conf/setup.conf
+${SED} -i "s@export mb_ip=\"*.*\"@export mb_ip=\"$ip\"@g" conf/setup.conf
 
-sed -i "s@export puppet_ip=\"*.*\"@export puppet_ip=\"$ip\"@g" conf/setup.conf
+${SED} -i "s@export puppet_ip=\"*.*\"@export puppet_ip=\"$ip\"@g" conf/setup.conf
 
-sed -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
+${SED} -i "s@export stratos_domain=\"*.*\"@export stratos_domain=\"$DOMAIN\"@g" conf/setup.conf
 
-sed -i "s@\s*\$mb_ip\s*=\s*'.*'\s*@  \$mb_ip                = '$ip'@g" /etc/puppet/manifests/nodes.pp
+${SED} -i "s@\s*\$mb_ip\s*=\s*'.*'\s*@  \$mb_ip                = '$ip'@g" /etc/puppet/manifests/nodes.pp
 
-sed -i "s@\s*\$cep_ip\s*=\s*'.*'\s*@  \$cep_ip               = '$ip'@g" /etc/puppet/manifests/nodes.pp
+${SED} -i "s@\s*\$cep_ip\s*=\s*'.*'\s*@  \$cep_ip               = '$ip'@g" /etc/puppet/manifests/nodes.pp
 
 hostname $puppet_hostname
 service puppetmaster restart

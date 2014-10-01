@@ -33,9 +33,9 @@ public class LBService extends Service {
     private String loadBalancedServiceType;
 
     public LBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
-                     CartridgeInfo cartridgeInfo, String tenantRange) {
+                     CartridgeInfo cartridgeInfo, String tenantRange, boolean isPublic) {
 
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
     }
 
     public void create () throws ADCException {

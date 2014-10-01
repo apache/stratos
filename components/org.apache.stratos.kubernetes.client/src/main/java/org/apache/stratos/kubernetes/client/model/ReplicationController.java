@@ -22,18 +22,16 @@ package org.apache.stratos.kubernetes.client.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 /**
  * @author nirmal
  *
  */
 @XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class ReplicationController {
 
 	private String kind;
 	private String id;
+	private int resourceVersion;
 	private String creationTimestamp;
 	private String selfLink;
 	private String apiVersion;
@@ -77,18 +75,25 @@ public class ReplicationController {
 		this.desiredState = desiredState;
 	}
 	
-	@Override
-	public String toString() {
-		return "ReplicationController [kind=" + kind + ", id=" + id
-				+ ", creationTimestamp=" + creationTimestamp + ", selfLink="
-				+ selfLink + ", labels=" + labels + ", desiredState="
-				+ desiredState + "]";
-	}
 	public String getApiVersion() {
 		return apiVersion;
 	}
 	public void setApiVersion(String apiVersion) {
 		this.apiVersion = apiVersion;
+	}
+	public int getResourceVersion() {
+		return resourceVersion;
+	}
+	public void setResourceVersion(int resourceVersion) {
+		this.resourceVersion = resourceVersion;
+	}
+	@Override
+	public String toString() {
+		return "ReplicationController [kind=" + kind + ", id=" + id
+				+ ", resourceVersion=" + resourceVersion
+				+ ", creationTimestamp=" + creationTimestamp + ", selfLink="
+				+ selfLink + ", apiVersion=" + apiVersion + ", labels="
+				+ labels + ", desiredState=" + desiredState + "]";
 	}
 	
 }

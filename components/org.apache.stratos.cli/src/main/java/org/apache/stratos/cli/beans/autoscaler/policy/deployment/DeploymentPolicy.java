@@ -25,12 +25,16 @@ import java.util.List;
 
 public class DeploymentPolicy {
     private String id;
+    
+    private String description;
+    
+    private boolean isPublic;
 
      //partition groups
      private List<PartitionGroup> partitionGroup;
 
     //partitions
-    private List<Partition> partition;
+    private List<Partition> partition;  
 
     public String getId() {
         return id;
@@ -54,5 +58,21 @@ public class DeploymentPolicy {
 
     public void setPartition(List<Partition> partition) {
         this.partition = partition;
+    }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

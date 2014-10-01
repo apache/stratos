@@ -26,6 +26,15 @@
 # Die on any error:
 set -e
 
+# General commands
+if [ "$(uname)" == "Darwin" ]; then
+    # Do something under Mac OS X platform  
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+else
+    # Do something else under some other platform
+    SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
+fi
+
 SLEEP=60
 export LOG=$log_path/stratos-openstack.log
 
@@ -41,16 +50,16 @@ pushd $stratos_extract_path
 
 echo "Set OpenStack provider specific info in repository/conf/cloud-controller.xml" >> $LOG
 
-sed -i "s@OPENSTACK_PROVIDER_START@@g" repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_IDENTITY@$openstack_identity@g"  repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_CREDENTIAL@$openstack_credential@g"  repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g"  repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_PROVIDER_END@@g"  repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_SECURITY_GROUPS@$openstack_security_groups@g" repository/conf/cloud-controller.xml
-sed -i "s@OPENSTACK_KEYPAIR@$openstack_keypair_name@g" repository/conf/cloud-controller.xml
-sed -i "s@EC2_PROVIDER_START@!--@g"  repository/conf/cloud-controller.xml
-sed -i "s@EC2_PROVIDER_END@--@g"  repository/conf/cloud-controller.xml
-sed -i "s@VCLOUD_PROVIDER_START@!--@g"  repository/conf/cloud-controller.xml
-sed -i "s@VCLOUD_PROVIDER_END@--@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_PROVIDER_START@@g" repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_IDENTITY@$openstack_identity@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_CREDENTIAL@$openstack_credential@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_PROVIDER_END@@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_SECURITY_GROUPS@$openstack_security_groups@g" repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_KEYPAIR@$openstack_keypair_name@g" repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_START@!--@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_END@--@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_START@!--@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_END@--@g"  repository/conf/cloud-controller.xml
 
 popd

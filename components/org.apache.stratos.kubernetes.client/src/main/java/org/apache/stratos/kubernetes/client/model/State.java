@@ -19,10 +19,7 @@
  *
  */
 package org.apache.stratos.kubernetes.client.model;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class State {
 
 	private Manifest manifest;
@@ -34,7 +31,6 @@ public class State {
 	private Selector replicaSelector;
 	private Pod podTemplate;
 	private Policy restartpolicy;
-	@JsonIgnore
 	private Object info;
 	
 	public Manifest getManifest() {

@@ -35,8 +35,8 @@ public class ExistingLBService extends LBService {
 
 	private static final long serialVersionUID = -421015139303889832L;
 
-	public ExistingLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo, String tenantRange) {
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+	public ExistingLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId, CartridgeInfo cartridgeInfo, String tenantRange, boolean isPublic) {
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
     }
 
     public PayloadData create(String alias, Cluster cluster, Subscriber subscriber, Repository repository, CartridgeInfo cartridgeInfo,

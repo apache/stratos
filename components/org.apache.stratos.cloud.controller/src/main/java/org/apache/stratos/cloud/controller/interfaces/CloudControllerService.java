@@ -92,18 +92,20 @@ public interface CloudControllerService {
      * to the provided Cluster ID. Also note that the instance that is starting up
      * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
      * by a hyphen (<i>-</i>).
-     * 
-     * @param clusterId
-     *            cluster ID of the instance to be started up.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be started.
-     * @return public IP which is associated with the newly started instance.
-     * @throws IllegalArgumentException if the provided member is not valid.
+     * @param Member Context with cluster id, partition etc.
+     * @return updated {@link MemberContext}
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
      */
     public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
+    
+    /**
+     * Create containers.
+     * @param Member Context with cluster id, and host cluster details. 
+     * @return updated {@link MemberContext}
+     * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
+     */
+    public MemberContext startContainers(MemberContext member) throws UnregisteredCartridgeException;
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.
@@ -126,12 +128,33 @@ public interface CloudControllerService {
      * @return whether an instance terminated successfully or not.
      */
     public void terminateAllInstances(String clusterId) throws InvalidClusterException;
+    
+    /**
+     * Terminate all containers of the given cluster.
+     * @param clusterId id of the subjected cluster.
+     * @throws InvalidClusterException
+     */
+    public void terminateAllContainers(String clusterId) throws InvalidClusterException;
+    
+    /**
+     * Update the Kubernetes controller created for the given cluster with the specified number of replicas.
+     * @param clusterId id of the subjected cluster.
+     * @param replicas total number of replicas to be set to the controller.
+     * @throws InvalidClusterException
+     */
+    public void updateKubernetesController(String clusterId, int replicas) throws InvalidClusterException;
+    
+    /**
+     * Unregister a docker service identified by the given cluster id.
+     * @param clusterId service cluster id.
+     * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
+     */
+    public void unregisterDockerService(String clusterId) throws UnregisteredClusterException;
 
     /**
-     * Unregister the service cluster which represents by this domain and sub domain.
-     * @param clusterId service cluster domain
-     * @return whether the unregistration was successful or not.
-     * @throws org.apache.stratos.cloud.controller.exception.UnregisteredClusterException if the service cluster requested is not a registered one.
+     * Unregister the service cluster identified by the given cluster id.
+     * @param clusterId service cluster id.
+     * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
      */
     public void unregisterService(String clusterId) throws UnregisteredClusterException;
     

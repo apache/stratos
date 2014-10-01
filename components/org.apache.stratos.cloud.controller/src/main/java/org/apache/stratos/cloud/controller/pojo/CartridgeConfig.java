@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * This class is used as the pojo for supporting the service at CC,
  * which is called by the Rest API in SM to deploy a cartridge definition
@@ -42,6 +44,8 @@ public class CartridgeConfig implements Serializable {
     private String version;
 
     private boolean multiTenant;
+    
+    private boolean isPublic;
 
     private String baseDir;
 
@@ -62,7 +66,10 @@ public class CartridgeConfig implements Serializable {
     private LoadbalancerConfig lbConfig;
     
     private String serviceGroup;
+    
+    private Container container;
 
+    private String deployerType;
 
     public String getType() {
         return type;
@@ -119,6 +126,14 @@ public class CartridgeConfig implements Serializable {
     public void setMultiTenant(boolean multiTenant) {
         this.multiTenant = multiTenant;
     }
+    
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setisPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
     public String getBaseDir() {
         return baseDir;
@@ -133,7 +148,7 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setDeploymentDirs(String[] deploymentDirs) {
-        this.deploymentDirs = deploymentDirs;
+        this.deploymentDirs = ArrayUtils.clone(deploymentDirs);
     }
 
     public PortMapping[] getPortMappings() {
@@ -141,7 +156,7 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setPortMappings(PortMapping[] portMappings) {
-        this.portMappings = portMappings;
+        this.portMappings = ArrayUtils.clone(portMappings);
     }
 
     public Properties getProperties() {
@@ -157,13 +172,13 @@ public class CartridgeConfig implements Serializable {
     }
 
     public void setIaasConfigs(IaasConfig[] iaasConfigs) {
-        this.iaasConfigs = iaasConfigs;
+        this.iaasConfigs = ArrayUtils.clone(iaasConfigs);
     }
 
     public String toString () {
 
         return "Type: " + type + ", Provider: " + provider + ", Host: " + hostName + ", Display Name: " + displayName +
-                ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant +
+                ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant + ", IsPublic " + isPublic +
                 "\n Deployment: " + getDeploymentDetails() + "\n PortMapping: " + getPortMappingDetails() +
                 "\n IaaS: " +  getIaasConfigDetails() + "\n Properties: " + getPropertyDetails();
     }
@@ -269,6 +284,22 @@ public class CartridgeConfig implements Serializable {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-    
+
+	public Container getContainer() {
+		return container;
+	}
+
+	public void setContainer(Container container) {
+		this.container = container;
+	}
+
+	public String getDeployerType() {
+		return deployerType;
+	}
+
+	public void setDeployerType(String deployerType) {
+		this.deployerType = deployerType;
+	}	
+	
     
 }

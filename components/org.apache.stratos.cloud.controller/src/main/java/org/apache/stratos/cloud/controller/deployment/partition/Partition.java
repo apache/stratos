@@ -38,6 +38,7 @@ public class Partition implements Serializable{
     private Properties properties = new Properties();
     private String id;
     private String description;
+    private boolean isPublic;
 
 
     /**
@@ -120,6 +121,25 @@ public class Partition implements Serializable{
 		this.description = description;
 	}
 	
+	/**
+     * Sets the value of the isPublic property.
+     * 
+     * @param value
+     *     allowed object is boolean
+     *     
+     */
+	public void setIsPublic(boolean isPublic) {
+		this.isPublic = isPublic;
+	}
+	
+	/**
+     * Gets the value of the isPublic property.
+     *          
+     */
+	public boolean getIsPublic() {
+		return isPublic;
+	}
+		
 	public Properties getProperties() {
         return properties;
     }
@@ -138,8 +158,8 @@ public class Partition implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "Partition [id=" + id + ", description=" + description + ", provider=" + provider
-				+ ", partitionMin=" + partitionMin + ", partitionMax="
+		return "Partition [id=" + id + ", description=" + description + ", isPublic=" + isPublic 
+				+ ", provider=" + provider + ", partitionMin=" + partitionMin + ", partitionMax="
 				+ partitionMax + ", properties=" + properties + "]";
 	}
     

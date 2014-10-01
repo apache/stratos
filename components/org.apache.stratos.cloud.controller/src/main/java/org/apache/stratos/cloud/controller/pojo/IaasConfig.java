@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * This class is used to support <link>CartridgeConfig</link>
  * class for the Rest API
@@ -93,7 +95,7 @@ public class IaasConfig implements Serializable {
     }
     
     public void setPayload(byte[] payload) {
-        this.payload = payload;
+        this.payload = ArrayUtils.clone(payload);
     }
     
     public static long getSerialversionuid() {

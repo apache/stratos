@@ -22,6 +22,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
@@ -50,6 +51,7 @@ public class MockContext {
     private Map<Integer, Map<String,Cartridge>> availableMultiTenantCartridges = new HashMap<Integer, Map<String,Cartridge>>();
     private Map<Integer, Map<String,Cartridge>> subscribedCartridges = new HashMap<Integer, Map<String,Cartridge>>();
     private Map<String,TenantInfoBean> tenantMap = new HashMap<String, TenantInfoBean>();
+    private Map<Integer, Map<String, UserInfoBean>> tenantUserMap= new HashMap<Integer, Map<String, UserInfoBean>>();
     private Map<String, Integer> tenantIdMap = new HashMap<String, Integer>();
     private Map<Integer, Map<String,Partition>> partitionMap = new HashMap<Integer, Map<String, Partition>>();
     private Map<Integer, Map<String,AutoscalePolicy>> autoscalePolicyMap = new HashMap<Integer, Map<String, AutoscalePolicy>>();
@@ -420,7 +422,7 @@ public class MockContext {
     }
 
     public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException{
-        try{
+    	try{
             tenantMap.put(tenantInfoBean.getTenantDomain(),tenantInfoBean);
             tenantInfoBean.setTenantId(tenantIdCount);
             tenantIdMap.put(tenantInfoBean.getAdmin(), tenantIdCount++);
@@ -917,6 +919,57 @@ public class MockContext {
 		
         return stratosAdminResponse;
 	}
+	
+	public void addUser(UserInfoBean user) {
+		int tenantId = getTenantId();
+		Map<String, UserInfoBean> users;
+		
+		if(tenantUserMap.containsKey(tenantId)) {
+			users = tenantUserMap.get(tenantId);
+		}
+		else {
+			users = new HashMap<String, UserInfoBean>();
+			tenantUserMap.put(tenantId, users);
+		}
+		
+		users.put(user.getUserName(), user);
+	}
+	
+	public void deleteUser(String userName) {
+		int tenantId = getTenantId();
+		Map<String, UserInfoBean> users;
+		
+		if(!tenantUserMap.containsKey(tenantId)) {
+			return;
+		}
+		
+		users = tenantUserMap.get(tenantId);
+		users.remove(userName);
+	}
+	
+	public void updateUser(UserInfoBean user) {
+		int tenantId = getTenantId();
+		Map<String, UserInfoBean> users;
+		
+		if(!tenantUserMap.containsKey(tenantId)) {
+			return;
+		}
+		
+		users = tenantUserMap.get(tenantId);
+		if(users.containsKey(user.getUserName())) {
+			users.put(user.getUserName(), user);
+		}
+	}
+	
+	public List<UserInfoBean> getAllUsers() {
+		int tenantId = getTenantId();
+        List<UserInfoBean> userList = new ArrayList<UserInfoBean>();
+        
+        if(tenantUserMap.containsKey(tenantId)) {
+        	userList.addAll(tenantUserMap.get(tenantId).values());
+		}
+        return userList;
+    }
 	
     private int getTenantId() {
     	String userName = CarbonContext.getThreadLocalCarbonContext().getUsername();

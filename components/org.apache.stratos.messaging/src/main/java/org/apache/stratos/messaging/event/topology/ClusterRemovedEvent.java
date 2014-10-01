@@ -54,4 +54,5 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
 	public String getDeploymentPolicy() {
 		return deploymentPolicy;
 	}
+	
 }

@@ -35,4 +35,42 @@
             <class>org.apache.stratos.autoscaler.partition.deployers.PartitionDeployer</class>
         </deployer>-->
     </deployers>
+    <ManagementPermissions>
+        <ManagementPermission>
+            <DisplayName>Autoscaling Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/add/autoscalingPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/add/deploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Partition</DisplayName>
+            <ResourceId>/permission/admin/manage/add/partition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>View</DisplayName>
+            <ResourceId>/permission/admin/manage/view/</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Autoscaling Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/view/autoscalingPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/view/deploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Partition</DisplayName>
+            <ResourceId>/permission/admin/manage/view/partition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Kubernetes</DisplayName>
+            <ResourceId>/permission/admin/manage/add/kubernetes</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Kubernetes</DisplayName>
+            <ResourceId>/permission/admin/manage/view/kubernetes</ResourceId>
+        </ManagementPermission>
+    </ManagementPermissions>
 </component>

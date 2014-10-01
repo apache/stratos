@@ -19,8 +19,10 @@
 
 package org.apache.stratos.autoscaler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 /**
  * Helper class to keep the state of the consequence of a rule.
@@ -29,7 +31,7 @@ import java.util.List;
  */
 public class TestDelegator {
     private static boolean isMinRuleFired;
-    private static List<String> obsoletedMembers = new ArrayList<String>();
+    private static Map<String, MemberContext> obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
 
     public static boolean isMinRuleFired() {
         return isMinRuleFired;
@@ -39,16 +41,16 @@ public class TestDelegator {
         TestDelegator.isMinRuleFired = isMinRuleFired;
     }
 
-    public static List<String> getObsoletedMembers() {
+    public static Map<String, MemberContext> getObsoletedMembers() {
         return obsoletedMembers;
     }
 
-    public static void setObsoletedMembers(List<String> obsoletedMembers) {
+    public static void setObsoletedMembers(Map<String, MemberContext> obsoletedMembers) {
         TestDelegator.obsoletedMembers = obsoletedMembers;
     }
     
-    public static void addObsoleteMember(String memberId) {
-        TestDelegator.obsoletedMembers.add(memberId);
+    public static void addObsoleteMember(MemberContext ctxt) {
+    	TestDelegator.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
     }
 
     

@@ -32,7 +32,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import java.lang.Throwable;
 
 /**
- * @scr.component name="org.wso2.stratos.tenant.activity" immediate="true"
+ * @scr.component name="org.apache.stratos.tenant.activity" immediate="true"
  * @scr.reference name="registry.service"
  * interface="org.wso2.carbon.registry.core.service.RegistryService" cardinality="1..1"
  * policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"

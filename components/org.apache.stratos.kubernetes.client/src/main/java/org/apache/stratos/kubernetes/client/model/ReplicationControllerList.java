@@ -24,10 +24,9 @@ import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.apache.commons.lang3.ArrayUtils;
 
 @XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class ReplicationControllerList {
 
 	private String kind;
@@ -50,7 +49,7 @@ public class ReplicationControllerList {
 		return items;
 	}
 	public void setItems(ReplicationController[] items) {
-		this.items = items;
+		this.items = ArrayUtils.clone(items);
 	}
 	@Override
 	public String toString() {

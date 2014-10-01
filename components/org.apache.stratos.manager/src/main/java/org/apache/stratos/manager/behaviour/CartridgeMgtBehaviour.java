@@ -147,33 +147,6 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
 
     public void remove(String clusterId, String alias) throws ADCException, NotSubscribedException {
 
-        /*try {
-            CloudControllerServiceClient.getServiceClient().terminateAllInstances(clusterId);
-
-        } catch (AxisFault e) {
-            String errorMsg = "Error in terminating members of cluster " + clusterId;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in terminating members of cluster " + clusterId;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Terminated all instances of " + clusterId);
-
-        try {
-            CloudControllerServiceClient.getServiceClient().unregisterService(clusterId);
-
-        } catch (Exception e) {
-            String errorMsg = "Error in unregistering service cluster with domain " + clusterId;
-            log.error(errorMsg);
-            throw new ADCException(errorMsg, e);
-        }
-
-        log.info("Unregistered service cluster, domain " + clusterId);*/
-
         //sending instance cleanup notification for the cluster, so that members in the cluster would aware of the termination
         // and perform the house keeping task.
 

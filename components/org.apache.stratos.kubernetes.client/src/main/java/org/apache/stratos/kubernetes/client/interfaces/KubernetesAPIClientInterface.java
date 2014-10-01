@@ -82,6 +82,14 @@ public interface KubernetesAPIClientInterface {
 	public void createReplicationController(ReplicationController controller) throws KubernetesClientException;
 	
 	/**
+	 * Update a Replication Controller (update the number of replicas).
+	 * @param controllerId id of the controller to be updated
+	 * @param replicas update the replicas count of the current controller.
+	 * @throws KubernetesClientException
+	 */
+	public void updateReplicationController(String controllerId, int replicas) throws KubernetesClientException;
+	
+	/**
 	 * Delete a Replication Controller.
 	 * @param replication controller id controller id to be deleted.
 	 * @throws KubernetesClientException

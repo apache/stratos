@@ -417,6 +417,37 @@
                 <include>**/patch0004/*.*</include>
             </includes>
         </fileSet>
+	<fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0005</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0005/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0006</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0006/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0007</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+	    <excludes>
+                <exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+            </excludes>
+            <includes>
+                <include>**/patch0007/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile-gen/target/WSO2-CARBON-PATCH-4.2.0-0008</directory>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0008/*.*</include>
+            </includes>
+        </fileSet>
 		<fileSet>
                    <directory>../../dbscripts/</directory>
                    <outputDirectory>${pom.artifactId}-${pom.version}/dbscripts</outputDirectory>
@@ -450,9 +481,6 @@
 	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
-            <includes>
-                <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
-            </includes>
         </fileSet>
 
     <!-- autoscaler -->
@@ -576,6 +604,11 @@
                 <include>org.apache.activemq:activemq-client:jar</include>
                 <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
                 <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
+                <include>org.eclipse.paho:mqtt-client:jar</include>
+  		<include>org.apache.stratos:org.apache.stratos.kubernetes.client:jar</include>
+		<include>org.jboss.resteasy:resteasy-jaxrs:jar</include>
+		<include>org.jboss.resteasy:resteasy-jaxb-provider:jar</include>
+		<include>org.jboss.resteasy:resteasy-jackson-provider:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>

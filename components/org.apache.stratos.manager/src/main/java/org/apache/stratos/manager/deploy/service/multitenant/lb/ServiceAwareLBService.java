@@ -44,9 +44,9 @@ public class ServiceAwareLBService extends LBService {
 	private static final long serialVersionUID = -4107281204555031986L;
 
 	public ServiceAwareLBService(String type, String autoscalingPolicyName, String deploymentPolicyName, int tenantId,
-                                 CartridgeInfo cartridgeInfo, String tenantRange) {
+                                 CartridgeInfo cartridgeInfo, String tenantRange, boolean isPublic) {
 
-        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange);
+        super(type, autoscalingPolicyName, deploymentPolicyName, tenantId, cartridgeInfo, tenantRange, isPublic);
     }
 
     private static Log log = LogFactory.getLog(ServiceAwareLBService.class);

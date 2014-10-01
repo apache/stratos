@@ -210,4 +210,5 @@ public class MemberContext implements Serializable{
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+    
 }

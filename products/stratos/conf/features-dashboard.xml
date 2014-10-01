@@ -62,32 +62,5 @@
 			</story-links>
 		</story>
 	</service>
-	<service name="Stratos Controller" link="" key="sc">
-		<story title="Multi-Tenant Cartridges">
-			<story-content>Stratos Cartridges, hosting WSO2 multi-tenant middleware 
-				services delivers multi-tenancy within each Cartridge instance 
-				where teams may define multiple tenants per Cartridge.
-			</story-content>
-			<story-links>
-				<link url="/carbon/cartridge-mgt/available_cartridges.jsp?item=available_multitenant_cartridges">Available Multi-Tenant Cartridges</link>
-			</story-links>
-		</story>
-		<story title="Single-Tenant Cartridges">
-			<story-content>Stratos Cartridges provide process-level isolation and 
-				instance-level dedicated tenancy with single-tenant containers and frameworks.
-			</story-content>
-			<story-links>
-				<link url="/carbon/cartridge-mgt/available_cartridges.jsp?item=available_singletenant_cartridges">Available Single-Tenant Cartridges</link>
-			</story-links>
-		</story>
-		<story title="Subscribed Cartridges">
-			<story-content>The tenant user can see all details of the Subscribed Cartridges such as
-				the status and the number of running instances at the moment.
-			</story-content>
-			<story-links>
-				<link url="/carbon/cartridge-mgt/subscribed_cartridges.jsp">Subscribed Cartridges</link>
-			</story-links>
-		</story>
-	</service>
 </data>
 

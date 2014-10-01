@@ -24,7 +24,7 @@ public class StratosConstants {
     public static final String CLOUD_SERVICE_IS_ACTIVE_PROP_KEY = "active";
 
     public static final String CLOUD_SERVICE_INFO_STORE_PATH =
-            "/repository/components/org.wso2.stratos/cloud-manager/cloud-services";
+            "/repository/components/org.apache.stratos/cloud-manager/cloud-services";
 
     public static final String TENANT_USER_VALIDATION_STORE_PATH =
             "/repository/components/org.wso2.carbon.validations";
@@ -139,5 +139,21 @@ public class StratosConstants {
     public static final String MULTITENANCY_LARGE_PLAN = "Enterprise";
     public static final String EMAIL_CONFIG= "email";
     public static final String MULTITENANCY_CONFIG_FOLDER = "multitenancy";
+    
+    // Cloud controller - payload
+    public static final String MEMBER_ID= "MEMBER_ID";
+    public static final String LB_CLUSTER_ID= "LB_CLUSTER_ID";
+    public static final String NETWORK_PARTITION_ID= "NETWORK_PARTITION_ID";
+
+    // Kubernetes related constants
+    public static final String KUBERNETES_CLUSTER_ID = "KUBERNETES_CLUSTER_ID";
+    public static final String KUBERNETES_DEPLOYER_TYPE = "kubernetes";
+    public static final String KUBERNETES_MASTER_IP = "KUBERNETES_MASTER_IP";
+    public static final String KUBERNETES_MIN_REPLICAS = "KUBERNETES_REPLICAS_MIN";
+    public static final String KUBERNETES_PORT_RANGE = "KUBERNETES_PORT_RANGE";
+    public static final String ALLOCATED_SERVICE_HOST_PORT = "ALLOCATED_SERVICE_HOST_PORT";
+
+    // Policy and definition related constants
+    public static final int PUBLIC_DEFINITION = 0;
 
 }

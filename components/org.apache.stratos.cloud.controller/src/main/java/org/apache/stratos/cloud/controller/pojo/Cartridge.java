@@ -64,6 +64,8 @@ public class Cartridge implements Serializable{
     
     private String serviceGroup;
     
+    private String deployerType;
+    
     /**
      * Property map of this Cartridge.
      */
@@ -83,6 +85,8 @@ public class Cartridge implements Serializable{
      * Value - Corresponding IaasProvider.
      */
     private Map<String, IaasProvider> partitionToIaasProvider;
+    
+    private Container container;
     
     public Cartridge(){
     	init();
@@ -368,6 +372,22 @@ public class Cartridge implements Serializable{
 
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
+	}
+
+	public Container getContainer() {
+		return container;
+	}
+
+	public void setContainer(Container container) {
+		this.container = container;
+	}
+
+	public String getDeployerType() {
+		return deployerType;
+	}
+
+	public void setDeployerType(String deployerType) {
+		this.deployerType = deployerType;
 	}
     
     

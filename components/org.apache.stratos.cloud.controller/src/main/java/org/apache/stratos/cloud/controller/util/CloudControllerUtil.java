@@ -75,6 +75,7 @@ public class CloudControllerUtil {
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
         cartridge.setServiceGroup(config.getServiceGroup());
+        cartridge.setDeployerType(config.getDeployerType());
         org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
@@ -158,6 +159,11 @@ public class CloudControllerUtil {
                     cartridge.addIaasProvider(iaasProvider);
                 }
             }
+        }
+        
+        // populate container
+        if(config.getContainer() != null) {
+        	cartridge.setContainer(config.getContainer());
         }
 
         return cartridge;
@@ -284,6 +290,25 @@ public class CloudControllerUtil {
     	
     }
 	
+	public static String getProperty(Properties properties, String key) {
+    	if (key != null && properties != null) {
+    		for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
+				String prop = (String) iterator.next();
+				if (key.equals(prop)) {
+					return properties.getProperty(prop);
+				}
+			}
+    	}
+    	
+    	return null;
+    }
+	
+	public static String getProperty(org.apache.stratos.cloud.controller.pojo.Properties properties, String key) {
+		Properties props = toJavaUtilProperties(properties);
+		
+		return getProperty(props, key);
+	}
+	
 	/**
 	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
 	 * @param properties org.apache.stratos.messaging.util.Properties
@@ -355,5 +380,12 @@ public class CloudControllerUtil {
 		
 		String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length()-2);
 		return "[" +partitionStr+ "]";
+	}
+	
+	public static String getCompatibleId(String clusterId) {
+		if (clusterId.indexOf('.') != -1) {
+			clusterId = clusterId.replace('.', '-');
+		}
+		return clusterId;
 	}
 }

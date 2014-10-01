@@ -19,6 +19,9 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
+import java.util.Properties;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Holds runtime data of a Cluster.
@@ -40,14 +43,16 @@ public class ClusterContext implements Serializable{
     private Volume[] volumes;
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
     private long timeoutInMillis;
+    private Properties properties;
 
     public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
-    		boolean isLbCluster) {
+    		boolean isLbCluster, Properties properties) {
         this.clusterId = clusterId;
         this.cartridgeType = cartridgeType;
         this.payload = payload;
         this.setHostName(hostName);
         this.isLbCluster = isLbCluster;
+        this.setProperties(properties);
     }
     
     public String getClusterId() {
@@ -84,7 +89,7 @@ public class ClusterContext implements Serializable{
 	public void setLbCluster(boolean isLbCluster) {
 		this.isLbCluster = isLbCluster;
 	}
-
+	
 	public boolean isVolumeRequired() {
 		return isVolumeRequired;
 	}
@@ -106,6 +111,22 @@ public class ClusterContext implements Serializable{
 	}
 
 	public void setVolumes(Volume[] volumes) {
-		this.volumes = volumes;
+		this.volumes = ArrayUtils.clone(volumes);
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+	
+	public void addProperty(String key, int value) {
+		this.properties.put(key, value);
+	}
+	
+	public void addProperty(String key, String value) {
+		this.properties.put(key, value);
 	}
 }

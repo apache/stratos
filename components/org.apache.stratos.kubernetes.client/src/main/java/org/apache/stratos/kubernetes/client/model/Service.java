@@ -22,15 +22,12 @@ package org.apache.stratos.kubernetes.client.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/service-schema.json
  * @author nirmal
  *
  */
 @XmlRootElement
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class Service {
 
 	private String kind;
