@@ -19,14 +19,14 @@
 
 package org.apache.stratos.metadataservice.util;
 
-import java.io.File;
-
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.Constants;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
 
 /**
  * This class contains utility methods for read metadata configuration file.
@@ -40,7 +40,8 @@ public class ConfUtil {
 	private static ConfUtil instance = null;
 
 	private ConfUtil(String configFilePath) {
-		log.info("Loading configuration.....");
+        log.debug("Loading configuration.....");
+
 		try {
 
 			File confFile;
