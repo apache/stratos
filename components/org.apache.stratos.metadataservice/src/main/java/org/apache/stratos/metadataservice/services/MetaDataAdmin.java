@@ -27,7 +27,7 @@ public class MetaDataAdmin {
 	@Context
 	HttpServletRequest httpServletRequest;
 
-	private final String defaultRegType = "GREG";
+	private final String defaultRegType = "carbon";
 
 	private XMLConfiguration conf;
 
