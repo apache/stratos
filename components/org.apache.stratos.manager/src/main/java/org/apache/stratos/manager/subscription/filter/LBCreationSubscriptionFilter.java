@@ -97,6 +97,11 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
                 if (lbDataCtxt.getLbProperperties() != null && !lbDataCtxt.getLbProperperties().isEmpty()) {
                     List<Property> lbProperperties = lbDataCtxt.getLbProperperties();
                     lbCartridgeSubscriptionProperties.setProperties(lbProperperties.toArray(new Property[lbProperperties.size()]));
+                    for (Property property : lbProperperties){
+                        if (org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF.equals(property.getName())) {
+                            filterProperties.addProperties(property);
+                        }
+                    }
                 }
 
 				if (lbCartridgeSubscription != null) {
