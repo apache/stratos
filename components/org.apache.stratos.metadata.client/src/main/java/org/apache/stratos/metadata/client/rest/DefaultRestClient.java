@@ -120,6 +120,8 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing GET statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
+        }finally {
+            get.releaseConnection();
         }
     }
 
@@ -134,6 +136,8 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing DELETE statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
+        }finally {
+            delete.releaseConnection();
         }
     }
 
