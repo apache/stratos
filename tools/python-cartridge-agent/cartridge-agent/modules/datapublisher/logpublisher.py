@@ -47,7 +47,7 @@ class LogPublisher(Thread):
                     read_file.seek(where)  # set seeker
                 else:
                     # new line detected, create event object
-                    event = LogEvent()
+                    event = ThriftEvent()
                     event.metaData.append(self.member_id)
                     event.payloadData.append(self.tenant_id)
                     event.payloadData.append(self.alias)
@@ -80,6 +80,37 @@ class LogPublisherManager(Thread):
     definition and the BAM/CEP server information for a single publishing context.
     """
 
+    @staticmethod
+    def define_stream():
+        """
+        Creates a stream definition for Log Publishing
+        :return: A StreamDefinition object with the required attributes added
+        :rtype : StreamDefinition
+        """
+        # stream definition
+        stream_definition = StreamDefinition()
+        valid_tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration.tenant_id)
+        alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration.cluster_id)
+        stream_name = "logs." + valid_tenant_id + "." \
+                      + alias + "." + LogPublisherManager.get_current_date()
+        stream_version = "1.0.0"
+        stream_definition.name = stream_name
+        stream_definition.version = stream_version
+        stream_definition.description = "Apache Stratos Instance Log Publisher"
+        stream_definition.add_metadata_attribute("memberId", 'STRING')
+        stream_definition.add_payloaddata_attribute("tenantID", "STRING")
+        stream_definition.add_payloaddata_attribute("serverName", "STRING")
+        stream_definition.add_payloaddata_attribute("appName", "STRING")
+        stream_definition.add_payloaddata_attribute("logTime", "STRING")
+        stream_definition.add_payloaddata_attribute("priority", "STRING")
+        stream_definition.add_payloaddata_attribute("message", "STRING")
+        stream_definition.add_payloaddata_attribute("logger", "STRING")
+        stream_definition.add_payloaddata_attribute("ip", "STRING")
+        stream_definition.add_payloaddata_attribute("instance", "STRING")
+        stream_definition.add_payloaddata_attribute("stacktrace", "STRING")
+
+        return stream_definition
+
     def __init__(self, logfile_paths):
         Thread.__init__(self)
         self.logfile_paths = logfile_paths
@@ -93,29 +124,7 @@ class LogPublisherManager(Thread):
         if not ports_active:
             raise DataPublisherException("Monitoring server not active, data publishing is aborted")
 
-        #stream definition
-        self.stream_definition = StreamDefinition()
-        valid_tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration.tenant_id)
-        alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration.cluster_id)
-        stream_name = "logs." + valid_tenant_id + "." \
-                      + alias + "." + LogPublisherManager.get_current_date()
-
-        stream_version = "1.0.0"
-        self.stream_definition.name = stream_name
-        self.stream_definition.version = stream_version
-        self.stream_definition.description = "Apache Stratos Instance Log Publisher"
-        self.stream_definition.add_metadata_attribute("memberId", 'STRING')
-
-        self.stream_definition.add_payloaddata_attribute("tenantID", "STRING")
-        self.stream_definition.add_payloaddata_attribute("serverName", "STRING")
-        self.stream_definition.add_payloaddata_attribute("appName", "STRING")
-        self.stream_definition.add_payloaddata_attribute("logTime", "STRING")
-        self.stream_definition.add_payloaddata_attribute("priority", "STRING")
-        self.stream_definition.add_payloaddata_attribute("message", "STRING")
-        self.stream_definition.add_payloaddata_attribute("logger", "STRING")
-        self.stream_definition.add_payloaddata_attribute("ip", "STRING")
-        self.stream_definition.add_payloaddata_attribute("instance", "STRING")
-        self.stream_definition.add_payloaddata_attribute("stacktrace", "STRING")
+        self.stream_definition = self.define_stream()
 
     def run(self):
         if self.logfile_paths is not None and len(self.logfile_paths):
@@ -190,7 +199,7 @@ class DataPublisherConfiguration:
     def get_instance():
         """
         Singleton instance retriever
-        :return: Instnace
+        :return: Instance
         :rtype : DataPublisherConfiguration
         """
         if DataPublisherConfiguration.__instance is None:
