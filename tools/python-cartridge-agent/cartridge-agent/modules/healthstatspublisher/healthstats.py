@@ -1,6 +1,8 @@
 from threading import Thread
 import time
 import logging
+import psutil
+import os
 
 from abstracthealthstatisticspublisher import *
 from ..databridge.agent import *
@@ -138,11 +140,12 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
 
     @staticmethod
     def __read_mem_usage():
-        raise NotImplementedError
+        return psutil.virtual_memory().percent
 
     @staticmethod
     def __read_load_avg():
-        raise NotImplementedError
+        (one, five, fifteen) = os.getloadavg()
+        return one
 
 
 class CEPPublisherConfiguration:
