@@ -14,7 +14,7 @@ from abstractextensionhandler import AbstractExtensionHandler
 
 class DefaultExtensionHandler(AbstractExtensionHandler):
     """
-    TODO : Provide abstraction
+    Default implementation of the AbstractExtensionHandler
     """
     log = None
 

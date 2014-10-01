@@ -1,6 +1,6 @@
 class AbstractHealthStatisticsReader:
     """
-    TODO:
+    Abstract class to implement to create a custom health stat reader
     """
 
     def stat_cartridge_health(self):

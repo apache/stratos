@@ -136,7 +136,7 @@ def get_publisher(topic):
 
 class EventPublisher:
     """
-    TODO: provide abstraction
+    Handles publishing events to topics to the provided message broker
     """
     def __init__(self, topic):
         self.__topic = topic
