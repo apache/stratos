@@ -150,8 +150,7 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
 
 class CEPPublisherConfiguration:
     """
-    A singleton implementation to access configuration information for data publishing to BAM/CEP
-    TODO: perfect singleton impl ex: Borg
+    TODO: Extract common functionality
     """
 
     __instance = None

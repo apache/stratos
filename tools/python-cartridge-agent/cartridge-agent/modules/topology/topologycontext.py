@@ -406,11 +406,6 @@ class TopologyContext:
             TopologyContext.topology = Topology()
         return TopologyContext.topology
 
-        # @staticmethod
-        # def update(topology):
-        #     TopologyContext.topology = topology
-        #     #TODO: persist in registry
-
     @staticmethod
     def update(topology):
         TopologyContext.topology = topology

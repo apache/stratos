@@ -105,7 +105,7 @@ class Subscription:
 
 class SubscriptionDomain:
     """
-    TODO
+    Represents a Subscription Domain
     """
 
     def __init__(self, domain_name, application_context):
