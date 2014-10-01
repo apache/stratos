@@ -5,6 +5,8 @@ import paho.mqtt.publish as publish
 from .. event.instance.status.events import *
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. util import cartridgeagentconstants
+from .. healthstatspublisher.healthstats import *
+from .. healthstatspublisher.abstracthealthstatisticspublisher import *
 
 
 logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
@@ -57,7 +59,22 @@ def publish_instance_activated_event():
         log.info("Instance activated event published")
         log.info("Starting health statistics notifier")
 
-        # TODO: health stat publisher start()
+        if CEPPublisherConfiguration.get_instance().enabled:
+            interval_default = 15  # seconds
+            interval = CartridgeAgentConfiguration.read_property("stats.notifier.interval")
+            if interval is not None and len(interval) > 0:
+                try:
+                    interval = int(interval)
+                except ValueError:
+                    interval = interval_default
+            else:
+                interval = interval_default
+
+            health_stats_publisher = HealthStatisticsPublisherManager(interval)
+            health_stats_publisher.start()
+        else:
+            log.warn("Statistics publisher is disabled")
+
         activated = True
         log.info("Health statistics notifier started")
     else:

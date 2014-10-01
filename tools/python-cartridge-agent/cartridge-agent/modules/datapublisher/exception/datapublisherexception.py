@@ -1,4 +1,7 @@
 class DataPublisherException(Exception):
+    """
+    Exception to be used during log publishing operations
+    """
 
     def __init__(self, msg):
         super(self,  msg)

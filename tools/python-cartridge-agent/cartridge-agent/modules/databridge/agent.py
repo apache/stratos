@@ -71,7 +71,7 @@ class StreamDefinition:
         return json_str
 
 
-class LogEvent:
+class ThriftEvent:
     """
     Represents an event to be published to a BAM/CEP monitoring server
     """
@@ -114,7 +114,7 @@ class ThriftPublisher:
         """
         Publishes the given event by creating the event bundle from the log event
 
-        :param LogEvent event: The log event to be published
+        :param ThriftEvent event: The log event to be published
         :return: void
         """
         event_bundler = EventBundle()
