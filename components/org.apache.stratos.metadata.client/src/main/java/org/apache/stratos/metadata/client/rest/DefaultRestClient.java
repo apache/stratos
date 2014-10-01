@@ -80,6 +80,8 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing POST statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
+        }finally {
+            post.releaseConnection();
         }
     }
 
