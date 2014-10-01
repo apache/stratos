@@ -22,25 +22,22 @@ package org.apache.stratos.manager.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
-import org.wso2.carbon.user.core.UserRealm;
-import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 public class UserRoleCreator {
 
-    private transient static final Log log = LogFactory.getLog(UserRoleCreator.class);
-    private static String userRole = "Internal/user";
+    private static final Log log = LogFactory.getLog(UserRoleCreator.class);
 
     /**
      * Creating a Internal/user Role at Carbon Server Start-up
      */
     public static void createTenantUserRole(UserStoreManager manager) throws UserManagementException{
 
+        String userRole = "Internal/user";
         try {
 
             if (!manager.isExistingRole(userRole)) {

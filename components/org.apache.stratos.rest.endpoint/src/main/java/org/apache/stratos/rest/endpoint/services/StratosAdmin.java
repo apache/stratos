@@ -31,7 +31,9 @@ import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.user.mgt.StratosUserManager;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
+import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -55,6 +57,7 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -1148,14 +1151,23 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
-
     @POST
     @Path("/user")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response addUser(UserInfoBean userInfoBean) throws RestAPIException {
-        ServiceUtils.addUser(userInfoBean);
+
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.addUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully added an user with Username " + userInfoBean.getUserName());
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
         return Response.created(url).build();
     }
@@ -1166,7 +1178,17 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response deleteUser(@PathParam("userName") String userName) throws RestAPIException {
-        ServiceUtils.deleteUser(userName);
+
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.deleteUser(getTenantUserStoreManager(), userName);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully deleted an user with Username " + userName);
         return Response.noContent().build();
     }
 
@@ -1176,7 +1198,17 @@ public class StratosAdmin extends AbstractAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
     public Response updateUser(UserInfoBean userInfoBean) throws RestAPIException {
-        ServiceUtils.updateUser(userInfoBean);
+
+        StratosUserManager stratosUserManager = new StratosUserManager();
+
+        try {
+            stratosUserManager.updateUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully updated an user with Username " + userInfoBean.getUserName());
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
         return Response.created(url).build();
     }
@@ -1185,16 +1217,43 @@ public class StratosAdmin extends AbstractAdmin {
     @Path("/user/list")
     @Produces("application/json")
     @AuthorizationAction("/permission/admin/manage/add/users")
-    public UserInfoBean[] retrieveUsers() throws RestAPIException {
-        List<UserInfoBean> userList = null;
+    public UserInfoBean[] listUsers() throws RestAPIException {
+
+        StratosUserManager stratosUserManager = new StratosUserManager();
+        List<UserInfoBean> userList;
+
         try {
-            userList = ServiceUtils.getAllUsers();
-        } catch (Exception e) {
-            String msg = "Error in retrieving users";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
+            userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
         }
         return userList.toArray(new UserInfoBean[userList.size()]);
+    }
+
+    /**
+     * Get Tenant UserStoreManager
+     *
+     * @return UserStoreManager
+     * @throws RestAPIException
+     */
+    private static UserStoreManager getTenantUserStoreManager() throws RestAPIException {
+
+        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
+        UserRealm userRealm = null;
+        UserStoreManager userStoreManager = null;
+
+        try {
+            userRealm = carbonContext.getUserRealm();
+            userStoreManager = userRealm.getUserStoreManager();
+
+        } catch (UserStoreException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+
+        return userStoreManager;
     }
 
     @POST

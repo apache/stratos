@@ -22,15 +22,11 @@ package org.apache.stratos.manager.user.mgt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
-import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserCoreConstants;
-import org.wso2.carbon.user.core.service.RealmService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,8 +46,8 @@ public class StratosUserManager {
     /**
      * Add a user to the user-store of the particular tenant
      *
-     * @param userStoreManager
-     * @param userInfoBean
+     * @param userStoreManager  UserStoreManager
+     * @param userInfoBean      UserInfoBean
      * @throws UserManagementException
      */
     public void addUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
@@ -77,7 +73,8 @@ public class StratosUserManager {
             }
 
         } catch (UserStoreException e) {
-            log.error(e.getMessage(), e);
+            String msg = "Error in adding the user : "+ userInfoBean.getUserName();
+            log.error(msg, e);
             throw new UserManagementException(e.getMessage(), e);
         }
     }
@@ -85,8 +82,8 @@ public class StratosUserManager {
     /**
      * Delete the user with the given username in the relevant tenant space
      *
-     * @param userStoreManager
-     * @param userName
+     * @param userStoreManager  UserStoreManager
+     * @param userName          UserName
      * @throws UserManagementException
      */
     public void deleteUser(UserStoreManager userStoreManager, String userName)
@@ -95,7 +92,8 @@ public class StratosUserManager {
         try {
             userStoreManager.deleteUser(userName);
         } catch (UserStoreException e) {
-            log.error(e.getMessage(), e);
+            String msg = "Error in deleting the user : "+ userName;
+            log.error(msg, e);
             throw new UserManagementException(e.getMessage(), e);
         }
     }
@@ -104,8 +102,8 @@ public class StratosUserManager {
     /**
      * Updates the user info given the new UserInfoBean
      *
-     * @param userStoreManager
-     * @param userInfoBean
+     * @param userStoreManager  UserStoreManager
+     * @param userInfoBean      UserInfoBean
      * @throws UserManagementException
      */
     public void updateUser(UserStoreManager userStoreManager, UserInfoBean userInfoBean)
@@ -119,11 +117,6 @@ public class StratosUserManager {
 
                 String[] newRoles = new String[1];
                 newRoles[0] = userInfoBean.getRole();
-                Map<String, String> claims = new HashMap<String, String>();
-
-                claims.put(UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail());
-                claims.put(UserCoreConstants.ClaimTypeURIs.GIVEN_NAME, userInfoBean.getFirstName());
-                claims.put(UserCoreConstants.ClaimTypeURIs.SURNAME, userInfoBean.getLastName());
 
                 userStoreManager.updateRoleListOfUser(userInfoBean.getUserName(), getRefinedListOfRolesOfUser(userStoreManager, userInfoBean.getUserName()), newRoles);
                 userStoreManager.setUserClaimValue(userInfoBean.getUserName(), UserCoreConstants.ClaimTypeURIs.EMAIL_ADDRESS, userInfoBean.getEmail(), userInfoBean.getProfileName());
@@ -133,7 +126,8 @@ public class StratosUserManager {
 
             }
         } catch (UserStoreException e) {
-            log.error(e.getMessage(), e);
+            String msg = "Error in updating the user : "+ userInfoBean.getUserName();
+            log.error(msg, e);
             throw new UserManagementException(e.getMessage(), e);
         }
 
@@ -149,7 +143,7 @@ public class StratosUserManager {
     public List<UserInfoBean> getAllUsers(UserStoreManager userStoreManager)
             throws UserManagementException {
 
-        String[] users = null;
+        String[] users;
         List<UserInfoBean> userList = new ArrayList<UserInfoBean>();
 
         try {
@@ -164,7 +158,8 @@ public class StratosUserManager {
             }
 
         } catch (UserStoreException e) {
-            log.error(e.getMessage(), e);
+            String msg = "Error in listing users";
+            log.error(msg, e);
             throw new UserManagementException(e.getMessage(), e);
         }
 
