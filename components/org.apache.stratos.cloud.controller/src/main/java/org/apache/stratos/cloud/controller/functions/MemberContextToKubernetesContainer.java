@@ -80,9 +80,6 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
 	}
 
 	private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
-//		String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
-//        		StratosConstants.KUBERNETES_CLUSTER_ID);
-//		KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
 		Port[] ports = new Port[cartridge.getPortMappings().size()];
 		List<Port> portList = new ArrayList<Port>();
 		
