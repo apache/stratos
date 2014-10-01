@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
+            <version>4.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
