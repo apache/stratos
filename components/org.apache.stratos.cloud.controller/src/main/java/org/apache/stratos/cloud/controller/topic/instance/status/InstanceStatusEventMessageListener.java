@@ -60,18 +60,17 @@ public class InstanceStatusEventMessageListener implements MqttCallback {
 
 			TextMessage receivedMessage = new ActiveMQTextMessage();
 
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  ORG_APACHE_STRATOS_MESSAGING_EVENT
-					                                  .concat(arg0.replace("/",
-					                                                       ".")));
-
 			try {
 				if (log.isDebugEnabled()) {
 					log.debug(String.format(
 							"Instance notifier message received: %s",
-							((TextMessage) message).getText()));
+							receivedMessage.getText()));
 				}
+				receivedMessage.setText(new String(message.getPayload()));
+				receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
+						ORG_APACHE_STRATOS_MESSAGING_EVENT.concat(arg0.replace(
+								"/", ".")));
+
 				// Add received message to the queue
 				InstanceStatusEventMessageQueue.getInstance().add(
 						receivedMessage);
