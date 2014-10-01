@@ -144,7 +144,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         monitor = asCtx.getClusterMonitor(clusterId);
                     } else {
                         if(log.isDebugEnabled()){
-                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                            		+ "[cluster] %s", clusterId));
                         }
                         return;
                     }
@@ -155,7 +156,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     		|| monitor.getClusterType() == ClusterType.VMLbCluster) {
                     	
                         NetworkPartitionContext nwPartitionCtxt;
-                        nwPartitionCtxt = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
+                        String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
+						nwPartitionCtxt = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
 
                         // start a new member in the same Partition
                         String partitionId = ((VMClusterMonitor) monitor).getPartitionOfMember(memberId);
@@ -170,8 +172,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         partitionCtxt.removeActiveMemberById(memberId);
                         
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
-                                                   memberId, partitionId, clusterId));
+                            log.info(String.format("Member is terminated and removed from the active members list: "
+                            		+ "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                         }
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
                     	// no need to do anything
@@ -309,7 +311,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         monitor = asCtx.getClusterMonitor(clusterId);
                     } else {
                         if(log.isDebugEnabled()){
-                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                            		+ "[cluster] %s", clusterId));
                         }
                         return;
                     }
@@ -317,29 +320,36 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     if(monitor.getClusterType() == ClusterType.VMServiceCluster 
                     		|| monitor.getClusterType() == ClusterType.VMLbCluster) {
                     	
-                        NetworkPartitionContext networkPartitionContext = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
+                        NetworkPartitionContext networkPartitionContext = 
+                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
 
                         PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
                         partitionContext.removeMemberStatsContext(memberId);
 
                         if (partitionContext.removeTerminationPendingMember(memberId)) {
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Member is removed from termination pending members list: [member] %s", memberId));
+                                log.debug(String.format("Member is removed from termination pending members list: "
+                                		+ "[member] %s", memberId));
                             }
                         } else if (partitionContext.removePendingMember(memberId)) {
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Member is removed from pending members list: [member] %s", memberId));
+                                log.debug(String.format("Member is removed from pending members list: "
+                                		+ "[member] %s", memberId));
                             }
                         } else if (partitionContext.removeActiveMemberById(memberId)) {
-                            log.warn(String.format("Member is in the wrong list and it is removed from active members list", memberId));
+                            log.warn(String.format("Member is in the wrong list and it is removed from "
+                            		+ "active members list", memberId));
                         } else if (partitionContext.removeObsoleteMember(memberId)){
-                        	log.warn(String.format("Member's obsolated timeout has been expired and it is removed from obsolated members list", memberId));
+                        	log.warn(String.format("Member's obsolated timeout has been expired and "
+                        			+ "it is removed from obsolated members list", memberId));
                         } else {
-                            log.warn(String.format("Member is not available in any of the list active, pending and termination pending", memberId));
+                            log.warn(String.format("Member is not available in any of the list active, "
+                            		+ "pending and termination pending", memberId));
                         }
 
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Member stat context has been removed successfully: [member] %s", memberId));
+                            log.info(String.format("Member stat context has been removed successfully: "
+                            		+ "[member] %s", memberId));
                         }
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
                     	// no need to do anything
@@ -374,7 +384,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         monitor = asCtx.getClusterMonitor(clusterId);
                     } else {
                         if(log.isDebugEnabled()){
-                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                            		+ "[cluster] %s", clusterId));
                         }
                         return;
                     }
@@ -384,7 +395,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         partitionContext = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                         partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Member stat context has been added successfully: [member] %s", memberId));
+                            log.info(String.format("Member stat context has been added successfully: "
+                            		+ "[member] %s", memberId));
                         }
                         partitionContext.movePendingMemberToActiveMembers(memberId);
 					} else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
@@ -392,7 +404,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 						kubernetesClusterContext = ((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
 						kubernetesClusterContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if (log.isInfoEnabled()) {
-                            log.info(String.format("Member stat context has been added successfully: [member] %s", memberId));
+                            log.info(String.format("Member stat context has been added successfully: "
+                            		+ "[member] %s", memberId));
                         }
 						kubernetesClusterContext.movePendingMemberToActiveMembers(memberId);
 					}
@@ -421,7 +434,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                        monitor = asCtx.getClusterMonitor(clusterId);
                    } else {
                        if(log.isDebugEnabled()){
-                           log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                           log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                           		+ "[cluster] %s", clusterId));
                        }
                        return;
                    }
@@ -430,7 +444,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 		   || monitor.getClusterType() == ClusterType.VMLbCluster) {
                 	   
                        NetworkPartitionContext nwPartitionCtxt;
-                       nwPartitionCtxt = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(memberReadyToShutdownEvent.getNetworkPartitionId());
+                       String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
+                       nwPartitionCtxt = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
 
                        // start a new member in the same Partition
                        String partitionId = ((VMClusterMonitor) monitor).getPartitionOfMember(memberId);
@@ -445,8 +460,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                        partitionCtxt.removeActiveMemberById(memberId);
 
                        if (log.isInfoEnabled()) {
-                           log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
-                                                  memberId, partitionId, clusterId));
+                           log.info(String.format("Member is terminated and removed from the active members list: "
+                           		+ "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                        }
                    } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
                 	   // no need to do anything
@@ -480,7 +495,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         monitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
                     } else {
                         if(log.isDebugEnabled()){
-                            log.debug(String.format("A cluster monitor is not found in autoscaler context [cluster] %s", clusterId));
+                            log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                            		+ "[cluster] %s", clusterId));
                         }
                         return;
                     }
@@ -492,7 +508,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     	partitionContext = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId).getPartitionCtxt(partitionId);
                         partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("Member has been moved as pending termination: [member] %s", memberId));
+                            log.debug(String.format("Member has been moved as pending termination: "
+                            		+ "[member] %s", memberId));
                         }
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
                     } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {

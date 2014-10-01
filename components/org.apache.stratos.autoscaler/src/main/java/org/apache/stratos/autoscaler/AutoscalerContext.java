@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 
 /**
- * This class is there for accumulating cluster details which are not there in Topology
+ * It holds all cluster monitors which are active in stratos.
  */
 public class AutoscalerContext {
 
