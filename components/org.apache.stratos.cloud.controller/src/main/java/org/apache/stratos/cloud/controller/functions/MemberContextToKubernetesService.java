@@ -30,35 +30,36 @@ import org.apache.stratos.kubernetes.client.model.Service;
 import com.google.common.base.Function;
 
 /**
- *	Is responsible for converting a {@link MemberContext} object to a Kubernetes {@link Service}
- *	Object.
+ * Is responsible for converting a {@link MemberContext} object to a Kubernetes
+ * {@link Service} Object.
  */
-public class MemberContextToKubernetesService implements Function<MemberContext, Service>{
+public class MemberContextToKubernetesService implements Function<MemberContext, Service> {
 
-	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
-	
-	@Override
-	public Service apply(MemberContext memberContext) {
-		
-		String clusterId = memberContext.getClusterId();
+    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+
+    @Override
+    public Service apply(MemberContext memberContext) {
+
+        String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
-        
-		String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(), 
-		StratosConstants.KUBERNETES_CLUSTER_ID);
-		KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
-        
+
+        String kubernetesClusterId = CloudControllerUtil.getProperty(
+                clusterContext.getProperties(), StratosConstants.KUBERNETES_CLUSTER_ID);
+        KubernetesClusterContext kubClusterContext = dataHolder
+                .getKubernetesClusterContext(kubernetesClusterId);
+
         Service service = new Service();
         service.setApiVersion("v1beta1");
         service.setId(CloudControllerUtil.getCompatibleId(clusterId));
         service.setKind("Service");
         int hostPort = kubClusterContext.getAnAvailableHostPort();
         clusterContext.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, hostPort);
-		service.setPort(hostPort);
+        service.setPort(hostPort);
         Selector selector = new Selector();
         selector.setName(clusterId);
         service.setSelector(selector);
-        
-		return service;
-	}
+
+        return service;
+    }
 
 }

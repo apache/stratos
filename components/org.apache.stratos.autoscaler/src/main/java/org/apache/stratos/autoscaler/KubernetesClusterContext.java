@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.stratos.autoscaler;
 
 import java.io.Serializable;
@@ -19,6 +37,9 @@ import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
+/*
+ * It holds the runtime data of a kubernetes cluster
+ */
 public class KubernetesClusterContext implements Serializable{
 	
 	private static final long serialVersionUID = 808741789615481596L;
@@ -54,13 +75,14 @@ public class KubernetesClusterContext implements Serializable{
     private String clusterId;
     
     //boolean values to keep whether the requests in flight parameters are reset or not
-    private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
+    private boolean rifReset = false, averageRifReset = false, 
+    		gradientRifReset = false, secondDerivativeRifRest = false;
     //boolean values to keep whether the memory consumption parameters are reset or not
     private boolean memoryConsumptionReset = false, averageMemoryConsumptionReset = false,
             gradientMemoryConsumptionReset = false, secondDerivativeMemoryConsumptionRest = false;
     //boolean values to keep whether the load average parameters are reset or not
-    private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
-            secondDerivativeLoadAverageRest = false;
+    private boolean loadAverageReset = false, averageLoadAverageReset = false, 
+    		gradientLoadAverageReset = false, secondDerivativeLoadAverageRest = false;
     
 	public KubernetesClusterContext(String kubernetesClusterId, String clusterId){
 		this.kubernetesClusterId = kubernetesClusterId;
@@ -316,9 +338,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (secondDerivativeRifRest && gradientRifReset) {
 			rifReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Requests in flights stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Requests in flights stats are reset, "
+						+ "ready to do scale check [kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -334,9 +355,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (averageRifReset && gradientRifReset) {
 			rifReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Requests in flights stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Requests in flights stats are reset, ready to do scale check "
+								+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -351,9 +371,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (secondDerivativeRifRest && averageRifReset) {
 			rifReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Requests in flights stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Requests in flights stats are reset, ready to do scale check "
+								+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -380,9 +399,8 @@ public class KubernetesClusterContext implements Serializable{
 				&& gradientMemoryConsumptionReset) {
 			memoryConsumptionReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Memory consumption stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Memory consumption stats are reset, ready to do scale check "
+								+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -399,9 +417,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (averageMemoryConsumptionReset && gradientMemoryConsumptionReset) {
 			memoryConsumptionReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Memory consumption stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Memory consumption stats are reset, ready to do scale check "
+								+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -417,9 +434,8 @@ public class KubernetesClusterContext implements Serializable{
 				&& averageMemoryConsumptionReset) {
 			memoryConsumptionReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Memory consumption stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Memory consumption stats are reset, ready to do scale check "
+								+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -446,9 +462,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (secondDerivativeLoadAverageRest && gradientLoadAverageReset) {
 			loadAverageReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Load average stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Load average stats are reset, ready to do scale check "
+						+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -463,9 +478,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (averageLoadAverageReset && gradientLoadAverageReset) {
 			loadAverageReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Load average stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Load average stats are reset, ready to do scale check "
+						+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}
@@ -480,9 +494,8 @@ public class KubernetesClusterContext implements Serializable{
 		if (secondDerivativeLoadAverageRest && averageLoadAverageReset) {
 			loadAverageReset = true;
 			if (log.isDebugEnabled()) {
-				log.debug(String
-						.format("Load average stats are reset, ready to do scale check [kub cluster] %s",
-								this.kubernetesClusterId));
+				log.debug(String.format("Load average stats are reset, ready to do scale check "
+						+ "[kub cluster] %s", this.kubernetesClusterId));
 			}
 		}
 	}

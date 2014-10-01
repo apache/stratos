@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.stratos.autoscaler.monitor;
 
 import java.util.Properties;
@@ -17,6 +35,9 @@ import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+/*
+ * It is monitoring a kubernetes service cluster periodically.
+ */
 public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
 	
 	private static final Log log = LogFactory.getLog(DockerServiceClusterMonitor.class);
@@ -129,7 +150,6 @@ public final class DockerServiceClusterMonitor extends ContainerClusterMonitor{
 	
     @Override
     protected void readConfigurations () {
-    	// same as VM cluster monitor interval
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
         setMonitorInterval(monitorInterval);

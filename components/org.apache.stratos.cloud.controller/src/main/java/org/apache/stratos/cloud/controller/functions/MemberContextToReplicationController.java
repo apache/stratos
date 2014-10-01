@@ -34,56 +34,57 @@ import org.apache.stratos.kubernetes.client.model.State;
 import com.google.common.base.Function;
 
 /**
- *	Is responsible for converting a {@link MemberContext} object to a Kubernetes {@link ReplicationController}
- *	Object.
+ * Is responsible for converting a {@link MemberContext} object to a Kubernetes
+ * {@link ReplicationController} Object.
  */
-public class MemberContextToReplicationController implements Function<MemberContext, ReplicationController>{
+public class MemberContextToReplicationController implements
+        Function<MemberContext, ReplicationController> {
 
-	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
-	
-	@Override
-	public ReplicationController apply(MemberContext memberContext) {
-		
-		String clusterId = memberContext.getClusterId();
+    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+
+    @Override
+    public ReplicationController apply(MemberContext memberContext) {
+
+        String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
-        
-		ReplicationController contr = new ReplicationController();
-		contr.setId(clusterContext.getClusterId());
-		contr.setKind("ReplicationController");
-		contr.setApiVersion("v1beta1");
-		State desiredState = new State();
-		String minReplicas = CloudControllerUtil.getProperty(clusterContext.getProperties(), 
-				StratosConstants.KUBERNETES_MIN_REPLICAS);
-		desiredState.setReplicas(Integer.parseInt(minReplicas));
-		Selector selector = new Selector();
-		selector.setName(clusterContext.getClusterId());
-		desiredState.setReplicaSelector(selector);
 
-		Pod podTemplate = new Pod();
-		State podState = new State();
-		Manifest manifest = new Manifest();
-		manifest.setVersion("v1beta1");
-		manifest.setId(clusterContext.getClusterId());
+        ReplicationController contr = new ReplicationController();
+        contr.setId(clusterContext.getClusterId());
+        contr.setKind("ReplicationController");
+        contr.setApiVersion("v1beta1");
+        State desiredState = new State();
+        String minReplicas = CloudControllerUtil.getProperty(clusterContext.getProperties(),
+                StratosConstants.KUBERNETES_MIN_REPLICAS);
+        desiredState.setReplicas(Integer.parseInt(minReplicas));
+        Selector selector = new Selector();
+        selector.setName(clusterContext.getClusterId());
+        desiredState.setReplicaSelector(selector);
 
-		MemberContextToKubernetesContainer containerFunc = new MemberContextToKubernetesContainer();
-		Container container = containerFunc.apply(memberContext);
+        Pod podTemplate = new Pod();
+        State podState = new State();
+        Manifest manifest = new Manifest();
+        manifest.setVersion("v1beta1");
+        manifest.setId(clusterContext.getClusterId());
 
-		manifest.setContainers(new Container[] { container });
+        MemberContextToKubernetesContainer containerFunc = new MemberContextToKubernetesContainer();
+        Container container = containerFunc.apply(memberContext);
 
-		podState.setManifest(manifest);
-		podTemplate.setDesiredState(podState);
-		Label l1 = new Label();
-		l1.setName(clusterContext.getClusterId());
-		podTemplate.setLabels(l1);
+        manifest.setContainers(new Container[] { container });
 
-		desiredState.setPodTemplate(podTemplate);
-		contr.setDesiredState(desiredState);
+        podState.setManifest(manifest);
+        podTemplate.setDesiredState(podState);
+        Label l1 = new Label();
+        l1.setName(clusterContext.getClusterId());
+        podTemplate.setLabels(l1);
 
-		Label l2 = new Label();
-		l2.setName(clusterContext.getClusterId());
-		contr.setLabels(l2);
+        desiredState.setPodTemplate(podTemplate);
+        contr.setDesiredState(desiredState);
 
-		return contr;
-	}
+        Label l2 = new Label();
+        l2.setName(clusterContext.getClusterId());
+        contr.setLabels(l2);
+
+        return contr;
+    }
 
 }

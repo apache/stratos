@@ -203,9 +203,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getMemberId(),
                 member.getPartitionId(), 0);
         memberFaultEventMessageMap.put("message", memberFaultEvent);
-        Properties headers = new Properties();
-        headers.put(Constants.EVENT_CLASS_NAME, memberFaultEvent.getClass().getName());
-        healthStatPublisher.publish(MemberFaultEventMap, headers, true);
+        healthStatPublisher.publish(MemberFaultEventMap, true);
     }
 
 
