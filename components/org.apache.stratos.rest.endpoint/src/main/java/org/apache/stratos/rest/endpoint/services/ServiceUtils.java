@@ -48,6 +48,9 @@ import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
+import org.apache.stratos.manager.user.mgt.StratosUserManager;
+import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
+import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -70,6 +73,10 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.wso2.carbon.context.CarbonContext;
+import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.api.UserStoreManager;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.rmi.RemoteException;
@@ -85,6 +92,7 @@ public class ServiceUtils {
 
     private static Log log = LogFactory.getLog(ServiceUtils.class);
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
+    private static StratosUserManager stratosUserManager = new StratosUserManager();
 
     static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                 String userName, String tenantDomain) throws RestAPIException {
@@ -1259,7 +1267,83 @@ public class ServiceUtils {
 
     }
 
+    public static void addUser(UserInfoBean userInfoBean) throws RestAPIException {
 
+        try {
+
+            stratosUserManager.addUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully added an user with Username " + userInfoBean.getUserName());
+    }
+
+    public static void updateUser(UserInfoBean userInfoBean) throws RestAPIException {
+
+        try {
+
+            stratosUserManager.updateUser(getTenantUserStoreManager(), userInfoBean);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully updated an user with Username " + userInfoBean.getUserName());
+    }
+
+    public static void deleteUser(String userName) throws RestAPIException {
+
+        try {
+
+            stratosUserManager.deleteUser(getTenantUserStoreManager(), userName);
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        log.info("Successfully deleted an user with Username " + userName);
+    }
+
+    public static List<UserInfoBean> getAllUsers() throws RestAPIException {
+
+        List<UserInfoBean> userList = null;
+
+        try {
+
+            userList = stratosUserManager.getAllUsers(getTenantUserStoreManager());
+
+        } catch (UserManagementException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+        return userList;
+    }
+
+    /**
+     * Get Tenant aware UserStoreManager
+     *
+     * @return UserStoreManager
+     * @throws RestAPIException
+     */
+    private static UserStoreManager getTenantUserStoreManager() throws RestAPIException {
+
+        CarbonContext carbonContext = CarbonContext.getThreadLocalCarbonContext();
+        UserRealm userRealm = null;
+        UserStoreManager userStoreManager = null;
+
+        try {
+            userRealm = carbonContext.getUserRealm();
+            userStoreManager = userRealm.getUserStoreManager();
+
+        } catch (UserStoreException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+        }
+
+        return userStoreManager;
+    }
 
     public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {
 

@@ -26,18 +26,21 @@ import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.user.mgt.exception.UserManagementException;
+import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.manager.utils.UserRoleCreator;
+import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.api.UserRealm;
+import org.wso2.carbon.user.mgt.UserMgtConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-/**
- * Listener for Tenant create event to create a new Role
- */
+
 public class TenantUserRoleCreator implements TenantMgtListener {
 
-    private static final Log log = LogFactory.getLog(TenantUserRoleCreator.class);
+    private transient static final Log log = LogFactory.getLog(TenantUserRoleCreator.class);
 
     /**
      * Create an 'user' role at tenant creation time
@@ -60,12 +63,10 @@ public class TenantUserRoleCreator implements TenantMgtListener {
                 UserRoleCreator.createTenantUserRole(userStoreManager);
 
             } catch (UserStoreException e) {
-                String msg = "Error while retrieving the user store for tenant : "+ tenantInfo.getTenantDomain();
-                log.error(msg, e);
+                log.error(e.getMessage(), e);
                 throw new StratosException(e.getMessage(), e);
             } catch (UserManagementException e) {
-                String msg = "Error while creating the user role in tenant : "+ tenantInfo.getTenantDomain();
-                log.error(msg, e);
+                log.error(e.getMessage(), e);
                 throw new StratosException(e.getMessage(), e);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
