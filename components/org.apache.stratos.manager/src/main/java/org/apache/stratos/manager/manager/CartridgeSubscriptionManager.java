@@ -608,9 +608,4 @@ public class CartridgeSubscriptionManager {
     	DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
         return dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType);
     }
-
-    public Collection<CartridgeSubscription> getCartridgeSubscriptionsForType (String cartridgeType) {
-
-        return new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(cartridgeType);
-    }
 }
