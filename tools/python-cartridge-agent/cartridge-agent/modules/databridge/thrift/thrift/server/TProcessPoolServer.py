@@ -22,7 +22,7 @@ import logging
 from multiprocessing import  Process, Value, Condition
 
 from TServer import TServer
-from thrift.transport.TTransport import TTransportException
+from ..transport.TTransport import TTransportException
 
 
 class TProcessPoolServer(TServer):

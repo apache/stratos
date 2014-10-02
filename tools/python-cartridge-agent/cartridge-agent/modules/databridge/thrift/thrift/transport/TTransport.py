@@ -19,7 +19,7 @@
 
 from cStringIO import StringIO
 from struct import pack, unpack
-from thrift.Thrift import TException
+from ..Thrift import TException
 
 
 class TTransportException(TException):

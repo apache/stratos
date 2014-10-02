@@ -31,8 +31,8 @@ import select
 import struct
 import logging
 
-from thrift.transport import TTransport
-from thrift.protocol.TBinaryProtocol import TBinaryProtocolFactory
+from ..transport import TTransport
+from ..protocol.TBinaryProtocol import TBinaryProtocolFactory
 
 __all__ = ['TNonblockingServer']
 

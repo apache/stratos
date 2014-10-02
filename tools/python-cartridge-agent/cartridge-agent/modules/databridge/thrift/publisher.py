@@ -1,10 +1,10 @@
 import time
 import sys
 
-sys.path.append("databridge/thrift/gen-py")
+sys.path.append("gen")
 
-from ThriftSecureEventTransmissionService import ThriftSecureEventTransmissionService
-from ThriftSecureEventTransmissionService.ttypes import *
+from gen.ThriftSecureEventTransmissionService import ThriftSecureEventTransmissionService
+from gen.ThriftSecureEventTransmissionService.ttypes import *
 
 from thrift.transport import TSSLSocket
 from thrift.transport import TTransport

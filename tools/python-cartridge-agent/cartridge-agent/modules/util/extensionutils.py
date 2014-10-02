@@ -472,5 +472,4 @@ def execute_command(command, env_params=None):
     return output, errors
 
 
-from .. config import cartridgeagentconfiguration
 from .. topology.topologycontext import *

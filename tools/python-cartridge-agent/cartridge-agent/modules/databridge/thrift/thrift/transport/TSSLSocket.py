@@ -21,8 +21,8 @@ import os
 import socket
 import ssl
 
-from thrift.transport import TSocket
-from thrift.transport.TTransport import TTransportException
+import TSocket
+from TTransport import TTransportException
 
 
 class TSSLSocket(TSocket.TSocket):

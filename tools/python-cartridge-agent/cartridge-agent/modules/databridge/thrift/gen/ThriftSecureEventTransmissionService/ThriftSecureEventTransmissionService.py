@@ -7,16 +7,33 @@
 #
 
 from ttypes import *
-from thrift.Thrift import TProcessor
-from thrift.transport import TTransport
+from ...thrift.Thrift import TProcessor
+from ...thrift.transport import TTransport
+from ..Exception import ttypes
+from .. import Data
 
 try:
-  from thrift.protocol import fastbinary
+  from ...thrift.protocol import fastbinary
 except:
   fastbinary = None
 
 
 class Iface:
+  def connect(self, userName, password):
+    """
+    Parameters:
+     - userName
+     - password
+    """
+    pass
+
+  def disconnect(self, sessionId):
+    """
+    Parameters:
+     - sessionId
+    """
+    pass
+
   def defineStream(self, sessionId, streamDefinition):
     """
     Parameters:
@@ -65,6 +82,68 @@ class Client(Iface):
     if oprot is not None:
       self._oprot = oprot
     self._seqid = 0
+
+  def connect(self, userName, password):
+    """
+    Parameters:
+     - userName
+     - password
+    """
+    self.send_connect(userName, password)
+    return self.recv_connect()
+
+  def send_connect(self, userName, password):
+    self._oprot.writeMessageBegin('connect', TMessageType.CALL, self._seqid)
+    args = connect_args()
+    args.userName = userName
+    args.password = password
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_connect(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = connect_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ae is not None:
+      raise result.ae
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "connect failed: unknown result");
+
+  def disconnect(self, sessionId):
+    """
+    Parameters:
+     - sessionId
+    """
+    self.send_disconnect(sessionId)
+    self.recv_disconnect()
+
+  def send_disconnect(self, sessionId):
+    self._oprot.writeMessageBegin('disconnect', TMessageType.CALL, self._seqid)
+    args = disconnect_args()
+    args.sessionId = sessionId
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_disconnect(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = disconnect_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    return
 
   def defineStream(self, sessionId, streamDefinition):
     """
@@ -251,6 +330,8 @@ class Processor(Iface, TProcessor):
   def __init__(self, handler):
     self._handler = handler
     self._processMap = {}
+    self._processMap["connect"] = Processor.process_connect
+    self._processMap["disconnect"] = Processor.process_disconnect
     self._processMap["defineStream"] = Processor.process_defineStream
     self._processMap["findStreamId"] = Processor.process_findStreamId
     self._processMap["publish"] = Processor.process_publish
@@ -272,6 +353,31 @@ class Processor(Iface, TProcessor):
       self._processMap[name](self, seqid, iprot, oprot)
     return True
 
+  def process_connect(self, seqid, iprot, oprot):
+    args = connect_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = connect_result()
+    try:
+      result.success = self._handler.connect(args.userName, args.password)
+    except ttypes.ThriftAuthenticationException, ae:
+      result.ae = ae
+    oprot.writeMessageBegin("connect", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_disconnect(self, seqid, iprot, oprot):
+    args = disconnect_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = disconnect_result()
+    self._handler.disconnect(args.sessionId)
+    oprot.writeMessageBegin("disconnect", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
   def process_defineStream(self, seqid, iprot, oprot):
     args = defineStream_args()
     args.read(iprot)
@@ -279,13 +385,13 @@ class Processor(Iface, TProcessor):
     result = defineStream_result()
     try:
       result.success = self._handler.defineStream(args.sessionId, args.streamDefinition)
-    except Exception.ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException, ade:
+    except ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException, ade:
       result.ade = ade
-    except Exception.ttypes.ThriftMalformedStreamDefinitionException, mtd:
+    except ttypes.ThriftMalformedStreamDefinitionException, mtd:
       result.mtd = mtd
-    except Exception.ttypes.ThriftStreamDefinitionException, tde:
+    except ttypes.ThriftStreamDefinitionException, tde:
       result.tde = tde
-    except Exception.ttypes.ThriftSessionExpiredException, se:
+    except ttypes.ThriftSessionExpiredException, se:
       result.se = se
     oprot.writeMessageBegin("defineStream", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -299,9 +405,9 @@ class Processor(Iface, TProcessor):
     result = findStreamId_result()
     try:
       result.success = self._handler.findStreamId(args.sessionId, args.streamName, args.streamVersion)
-    except Exception.ttypes.ThriftNoStreamDefinitionExistException, tnde:
+    except ttypes.ThriftNoStreamDefinitionExistException, tnde:
       result.tnde = tnde
-    except Exception.ttypes.ThriftSessionExpiredException, se:
+    except ttypes.ThriftSessionExpiredException, se:
       result.se = se
     oprot.writeMessageBegin("findStreamId", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -315,9 +421,9 @@ class Processor(Iface, TProcessor):
     result = publish_result()
     try:
       self._handler.publish(args.eventBundle)
-    except Exception.ttypes.ThriftUndefinedEventTypeException, ue:
+    except ttypes.ThriftUndefinedEventTypeException, ue:
       result.ue = ue
-    except Exception.ttypes.ThriftSessionExpiredException, se:
+    except ttypes.ThriftSessionExpiredException, se:
       result.se = se
     oprot.writeMessageBegin("publish", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -331,7 +437,7 @@ class Processor(Iface, TProcessor):
     result = deleteStreamById_result()
     try:
       result.success = self._handler.deleteStreamById(args.sessionId, args.streamId)
-    except Exception.ttypes.ThriftSessionExpiredException, se:
+    except ttypes.ThriftSessionExpiredException, se:
       result.se = se
     oprot.writeMessageBegin("deleteStreamById", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -345,7 +451,7 @@ class Processor(Iface, TProcessor):
     result = deleteStreamByNameVersion_result()
     try:
       result.success = self._handler.deleteStreamByNameVersion(args.sessionId, args.streamName, args.streamVersion)
-    except Exception.ttypes.ThriftSessionExpiredException, se:
+    except ttypes.ThriftSessionExpiredException, se:
       result.se = se
     oprot.writeMessageBegin("deleteStreamByNameVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
@@ -354,6 +460,252 @@ class Processor(Iface, TProcessor):
 
 
 # HELPER FUNCTIONS AND STRUCTURES
+
+class connect_args:
+  """
+  Attributes:
+   - userName
+   - password
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'userName', None, None, ), # 1
+    (2, TType.STRING, 'password', None, None, ), # 2
+  )
+
+  def __init__(self, userName=None, password=None,):
+    self.userName = userName
+    self.password = password
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.userName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.password = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('connect_args')
+    if self.userName is not None:
+      oprot.writeFieldBegin('userName', TType.STRING, 1)
+      oprot.writeString(self.userName)
+      oprot.writeFieldEnd()
+    if self.password is not None:
+      oprot.writeFieldBegin('password', TType.STRING, 2)
+      oprot.writeString(self.password)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class connect_result:
+  """
+  Attributes:
+   - success
+   - ae
+  """
+
+  thrift_spec = (
+    (0, TType.STRING, 'success', None, None, ), # 0
+    (1, TType.STRUCT, 'ae', (ttypes.ThriftAuthenticationException, ttypes.ThriftAuthenticationException.thrift_spec), None, ), # 1
+  )
+
+  def __init__(self, success=None, ae=None,):
+    self.success = success
+    self.ae = ae
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ae = ttypes.ThriftAuthenticationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('connect_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 1)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class disconnect_args:
+  """
+  Attributes:
+   - sessionId
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'sessionId', None, None, ), # 1
+  )
+
+  def __init__(self, sessionId=None,):
+    self.sessionId = sessionId
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.sessionId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('disconnect_args')
+    if self.sessionId is not None:
+      oprot.writeFieldBegin('sessionId', TType.STRING, 1)
+      oprot.writeString(self.sessionId)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class disconnect_result:
+
+  thrift_spec = (
+  )
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('disconnect_result')
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
 
 class defineStream_args:
   """
@@ -439,10 +791,10 @@ class defineStream_result:
 
   thrift_spec = (
     (0, TType.STRING, 'success', None, None, ), # 0
-    (1, TType.STRUCT, 'ade', (Exception.ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException, Exception.ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'mtd', (Exception.ttypes.ThriftMalformedStreamDefinitionException, Exception.ttypes.ThriftMalformedStreamDefinitionException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'tde', (Exception.ttypes.ThriftStreamDefinitionException, Exception.ttypes.ThriftStreamDefinitionException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'se', (Exception.ttypes.ThriftSessionExpiredException, Exception.ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 4
+    (1, TType.STRUCT, 'ade', (ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException, ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'mtd', (ttypes.ThriftMalformedStreamDefinitionException, ttypes.ThriftMalformedStreamDefinitionException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'tde', (ttypes.ThriftStreamDefinitionException, ttypes.ThriftStreamDefinitionException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'se', (ttypes.ThriftSessionExpiredException, ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 4
   )
 
   def __init__(self, success=None, ade=None, mtd=None, tde=None, se=None,):
@@ -468,25 +820,25 @@ class defineStream_result:
           iprot.skip(ftype)
       elif fid == 1:
         if ftype == TType.STRUCT:
-          self.ade = Exception.ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException()
+          self.ade = ttypes.ThriftDifferentStreamDefinitionAlreadyDefinedException()
           self.ade.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.mtd = Exception.ttypes.ThriftMalformedStreamDefinitionException()
+          self.mtd = ttypes.ThriftMalformedStreamDefinitionException()
           self.mtd.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRUCT:
-          self.tde = Exception.ttypes.ThriftStreamDefinitionException()
+          self.tde = ttypes.ThriftStreamDefinitionException()
           self.tde.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 4:
         if ftype == TType.STRUCT:
-          self.se = Exception.ttypes.ThriftSessionExpiredException()
+          self.se = ttypes.ThriftSessionExpiredException()
           self.se.read(iprot)
         else:
           iprot.skip(ftype)
@@ -632,8 +984,8 @@ class findStreamId_result:
 
   thrift_spec = (
     (0, TType.STRING, 'success', None, None, ), # 0
-    (1, TType.STRUCT, 'tnde', (Exception.ttypes.ThriftNoStreamDefinitionExistException, Exception.ttypes.ThriftNoStreamDefinitionExistException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'se', (Exception.ttypes.ThriftSessionExpiredException, Exception.ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 2
+    (1, TType.STRUCT, 'tnde', (ttypes.ThriftNoStreamDefinitionExistException, ttypes.ThriftNoStreamDefinitionExistException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'se', (ttypes.ThriftSessionExpiredException, ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 2
   )
 
   def __init__(self, success=None, tnde=None, se=None,):
@@ -657,13 +1009,13 @@ class findStreamId_result:
           iprot.skip(ftype)
       elif fid == 1:
         if ftype == TType.STRUCT:
-          self.tnde = Exception.ttypes.ThriftNoStreamDefinitionExistException()
+          self.tnde = ttypes.ThriftNoStreamDefinitionExistException()
           self.tnde.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.se = Exception.ttypes.ThriftSessionExpiredException()
+          self.se = ttypes.ThriftSessionExpiredException()
           self.se.read(iprot)
         else:
           iprot.skip(ftype)
@@ -777,8 +1129,8 @@ class publish_result:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'ue', (Exception.ttypes.ThriftUndefinedEventTypeException, Exception.ttypes.ThriftUndefinedEventTypeException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'se', (Exception.ttypes.ThriftSessionExpiredException, Exception.ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 2
+    (1, TType.STRUCT, 'ue', (ttypes.ThriftUndefinedEventTypeException, ttypes.ThriftUndefinedEventTypeException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'se', (ttypes.ThriftSessionExpiredException, ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 2
   )
 
   def __init__(self, ue=None, se=None,):
@@ -796,13 +1148,13 @@ class publish_result:
         break
       if fid == 1:
         if ftype == TType.STRUCT:
-          self.ue = Exception.ttypes.ThriftUndefinedEventTypeException()
+          self.ue = ttypes.ThriftUndefinedEventTypeException()
           self.ue.read(iprot)
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.se = Exception.ttypes.ThriftSessionExpiredException()
+          self.se = ttypes.ThriftSessionExpiredException()
           self.se.read(iprot)
         else:
           iprot.skip(ftype)
@@ -923,7 +1275,7 @@ class deleteStreamById_result:
 
   thrift_spec = (
     (0, TType.BOOL, 'success', None, None, ), # 0
-    (1, TType.STRUCT, 'se', (Exception.ttypes.ThriftSessionExpiredException, Exception.ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 1
+    (1, TType.STRUCT, 'se', (ttypes.ThriftSessionExpiredException, ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 1
   )
 
   def __init__(self, success=None, se=None,):
@@ -946,7 +1298,7 @@ class deleteStreamById_result:
           iprot.skip(ftype)
       elif fid == 1:
         if ftype == TType.STRUCT:
-          self.se = Exception.ttypes.ThriftSessionExpiredException()
+          self.se = ttypes.ThriftSessionExpiredException()
           self.se.read(iprot)
         else:
           iprot.skip(ftype)
@@ -1079,7 +1431,7 @@ class deleteStreamByNameVersion_result:
 
   thrift_spec = (
     (0, TType.BOOL, 'success', None, None, ), # 0
-    (1, TType.STRUCT, 'se', (Exception.ttypes.ThriftSessionExpiredException, Exception.ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 1
+    (1, TType.STRUCT, 'se', (ttypes.ThriftSessionExpiredException, ttypes.ThriftSessionExpiredException.thrift_spec), None, ), # 1
   )
 
   def __init__(self, success=None, se=None,):
@@ -1102,7 +1454,7 @@ class deleteStreamByNameVersion_result:
           iprot.skip(ftype)
       elif fid == 1:
         if ftype == TType.STRUCT:
-          self.se = Exception.ttypes.ThriftSessionExpiredException()
+          self.se = ttypes.ThriftSessionExpiredException()
           self.se.read(iprot)
         else:
           iprot.skip(ftype)
