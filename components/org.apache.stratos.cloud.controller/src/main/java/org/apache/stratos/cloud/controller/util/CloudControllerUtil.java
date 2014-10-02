@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
@@ -308,6 +309,18 @@ public class CloudControllerUtil {
 		
 		return getProperty(props, key);
 	}
+	
+    public static org.apache.stratos.cloud.controller.pojo.Properties addProperty(
+            org.apache.stratos.cloud.controller.pojo.Properties properties, String key, String value) {
+        Property property = new Property();
+        property.setName(key);
+        property.setValue(value);
+
+        org.apache.stratos.cloud.controller.pojo.Properties newProperties = 
+                new org.apache.stratos.cloud.controller.pojo.Properties();
+        newProperties.setProperties(ArrayUtils.add(properties.getProperties(), property));
+        return newProperties;
+    }
 	
 	/**
 	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties

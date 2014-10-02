@@ -1426,9 +1426,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						+ controller + " via Kubernetes layer.");
 			}
 			
-			memberContext.setPublicIpAddress(kubernetesMasterIp);
-			memberContext.setPrivateIpAddress(kubernetesMasterIp);
-			dataHolder.addMemberContext(memberContext);
+            memberContext.setPublicIpAddress(kubernetesMasterIp);
+            memberContext.setPrivateIpAddress(kubernetesMasterIp);
+            memberContext.setProperties(CloudControllerUtil.addProperty(memberContext
+                    .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                    CloudControllerUtil.getProperty(ctxt.getProperties(),
+                            StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+            dataHolder.addMemberContext(memberContext);
 
 			// persist in registry
 			persist();
