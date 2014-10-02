@@ -44,7 +44,7 @@ class EventSubscriber(threading.Thread):
         """
         Adds an event handler function mapped to the provided event.
         :param str event: Name of the event to attach the provided handler
-        :param (str)->void handler: The handler function
+        :param handler: The handler function
         :return: void
         :rtype: void
         """

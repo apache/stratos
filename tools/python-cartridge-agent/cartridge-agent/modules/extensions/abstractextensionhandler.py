@@ -1,6 +1,3 @@
-import abc
-
-
 class AbstractExtensionHandler:
 
     def on_instance_started_event(self):
