@@ -250,17 +250,6 @@ public class DefaultApplicationParser implements ApplicationParser {
         log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
 
         return application;
-
-        //ApplicationDataHolder applicationDataHolder = new ApplicationDataHolder();
-        //assert clusterDataHolder != null;
-        //applicationDataHolder.setClusters(clusterDataHolder.getApplicationClusterContexts());
-        //applicationDataHolder.setPayloadDataHolders(clusterDataHolder.getPayloadDataHolders());
-        //applicationDataHolder.setApplication(application);
-
-        // persist the information in FasterLookUpDataHolder
-        //persist(dataHolder);
-
-        //return applicationDataHolder;
     }
 
     private Map<String, Group> parseGroups (String appId, int tenantId, String key, List<GroupContext> groupCtxts,
@@ -333,7 +322,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
-        Set<StartupOrder>  startupOrders = getStartupOrderForGroup(groupCtxt.getName());
+        Set<StartupOrder>  startupOrders = getStartupOrderForGroup(groupCtxt);
         if (startupOrders != null) {
             dependencyOrder.setStartupOrders(startupOrders);
         }
@@ -347,14 +336,6 @@ public class DefaultApplicationParser implements ApplicationParser {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
                     Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts);
             group.setClusterData(clusterDataMap);
-            //clusters.addAll(clusterDataHolderOfGroup.getApplicationClusterContexts());
-//            if (clusterDataHolder == null) {
-//                clusterDataHolder = clusterDataHolderOfGroup;
-//            } else {
-//                clusterDataHolder.getApplicationClusterContexts().addAll(clusterDataHolderOfGroup.getApplicationClusterContexts());
-//                clusterDataHolder.getClusterIdMap().putAll(clusterDataHolderOfGroup.getClusterIdMap());
-//                //clusterDataHolder.getPayloadDataHolders().addAll(clusterDataHolderOfGroup.getPayloadDataHolders());
-//            }
         }
 
         // get nested groups
@@ -376,18 +357,20 @@ public class DefaultApplicationParser implements ApplicationParser {
         return group;
     }
 
-    private Set<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws ApplicationDefinitionException {
+    private Set<StartupOrder> getStartupOrderForGroup(GroupContext groupContext) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(serviceGroupName);
+        ServiceGroup serviceGroup = FasterLookUpDataHolder.getInstance().getServiceGroup(groupContext.getName());
 
         if (serviceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
+            handleError("Service Group Definition not found for name " + groupContext.getName());
         }
 
         assert serviceGroup != null;
         if (serviceGroup.getDependencies() != null) {
             if (serviceGroup.getDependencies().getStartupOrder() != null) {
-                return ParserUtils.convert(serviceGroup.getDependencies().getStartupOrder());
+
+                // convert to Startup Order with aliases
+                return ParserUtils.convert(serviceGroup.getDependencies().getStartupOrder(), groupContext);
             }
         }
 
