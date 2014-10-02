@@ -24,15 +24,15 @@ def publish_instance_started_event():
     global started, log
     if not started:
         log.info("Publishing instance started event")
-        service_name = CartridgeAgentConfiguration.service_name
-        cluster_id = CartridgeAgentConfiguration.cluster_id
-        network_partition_id = CartridgeAgentConfiguration.network_partition_id
-        parition_id = CartridgeAgentConfiguration.partition_id
-        member_id = CartridgeAgentConfiguration.member_id
+        service_name = CartridgeAgentConfiguration().service_name
+        cluster_id = CartridgeAgentConfiguration().cluster_id
+        network_partition_id = CartridgeAgentConfiguration().network_partition_id
+        parition_id = CartridgeAgentConfiguration().partition_id
+        member_id = CartridgeAgentConfiguration().member_id
 
         instance_started_event = InstanceStartedEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                       member_id)
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceStartedEvent")
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
         started = True
         log.info("Instance started event published")
@@ -44,15 +44,15 @@ def publish_instance_activated_event():
     global activated, log
     if not activated:
         log.info("Publishing instance activated event")
-        service_name = CartridgeAgentConfiguration.service_name
-        cluster_id = CartridgeAgentConfiguration.cluster_id
-        network_partition_id = CartridgeAgentConfiguration.network_partition_id
-        parition_id = CartridgeAgentConfiguration.partition_id
-        member_id = CartridgeAgentConfiguration.member_id
+        service_name = CartridgeAgentConfiguration().service_name
+        cluster_id = CartridgeAgentConfiguration().cluster_id
+        network_partition_id = CartridgeAgentConfiguration().network_partition_id
+        parition_id = CartridgeAgentConfiguration().partition_id
+        member_id = CartridgeAgentConfiguration().member_id
 
         instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceActivatedEvent")
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_ACTIVATED_EVENT)
         publisher.publish(instance_activated_event)
 
         log.info("Instance activated event published")
@@ -60,7 +60,7 @@ def publish_instance_activated_event():
 
         if CEPPublisherConfiguration.get_instance().enabled:
             interval_default = 15  # seconds
-            interval = CartridgeAgentConfiguration.read_property("stats.notifier.interval")
+            interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval")
             if interval is not None and len(interval) > 0:
                 try:
                     interval = int(interval)
@@ -85,16 +85,16 @@ def publish_maintenance_mode_event():
     if not maintenance:
         log.info("Publishing instance maintenance mode event")
 
-        service_name = CartridgeAgentConfiguration.service_name
-        cluster_id = CartridgeAgentConfiguration.cluster_id
-        network_partition_id = CartridgeAgentConfiguration.network_partition_id
-        parition_id = CartridgeAgentConfiguration.partition_id
-        member_id = CartridgeAgentConfiguration.member_id
+        service_name = CartridgeAgentConfiguration().service_name
+        cluster_id = CartridgeAgentConfiguration().cluster_id
+        network_partition_id = CartridgeAgentConfiguration().network_partition_id
+        parition_id = CartridgeAgentConfiguration().partition_id
+        member_id = CartridgeAgentConfiguration().member_id
 
         instance_maintenance_mode_event = InstanceMaintenanceModeEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceMaintenanceModeEvent")
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_MAINTENANCE_MODE_EVENT)
         publisher.publish(instance_maintenance_mode_event)
 
         maintenance = True
@@ -108,16 +108,16 @@ def publish_instance_ready_to_shutdown_event():
     if not ready_to_shutdown:
         log.info("Publishing instance activated event")
 
-        service_name = CartridgeAgentConfiguration.service_name
-        cluster_id = CartridgeAgentConfiguration.cluster_id
-        network_partition_id = CartridgeAgentConfiguration.network_partition_id
-        parition_id = CartridgeAgentConfiguration.partition_id
-        member_id = CartridgeAgentConfiguration.member_id
+        service_name = CartridgeAgentConfiguration().service_name
+        cluster_id = CartridgeAgentConfiguration().cluster_id
+        network_partition_id = CartridgeAgentConfiguration().network_partition_id
+        parition_id = CartridgeAgentConfiguration().partition_id
+        member_id = CartridgeAgentConfiguration().member_id
 
         instance_shutdown_event = InstanceReadyToShutdownEvent(service_name, cluster_id, network_partition_id, parition_id,
                                                           member_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + "InstanceReadyToShutdownEvent")
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
         publisher.publish(instance_shutdown_event)
 
         ready_to_shutdown = True
@@ -140,14 +140,8 @@ class EventPublisher:
     def __init__(self, topic):
         self.__topic = topic
 
-    """
-    msgs = [{'topic': "instance/status/InstanceStartedEvent", 'payload': instance_started_event.to_JSON()}]
-    #publish.single("instance", instance_started_event.to_JSON(), hostname="localhost", port=1883)
-    publish.multiple(msgs, "localhost", 1883)
-    """
-
     def publish(self, event):
-        mb_ip = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_IP)
-        mb_port = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_PORT)
+        mb_ip = CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_IP)
+        mb_port = CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_PORT)
         payload = event.to_json()
         publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port)

@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-import logging
 import threading
-import time
 
-from modules.config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from modules.exception.parameternotfoundexception import ParameterNotFoundException
-from modules.subscriber.eventsubscriber import EventSubscriber
-from modules.extensions.defaultextensionhandler import DefaultExtensionHandler
+from modules.subscriber import eventsubscriber
 from modules.publisher import cartridgeagentpublisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
@@ -14,7 +10,7 @@ from modules.event.topology.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
-from modules.extensions.abstractextensionhandler import *
+from modules.config import cartridgeagentconfiguration
 
 
 class CartridgeAgent(threading.Thread):
@@ -22,11 +18,22 @@ class CartridgeAgent(threading.Thread):
 
     def __init__(self):
         threading.Thread.__init__(self)
-        CartridgeAgentConfiguration.initialize_configuration()
 
-        self.__instance_event_subscriber = EventSubscriber(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC)
-        self.__tenant_event_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC)
-        self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
+        mb_ip = cartridgeagentconfiguration.CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_IP)
+        mb_port = cartridgeagentconfiguration.CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_PORT)
+
+        self.__instance_event_subscriber = eventsubscriber.EventSubscriber(
+            cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC,
+            mb_ip,
+            mb_port)
+        self.__tenant_event_subscriber = eventsubscriber.EventSubscriber(
+            cartridgeagentconstants.TENANT_TOPIC,
+            mb_ip,
+            mb_port)
+        self.__topology_event_subscriber = eventsubscriber.EventSubscriber(
+            cartridgeagentconstants.TOPOLOGY_TOPIC,
+            mb_ip,
+            mb_port)
 
         self.__tenant_context_initialized = False
         self.__topology_context_initialized = False
@@ -36,6 +43,8 @@ class CartridgeAgent(threading.Thread):
         self.terminated = False
 
         self.log = LogFactory().get_log(__name__)
+
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -66,25 +75,26 @@ class CartridgeAgent(threading.Thread):
 
         #Wait for all ports to be active
         cartridgeagentutils.wait_until_ports_active(
-            CartridgeAgentConfiguration.listen_address,
-            CartridgeAgentConfiguration.ports
+            self.cartridge_agent_config.listen_address,
+            self.cartridge_agent_config.ports,
+            int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False))
         )
 
         # check if artifact management is required before publishing instance activated event
-        repo_url = CartridgeAgentConfiguration.repo_url
+        repo_url = self.cartridge_agent_config.repo_url
         if repo_url is None or str(repo_url).strip() == "":
             self.log.info("No artifact repository found")
             CartridgeAgent.extension_handler.on_instance_activated_event()
 
             cartridgeagentpublisher.publish_instance_activated_event()
 
-        persistence_mappping_payload = CartridgeAgentConfiguration.persistence_mappings
+        persistence_mappping_payload = self.cartridge_agent_config.persistence_mappings
         if persistence_mappping_payload is not None:
             CartridgeAgent.extension_handler.volume_mount_extension(persistence_mappping_payload)
 
         # start log publishing thread
         if DataPublisherConfiguration.get_instance().enabled:
-            log_file_paths = CartridgeAgentConfiguration.log_file_paths
+            log_file_paths = self.cartridge_agent_config.log_file_paths
             if log_file_paths is None:
                 self.log.exception("No valid log file paths found, no logs will be published")
             else:
@@ -112,21 +122,21 @@ class CartridgeAgent(threading.Thread):
         """
         # JNDI_PROPERTIES_DIR
         try:
-            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
+            self.cartridge_agent_config.read_property(cartridgeagentconstants.JNDI_PROPERTIES_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.JNDI_PROPERTIES_DIR)
             return
 
         #PARAM_FILE_PATH
         try:
-            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
+            self.cartridge_agent_config.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.PARAM_FILE_PATH)
             return
 
         #EXTENSIONS_DIR
         try:
-            CartridgeAgentConfiguration.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
+            self.cartridge_agent_config.read_property(cartridgeagentconstants.EXTENSIONS_DIR)
         except ParameterNotFoundException:
             self.log.error("System property not found: %r" % cartridgeagentconstants.EXTENSIONS_DIR)
             return
@@ -150,7 +160,7 @@ class CartridgeAgent(threading.Thread):
         CartridgeAgent.extension_handler.on_artifact_updated_event(event_obj)
 
     def on_instance_cleanup_member(self, msg):
-        member_in_payload = CartridgeAgentConfiguration.member_id
+        member_in_payload = self.cartridge_agent_config.member_id
         event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
@@ -158,7 +168,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_instance_cleanup_cluster(self, msg):
         event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)
-        cluster_in_payload = CartridgeAgentConfiguration.cluster_id
+        cluster_in_payload = self.cartridge_agent_config.cluster_id
         cluster_in_event = event_obj.cluster_id
 
         if cluster_in_event == cluster_in_payload:
@@ -277,18 +287,6 @@ class CartridgeAgent(threading.Thread):
             CartridgeAgent.extension_handler.on_tenant_unsubscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant unSubscribed event")
-            
-    @staticmethod
-    def get_extension_handler():
-        """
-        Returns the Extension handler implementation
-        :return: An implmentation of AbstractExtensionHandler
-        :rtype : AbstractExtensionHandler
-        """
-        if CartridgeAgent.extension_handler is None:
-            CartridgeAgent.extension_handler = DefaultExtensionHandler()
-            
-        return CartridgeAgent.extension_handler
 
 
 def main():

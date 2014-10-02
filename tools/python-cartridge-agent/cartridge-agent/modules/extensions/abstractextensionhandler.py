@@ -12,10 +12,10 @@ class AbstractExtensionHandler:
     def on_artifact_update_scheduler_event(self, tenant_id):
         raise NotImplementedError
 
-    def on_instance_cleanup_cluster_event(self, instanceCleanupClusterEvent):
+    def on_instance_cleanup_cluster_event(self, instance_cleanup_cluster_event):
         raise NotImplementedError
 
-    def on_instance_cleanup_member_event(self, instanceCleanupMemberEvent):
+    def on_instance_cleanup_member_event(self, instance_cleanup_member_event):
         raise NotImplementedError
 
     def on_member_activated_event(self, member_activated_event):
@@ -45,7 +45,7 @@ class AbstractExtensionHandler:
     def on_subscription_domain_added_event(self, subscription_domain_added_event):
         raise NotImplementedError
 
-    def on_subscription_domain_removed_event(self, subscriptionDomainRemovedEvent):
+    def on_subscription_domain_removed_event(self, subscription_domain_removed_event):
         raise NotImplementedError
 
     def on_copy_artifacts_extension(self, src, des):

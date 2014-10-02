@@ -247,8 +247,10 @@ class Cluster:
         return member_id in self.member_map
 
     def __str__(self):
-        return "Cluster [serviceName=%r, clusterId=%r, autoscalePolicyName=%r, deploymentPolicyName=%r, hostNames=%r, tenantRange=%r, isLbCluster=%r, properties=%r]" % \
-               (self.service_name, self.cluster_id, self.autoscale_policy_name, self.deployment_policy_name, self.hostnames, self.tenant_range, self.is_lb_cluster, self.properties)
+        return "Cluster [serviceName=" + self.service_name + ", clusterId=" + self.cluster_id \
+               + ", autoscalePolicyName=" + self.autoscale_policy_name + ", deploymentPolicyName=" \
+               + self.deployment_policy_name + ", hostNames=" + self.hostnames + ", tenantRange=" + self.tenant_range \
+               + ", isLbCluster=" + self.is_lb_cluster + ", properties=" + self.properties + "]"
 
     def tenant_id_in_range(self, tenant_id):
         """

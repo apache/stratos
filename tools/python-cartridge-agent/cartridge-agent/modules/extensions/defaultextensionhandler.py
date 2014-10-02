@@ -1,15 +1,5 @@
-import logging
 import time
 
-from ..artifactmgt.git.agentgithandler import AgentGitHandler
-from ..artifactmgt.repositoryinformation import RepositoryInformation
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import extensionutils
-from ..publisher import cartridgeagentpublisher
-from ..exception.parameternotfoundexception import ParameterNotFoundException
-from ..topology.topologycontext import *
-from ..tenant.tenantcontext import *
-from ..util.log import LogFactory
 from abstractextensionhandler import AbstractExtensionHandler
 
 
@@ -22,12 +12,13 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     def __init__(self):
         self.log = LogFactory().get_log(__name__)
         self.wk_members = []
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def on_instance_started_event(self):
         try:
             self.log.debug("Processing instance started event...")
-            if CartridgeAgentConfiguration.is_multitenant:
-                artifact_source = "%r/repository/deployment/server/" % CartridgeAgentConfiguration.app_path
+            if self.cartridge_agent_config.is_multitenant:
+                artifact_source = "%r/repository/deployment/server/" % self.cartridge_agent_config.app_path
                 artifact_dest = cartridgeagentconstants.SUPERTENANT_TEMP_PATH
                 extensionutils.execute_copy_artifact_extension(artifact_source, artifact_dest)
 
@@ -45,18 +36,18 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                        artifacts_updated_event.status))
 
         cluster_id_event = str(artifacts_updated_event.cluster_id).strip()
-        cluster_id_payload = CartridgeAgentConfiguration.cluster_id
+        cluster_id_payload = self.cartridge_agent_config.cluster_id
         repo_url = str(artifacts_updated_event.repo_url).strip()
 
         if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
-            local_repo_path = CartridgeAgentConfiguration.app_path
+            local_repo_path = self.cartridge_agent_config.app_path
 
-            secret = CartridgeAgentConfiguration.cartridge_key
+            secret = self.cartridge_agent_config.cartridge_key
             repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
             repo_username = artifacts_updated_event.repo_username
             tenant_id = artifacts_updated_event.tenant_id
-            is_multitenant = CartridgeAgentConfiguration.is_multitenant
+            is_multitenant = self.cartridge_agent_config.is_multitenant
             commit_enabled = artifacts_updated_event.commit_enabled
 
             self.log.info("Executing git checkout")
@@ -66,7 +57,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                                               is_multitenant, commit_enabled)
 
             # checkout code
-            subscribe_run, repo_context = AgentGitHandler.checkout(repo_info)
+            subscribe_run, repo_context = agentgithandler.AgentGitHandler.checkout(repo_info)
             # repo_context = checkout_result["repo_context"]
             # execute artifact updated extension
             env_params = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
@@ -82,15 +73,15 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 # publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 
-            update_artifacts = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE, False)
+            update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE, False)
             update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
             if update_artifacts:
-                auto_commit = CartridgeAgentConfiguration.is_commits_enabled
-                auto_checkout = CartridgeAgentConfiguration.is_checkout_enabled
+                auto_commit = self.cartridge_agent_config.is_commits_enabled
+                auto_checkout = self.cartridge_agent_config.is_checkout_enabled
 
                 try:
                     update_interval = len(
-                        CartridgeAgentConfiguration.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL, False))
+                        self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL, False))
                 except ParameterNotFoundException:
                     self.log.exception("Invalid artifact sync interval specified ")
                     update_interval = 10
@@ -103,7 +94,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 self.log.info("Auto Commit is turned %r " % "on" if auto_commit else "off")
                 self.log.info("Auto Checkout is turned %r " % "on" if auto_checkout else "off")
 
-                AgentGitHandler.schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit,
+                agentgithandler.AgentGitHandler.schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit,
                                                                         update_interval)
 
     def on_artifact_update_scheduler_event(self, tenant_id):
@@ -111,19 +102,21 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         extensionutils.execute_artifacts_updated_extension(env_params)
 
-    def on_instance_cleanup_cluster_event(self, instanceCleanupClusterEvent):
+    def on_instance_cleanup_cluster_event(self, instance_cleanup_cluster_event):
         self.cleanup()
 
-    def on_instance_cleanup_member_event(self, instanceCleanupMemberEvent):
+    def on_instance_cleanup_member_event(self, instance_cleanup_member_event):
         self.cleanup()
 
     def on_member_activated_event(self, member_activated_event):
         self.log.info("Member activated event received: [service] %r [cluster] %r [member] %r"
             % (member_activated_event.service_name, member_activated_event.cluster_id, member_activated_event.member_id))
 
-        topology_consistent = extensionutils.check_topology_consistency(member_activated_event.service_name,
-                                                               member_activated_event.cluster_id,
-                                                               member_activated_event.member_id)
+        topology_consistent = extensionutils.check_topology_consistency(
+            member_activated_event.service_name,
+            member_activated_event.cluster_id,
+            member_activated_event.member_id)
+
         if not topology_consistent:
             self.log.error("Topology is inconsistent...failed to execute member activated event")
             return
@@ -164,7 +157,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             extensionutils.add_properties(cluster.properties, env_params, "MEMBER_ACTIVATED_CLUSTER_PROPERTY")
             extensionutils.add_properties(member.properties, env_params, "MEMBER_ACTIVATED_MEMBER_PROPERTY")
 
-            clustered = CartridgeAgentConfiguration.is_clustered
+            clustered = self.cartridge_agent_config.is_clustered
 
             if member.properties is not None and member.properties[
                     cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" and clustered is not None and clustered:
@@ -178,7 +171,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                 self.log.debug(" hasWKIpChanged %r" + has_wk_ip_changed)
 
-                min_count = int(CartridgeAgentConfiguration.min_count)
+                min_count = int(self.cartridge_agent_config.min_count)
                 is_wk_member_grp_ready = self.is_wk_member_group_ready(env_params, min_count)
                 self.log.debug("MinCount: %r" % min_count)
                 self.log.debug("is_wk_member_grp_ready : %r" % is_wk_member_grp_ready)
@@ -189,7 +182,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             self.log.debug("Setting env var STRATOS_CLUSTERING to %r" % clustered)
             env_params["STRATOS_CLUSTERING"] = clustered
-            env_params["STRATOS_WK_MEMBER_COUNT"] = CartridgeAgentConfiguration.min_count
+            env_params["STRATOS_WK_MEMBER_COUNT"] = self.cartridge_agent_config.min_count
 
             extensionutils.execute_member_activated_extension(env_params)
         else:
@@ -198,9 +191,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     def on_complete_topology_event(self, complete_topology_event):
         self.log.debug("Complete topology event received")
 
-        service_name_in_payload = CartridgeAgentConfiguration.service_name
-        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
-        member_id_in_payload = CartridgeAgentConfiguration.member_id
+        service_name_in_payload = self.cartridge_agent_config.service_name
+        cluster_id_in_payload = self.cartridge_agent_config.cluster_id
+        member_id_in_payload = self.cartridge_agent_config.member_id
 
         extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
@@ -224,7 +217,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
     def on_member_terminated_event(self, member_terminated_event):
         self.log.info("Member terminated event received: [service] " + member_terminated_event.service_name +
-                      " [cluster] " + member_terminated_event.cluster_id + " [member] " + member_terminated_event.member_id)
+                      " [cluster] " + member_terminated_event.cluster_id
+                      + " [member] " + member_terminated_event.member_id)
 
         topology_consistent = extensionutils.check_topology_consistency(
             member_terminated_event.service_name,
@@ -374,9 +368,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         extensionutils.wait_for_complete_topology()
         self.log.info("[start server extension] complete topology event received")
 
-        service_name_in_payload = CartridgeAgentConfiguration.service_name
-        cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
-        member_id_in_payload = CartridgeAgentConfiguration.member_id
+        service_name_in_payload = self.cartridge_agent_config.service_name
+        cluster_id_in_payload = self.cartridge_agent_config.cluster_id
+        member_id_in_payload = self.cartridge_agent_config.member_id
 
         topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
@@ -393,12 +387,12 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             env_params = {}
 
             # if clustering is enabled wait until all well known members have started
-            clustering_enabled = CartridgeAgentConfiguration.is_clustered
+            clustering_enabled = self.cartridge_agent_config.is_clustered
             if clustering_enabled:
                 env_params["STRATOS_CLUSTERING"] = "true"
-                env_params["STRATOS_WK_MEMBER_COUNT"] = CartridgeAgentConfiguration.min_count
+                env_params["STRATOS_WK_MEMBER_COUNT"] = self.cartridge_agent_config.min_count
 
-                env_params["STRATOS_PRIMARY"] = "true" if CartridgeAgentConfiguration.is_primary else "false"
+                env_params["STRATOS_PRIMARY"] = "true" if self.cartridge_agent_config.is_primary else "false"
 
                 self.wait_for_wk_members(env_params)
                 self.log.info("All well known members have started! Resuming start server extension...")
@@ -430,16 +424,16 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         extensionutils.execute_subscription_domain_added_extension(env_params)
 
-    def on_subscription_domain_removed_event(self, subscriptionDomainRemovedEvent):
-        tenant_domain = self.find_tenant_domain(subscriptionDomainRemovedEvent.tenant_id)
+    def on_subscription_domain_removed_event(self, subscription_domain_removed_event):
+        tenant_domain = self.find_tenant_domain(subscription_domain_removed_event.tenant_id)
         self.log.info(
-            "Subscription domain removed event received: [tenant-id] " + subscriptionDomainRemovedEvent.tenant_id +
-            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscriptionDomainRemovedEvent.domain_name
+            "Subscription domain removed event received: [tenant-id] " + subscription_domain_removed_event.tenant_id +
+            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_removed_event.domain_name
         )
 
-        env_params = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscriptionDomainRemovedEvent.service_name,
-                      "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscriptionDomainRemovedEvent.domain_name,
-                      "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscriptionDomainRemovedEvent.tenant_id),
+        env_params = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscription_domain_removed_event.service_name,
+                      "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscription_domain_removed_event.domain_name,
+                      "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscription_domain_removed_event.tenant_id),
                       "STRATOS_SUBSCRIPTION_TENANT_DOMAIN": tenant_domain}
 
         extensionutils.execute_subscription_domain_removed_extension(env_params)
@@ -458,14 +452,15 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     def on_tenant_unsubscribed_event(self, tenant_unsubscribed_event):
         self.log.info(
             "Tenant unsubscribed event received: [tenant] " + tenant_unsubscribed_event.tenant_id +
-            " [service] " + tenant_unsubscribed_event.service_name + " [cluster] " + tenant_unsubscribed_event.cluster_ids
+            " [service] " + tenant_unsubscribed_event.service_name +
+            " [cluster] " + tenant_unsubscribed_event.cluster_ids
         )
 
         try:
-            if CartridgeAgentConfiguration.service_name == tenant_unsubscribed_event.service_name:
-                AgentGitHandler.remove_repo(tenant_unsubscribed_event.tenant_id)
+            if self.cartridge_agent_config.service_name == tenant_unsubscribed_event.service_name:
+                agentgithandler.AgentGitHandler.remove_repo(tenant_unsubscribed_event.tenant_id)
         except:
-            self.log.exception()
+            self.log.exception("Removing git repository failed: ")
         extensionutils.execute_tenant_unsubscribed_extension({})
 
     def cleanup(self):
@@ -484,18 +479,20 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         if topology is None or not topology.initialized:
             return False
 
-        service_group_in_payload = CartridgeAgentConfiguration.service_group
+        service_group_in_payload = self.cartridge_agent_config.service_group
         if service_group_in_payload is not None:
             env_params["STRATOS_SERVICE_GROUP"] = service_group_in_payload
 
         # clustering logic for apimanager
         if service_group_in_payload is not None and service_group_in_payload == "apim":
             # handle apistore and publisher case
-            if CartridgeAgentConfiguration.service_name == "apistore" or \
-                    CartridgeAgentConfiguration.service_name == "publisher":
+            if self.cartridge_agent_config.service_name == cartridgeagentconstants.APIMANAGER_SERVICE_NAME or \
+                    self.cartridge_agent_config.service_name == cartridgeagentconstants.PUBLISHER_SERVICE_NAME:
 
-                apistore_cluster_collection = topology.get_service("apistore").get_clusters()
-                publisher_cluster_collection = topology.get_service("publisher").get_clusters()
+                apistore_cluster_collection = topology.get_service(cartridgeagentconstants.APIMANAGER_SERVICE_NAME)\
+                    .get_clusters()
+                publisher_cluster_collection = topology.get_service(cartridgeagentconstants.PUBLISHER_SERVICE_NAME)\
+                    .get_clusters()
 
                 apistore_member_list = []
                 for member in apistore_cluster_collection[0].get_members():
@@ -526,42 +523,43 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                 return True
 
-            elif CartridgeAgentConfiguration.service_name == "gatewaymgt" or \
-                    CartridgeAgentConfiguration.service_name == "gateway":
+            elif self.cartridge_agent_config.service_name == cartridgeagentconstants.GATEWAY_MGT_SERVICE_NAME or \
+                    self.cartridge_agent_config.service_name == cartridgeagentconstants.GATEWAY_SERVICE_NAME:
 
-                if CartridgeAgentConfiguration.deployment is not None:
+                if self.cartridge_agent_config.deployment is not None:
                     # check if deployment is Manager Worker separated
-                    if CartridgeAgentConfiguration.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower() or \
-                            CartridgeAgentConfiguration.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                    if self.cartridge_agent_config.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower() or \
+                            self.cartridge_agent_config.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
 
-                        self.log.info("Deployment pattern for the node: %r" % CartridgeAgentConfiguration.deployment)
-                        env_params["DEPLOYMENT"] = CartridgeAgentConfiguration.deployment
+                        self.log.info("Deployment pattern for the node: %r" % self.cartridge_agent_config.deployment)
+                        env_params["DEPLOYMENT"] = self.cartridge_agent_config.deployment
                         # check if WKA members of Manager Worker separated deployment is ready
                         return self.is_manager_worker_WKA_group_ready(env_params)
 
-            elif CartridgeAgentConfiguration.service_name == "keymanager":
+            elif self.cartridge_agent_config.service_name == cartridgeagentconstants.KEY_MANAGER_SERVICE_NAME:
                 return True
 
         else:
-            if CartridgeAgentConfiguration.deployment is not None:
+            if self.cartridge_agent_config.deployment is not None:
                 # check if deployment is Manager Worker separated
-                if CartridgeAgentConfiguration.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower() or \
-                        CartridgeAgentConfiguration.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                if self.cartridge_agent_config.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower() or \
+                        self.cartridge_agent_config.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
 
-                    self.log.info("Deployment pattern for the node: %r" % CartridgeAgentConfiguration.deployment)
-                    env_params["DEPLOYMENT"] = CartridgeAgentConfiguration.deployment
+                    self.log.info("Deployment pattern for the node: %r" % self.cartridge_agent_config.deployment)
+                    env_params["DEPLOYMENT"] = self.cartridge_agent_config.deployment
                     # check if WKA members of Manager Worker separated deployment is ready
                     return self.is_manager_worker_WKA_group_ready(env_params)
 
-            service_name_in_payload = CartridgeAgentConfiguration.service_name
-            cluster_id_in_payload = CartridgeAgentConfiguration.cluster_id
+            service_name_in_payload = self.cartridge_agent_config.service_name
+            cluster_id_in_payload = self.cartridge_agent_config.cluster_id
             service = topology.get_service(service_name_in_payload)
             cluster = service.get_cluster(cluster_id_in_payload)
 
             wk_members = []
             for member in cluster.get_members():
                 if member.properties is not None and \
-                        "PRIMARY" in member.properties and member.properties["PRIMARY"].lower() == "true" and \
+                        cartridgeagentconstants.PRIMARY in member.properties \
+                        and member.properties[cartridgeagentconstants.PRIMARY].lower() == "true" and \
                         (member.status == MemberStatus.Starting or member.status == MemberStatus.Activated):
 
                     wk_members.append(member)
@@ -584,8 +582,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     def is_manager_worker_WKA_group_ready(self, env_params):
 
         # for this, we need both manager cluster service name and worker cluster service name
-        manager_service_name = CartridgeAgentConfiguration.manager_service_name
-        worker_service_name = CartridgeAgentConfiguration.worker_service_name
+        manager_service_name = self.cartridge_agent_config.manager_service_name
+        worker_service_name = self.cartridge_agent_config.worker_service_name
 
         # managerServiceName and workerServiceName both should not be null /empty
         if manager_service_name is None or manager_service_name.strip() == "":
@@ -623,7 +621,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         manager_wka_members = []
         for member in manager_clusters[0].get_members():
             if member.properties is not None and \
-                    "PRIMARY" in member.properties and member.properties["PRIMARY"].lower() == "true" and \
+                    cartridgeagentconstants.PRIMARY in member.properties \
+                    and member.properties[cartridgeagentconstants.PRIMARY].lower() == "true" and \
                     (member.status == MemberStatus.Starting or member.status == MemberStatus.Activated):
 
                 manager_wka_members.append(member)
@@ -656,8 +655,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 self.log.info(
                     "Manager min instance count when allManagersNonPrimary true : " + manager_min_instance_count)
 
-            if member.properties is not None and "PRIMARY" in member.properties and \
-                            member.properties["PRIMARY"].lower() == "true":
+            if member.properties is not None and cartridgeagentconstants.PRIMARY in member.properties and \
+                    member.properties[cartridgeagentconstants.PRIMARY].lower() == "true":
                 all_managers_non_primary = False
                 break
 
@@ -681,8 +680,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         for member in worker_clusters[0].get_members():
             self.log.debug("Checking member : " + member.member_id)
 
-            if member.properties is not None and "PRIMARY" in member.properties and \
-                    member.properties["PRIMARY"].lower() == "true" and \
+            if member.properties is not None and cartridgeagentconstants.PRIMARY in member.properties and \
+                    member.properties[cartridgeagentconstants.PRIMARY].lower() == "true" and \
                     (member.status == MemberStatus.Starting or member.status == MemberStatus.Activated):
 
                 self.log.debug("Added worker member " + member.member_id)
@@ -713,8 +712,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         return min_manager_instances_available and min_worker_instances_available
 
     def get_min_instance_count_from_member(self, member):
-        if "MIN_COUNT" in member.properties:
-            return int(member.properties["MIN_COUNT"])
+        if cartridgeagentconstants.MIN_COUNT in member.properties:
+            return int(member.properties[cartridgeagentconstants.MIN_COUNT])
 
         return 1
 
@@ -726,7 +725,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         return tenant.tenant_domain
 
     def wait_for_wk_members(self, env_params):
-        min_count = int(CartridgeAgentConfiguration.min_count)
+        min_count = int(self.cartridge_agent_config.min_count)
         is_wk_member_group_ready = False
         while not is_wk_member_group_ready:
             self.log.info("Waiting for %r well known members..." % min_count)
@@ -734,3 +733,13 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             time.sleep(5)
 
             is_wk_member_group_ready = self.is_wk_member_group_ready(env_params, min_count)
+
+from ..artifactmgt.git import agentgithandler
+from ..artifactmgt.repositoryinformation import RepositoryInformation
+from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from ..util import extensionutils
+from ..publisher import cartridgeagentpublisher
+from ..exception.parameternotfoundexception import ParameterNotFoundException
+from ..topology.topologycontext import *
+from ..tenant.tenantcontext import *
+from ..util.log import LogFactory

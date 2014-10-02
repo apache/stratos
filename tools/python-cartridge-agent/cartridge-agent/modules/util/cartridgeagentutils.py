@@ -6,7 +6,6 @@ import time
 import socket
 import shutil
 
-from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 import cartridgeagentconstants
 from log import LogFactory
 
@@ -15,6 +14,16 @@ unpad = lambda s: s[0:-ord(s[-1])]
 log = LogFactory().get_log(__name__)
 
 current_milli_time = lambda: int(round(time.time() * 1000))
+
+extension_handler = None
+
+
+def get_extension_handler():
+    global extension_handler
+    if extension_handler is None:
+        extension_handler = defaultextensionhandler.DefaultExtensionHandler()
+
+    return extension_handler
 
 
 def decrypt_password(pass_str, secret):
@@ -75,14 +84,14 @@ def delete_folder_tree(path):
         log.exception("Deletion of folder path %r failed." % path)
 
 
-def wait_until_ports_active(ip_address, ports):
+def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
     """
     Blocks until the given list of ports become active
     :param str ip_address: Ip address of the member to be checked
     :param list[str] ports: List of ports to be checked
+    :param int ports_check_timeout: The timeout in milliseconds, defaults to 1000*60*10
     :return: void
     """
-    ports_check_timeout = CartridgeAgentConfiguration.read_property("port.check.timeout", critical=False)
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
@@ -161,3 +170,16 @@ def get_carbon_server_property(property_key):
     """
 
     raise NotImplementedError
+
+
+def get_working_dir():
+    """
+    Returns the base directory of the cartridge agent.
+    :return: Base working dir path
+    :rtype : str
+    """
+    #"/path/to/cartridge-agent/modules/util/".split("modules") returns ["/path/to/cartridge-agent/", "/util"]
+    return os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
+
+
+from ..extensions import defaultextensionhandler

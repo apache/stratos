@@ -5,15 +5,6 @@ EXTENSIONS_DIR = "extensions.dir"
 MB_IP = "mb.ip"
 MB_PORT = "mb.port"
 
-INSTANCE_STARTED_SH = "instance-started.sh"
-START_SERVERS_SH = "start-servers.sh"
-INSTANCE_ACTIVATED_SH = "instance-activated.sh"
-ARTIFACTS_UPDATED_SH = "artifacts-updated.sh"
-CLEAN_UP_SH = "clean.sh"
-MOUNT_VOLUMES_SH = "mount_volumes.sh"
-SUBSCRIPTION_DOMAIN_ADDED_SH = "subscription-domain-added.sh"
-SUBSCRIPTION_DOMAIN_REMOVED_SH = "subscription-domain-removed.sh"
-
 CARTRIDGE_KEY = "CARTRIDGE_KEY"
 APP_PATH = "APP_PATH"
 SERVICE_GROUP = "SERIVCE_GROUP"
@@ -29,6 +20,7 @@ PORTS = "PORTS"
 DEPLOYMENT = "DEPLOYMENT"
 MANAGER_SERVICE_TYPE = "MANAGER_SERVICE_TYPE"
 WORKER_SERVICE_TYPE = "WORKER_SERVICE_TYPE"
+PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING"
 
 # stratos.sh environment variables keys
 LOG_FILE_PATHS = "LOG_FILE_PATHS"
@@ -87,6 +79,41 @@ TOPOLOGY_TOPIC = "topology/#"
 TENANT_TOPIC = "tenant/#"
 INSTANCE_STATUS_TOPIC = "instance/status/"
 
-
 #Messaging Model
 TENANT_RANGE_DELIMITER = "-"
+
+INSTANCE_STARTED_EVENT = "InstanceStartedEvent"
+INSTANCE_ACTIVATED_EVENT = "InstanceActivatedEvent"
+INSTANCE_MAINTENANCE_MODE_EVENT = "InstanceMaintenanceModeEvent"
+INSTANCE_READY_TO_SHUTDOWN_EVENT = "InstanceReadyToShutdownEvent"
+
+PUBLISHER_SERVICE_NAME = "publisher"
+APISTORE_SERVICE_NAME = "apistore"
+APIMANAGER_SERVICE_NAME = "apim"
+GATEWAY_SERVICE_NAME = "gatewaymgt"
+GATEWAY_MGT_SERVICE_NAME = "gateway"
+KEY_MANAGER_SERVICE_NAME = "keymanager"
+
+PRIMARY = "PRIMARY"
+MIN_COUNT = "MIN_COUNT"
+
+#multi tenant constants
+INVALID_TENANT_ID = "-1"
+SUPER_TENANT_ID = "-1234"
+
+DATE_FORMAT = "%Y.%m.%d"
+
+PORT_CHECK_TIMEOUT = "port.check.timeout"
+
+CEP_PUBLISHER_ENABLED = "cep.stats.publisher.enabled"
+CEP_RECEIVER_IP = "thrift.receiver.ip"
+CEP_RECEIVER_PORT = "thrift.receiver.port"
+CEP_SERVER_ADMIN_USERNAME = "thrift.server.admin.username"
+CEP_SERVER_ADMIN_PASSWORD = "thrift.server.admin.password"
+
+MONITORING_PUBLISHER_ENABLED = "enable.data.publisher"
+MONITORING_RECEIVER_IP = "monitoring.server.ip"
+MONITORING_RECEIVER_PORT = "monitoring.server.port"
+MONITORING_RECEIVER_SECURE_PORT = "monitoring.server.secure.port"
+MONITORING_SERVER_ADMIN_USERNAME = "monitoring.server.admin.username"
+MONITORING_SERVER_ADMIN_PASSWORD = "monitoring.server.admin.password"
