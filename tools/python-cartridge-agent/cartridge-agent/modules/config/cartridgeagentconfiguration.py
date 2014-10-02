@@ -3,6 +3,7 @@ import logging
 import os
 
 from ..util import cartridgeagentconstants
+from ..util.log import LogFactory
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 
 
@@ -11,8 +12,7 @@ class CartridgeAgentConfiguration:
     Handles the configuration information of the particular Cartridge Agent
     """
     # set log level
-    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-    log = logging.getLogger(__name__)
+    log = LogFactory().get_log(__name__)
 
     payload_params = {}
     properties = None

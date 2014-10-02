@@ -8,11 +8,11 @@ import shutil
 
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 import cartridgeagentconstants
+from log import LogFactory
 
 unpad = lambda s: s[0:-ord(s[-1])]
 
-logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-log = logging.getLogger(__name__)
+log = LogFactory().get_log(__name__)
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -149,3 +149,15 @@ def validate_tenant_range(tenant_range):
 
     if not valid:
         raise RuntimeError("Tenant range %r is not valid" % tenant_range)
+
+
+def get_carbon_server_property(property_key):
+    """
+    Reads the carbon.xml file and returns the value for the property key.
+    TODO: Get carbon server xml location
+    :param str property_key: Property key to look for
+    :return: The value of the property, None if the property key is invalid or not present
+    :rtype : str
+    """
+
+    raise NotImplementedError

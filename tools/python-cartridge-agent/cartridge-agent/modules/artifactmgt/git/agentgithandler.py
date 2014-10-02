@@ -1,7 +1,9 @@
 import logging
 from threading import current_thread, Thread
-
+import os
 from git import *
+from gittle import Gittle, GittleAuth  # GitPython and Gittle are both used at the time being for pros and cons of both
+import urllib2
 
 from gitrepository import GitRepository
 from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
@@ -9,23 +11,42 @@ from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstant
 from ... util.asyncscheduledtask import AsyncScheduledTask
 from ... artifactmgt.repositoryinformation import RepositoryInformation
 from ... extensions.abstractextensionhandler import AbstractExtensionHandler
+from ... util.log import LogFactory
+
 
 
 class AgentGitHandler:
-    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-    log = logging.getLogger(__name__)
+    """
+    Handles all the git artifact management tasks related to a cartridge
+    """
+
+    log = LogFactory().get_log(__name__)
 
     SUPER_TENANT_ID = -1234
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    extension_handler = AbstractExtensionHandler()
+    extension_handler = AbstractExtensionHandler()  # TODO: remove dependancy
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
 
     @staticmethod
     def checkout(repo_info):
+        """
+        Checks out the code from the remote repository.
+        If local repository path is empty, a clone operation is done.
+        If there is a cloned repository already on the local repository path, a pull operation
+        will be performed.
+        If there are artifacts not in the repository already on the local repository path,
+        they will be added to a git repository, the remote url added as origin, and then
+        a pull operation will be performed.
+
+        :param RepositoryInformation repo_info: The repository information object
+        :return: A tuple containing whether it was an initial clone or not, and the repository
+        context object
+        :rtype: tuple(bool, GitRepository)
+        """
         repo_context = AgentGitHandler.get_repo_context(repo_info.tenant_id)
         if repo_context is not None:
             #has been previously cloned, this is not the subscription run
@@ -48,7 +69,7 @@ class AgentGitHandler:
             subscribe_run = True
             repo_context = AgentGitHandler.clone(repo_context)
 
-        return {"subscribe_run": subscribe_run, "repo_context": repo_context}
+        return subscribe_run, repo_context
 
     @staticmethod
     def sync_initial_local_artifacts(repo_context):
@@ -75,8 +96,7 @@ class AgentGitHandler:
     @staticmethod
     def init(path):
         try:
-            repo = Repo.init(path, mkdir=True)
-            repo.git.init()
+            repo = Gittle.init(path)
         except:
             AgentGitHandler.log.exception("Initializing local repo at %r failed" % path)
             raise Exception("Initializing local repo at %r failed" % path)
@@ -90,7 +110,6 @@ class AgentGitHandler:
             try:
                 ref._get_object()
             except ValueError:
-                #corrupt sha in the reference
                 return False
 
         return True
@@ -157,7 +176,6 @@ class AgentGitHandler:
 
     @staticmethod
     def clone(repo_info):
-        #TODO: credential management
         repo_context = None
         try:
             repo_context = AgentGitHandler.create_git_repo_context(repo_info)
@@ -165,21 +183,74 @@ class AgentGitHandler:
             if not os.path.isdir(repo_context.local_repo_path):
                 cartridgeagentutils.create_dir(repo_context.local_repo_path)
 
-            repo = Repo.clone_from(repo_context.repo_url, repo_context.local_repo_path)
+            auth = AgentGitHandler.create_auth_configuration(repo_context)
+
+            if auth is not None:
+                # authentication is required, use Gittle
+                gittle_repo = Gittle.clone(repo_context.repo_url, repo_context.local_repo_path, auth=auth)
+                repo = Repo(repo_context.local_repo_path)
+            else:
+                # authentication is not required, use GitPython
+                repo = Repo.clone_from(repo_context.repo_url, repo_context.local_repo_path)
+                gittle_repo = Gittle(repo_context.local_repo_path)
 
             repo_context.cloned = True
-            repo_context.repo = repo
+            repo_context.gittle_repo = gittle_repo
+            repo_context.repo  = repo
             AgentGitHandler.add_repo_context(repo_context)
             AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
-        except GitCommandError as ex:
-            if "remote: Repository not found." in ex:
-                AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
-                #GitPython deletes the target folder if remote not found
-                cartridgeagentutils.create_dir(repo_context.local_repo_path)
-            else:
-                AgentGitHandler.log.exception("Git clone operation for tenant %r failed" % repo_context.tenant_id)
+        except urllib2.URLError:
+            AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
+        except OSError:
+            AgentGitHandler.log.exception("Permission denied for repository path for tenant %r" % repo_context.tenant_id)
+        except:
+            AgentGitHandler.log.exception("Git clone operation for tenant %r failed" % repo_context.tenant_id)
         finally:
             return repo_context
+
+    @staticmethod
+    def create_auth_configuration(repo_context):
+        """
+        Creates a GittleAuth object based on the type of authorization
+        :param GitRepository repo_context: The repository context object
+        :return: GittleAuth object or None if no authorization needed
+        :rtype: GittleAuth
+        """
+        if repo_context.key_based_auth:
+            pkey = AgentGitHandler.get_private_key()
+            auth = GittleAuth(pkey=pkey)
+        elif repo_context.repo_username.strip() != "" and repo_context.repo_password.strip() != "":
+            auth = GittleAuth(username=repo_context.repo_username, password=repo_context.repo_password)
+        else:
+            auth = None
+
+        return auth
+
+    @staticmethod
+    def get_private_key():
+        """
+        Returns a file handler to the private key path specified by Carbon or default if not specified
+        by Carbon
+        :return: The file object of the private key file
+        :rtype: file
+        """
+        pkey_name = cartridgeagentutils.get_carbon_server_property("SshPrivateKeyName")
+        if pkey_name is  None:
+            pkey_name = "wso2"
+
+        pkey_path = cartridgeagentutils.get_carbon_server_property("SshPrivateKeyPath")
+        if pkey_path is None:
+            pkey_path = os.environ["HOME"] + "/.ssh"
+
+        if pkey_path.endswith("/"):
+            pkey_ptr = pkey_path + pkey_name
+        else:
+            pkey_ptr = pkey_path + "/" + pkey_name
+
+        pkey_file = open(pkey_ptr)
+
+        return pkey_file
+
 
     @staticmethod
     def add_repo_context(repo_context):
@@ -215,22 +286,39 @@ class AgentGitHandler:
         repo_context.is_multitenant = repo_info.is_multitenant
         repo_context.commit_enabled = repo_info.commit_enabled
 
-        # TODO: push
-        # push not implemented
-        # if is_key_based_auth(repo_info.repo_url, tenant_id):
-        #     repo.key_based_auth = True
-        #     init_ssh_auth()
-        # else:
-        #     repo.key_based_auth = False
+        if AgentGitHandler.is_key_based_auth(repo_info.repo_url, repo_info.tenant_id):
+            repo_context.key_based_auth = True
+        else:
+            repo_context.key_based_auth = False
 
         repo_context.cloned = False
 
         repo_context.repo = None
+        repo_context.gittle_repo = None
 
         return repo_context
 
-    # @staticmethod
-    # def is_key_based_auth(repo_url, tenant_id):
+    @staticmethod
+    def is_key_based_auth(repo_url, tenant_id):
+        """
+        Checks if the given git repo has key based authentication
+        :param str repo_url: Git repository remote url
+        :param str tenant_id: Tenant ID
+        :return: True if key based, False otherwise
+        :rtype: bool
+        """
+        if repo_url.startswith("http://") or repo_url.startswith("https://"):
+            # username and password, not key based
+            return False
+        elif repo_url.startswith("git://github.com"):
+            # no auth required
+            return False
+        elif repo_url.startswith("ssh://") or "@" in repo_url:
+            # key based
+            return True
+        else:
+            AgentGitHandler.log.error("Invalid git URL provided for tenant " + tenant_id)
+            raise RuntimeError("Invalid git URL provided for tenant " + tenant_id)
 
     @staticmethod
     def get_repo_path_for_tenant(tenant_id, git_local_repo_path, is_multitenant):
@@ -278,6 +366,58 @@ class AgentGitHandler:
 
     @staticmethod
     def commit(repo_info):
+        """
+        Commits and pushes new artifacts to the remote repository
+        :param repo_info:
+        :return:
+        """
+        tenant_id = repo_info.tenant_id
+        repo_context = AgentGitHandler.get_repo_context(tenant_id)
+        gittle_repo = repo_context.gittle_repo
+        try:
+            modified = True if gittle_repo.modified_unstaged_files.count > 0 else False
+        except OSError:
+            # removed files
+            modified = True
+
+        if not modified:
+            AgentGitHandler.log.debug("No changes detected in the local repository for tenant " + tenant_id)
+            return
+
+        gittle_repo.stage(gittle_repo.untracked_files)
+        gittle_repo.stage(gittle_repo.removed_files)
+        gittle_repo.stage(gittle_repo.modified_unstaged_files)
+
+        #commit to local repositpory
+        commit_message = "tenant " + tenant_id + "'s artifacts committed to local repo at " + repo_context.local_repo_path
+
+        try:
+            commit_hash = gittle_repo.commit(name="First Author", email="author@example.org", message=commit_message)
+            AgentGitHandler.log.debug("Committed artifacts for tenant : " + tenant_id + " : " + commit_hash)
+        except:
+            AgentGitHandler.log.exception("Committing artifacts to local repository failed for tenant " + tenant_id)
+
+        #push to remote
+        try:
+            repo = repo_context.repo
+            #TODO: check key based authentication
+            credentialed_remote_url = AgentGitHandler.get_credentialed_remote_url(repo_context)
+            push_remote = repo.create_remote('push_remote', credentialed_remote_url)
+            push_remote.push()
+            AgentGitHandler.log.debug("Pushed artifacts for tenant : " + tenant_id)
+        except:
+            AgentGitHandler.log.exception("Pushing artifacts to remote repository failed for tenant " + tenant_id)
+
+    @staticmethod
+    def get_credentialed_remote_url(repo_context):
+        """
+        Creates a remote url including the credentials
+        :param repo_context:
+        :return:
+        """
+        username = repo_context.repo_username
+        password = repo_context.repo_password
+
         raise NotImplementedError
 
     @staticmethod
@@ -326,8 +466,7 @@ class AgentGitHandler:
 class ArtifactUpdateTask(Thread):
 
     def __init__(self, repo_info, auto_checkout, auto_commit):
-        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
         Thread.__init__(self)
         self.repo_info = repo_info
         self.auto_checkout = auto_checkout
