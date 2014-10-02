@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.rest.endpoint.bean.topology;
 
+import java.util.Properties;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -32,5 +34,6 @@ public class Member {
     public String memberIp;
     public String lbClusterId;
     public String memberPublicIp;
+    public Properties properties;
 
 }

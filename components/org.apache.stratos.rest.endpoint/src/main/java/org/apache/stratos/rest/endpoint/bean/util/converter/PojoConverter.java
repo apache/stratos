@@ -394,6 +394,7 @@ public class PojoConverter {
             }
             member.serviceName = tmp.getServiceName();
             member.status = tmp.getStatus().toString();
+            member.properties = tmp.getProperties();
             cluster1.member.add(member);
         }
 
