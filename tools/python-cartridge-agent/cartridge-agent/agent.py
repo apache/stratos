@@ -14,10 +14,11 @@ from modules.event.topology.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
+from modules.extensions.abstractextensionhandler import *
 
 
 class CartridgeAgent(threading.Thread):
-    log = LogFactory().get_log(__name__)
+    extension_handler = None
 
     def __init__(self):
         threading.Thread.__init__(self)
@@ -27,14 +28,14 @@ class CartridgeAgent(threading.Thread):
         self.__tenant_event_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC)
         self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC)
 
-        self.extension_handler = DefaultExtensionHandler()
-
         self.__tenant_context_initialized = False
         self.__topology_context_initialized = False
 
         self.log_publish_manager = None
 
         self.terminated = False
+
+        self.log = LogFactory().get_log(__name__)
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
@@ -52,14 +53,14 @@ class CartridgeAgent(threading.Thread):
         self.register_tenant_event_listeners()
 
         #Execute instance started shell script
-        self.extension_handler.on_instance_started_event()
+        CartridgeAgent.extension_handler.on_instance_started_event()
 
         #Publish instance started event
         cartridgeagentpublisher.publish_instance_started_event()
 
         #Execute start servers extension
         try:
-            self.extension_handler.start_server_extension()
+            CartridgeAgent.extension_handler.start_server_extension()
         except:
             self.log.exception("Error processing start servers event")
 
@@ -73,13 +74,13 @@ class CartridgeAgent(threading.Thread):
         repo_url = CartridgeAgentConfiguration.repo_url
         if repo_url is None or str(repo_url).strip() == "":
             self.log.info("No artifact repository found")
-            self.extension_handler.on_instance_activated_event()
+            CartridgeAgent.extension_handler.on_instance_activated_event()
 
             cartridgeagentpublisher.publish_instance_activated_event()
 
         persistence_mappping_payload = CartridgeAgentConfiguration.persistence_mappings
         if persistence_mappping_payload is not None:
-            self.extension_handler.volume_mount_extension(persistence_mappping_payload)
+            CartridgeAgent.extension_handler.volume_mount_extension(persistence_mappping_payload)
 
         # start log publishing thread
         if DataPublisherConfiguration.get_instance().enabled:
@@ -146,14 +147,14 @@ class CartridgeAgent(threading.Thread):
 
     def on_artifact_updated(self, msg):
         event_obj = ArtifactUpdatedEvent.create_from_json(msg.payload)
-        self.extension_handler.on_artifact_updated_event(event_obj)
+        CartridgeAgent.extension_handler.on_artifact_updated_event(event_obj)
 
     def on_instance_cleanup_member(self, msg):
         member_in_payload = CartridgeAgentConfiguration.member_id
         event_obj = InstanceCleanupMemberEvent.create_from_json(msg.payload)
         member_in_event = event_obj.member_id
         if member_in_payload == member_in_event:
-            self.extension_handler.on_instance_cleanup_member_event(event_obj)
+            CartridgeAgent.extension_handler.on_instance_cleanup_member_event(event_obj)
 
     def on_instance_cleanup_cluster(self, msg):
         event_obj = InstanceCleanupClusterEvent.create_from_json(msg.payload)
@@ -161,7 +162,7 @@ class CartridgeAgent(threading.Thread):
         cluster_in_event = event_obj.cluster_id
 
         if cluster_in_event == cluster_in_payload:
-            self.extension_handler.on_instance_cleanup_cluster_event(event_obj)
+            CartridgeAgent.extension_handler.on_instance_cleanup_cluster_event(event_obj)
 
     def register_topology_event_listeners(self):
         self.log.debug("Starting topology event message receiver thread")
@@ -179,7 +180,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Member activated event received: %r" % msg.payload)
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_member_activated_event(event_obj)
+            CartridgeAgent.extension_handler.on_member_activated_event(event_obj)
         except:
             self.log.exception("Error processing member terminated event")
 
@@ -187,7 +188,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Member terminated event received: %r" % msg.payload)
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_member_terminated_event(event_obj)
+            CartridgeAgent.extension_handler.on_member_terminated_event(event_obj)
         except:
             self.log.exception("Error processing member terminated event")
 
@@ -195,7 +196,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Member suspended event received: %r" % msg.payload)
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_member_suspended_event(event_obj)
+            CartridgeAgent.extension_handler.on_member_suspended_event(event_obj)
         except:
             self.log.exception("Error processing member suspended event")
 
@@ -206,7 +207,7 @@ class CartridgeAgent(threading.Thread):
             TopologyContext.update(event_obj.topology)
             self.__topology_context_initialized = True
             try:
-                self.extension_handler.on_complete_topology_event(event_obj)
+                CartridgeAgent.extension_handler.on_complete_topology_event(event_obj)
             except:
                 self.log.exception("Error processing complete topology event")
         else:
@@ -216,7 +217,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Member started event received: %r" % msg.payload)
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_member_started_event(event_obj)
+            CartridgeAgent.extension_handler.on_member_started_event(event_obj)
         except:
             self.log.exception("Error processing member started event")
 
@@ -235,7 +236,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Subscription domain added event received : %r" % msg.payload)
         event_obj = SubscriptionDomainAddedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_subscription_domain_added_event(event_obj)
+            CartridgeAgent.extension_handler.on_subscription_domain_added_event(event_obj)
         except:
             self.log.exception("Error processing subscription domains added event")
 
@@ -243,7 +244,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Subscription domain removed event received : %r" % msg.payload)
         event_obj = SubscriptionDomainRemovedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_subscription_domain_removed_event(event_obj)
+            CartridgeAgent.extension_handler.on_subscription_domain_removed_event(event_obj)
         except:
             self.log.exception("Error processing subscription domains removed event")
 
@@ -254,7 +255,7 @@ class CartridgeAgent(threading.Thread):
             TenantContext.update(event_obj.tenants)
 
             try:
-                self.extension_handler.on_complete_tenant_event(event_obj)
+                CartridgeAgent.extension_handler.on_complete_tenant_event(event_obj)
                 self.__tenant_context_initialized = True
             except:
                 self.log.exception("Error processing complete tenant event")
@@ -265,7 +266,7 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Tenant subscribed event received: %r" % msg.payload)
         event_obj = TenantSubscribedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_tenant_subscribed_event(event_obj)
+            CartridgeAgent.extension_handler.on_tenant_subscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant subscribed event")
 
@@ -273,14 +274,27 @@ class CartridgeAgent(threading.Thread):
         self.log.debug("Tenant unSubscribed event received: %r" % msg.payload)
         event_obj = TenantUnsubscribedEvent.create_from_json(msg.payload)
         try:
-            self.extension_handler.on_tenant_unsubscribed_event(event_obj)
+            CartridgeAgent.extension_handler.on_tenant_unsubscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant unSubscribed event")
+            
+    @staticmethod
+    def get_extension_handler():
+        """
+        Returns the Extension handler implementation
+        :return: An implmentation of AbstractExtensionHandler
+        :rtype : AbstractExtensionHandler
+        """
+        if CartridgeAgent.extension_handler is None:
+            CartridgeAgent.extension_handler = DefaultExtensionHandler()
+            
+        return CartridgeAgent.extension_handler
 
 
 def main():
+    cartridge_agent = CartridgeAgent()
+
     try:
-        cartridge_agent = CartridgeAgent()
         cartridge_agent.start()
     except:
         cartridge_agent.terminate()

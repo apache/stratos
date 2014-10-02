@@ -10,9 +10,8 @@ from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
 from ... util.asyncscheduledtask import AsyncScheduledTask
 from ... artifactmgt.repositoryinformation import RepositoryInformation
-from ... extensions.abstractextensionhandler import AbstractExtensionHandler
 from ... util.log import LogFactory
-
+from ....agent import CartridgeAgent
 
 
 class AgentGitHandler:
@@ -26,7 +25,7 @@ class AgentGitHandler:
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    extension_handler = AbstractExtensionHandler()  # TODO: remove dependancy
+    extension_handler = CartridgeAgent.get_extension_handler()
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
