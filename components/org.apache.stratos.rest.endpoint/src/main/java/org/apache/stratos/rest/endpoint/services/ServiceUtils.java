@@ -345,17 +345,77 @@ public class ServiceUtils {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
+
+            CartridgeInfo cartridgeInfo = null;
             try {
-                cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
+                cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
+
             } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-                String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
-                log.error(msg, e);
-                throw new RestAPIException(msg, e);
+                log.error("Error in getting Cartridge details for type " + cartridgeType);
+                throw new RestAPIException(e);
+
+            } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+                log.error("Error in getting Cartridge details for type " + cartridgeType);
+                throw new RestAPIException(e);
             }
 
+            if (cartridgeInfo == null) {
+                String errorMsg = "Cartridge information not found for type "  + cartridgeType;
+                log.error(errorMsg);
+                throw new RestAPIException(errorMsg);
+            }
+
+            // check if the service is multi tenant.
+            if (cartridgeInfo.getMultiTenant()) {
+                // check if there are any deployed MT services. If so, should not allow to undeploy
+                try {
+                    Service service = serviceDeploymentManager.getService(cartridgeType);
+                    if (service != null) {
+                        // not allowed to undeploy!
+                        String errorMsg = "Multi tenant Service already exists for " + cartridgeType + ", cannot undeploy";
+                        log.error(errorMsg);
+                        throw new RestAPIException(errorMsg);
+                    } else {
+                        // can undeploy
+                        undeployCartridgeDefinition(cloudControllerServiceClient, cartridgeType);
+                    }
+
+                } catch (ADCException e) {
+                    log.error("Error in getting MT Service details for type " + cartridgeType);
+                    throw new RestAPIException(e);
+                }
+
+            } else {
+               // if not multi tenant, check if there are any existing Subscriptions
+                Collection<CartridgeSubscription> cartridgeSubscriptions =
+                        cartridgeSubsciptionManager.getCartridgeSubscriptionsForType(cartridgeType);
+                if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
+                    // not allowed to undeploy!
+                    String errorMsg = "Subscription exists for " + cartridgeType + ", cannot undeploy";
+                    log.error(errorMsg);
+                    throw new RestAPIException(errorMsg);
+                } else {
+                    // can undeploy
+                    undeployCartridgeDefinition(cloudControllerServiceClient, cartridgeType);
+                }
+            }
+        }
+    }
+
+    private static void undeployCartridgeDefinition (CloudControllerServiceClient cloudControllerServiceClient,
+                                              String cartridgeType) throws RestAPIException {
+
+        try {
+            cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
+
+        } catch (RemoteException e) {
+            log.error(e.getMessage(), e);
+            throw new RestAPIException(e.getMessage(), e);
+
+        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
+            String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
         }
     }
 
