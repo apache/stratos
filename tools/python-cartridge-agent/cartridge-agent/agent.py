@@ -11,10 +11,11 @@ from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
 from modules.config import cartridgeagentconfiguration
+from modules.extensions import defaultextensionhandler
 
 
 class CartridgeAgent(threading.Thread):
-    extension_handler = None
+    extension_handler = defaultextensionhandler.DefaultExtensionHandler()
 
     def __init__(self):
         threading.Thread.__init__(self)

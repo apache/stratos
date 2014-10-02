@@ -111,8 +111,7 @@ class CartridgeAgentConfiguration:
                     self.log_file_paths = None
 
                 is_multi_str = self.read_property(cartridgeagentconstants.CLUSTER_ID)
-                self.is_multitenant = True if str(
-                    is_multi_str).lower().strip() == "true" else False
+                self.is_multitenant = True if str(is_multi_str).lower().strip() == "true" else False
 
                 try:
                     self.persistence_mappings = self.read_property(
@@ -123,47 +122,36 @@ class CartridgeAgentConfiguration:
 
                 try:
                     is_commit_str = self.read_property(cartridgeagentconstants.COMMIT_ENABLED)
-                    self.is_commits_enabled = True if str(
-                        is_commit_str).lower().strip() == "true" else False
+                    self.is_commits_enabled = True if str(is_commit_str).lower().strip() == "true" else False
                 except ParameterNotFoundException:
                     try:
                         is_commit_str = self.read_property(cartridgeagentconstants.AUTO_COMMIT)
-                        self.is_commits_enabled = True if str(
-                            is_commit_str).lower().strip() == "true" else False
+                        self.is_commits_enabled = True if str(is_commit_str).lower().strip() == "true" else False
                     except ParameterNotFoundException:
                         self.log.info(
                             "%r is not found and setting it to false" % cartridgeagentconstants.COMMIT_ENABLED)
                         self.is_commits_enabled = False
 
                 auto_checkout_str = self.read_property(cartridgeagentconstants.AUTO_CHECKOUT, False)
-                self.is_checkout_enabled = True if str(
-                    auto_checkout_str).lower().strip() == "true" else False
+                self.is_checkout_enabled = True if str(auto_checkout_str).lower().strip() == "true" else False
 
                 self.listen_address = self.read_property(
                     cartridgeagentconstants.LISTEN_ADDRESS, False)
 
                 try:
                     int_repo_str = self.read_property(cartridgeagentconstants.PROVIDER)
-                    self.is_internal_repo = True if str(
-                        int_repo_str).strip().lower() == cartridgeagentconstants.INTERNAL else False
+                    self.is_internal_repo = True if str(int_repo_str).strip().lower() == cartridgeagentconstants.INTERNAL else False
                 except ParameterNotFoundException:
                     self.log.info(" INTERNAL payload parameter is not found")
                     self.is_internal_repo = False
 
-                self.tenant_id = self.read_property(
-                    cartridgeagentconstants.TENANT_ID)
-                self.lb_cluster_id = self.read_property(
-                    cartridgeagentconstants.LB_CLUSTER_ID)
-                self.min_count = self.read_property(
-                    cartridgeagentconstants.MIN_INSTANCE_COUNT)
-                self.lb_private_ip = self.read_property(
-                    cartridgeagentconstants.LB_PRIVATE_IP, False)
-                self.lb_public_ip = self.read_property(
-                    cartridgeagentconstants.LB_PUBLIC_IP, False)
-                self.tenant_repository_path = self.read_property(
-                    cartridgeagentconstants.TENANT_REPO_PATH, False)
-                self.super_tenant_repository_path = self.read_property(
-                    cartridgeagentconstants.SUPER_TENANT_REPO_PATH, False)
+                self.tenant_id = self.read_property(cartridgeagentconstants.TENANT_ID)
+                self.lb_cluster_id = self.read_property(cartridgeagentconstants.LB_CLUSTER_ID)
+                self.min_count = self.read_property(cartridgeagentconstants.MIN_INSTANCE_COUNT)
+                self.lb_private_ip = self.read_property(cartridgeagentconstants.LB_PRIVATE_IP, False)
+                self.lb_public_ip = self.read_property(cartridgeagentconstants.LB_PUBLIC_IP, False)
+                self.tenant_repository_path = self.read_property(cartridgeagentconstants.TENANT_REPO_PATH, False)
+                self.super_tenant_repository_path = self.read_property(cartridgeagentconstants.SUPER_TENANT_REPO_PATH, False)
 
                 try:
                     self.deployment = self.read_property(
@@ -175,14 +163,14 @@ class CartridgeAgentConfiguration:
                 if self.deployment is None:
                     self.manager_service_name = None
 
-                if self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
+                if str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
                     self.manager_service_name = self.service_name
 
-                elif self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
                     self.deployment = self.read_property(
                         cartridgeagentconstants.MANAGER_SERVICE_TYPE)
 
-                elif self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
+                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
                     self.deployment = None
                 else:
                     self.deployment = None
@@ -191,14 +179,14 @@ class CartridgeAgentConfiguration:
                 if self.deployment is None:
                     self.worker_service_name = None
 
-                if self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                if str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
                     self.manager_service_name = self.service_name
 
-                elif self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
+                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
                     self.deployment = self.read_property(
                         cartridgeagentconstants.WORKER_SERVICE_TYPE)
 
-                elif self.deployment.lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
+                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
                     self.deployment = None
                 else:
                     self.deployment = None
@@ -288,11 +276,15 @@ class CartridgeAgentConfiguration:
 
     instance = None
 
-    def __new__(cls, *args, **kwargs):
+    # def __new__(cls, *args, **kwargs):
+    #     if not CartridgeAgentConfiguration.instance:
+    #         CartridgeAgentConfiguration.instance = CartridgeAgentConfiguration.__CartridgeAgentConfiguration()
+    #
+    #     return CartridgeAgentConfiguration.instance
+
+    def __init__(self):
         if not CartridgeAgentConfiguration.instance:
             CartridgeAgentConfiguration.instance = CartridgeAgentConfiguration.__CartridgeAgentConfiguration()
-
-        return CartridgeAgentConfiguration.instance
 
     def __getattr__(self, name):
         return getattr(self.instance, name)
