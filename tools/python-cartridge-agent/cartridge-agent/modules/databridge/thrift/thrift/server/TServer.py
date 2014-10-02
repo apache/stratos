@@ -24,9 +24,9 @@ import sys
 import threading
 import traceback
 
-from thrift.Thrift import TProcessor
-from thrift.protocol import TBinaryProtocol
-from thrift.transport import TTransport
+from ..Thrift import TProcessor
+from ..protocol import TBinaryProtocol
+from ..transport import TTransport
 
 
 class TServer:

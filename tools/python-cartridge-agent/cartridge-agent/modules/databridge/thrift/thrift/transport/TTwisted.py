@@ -27,7 +27,7 @@ from twisted.protocols import basic
 from twisted.python import log
 from twisted.web import server, resource, http
 
-from thrift.transport import TTransport
+import TTransport
 
 
 class TMessageSenderTransport(TTransport.TTransportBase):

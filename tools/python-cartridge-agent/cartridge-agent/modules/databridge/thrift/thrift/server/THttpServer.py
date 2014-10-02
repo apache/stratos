@@ -19,8 +19,8 @@
 
 import BaseHTTPServer
 
-from thrift.server import TServer
-from thrift.transport import TTransport
+from ..server import TServer
+from ..transport import TTransport
 
 
 class ResponseException(Exception):

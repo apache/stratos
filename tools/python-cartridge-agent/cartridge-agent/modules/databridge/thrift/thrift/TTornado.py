@@ -22,8 +22,8 @@ import logging
 import socket
 import struct
 
-from thrift.transport import TTransport
-from thrift.transport.TTransport import TTransportException
+from .transport import TTransport
+from .transport.TTransport import TTransportException
 
 from tornado import gen
 from tornado import iostream
