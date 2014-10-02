@@ -10,7 +10,7 @@ class LogFactory(object):
     class __LogFactory:
         def __init__(self):
             self.logs = {}
-            logging_conf = os.path.join(os.path.dirname(__file__), "logging.ini")
+            logging_conf = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "logging.ini"
             logging.config.fileConfig(logging_conf)
 
         def get_log(self, name):

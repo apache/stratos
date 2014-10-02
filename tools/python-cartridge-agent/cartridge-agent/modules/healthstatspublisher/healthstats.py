@@ -14,6 +14,11 @@ class HealthStatisticsPublisherManager(Thread):
     Read from an implementation of AbstractHealthStatisticsPublisher the value for memory usage and
     load average and publishes them as ThriftEvents to a CEP server
     """
+    STREAM_NAME = "cartridge_agent_health_stats"
+    STREAM_VERSION = "1.0.0"
+    STREAM_NICKNAME = "agent health stats"
+    STREAM_DESCRIPTION = "agent health stats"
+
     def __init__(self, publish_interval):
         """
         Initializes a new HealthStatistsPublisherManager with a given number of seconds as the interval
@@ -54,7 +59,13 @@ class HealthStatisticsPublisher:
         self.log = LogFactory().get_log(__name__)
         self.ports = []
         self.ports.append(CEPPublisherConfiguration.get_instance().server_port)
-        cartridgeagentutils.wait_until_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
+
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
+
+        cartridgeagentutils.wait_until_ports_active(
+            CEPPublisherConfiguration.get_instance().server_ip,
+            self.ports,
+            int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
         cep_active = cartridgeagentutils.check_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
         if not cep_active:
             raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
@@ -74,17 +85,17 @@ class HealthStatisticsPublisher:
         Create a StreamDefinition for publishing to CEP
         """
         stream_def = StreamDefinition()
-        stream_def.name = "cartridge_agent_health_stats"
-        stream_def.version = "1.0.0"
-        stream_def.nickname = "agent health stats"
-        stream_def.description = "agent health stats"
+        stream_def.name = HealthStatisticsPublisherManager.STREAM_NAME
+        stream_def.version = HealthStatisticsPublisherManager.STREAM_VERSION
+        stream_def.nickname = HealthStatisticsPublisherManager.STREAM_NICKNAME
+        stream_def.description = HealthStatisticsPublisherManager.STREAM_DESCRIPTION
 
-        stream_def.add_payloaddata_attribute("cluster_id", "STRING")
-        stream_def.add_payloaddata_attribute("network_partition_id", "STRING")
-        stream_def.add_payloaddata_attribute("member_id", "STRING")
-        stream_def.add_payloaddata_attribute("partition_id", "STRING")
-        stream_def.add_payloaddata_attribute("health_description", "STRING")
-        stream_def.add_payloaddata_attribute("value", "DOUBLE")
+        stream_def.add_payloaddata_attribute("cluster_id", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("network_partition_id", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("member_id", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("partition_id", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("health_description", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("value", StreamDefinition.DOUBLE)
 
         return stream_def
 
@@ -95,10 +106,10 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
-        event.payloadData.append(CartridgeAgentConfiguration.cluster_id)
-        event.payloadData.append(CartridgeAgentConfiguration.network_partition_id)
-        event.payloadData.append(CartridgeAgentConfiguration.member_id)
-        event.payloadData.append(CartridgeAgentConfiguration.partition_id)
+        event.payloadData.append(self.cartridge_agent_config.cluster_id)
+        event.payloadData.append(self.cartridge_agent_config.network_partition_id)
+        event.payloadData.append(self.cartridge_agent_config.member_id)
+        event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(cartridgeagentconstants.MEMORY_CONSUMPTION)
         event.payloadData.append(memory_usage)
 
@@ -112,10 +123,10 @@ class HealthStatisticsPublisher:
         """
 
         event = ThriftEvent()
-        event.payloadData.append(CartridgeAgentConfiguration.cluster_id)
-        event.payloadData.append(CartridgeAgentConfiguration.network_partition_id)
-        event.payloadData.append(CartridgeAgentConfiguration.member_id)
-        event.payloadData.append(CartridgeAgentConfiguration.partition_id)
+        event.payloadData.append(self.cartridge_agent_config.cluster_id)
+        event.payloadData.append(self.cartridge_agent_config.network_partition_id)
+        event.payloadData.append(self.cartridge_agent_config.member_id)
+        event.payloadData.append(self.cartridge_agent_config.partition_id)
         event.payloadData.append(cartridgeagentconstants.LOAD_AVERAGE)
         event.payloadData.append(load_avg)
 
@@ -173,28 +184,35 @@ class CEPPublisherConfiguration:
         self.admin_password = None
         self.read_config()
 
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
+
     def read_config(self):
-        self.enabled = True if CartridgeAgentConfiguration.read_property("cep.stats.publisher.enabled", False).strip().lower() == "true" else False
+        self.enabled = True if self.cartridge_agent_config.read_property(
+           cartridgeagentconstants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
         if not self.enabled:
             CEPPublisherConfiguration.log.info("CEP Publisher disabled")
             return
 
         CEPPublisherConfiguration.log.info("CEP Publisher enabled")
 
-        self.server_ip = CartridgeAgentConfiguration.read_property("thrift.receiver.ip", False)
+        self.server_ip = self.cartridge_agent_config.read_property(
+            cartridgeagentconstants.CEP_RECEIVER_IP, False)
         if self.server_ip.strip() == "":
-            raise RuntimeError("System property not found: thrift.receiver.ip")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_IP)
 
-        self.server_port = CartridgeAgentConfiguration.read_property("thrift.receiver.port", False)
+        self.server_port = self.cartridge_agent_config.read_property(
+            cartridgeagentconstants.CEP_RECEIVER_PORT, False)
         if self.server_port.strip() == "":
-            raise RuntimeError("System property not found: thrift.receiver.port")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_PORT)
 
-        self.admin_username = CartridgeAgentConfiguration.read_property("thrift.server.admin.username", False)
+        self.admin_username = self.cartridge_agent_config.read_property(
+            cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME, False)
         if self.admin_username.strip() == "":
-            raise RuntimeError("System property not found: thrift.server.admin.username")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME)
 
-        self.admin_password = CartridgeAgentConfiguration.read_property("thrift.server.admin.password", False)
+        self.admin_password = self.cartridge_agent_config.read_property(
+            cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD, False)
         if self.admin_password.strip() == "":
-            raise RuntimeError("System property not found: thrift.server.admin.password")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD)
 
         CEPPublisherConfiguration.log.info("CEP Publisher configuration initialized")

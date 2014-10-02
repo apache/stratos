@@ -6,6 +6,13 @@ class StreamDefinition:
     """
     Represents a BAM/CEP stream definition
     """
+
+    STRING = 'STRING'
+    DOUBLE = 'DOUBLE'
+    INT = 'INT'
+    LONG = 'LONG'
+    BOOL = 'BOOL'
+
     def __init__(self):
         self.name = None
         """:type : str"""

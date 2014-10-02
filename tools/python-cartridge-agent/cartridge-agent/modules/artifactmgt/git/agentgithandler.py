@@ -1,17 +1,10 @@
-import logging
 from threading import current_thread, Thread
-import os
 from git import *
 from gittle import Gittle, GittleAuth  # GitPython and Gittle are both used at the time being for pros and cons of both
 import urllib2
 
-from gitrepository import GitRepository
-from ... config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
-from ... util.asyncscheduledtask import AsyncScheduledTask
-from ... artifactmgt.repositoryinformation import RepositoryInformation
 from ... util.log import LogFactory
-from ....agent import CartridgeAgent
+from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
 
 
 class AgentGitHandler:
@@ -25,10 +18,12 @@ class AgentGitHandler:
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    extension_handler = CartridgeAgent.get_extension_handler()
+    extension_handler = cartridgeagentutils.get_extension_handler()
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
+
+    cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
 
     @staticmethod
     def checkout(repo_info):
@@ -89,13 +84,15 @@ class AgentGitHandler:
             repo_context.repo.git.branch("-f", "--track", "master", "origin/master")
             return True
         except:
-            AgentGitHandler.log.exception("Error in adding remote origin %r for local repository %r" % (repo_context.repo_url, repo_context.local_repo_path))
+            AgentGitHandler.log.exception("Error in adding remote origin %r for local repository %r"
+                                          % (repo_context.repo_url, repo_context.local_repo_path))
             return False
 
     @staticmethod
     def init(path):
         try:
             repo = Gittle.init(path)
+            return repo
         except:
             AgentGitHandler.log.exception("Initializing local repo at %r failed" % path)
             raise Exception("Initializing local repo at %r failed" % path)
@@ -326,7 +323,7 @@ class AgentGitHandler:
         if is_multitenant:
             if tenant_id == AgentGitHandler.SUPER_TENANT_ID:
                 #super tenant, /repository/deploy/server/
-                super_tenant_repo_path = CartridgeAgentConfiguration.super_tenant_repository_path
+                super_tenant_repo_path = AgentGitHandler.cartridge_agent_config.super_tenant_repository_path
                 #"app_path"
                 repo_path += git_local_repo_path
 
@@ -341,7 +338,7 @@ class AgentGitHandler:
 
             else:
                 #normal tenant, /repository/tenants/tenant_id
-                tenant_repo_path = CartridgeAgentConfiguration.tenant_repository_path
+                tenant_repo_path = AgentGitHandler.cartridge_agent_config.tenant_repository_path
                 #"app_path"
                 repo_path += git_local_repo_path
 
@@ -451,10 +448,10 @@ class AgentGitHandler:
         AgentGitHandler.remove_repo_context(tenant_id)
 
         if tenant_id == -1234:
-            if CartridgeAgentConfiguration.is_multitenant:
+            if AgentGitHandler.cartridge_agent_config.is_multitenant:
                 extensionutils.execute_copy_artifact_extension(
                     cartridgeagentconstants.SUPERTENANT_TEMP_PATH,
-                    CartridgeAgentConfiguration.app_path + "/repository/deployment/server/"
+                    AgentGitHandler.cartridge_agent_config.app_path + "/repository/deployment/server/"
                 )
 
         AgentGitHandler.log.info("git repository deleted for tenant %r" % repo_context.tenant_id)
@@ -476,7 +473,13 @@ class ArtifactUpdateTask(Thread):
             if self.auto_checkout:
                 AgentGitHandler.checkout(self.repo_info)
         except:
-            self.log.exception()
+            self.log.exception("Auto checkout task failed")
 
         if self.auto_commit:
             AgentGitHandler.commit(self.repo_info)
+
+
+from gitrepository import GitRepository
+from ... config import cartridgeagentconfiguration
+from ... util.asyncscheduledtask import AsyncScheduledTask
+from ... artifactmgt.repositoryinformation import RepositoryInformation

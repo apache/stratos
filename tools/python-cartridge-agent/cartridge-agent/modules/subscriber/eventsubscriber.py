@@ -1,10 +1,5 @@
-import logging
 import threading
 import paho.mqtt.client as mqtt
-
-from .. util import cartridgeagentconstants
-from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from .. util.log import LogFactory
 
 
 class EventSubscriber(threading.Thread):
@@ -13,7 +8,7 @@ class EventSubscriber(threading.Thread):
     register event handlers for various events.
     """
 
-    def __init__(self, topic):
+    def __init__(self, topic, ip, port):
         threading.Thread.__init__(self)
 
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
@@ -27,16 +22,16 @@ class EventSubscriber(threading.Thread):
 
         self.__subscribed = False
 
+        self.__ip = ip
+        self.__port = port
+
     def run(self):
         self.__mb_client = mqtt.Client()
         self.__mb_client.on_connect = self.on_connect
         self.__mb_client.on_message = self.on_message
 
-        mb_ip = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_IP)
-        mb_port = CartridgeAgentConfiguration.read_property(cartridgeagentconstants.MB_PORT)
-
-        self.log.debug("Connecting to the message broker with address %r:%r" % (mb_ip, mb_port))
-        self.__mb_client.connect(mb_ip, mb_port, 60)
+        self.log.debug("Connecting to the message broker with address %r:%r" % (self.__ip, self.__port))
+        self.__mb_client.connect(self.__ip, self.__port, 60)
         self.__subscribed = True
         self.__mb_client.loop_forever()
 
@@ -79,3 +74,6 @@ class EventSubscriber(threading.Thread):
         :rtype: bool
         """
         return self.__subscribed
+
+
+from .. util.log import LogFactory

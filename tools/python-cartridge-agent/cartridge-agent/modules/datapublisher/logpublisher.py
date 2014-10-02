@@ -4,7 +4,7 @@ from threading import Thread, current_thread
 
 from ..databridge.agent import *
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import cartridgeagentutils
+from ..util import cartridgeagentutils, cartridgeagentconstants
 from exception.datapublisherexception import DataPublisherException
 
 
@@ -87,25 +87,26 @@ class LogPublisherManager(Thread):
         """
         # stream definition
         stream_definition = StreamDefinition()
-        valid_tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration.tenant_id)
-        alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration.cluster_id)
+        valid_tenant_id = LogPublisherManager.get_valid_tenant_id(CartridgeAgentConfiguration().tenant_id)
+        alias = LogPublisherManager.get_alias(CartridgeAgentConfiguration().cluster_id)
         stream_name = "logs." + valid_tenant_id + "." \
                       + alias + "." + LogPublisherManager.get_current_date()
         stream_version = "1.0.0"
+
         stream_definition.name = stream_name
         stream_definition.version = stream_version
         stream_definition.description = "Apache Stratos Instance Log Publisher"
-        stream_definition.add_metadata_attribute("memberId", 'STRING')
-        stream_definition.add_payloaddata_attribute("tenantID", "STRING")
-        stream_definition.add_payloaddata_attribute("serverName", "STRING")
-        stream_definition.add_payloaddata_attribute("appName", "STRING")
-        stream_definition.add_payloaddata_attribute("logTime", "STRING")
-        stream_definition.add_payloaddata_attribute("priority", "STRING")
-        stream_definition.add_payloaddata_attribute("message", "STRING")
-        stream_definition.add_payloaddata_attribute("logger", "STRING")
-        stream_definition.add_payloaddata_attribute("ip", "STRING")
-        stream_definition.add_payloaddata_attribute("instance", "STRING")
-        stream_definition.add_payloaddata_attribute("stacktrace", "STRING")
+        stream_definition.add_metadata_attribute("memberId", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("tenantID", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("serverName", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("appName", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("logTime", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("priority", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("message", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("logger", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("ip", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("instance", StreamDefinition.STRING)
+        stream_definition.add_payloaddata_attribute("stacktrace", StreamDefinition.STRING)
 
         return stream_definition
 
@@ -117,8 +118,17 @@ class LogPublisherManager(Thread):
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_port)
         self.ports.append(DataPublisherConfiguration.get_instance().monitoring_server_secure_port)
 
-        cartridgeagentutils.wait_until_ports_active(DataPublisherConfiguration.get_instance().monitoring_server_ip, self.ports)
-        ports_active = cartridgeagentutils.check_ports_active(DataPublisherConfiguration.get_instance().monitoring_server_ip, self.ports)
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
+
+        cartridgeagentutils.wait_until_ports_active(
+            DataPublisherConfiguration.get_instance().monitoring_server_ip,
+            self.ports,
+            int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
+
+        ports_active = cartridgeagentutils.check_ports_active(
+            DataPublisherConfiguration.get_instance().monitoring_server_ip,
+            self.ports)
+
         if not ports_active:
             raise DataPublisherException("Monitoring server not active, data publishing is aborted")
 
@@ -158,14 +168,14 @@ class LogPublisherManager(Thread):
 
     @staticmethod
     def get_valid_tenant_id(tenant_id):
-        if tenant_id == "-1" or tenant_id == "-1234":
+        if tenant_id == cartridgeagentconstants.INVALID_TENANT_ID \
+                or tenant_id == cartridgeagentconstants.SUPER_TENANT_ID:
             return "0"
 
         return tenant_id
 
     @staticmethod
     def get_alias(cluster_id):
-        alias = ""
         try:
             alias = cluster_id.split("\\.")[0]
         except:
@@ -180,7 +190,7 @@ class LogPublisherManager(Thread):
         :return: Formatted date string
         :rtype : str
         """
-        return datetime.date.today().strftime("%Y.%m.%d")
+        return datetime.date.today().strftime(cartridgeagentconstants.DATE_FORMAT)
 
 
 class DataPublisherConfiguration:
@@ -213,32 +223,34 @@ class DataPublisherConfiguration:
         self.admin_password = None
         self.read_config()
 
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
+
     def read_config(self):
-        self.enabled = True if CartridgeAgentConfiguration.read_property("enable.data.publisher", False).strip().lower() == "true" else False
+        self.enabled = True if self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
         if not self.enabled:
             DataPublisherConfiguration.log.info("Data Publisher disabled")
             return
 
         DataPublisherConfiguration.log.info("Data Publisher enabled")
 
-        self.monitoring_server_ip = CartridgeAgentConfiguration.read_property("monitoring.server.ip", False)
+        self.monitoring_server_ip = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_RECEIVER_IP, False)
         if self.monitoring_server_ip.strip() == "":
-            raise RuntimeError("System property not found: monitoring.server.ip")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_RECEIVER_IP)
 
-        self.monitoring_server_port = CartridgeAgentConfiguration.read_property("monitoring.server.port", False)
+        self.monitoring_server_port = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_RECEIVER_PORT, False)
         if self.monitoring_server_port.strip() == "":
-            raise RuntimeError("System property not found: monitoring.server.port")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_RECEIVER_PORT)
 
-        self.monitoring_server_secure_port = CartridgeAgentConfiguration.read_property("monitoring.server.secure.port", False)
-        if self.monitoring_server_secure_port.strip() == "":
-            raise RuntimeError("System property not found: monitoring.server.secure.port")
+        # self.monitoring_server_secure_port = self.cartridge_agent_config.read_property("monitoring.server.secure.port", False)
+        # if self.monitoring_server_secure_port.strip() == "":
+        #     raise RuntimeError("System property not found: monitoring.server.secure.port")
 
-        self.admin_username = CartridgeAgentConfiguration.read_property("monitoring.server.admin.username", False)
+        self.admin_username = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_SERVER_ADMIN_USERNAME, False)
         if self.admin_username.strip() == "":
-            raise RuntimeError("System property not found: monitoring.server.admin.username")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_SERVER_ADMIN_USERNAME)
 
-        self.admin_password = CartridgeAgentConfiguration.read_property("monitoring.server.admin.password", False)
+        self.admin_password = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_SERVER_ADMIN_PASSWORD, False)
         if self.admin_password.strip() == "":
-            raise RuntimeError("System property not found: monitoring.server.admin.password")
+            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_SERVER_ADMIN_PASSWORD)
 
         DataPublisherConfiguration.log.info("Data Publisher configuration initialized")
