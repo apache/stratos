@@ -7,6 +7,7 @@ import org.apache.stratos.metadataservice.annotation.AuthorizationAction;
 import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.exception.RestAPIException;
 import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
+import org.apache.stratos.metadataservice.registry.DataStore;
 import org.apache.stratos.metadataservice.util.ConfUtil;
 import org.wso2.carbon.registry.api.RegistryException;
 
@@ -27,14 +28,15 @@ public class MetaDataAdmin {
 	@Context
 	HttpServletRequest httpServletRequest;
 
-	private final String defaultRegType = "carbon";
+	private final String DEFAULT_REG_TYPE = "carbon";
 
 	private XMLConfiguration conf;
-    private String registryType;
+    DataStore registry;
 
     public MetaDataAdmin(){
         conf = ConfUtil.getInstance(null).getConfiguration();
-        registryType =  conf.getString("metadataservice.govenanceregistrytype", defaultRegType);
+        String registryType =  conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
+        registry = DataRegistryFactory.getDataRegistryFactory(registryType);
     }
 	@POST
 	@Path("/init")
@@ -48,9 +50,8 @@ public class MetaDataAdmin {
 		conf = ConfUtil.getInstance(null).getConfiguration();
 		String registryType =
 		                      conf.getString("metadataservice.govenanceregistrytype",
-		                                     defaultRegType);
-		return DataRegistryFactory.getDataRegistryFactory(registryType)
-		                          .removeCartridgeMetaDataDetails(applicationName, cartridgeType);
+                                      DEFAULT_REG_TYPE);
+		return registry.removeCartridgeMetaDataDetails(applicationName, cartridgeType);
 
 	}
 
@@ -64,7 +65,7 @@ public class MetaDataAdmin {
         List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
         try {
-            properties = DataRegistryFactory.getDataRegistryFactory(registryType)
+            properties = registry
                     .getPropertiesOfCluster(applicationId, clusterId);
             if(properties != null) {
                 propertiesArr = new NewProperty[properties.size()];
@@ -93,7 +94,7 @@ public class MetaDataAdmin {
         NewProperty property = null;
 
         try {
-            properties = DataRegistryFactory.getDataRegistryFactory(registryType)
+            properties = registry
                     .getPropertiesOfCluster(applicationId, clusterId);
             if(properties == null){
                 return Response.status(Response.Status.NOT_FOUND).build();
@@ -117,122 +118,6 @@ public class MetaDataAdmin {
         return rb.build();
     }
 
-    @GET
-    @Path("/application/{application_id}/cluster/{cluster_id}/dependencies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getClusterDependencies(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId){
-        List<NewProperty> properties;
-        NewProperty property = null;
-
-        try {
-            properties = DataRegistryFactory.getDataRegistryFactory(registryType)
-                    .getPropertiesOfCluster(applicationId, clusterId);
-            if(properties == null){
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            for(NewProperty p : properties){
-                if("dependencies".equals(p.getKey())){
-                    property = p;
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            log.error("Error occurred while getting properties ", e);
-        }
-        Response.ResponseBuilder rb=null;
-        if(property == null){
-            rb = Response.status(Response.Status.NOT_FOUND);
-        }else{
-            rb = Response.ok().entity(property);
-        }
-        return rb.build();
-    }
-
-    @GET
-    @Path("/application/{application_id}/properties")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getApplicationProperties(@PathParam("application_id") String applicationId){
-        List<NewProperty> properties;
-        NewProperty[] propertiesArr = null;
-        try {
-            properties = DataRegistryFactory.getDataRegistryFactory(registryType)
-                    .getPropertiesOfApplication(applicationId);
-            if(properties != null) {
-                propertiesArr = new NewProperty[properties.size()];
-                propertiesArr = properties.toArray(propertiesArr);
-            }
-        } catch (Exception e) {
-            log.error("Error occurred while getting properties ", e);
-        }
-
-        Response.ResponseBuilder rb=null;
-        if(propertiesArr == null){
-            rb = Response.status(Response.Status.NOT_FOUND);
-        }else{
-            rb = Response.ok().entity(propertiesArr);
-        }
-        return rb.build();
-    }
-
-    @GET
-    @Path("/application/{application_id}/property/{property_name}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getApplicationProperty(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName){
-        List<NewProperty> properties;
-        NewProperty property = null;
-
-        try {
-            properties = DataRegistryFactory.getDataRegistryFactory(registryType)
-                    .getPropertiesOfApplication(applicationId);
-            if(properties == null){
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            for(NewProperty p : properties){
-                if(propertyName.equals(p.getKey())){
-                    property = p;
-                    break;
-                }
-            }
-        } catch (RegistryException e) {
-            log.error("Error occurred while getting property", e);
-        }
-
-        Response.ResponseBuilder rb=null;
-        if(property == null){
-            rb = Response.status(Response.Status.NOT_FOUND);
-        }else{
-            rb = Response.ok().entity(property);
-        }
-        return rb.build();
-    }
-
-
-    @POST
-    @Path("/application/{application_id}/cluster/{cluster_id}/dependencies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addClusterDependencies(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId,  NewProperty property) throws RestAPIException {
-
-        if(!property.getKey().equals("dependencies")){
-            throw new RestAPIException("Property name should be dependencies");
-        }
-        URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
-
-        try {
-            DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
-        } catch (RegistryException e) {
-            log.error("Error occurred while adding dependencies ", e);
-        }
-        return Response.created(url).build();
-    }
-
     @POST
     @Path("application/{application_id}/cluster/{cluster_id}/property")
     @Produces("application/json")
@@ -244,7 +129,7 @@ public class MetaDataAdmin {
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
 
         try {
-            DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
+            registry.addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
             log.error("Error occurred while adding property", e);
         }
@@ -263,7 +148,7 @@ public class MetaDataAdmin {
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
 
         try {
-            DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToCluster(applicationId, clusterId, properties);
+            registry.addPropertiesToCluster(applicationId, clusterId, properties);
         } catch (Exception e) {
            log.error("Error occurred while adding properties ", e);
         }
@@ -272,41 +157,5 @@ public class MetaDataAdmin {
         return Response.created(url).build();
     }
 
-    @POST
-    @Path("application/{application_id}/properties")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addPropertiesToApplication(@PathParam("application_id") String applicationId,NewProperty[] properties)
-            throws RestAPIException {
-        URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId).build();
 
-        try {
-            DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToApplication(applicationId, properties);
-        } catch (Exception e) {
-            log.error("Error occurred while adding properties ", e);
-        }
-
-
-        return Response.created(url).build();
-    }
-
-    @POST
-    @Path("application/{application_id}/property")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addPropertyToApplication(@PathParam("application_id") String applicationId, NewProperty property)
-            throws RestAPIException {
-        URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId).build();
-
-        try {
-            DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToApplication(applicationId, property);
-        } catch (Exception e) {
-            log.error("Error occurred while adding property ", e);
-        }
-
-
-        return Response.created(url).build();
-    }
 }
