@@ -30,12 +30,17 @@ public class MetaDataAdmin {
 	private final String defaultRegType = "carbon";
 
 	private XMLConfiguration conf;
+    private String registryType;
 
+    public MetaDataAdmin(){
+        conf = ConfUtil.getInstance(null).getConfiguration();
+        registryType =  conf.getString("metadataservice.govenanceregistrytype", defaultRegType);
+    }
 	@POST
 	@Path("/init")
 	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
 	public void initialize() throws RestAPIException {
-		conf = ConfUtil.getInstance(null).getConfiguration();
+
 	}
 
     public boolean removeCartridgeMetaDataDetails(String applicationName, String cartridgeType)
@@ -55,11 +60,7 @@ public class MetaDataAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId){
-        conf = ConfUtil.getInstance(null).getConfiguration();
 
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
         List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
         try {
@@ -88,10 +89,6 @@ public class MetaDataAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName){
-        conf = ConfUtil.getInstance(null).getConfiguration();
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
         List<NewProperty> properties = null;
         NewProperty property = null;
 
@@ -126,11 +123,7 @@ public class MetaDataAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusterDependencies(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId){
-        conf = ConfUtil.getInstance(null).getConfiguration();
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
-        List<NewProperty> properties = null;
+        List<NewProperty> properties;
         NewProperty property = null;
 
         try {
@@ -163,12 +156,7 @@ public class MetaDataAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationProperties(@PathParam("application_id") String applicationId){
-        conf = ConfUtil.getInstance(null).getConfiguration();
-
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
-        List<NewProperty> properties = null;
+        List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
         try {
             properties = DataRegistryFactory.getDataRegistryFactory(registryType)
@@ -196,11 +184,7 @@ public class MetaDataAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationProperty(@PathParam("application_id") String applicationId, @PathParam("property_name") String propertyName){
-        conf = ConfUtil.getInstance(null).getConfiguration();
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
-        List<NewProperty> properties = null;
+        List<NewProperty> properties;
         NewProperty property = null;
 
         try {
@@ -240,9 +224,7 @@ public class MetaDataAdmin {
             throw new RestAPIException("Property name should be dependencies");
         }
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
-        conf = ConfUtil.getInstance(null).getConfiguration();
 
-        String registryType = conf.getString("metadataservice.govenanceregistrytype", defaultRegType);
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
@@ -260,9 +242,7 @@ public class MetaDataAdmin {
             throws RestAPIException {
 
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
-        conf = ConfUtil.getInstance(null).getConfiguration();
 
-        String registryType = conf.getString("metadataservice.govenanceregistrytype", defaultRegType);
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
@@ -282,11 +262,6 @@ public class MetaDataAdmin {
             throws RestAPIException {
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
 
-        conf = ConfUtil.getInstance(null).getConfiguration();
-
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToCluster(applicationId, clusterId, properties);
         } catch (Exception e) {
@@ -306,11 +281,6 @@ public class MetaDataAdmin {
             throws RestAPIException {
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId).build();
 
-        conf = ConfUtil.getInstance(null).getConfiguration();
-
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertiesToApplication(applicationId, properties);
         } catch (Exception e) {
@@ -330,11 +300,6 @@ public class MetaDataAdmin {
             throws RestAPIException {
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId).build();
 
-        conf = ConfUtil.getInstance(null).getConfiguration();
-
-        String registryType =
-                conf.getString("metadataservice.govenanceregistrytype",
-                        defaultRegType);
         try {
             DataRegistryFactory.getDataRegistryFactory(registryType).addPropertyToApplication(applicationId, property);
         } catch (Exception e) {
