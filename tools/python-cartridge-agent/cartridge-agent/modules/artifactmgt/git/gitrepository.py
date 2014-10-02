@@ -1,5 +1,6 @@
 from ...util.asyncscheduledtask import AsyncScheduledTask
-
+from gittle import Gittle
+from git import *
 
 class GitRepository:
     """
@@ -14,7 +15,9 @@ class GitRepository:
         self.cloned = False
         """ :type : bool  """
         self.repo = None
-        """ :type : str  """
+        """ :type : git.repo.base.Repo  """
+        self.gittle_repo = None
+        """ :type : gittle.gittle.Gittle  """
         self.tenant_id = None
         """ :type : int  """
         self.key_based_auth = False

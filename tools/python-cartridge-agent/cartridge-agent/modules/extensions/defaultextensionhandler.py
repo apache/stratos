@@ -9,6 +9,7 @@ from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
+from ..util.log import LogFactory
 from abstractextensionhandler import AbstractExtensionHandler
 
 
@@ -19,8 +20,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     log = None
 
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
         self.wk_members = []
 
     def on_instance_started_event(self):
@@ -66,7 +66,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                                               is_multitenant, commit_enabled)
 
             # checkout code
-            checkout_result = AgentGitHandler.checkout(repo_info)
+            subscribe_run, repo_context = AgentGitHandler.checkout(repo_info)
             # repo_context = checkout_result["repo_context"]
             # execute artifact updated extension
             env_params = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
@@ -78,7 +78,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             extensionutils.execute_artifacts_updated_extension(env_params)
 
-            if checkout_result["subscribe_run"]:
+            if subscribe_run:
                 # publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 

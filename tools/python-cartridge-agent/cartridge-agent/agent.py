@@ -17,8 +17,7 @@ from modules.datapublisher.logpublisher import *
 
 
 class CartridgeAgent(threading.Thread):
-    logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-    log = logging.getLogger(__name__)
+    log = LogFactory().get_log(__name__)
 
     def __init__(self):
         threading.Thread.__init__(self)

@@ -5,9 +5,9 @@ import time
 
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from .. topology.topologycontext import *
+from log import LogFactory
 
-logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-log = logging.getLogger(__name__)
+log = LogFactory().get_log(__name__)
 
 
 def execute_copy_artifact_extension(source, destination):

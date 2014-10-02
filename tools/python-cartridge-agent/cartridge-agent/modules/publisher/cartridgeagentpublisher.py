@@ -9,8 +9,7 @@ from .. healthstatspublisher.healthstats import *
 from .. healthstatspublisher.abstracthealthstatisticspublisher import *
 
 
-logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-log = logging.getLogger(__name__)
+log = LogFactory().get_log(__name__)
 
 started = False
 activated = False

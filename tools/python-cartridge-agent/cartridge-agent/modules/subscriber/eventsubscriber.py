@@ -4,6 +4,7 @@ import paho.mqtt.client as mqtt
 
 from .. util import cartridgeagentconstants
 from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from .. util.log import LogFactory
 
 
 class EventSubscriber(threading.Thread):
@@ -18,8 +19,7 @@ class EventSubscriber(threading.Thread):
         #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
         self.__event_handlers = {}
 
-        logging.basicConfig(level=logging.DEBUG, filename='/tmp/cartridge-agent.log')
-        self.log = logging.getLogger(__name__)
+        self.log = LogFactory().get_log(__name__)
 
         self.__mb_client = None
 
