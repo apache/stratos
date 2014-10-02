@@ -56,6 +56,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
             HttpResponse res = restClient.doGet("pods/"+podId);
             
+            handleNullResponse("Pod ["+podId+"] retrieval failed.", res);
+            
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Pod ["+podId+"] doesn't exist.";
 				log.error(msg);
@@ -84,6 +86,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 			HttpResponse res = restClient.doGet("pods");
             
+			handleNullResponse("Pod retrieval failed.", res);
+			
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new Pod[0];
             }
@@ -112,9 +116,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			if (log.isDebugEnabled()) {
 				log.debug("CreatePod Request Body : "+content);
 			}
-			System.out.println(content);
 			HttpResponse res = restClient.doPost("pods", content);
-			System.out.println(res.getStatusLine().getStatusCode());
+			
+			handleNullResponse("Pod "+pod+" creation failed.", res);
 			
 			if (res.getStatusLine().getStatusCode() == HttpStatus.SC_CONFLICT) {
 				log.warn("Pod already created. "+pod);
@@ -143,6 +147,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 			HttpResponse res = restClient.doDelete("pods/"+podId);
             
+			handleNullResponse("Pod ["+podId+"] deletion failed.", res);
+			
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Pod ["+podId+"] doesn't exist.";
 				log.error(msg);
@@ -171,6 +177,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
 		try {
 			HttpResponse res = restClient.doGet("replicationControllers/"+controllerId);
+			
+			handleNullResponse("Replication Controller ["+controllerId+"] retrieval failed.", res);
             
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Replication Controller ["+controllerId+"] doesn't exist.";
@@ -200,6 +208,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 			HttpResponse res = restClient.doGet("replicationControllers");
             
+			handleNullResponse("Replication Controller retrieval failed.", res);
+			
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new ReplicationController[0];
             }
@@ -231,6 +241,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				log.debug("CreateReplicationController Request Body : "+content);
 			}
 			HttpResponse res = restClient.doPost("replicationControllers", content);
+			
+			handleNullResponse("Replication Controller "+controller+" creation failed.", res);
             
 			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
 					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -274,6 +286,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			}
 			HttpResponse res = restClient.doPut("replicationControllers/"+controller.getId(),
 					content);
+			
+			handleNullResponse("Replication Controller ["+controllerId+"] update failed.", res);
 
 			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED
 					&& res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -302,6 +316,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 			HttpResponse res = restClient.doDelete("replicationControllers/"+controllerId);
             
+			handleNullResponse("Replication Controller ["+controllerId+"] deletion failed.", res);
+			
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Replication Controller ["+controllerId+"] doesn't exist.";
 				log.error(msg);
@@ -329,6 +345,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 		try {
 			HttpResponse res = restClient.doGet("services/"+serviceId);
+			
+			handleNullResponse("Service ["+serviceId+"] retrieval failed.", res);
             
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Service ["+serviceId+"] doesn't exist.";
@@ -355,6 +373,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 			HttpResponse res = restClient.doGet("services");
             
+			handleNullResponse("Service retrieval failed.", res);
+			
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new Service[0];
             }
@@ -382,10 +402,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			if (log.isDebugEnabled()) {
 				log.debug("CreateService Request Body : "+content);
 			}
-			System.out.println(content);
+			
 			HttpResponse res = restClient.doPost("services", content);
-			System.out.println(res.getStatusLine().getStatusCode());
-            
+			
+			handleNullResponse("Service "+service+" creation failed.", res);
+			
 			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
 					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Service ["+service+"] creation failed. Error: "+
@@ -409,6 +430,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
 		try {
 			HttpResponse res = restClient.doDelete("services/"+serviceId);
+			
+			handleNullResponse("Service ["+serviceId+"] deletion failed.", res);
             
             if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Service ["+serviceId+"] doesn't exist.";
@@ -432,6 +455,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throw new KubernetesClientException(msg, e);
 		}
 	}
+
+    private void handleNullResponse(String message, HttpResponse res)
+            throws KubernetesClientException {
+        if (res == null) {
+            log.error(message+ " Null response receieved.");
+            throw new KubernetesClientException(message);
+        }
+    }
 	
 	// This method gives the HTTP response string
 	private String getHttpResponseString(HttpResponse response) {
