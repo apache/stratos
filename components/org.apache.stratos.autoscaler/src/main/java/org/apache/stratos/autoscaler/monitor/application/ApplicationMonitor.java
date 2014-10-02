@@ -24,9 +24,8 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.*;
 
@@ -39,12 +38,7 @@ public class ApplicationMonitor extends Monitor {
     public ApplicationMonitor(Application application) {
         super(application);
         this.id = application.getId();
-        if (preOrderTraverse.isEmpty()) {
-            log.warn("the child group/cluster cannot be found for the Application " + id);
-        } else {
-            startDependency();
-        }
-        //keep
+        startDependency();
     }
 
     @Override
@@ -56,67 +50,12 @@ public class ApplicationMonitor extends Monitor {
             log.info(String.format("[Monitor] %s got notified from the [child] %s" +
                     "on its state change from %s to %s", id, notifier, this.status, status));
             if (childStatus == Status.Activated) {
+                //update the notifier as active in the dependency tree
+
                 //start the next dependency
-                if (!preOrderTraverse.isEmpty()) {
-                    startDependency();
-                }
+                startDependency(notifier);
             }
         }
-    }
-
-    @Override
-    protected void onEvent(Event event) {
-
-    }
-
-    @Override
-    protected void startDependency() {
-        //Need to get the order every time as group/cluster might already been started
-        //TODO breadth first search in a tree and find the parallel one
-        //TODO build up the tree with ordered manner
-
-        // start the first dependency
-        if (!preOrderTraverse.isEmpty()) {
-            String dependency = preOrderTraverse.poll();
-            if (log.isDebugEnabled()) {
-                log.debug("Dependency check for the [group] " + dependency + " started");
-            }
-            if (dependency.contains("group")) {
-                String groupId = dependency.substring(6);
-                if (log.isDebugEnabled()) {
-                    log.debug("Dependency check starting the [group]" + groupId);
-                }
-                startGroupMonitor(this, groupId, component);
-            } else if (dependency.contains("cartridge")) {
-                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
-                String clusterId = clusterDataHolder.getClusterId();
-                String serviceName = clusterDataHolder.getServiceType();
-                Cluster cluster = null;
-                //TopologyManager.acquireReadLock();
-                Topology topology = TopologyManager.getTopology();
-                if (topology.serviceExists(serviceName)) {
-                    Service service = topology.getService(serviceName);
-                    if (service.clusterExists(clusterId)) {
-                        cluster = service.getCluster(clusterId);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Dependency check starting the [cluster]" + clusterId);
-                        }
-                        startClusterMonitor(this, cluster);
-                    } else {
-                        log.warn("[Cluster] " + clusterId + " cannot be found in the " +
-                                "Topology for [service] " + serviceName);
-                    }
-                } else {
-                    log.warn("[Service] " + serviceName + " cannot be found in the Topology");
-                }
-                //TopologyManager.releaseReadLock();
-            }
-        } else {
-            //all the groups/clusters have been started and waiting for activation
-            log.info("All the groups/clusters of the [Application]: " + this.id + " have been started.");
-        }
-
-
     }
 
 
@@ -127,14 +66,14 @@ public class ApplicationMonitor extends Monitor {
      * @return the found GroupMonitor
      */
     public GroupMonitor findGroupMonitorWithId(String groupId) {
-        return findGroupMonitor(groupId, groupMonitors.values());
+        return findGroupMonitor(groupId, aliasToGroupMonitorsMap.values());
 
     }
 
     public List<String> findClustersOfApplication(String appId) {
         List<String> clusters = new ArrayList<String>();
         //considering only one level
-        for (AbstractClusterMonitor monitor : this.abstractClusterMonitors.values()) {
+        for (AbstractClusterMonitor monitor : this.clusterIdToClusterMonitorsMap.values()) {
             clusters.add(monitor.getClusterId());
         }
         //TODO rest
@@ -150,7 +89,7 @@ public class ApplicationMonitor extends Monitor {
      * @return
      */
     public AbstractClusterMonitor findClusterMonitorWithId(String clusterId) {
-        return findClusterMonitor(clusterId, abstractClusterMonitors.values(), groupMonitors.values());
+        return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(), aliasToGroupMonitorsMap.values());
 
     }
 
@@ -166,8 +105,8 @@ public class ApplicationMonitor extends Monitor {
 
         for (GroupMonitor groupMonitor : groupMonitors) {
             return findClusterMonitor(clusterId,
-                    groupMonitor.getAbstractClusterMonitors().values(),
-                    groupMonitor.getGroupMonitors().values());
+                    groupMonitor.getClusterIdToClusterMonitorsMap().values(),
+                    groupMonitor.getAliasToGroupMonitorsMap().values());
         }
         return null;
 
@@ -180,8 +119,8 @@ public class ApplicationMonitor extends Monitor {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor.getGroupMonitors() != null) {
-                    return findGroupMonitor(id, monitor.getGroupMonitors().values());
+                if (monitor.getAliasToGroupMonitorsMap() != null) {
+                    return findGroupMonitor(id, monitor.getAliasToGroupMonitorsMap().values());
                 }
             }
         }
@@ -195,12 +134,12 @@ public class ApplicationMonitor extends Monitor {
 
     private Monitor findParentMonitorForGroup(String groupId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
-        if (monitor.getGroupMonitors().containsKey(groupId)) {
+        if (monitor.getAliasToGroupMonitorsMap().containsKey(groupId)) {
             return monitor;
         } else {
-            if (monitor.getGroupMonitors() != null) {
+            if (monitor.getAliasToGroupMonitorsMap() != null) {
                 //check whether the children has the group and find its parent
-                for (GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                for (GroupMonitor groupMonitor : monitor.getAliasToGroupMonitorsMap().values()) {
                     return findParentMonitorForGroup(groupId, groupMonitor);
 
                 }
@@ -216,12 +155,12 @@ public class ApplicationMonitor extends Monitor {
 
     private Monitor findParentMonitorForCluster(String clusterId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
-        if (monitor.getAbstractClusterMonitors().containsKey(clusterId)) {
+        if (monitor.getClusterIdToClusterMonitorsMap().containsKey(clusterId)) {
             return monitor;
         } else {
-            if (monitor.getGroupMonitors() != null) {
+            if (monitor.getAliasToGroupMonitorsMap() != null) {
                 //check whether the children has the group and find its parent
-                for (GroupMonitor groupMonitor : monitor.getGroupMonitors().values()) {
+                for (GroupMonitor groupMonitor : monitor.getAliasToGroupMonitorsMap().values()) {
                     return findParentMonitorForCluster(clusterId, groupMonitor);
 
                 }
@@ -242,13 +181,5 @@ public class ApplicationMonitor extends Monitor {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
         this.status = status;
-    }
-
-    public Queue<String> getPreOrderTraverse() {
-        return preOrderTraverse;
-    }
-
-    public void setPreOrderTraverse(Queue<String> preOrderTraverse) {
-        this.preOrderTraverse = preOrderTraverse;
     }
 }

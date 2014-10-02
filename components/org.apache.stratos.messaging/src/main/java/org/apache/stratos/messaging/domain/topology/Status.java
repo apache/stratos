@@ -22,9 +22,10 @@ package org.apache.stratos.messaging.domain.topology;
 public enum Status {
 
     Created(1),
-    In_Maintenance(2),
-    Running(3),
-    Activated(4);
+    Running(2),
+    Activated(3),
+    In_Maintenance(4),
+    Removed(5);
 
     private int code;
 

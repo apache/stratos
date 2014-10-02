@@ -20,15 +20,15 @@ package org.apache.stratos.autoscaler.monitor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.grouping.DependencyBuilder;
+import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.autoscaler.grouping.dependency.context.ClusterContext;
+import org.apache.stratos.autoscaler.grouping.dependency.context.GroupContext;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -41,26 +41,23 @@ public class GroupMonitor extends Monitor {
     public GroupMonitor(Group group) {
         super(group);
         this.id = group.getAlias();
-        if(preOrderTraverse.isEmpty()) {
-            log.warn("the child group/cluster cannot be found for the Group " + id);
-        } else {
-            startDependency();
-        }
+        startDependency();
+
     }
 
     @Override
     public void update(Observable observable, Object event) {
-        if(event instanceof MonitorStatusEvent) {
+        if (event instanceof MonitorStatusEvent) {
             MonitorStatusEvent statusEvent = (MonitorStatusEvent) event;
             Status childStatus = statusEvent.getStatus();
             String notifier = statusEvent.getNotifierId();
             log.info(String.format("[Monitor] %s got notified from the [child] %s" +
                     "on its state change from %s to %s", id, notifier, this.status, status));
-            if(childStatus == Status.Activated) {
+            if (childStatus == Status.Activated) {
                 //start the next dependency
-                if(!preOrderTraverse.isEmpty()) {
-                    startDependency();
-                }
+                startDependency(notifier);
+            } else if(childStatus == Status.In_Maintenance) {
+
             }
 
         }
@@ -76,63 +73,11 @@ public class GroupMonitor extends Monitor {
     }
 
     @Override
-    public void startDependency() {
-        //Need to get the order every time as group/cluster might already been started
-        //TODO breadth first search in a tree and find the parallel one
-        //TODO build up the tree with ordered manner
 
-        preOrderTraverse = DependencyBuilder.getStartupOrder(component);
-
-        //start the first dependency
-        if(!preOrderTraverse.isEmpty()) {
-            String dependency = preOrderTraverse.poll();
-            if(log.isDebugEnabled()) {
-                log.debug("Dependency check for the Group " + dependency + " started");
-            }
-            if (dependency.contains("group")) {
-                for(Group group: component.getAliasToGroupMap().values()) {
-                    if(group.getName().equals(dependency.substring(6))) {
-                        startGroupMonitor(this, group.getAlias(), component);
-                    }
-                }
-            } else if (dependency.contains("cartridge")) {
-                ClusterDataHolder clusterDataHolder = component.getClusterData(dependency.substring(10));
-                String clusterId = clusterDataHolder.getClusterId();
-                String serviceName = clusterDataHolder.getServiceType();
-                Cluster cluster = null;
-                //TopologyManager.acquireReadLock();
-                Topology topology = TopologyManager.getTopology();
-                if (topology.serviceExists(serviceName)) {
-                    Service service = topology.getService(serviceName);
-                    if (service.clusterExists(clusterId)) {
-                        cluster = service.getCluster(clusterId);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Dependency check starting the [cluster]" + clusterId);
-                        }
-                        startClusterMonitor(this, cluster);
-                    } else {
-                        log.warn("[Cluster] " + clusterId + " cannot be found in the " +
-                                "Topology for [service] " + serviceName);
-                    }
-                } else {
-                    log.warn("[Service] " + serviceName + " cannot be found in the Topology");
-                }
-                //TopologyManager.releaseReadLock();
-            }
-        } else {
-            //all the groups/clusters have been started and waiting for activation
-            log.info("All the groups/clusters of the [group]: " + this.id + " have been started.");
-        }
-    }
 
     //monitor the status of the cluster and the groups
     public void monitor() {
 
-
-    }
-
-    @Override
-    protected void onEvent(Event event) {
 
     }
 }
