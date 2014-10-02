@@ -1,4 +1,4 @@
-from ..util import cartridgeagentutils, cartridgeagentconstants
+from ..util import cartridgeagentconstants
 
 
 class Topology:
@@ -207,7 +207,7 @@ class Cluster:
         self.hostnames.append(hostname)
 
     def set_tenant_range(self, tenant_range):
-        cartridgeagentutils.validate_tenant_range(tenant_range)
+        self.validate_tenant_range(tenant_range)
         self.tenant_range = tenant_range
 
     def get_members(self):
@@ -277,6 +277,26 @@ class Cluster:
 
         return False
 
+    def validate_tenant_range(self, tenant_range):
+        """
+        Validates the tenant range to be either '*' or a delimeted range of numbers
+        :param str tenant_range: The tenant range string to be validated
+        :return: void if the provided tenant range is valid, RuntimeError if otherwise
+        :exception: RuntimeError if the tenant range is invalid
+        """
+        valid = False
+        if tenant_range == "*":
+            valid = True
+        else:
+            arr = tenant_range.split(cartridgeagentconstants.TENANT_RANGE_DELIMITER)
+            if len(arr) == 2:
+                if arr[0].isdigit() and arr[1].isdigit():
+                    valid = True
+                elif arr[0].isdigit() and arr[1] == "*":
+                    valid = True
+
+        if not valid:
+            raise RuntimeError("Tenant range %r is not valid" % tenant_range)
 
 class Member:
     """

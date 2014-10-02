@@ -4,6 +4,8 @@ import subprocess
 import time
 
 from log import LogFactory
+from .. config import cartridgeagentconfiguration
+
 
 log = LogFactory().get_log(__name__)
 

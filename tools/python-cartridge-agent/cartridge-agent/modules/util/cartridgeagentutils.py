@@ -1,12 +1,10 @@
 from Crypto.Cipher import AES
 import base64
-import logging
 import os
 import time
 import socket
 import shutil
 
-import cartridgeagentconstants
 from log import LogFactory
 
 unpad = lambda s: s[0:-ord(s[-1])]
@@ -14,16 +12,6 @@ unpad = lambda s: s[0:-ord(s[-1])]
 log = LogFactory().get_log(__name__)
 
 current_milli_time = lambda: int(round(time.time() * 1000))
-
-extension_handler = None
-
-
-def get_extension_handler():
-    global extension_handler
-    if extension_handler is None:
-        extension_handler = defaultextensionhandler.DefaultExtensionHandler()
-
-    return extension_handler
 
 
 def decrypt_password(pass_str, secret):
@@ -138,28 +126,6 @@ def check_ports_active(ip_address, ports):
     return True
 
 
-def validate_tenant_range(tenant_range):
-    """
-    Validates the tenant range to be either '*' or a delimeted range of numbers
-    :param str tenant_range: The tenant range string to be validated
-    :return: void if the provided tenant range is valid, RuntimeError if otherwise
-    :exception: RuntimeError if the tenant range is invalid
-    """
-    valid = False
-    if tenant_range == "*":
-        valid = True
-    else:
-        arr = tenant_range.split(cartridgeagentconstants.TENANT_RANGE_DELIMITER)
-        if len(arr) == 2:
-            if arr[0].isdigit() and arr[1].isdigit():
-                valid = True
-            elif arr[0].isdigit() and arr[1] == "*":
-                valid = True
-
-    if not valid:
-        raise RuntimeError("Tenant range %r is not valid" % tenant_range)
-
-
 def get_carbon_server_property(property_key):
     """
     Reads the carbon.xml file and returns the value for the property key.
@@ -180,6 +146,3 @@ def get_working_dir():
     """
     #"/path/to/cartridge-agent/modules/util/".split("modules") returns ["/path/to/cartridge-agent/", "/util"]
     return os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
-
-
-from ..extensions import defaultextensionhandler

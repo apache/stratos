@@ -5,7 +5,10 @@ import urllib2
 
 from ... util.log import LogFactory
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
-
+from gitrepository import GitRepository
+from ... config import cartridgeagentconfiguration
+from ... util.asyncscheduledtask import AsyncScheduledTask
+from ... artifactmgt.repositoryinformation import RepositoryInformation
 
 class AgentGitHandler:
     """
@@ -18,7 +21,7 @@ class AgentGitHandler:
     SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
     TENANT_REPO_PATH = "/repository/tenants/"
 
-    extension_handler = cartridgeagentutils.get_extension_handler()
+    extension_handler = None
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
@@ -113,6 +116,8 @@ class AgentGitHandler:
     @staticmethod
     def pull(repo_context):
         repo = Repo(repo_context.local_repo_path)
+        from ....agent import CartridgeAgent
+        AgentGitHandler.extension_handler = CartridgeAgent.extension_handler
         try:
             repo.git.checkout("master")
             pull_output = repo.git.pull()
@@ -477,9 +482,3 @@ class ArtifactUpdateTask(Thread):
 
         if self.auto_commit:
             AgentGitHandler.commit(self.repo_info)
-
-
-from gitrepository import GitRepository
-from ... config import cartridgeagentconfiguration
-from ... util.asyncscheduledtask import AsyncScheduledTask
-from ... artifactmgt.repositoryinformation import RepositoryInformation
