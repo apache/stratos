@@ -333,15 +333,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     	
         ServiceGroup serviceGroup = null;
-        if((serviceGroup = dataHolder.getServiceGroup(name)) != null) {
-            if (dataHolder.getServiceGroups().remove(name)) {
+        
+        serviceGroup = dataHolder.getServiceGroup(name);
+        
+        if (serviceGroup  != null) {
+            if (dataHolder.getServiceGroups().remove(serviceGroup)) {
                 persist();
                 if(log.isInfoEnabled()) {
                     log.info("Successfully undeployed the Service Group definition: " + serviceGroup);
                 }
                 return;
             }
-        }
+        } 
+        
         String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
         log.error(msg);
         throw new InvalidServiceGroupException(msg);
