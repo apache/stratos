@@ -59,8 +59,8 @@ public class Application implements ParentBehavior {
     }
 
     @Override
-    public void setGroups(Map<String, Group> groupNameToGroup) {
-        aliasToGroupMap.putAll(groupNameToGroup);
+    public void setGroups(Map<String, Group> aliasToGroup) {
+        aliasToGroupMap.putAll(aliasToGroup);
     }
 
     @Override

@@ -16,38 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.grouping.dependency.context;
 
-package org.apache.stratos.messaging.domain.topology;
-
-import java.io.Serializable;
-import java.util.List;
-
-public class StartupOrder implements Serializable {
-
-    private String start;
-
-    private String after;
-
-    private List<String> startList;
-
-    public StartupOrder (String start, String after) {
-        this.start = start;
-        this.after = after;
-    }
-
-    public String getStart() {
-        return start;
-    }
-
-    public String getAfter() {
-        return after;
-    }
-
-    public List<String> getStartList() {
-        return startList;
-    }
-
-    public void setStartList(List<String> startList) {
-        this.startList = startList;
+/**
+ * Created by reka on 10/1/14.
+ */
+public class GroupContext extends ApplicationContext {
+    public GroupContext(String id, boolean killDependent) {
+        super(id ,killDependent);
     }
 }
