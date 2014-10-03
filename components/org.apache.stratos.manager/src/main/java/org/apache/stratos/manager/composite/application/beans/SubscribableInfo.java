@@ -38,6 +38,8 @@ public class SubscribableInfo {
 
     private String repoPassword;
 
+    private String metaInfoAlias;
+
     public String getAlias() {
         return alias;
     }
@@ -92,5 +94,13 @@ public class SubscribableInfo {
 
     public void setRepoPassword(String repoPassword) {
         this.repoPassword = repoPassword;
+    }
+
+    public String getMetaInfoAlias() {
+        return metaInfoAlias;
+    }
+
+    public void setMetaInfoAlias(String metaInfoAlias) {
+        this.metaInfoAlias = metaInfoAlias;
     }
 }
