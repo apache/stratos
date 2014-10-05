@@ -35,14 +35,12 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
- *
  */
 public class VMServiceClusterMonitor extends VMClusterMonitor {
 
@@ -50,11 +48,12 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     private String lbReferenceType;
     private boolean hasPrimary;
 
-    public VMServiceClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
-                          AutoscalePolicy autoscalePolicy) {
-    	super(clusterId, serviceId, ClusterType.VMServiceCluster, new AutoscalerRuleEvaluator(), 
-    			deploymentPolicy, autoscalePolicy, 
-    			new ConcurrentHashMap<String, NetworkPartitionContext>());
+    public VMServiceClusterMonitor(String clusterId, String serviceId,
+                                   DeploymentPolicy deploymentPolicy,
+                                   AutoscalePolicy autoscalePolicy) {
+        super(clusterId, serviceId, new AutoscalerRuleEvaluator(),
+              deploymentPolicy, autoscalePolicy,
+              new ConcurrentHashMap<String, NetworkPartitionContext>());
         readConfigurations();
     }
 
@@ -73,19 +72,19 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 log.debug("VMServiceClusterMonitor is running.. " + this.toString());
             }
             try {
-                if(!ClusterStatus.In_Maintenance.equals(getStatus())) {
+                if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("VMServiceClusterMonitor is suspended as the cluster is in " +
-                                    ClusterStatus.In_Maintenance + " mode......");
+                                  ClusterStatus.In_Maintenance + " mode......");
                     }
                 }
             } catch (Exception e) {
                 log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
             }
             try {
-                Thread.sleep(getMonitorInterval());
+                Thread.sleep(getMonitorIntervalMilliseconds());
             } catch (InterruptedException ignore) {
             }
         }
@@ -105,13 +104,13 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 List<String> primaryMemberListInPartition = new ArrayList<String>();
                 // get active primary members in this partition context
                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
-                    if (isPrimaryMember(memberContext)){
+                    if (isPrimaryMember(memberContext)) {
                         primaryMemberListInPartition.add(memberContext.getMemberId());
                     }
                 }
                 // get pending primary members in this partition context
                 for (MemberContext memberContext : partitionContext.getPendingMembers()) {
-                    if (isPrimaryMember(memberContext)){
+                    if (isPrimaryMember(memberContext)) {
                         primaryMemberListInPartition.add(memberContext.getMemberId());
                     }
                 }
@@ -134,19 +133,19 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
             if (log.isDebugEnabled()) {
-                log.debug("flag of rifReset: "  + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
-                        + " flag of loadAverageReset" + loadAverageReset);
+                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
+                          + " flag of loadAverageReset" + loadAverageReset);
             }
             if (rifReset || memoryConsumptionReset || loadAverageReset) {
-            	getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                 //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
-            	getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
-            	getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
-            	getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
-            	getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-            	getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
-            	getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
-            	getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
+                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
+                getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+                getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+                getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+                getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
 
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
@@ -161,12 +160,12 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 networkPartitionContext.setLoadAverageReset(false);
             } else if (log.isDebugEnabled()) {
                 log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
-                        "cycle for network partition %s", networkPartitionContext.getId()));
+                                        "cycle for network partition %s", networkPartitionContext.getId()));
             }
         }
     }
-    
-    private boolean isPrimaryMember(MemberContext memberContext){
+
+    private boolean isPrimaryMember(MemberContext memberContext) {
         Properties props = memberContext.getProperties();
         if (log.isDebugEnabled()) {
             log.debug(" Properties [" + props + "] ");
@@ -176,7 +175,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 if (prop.getName().equals("PRIMARY")) {
                     if (Boolean.parseBoolean(prop.getValue())) {
                         log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
-                                "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
+                                  "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
                         return true;
                     }
                 }
@@ -184,33 +183,33 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         }
         return false;
     }
-    
+
     @Override
-    protected void readConfigurations () {
+    protected void readConfigurations() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
-        setMonitorInterval(monitorInterval);
+        setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("VMServiceClusterMonitor task interval: " + getMonitorInterval());
+            log.debug("VMServiceClusterMonitor task interval: " + getMonitorIntervalMilliseconds());
         }
     }
-    
-	@Override
+
+    @Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
-        if(log.isDebugEnabled()) {
-            log.debug("VMServiceClusterMonitor Drools session has been disposed. "+this.toString());
+        if (log.isDebugEnabled()) {
+            log.debug("VMServiceClusterMonitor Drools session has been disposed. " + this.toString());
         }
     }
 
     @Override
     public String toString() {
         return "VMServiceClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() +
-                ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
-                ", lbReferenceType=" + lbReferenceType +
-                ", hasPrimary=" + hasPrimary + " ]";
+               ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
+               ", lbReferenceType=" + lbReferenceType +
+               ", hasPrimary=" + hasPrimary + " ]";
     }
 
     public String getLbReferenceType() {

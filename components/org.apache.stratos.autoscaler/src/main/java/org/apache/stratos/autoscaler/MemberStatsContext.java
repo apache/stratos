@@ -31,10 +31,10 @@ public class MemberStatsContext {
     private MemoryConsumption memoryConsumption;
     private String memberId;
 
-    public MemberStatsContext(String memberId){
+    public MemberStatsContext(String memberId) {
         this.memberId = memberId;
         memoryConsumption = new MemoryConsumption();
-        loadAverage =  new LoadAverage();
+        loadAverage = new LoadAverage();
     }
 
     public String getMemberId() {
@@ -52,4 +52,29 @@ public class MemberStatsContext {
     public MemoryConsumption getMemoryConsumption() {
         return memoryConsumption;
     }
+
+    public void setAverageLoadAverage(float value) {
+        loadAverage.setAverage(value);
+    }
+
+    public void setAverageMemoryConsumption(float value) {
+        memoryConsumption.setAverage(value);
+    }
+
+    public void setGradientOfLoadAverage(float value) {
+        loadAverage.setGradient(value);
+    }
+
+    public void setGradientOfMemoryConsumption(float value) {
+        memoryConsumption.setGradient(value);
+    }
+
+    public void setSecondDerivativeOfLoadAverage(float value) {
+        loadAverage.setSecondDerivative(value);
+    }
+
+    public void setSecondDerivativeOfMemoryConsumption(float value) {
+        memoryConsumption.setSecondDerivative(value);
+    }
+
 }

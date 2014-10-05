@@ -19,130 +19,211 @@
 package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
 /*
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
  */
-public abstract class AbstractClusterMonitor implements Runnable{
-	
+public abstract class AbstractClusterMonitor implements Runnable {
+
     private String clusterId;
     private String serviceId;
-    private ClusterType clusterType;
-	private ClusterStatus status;
-	private int monitorInterval;
-	
-	protected FactHandle minCheckFactHandle;
-	protected FactHandle scaleCheckFactHandle;
-	private StatefulKnowledgeSession minCheckKnowledgeSession;
-	private StatefulKnowledgeSession scaleCheckKnowledgeSession;
-	private boolean isDestroyed;
-	
-	private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-	
-	protected AbstractClusterMonitor(String clusterId, String serviceId, ClusterType clusterType, 
-			AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
-		
-		super();
-		this.clusterId = clusterId;
-		this.serviceId = serviceId;
-		this.clusterType = clusterType;
-		this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+    private ClusterStatus status;
+    private int monitoringIntervalMilliseconds;
+
+    protected FactHandle minCheckFactHandle;
+    protected FactHandle scaleCheckFactHandle;
+    private StatefulKnowledgeSession minCheckKnowledgeSession;
+    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
+    private boolean isDestroyed;
+
+    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+
+    protected AbstractClusterMonitor(String clusterId, String serviceId,
+                                     AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+
+        super();
+        this.clusterId = clusterId;
+        this.serviceId = serviceId;
+        this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
-	}
+    }
 
-	protected abstract void readConfigurations();
-	protected abstract void monitor();
+    protected abstract void readConfigurations();
+
+    protected abstract void monitor();
+
     public abstract void destroy();
-    
-	public String getClusterId() {
-		return clusterId;
-	}
-	
-	public void setClusterId(String clusterId) {
-		this.clusterId = clusterId;
-	}
-	
-	public void setStatus(ClusterStatus status) {
-		this.status = status;
-	}
 
-	public ClusterType getClusterType() {
-		return clusterType;
-	}
+    //handle health events
+    public abstract void handleAverageLoadAverageEvent(
+            AverageLoadAverageEvent averageLoadAverageEvent);
 
-	public ClusterStatus getStatus() {
-		return status;
-	}
-	
-	public String getServiceId() {
-		return serviceId;
-	}
-	
-	public void setServiceId(String serviceId) {
-		this.serviceId = serviceId;
-	}
-	
-	public int getMonitorInterval() {
-		return monitorInterval;
-	}
-	
-	public void setMonitorInterval(int monitorInterval) {
-		this.monitorInterval = monitorInterval;
-	}
+    public abstract void handleGradientOfLoadAverageEvent(
+            GradientOfLoadAverageEvent gradientOfLoadAverageEvent);
 
-	public FactHandle getMinCheckFactHandle() {
-		return minCheckFactHandle;
-	}
-	
-	public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
-		this.minCheckFactHandle = minCheckFactHandle;
-	}
-	
-	public FactHandle getScaleCheckFactHandle() {
-		return scaleCheckFactHandle;
-	}
-	
-	public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
-		this.scaleCheckFactHandle = scaleCheckFactHandle;
-	}
-	
-	public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
-		return minCheckKnowledgeSession;
-	}
-	
-	public void setMinCheckKnowledgeSession(
-			StatefulKnowledgeSession minCheckKnowledgeSession) {
-		this.minCheckKnowledgeSession = minCheckKnowledgeSession;
-	}
-	
-	public StatefulKnowledgeSession getScaleCheckKnowledgeSession() {
-		return scaleCheckKnowledgeSession;
-	}
-	
-	public void setScaleCheckKnowledgeSession(
-			StatefulKnowledgeSession scaleCheckKnowledgeSession) {
-		this.scaleCheckKnowledgeSession = scaleCheckKnowledgeSession;
-	}
-	
-	public boolean isDestroyed() {
-		return isDestroyed;
-	}
-	
-	public void setDestroyed(boolean isDestroyed) {
-		this.isDestroyed = isDestroyed;
-	}
+    public abstract void handleSecondDerivativeOfLoadAverageEvent(
+            SecondDerivativeOfLoadAverageEvent secondDerivativeOfLoadAverageEvent);
 
-	public AutoscalerRuleEvaluator getAutoscalerRuleEvaluator() {
-		return autoscalerRuleEvaluator;
-	}
+    public abstract void handleAverageMemoryConsumptionEvent(
+            AverageMemoryConsumptionEvent averageMemoryConsumptionEvent);
 
-	public void setAutoscalerRuleEvaluator(
-			AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
-		this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
-	}
+    public abstract void handleGradientOfMemoryConsumptionEvent(
+            GradientOfMemoryConsumptionEvent gradientOfMemoryConsumptionEvent);
+
+    public abstract void handleSecondDerivativeOfMemoryConsumptionEvent(
+            SecondDerivativeOfMemoryConsumptionEvent secondDerivativeOfMemoryConsumptionEvent);
+
+    public abstract void handleAverageRequestsInFlightEvent(
+            AverageRequestsInFlightEvent averageRequestsInFlightEvent);
+
+    public abstract void handleGradientOfRequestsInFlightEvent(
+            GradientOfRequestsInFlightEvent gradientOfRequestsInFlightEvent);
+
+    public abstract void handleSecondDerivativeOfRequestsInFlightEvent(
+            SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent);
+
+    public abstract void handleMemberAverageMemoryConsumptionEvent(
+            MemberAverageMemoryConsumptionEvent memberAverageMemoryConsumptionEvent);
+
+    public abstract void handleMemberGradientOfMemoryConsumptionEvent(
+            MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent);
+
+    public abstract void handleMemberSecondDerivativeOfMemoryConsumptionEvent(
+            MemberSecondDerivativeOfMemoryConsumptionEvent memberSecondDerivativeOfMemoryConsumptionEvent);
+
+
+    public abstract void handleMemberAverageLoadAverageEvent(
+            MemberAverageLoadAverageEvent memberAverageLoadAverageEvent);
+
+    public abstract void handleMemberGradientOfLoadAverageEvent(
+            MemberGradientOfLoadAverageEvent memberGradientOfLoadAverageEvent);
+
+    public abstract void handleMemberSecondDerivativeOfLoadAverageEvent(
+            MemberSecondDerivativeOfLoadAverageEvent memberSecondDerivativeOfLoadAverageEvent);
+
+    public abstract void handleMemberFaultEvent(MemberFaultEvent memberFaultEvent);
+
+    //handle topology events
+    public abstract void handleMemberStartedEvent(MemberStartedEvent memberStartedEvent);
+
+    public abstract void handleMemberActivatedEvent(MemberActivatedEvent memberActivatedEvent);
+
+    public abstract void handleMemberMaintenanceModeEvent(
+            MemberMaintenanceModeEvent maintenanceModeEvent);
+
+    public abstract void handleMemberReadyToShutdownEvent(
+            MemberReadyToShutdownEvent memberReadyToShutdownEvent);
+
+    public abstract void handleMemberTerminatedEvent(MemberTerminatedEvent memberTerminatedEvent);
+
+    public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public void setStatus(ClusterStatus status) {
+        this.status = status;
+    }
+
+    public ClusterStatus getStatus() {
+        return status;
+    }
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public int getMonitorIntervalMilliseconds() {
+        return monitoringIntervalMilliseconds;
+    }
+
+    public void setMonitorIntervalMilliseconds(int monitorIntervalMilliseconds) {
+        this.monitoringIntervalMilliseconds = monitorIntervalMilliseconds;
+    }
+
+    public FactHandle getMinCheckFactHandle() {
+        return minCheckFactHandle;
+    }
+
+    public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
+        this.minCheckFactHandle = minCheckFactHandle;
+    }
+
+    public FactHandle getScaleCheckFactHandle() {
+        return scaleCheckFactHandle;
+    }
+
+    public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
+        this.scaleCheckFactHandle = scaleCheckFactHandle;
+    }
+
+    public StatefulKnowledgeSession getMinCheckKnowledgeSession() {
+        return minCheckKnowledgeSession;
+    }
+
+    public void setMinCheckKnowledgeSession(
+            StatefulKnowledgeSession minCheckKnowledgeSession) {
+        this.minCheckKnowledgeSession = minCheckKnowledgeSession;
+    }
+
+    public StatefulKnowledgeSession getScaleCheckKnowledgeSession() {
+        return scaleCheckKnowledgeSession;
+    }
+
+    public void setScaleCheckKnowledgeSession(
+            StatefulKnowledgeSession scaleCheckKnowledgeSession) {
+        this.scaleCheckKnowledgeSession = scaleCheckKnowledgeSession;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+    public void setDestroyed(boolean isDestroyed) {
+        this.isDestroyed = isDestroyed;
+    }
+
+    public AutoscalerRuleEvaluator getAutoscalerRuleEvaluator() {
+        return autoscalerRuleEvaluator;
+    }
+
+    public void setAutoscalerRuleEvaluator(
+            AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+        this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+    }
 }

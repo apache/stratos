@@ -21,24 +21,41 @@ package org.apache.stratos.autoscaler.message.receiver.health;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.ContainerClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.DockerServiceClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.VMClusterMonitor;
-import org.apache.stratos.autoscaler.policy.model.LoadAverage;
-import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
-import org.apache.stratos.common.enums.ClusterType;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.health.stat.*;
-import org.apache.stratos.messaging.listener.health.stat.*;
+import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.listener.health.stat.AverageLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.AverageMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.AverageRequestsInFlightEventListener;
+import org.apache.stratos.messaging.listener.health.stat.GradientOfLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.GradientOfMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.GradientOfRequestsInFlightEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberAverageLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberAverageMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberFaultEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberGradientOfLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberGradientOfMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberSecondDerivativeOfLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.MemberSecondDerivativeOfMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.SecondDerivativeOfLoadAverageEventListener;
+import org.apache.stratos.messaging.listener.health.stat.SecondDerivativeOfMemoryConsumptionEventListener;
+import org.apache.stratos.messaging.listener.health.stat.SecondDerivativeOfRequestsInFlightEventListener;
 import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -54,7 +71,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
     private HealthStatEventReceiver healthStatEventReceiver;
 
     public AutoscalerHealthStatEventReceiver() {
-		this.healthStatEventReceiver = new HealthStatEventReceiver();
+        this.healthStatEventReceiver = new HealthStatEventReceiver();
         addEventListeners();
     }
 
@@ -67,18 +84,18 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         }
         Thread thread = new Thread(healthStatEventReceiver);
         thread.start();
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread started");
         }
 
         // Keep the thread live until terminated
-        while (!terminated){
-        	try {
+        while (!terminated) {
+            try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
         }
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread terminated");
         }
     }
@@ -88,876 +105,396 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         healthStatEventReceiver.addEventListener(new AverageLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                AverageLoadAverageEvent e = (AverageLoadAverageEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Avg load avg event: [cluster] %s [network-partition] %s [value] %s",
-                            clusterId, networkPartitionId, floatValue));
-                }
+                AverageLoadAverageEvent averageLoadAverageEvent = (AverageLoadAverageEvent) event;
+                String clusterId = averageLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster) {
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setAverageLoadAverage(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setAverageLoadAverage(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleAverageLoadAverageEvent(averageLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new AverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-
-                AverageMemoryConsumptionEvent e = (AverageMemoryConsumptionEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Avg Memory Consumption event: [cluster] %s [network-partition] %s "
-                    		+ "[value] %s", clusterId, networkPartitionId, floatValue));
-                }
+                AverageMemoryConsumptionEvent averageMemoryConsumptionEvent = (AverageMemoryConsumptionEvent) event;
+                String clusterId = averageMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster) {
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setAverageMemoryConsumption(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setAverageMemoryConsumption(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleAverageMemoryConsumptionEvent(averageMemoryConsumptionEvent);
             }
         });
+
         healthStatEventReceiver.addEventListener(new AverageRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-
-                AverageRequestsInFlightEvent e = (AverageRequestsInFlightEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-                Float floatValue = e.getValue();
-
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",
-                            clusterId, networkPartitionId, floatValue));
-                }
+                AverageRequestsInFlightEvent averageRequestsInFlightEvent = (AverageRequestsInFlightEvent) event;
+                String clusterId = averageRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster) {
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setAverageRequestsInFlight(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setAverageRequestsInFlight(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleAverageRequestsInFlightEvent(averageRequestsInFlightEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new GradientOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                GradientOfLoadAverageEvent e = (GradientOfLoadAverageEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Grad of load avg event: [cluster] %s [network-partition] %s [value] %s",
-                            clusterId, networkPartitionId, floatValue));
-                }
+                GradientOfLoadAverageEvent gradientOfLoadAverageEvent = (GradientOfLoadAverageEvent) event;
+                String clusterId = gradientOfLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setLoadAverageGradient(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setLoadAverageGradient(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleGradientOfLoadAverageEvent(gradientOfLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new GradientOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-
-                GradientOfMemoryConsumptionEvent e = (GradientOfMemoryConsumptionEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Grad of Memory Consumption event: [cluster] %s "
-                    		+ "[network-partition] %s [value] %s", clusterId, networkPartitionId, floatValue));
-                }
+                GradientOfMemoryConsumptionEvent gradientOfMemoryConsumptionEvent = (GradientOfMemoryConsumptionEvent) event;
+                String clusterId = gradientOfMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setMemoryConsumptionGradient(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setMemoryConsumptionGradient(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleGradientOfMemoryConsumptionEvent(gradientOfMemoryConsumptionEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new GradientOfRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                GradientOfRequestsInFlightEvent e = (GradientOfRequestsInFlightEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Gradient of Rif event: [cluster] %s [network-partition] %s [value] %s",
-                            clusterId, networkPartitionId, floatValue));
-                }
+                GradientOfRequestsInFlightEvent gradientOfRequestsInFlightEvent = (GradientOfRequestsInFlightEvent) event;
+                String clusterId = gradientOfRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setRequestsInFlightGradient(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setRequestsInFlightGradient(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleGradientOfRequestsInFlightEvent(gradientOfRequestsInFlightEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberAverageLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberAverageLoadAverageEvent e = (MemberAverageLoadAverageEvent) event;
-                LoadAverage loadAverage = findLoadAverage(e.getMemberId());
-                if(loadAverage != null) {
-
-                    Float floatValue = e.getValue();
-                    loadAverage.setAverage(floatValue);
-
+                MemberAverageLoadAverageEvent memberAverageLoadAverageEvent = (MemberAverageLoadAverageEvent) event;
+                String memberId = memberAverageLoadAverageEvent.getMemberId();
+                Member member = getMemberByMemberId(memberId);
+                if (null == member) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member avg of load avg event: [member] %s [value] %s", 
-                        		e.getMemberId(), floatValue));
+                        log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
                     }
+                    return;
                 }
-
+                if (!member.isActive()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member activated event has not received for the member %s. "
+                                                + "Therefore ignoring" + " the health stat", memberId));
+                    }
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                String clusterId = member.getClusterId();
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberAverageLoadAverageEvent(memberAverageLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberAverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberAverageMemoryConsumptionEvent e = (MemberAverageMemoryConsumptionEvent) event;
-                MemoryConsumption memoryConsumption = findMemoryConsumption(e.getMemberId());
-                if(memoryConsumption != null) {
-
-                    Float floatValue = e.getValue();
-                    memoryConsumption.setAverage(floatValue);
-
+                MemberAverageMemoryConsumptionEvent memberAverageMemoryConsumptionEvent = (MemberAverageMemoryConsumptionEvent) event;
+                String memberId = memberAverageMemoryConsumptionEvent.getMemberId();
+                Member member = getMemberByMemberId(memberId);
+                if (null == member) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member avg Memory Consumption event: [member] %s [value] %s", 
-                        		e.getMemberId(), floatValue));
+                        log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
                     }
+                    return;
                 }
-
+                if (!member.isActive()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member activated event has not received for the member %s. "
+                                                + "Therefore ignoring" + " the health stat", memberId));
+                    }
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                String clusterId = member.getClusterId();
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberAverageMemoryConsumptionEvent(memberAverageMemoryConsumptionEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberFaultEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberFaultEvent e = (MemberFaultEvent) event;
-                String clusterId = e.getClusterId();
-                String memberId = e.getMemberId();
-
-                if (memberId == null || memberId.isEmpty()) {
-                    if(log.isErrorEnabled()) {
-                        log.error("Member id not found in received message");
-                    }
-                } else {
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member fault event: [member] %s ", e.getMemberId()));
-                    }
-                    handleMemberFaultEvent(clusterId, memberId);
+                MemberFaultEvent memberFaultEvent = (MemberFaultEvent) event;
+                String clusterId = memberFaultEvent.getClusterId();
+                String memberId = memberFaultEvent.getMemberId();
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Member fault event: [member] %s ", memberId));
                 }
+                if (memberId == null || memberId.isEmpty()) {
+                    log.error("Member id not found in received message");
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberFaultEvent(memberFaultEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberGradientOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberGradientOfLoadAverageEvent e = (MemberGradientOfLoadAverageEvent) event;
-                LoadAverage loadAverage = findLoadAverage(e.getMemberId());
-                if(loadAverage != null) {
-
-                    Float floatValue = e.getValue();
-                    loadAverage.setGradient(floatValue);
-
+                MemberGradientOfLoadAverageEvent memberGradientOfLoadAverageEvent = (MemberGradientOfLoadAverageEvent) event;
+                String memberId = memberGradientOfLoadAverageEvent.getMemberId();
+                Member member = getMemberByMemberId(memberId);
+                if (null == member) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member grad of load avg event: [member] %s "
-                        		+ "[value] %s", e.getMemberId(), floatValue));
+                        log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
                     }
+                    return;
                 }
-
+                if (!member.isActive()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member activated event has not received for the member %s. "
+                                                + "Therefore ignoring" + " the health stat", memberId));
+                    }
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                String clusterId = member.getClusterId();
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberGradientOfLoadAverageEvent(memberGradientOfLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberGradientOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberGradientOfMemoryConsumptionEvent e = (MemberGradientOfMemoryConsumptionEvent) event;
-                MemoryConsumption memoryConsumption = findMemoryConsumption(e.getMemberId());
-                if(memoryConsumption != null) {
-
-                    Float floatValue = e.getValue();
-                    memoryConsumption.setGradient(floatValue);
-
+                MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent = (MemberGradientOfMemoryConsumptionEvent) event;
+                String memberId = memberGradientOfMemoryConsumptionEvent.getMemberId();
+                Member member = getMemberByMemberId(memberId);
+                if (null == member) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member grad of Memory Consumption event: [member] %s "
-                        		+ "[value] %s", e.getMemberId(), floatValue));
+                        log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
                     }
+                    return;
                 }
-
+                if (!member.isActive()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member activated event has not received for the member %s. "
+                                                + "Therefore ignoring" + " the health stat", memberId));
+                    }
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                String clusterId = member.getClusterId();
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberGradientOfMemoryConsumptionEvent(memberGradientOfMemoryConsumptionEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberSecondDerivativeOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberSecondDerivativeOfLoadAverageEvent e = (MemberSecondDerivativeOfLoadAverageEvent) event;
-                LoadAverage loadAverage = findLoadAverage(e.getMemberId());
-                if(loadAverage != null) {
-
-                    Float floatValue = e.getValue();
-                    loadAverage.setSecondDerivative(floatValue);
-
+                MemberSecondDerivativeOfLoadAverageEvent memberSecondDerivativeOfLoadAverageEvent = (MemberSecondDerivativeOfLoadAverageEvent) event;
+                String memberId = memberSecondDerivativeOfLoadAverageEvent.getMemberId();
+                Member member = getMemberByMemberId(memberId);
+                if (null == member) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member Second Derivation of load avg event: [member] %s "
-                        		+ "[value] %s", e.getMemberId(), floatValue));
+                        log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
                     }
+                    return;
                 }
+                if (!member.isActive()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member activated event has not received for the member %s. "
+                                                + "Therefore ignoring" + " the health stat", memberId));
+                    }
+                    return;
+                }
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                String clusterId = member.getClusterId();
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                monitor.handleMemberSecondDerivativeOfLoadAverageEvent(memberSecondDerivativeOfLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new MemberSecondDerivativeOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-            }
 
+            }
         });
+
         healthStatEventReceiver.addEventListener(new SecondDerivativeOfLoadAverageEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-
-                SecondDerivativeOfLoadAverageEvent e = (SecondDerivativeOfLoadAverageEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Second Derivation of load avg event: [cluster] %s "
-                    		+ "[network-partition] %s [value] %s", clusterId, networkPartitionId, floatValue));
-                }
+                SecondDerivativeOfLoadAverageEvent secondDerivativeOfLoadAverageEvent = (SecondDerivativeOfLoadAverageEvent) event;
+                String clusterId = secondDerivativeOfLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setLoadAverageSecondDerivative(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setLoadAverageSecondDerivative(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleSecondDerivativeOfLoadAverageEvent(secondDerivativeOfLoadAverageEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new SecondDerivativeOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-
-                SecondDerivativeOfMemoryConsumptionEvent e = (SecondDerivativeOfMemoryConsumptionEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s "
-                    		+ "[network-partition] %s [value] %s", clusterId, networkPartitionId, floatValue));
-                }
+                SecondDerivativeOfMemoryConsumptionEvent secondDerivativeOfMemoryConsumptionEvent = (SecondDerivativeOfMemoryConsumptionEvent) event;
+                String clusterId = secondDerivativeOfMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setMemoryConsumptionSecondDerivative(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setMemoryConsumptionSecondDerivative(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleSecondDerivativeOfMemoryConsumptionEvent(secondDerivativeOfMemoryConsumptionEvent);
             }
-
         });
+
         healthStatEventReceiver.addEventListener(new SecondDerivativeOfRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                SecondDerivativeOfRequestsInFlightEvent e = (SecondDerivativeOfRequestsInFlightEvent) event;
-                String clusterId = e.getClusterId();
-                String networkPartitionId = e.getNetworkPartitionId();
-                Float floatValue = e.getValue();
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Second derivative of Rif event: [cluster] %s "
-                    		+ "[network-partition] %s [value] %s", clusterId, networkPartitionId, floatValue));
-                }
+                SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent = (SecondDerivativeOfRequestsInFlightEvent) event;
+                String clusterId = secondDerivativeOfRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
-
-                if(asCtx.clusterMonitorExist(clusterId)){
-                    monitor = asCtx.getClusterMonitor(clusterId);
-                } else {
-                    if(log.isDebugEnabled()){
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                        		+ "[cluster] %s", clusterId));
+                                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
-                
-                if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-                		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-                	
-                    if(null != monitor){
-                        NetworkPartitionContext networkPartitionContext = 
-                        		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-                        if(null != networkPartitionContext){
-                            networkPartitionContext.setRequestsInFlightSecondDerivative(floatValue);
-                        } else {
-                            if(log.isDebugEnabled()) {
-                               log.debug(String.format("Network partition context is not available for :" +
-                                       " [network partition] %s", networkPartitionId));
-                            }
-                        }
-                    }
-                } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-                	KubernetesClusterContext kubernetesClusterContext = 
-                			((DockerServiceClusterMonitor) monitor).getKubernetesClusterCtxt();
-                	if (null != kubernetesClusterContext) {
-						kubernetesClusterContext.setRequestsInFlightSecondDerivative(floatValue);
-					} else {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                    " [cluster] %s", clusterId));
-                         }
-					}
-                }
+                monitor.handleSecondDerivativeOfRequestsInFlightEvent(secondDerivativeOfRequestsInFlightEvent);
             }
         });
     }
 
-
-    private LoadAverage findLoadAverage(String memberId) {
-//        String memberId = event.getProperties().get("member_id");
-        Member member = findMember(memberId);
-        
-        if(null == member){
-        	if(log.isDebugEnabled()) {
-                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
-            }
-        	return null;
-        }
-        String clusterId = member.getClusterId();
-
-        AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        AbstractClusterMonitor monitor;
-
-        if(asCtx.clusterMonitorExist(clusterId)){
-            monitor = asCtx.getClusterMonitor(clusterId);
-        } else {
-            if(log.isDebugEnabled()){
-                log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                		+ "[cluster] %s", clusterId));
-            }
-            return null;
-        }
-        
-        if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-        		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-        	
-            String networkPartitionId = findNetworkPartitionId(memberId);
-            MemberStatsContext memberStatsContext = 
-            		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId)
-                            .getPartitionCtxt(member.getPartitionId())
-                            .getMemberStatsContext(memberId);
-            if(null == memberStatsContext){
-                if(log.isDebugEnabled()) {
-                   log.debug(String.format("Member context is not available for : [member] %s", memberId));
-                }
-                return null;
-            }
-            else if(!member.isActive()){
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("Member activated event has not received for the member %s. "
-                    		+ "Therefore ignoring" + " the health stat", memberId));
-                }
-                return null;
-            }
-
-            LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-            return loadAverage;
-        } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-        	MemberStatsContext memberStatsContext = 
-        			((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt().getMemberStatsContext(memberId);
-            if(null == memberStatsContext){
-                if(log.isDebugEnabled()) {
-                   log.debug(String.format("Member context is not available for : [member] %s", memberId));
-                }
-                return null;
-            }
-            else if(!member.isActive()){
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("Member activated event has not received for the member %s. "
-                    		+ "Therefore ignoring" + " the health stat", memberId));
-                }
-                return null;
-            }
-
-            LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-            return loadAverage;
-        }
-
-        return null;
-    }
-
-    private MemoryConsumption findMemoryConsumption(String memberId) {
-//        String memberId = event.getProperties().get("member_id");
-        Member member = findMember(memberId);
-        
-        if(null == member){
-        	if(log.isDebugEnabled()) {
-                log.debug(String.format("Member not found in the Topology : [member] %s", memberId));
-            }
-        	return null;
-        }
-        
-        AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        AbstractClusterMonitor monitor;
-
-        if(asCtx.clusterMonitorExist(member.getClusterId())){
-            monitor = asCtx.getClusterMonitor(member.getClusterId());
-        } else {
-            if(log.isDebugEnabled()){
-                log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                		+ "[cluster] %s", member.getClusterId()));
-            }
-            return null;
-        }
-
-        if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-        		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-        	
-            String networkPartitionId = findNetworkPartitionId(memberId);
-            NetworkPartitionContext networkPartitionCtxt = 
-            		((VMClusterMonitor) monitor).getNetworkPartitionCtxt(networkPartitionId);
-			PartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
-			MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
-            if(null == memberStatsContext){
-                if(log.isDebugEnabled()) {
-                   log.debug(String.format("Member context is not available for : [member] %s", memberId));
-                }
-                return null;
-            }else if(!member.isActive()){
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("Member activated event has not received for the member %s. "
-                    		+ "Therefore ignoring" + " the health stat", memberId));
-                }
-                return null;
-            }
-            MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
-
-            return memoryConsumption;
-        } else if (monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-        	KubernetesClusterContext kubernetesClusterCtxt = 
-        			((ContainerClusterMonitor) monitor).getKubernetesClusterCtxt();
-			MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-            if(null == memberStatsContext){
-                if(log.isDebugEnabled()) {
-                   log.debug(String.format("Member context is not available for : [member] %s", memberId));
-                }
-                return null;
-            }else if(!member.isActive()){
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("Member activated event has not received for the member %s. "
-                    		+ "Therefore ignoring" + " the health stat", memberId));
-                }
-                return null;
-            }
-            MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
-
-            return memoryConsumption;
-        }
-        
-        return null;
-    }
-
-    private String findNetworkPartitionId(String memberId) {
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
-                    return cluster.getMember(memberId).getNetworkPartitionId();
-                }
-            }
-        }
-        return null;
-    }
-
-    private Member findMember(String memberId) {
+    private Member getMemberByMemberId(String memberId) {
         try {
             TopologyManager.acquireReadLock();
-            for(Service service : TopologyManager.getTopology().getServices()) {
-                for(Cluster cluster : service.getClusters()) {
-                    if(cluster.memberExists(memberId)) {
+            for (Service service : TopologyManager.getTopology().getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    if (cluster.memberExists(memberId)) {
                         return cluster.getMember(memberId);
                     }
                 }
             }
             return null;
-        }
-        finally {
+        } finally {
             TopologyManager.releaseReadLock();
         }
     }
 
-    private void handleMemberFaultEvent(String clusterId, String memberId) {
-        try {
-        	AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        	AbstractClusterMonitor monitor;
-        	
-            if(asCtx.clusterMonitorExist(clusterId)){
-                monitor = asCtx.getClusterMonitor(clusterId);
-            } else {
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                    		+ "[cluster] %s", clusterId));
-                }
-                return;
-            }
-
-            if(monitor.getClusterType() == ClusterType.VMServiceCluster 
-            		|| monitor.getClusterType() == ClusterType.VMLbCluster){
-            	
-            	NetworkPartitionContext nwPartitionCtxt;
-                try{
-                	TopologyManager.acquireReadLock();
-                	Member member = findMember(memberId);
-                	
-                	if(null == member){
-                		return;
-                	}
-                    if(!member.isActive()){
-                        if(log.isDebugEnabled()){
-                            log.debug(String.format("Member activated event has not received for the member %s. "
-                            		+ "Therefore ignoring" + " the member fault health stat", memberId));
-                        }
-                        return;
-                    }
-    	            
-    	            nwPartitionCtxt = ((VMClusterMonitor) monitor).getNetworkPartitionCtxt(member);
-    	            
-                }finally{
-                	TopologyManager.releaseReadLock();
-                }
-                // start a new member in the same Partition
-                String partitionId = ((VMClusterMonitor) monitor).getPartitionOfMember(memberId);
-                PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
-
-                if(!partitionCtxt.activeMemberExist(memberId)){
-                    if(log.isDebugEnabled()){
-                        log.debug(String.format("Could not find the active member in partition context, "
-                        		+ "[member] %s ", memberId));
-                    }
-                    return;
-                }
-                // terminate the faulty member
-                CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                ccClient.terminate(memberId);
-
-                // remove from active member list
-                partitionCtxt.removeActiveMemberById(memberId);
-
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Faulty member is terminated and removed from the active members list: "
-                    		+ "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
-                }
-            } else if(monitor.getClusterType() == ClusterType.DockerServiceCluster) {
-            	// no need to do anything
-            }
-            
-        } catch (TerminationException e) {
-            log.error(e);
-        }
-    }
-
-    public void terminate(){
-    	this.terminated = true;
+    public void terminate() {
+        this.terminated = true;
     }
 }

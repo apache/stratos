@@ -33,6 +33,8 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 public class AutoscalerContext {
 
     private static final Log log = LogFactory.getLog(AutoscalerContext.class);
+    private static final AutoscalerContext INSTANCE = new AutoscalerContext();
+
     private AutoscalerContext() {
         try {
             setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
@@ -40,17 +42,13 @@ public class AutoscalerContext {
             log.error("Rule evaluateMinCheck error", e);
         }
     }
-    
+
     // Map<ClusterId, AbstractClusterMonitor>
     private Map<String, AbstractClusterMonitor> clusterMonitors;
 
-	private static class Holder {
-		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
-	}
-
-	public static AutoscalerContext getInstance() {
-		return Holder.INSTANCE;
-	}
+    public static AutoscalerContext getInstance() {
+        return INSTANCE;
+    }
 
     public void addClusterMonitor(AbstractClusterMonitor clusterMonitor) {
         clusterMonitors.put(clusterMonitor.getClusterId(), clusterMonitor);
@@ -59,11 +57,7 @@ public class AutoscalerContext {
     public AbstractClusterMonitor getClusterMonitor(String clusterId) {
         return clusterMonitors.get(clusterId);
     }
-    
-    public boolean clusterMonitorExist(String clusterId) {
-        return clusterMonitors.containsKey(clusterId);
-    }
-    
+
     public Map<String, AbstractClusterMonitor> getClusterMonitors() {
         return clusterMonitors;
     }
@@ -71,13 +65,15 @@ public class AutoscalerContext {
     public void setClusterMonitors(Map<String, AbstractClusterMonitor> clusterMonitors) {
         this.clusterMonitors = clusterMonitors;
     }
-    
+
     public AbstractClusterMonitor removeClusterMonitor(String clusterId) {
-    	if(!clusterMonitorExist(clusterId)) {
-    		log.fatal("ClusterMonitor not found for cluster id: "+clusterId);
-    		return null;
-    	}
-    	log.info("Removed ClusterMonitor [cluster id]: " + clusterId);
-        return clusterMonitors.remove(clusterId);
+
+        AbstractClusterMonitor monitor = clusterMonitors.remove(clusterId);
+        if (monitor == null) {
+            log.fatal("ClusterMonitor not found for cluster id: " + clusterId);
+        } else {
+            log.info("Removed ClusterMonitor [cluster id]: " + clusterId);
+        }
+        return monitor;
     }
 }
