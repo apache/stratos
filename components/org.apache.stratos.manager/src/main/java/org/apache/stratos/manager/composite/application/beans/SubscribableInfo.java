@@ -38,7 +38,7 @@ public class SubscribableInfo {
 
     private String repoPassword;
 
-    private String metaInfoAlias;
+    private String[] dependencyAliases;
 
     public String getAlias() {
         return alias;
@@ -96,11 +96,11 @@ public class SubscribableInfo {
         this.repoPassword = repoPassword;
     }
 
-    public String getMetaInfoAlias() {
-        return metaInfoAlias;
+    public String[] getDependencyAliases() {
+        return dependencyAliases;
     }
 
-    public void setMetaInfoAlias(String metaInfoAlias) {
-        this.metaInfoAlias = metaInfoAlias;
+    public void setDependencyAliases(String[] dependencyAliases) {
+        this.dependencyAliases = dependencyAliases;
     }
 }

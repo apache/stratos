@@ -35,6 +35,8 @@ public class SubscribableInfoContext {
 
     private String repoPassword;
 
+    private String[] dependencyAliases;
+
     public String getAlias() {
         return alias;
     }
@@ -89,5 +91,13 @@ public class SubscribableInfoContext {
 
     public void setRepoPassword(String repoPassword) {
         this.repoPassword = repoPassword;
+    }
+
+    public String[] getDependencyAliases() {
+        return dependencyAliases;
+    }
+
+    public void setDependencyAliases(String[] dependencyAliases) {
+        this.dependencyAliases = dependencyAliases;
     }
 }
