@@ -103,9 +103,6 @@ public class OpenstackNovaIaas extends Iaas {
 		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
 		templateBuilder.imageId(iaasInfo.getImage());
-        if(!(iaasInfo instanceof IaasProvider)) {
-           templateBuilder.locationId(iaasInfo.getType());
-        }
         
         // to avoid creation of template objects in each and every time, we
         // create all at once!
@@ -516,11 +513,17 @@ public class OpenstackNovaIaas extends Iaas {
 	@Override
 	public String createVolume(int sizeGB, String snapshotId) {
 		IaasProvider iaasInfo = getIaasProvider();
+		
+		if (iaasInfo == null) {
+		    log.fatal(String.format("Cannot create a new volume with snapshot ID : %s", snapshotId));
+		    return null;
+		}
+		
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
 		
-        if (region == null || iaasInfo == null) {
-        	log.fatal(String.format("Cannot create a new volume in the [region] : %s of Iaas : %s", region, iaasInfo));
+        if (region == null) {
+        	log.fatal(String.format("Cannot create a new volume. Extracted region is null for Iaas : %s", iaasInfo));
             return null;
         }
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
@@ -567,7 +570,7 @@ public class OpenstackNovaIaas extends Iaas {
 	}
 
     private boolean waitForStatus(String volumeId, Volume.Status expectedStatus, int timeoutInMins) throws TimeoutException {
-        long timeout = 1000 * 60 * timeoutInMins;
+        int timeout = 1000 * 60 * timeoutInMins;
         long timout = System.currentTimeMillis() + timeout;
 
         IaasProvider iaasInfo = getIaasProvider();
@@ -620,7 +623,7 @@ public class OpenstackNovaIaas extends Iaas {
         String device = deviceName == null ? "/dev/vdc" : deviceName;
 
         if (region == null) {
-            log.fatal(String.format("Cannot attach the volume [id]: %s in the [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
+            log.fatal(String.format("Cannot attach the volume [id]: %s. Extracted region is null for Iaas : %s", volumeId, iaasInfo));
             return null;
         }
 
@@ -686,7 +689,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		
 		if(region == null) {
-			log.fatal(String.format("Cannot detach the volume [id]: %s from the instance [id]: %s of the [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
+			log.fatal(String.format("Cannot detach the volume [id]: %s from the instance [id]: %s. Extracted region is null for Iaas : %s", volumeId, instanceId, iaasInfo));
 			return;
 		}
         if(log.isDebugEnabled()) {
@@ -713,7 +716,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
 		
 		if(region == null) {
-			log.fatal(String.format("Cannot delete the volume [id]: %s of the [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
+			log.fatal(String.format("Cannot delete the volume [id]: %s. Extracted region is null for Iaas : %s", volumeId, iaasInfo));
 			return;
 		}
 
