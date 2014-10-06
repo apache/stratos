@@ -1422,7 +1422,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			kubApi.createReplicationController(controller);
 			
 			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller successfully starte the controller "
+				log.debug("Cloud Controller successfully started the controller "
 						+ controller + " via Kubernetes layer.");
 			}
 			
@@ -1438,7 +1438,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			kubApi.createService(service);
 			
 			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller successfully starte the controller "
+				log.debug("Cloud Controller successfully started the service "
 						+ controller + " via Kubernetes layer.");
 			}
 			
