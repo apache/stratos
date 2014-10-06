@@ -142,7 +142,7 @@ public class DependencyBuilder {
 
             }
         }
-        return null;
+        return dependencyTree;
     }
 
     /*public static Queue<String> getStartupOrder(ParentBehavior component) {

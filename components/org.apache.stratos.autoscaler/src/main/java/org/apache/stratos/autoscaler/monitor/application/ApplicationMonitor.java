@@ -170,13 +170,6 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
-    @Override
-    public void monitor() {
-        startDependency();
-
-        //evaluate dependency
-    }
-
     public void setStatus(Status status) {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));

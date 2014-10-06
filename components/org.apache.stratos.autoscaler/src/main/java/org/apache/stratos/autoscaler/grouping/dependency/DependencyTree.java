@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
@@ -51,6 +52,9 @@ public class DependencyTree {
     public DependencyTree(String id) {
         applicationContextList = new ArrayList<ApplicationContext>();
         this.setId(id);
+        if(log.isDebugEnabled()) {
+            log.debug("Starting a dependency tree for the [group/application] " + id);
+        }
     }
 
     public List<ApplicationContext> getApplicationContextList() {
@@ -120,16 +124,42 @@ public class DependencyTree {
      * When one group/cluster terminates/in_maintenance, need to consider about other
      * dependencies
      * @param id the alias/id of group/cluster in which terminated event received
-     * @return
+     * @return all the kill able children dependencies
      */
     public List<ApplicationContext> getKillDependencies(String id) {
-        ApplicationContext applicationContext = findApplicationContextWithId(id);
+        List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
+
         if(killDependent) {
-            return applicationContext.getApplicationContextList();
+            //finding the ApplicationContext of the given id
+            ApplicationContext applicationContext = findApplicationContextWithId(id);
+            //finding all the children of the found application context
+            findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
+                                        allChildrenOfAppContext);
+            return allChildrenOfAppContext;
+        } else if(killAll) {
+            //killall will be killed by the monitor from it's list.
+            findAllChildrenOfAppContext(this.applicationContextList,
+                    allChildrenOfAppContext);
+
         }
-        return null;
+        //return empty for the kill-none case
+        return allChildrenOfAppContext;
     }
 
+    /**
+     *
+     * @param applicationContexts
+     * @param childContexts
+     * @return
+     */
+    public List<ApplicationContext> findAllChildrenOfAppContext(List<ApplicationContext> applicationContexts,
+                                                                List<ApplicationContext> childContexts) {
+        for(ApplicationContext context : applicationContexts) {
+            childContexts.add(context);
+            findAllChildrenOfAppContext(context.getApplicationContextList(), childContexts);
+        }
+        return childContexts;
+    }
 
 
     public boolean isKillAll() {
