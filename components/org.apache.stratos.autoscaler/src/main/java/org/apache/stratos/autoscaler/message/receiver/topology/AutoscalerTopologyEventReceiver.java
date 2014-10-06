@@ -342,10 +342,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
-            //TODO  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-            //		scheduler.scheduleAtFixedRate(monitor, 0, getMonitorInterval(), TimeUnit.MILLISECONDS);
-            Thread th = new Thread(monitor);
-            th.start();
+
+//            Thread th = new Thread(monitor);
+//            th.start();
+            monitor.startScheduler();
             AutoscalerContext.getInstance().addClusterMonitor(monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster monitor has been added successfully: [cluster] %s",

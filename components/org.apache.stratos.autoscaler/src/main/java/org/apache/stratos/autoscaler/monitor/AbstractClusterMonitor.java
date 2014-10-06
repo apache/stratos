@@ -18,6 +18,10 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
@@ -62,6 +66,8 @@ public abstract class AbstractClusterMonitor implements Runnable {
     private boolean isDestroyed;
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     protected AbstractClusterMonitor(String clusterId, String serviceId,
                                      AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
@@ -75,6 +81,14 @@ public abstract class AbstractClusterMonitor implements Runnable {
     }
 
     protected abstract void readConfigurations();
+    
+    public void startScheduler() {
+    	scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+    }
+    
+    protected void stopScheduler() {
+    	scheduler.shutdownNow();
+    }
 
     protected abstract void monitor();
 
