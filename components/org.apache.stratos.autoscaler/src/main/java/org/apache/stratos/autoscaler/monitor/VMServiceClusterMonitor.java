@@ -67,21 +67,21 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         } catch (InterruptedException ignore) {
         }
 
-            if (log.isDebugEnabled()) {
-                log.debug("VMServiceClusterMonitor is running.. " + this.toString());
-            }
-            try {
-                if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
-                    monitor();
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("VMServiceClusterMonitor is suspended as the cluster is in " +
-                                  ClusterStatus.In_Maintenance + " mode......");
-                    }
+        if (log.isDebugEnabled()) {
+            log.debug("VMServiceClusterMonitor is running.. " + this.toString());
+        }
+        try {
+            if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
+                monitor();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("VMServiceClusterMonitor is suspended as the cluster is in " +
+                              ClusterStatus.In_Maintenance + " mode......");
                 }
-            } catch (Exception e) {
-                log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
             }
+        } catch (Exception e) {
+            log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
+        }
     }
 
     @Override

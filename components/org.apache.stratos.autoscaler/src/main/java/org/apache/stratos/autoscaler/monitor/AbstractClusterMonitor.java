@@ -66,7 +66,7 @@ public abstract class AbstractClusterMonitor implements Runnable {
     private boolean isDestroyed;
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-    
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     protected AbstractClusterMonitor(String clusterId, String serviceId,
@@ -81,13 +81,13 @@ public abstract class AbstractClusterMonitor implements Runnable {
     }
 
     protected abstract void readConfigurations();
-    
+
     public void startScheduler() {
-    	scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
     }
-    
+
     protected void stopScheduler() {
-    	scheduler.shutdownNow();
+        scheduler.shutdownNow();
     }
 
     protected abstract void monitor();
