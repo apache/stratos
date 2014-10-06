@@ -59,22 +59,22 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     public void run() {
 
-            if (log.isDebugEnabled()) {
-                log.debug("KubernetesServiceClusterMonitor is running.. " + this.toString());
-            }
-            try {
-                if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
-                    monitor();
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("KubernetesServiceClusterMonitor is suspended as the cluster is in "
-                                  + ClusterStatus.In_Maintenance + " mode......");
-                    }
+        if (log.isDebugEnabled()) {
+            log.debug("KubernetesServiceClusterMonitor is running.. " + this.toString());
+        }
+        try {
+            if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
+                monitor();
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("KubernetesServiceClusterMonitor is suspended as the cluster is in "
+                              + ClusterStatus.In_Maintenance + " mode......");
                 }
-            } catch (Exception e) {
-                log.error("KubernetesServiceClusterMonitor : Monitor failed." + this.toString(),
-                          e);
             }
+        } catch (Exception e) {
+            log.error("KubernetesServiceClusterMonitor : Monitor failed." + this.toString(),
+                      e);
+        }
     }
 
     @Override
