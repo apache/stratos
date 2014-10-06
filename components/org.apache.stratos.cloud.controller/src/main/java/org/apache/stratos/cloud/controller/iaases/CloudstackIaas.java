@@ -11,15 +11,13 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class CloudStackIass extends Iaas{
+public class CloudstackIaas extends Iaas{
 
-    private static final Log log = LogFactory.getLog(CloudStackIass.class);
+    private static final Log log = LogFactory.getLog(CloudstackIaas.class);
 
 
 
-    public CloudStackIass(IaasProvider iaasProvider) {
-        super(iaasProvider);
-    }
+    public CloudstackIaas(IaasProvider iaasProvider) {super(iaasProvider);}
 
     @Override
     public void buildComputeServiceAndTemplate() {

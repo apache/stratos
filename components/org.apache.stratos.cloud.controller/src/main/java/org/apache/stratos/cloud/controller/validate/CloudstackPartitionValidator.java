@@ -6,7 +6,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.apache.stratos.messaging.domain.topology.Scope;
 
 import java.util.Properties;
 
@@ -30,7 +29,7 @@ public class CloudstackPartitionValidator implements PartitionValidator {
     @Override
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
 
-
+        System.out.println("======================hey===================");
 
         return iaasProvider;
     }
