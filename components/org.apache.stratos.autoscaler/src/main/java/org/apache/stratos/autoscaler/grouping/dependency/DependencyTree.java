@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class DependencyTree {
     public DependencyTree(String id) {
         applicationContextList = new ArrayList<ApplicationContext>();
         this.setId(id);
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Starting a dependency tree for the [group/application] " + id);
         }
     }
@@ -72,6 +71,7 @@ public class DependencyTree {
 
     /**
      * Find an ApplicationContext from dependency tree with the given id
+     *
      * @param id the alias/id of group/cluster
      * @return ApplicationContext of the given id
      */
@@ -81,19 +81,20 @@ public class DependencyTree {
 
     /**
      * Find the ApplicationContext using Breadth first search.
-     * @param id the alias/id of group/cluster
+     *
+     * @param id       the alias/id of group/cluster
      * @param contexts the list of contexts in the same level of the tree
      * @return ApplicationContext of the given id
      */
     private ApplicationContext findApplicationContextWithId(String id, List<ApplicationContext> contexts) {
-        for(ApplicationContext context: contexts) {
-            if(context.getId().equals(id)) {
+        for (ApplicationContext context : contexts) {
+            if (context.getId().equals(id)) {
                 return context;
             }
         }
         //if not found in the top level search recursively
-        for(ApplicationContext context: contexts) {
-                return findApplicationContextWithId(id, context.getApplicationContextList());
+        for (ApplicationContext context : contexts) {
+            return findApplicationContextWithId(id, context.getApplicationContextList());
         }
         return null;
     }
@@ -101,6 +102,7 @@ public class DependencyTree {
     /**
      * Getting the next start able dependencies upon the activate event
      * received for a group/cluster which is part of this tree.
+     *
      * @param id the alias/id of group/cluster which received the activated event.
      * @return list of dependencies
      */
@@ -113,6 +115,7 @@ public class DependencyTree {
 
     /**
      * Getting the next start able dependencies upon the monitor initialization.
+     *
      * @return list of dependencies
      */
     public List<ApplicationContext> getStarAbleDependencies() {
@@ -123,20 +126,21 @@ public class DependencyTree {
     /**
      * When one group/cluster terminates/in_maintenance, need to consider about other
      * dependencies
+     *
      * @param id the alias/id of group/cluster in which terminated event received
      * @return all the kill able children dependencies
      */
     public List<ApplicationContext> getKillDependencies(String id) {
         List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
 
-        if(killDependent) {
+        if (killDependent) {
             //finding the ApplicationContext of the given id
             ApplicationContext applicationContext = findApplicationContextWithId(id);
             //finding all the children of the found application context
             findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
-                                        allChildrenOfAppContext);
+                    allChildrenOfAppContext);
             return allChildrenOfAppContext;
-        } else if(killAll) {
+        } else if (killAll) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
                     allChildrenOfAppContext);
@@ -147,14 +151,15 @@ public class DependencyTree {
     }
 
     /**
+     * This will help to find out all the children of a particular node
      *
-     * @param applicationContexts
-     * @param childContexts
-     * @return
+     * @param applicationContexts app contexts of the particular node
+     * @param childContexts       contains the children of the node
+     * @return all the children of the given node
      */
     public List<ApplicationContext> findAllChildrenOfAppContext(List<ApplicationContext> applicationContexts,
                                                                 List<ApplicationContext> childContexts) {
-        for(ApplicationContext context : applicationContexts) {
+        for (ApplicationContext context : applicationContexts) {
             childContexts.add(context);
             findAllChildrenOfAppContext(context.getApplicationContextList(), childContexts);
         }
