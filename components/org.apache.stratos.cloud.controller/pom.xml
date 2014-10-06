@@ -245,6 +245,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>cloudstack</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>openstack-keystone</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
