@@ -24,13 +24,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.SocketException;
+import java.net.URI;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.interfaces.KubernetesAPIClientInterface;
+import org.apache.stratos.kubernetes.client.model.Label;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.PodList;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
@@ -46,15 +49,18 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	
 	private static final Log log = LogFactory.getLog(KubernetesApiClient.class);
 	private RestClient restClient;
+	private String baseURL;
 	
 	public KubernetesApiClient(String endpointUrl) {
-		restClient = new RestClient(endpointUrl);
+		restClient = new RestClient();
+		baseURL = endpointUrl;
 	}
 
 	@Override
 	public Pod getPod(String podId) throws KubernetesClientException{
 		try {
-            HttpResponse res = restClient.doGet("pods/"+podId);
+		    URI uri = new URIBuilder(baseURL+"pods/"+podId).build();
+            HttpResponse res = restClient.doGet(uri);
             
             handleNullResponse("Pod ["+podId+"] retrieval failed.", res);
             
@@ -84,7 +90,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	public Pod[] getAllPods() throws KubernetesClientException {
 		
 		try {
-			HttpResponse res = restClient.doGet("pods");
+		    URI uri = new URIBuilder(baseURL+"pods").build();
+			HttpResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Pod retrieval failed.", res);
 			
@@ -116,7 +123,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			if (log.isDebugEnabled()) {
 				log.debug("CreatePod Request Body : "+content);
 			}
-			HttpResponse res = restClient.doPost("pods", content);
+			URI uri = new URIBuilder(baseURL+"pods").build();
+			HttpResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Pod "+pod+" creation failed.", res);
 			
@@ -145,7 +153,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	public void deletePod(String podId) throws KubernetesClientException {
 
 		try {
-			HttpResponse res = restClient.doDelete("pods/"+podId);
+		    URI uri = new URIBuilder(baseURL+"pods/"+podId).build();
+			HttpResponse res = restClient.doDelete(uri);
             
 			handleNullResponse("Pod ["+podId+"] deletion failed.", res);
 			
@@ -176,7 +185,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 
 		try {
-			HttpResponse res = restClient.doGet("replicationControllers/"+controllerId);
+		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
+			HttpResponse res = restClient.doGet(uri);
 			
 			handleNullResponse("Replication Controller ["+controllerId+"] retrieval failed.", res);
             
@@ -206,7 +216,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 		
 		try {
-			HttpResponse res = restClient.doGet("replicationControllers");
+		    URI uri = new URIBuilder(baseURL+"replicationControllers").build();
+			HttpResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Replication Controller retrieval failed.", res);
 			
@@ -240,7 +251,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			if (log.isDebugEnabled()) {
 				log.debug("CreateReplicationController Request Body : "+content);
 			}
-			HttpResponse res = restClient.doPost("replicationControllers", content);
+			
+			URI uri = new URIBuilder(baseURL+"replicationControllers").build();
+			HttpResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Replication Controller "+controller+" creation failed.", res);
             
@@ -284,8 +297,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				log.debug("UpdateReplicationController Request Body : "
 						+ content);
 			}
-			HttpResponse res = restClient.doPut("replicationControllers/"+controller.getId(),
-					content);
+			
+			URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
+			HttpResponse res = restClient.doPut(uri, content);
 			
 			handleNullResponse("Replication Controller ["+controllerId+"] update failed.", res);
 
@@ -314,7 +328,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 		
 		try {
-			HttpResponse res = restClient.doDelete("replicationControllers/"+controllerId);
+		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
+			HttpResponse res = restClient.doDelete(uri);
             
 			handleNullResponse("Replication Controller ["+controllerId+"] deletion failed.", res);
 			
@@ -344,7 +359,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	public Service getService(String serviceId)
 			throws KubernetesClientException {
 		try {
-			HttpResponse res = restClient.doGet("services/"+serviceId);
+		    URI uri = new URIBuilder(baseURL+"services/"+serviceId).build();
+			HttpResponse res = restClient.doGet(uri);
 			
 			handleNullResponse("Service ["+serviceId+"] retrieval failed.", res);
             
@@ -371,7 +387,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	@Override
 	public Service[] getAllServices() throws KubernetesClientException {
 		try {
-			HttpResponse res = restClient.doGet("services");
+		    
+		    URI uri = new URIBuilder(baseURL+"services").build();
+			HttpResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Service retrieval failed.", res);
 			
@@ -403,7 +421,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				log.debug("CreateService Request Body : "+content);
 			}
 			
-			HttpResponse res = restClient.doPost("services", content);
+			URI uri = new URIBuilder(baseURL+"services").build();
+			HttpResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Service "+service+" creation failed.", res);
 			
@@ -429,7 +448,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 
 		try {
-			HttpResponse res = restClient.doDelete("services/"+serviceId);
+		    URI uri = new URIBuilder(baseURL+"services/"+serviceId).build();
+			HttpResponse res = restClient.doDelete(uri);
 			
 			handleNullResponse("Service ["+serviceId+"] deletion failed.", res);
             
@@ -455,6 +475,45 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throw new KubernetesClientException(msg, e);
 		}
 	}
+
+    @Override
+    public Pod[] getSelectedPods(Label[] label) throws KubernetesClientException {
+        
+        try {
+            String labelQuery = getLabelQuery(label);
+            URI uri = new URIBuilder(baseURL + "pods").addParameter("labels", labelQuery).build();
+            HttpResponse res = restClient.doGet(uri);
+            
+            handleNullResponse("Pod retrieval failed.", res);
+            
+            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                return new Pod[0];
+            }
+            
+            String content = getHttpResponseString(res);
+            
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            PodList podList = gson.fromJson(content, PodList.class);
+            if (podList == null || podList.getItems() == null) {
+                return new Pod[0];
+            }
+            return podList.getItems();
+            
+        } catch (Exception e) {
+            String msg = "Error while retrieving Pods.";
+            log.error(msg, e);
+            throw new KubernetesClientException(msg, e);
+        }
+    }
+
+    private String getLabelQuery(Label[] label) {
+        String query = "";
+        for (Label l : label) {
+            query = query.concat("name="+l.getName()+",");
+        }
+        return query.endsWith(",") ? query.substring(0, query.length()) : query;
+    }
 
     private void handleNullResponse(String message, HttpResponse res)
             throws KubernetesClientException {
@@ -489,5 +548,13 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			return null;
 		}
 	}
+
+    public String getBaseURL() {
+        return baseURL;
+    }
+
+    public void setBaseURL(String baseURL) {
+        this.baseURL = baseURL;
+    }
 
 }
