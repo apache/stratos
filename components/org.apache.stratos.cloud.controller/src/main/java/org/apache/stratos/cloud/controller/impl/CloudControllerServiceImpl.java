@@ -58,6 +58,7 @@ import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -192,8 +193,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	List<IaasProvider> newIaasProviders = cartridge.getIaases();
     	Map<String, IaasProvider> oldPartitionToIaasMap = cartridgeToBeRemoved.getPartitionToIaasProvider();
     	
-    	for (String partitionId : oldPartitionToIaasMap.keySet()) {
-			IaasProvider oldIaasProvider = oldPartitionToIaasMap.get(partitionId);
+    	for (Entry<String, IaasProvider> entry : oldPartitionToIaasMap.entrySet()) {
+    	    if (entry == null) {
+    	        continue;
+    	    }
+    	    String partitionId = entry.getKey();
+			IaasProvider oldIaasProvider = entry.getValue();
 			if (newIaasProviders.contains(oldIaasProvider)) {
 				if (log.isDebugEnabled()) {
 					log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
@@ -605,6 +610,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             				+ memberContext + " from Jclouds layer.");
             	}
             	
+            	if (node == null) {
+            	    String msg = "Null response received for instance start-up request to Jclouds.\n"
+                            + memberContext.toString();
+                    log.error(msg);
+                    throw new IllegalStateException(msg);
+            	}
+            	
             	// node id
             	String nodeId = node.getId();
             	if (nodeId == null) {
@@ -695,8 +707,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    	                	
                         } else {
                         	if(log.isDebugEnabled()) {
-                        		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, " + pre_defined_ip
-                        			+ ", selecting available one from pool");
+                        		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, "
+                        		        + "selecting available one from pool");
                         	}
                             // allocate an IP address - manual IP assigning mode
                             ip = iaas.associateAddress(node);
@@ -1232,8 +1244,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		}
         
         // Retrieve the results of the concurrently performed sanity checks.
-        for (String partitionId : jobList.keySet()) {
-        	Future<IaasProvider> job = jobList.get(partitionId);
+        for (Entry<String, Future<IaasProvider>> entry : jobList.entrySet()) {
+            if (entry == null) {
+                continue;
+            }
+            String partitionId = entry.getKey();
+        	Future<IaasProvider> job = entry.getValue();
             try {
             	// add to a temporary Map
             	partitionToIaasProviders.put(partitionId, job.get());
