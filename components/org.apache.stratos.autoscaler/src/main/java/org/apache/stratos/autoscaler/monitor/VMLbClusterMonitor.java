@@ -57,7 +57,6 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     @Override
     public void run() {
 
-        while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("VMLbClusterMonitor is running.. " + this.toString());
             }
@@ -73,11 +72,6 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
             } catch (Exception e) {
                 log.error("VMLbClusterMonitor : Monitor failed. " + this.toString(), e);
             }
-            try {
-                Thread.sleep(getMonitorIntervalMilliseconds());
-            } catch (InterruptedException ignore) {
-            }
-        }
     }
 
     @Override
@@ -116,6 +110,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
         getMinCheckKnowledgeSession().dispose();
         getMinCheckKnowledgeSession().dispose();
         setDestroyed(true);
+        stopScheduler();
         if (log.isDebugEnabled()) {
             log.debug("VMLbClusterMonitor Drools session has been disposed. " + this.toString());
         }

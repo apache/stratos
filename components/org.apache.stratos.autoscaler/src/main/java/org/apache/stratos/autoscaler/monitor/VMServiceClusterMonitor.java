@@ -67,7 +67,6 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         } catch (InterruptedException ignore) {
         }
 
-        while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("VMServiceClusterMonitor is running.. " + this.toString());
             }
@@ -83,11 +82,6 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
             } catch (Exception e) {
                 log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
             }
-            try {
-                Thread.sleep(getMonitorIntervalMilliseconds());
-            } catch (InterruptedException ignore) {
-            }
-        }
     }
 
     @Override
@@ -199,6 +193,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         getMinCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
+        stopScheduler();
         if (log.isDebugEnabled()) {
             log.debug("VMServiceClusterMonitor Drools session has been disposed. " + this.toString());
         }

@@ -59,7 +59,6 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     public void run() {
 
-        while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("KubernetesServiceClusterMonitor is running.. " + this.toString());
             }
@@ -76,11 +75,6 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                 log.error("KubernetesServiceClusterMonitor : Monitor failed." + this.toString(),
                           e);
             }
-            try {
-                Thread.sleep(getMonitorIntervalMilliseconds());
-            } catch (InterruptedException ignore) {
-            }
-        }
     }
 
     @Override
@@ -148,6 +142,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         getMinCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
+        stopScheduler();
         if (log.isDebugEnabled()) {
             log.debug("KubernetesServiceClusterMonitor Drools session has been disposed. " + this.toString());
         }
