@@ -71,13 +71,4 @@ public class GroupMonitor extends Monitor {
         setChanged();
         notifyObservers(new MonitorStatusEvent(status, id));
     }
-
-    @Override
-
-
-    //monitor the status of the cluster and the groups
-    public void monitor() {
-
-
-    }
 }
