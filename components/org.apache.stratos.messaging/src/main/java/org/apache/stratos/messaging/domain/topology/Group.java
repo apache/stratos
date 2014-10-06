@@ -21,6 +21,10 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.util.*;
 
+/**
+ * Represents a Group/nested Group in an Application/Group
+ */
+
 public class Group implements ParentBehavior {
 
     private static final long serialVersionUID = 8347096598203655846L;
@@ -55,13 +59,13 @@ public class Group implements ParentBehavior {
     }
 
     @Override
-    public void setGroups(Map<String, Group> groupNameToGroup) {
-        aliasToGroupMap.putAll(groupNameToGroup);
+    public void setGroups(Map<String, Group> groupAliasToGroup) {
+        aliasToGroupMap.putAll(groupAliasToGroup);
     }
 
     @Override
-    public Group getGroup(String groupName) {
-        return aliasToGroupMap.get(groupName);
+    public Group getGroup(String groupAlias) {
+        return aliasToGroupMap.get(groupAlias);
     }
 
     @Override

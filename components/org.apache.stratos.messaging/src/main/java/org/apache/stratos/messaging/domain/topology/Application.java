@@ -23,6 +23,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.*;
 
+/**
+ * Represents an Application in the Topology
+ */
+
 public class Application implements ParentBehavior {
 
     private static final long serialVersionUID = -5092959597171649688L;
@@ -59,13 +63,13 @@ public class Application implements ParentBehavior {
     }
 
     @Override
-    public void setGroups(Map<String, Group> aliasToGroup) {
-        aliasToGroupMap.putAll(aliasToGroup);
+    public void setGroups(Map<String, Group> groupAliasToGroup) {
+        aliasToGroupMap.putAll(groupAliasToGroup);
     }
 
     @Override
-    public Group getGroup(String groupName) {
-        return aliasToGroupMap.get(groupName);
+    public Group getGroup(String groupAlias) {
+        return aliasToGroupMap.get(groupAlias);
     }
 
     @Override
@@ -154,22 +158,6 @@ public class Application implements ParentBehavior {
     public ClusterDataHolder getClusterData(String alias) {
         return aliasToClusterDataMap.get(alias);
     }
-
-//    @Override
-//    public void addClusterId(String serviceName, String clusterId) {
-//
-//        synchronized (serviceNameToClusterIdsMap) {
-//            if (serviceNameToClusterIdsMap.get(serviceName) == null) {
-//                // not found, create
-//                Set<String> clusterIds = new HashSet<String>();
-//                clusterIds.add(clusterId);
-//                serviceNameToClusterIdsMap.put(serviceName, clusterIds);
-//            } else {
-//                // the cluster id set already exists, update
-//                serviceNameToClusterIdsMap.get(serviceName).add(clusterId);
-//            }
-//        }
-//    }
 
     public String getId() {
         return id;
