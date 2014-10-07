@@ -593,8 +593,11 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
     }
 
     private Member findMember(String memberId) {
+
+        TopologyManager.acquireReadLockForServices();
+
         try {
-            TopologyManager.acquireReadLock();
+            //TopologyManager.acquireReadLock();
             for(Service service : TopologyManager.getTopology().getServices()) {
                 for(Cluster cluster : service.getClusters()) {
                     if(cluster.memberExists(memberId)) {
@@ -605,7 +608,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             return null;
         }
         finally {
-            TopologyManager.releaseReadLock();
+            //TopologyManager.releaseReadLock();
+            TopologyManager.releaseReadLockForServices();
         }
     }
 
@@ -613,8 +617,13 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         try {
             AbstractClusterMonitor monitor = getMonitor(clusterId);
             NetworkPartitionContext nwPartitionCtxt;
+
+            // TODO: the optimal way would be to add Service Name to member fault event and use to get a
+            // hierarchical lock using TopologyManager.acquireReadLockForCluster(serviceName, clusterid)
+            TopologyManager.acquireReadLockForServices();
+
             try{
-            	TopologyManager.acquireReadLock();
+            	//TopologyManager.acquireReadLock();
             	Member member = findMember(memberId);
             	
             	if(null == member){
@@ -634,7 +643,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                 }
 
             }finally{
-            	TopologyManager.releaseReadLock();
+            	//TopologyManager.releaseReadLock();
+                TopologyManager.releaseReadLockForServices();
             }
             // start a new member in the same Partition
             String partitionId = monitor.getPartitionOfMember(memberId);

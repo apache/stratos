@@ -26,6 +26,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.ArrayList;
@@ -49,102 +50,20 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         if (CompleteTopologyEvent.class.getName().equals(type)) {
         	// Parse complete message and build event
         	CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
-        	
-            // if topology has not already initialized
-			if (!topology.isInitialized()) {
 
-				// Apply service filter
-				if (TopologyServiceFilter.getInstance().isActive()) {
-					// Add services included in service filter
-					for (Service service : event.getTopology().getServices()) {
-						if (TopologyServiceFilter.getInstance()
-								.serviceNameIncluded(service.getServiceName())) {
-							topology.addService(service);
-						} else {
-							if (log.isDebugEnabled()) {
-								log.debug(String.format(
-										"Service is excluded: [service] %s",
-										service.getServiceName()));
-							}
-						}
-					}
-				} else {
-					// Add all services
-					topology.addServices(event.getTopology().getServices());
-				}
+            if (!topology.isInitialized()) {
+                TopologyManager.acquireWriteLock();
 
-				// Apply cluster filter
-				if (TopologyClusterFilter.getInstance().isActive()) {
-					for (Service service : topology.getServices()) {
-						List<Cluster> clustersToRemove = new ArrayList<Cluster>();
-						for (Cluster cluster : service.getClusters()) {
-							if (TopologyClusterFilter.getInstance()
-									.clusterIdExcluded(cluster.getClusterId())) {
-								clustersToRemove.add(cluster);
-							}
-						}
-						for (Cluster cluster : clustersToRemove) {
-							service.removeCluster(cluster);
-							if (log.isDebugEnabled()) {
-								log.debug(String.format(
-										"Cluster is excluded: [cluster] %s",
-										cluster.getClusterId()));
-							}
-						}
-					}
-				}
+                try {
+                    return doProcess(event, topology);
 
-				// Apply member filter
-				if (TopologyMemberFilter.getInstance().isActive()) {
-					for (Service service : topology.getServices()) {
-						for (Cluster cluster : service.getClusters()) {
-							List<Member> membersToRemove = new ArrayList<Member>();
-							for (Member member : cluster.getMembers()) {
-								if (TopologyMemberFilter.getInstance()
-										.lbClusterIdExcluded(
-												member.getLbClusterId())) {
-									membersToRemove.add(member);
-								}
-							}
-							for (Member member : membersToRemove) {
-								cluster.removeMember(member);
-								if (log.isDebugEnabled()) {
-									log.debug(String
-											.format("Member is excluded: [member] %s [lb-cluster-id] %s",
-													member.getMemberId(),
-													member.getLbClusterId()));
-								}
-							}
-						}
-					}
-				}
-
-                // add existing Applications to Topology
-                Collection<Application> applications = event.getTopology().getApplications();
-                if (applications != null && !applications.isEmpty()) {
-                    for (Application application : applications) {
-                        topology.addApplication(application);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Application with id [ " +  application.getId() + " ] added to Topology");
-                        }
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("No Application information found in Complete Topology event");
-                    }
+                } finally {
+                    TopologyManager.releaseWriteLock();
                 }
+            } else {
+                return true;
+            }
 
-				if (log.isInfoEnabled()) {
-					log.info("Topology initialized");
-				}
-
-				// Set topology initialized
-				topology.setInitialized(true);
-			}
-
-            // Notify event listeners
-            notifyEventListeners(event);
-            return true;
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
@@ -152,5 +71,100 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             }
             return false;
         }
+    }
+
+    private boolean doProcess (CompleteTopologyEvent event, Topology topology) {
+
+        // Apply service filter
+        if (TopologyServiceFilter.getInstance().isActive()) {
+            // Add services included in service filter
+            for (Service service : event.getTopology().getServices()) {
+                if (TopologyServiceFilter.getInstance()
+                        .serviceNameIncluded(service.getServiceName())) {
+                    topology.addService(service);
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Service is excluded: [service] %s",
+                                service.getServiceName()));
+                    }
+                }
+            }
+        } else {
+            // Add all services
+            topology.addServices(event.getTopology().getServices());
+        }
+
+        // Apply cluster filter
+        if (TopologyClusterFilter.getInstance().isActive()) {
+            for (Service service : topology.getServices()) {
+                List<Cluster> clustersToRemove = new ArrayList<Cluster>();
+                for (Cluster cluster : service.getClusters()) {
+                    if (TopologyClusterFilter.getInstance()
+                            .clusterIdExcluded(cluster.getClusterId())) {
+                        clustersToRemove.add(cluster);
+                    }
+                }
+                for (Cluster cluster : clustersToRemove) {
+                    service.removeCluster(cluster);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Cluster is excluded: [cluster] %s",
+                                cluster.getClusterId()));
+                    }
+                }
+            }
+        }
+
+        // Apply member filter
+        if (TopologyMemberFilter.getInstance().isActive()) {
+            for (Service service : topology.getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    List<Member> membersToRemove = new ArrayList<Member>();
+                    for (Member member : cluster.getMembers()) {
+                        if (TopologyMemberFilter.getInstance()
+                                .lbClusterIdExcluded(
+                                        member.getLbClusterId())) {
+                            membersToRemove.add(member);
+                        }
+                    }
+                    for (Member member : membersToRemove) {
+                        cluster.removeMember(member);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String
+                                    .format("Member is excluded: [member] %s [lb-cluster-id] %s",
+                                            member.getMemberId(),
+                                            member.getLbClusterId()));
+                        }
+                    }
+                }
+            }
+        }
+
+        // add existing Applications to Topology
+        Collection<Application> applications = event.getTopology().getApplications();
+        if (applications != null && !applications.isEmpty()) {
+            for (Application application : applications) {
+                topology.addApplication(application);
+                if (log.isDebugEnabled()) {
+                    log.debug("Application with id [ " +  application.getId() + " ] added to Topology");
+                }
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("No Application information found in Complete Topology event");
+            }
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Topology initialized");
+        }
+
+        // Set topology initialized
+        topology.setInitialized(true);
+
+        // Notify event listeners
+        notifyEventListeners(event);
+        return true;
     }
 }

@@ -22,9 +22,9 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ApplicationRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 
 public class ApplicationRemovedMessageProcessor extends MessageProcessor {
@@ -55,38 +55,20 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	            return false;
 	        }
 	
-	        ApplicationRemovedEvent appRemovedEvent = (ApplicationRemovedEvent) Util.jsonToObject(message, ApplicationRemovedEvent.class);
-	        if (appRemovedEvent == null) {
+	        ApplicationRemovedEvent event = (ApplicationRemovedEvent) Util.jsonToObject(message, ApplicationRemovedEvent.class);
+	        if (event == null) {
 	            log.error("Unable to convert the JSON message to ApplicationCreatedEvent");
 	            return false;
 	        }
-	        
-	     // check if required properties are available
-	        if (appRemovedEvent.getApplicationId() == null) {
-	            String errorMsg = "Application Id of application removed event is invalid";
-	            log.error(errorMsg);
-	            throw new RuntimeException(errorMsg);
-	        }
-	        
-	        if (appRemovedEvent.getTenantDomain()== null) {
-	            String errorMsg = "Application tenant domain of application removed event is invalid";
-	            log.error(errorMsg);
-	            throw new RuntimeException(errorMsg);
-	        }
-	        
-	        // check if an Application with same name exists in topology
-	        String appId = appRemovedEvent.getApplicationId();
-            if (topology.applicationExists(appId)) {
-                log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
-                topology.removeApplication(appId);
-            } 
-	        
-            if (log.isDebugEnabled()) {
-        		log.debug("ApplicationRemovedMessageProcessor notifying listener " + object);
-        	}
-            
-	        notifyEventListeners(appRemovedEvent);
-	        return true;
+
+            TopologyManager.acquireWriteLockForApplications();
+
+            try {
+                return doProcess(event, topology);
+
+            } finally {
+                TopologyManager.releaseWriteLockForApplications();
+            }
         
 	    } else {
 	        if (nextProcessor != null) {
@@ -96,6 +78,35 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	            throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
 	        }
 	    }
-        
+    }
+
+    private boolean doProcess (ApplicationRemovedEvent event, Topology topology) {
+
+        // check if required properties are available
+        if (event.getApplicationId() == null) {
+            String errorMsg = "Application Id of application removed event is invalid";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        if (event.getTenantDomain()== null) {
+            String errorMsg = "Application tenant domain of application removed event is invalid";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        // check if an Application with same name exists in topology
+        String appId = event.getApplicationId();
+        if (topology.applicationExists(appId)) {
+            log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
+            topology.removeApplication(appId);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("ApplicationRemovedMessageProcessor notifying listener ");
+        }
+
+        notifyEventListeners(event);
+        return true;
     }
 }

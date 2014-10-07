@@ -608,7 +608,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationDeployed(Application application,
+    public static synchronized void handleApplicationDeployed(Application application,
                                                  Set<ApplicationClusterContext> applicationClusterContexts,
                                                  Set<MetaDataHolder> metaDataHolders) {
 
@@ -644,6 +644,7 @@ public class TopologyBuilder {
             // add to Topology and update
             topology.addApplication(application);
             TopologyManager.updateTopology(topology);
+
             log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
 
             TopologyEventPublisher.sendApplicationCreatedEvent(application ,clusters);
@@ -653,7 +654,8 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder, String applicationId, int tenantId, String tenantDomain) {
+    public static synchronized void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder,
+                                                                String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
 
@@ -672,6 +674,7 @@ public class TopologyBuilder {
                     if (service != null) {
                         // remove Cluster
                         service.removeCluster(clusterDataHolder.getClusterId());
+
                         if (log.isDebugEnabled()) {
                             log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
                         }
