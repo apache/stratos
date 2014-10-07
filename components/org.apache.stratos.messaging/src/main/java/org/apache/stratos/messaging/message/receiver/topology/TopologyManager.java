@@ -21,13 +21,10 @@ package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -335,27 +332,6 @@ public class TopologyManager {
         // acquire read lock for all Applications
         acquireReadLockForApplications();
 
-        // get the Application's cluster's and acquire read locks
-        Application application = topology.getApplication(appId);
-        if (application == null) {
-            log.warn("Application " + appId + " is not found in the Topology");
-
-        } else {
-
-            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-            if (clusterData != null && !clusterData.isEmpty()) {
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    // acquire read locks for services and clusters
-                    acquireReadLockForCluster(clusterDataHolder.getServiceType(), clusterDataHolder.getClusterId());
-                }
-
-            } else {
-               if (log.isDebugEnabled()) {
-                   log.debug("No Cluster Data found in Application " + appId);
-               }
-            }
-        }
-
         TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
         if (topologyAppLock == null)  {
             handleLockNotFound("Topology lock not found for Application " + appId);
@@ -385,49 +361,12 @@ public class TopologyManager {
 
         // release read lock for all Applications
         releaseReadLockForApplications();
-
-        // get the Application's cluster information
-        Application application = topology.getApplication(appId);
-        if (application == null) {
-            log.warn("Application " + appId + " is not found in the Topology");
-
-        } else {
-            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-            if (clusterData != null && !clusterData.isEmpty()) {
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    // release read locks for clusters and services
-                    releaseReadLockForCluster(clusterDataHolder.getServiceType(), clusterDataHolder.getClusterId());
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No Cluster Data found in Application " + appId);
-                }
-            }
-        }
     }
 
     public static synchronized void acquireWriteLockForApplication (String appId) {
 
         // acquire read lock for all Applications
         acquireReadLockForApplications();
-
-        // get the Application's cluster's and acquire read locks
-        Application application = topology.getApplication(appId);
-        if (application == null) {
-            log.warn("Application " + appId + " is not found in the Topology");
-
-        } else {
-            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-            if (clusterData != null && !clusterData.isEmpty()) {
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    acquireWriteLockForCluster(clusterDataHolder.getServiceType(), clusterDataHolder.getClusterId());
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No Cluster Data found in Application " + appId);
-                }
-            }
-        }
 
         TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
         if (topologyAppLock == null)  {
@@ -458,25 +397,6 @@ public class TopologyManager {
 
         // release read lock for all Applications
         releaseReadLockForApplications();
-
-        // get the Application's cluster's and acquire read
-        Application application = topology.getApplication(appId);
-        if (application == null) {
-            log.warn("Application " + appId + " is not found in the Topology");
-
-        } else {
-            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-            if (clusterData != null && !clusterData.isEmpty()) {
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    // release read locks for clusters and services
-                    releaseWriteLockForCluster(clusterDataHolder.getServiceType(), clusterDataHolder.getClusterId());
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("No Cluster Data found in Application " + appId);
-                }
-            }
-        }
     }
 
     private static void handleLockNotFound (String errorMsg) {

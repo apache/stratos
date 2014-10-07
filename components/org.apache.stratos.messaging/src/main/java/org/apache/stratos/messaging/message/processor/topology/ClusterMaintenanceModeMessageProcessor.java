@@ -50,14 +50,12 @@ public class ClusterMaintenanceModeMessageProcessor extends MessageProcessor {
             ClusterMaintenanceModeEvent event = (ClusterMaintenanceModeEvent) Util.
                                 jsonToObject(message, ClusterMaintenanceModeEvent.class);
 
-            TopologyManager.acquireReadLockForServices();
             TopologyManager.acquireWriteLockForService(event.getServiceName());
             try {
                 return doProcess(event, topology);
 
             } finally {
                 TopologyManager.releaseWriteLockForService(event.getServiceName());
-                TopologyManager.releaseReadLockForServices();
             }
 
         } else {

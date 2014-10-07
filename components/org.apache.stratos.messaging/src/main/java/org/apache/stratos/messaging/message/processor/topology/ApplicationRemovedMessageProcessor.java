@@ -21,6 +21,8 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -62,12 +64,18 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	        }
 
             TopologyManager.acquireWriteLockForApplications();
+            for (ClusterDataHolder clusterData : event.getClusterData()) {
+                TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+            }
 
             try {
                 return doProcess(event, topology);
 
             } finally {
                 TopologyManager.releaseWriteLockForApplications();
+                for (ClusterDataHolder clusterData : event.getClusterData()) {
+                    TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                }
             }
         
 	    } else {
@@ -100,6 +108,21 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
         if (topology.applicationExists(appId)) {
             log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
             topology.removeApplication(appId);
+        }
+
+        if (event.getClusterData() != null) {
+            // remove the Clusters from the Topology
+            for (ClusterDataHolder clusterData : event.getClusterData()) {
+                Service service = topology.getService(clusterData.getServiceType());
+                if (service != null) {
+                    service.removeCluster(clusterData.getClusterId());
+                    if (log.isDebugEnabled()) {
+                        log.debug("Removed the Cluster " + clusterData.getClusterId() + " from Topology");
+                    }
+                }  else {
+                    log.warn("Service " + clusterData.getServiceType() + " not found in Topology!");
+                }
+            }
         }
 
         if (log.isDebugEnabled()) {

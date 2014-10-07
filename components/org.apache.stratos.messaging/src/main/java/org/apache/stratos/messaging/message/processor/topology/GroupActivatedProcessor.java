@@ -51,7 +51,6 @@ public class GroupActivatedProcessor extends MessageProcessor {
             GroupActivatedEvent event = (GroupActivatedEvent) Util.
                     jsonToObject(message, GroupActivatedEvent.class);
 
-            TopologyManager.acquireReadLockForApplications();
             TopologyManager.acquireWriteLockForApplication(event.getAppId());
 
             try {
@@ -59,7 +58,6 @@ public class GroupActivatedProcessor extends MessageProcessor {
 
             } finally {
                 TopologyManager.releaseWriteLockForApplication(event.getAppId());
-                TopologyManager.releaseReadLockForApplications();
             }
 
         } else {

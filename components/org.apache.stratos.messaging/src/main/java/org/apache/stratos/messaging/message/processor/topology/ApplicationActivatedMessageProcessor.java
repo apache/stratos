@@ -57,7 +57,6 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             ApplicationActivatedEvent event = (ApplicationActivatedEvent) Util.
                     jsonToObject(message, ApplicationActivatedEvent.class);
 
-            TopologyManager.acquireReadLockForApplications();
             TopologyManager.acquireWriteLockForApplication(event.getAppId());
 
             try {
@@ -65,7 +64,6 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
 
             } finally {
                 TopologyManager.releaseWriteLockForApplication(event.getAppId());
-                TopologyManager.releaseReadLockForApplications();
             }
 
         } else {

@@ -53,14 +53,12 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
 
-            TopologyManager.acquireReadLockForServices();
             TopologyManager.acquireWriteLockForService(event.getServiceName());
             try {
                 return doProcess(event, topology);
 
             } finally {
                 TopologyManager.releaseWriteLockForService(event.getServiceName());
-                TopologyManager.releaseReadLockForServices();
             }
 
         } else {

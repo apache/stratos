@@ -51,14 +51,12 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
             // Parse complete message and build event
             ClusterRemovedEvent event = (ClusterRemovedEvent) Util.jsonToObject(message, ClusterRemovedEvent.class);
 
-            TopologyManager.acquireReadLockForServices();
             TopologyManager.acquireWriteLockForService(event.getServiceName());
             try {
                 return doProcess(event, topology);
 
             } finally {
                 TopologyManager.releaseWriteLockForService(event.getServiceName());
-                TopologyManager.releaseReadLockForServices();
             }
 
         } else {

@@ -22,11 +22,14 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
+
+import java.util.Set;
 
 public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
@@ -55,11 +58,17 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             }
 
             TopologyManager.acquireWriteLockForApplications();
+            for (ClusterDataHolder clusterData : event.getApplication().getClusterDataRecursively()) {
+                TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+            }
 
             try {
                 return doProcess(event, topology);
 
             } finally {
+                for (ClusterDataHolder clusterData : event.getApplication().getClusterDataRecursively()) {
+                    TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                }
                 TopologyManager.releaseWriteLockForApplications();
             }
 
