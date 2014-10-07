@@ -639,11 +639,18 @@ public class KubernetesClusterContext implements Serializable {
     }
 
     public int getTotalMemberCount() {
-
         return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
     }
 
     public int getNonTerminatedMemberCount() {
         return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
     }
+
+	public String getClusterId() {
+		return clusterId;
+	}
+
+	public void setClusterId(String clusterId) {
+		this.clusterId = clusterId;
+	}
 }
