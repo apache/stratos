@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
@@ -30,7 +31,6 @@ import org.apache.stratos.messaging.domain.topology.Status;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Observable;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -44,10 +44,10 @@ public class ApplicationMonitor extends Monitor {
         startDependency();
     }
 
-    @Override
+    /*@Override
     public void update(Observable observable, Object event) {
-        if (event instanceof MonitorStatusEvent) {
-            MonitorStatusEvent statusEvent = (MonitorStatusEvent) event;
+        if (event instanceof MonitorStatusEvent1111) {
+            MonitorStatusEvent1111 statusEvent = (MonitorStatusEvent1111) event;
             Status childStatus = statusEvent.getStatus();
             String notifier = statusEvent.getNotifierId();
             log.info(String.format("[Monitor] %s got notified from the [child] %s" +
@@ -59,20 +59,15 @@ public class ApplicationMonitor extends Monitor {
                 startDependency(notifier);
             }
         }
-    }
+    }*/
 
 
     /**
-     * Find the group monitor by traversing recursively in the hierarchical monitors.
+     * To find all the clusters of an application
      *
-     * @param groupId the unique alias of the Group
-     * @return the found GroupMonitor
+     * @param appId the application which contains the clusters
+     * @return all the clusters of the application
      */
-    public GroupMonitor findGroupMonitorWithId(String groupId) {
-        return findGroupMonitor(groupId, aliasToGroupMonitorsMap.values());
-
-    }
-
     public List<String> findClustersOfApplication(String appId) {
         List<String> clusters = new ArrayList<String>();
         //considering only one level
@@ -84,18 +79,26 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
-
     /**
      * Find the cluster monitor by traversing recursively in the hierarchical monitors.
      *
-     * @param clusterId
-     * @return
+     * @param clusterId cluster id of the monitor to be searched
+     * @return the found cluster monitor
      */
     public AbstractClusterMonitor findClusterMonitorWithId(String clusterId) {
-        return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(), aliasToGroupMonitorsMap.values());
+        return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(),
+                aliasToGroupMonitorsMap.values());
 
     }
 
+    /**
+     * utility method to recursively search for cluster monitors in the App monitor
+     *
+     * @param clusterId       cluster id of the monitor to be searched
+     * @param clusterMonitors cluster monitors found in the app Monitor
+     * @param groupMonitors   group monitors found in the app monitor
+     * @return the found cluster monitor
+     */
     private AbstractClusterMonitor findClusterMonitor(String clusterId,
                                                       Collection<AbstractClusterMonitor> clusterMonitors,
                                                       Collection<GroupMonitor> groupMonitors) {
@@ -115,6 +118,25 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
+    /**
+     * Find the group monitor by traversing recursively in the hierarchical monitors.
+     *
+     * @param groupId the unique alias of the Group
+     * @return the found GroupMonitor
+     */
+    public GroupMonitor findGroupMonitorWithId(String groupId) {
+        return findGroupMonitor(groupId, aliasToGroupMonitorsMap.values());
+
+    }
+
+
+    /**
+     * Utility method to find the group monitor recursively within app monitor
+     *
+     * @param id       the unique alias of the Group
+     * @param monitors the group monitors found in the app monitor
+     * @return the found GroupMonitor
+     */
     private GroupMonitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
         for (GroupMonitor monitor : monitors) {
             // check if alias is equal, if so, return
@@ -131,10 +153,23 @@ public class ApplicationMonitor extends Monitor {
     }
 
 
+    /**
+     * To find the parent monitor of a group's associate monitor
+     *
+     * @param groupId the id of the group
+     * @return the found parent monitor of the group
+     */
     public Monitor findParentMonitorOfGroup(String groupId) {
         return findParentMonitorForGroup(groupId, this);
     }
 
+    /**
+     * Find the parent monitor of the given group in the app monitor
+     *
+     * @param groupId the id of the group
+     * @param monitor the app monitor
+     * @return the found parent monitor of the group
+     */
     private Monitor findParentMonitorForGroup(String groupId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
         if (monitor.getAliasToGroupMonitorsMap().containsKey(groupId)) {
@@ -152,10 +187,23 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
+    /**
+     * Find the parent monitor of the given cluster in the app monitor
+     *
+     * @param clusterId the id of the cluster
+     * @return the found parent monitor of the cluster
+     */
     public Monitor findParentMonitorOfCluster(String clusterId) {
         return findParentMonitorForCluster(clusterId, this);
     }
 
+    /**
+     * Find the parent monitor of the given cluster in the app monitor
+     *
+     * @param clusterId the id of the cluster
+     * @param monitor   the app monitor
+     * @return the found parent monitor of the cluster
+     */
     private Monitor findParentMonitorForCluster(String clusterId, Monitor monitor) {
         //if this monitor has the group, return it as the parent
         if (monitor.getClusterIdToClusterMonitorsMap().containsKey(clusterId)) {
@@ -173,9 +221,31 @@ public class ApplicationMonitor extends Monitor {
 
     }
 
+    /**
+     * To set the status of the application monitor
+     *
+     * @param status the status
+     */
     public void setStatus(Status status) {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
         this.status = status;
+    }
+
+    @Override
+    public void onEvent(MonitorStatusEvent statusEvent) {
+        this.monitor(statusEvent);
+    }
+
+    @Override
+    protected void monitor(MonitorStatusEvent statusEvent) {
+        ApplicationContext context = this.dependencyTree.
+                findApplicationContextWithId(statusEvent.getId());
+        if(context.getStatusLifeCycle().isEmpty()) {
+            startDependency(statusEvent.getId());
+        } else {
+            //TODO act based on life cyle events
+        }
+
     }
 }

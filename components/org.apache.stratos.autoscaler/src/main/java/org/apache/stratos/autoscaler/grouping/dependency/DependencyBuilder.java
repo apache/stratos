@@ -54,14 +54,19 @@ public class DependencyBuilder {
      * @return the dependency tree out of the dependency orders
      */
     public DependencyTree buildDependency(ParentBehavior component) {
-        Group group = (Group) component;
-        DependencyTree dependencyTree = new DependencyTree(group.getAlias());
+        String alias = null;
+        if(component instanceof Application) {
+            alias = ((Application)component).getId();
+        } else if(component instanceof Group) {
+            alias = ((Group) component).getAlias();
+        }
+        DependencyTree dependencyTree = new DependencyTree(alias);
         DependencyOrder dependencyOrder = component.getDependencyOrder();
 
         if (dependencyOrder != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Building dependency for the Application/Group " +
-                        group.getAlias());
+                        alias);
             }
 
             //Parsing the kill behaviour

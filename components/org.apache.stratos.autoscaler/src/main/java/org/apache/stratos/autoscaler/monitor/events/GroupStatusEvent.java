@@ -18,8 +18,14 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
+import org.apache.stratos.messaging.domain.topology.Status;
+
 /**
- * This will use to notify observers upon a group maintenance events received in Topology.
+ * This will use to notify observers upon a group activation events received in Topology.
  */
-public class GroupInMaintenanceEvent extends MonitorEvent {
+public class GroupStatusEvent extends MonitorStatusEvent {
+
+    public GroupStatusEvent(Status status, String id) {
+        super(status, id);
+    }
 }

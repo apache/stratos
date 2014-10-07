@@ -30,9 +30,11 @@ import org.apache.stratos.autoscaler.grouping.dependency.context.ClusterContext;
 import org.apache.stratos.autoscaler.grouping.dependency.context.GroupContext;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.application.status.StatusEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.*;
@@ -44,34 +46,34 @@ import java.util.concurrent.TimeUnit;
  * Monitor is to monitor it's child monitors and
  * control them according to the dependencies respectively.
  */
-public abstract class Monitor extends Observable implements Observer {
+public abstract class Monitor implements EventHandler {
     private static final Log log = LogFactory.getLog(Monitor.class);
 
+    //id of the monitor, it can be alias or the id
     protected String id;
-
+    //GroupMonitor map, key=GroupAlias and value=GroupMonitor
     protected Map<String, GroupMonitor> aliasToGroupMonitorsMap;
-
+    //AbstractMonitor map, key=clusterId and value=AbstractMonitors
     protected Map<String, AbstractClusterMonitor> clusterIdToClusterMonitorsMap;
-
-    protected Map<String, ScheduledExecutorService> clusterIdToExecutorServiceMap;
-
-    private Map<String, ScheduledExecutorService> adderIdToExecutorServiceMap;
-
+    //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
-
+    //application/group reference from the Topology
     protected ParentBehavior component;
-
+    //status of the monitor whether it is running/in_maintainable/terminated
     protected Status status;
 
     public Monitor(ParentBehavior component) {
         aliasToGroupMonitorsMap = new HashMap<String, GroupMonitor>();
         clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
-        clusterIdToExecutorServiceMap = new HashMap<String, ScheduledExecutorService>();
-        adderIdToExecutorServiceMap = new HashMap<String, ScheduledExecutorService>();
         //preOrderTraverse = new LinkedList<String>();
         this.component = component;
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
+
+    /**
+     *
+     */
+    protected abstract void monitor(MonitorStatusEvent statusEvent);
 
 
     /**
@@ -88,6 +90,7 @@ public abstract class Monitor extends Observable implements Observer {
 
     /**
      * This will get invoked based on the activation event of its one of the child
+     *
      * @param id alias/clusterId of which receive the activated event
      */
     public void startDependency(String id) {
@@ -95,10 +98,15 @@ public abstract class Monitor extends Observable implements Observer {
         startDependency(applicationContexts);
     }
 
+    /**
+     * To start the dependency of the given application contexts
+     *
+     * @param applicationContexts the found applicationContexts to be started
+     */
     private void startDependency(List<ApplicationContext> applicationContexts) {
-        if(applicationContexts == null) {
+        if (applicationContexts == null) {
             //all the groups/clusters have been started and waiting for activation
-            log.warn("There is no child found for the [group]: " + this.id );
+            log.warn("There is no child found for the [group]: " + this.id);
         }
         for (ApplicationContext context : applicationContexts) {
             if (log.isDebugEnabled()) {
@@ -150,10 +158,10 @@ public abstract class Monitor extends Observable implements Observer {
             }
         }
         if (adder != null) {
-            adderIdToExecutorServiceMap.put(cluster.getClusterId(), adder);
+            //adderIdToExecutorServiceMap.put(cluster.getClusterId(), adder);
             log.info(String
-                        .format("Cluster monitor thread has been started successfully: [cluster] %s ",
-                                cluster.getClusterId()));
+                    .format("Cluster monitor thread has been started successfully: [cluster] %s ",
+                            cluster.getClusterId()));
         }
     }
 
@@ -176,10 +184,10 @@ public abstract class Monitor extends Observable implements Observer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }*/
-            adderIdToExecutorServiceMap.put(((Group)component).getAlias(), adder);
+            //adderIdToExecutorServiceMap.put(((Group)component).getAlias(), adder);
             log.info(String
-                        .format("Group monitor thread has been started successfully: [group] %s ",
-                                dependency));
+                    .format("Group monitor thread has been started successfully: [group] %s ",
+                            dependency));
         }
     }
 
@@ -187,12 +195,36 @@ public abstract class Monitor extends Observable implements Observer {
         return status;
     }
 
-    public Map<String, ScheduledExecutorService> getAdderIdToExecutorServiceMap() {
-        return adderIdToExecutorServiceMap;
+    public Map<String, GroupMonitor> getAliasToGroupMonitorsMap() {
+        return aliasToGroupMonitorsMap;
     }
 
-    public void setAdderIdToExecutorServiceMap(Map<String, ScheduledExecutorService> adderIdToExecutorServiceMap) {
-        this.adderIdToExecutorServiceMap = adderIdToExecutorServiceMap;
+    public void setAliasToGroupMonitorsMap(Map<String, GroupMonitor> aliasToGroupMonitorsMap) {
+        this.aliasToGroupMonitorsMap = aliasToGroupMonitorsMap;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Map<String, AbstractClusterMonitor> getClusterIdToClusterMonitorsMap() {
+        return clusterIdToClusterMonitorsMap;
+    }
+
+    public void setClusterIdToClusterMonitorsMap(Map<String, AbstractClusterMonitor> clusterIdToClusterMonitorsMap) {
+        this.clusterIdToClusterMonitorsMap = clusterIdToClusterMonitorsMap;
+    }
+
+    public void addAbstractMonitor(AbstractClusterMonitor monitor) {
+        this.clusterIdToClusterMonitorsMap.put(monitor.getClusterId(), monitor);
+    }
+
+    public AbstractClusterMonitor getAbstractMonitor(String clusterId) {
+        return this.clusterIdToClusterMonitorsMap.get(clusterId);
     }
 
     private class ClusterMonitorAdder implements Runnable {
@@ -214,12 +246,13 @@ public abstract class Monitor extends Observable implements Observer {
                 } catch (InterruptedException e1) {
                 }*/
                 try {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("CLuster monitor is going to be started for [cluster] "
                                 + cluster.getClusterId());
                     }
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
-                    monitor.addObserver(parent);
+                    monitor.setParent(parent);
+                    //monitor.addObserver(parent);
                     success = true;
                     //TODO start the status checker
                 } catch (PolicyValidationException e) {
@@ -238,7 +271,7 @@ public abstract class Monitor extends Observable implements Observer {
             } while (!success && retries != 0);
 
 
-                    if (monitor == null) {
+            if (monitor == null) {
                 String msg = "Cluster monitor creation failed, even after retrying for 5 times, "
                         + "for cluster: " + cluster.getClusterId();
                 log.error(msg);
@@ -273,19 +306,20 @@ public abstract class Monitor extends Observable implements Observer {
             GroupMonitor monitor = null;
             int retries = 5;
             boolean success = false;
-             do {
-                 try {
-                     Thread.sleep(5000);
-                 } catch (InterruptedException e1) {
-                 }
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
 
                 try {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Group monitor is going to be started for [group] "
                                 + dependency);
                     }
                     monitor = AutoscalerUtil.getGroupMonitor(component.getGroup(dependency));
-                    monitor.addObserver(parent);
+                    monitor.setParent(parent);
+                    //monitor.addObserver(parent);
                     success = true;
 
                 } catch (Exception e) {
@@ -306,7 +340,7 @@ public abstract class Monitor extends Observable implements Observer {
             }
 
             aliasToGroupMonitorsMap.put(dependency, monitor);
-            parent.addObserver(monitor);
+            //parent.addObserver(monitor);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Group monitor has been added successfully: [group] %s",
@@ -363,39 +397,6 @@ public abstract class Monitor extends Observable implements Observer {
                         cluster.getClusterId()));
             }
         }
-    }
-
-
-    public Map<String, GroupMonitor> getAliasToGroupMonitorsMap() {
-        return aliasToGroupMonitorsMap;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public void setAliasToGroupMonitorsMap(Map<String, GroupMonitor> aliasToGroupMonitorsMap) {
-        this.aliasToGroupMonitorsMap = aliasToGroupMonitorsMap;
-    }
-
-    public Map<String, AbstractClusterMonitor> getClusterIdToClusterMonitorsMap() {
-        return clusterIdToClusterMonitorsMap;
-    }
-
-    public void addAbstractMonitor(AbstractClusterMonitor monitor) {
-        this.clusterIdToClusterMonitorsMap.put(monitor.getClusterId(), monitor);
-    }
-
-    public AbstractClusterMonitor getAbstractMonitor(String clusterId) {
-        return this.clusterIdToClusterMonitorsMap.get(clusterId);
-    }
-
-    public void setClusterIdToClusterMonitorsMap(Map<String, AbstractClusterMonitor> clusterIdToClusterMonitorsMap) {
-        this.clusterIdToClusterMonitorsMap = clusterIdToClusterMonitorsMap;
     }
 
 

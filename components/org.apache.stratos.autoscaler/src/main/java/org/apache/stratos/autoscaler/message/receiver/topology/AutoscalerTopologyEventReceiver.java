@@ -582,7 +582,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
                     long end = System.currentTimeMillis();
-                    log.info("Time taken to start app monitor: " + (end - start)/1000);
+                    log.info("Time taken to start Napp monitor: " + (end - start)/1000);
                     success = true;
                     //TODO exception handling
                 } catch (Exception e) {
@@ -594,7 +594,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                        + "for Application: " + applicationMonitor.getId();
+                        + "for Application: " + application.getId();
                 log.error(msg);
                 throw new RuntimeException(msg);
             }

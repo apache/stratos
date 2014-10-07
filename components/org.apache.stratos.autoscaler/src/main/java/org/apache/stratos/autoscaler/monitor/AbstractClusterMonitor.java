@@ -18,18 +18,14 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -41,12 +37,14 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
+import java.util.Map;
+
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-abstract public class AbstractClusterMonitor extends Observable implements Observer, Runnable {
+abstract public class AbstractClusterMonitor implements EventHandler, Runnable {
 
     private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
     // Map<NetworkpartitionId, Network Partition Context>
@@ -70,6 +68,8 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
 
     protected Status status;
 
+    protected Monitor parent;
+
     protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
     // time intereval between two runs of the Monitor. Default is 90000ms.
@@ -79,7 +79,7 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
         readConfigurations();
     }
 
-    private void readConfigurations () {
+    private void readConfigurations() {
 
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
@@ -97,7 +97,7 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
     public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
         log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
         String networkPartitionId = member.getNetworkPartitionId();
-        if(networkPartitionCtxts.containsKey(networkPartitionId)) {
+        if (networkPartitionCtxts.containsKey(networkPartitionId)) {
             log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
             return networkPartitionCtxts.get(networkPartitionId);
         }
@@ -105,10 +105,10 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
         return null;
     }
 
-    public String getPartitionOfMember(String memberId){
-        for(Service service: TopologyManager.getTopology().getServices()){
-            for(Cluster cluster: service.getClusters()){
-                if(cluster.memberExists(memberId)){
+    public String getPartitionOfMember(String memberId) {
+        for (Service service : TopologyManager.getTopology().getServices()) {
+            for (Cluster cluster : service.getClusters()) {
+                if (cluster.memberExists(memberId)) {
                     return cluster.getMember(memberId).getPartitionId();
                 }
             }
@@ -232,11 +232,6 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
         this.terminateDependencyFactHandle = terminateDependencyFactHandle;
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-            //get the update from parent monitor
-    }
-
     public int getMonitorInterval() {
         return monitorInterval;
     }
@@ -249,7 +244,21 @@ abstract public class AbstractClusterMonitor extends Observable implements Obser
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", clusterId, this.status, status));
         this.status = status;
-        setChanged();
-        notifyObservers(new MonitorStatusEvent(status, clusterId));
+        //notifying the parent monitor about the state change
+        MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+
+    }
+
+    public Monitor getParent() {
+        return parent;
+    }
+
+    public void setParent(Monitor parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public void onEvent(MonitorStatusEvent statusEvent) {
+
     }
 }
