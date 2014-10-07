@@ -58,12 +58,15 @@ public class CartridgeDefinitionBean {
     
     public String serviceGroup;
 
+    private String[] exportingProperties;
+
     public String toString () {
 
         return "Type: " + type + ", Provider: " + provider + ", Host: " + host + ", Display Name: " + displayName +
                 ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString();
+                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString()
+                + "\n Exports " + exportingProperties.toString();
     }
 
 	private String getDeploymentDetails () {
@@ -113,5 +116,13 @@ public class CartridgeDefinitionBean {
             }
         }
         return propertyBuilder.toString();
+    }
+
+    public String[] getExportingProperties() {
+        return exportingProperties;
+    }
+
+    public void setExportingProperties(String[] exportingProperties) {
+        this.exportingProperties = exportingProperties;
     }
 }

@@ -62,6 +62,7 @@ public class CartridgeConfig implements Serializable {
     private LoadbalancerConfig lbConfig;
     
     private String serviceGroup;
+    private String[] exportingProperties;
 
 
     public String getType() {
@@ -269,6 +270,13 @@ public class CartridgeConfig implements Serializable {
 	public void setServiceGroup(String serviceGroup) {
 		this.serviceGroup = serviceGroup;
 	}
-    
-    
+
+
+    public String[] getExportingProperties() {
+        return exportingProperties;
+    }
+
+    public void setExportingProperties(String[] exportingProperties) {
+        this.exportingProperties = exportingProperties;
+    }
 }

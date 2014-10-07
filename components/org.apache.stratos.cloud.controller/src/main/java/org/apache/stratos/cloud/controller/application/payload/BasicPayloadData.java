@@ -49,6 +49,8 @@ public class BasicPayloadData implements Serializable {
     private String portMappings;
     private String multitenant;
     private String provider;
+    private String[] dependencyAliases;
+    private String[] exportingProperties;
 
     protected StringBuilder payloadBuilder;
 
@@ -99,6 +101,14 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty("puppet.env"));
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_ENV=" + System.getProperty("puppet.dns.available"));
+
+        if(getDependencyAliasesPayloadString() != null){
+            payloadBuilder.append("DEPENDECNY_ALIASES=" + getDependencyAliasesPayloadString());
+        }
+
+        if(getExportingPropertiesPayloadString() != null){
+            payloadBuilder.append("EXPORTING_PROPERTIES=" + getExportingPropertiesPayloadString());
+        }
 
     }
 
@@ -249,5 +259,53 @@ public class BasicPayloadData implements Serializable {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String[] getDependencyAliases() {
+        return dependencyAliases;
+    }
+
+    public void setDependencyAliases(String[] dependencyAliases) {
+        this.dependencyAliases = dependencyAliases;
+    }
+
+    private String getDependencyAliasesPayloadString(){
+        if(dependencyAliases == null){
+            return null;
+        }
+
+        StringBuilder dependencyAliasesPayload = new StringBuilder();
+        for(int i=0; i< dependencyAliases.length; i++){
+            dependencyAliasesPayload.append(dependencyAliases[i]);
+            if(i != dependencyAliases.length -1){
+                dependencyAliasesPayload.append("|");
+            }
+        }
+        log.info("testing1 getDependencyAliasesPayloadString " + dependencyAliasesPayload);
+        return dependencyAliasesPayload.toString();
+    }
+
+    private String getExportingPropertiesPayloadString(){
+        if(exportingProperties == null){
+            return null;
+        }
+
+        StringBuilder exportingPropertiesPayload = new StringBuilder();
+        for(int i=0; i< exportingProperties.length; i++){
+            exportingPropertiesPayload.append(exportingProperties[i]);
+            if(i != exportingProperties.length -1){
+                exportingPropertiesPayload.append("|");
+            }
+        }
+        log.info("testing1 getExportingPropertiesPayloadString " + exportingPropertiesPayload);
+        return exportingPropertiesPayload.toString();
+    }
+
+    public String[] getExportingProperties() {
+        return exportingProperties;
+    }
+
+    public void setExportingProperties(String[] exportingProperties) {
+        this.exportingProperties = exportingProperties;
     }
 }

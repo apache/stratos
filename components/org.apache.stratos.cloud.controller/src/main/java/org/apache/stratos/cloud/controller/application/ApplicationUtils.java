@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cloud.controller.application;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.application.payload.BasicPayloadData;
 import org.apache.stratos.cloud.controller.application.payload.PayloadData;
 import org.apache.stratos.cloud.controller.application.payload.PayloadFactory;
@@ -33,6 +35,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class ApplicationUtils {
+    private static final Log log = LogFactory.getLog(ApplicationUtils.class);
 
     public static boolean isAliasValid (String alias) {
 
@@ -190,13 +193,13 @@ public class ApplicationUtils {
         return payloadBuilder;
     }
 
-    public static PayloadData createPayload (String appId, String groupName, Cartridge cartridge, String subscriptionKey, int tenantId, String clusterId,
-                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries)
+    public static PayloadData createPayload(String appId, String groupName, Cartridge cartridge, String subscriptionKey, int tenantId, String clusterId,
+                                            String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases)
             throws ApplicationDefinitionException {
 
         //Create the payload
         BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridge, subscriptionKey,
-                clusterId, hostName, repoUrl, alias, tenantId);
+                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -241,10 +244,10 @@ public class ApplicationUtils {
         return payloadData;
     }
 
-    private static BasicPayloadData createBasicPayload (String appId, String groupName, Cartridge cartridge,
-                                                        String subscriptionKey, String clusterId,
-                                                        String hostName, String repoUrl, String alias,
-                                                       int tenantId) {
+    private static BasicPayloadData createBasicPayload(String appId, String groupName, Cartridge cartridge,
+                                                       String subscriptionKey, String clusterId,
+                                                       String hostName, String repoUrl, String alias,
+                                                       int tenantId, String[] dependencyAliases) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setAppId(appId);
@@ -276,6 +279,12 @@ public class ApplicationUtils {
         basicPayloadData.setTenantId(tenantId);
 
         basicPayloadData.setTenantRange("*");
+        basicPayloadData.setDependencyAliases(dependencyAliases);
+        if(cartridge.getExportingProperties() != null){
+            basicPayloadData.setExportingProperties(cartridge.getExportingProperties());
+            log.info("testing1 getExportingProperties " + cartridge.getExportingProperties());
+
+        }
 
         return basicPayloadData;
     }

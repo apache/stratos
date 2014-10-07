@@ -160,6 +160,10 @@ public class CloudControllerUtil {
             }
         }
 
+        if(config.getExportingProperties() != null){
+            cartridge.setExportingProperties(config.getExportingProperties());
+        }
+
         return cartridge;
     }
 	  

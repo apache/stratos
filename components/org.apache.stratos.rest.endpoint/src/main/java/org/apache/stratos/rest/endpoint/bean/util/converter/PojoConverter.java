@@ -96,6 +96,11 @@ public class PojoConverter {
             cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
         }
 
+        if(cartridgeDefinitionBean.getExportingProperties() != null)
+        {
+            cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
+        }
+        
         return cartridgeConfig;
     }
     
@@ -717,7 +722,9 @@ public class PojoConverter {
             subscribableInfoContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
             subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
+            subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
             subscribableInfoContexts[i++] =  subscribableInfoContext;
+
         }
 
         return subscribableInfoContexts;

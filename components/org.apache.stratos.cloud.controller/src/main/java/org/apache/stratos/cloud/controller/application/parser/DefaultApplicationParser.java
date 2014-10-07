@@ -489,7 +489,8 @@ public class DefaultApplicationParser implements ApplicationParser {
             assert subscribableInfoCtxt != null;
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
-                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false);
+                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
+
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
             this.applicationClusterContexts.add(appClusterCtxt);
 
@@ -521,17 +522,17 @@ public class DefaultApplicationParser implements ApplicationParser {
         //clusterDataHolder.setPayloadDataHolders(payloadDataHolders);
     }
 
-    private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, Cartridge cartridge,
-                                                                       String subscriptionKey, int tenantId, String repoUrl,
-                                                                       String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLB)
+    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, Cartridge cartridge,
+                                                                      String subscriptionKey, int tenantId, String repoUrl,
+                                                                      String alias, String clusterId, String hostname,
+                                                                      String deploymentPolicy, boolean isLB, String[] dependencyAliases)
             throws ApplicationDefinitionException {
 
         // Create text payload
         //String textPayload = ApplicationUtils.getTextPayload(appId, groupName, clusterId).toString();
 
         String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null).toString();
+                hostname, repoUrl, alias, null, dependencyAliases).toString();
 
         return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
