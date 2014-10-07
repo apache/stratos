@@ -24,10 +24,9 @@ import java.io.Serializable;
 
 /**
  * Holds information about a Member.
- * @author nirmal
  *
  */
-public class MemberContext implements Serializable{
+public class MemberContext implements Serializable {
 
     private static final long serialVersionUID = -388327475844701869L;
     // id of the member
