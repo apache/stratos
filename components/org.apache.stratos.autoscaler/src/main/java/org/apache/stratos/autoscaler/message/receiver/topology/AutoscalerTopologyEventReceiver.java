@@ -26,7 +26,6 @@ import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClie
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
@@ -587,12 +586,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     success = true;
                     //TODO exception handling
                 } catch (Exception e) {
-                    String msg = "Application monitor creation failed for Application: " +
-                                    application.getId();
-                    log.debug(msg, e);
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
                     retries--;
-
-
                 }
             } while (!success && retries != 0);
 
