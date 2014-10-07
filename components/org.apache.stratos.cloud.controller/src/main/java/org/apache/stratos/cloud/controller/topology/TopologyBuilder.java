@@ -653,7 +653,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(String applicationId, int tenantId, String tenantDomain) {
+    public static void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder, String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
 
@@ -670,6 +670,7 @@ public class TopologyBuilder {
                 for (ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
                     Service service = topology.getService(clusterDataHolder.getServiceType());
                     if (service != null) {
+                        // remove Cluster
                         service.removeCluster(clusterDataHolder.getClusterId());
                         if (log.isDebugEnabled()) {
                             log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
@@ -677,6 +678,12 @@ public class TopologyBuilder {
                     } else {
                         log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
                                 " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+                    }
+
+                    // remove runtime data
+                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
+                    if(log.isDebugEnabled()) {
+                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
                     }
                 }
 

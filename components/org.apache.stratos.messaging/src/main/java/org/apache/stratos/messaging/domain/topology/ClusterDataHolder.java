@@ -21,10 +21,17 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
 
+/**
+ * Data Holder for a Cluster.
+ * Will hold the Service Type and Cluster Id.
+ */
+
 public class ClusterDataHolder implements Serializable {
 
+    // Service/Cartridge type
     private String serviceType;
 
+    // Cluster id
     private String clusterId;
 
     public ClusterDataHolder (String serviceType, String clusterId) {

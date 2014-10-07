@@ -28,9 +28,26 @@ import java.util.Set;
 
 public interface ApplicationParser {
 
+    /**
+     * Parses the Application Definition
+     *
+     * @param obj Object with the Application Definition. An Object is used here since there can be
+     *            significant changes between the way composite Applications are defined in different
+     *            conventions
+     * @return Application structure denoting the parsed Application
+     * @throws ApplicationDefinitionException If the Application Definition is invalid
+     */
     public Application parse (Object obj) throws ApplicationDefinitionException;
 
+    /**
+     * Returns a set of ApplicationClusterContext which will comprise of cluster related information
+     * extracted from the Application definition
+     *
+     * @return  Set of ApplicationClusterContext objects
+     * @throws ApplicationDefinitionException if any error occurs
+     */
     public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException;
 
+    // TODO: remove
     public Set<MetaDataHolder> getPayloadData () throws ApplicationDefinitionException;
 }

@@ -1440,41 +1440,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ApplicationParser applicationParser = new DefaultApplicationParser();
         Application application = applicationParser.parse(applicationContext);
 
+        // Create a Cluster Context obj. for each of the Clusters in the Application
         for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
             dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
                     applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
                     applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
         }
-
-        //TODO: improve
-//        Set<MetaDataHolder> medaDataHolders = applicationParser.getPayloadData();
-//        if (medaDataHolders != null) {
-//
-//            MetaDataServiceClient metaDataServiceClient;
-//            try {
-//
-//                metaDataServiceClient = new DefaultMetaDataServiceClient(MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
-//                metaDataServiceClient.initialize();
-//
-//            } catch (RestClientException e) {
-//                log.error("Error creating instance of Metadata Service Client", e);
-//                throw new ApplicationDefinitionException(e);
-//            }
-//
-//            for (MetaDataHolder metaDataHolder : medaDataHolders) {
-//                for (Map.Entry<Object, Object> metaDataEntry : metaDataHolder.getProperties().entrySet()) {
-//                    try {
-//                        metaDataServiceClient.addPropertyToCluster(metaDataHolder.getAppId(), metaDataHolder.getClusterId(),
-//                                (String)metaDataEntry.getKey(), (String)metaDataEntry.getValue());
-//
-//                    } catch (MetaDataServiceClientExeption e) {
-//                        log.error("Error publishing data to Metadata Service", e);
-//                        throw new ApplicationDefinitionException(e);
-//                    }
-//                }
-//            }
-//        }
-
 
         TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
                 applicationParser.getPayloadData());
@@ -1485,7 +1456,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
 
-        TopologyBuilder.handleApplicationUndeployed(applicationId, tenantId, tenantDomain);
+        TopologyBuilder.handleApplicationUndeployed(dataHolder, applicationId, tenantId, tenantDomain);
+
+        persist();
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
