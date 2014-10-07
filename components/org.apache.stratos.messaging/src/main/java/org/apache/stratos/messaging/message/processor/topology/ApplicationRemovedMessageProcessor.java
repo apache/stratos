@@ -29,6 +29,8 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.Set;
+
 public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	
 	private static final Log log = LogFactory.getLog(ApplicationCreatedMessageProcessor.class);
@@ -64,18 +66,23 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	        }
 
             TopologyManager.acquireWriteLockForApplications();
-            for (ClusterDataHolder clusterData : event.getClusterData()) {
-                TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+            Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
+            if (clusterDataHolders != null) {
+                for (ClusterDataHolder clusterData : clusterDataHolders) {
+                    TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+                }
             }
 
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyManager.releaseWriteLockForApplications();
-                for (ClusterDataHolder clusterData : event.getClusterData()) {
-                    TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                    }
                 }
+                TopologyManager.releaseWriteLockForApplications();
             }
         
 	    } else {

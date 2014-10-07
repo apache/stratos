@@ -58,16 +58,21 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             }
 
             TopologyManager.acquireWriteLockForApplications();
-            for (ClusterDataHolder clusterData : event.getApplication().getClusterDataRecursively()) {
-                TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+            Set<ClusterDataHolder> clusterDataHolders = event.getApplication().getClusterDataRecursively();
+            if (clusterDataHolders != null) {
+                for (ClusterDataHolder clusterData : clusterDataHolders) {
+                    TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+                }
             }
 
             try {
                 return doProcess(event, topology);
 
             } finally {
-                for (ClusterDataHolder clusterData : event.getApplication().getClusterDataRecursively()) {
-                    TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                    }
                 }
                 TopologyManager.releaseWriteLockForApplications();
             }

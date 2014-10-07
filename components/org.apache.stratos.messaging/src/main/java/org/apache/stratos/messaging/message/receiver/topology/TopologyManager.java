@@ -101,6 +101,9 @@ public class TopologyManager {
 
     // Top level locks - should be used to lock the entire Topology
 
+    /**
+     * Acquires read lock for the Complete Topology
+     */
     public static void acquireReadLock() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired for Topology");
@@ -108,6 +111,9 @@ public class TopologyManager {
         readLock.lock();
     }
 
+    /**
+     * Releases read lock for the Complete Topology
+     */
     public static void releaseReadLock() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released for Topology");
@@ -115,6 +121,9 @@ public class TopologyManager {
         readLock.unlock();
     }
 
+    /**
+     * Acquires write lock for the Complete Topology
+     */
     public static void acquireWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired for Topology");
@@ -122,6 +131,9 @@ public class TopologyManager {
         writeLock.lock();
     }
 
+    /**
+     * Releases write lock for the Complete Topology
+     */
     public static void releaseWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released for Topology");
@@ -129,8 +141,10 @@ public class TopologyManager {
         writeLock.unlock();
     }
 
-    // Application, Service and Cluster read locks
-
+    // Application and Service read locks
+    /**
+     * Acquires read lock for the all Applications
+     */
     public static void acquireReadLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired for Applications");
@@ -138,6 +152,9 @@ public class TopologyManager {
         topologyLockHierarchy.getApplicatioLock().acquireReadLock();
     }
 
+    /**
+     * Releases read lock for the all Applications
+     */
     public static void releaseReadLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released for Applications");
@@ -145,6 +162,9 @@ public class TopologyManager {
         topologyLockHierarchy.getApplicatioLock().releaseReadLock();
     }
 
+    /**
+     * Acquires read lock for the all Services
+     */
     public static void acquireReadLockForServices() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired for Services");
@@ -152,6 +172,9 @@ public class TopologyManager {
         topologyLockHierarchy.getServiceLock().acquireReadLock();
     }
 
+    /**
+     * Releases read lock for the all Services
+     */
     public static void releaseReadLockForServices() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released for Services");
@@ -159,8 +182,10 @@ public class TopologyManager {
         topologyLockHierarchy.getServiceLock().releaseReadLock();
     }
 
-    // Application, Service and Cluster write locks
-
+    // Application and Service write locks
+    /**
+     * Acquires write lock for the all Applications
+     */
     public static void acquireWriteLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired for Applications");
@@ -168,6 +193,9 @@ public class TopologyManager {
         topologyLockHierarchy.getApplicatioLock().acquireWriteLock();
     }
 
+    /**
+     * Releases write lock for the all Applications
+     */
     public static void releaseWriteLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released for Applications");
@@ -175,6 +203,9 @@ public class TopologyManager {
         topologyLockHierarchy.getApplicatioLock().releaseWritelock();
     }
 
+    /**
+     * Acquires write lock for the all Services
+     */
     public static void acquireWriteLockForServices() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired for Services");
@@ -182,6 +213,9 @@ public class TopologyManager {
         topologyLockHierarchy.getServiceLock().acquireWriteLock();
     }
 
+    /**
+     * Releases write lock for the all Services
+     */
     public static void releaseWriteLockForServices() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released for Services");
@@ -189,6 +223,11 @@ public class TopologyManager {
         topologyLockHierarchy.getServiceLock().releaseWritelock();
     }
 
+    /**
+     * Acquires read lock for a Service
+     *
+     * @param serviceName service name to acquire read lock
+     */
     public static void acquireReadLockForService (String serviceName) {
 
         // acquire read lock for all Services
@@ -206,6 +245,11 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases read lock for a Service
+     *
+     * @param serviceName service name to release read lock
+     */
     public static void releaseReadLockForService (String serviceName) {
 
         TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
@@ -223,6 +267,11 @@ public class TopologyManager {
         releaseReadLockForServices();
     }
 
+    /**
+     * Acquires write lock for a Service
+     *
+     * @param serviceName service name to acquire write lock
+     */
     public static void acquireWriteLockForService (String serviceName) {
 
         // acquire read lock for all Applications
@@ -240,6 +289,11 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases write lock for a Service
+     *
+     * @param serviceName service name to release write lock
+     */
     public static void releaseWriteLockForService (String serviceName) {
 
         TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
@@ -257,6 +311,14 @@ public class TopologyManager {
         releaseReadLockForServices();
     }
 
+    /**
+     * Acquires read lock for a Cluster. This will acquire the read lock in the following order
+     *      1. for the Service
+     *      2. for the Cluster
+     *
+     * @param serviceName service name to acquire read lock
+     * @param clusterId cluster id to acquire read lock
+     */
     public static void acquireReadLockForCluster (String serviceName, String clusterId) {
 
         // acquire read lock for the relevant Services
@@ -275,6 +337,14 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases read lock for a Cluster. This will release the read lock in the following order
+     *      1. for the Cluster
+     *      2. for the Service
+     *
+     * @param serviceName service name to release read lock
+     * @param clusterId cluster id to release read lock
+     */
     public static void releaseReadLockForCluster (String serviceName, String clusterId) {
 
         TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
@@ -293,6 +363,14 @@ public class TopologyManager {
         releaseReadLockForService(serviceName);
     }
 
+    /**
+     * Acquires write lock for a Cluster. This will acquire the write lock in the following order
+     *      1. for the Service
+     *      2. for the Cluster
+     *
+     * @param serviceName service name to acquire write lock
+     * @param clusterId cluster id to acquire write lock
+     */
     public static void acquireWriteLockForCluster (String serviceName, String clusterId) {
 
         // acquire read lock for the relevant Services
@@ -310,6 +388,14 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases write lock for a Cluster. This will release the write lock in the following order
+     *      1. for the Cluster
+     *      2. for the Service
+     *
+     * @param serviceName service name to release write lock
+     * @param clusterId cluster id to release write lock
+     */
     public static void releaseWriteLockForCluster (String serviceName, String clusterId) {
 
         TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
@@ -327,6 +413,11 @@ public class TopologyManager {
         releaseReadLockForService(serviceName);
     }
 
+    /**
+     * Acquires read lock for the Application
+     *
+     * @param appId Application id
+     */
     public static void acquireReadLockForApplication (String appId) {
 
         // acquire read lock for all Applications
@@ -345,6 +436,11 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases read lock for the Application
+     *
+     * @param appId Application id
+     */
     public static void releaseReadLockForApplication (String appId) {
 
         TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
@@ -363,6 +459,11 @@ public class TopologyManager {
         releaseReadLockForApplications();
     }
 
+    /**
+     * Acquires write lock for the Application
+     *
+     * @param appId Application id
+     */
     public static synchronized void acquireWriteLockForApplication (String appId) {
 
         // acquire read lock for all Applications
@@ -381,6 +482,11 @@ public class TopologyManager {
         }
     }
 
+    /**
+     * Releases write lock for the Application
+     *
+     * @param appId Application id
+     */
     public static synchronized void releaseWriteLockForApplication (String appId) {
 
         TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
