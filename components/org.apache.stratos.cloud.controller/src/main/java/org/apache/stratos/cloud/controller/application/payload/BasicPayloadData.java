@@ -101,11 +101,11 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty("puppet.env"));
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_ENV=" + System.getProperty("puppet.dns.available"));
-
+        payloadBuilder.append(",");
         if(getDependencyAliasesPayloadString() != null){
             payloadBuilder.append("DEPENDECNY_ALIASES=" + getDependencyAliasesPayloadString());
         }
-
+        payloadBuilder.append(",");
         if(getExportingPropertiesPayloadString() != null){
             payloadBuilder.append("EXPORTING_PROPERTIES=" + getExportingPropertiesPayloadString());
         }
