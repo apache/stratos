@@ -238,7 +238,7 @@ public class CloudControllerClient {
      * @return
      * @throws SpawningException
      */
-    public synchronized MemberContext[] createContainer(String kubernetesClusterId, String clusterId) throws SpawningException {
+    public synchronized MemberContext[] createContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
         	
         	KubernetesManager kubernetesManager = KubernetesManager.getInstance();
