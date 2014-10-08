@@ -20,6 +20,7 @@
 package org.apache.stratos.cli.beans.cartridge;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
 
 
 @XmlRootElement
@@ -181,7 +182,11 @@ public class Cartridge implements Comparable<Cartridge> {
     }
 
     public void setAccessURLs(String[] accessURLs) {
-        this.accessURLs = accessURLs;
+        if(accessURLs == null) {
+            this.accessURLs = new String[0];
+        } else {
+            this.accessURLs = Arrays.copyOf(accessURLs, accessURLs.length);
+        }
     }
 
     public void setDbUserName(String dbUserName) {
@@ -201,7 +206,11 @@ public class Cartridge implements Comparable<Cartridge> {
 	}
 
 	public void setPortMappings(PortMapping[] portMappings) {
-		this.portMappings = portMappings;
+        if(portMappings == null) {
+            this.portMappings = new PortMapping[0];
+        } else {
+            this.portMappings = Arrays.copyOf(portMappings, portMappings.length);
+        }
 	}
 	
 	public String getDbHost() {

@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Persistence implements Serializable{
 	
@@ -43,6 +44,10 @@ public class Persistence implements Serializable{
     }
 
     public void setVolumes(Volume[] volumes) {
-        this.volumes = volumes;
+        if(volumes == null) {
+            this.volumes = new Volume[0];
+        } else {
+            this.volumes = Arrays.copyOf(volumes, volumes.length);
+        }
     }
 }

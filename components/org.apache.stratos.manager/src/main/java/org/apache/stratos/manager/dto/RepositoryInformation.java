@@ -19,6 +19,7 @@
 package org.apache.stratos.manager.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class RepositoryInformation implements Serializable {
 
@@ -40,7 +41,11 @@ public class RepositoryInformation implements Serializable {
 	}
 
 	public void setRefName(String[] refName) {
-		this.refName = refName;
+        if(refName == null) {
+            this.refName = new String[0];
+        } else {
+            this.refName = Arrays.copyOf(refName, refName.length);
+        }
 	}
 
 }

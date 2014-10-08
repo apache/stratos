@@ -18,10 +18,11 @@
  */
 package org.apache.stratos.messaging.util;
 
+import java.util.Arrays;
+
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in
- * current
- * stub generation.
+ * current stub generation.
  */
 public class Properties {
 
@@ -32,7 +33,10 @@ public class Properties {
 	}
 
 	public void setProperties(Property[] properties) {
-		this.properties = properties;
+        if(properties == null) {
+            this.properties = new Property[0];
+        } else {
+            this.properties = Arrays.copyOf(properties, properties.length);
+        }
 	}
-
 }
