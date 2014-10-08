@@ -85,7 +85,6 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Co
         for (PortMapping portMapping : cartridge.getPortMappings()) {
             Port p = new Port();
             p.setContainerPort(Integer.parseInt(portMapping.getPort()));
-            p.setHostPort(Integer.parseInt(portMapping.getPort()));
             // In kubernetes transport protocol always be 'tcp'
             p.setProtocol("tcp");
             p.setName(p.getProtocol() + p.getContainerPort());
