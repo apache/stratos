@@ -32,6 +32,9 @@ public class ContainerClusterContext implements Serializable {
     // properties
     private Properties properties;
     
+    public ContainerClusterContext() {
+    }
+    
     public ContainerClusterContext(String clusterId) {
         this.clusterId = clusterId;
     }
