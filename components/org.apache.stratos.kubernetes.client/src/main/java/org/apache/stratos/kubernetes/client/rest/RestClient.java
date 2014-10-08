@@ -18,6 +18,10 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.SocketException;
 import java.net.URI;
 
 import org.apache.http.HttpResponse;
@@ -49,7 +53,7 @@ public class RestClient {
      * @throws Exception
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
+    public KubernetesResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
         try {
         	httpClient = new DefaultHttpClient();
             HttpPost postRequest = new HttpPost(resourcePath);
@@ -58,7 +62,7 @@ public class RestClient {
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            HttpResponse response = httpClient.execute(postRequest);
+            KubernetesResponse response = httpClient.execute(postRequest, new KubernetesResponseHandler());
 
             return response;
         } finally {
@@ -81,28 +85,26 @@ public class RestClient {
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(URI resourcePath) throws Exception{
+    public KubernetesResponse doGet(URI resourcePath) throws Exception{
         try {
         	httpClient = new DefaultHttpClient();
             HttpGet getRequest = new HttpGet(resourcePath);
-            System.out.println(getRequest.getRequestLine().getUri());
             getRequest.addHeader("Content-Type", "application/json");
 
-            HttpResponse response = httpClient.execute(getRequest);
-
+            KubernetesResponse response = httpClient.execute(getRequest, new KubernetesResponseHandler());
             return response;
         } finally {
         	 httpClient.getConnectionManager().shutdown();
         }
     }
-
-    public HttpResponse doDelete(URI resourcePath) throws Exception {
+    
+    public KubernetesResponse doDelete(URI resourcePath) throws Exception {
         try {
         	httpClient = new DefaultHttpClient();
             HttpDelete httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
 
-            HttpResponse response = httpClient.execute(httpDelete);
+            KubernetesResponse response = httpClient.execute(httpDelete, new KubernetesResponseHandler());
 
             return  response;
 
@@ -111,7 +113,7 @@ public class RestClient {
         }
     }
 
-    public HttpResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
+    public KubernetesResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
 
 		try {
 			httpClient = new DefaultHttpClient();
@@ -121,7 +123,7 @@ public class RestClient {
 			input.setContentType("application/json");
 			putRequest.setEntity(input);
 
-			HttpResponse response = httpClient.execute(putRequest);
+			KubernetesResponse response = httpClient.execute(putRequest, new KubernetesResponseHandler());
 
 			return response;
 		
