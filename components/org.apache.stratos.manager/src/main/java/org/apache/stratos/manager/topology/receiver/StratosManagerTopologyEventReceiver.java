@@ -23,8 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.ApplicationSubscriptionException;
-import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
-import org.apache.stratos.manager.exception.CompositeApplicationException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
@@ -95,7 +93,9 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = clustercreatedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(clustercreatedEvent.getServiceName(),
+                        clustercreatedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clustercreatedEvent.getClusterId());
@@ -103,7 +103,9 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(clustercreatedEvent.getServiceName(),
+                            clustercreatedEvent.getClusterId());
                 }
 
             }
@@ -137,14 +139,18 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = instanceSpawnedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(instanceSpawnedEvent.getServiceName(),
+                        instanceSpawnedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(instanceSpawnedEvent.getServiceName(),
+                            instanceSpawnedEvent.getClusterId());
                 }
             }
         });
@@ -162,14 +168,18 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = memberStartedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(memberStartedEvent.getServiceName(),
+                        memberStartedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(memberStartedEvent.getServiceName(),
+                            memberStartedEvent.getClusterId());
                 }
 
             }
@@ -188,14 +198,18 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = memberActivatedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(memberActivatedEvent.getServiceName(),
+                        memberActivatedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(memberActivatedEvent.getServiceName(),
+                            memberActivatedEvent.getClusterId());
                 }
             }
         });
@@ -213,7 +227,9 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = memberSuspendedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(memberSuspendedEvent.getServiceName(),
+                        memberSuspendedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
@@ -221,7 +237,9 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(memberSuspendedEvent.getServiceName(),
+                            memberSuspendedEvent.getClusterId());
                 }
             }
         });
@@ -239,7 +257,9 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 String serviceType = memberTerminatedEvent.getServiceName();
                 //acquire read lock
-                TopologyManager.acquireReadLock();
+                //TopologyManager.acquireReadLock();
+                TopologyManager.acquireReadLockForCluster(memberTerminatedEvent.getServiceName(),
+                        memberTerminatedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
@@ -247,8 +267,12 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     // check and remove terminated member
                     if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
                         // release the read lock and acquire the write lock
-                        TopologyManager.releaseReadLock();
-                        TopologyManager.acquireWriteLock();
+//                        TopologyManager.releaseReadLock();
+//                        TopologyManager.acquireWriteLock();
+                        TopologyManager.releaseReadLockForCluster(memberTerminatedEvent.getServiceName(),
+                                memberTerminatedEvent.getClusterId());
+                        TopologyManager.acquireWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+                                memberTerminatedEvent.getClusterId());
 
                         try {
                             // re-check the state; another thread might have acquired the write lock and modified
@@ -263,17 +287,23 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                             // downgrade to read lock - 1. acquire read lock, 2. release write lock
                             // acquire read lock
-                            TopologyManager.acquireReadLock();
+                            //TopologyManager.acquireReadLock();
+                            TopologyManager.acquireReadLockForCluster(memberTerminatedEvent.getServiceName(),
+                                    memberTerminatedEvent.getClusterId());
 
                         } finally {
                             // release the write lock
-                            TopologyManager.releaseWriteLock();
+                           // TopologyManager.releaseWriteLock();
+                            TopologyManager.releaseWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+                                    memberTerminatedEvent.getClusterId());
                         }
                     }
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForCluster(memberTerminatedEvent.getServiceName(),
+                            memberTerminatedEvent.getClusterId());
                 }
             }
         });
@@ -288,7 +318,8 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 log.info("[ApplicationCreatedEventListener] Received: " + event.getClass());
 
                 try {
-                    TopologyManager.acquireReadLock();
+                    //TopologyManager.acquireReadLock();
+                    TopologyManager.acquireReadLockForApplication(appCreateEvent.getApplication().getId());
                     
                     // create and persist Application subscritpion
                     CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
@@ -318,7 +349,8 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     	PrivilegedCarbonContext.endTenantFlow();
                     }
                 } finally {
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForApplication(appCreateEvent.getApplication().getId());
                 }
             }
         });
@@ -333,7 +365,8 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 log.info("[ApplicationRemovedEventListener] Received: " + event.getClass());
 
                 try {
-                    TopologyManager.acquireReadLock();
+                    //TopologyManager.acquireReadLock();
+                    TopologyManager.acquireReadLockForApplication(appRemovedEvent.getApplicationId());
                     
                     // create and persist Application subscritpion
                     CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
@@ -360,7 +393,8 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     	PrivilegedCarbonContext.endTenantFlow();
                     }
                 } finally {
-                    TopologyManager.releaseReadLock();
+                    //TopologyManager.releaseReadLock();
+                    TopologyManager.releaseReadLockForApplication(appRemovedEvent.getApplicationId());
                 }
             }
         });

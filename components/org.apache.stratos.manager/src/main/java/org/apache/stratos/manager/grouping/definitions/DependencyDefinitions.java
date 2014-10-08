@@ -26,17 +26,14 @@ import java.util.List;
 @XmlRootElement(name = "dependencies")
 public class DependencyDefinitions implements Serializable {
 
-    private List<StartupOrderDefinition> startupOrder;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private List<String> startupOrders;
 
     private String killBehaviour;
-
-    public List<StartupOrderDefinition> getStartupOrder() {
-        return startupOrder;
-    }
-
-    public void setStartupOrder(List<StartupOrderDefinition> startupOrder) {
-        this.startupOrder = startupOrder;
-    }
 
     public String getKillBehaviour() {
         return killBehaviour;
@@ -45,4 +42,12 @@ public class DependencyDefinitions implements Serializable {
     public void setKillBehaviour(String killBehaviour) {
         this.killBehaviour = killBehaviour;
     }
+
+	public List<String> getStartupOrders() {
+		return startupOrders;
+	}
+
+	public void setStartupOrders(List<String> startupOrders) {
+		this.startupOrders = startupOrders;
+	}
 }

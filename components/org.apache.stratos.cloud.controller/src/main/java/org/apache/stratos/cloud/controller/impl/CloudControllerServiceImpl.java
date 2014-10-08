@@ -35,7 +35,6 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
-import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -49,11 +48,6 @@ import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
-import org.apache.stratos.metadata.client.DefaultMetaDataServiceClient;
-import org.apache.stratos.metadata.client.MetaDataServiceClient;
-import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
-import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
-import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
@@ -299,7 +293,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	
 
     	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups.length);
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups);
+            if (subGroups != null) {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups:size" + subGroups.length);
+            } else {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups: is null");
+            }
         }
     	
     	
@@ -309,13 +308,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
         }
     	
-    	StartupOrder [] startupOrder = dependencies.getStartupOrder();
+    	String [] startupOrders = dependencies.getStartupOrders();
     	
     	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder" + startupOrder);
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
             
-            if (startupOrder != null) {
-            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrder.length);
+            if (startupOrders != null) {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
             } else {
             	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
             }

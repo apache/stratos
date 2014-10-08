@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -56,26 +57,14 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             ApplicationActivatedEvent event = (ApplicationActivatedEvent) Util.
                     jsonToObject(message, ApplicationActivatedEvent.class);
 
-            // Validate event against the existing topology
-            Application application = topology.getApplication(event.getAppId());
-            if (application == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Application does not exist: [service] %s",
-                            event.getAppId()));
-                }
-                return false;
-            } else {
-                // Apply changes to the topology
-                application.setStatus(Status.Activated);
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Application updated as activated : %s",
-                            application.toString()));
-                }
-            }
+            TopologyManager.acquireWriteLockForApplication(event.getAppId());
 
-            // Notify event listeners
-            notifyEventListeners(event);
-            return true;
+            try {
+                return doProcess(event, topology);
+
+            } finally {
+                TopologyManager.releaseWriteLockForApplication(event.getAppId());
+            }
 
         } else {
             if (nextProcessor != null) {
@@ -85,5 +74,30 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
+    }
+
+    private boolean doProcess (ApplicationActivatedEvent event, Topology topology) {
+
+        // Validate event against the existing topology
+        Application application = topology.getApplication(event.getAppId());
+        if (application == null) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Application does not exist: [service] %s",
+                        event.getAppId()));
+            }
+            return false;
+        } else {
+            // Apply changes to the topology
+            application.setStatus(Status.Activated);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Application updated as activated : %s",
+                        application.toString()));
+            }
+        }
+
+        // Notify event listeners
+        notifyEventListeners(event);
+        return true;
+
     }
 }

@@ -35,10 +35,13 @@ public abstract class ApplicationContext {
 
     private Status status;
 
+    private List<Status> statusLifeCycle;
+
     protected boolean killDependent;
 
     public ApplicationContext(String id, boolean killDependent) {
         applicationContextList = new ArrayList<ApplicationContext>();
+        statusLifeCycle = new ArrayList<Status>();
         this.killDependent = killDependent;
         this.id = id;
     }
@@ -56,6 +59,10 @@ public abstract class ApplicationContext {
 
     }
 
+    public void addStatusToLIfeCycle(Status status) {
+       this.statusLifeCycle.add(status);
+    }
+
     public String getId() {
         return id;
     }
@@ -70,5 +77,13 @@ public abstract class ApplicationContext {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public List<Status> getStatusLifeCycle() {
+        return statusLifeCycle;
+    }
+
+    public void setStatusLifeCycle(List<Status> statusLifeCycle) {
+        this.statusLifeCycle = statusLifeCycle;
     }
 }

@@ -608,7 +608,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationDeployed(Application application,
+    public static synchronized void handleApplicationDeployed(Application application,
                                                  Set<ApplicationClusterContext> applicationClusterContexts,
                                                  Set<MetaDataHolder> metaDataHolders) {
 
@@ -644,6 +644,7 @@ public class TopologyBuilder {
             // add to Topology and update
             topology.addApplication(application);
             TopologyManager.updateTopology(topology);
+
             log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
 
             TopologyEventPublisher.sendApplicationCreatedEvent(application ,clusters);
@@ -653,7 +654,8 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder, String applicationId, int tenantId, String tenantDomain) {
+    public static synchronized void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder,
+                                                                String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
 
@@ -662,16 +664,18 @@ public class TopologyBuilder {
 
             if (!topology.applicationExists(applicationId)) {
                 log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
 
             } else {
                 Application application = topology.getApplication(applicationId);
+                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
                 // remove clusters
-                for (ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
+                for (ClusterDataHolder clusterDataHolder : clusterData) {
                     Service service = topology.getService(clusterDataHolder.getServiceType());
                     if (service != null) {
                         // remove Cluster
                         service.removeCluster(clusterDataHolder.getClusterId());
+
                         if (log.isDebugEnabled()) {
                             log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
                         }
@@ -693,7 +697,7 @@ public class TopologyBuilder {
 
                 log.info("Removed application [ " + applicationId + " ] from Topology");
 
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain);
             }
 
         } finally {

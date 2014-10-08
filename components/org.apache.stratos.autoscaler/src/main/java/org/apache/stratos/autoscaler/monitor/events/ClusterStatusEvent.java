@@ -23,32 +23,14 @@ import org.apache.stratos.messaging.domain.topology.Status;
 /**
  * This will use to notify observers upon a cluster activation events received in Topology.
  */
-public class ClusterActivatedEvent extends MonitorEvent {
-    private Status status;
-    private String appId;
-    private String clusterId;
-    private String serviceName;
+public class ClusterStatusEvent extends MonitorStatusEvent {
 
-    public ClusterActivatedEvent(Status status, String appId, String clusterId, String serviceName) {
-        this.status = status;
-        this.appId = appId;
-        this.clusterId = clusterId;
-        this.serviceName = serviceName;
+    public ClusterStatusEvent(Status status, String id) {
+        super(status, id);
     }
 
     public Status getStatus() {
-        return status;
+        return super.getStatus();
     }
 
-    public String getAppId() {
-        return appId;
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
 }

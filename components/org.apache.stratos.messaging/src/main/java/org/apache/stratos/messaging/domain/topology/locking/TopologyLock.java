@@ -16,12 +16,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.events;
 
-import java.io.Serializable;
+package org.apache.stratos.messaging.domain.topology.locking;
 
-/**
- * This event will be used to notify observers based on the status events received from Topology.
- */
-public abstract class MonitorEvent implements Serializable {
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+public class TopologyLock {
+
+    private final ReentrantReadWriteLock lock;
+
+    public TopologyLock () {
+        lock = new ReentrantReadWriteLock(true);
+    }
+
+    public void acquireWriteLock() {
+        lock.writeLock().lock();
+    }
+
+    public void releaseWritelock() {
+        if (lock.isWriteLockedByCurrentThread()) {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public void acquireReadLock() {
+        lock.readLock().lock();
+    }
+
+    public void releaseReadLock() {
+        lock.readLock().unlock();
+    }
 }

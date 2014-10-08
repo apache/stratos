@@ -16,27 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.events;
+package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 
 /**
- * This will use to notify observers upon a application activation events received in Topology.
+ * Event Handler to notify the observer/to receive notification
  */
-public class ApplicationActivatedEvent extends MonitorEvent {
-    private Status status;
-    private String appId;
-
-    public ApplicationActivatedEvent(Status status, String appId) {
-        this.status = status;
-        this.appId = appId;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
+public interface EventHandler {
+    /**
+     * Triggered when an event is received.
+     *
+     * @param statusEvent
+     */
+    public abstract void onEvent(MonitorStatusEvent statusEvent);
 }

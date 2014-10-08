@@ -21,22 +21,31 @@ package org.apache.stratos.autoscaler.monitor.events;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 /**
- * Created by reka on 9/25/14.
+ * Monitor Status Event
  */
-public class MonitorStatusEvent extends MonitorEvent {
-    private Status status;
-    private String notifierId;
+public abstract class MonitorStatusEvent {
+    protected Status status;
+    protected String id;
 
-    public MonitorStatusEvent(Status status, String notifierId) {
-        this.status = status;
-        this.notifierId = notifierId;
+    public MonitorStatusEvent(Status status, String id) {
+        this.setStatus(status);
+        this.setId(id);
+    }
+
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Status getStatus() {
         return status;
     }
 
-    public String getNotifierId() {
-        return notifierId;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

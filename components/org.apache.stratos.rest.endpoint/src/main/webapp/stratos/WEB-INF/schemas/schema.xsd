@@ -213,7 +213,7 @@
         </xs:complexType>
     </xs:element>
     
-        <xs:element name="compositeAppDefinition">
+    <xs:element name="compositeAppDefinition">
         <xs:complexType>
         	<xs:sequence>
             	<xs:element name="applicationId" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
@@ -247,16 +247,9 @@
     <xs:complexType name="tdependencies">
     	<xs:sequence>
 			<xs:element name="killBehaviour" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-			<xs:element name="startupOrder" type="tstartupOrder" minOccurs="0" maxOccurs="unbounded"/>            
+			<xs:element name="startupOrders" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="false"/>            
     	</xs:sequence>
     </xs:complexType>
-    
-    <xs:complexType name="tstartupOrder">
-        	<xs:all>
-            	<xs:element name="start" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                 <xs:element name="after" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-            </xs:all>
-	</xs:complexType> 
     
     <xs:complexType name="tgroups">
         <xs:sequence>

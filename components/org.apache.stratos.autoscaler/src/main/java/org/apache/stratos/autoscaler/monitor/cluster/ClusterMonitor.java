@@ -24,13 +24,13 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,32 +77,32 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         } catch (InterruptedException ignore) {
         }*/
         //this.status = Status.Running;
-            while (!isDestroyed()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cluster monitor is running.. " + this.toString());
-                }
-                try {
-                    if(!ClusterStatus.In_Maintenance.equals(status)) {
-                        monitor();
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Cluster monitor is suspended as the cluster is in " +
-                                    ClusterStatus.In_Maintenance + " mode......");
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Cluster monitor: Monitor failed." + this.toString(), e);
-                }
-                try {
-                    Thread.sleep(monitorInterval);
-                } catch (InterruptedException ignore) {
-                }
+        while (!isDestroyed()) {
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
+            try {
+                if (!ClusterStatus.In_Maintenance.equals(status)) {
+                    monitor();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster monitor is suspended as the cluster is in " +
+                                ClusterStatus.In_Maintenance + " mode......");
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
+            }
+            try {
+                Thread.sleep(monitorInterval);
+            } catch (InterruptedException ignore) {
+            }
+        }
 
 
     }
 
-    private boolean isPrimaryMember(MemberContext memberContext){
+    private boolean isPrimaryMember(MemberContext memberContext) {
         Properties props = memberContext.getProperties();
         if (log.isDebugEnabled()) {
             log.debug(" Properties [" + props + "] ");
@@ -133,14 +133,14 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                 List<String> primaryMemberListInPartition = new ArrayList<String>();
                 // get active primary members in this partition context
                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
-                    if (isPrimaryMember(memberContext)){
+                    if (isPrimaryMember(memberContext)) {
                         primaryMemberListInPartition.add(memberContext.getMemberId());
                     }
                 }
 
                 // get pending primary members in this partition context
                 for (MemberContext memberContext : partitionContext.getPendingMembers()) {
-                    if (isPrimaryMember(memberContext)){
+                    if (isPrimaryMember(memberContext)) {
                         primaryMemberListInPartition.add(memberContext.getMemberId());
                     }
                 }
@@ -185,7 +185,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
 
             if (log.isDebugEnabled()) {
-                log.debug("flag of rifReset: "  + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
+                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
                         + " flag of loadAverageReset" + loadAverageReset);
             }
             if (rifReset || memoryConsumptionReset || loadAverageReset) {
@@ -240,5 +240,10 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
+    }
+
+    @Override
+    public void onEvent(MonitorStatusEvent statusEvent) {
+
     }
 }
