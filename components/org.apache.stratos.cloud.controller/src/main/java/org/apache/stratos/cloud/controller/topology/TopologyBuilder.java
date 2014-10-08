@@ -617,15 +617,15 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
 
-            if (topology.applicationExists(application.getId())) {
-                log.warn("Application with id [ " + application.getId() + " ] already exists in Topology");
+            if (topology.applicationExists(application.getUniqueIdentifier())) {
+                log.warn("Application with id [ " + application.getUniqueIdentifier() + " ] already exists in Topology");
                 return;
             }
             List<Cluster> clusters = new ArrayList<Cluster>();
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
-                        applicationClusterContext.getAutoscalePolicyName(), application.getId());
+                        applicationClusterContext.getAutoscalePolicyName(), application.getUniqueIdentifier());
                 cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
@@ -634,7 +634,7 @@ public class TopologyBuilder {
                 Service service = topology.getService(applicationClusterContext.getCartridgeType());
                 if (service != null) {
                     service.addCluster(cluster);
-                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + application.getId());
+                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + application.getUniqueIdentifier());
                 } else {
                     log.error("Service " + applicationClusterContext.getCartridgeType() + " not found");
                     return;
@@ -645,7 +645,7 @@ public class TopologyBuilder {
             topology.addApplication(application);
             TopologyManager.updateTopology(topology);
 
-            log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
+            log.info("Application with id [ " + application.getUniqueIdentifier() + " ] added to Topology successfully");
 
             TopologyEventPublisher.sendApplicationCreatedEvent(application ,clusters);
 

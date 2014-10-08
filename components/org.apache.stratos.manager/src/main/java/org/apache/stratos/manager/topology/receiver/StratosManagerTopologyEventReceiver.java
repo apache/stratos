@@ -319,13 +319,13 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 try {
                     //TopologyManager.acquireReadLock();
-                    TopologyManager.acquireReadLockForApplication(appCreateEvent.getApplication().getId());
+                    TopologyManager.acquireReadLockForApplication(appCreateEvent.getApplication().getUniqueIdentifier());
                     
                     // create and persist Application subscritpion
                     CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
                     ApplicationSubscription compositeAppSubscription;
                     Application app = appCreateEvent.getApplication();
-                    String appId = app.getId();
+                    String appId = app.getUniqueIdentifier();
                     int tenantId = app.getTenantId();
                     String domain = app.getTenantDomain();
                     
@@ -350,7 +350,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     }
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForApplication(appCreateEvent.getApplication().getId());
+                    TopologyManager.releaseReadLockForApplication(appCreateEvent.getApplication().getUniqueIdentifier());
                 }
             }
         });

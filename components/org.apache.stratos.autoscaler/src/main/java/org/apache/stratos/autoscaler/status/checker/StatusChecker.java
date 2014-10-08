@@ -157,7 +157,7 @@ public class StatusChecker {
     }
 
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
-                                      Map<String, ClusterDataHolder> clusterData, ParentBehavior parent) {
+                                      Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
         boolean groupActive = false;
         boolean clustersActive;
         boolean groupsActive;

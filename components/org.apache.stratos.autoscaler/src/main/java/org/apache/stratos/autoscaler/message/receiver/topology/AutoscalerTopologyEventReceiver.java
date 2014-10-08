@@ -120,7 +120,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //acquire read lock
                 //TopologyManager.acquireReadLock();
-                TopologyManager.acquireReadLockForApplication(applicationCreatedEvent.getApplication().getId());
+                TopologyManager.acquireReadLockForApplication(applicationCreatedEvent.getApplication().getUniqueIdentifier());
 
                 try {
                     //start the application monitor
@@ -129,7 +129,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 } finally {
                     //release read lock
-                    TopologyManager.releaseReadLockForApplication(applicationCreatedEvent.getApplication().getId());
+                    TopologyManager.releaseReadLockForApplication(applicationCreatedEvent.getApplication().getUniqueIdentifier());
                     //TopologyManager.releaseReadLock();
                 }
 
@@ -582,7 +582,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
     protected synchronized void startApplicationMonitor(Application application) {
         Thread th = null;
         if (!AutoscalerContext.getInstance()
-                .appMonitorExist(application.getId())) {
+                .appMonitorExist(application.getUniqueIdentifier())) {
             th = new Thread(
                     new ApplicationMonitorAdder(application));
         }
@@ -596,7 +596,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Application monitor thread has been started successfully: " +
-                                        "[application] %s ", application.getId()));
+                                        "[application] %s ", application.getUniqueIdentifier()));
             }
         }
     }
@@ -621,7 +621,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     long start = System.currentTimeMillis();
                     if(log.isDebugEnabled()) {
                         log.debug("application monitor is going to be started for [application] " +
-                                application.getId());
+                                application.getUniqueIdentifier());
                     }
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
                     long end = System.currentTimeMillis();
@@ -637,7 +637,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                        + "for Application: " + application.getId();
+                        + "for Application: " + application.getUniqueIdentifier();
                 log.error(msg);
                 throw new RuntimeException(msg);
             }

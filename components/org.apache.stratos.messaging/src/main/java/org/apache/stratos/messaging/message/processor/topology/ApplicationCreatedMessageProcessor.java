@@ -96,15 +96,15 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException(errorMsg);
         }
 
-        if (event.getApplication().getId() == null || event.getApplication().getId().isEmpty()) {
-            String errorMsg = "App id of application created event is invalid: [ " + event.getApplication().getId() + " ]";
+        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier().isEmpty()) {
+            String errorMsg = "App id of application created event is invalid: [ " + event.getApplication().getUniqueIdentifier() + " ]";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
 
         // check if an Application with same name exists in topology
-        if (topology.applicationExists(event.getApplication().getId())) {
-            log.warn("Application with id [ " + event.getApplication().getId() + " ] already exists in Topology");
+        if (topology.applicationExists(event.getApplication().getUniqueIdentifier())) {
+            log.warn("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists in Topology");
 
         } else {
             // add application and the clusters to Topology

@@ -147,7 +147,7 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             for (Application application : applications) {
                 topology.addApplication(application);
                 if (log.isDebugEnabled()) {
-                    log.debug("Application with id [ " +  application.getId() + " ] added to Topology");
+                    log.debug("Application with id [ " +  application.getUniqueIdentifier() + " ] added to Topology");
                 }
             }
         } else {

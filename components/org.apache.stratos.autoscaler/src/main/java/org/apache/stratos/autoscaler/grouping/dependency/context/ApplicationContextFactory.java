@@ -19,7 +19,7 @@
 package org.apache.stratos.autoscaler.grouping.dependency.context;
 
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
-import org.apache.stratos.messaging.domain.topology.ParentBehavior;
+import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 /**
  * Factory to create new GroupContext or ClusterContext
@@ -27,7 +27,7 @@ import org.apache.stratos.messaging.domain.topology.ParentBehavior;
 public class ApplicationContextFactory {
 
     public static ApplicationContext getApplicationContext(String startOrder,
-                                                           ParentBehavior component,
+                                                           ParentComponent component,
                                                            DependencyTree dependencyTree) {
         String id;
         ApplicationContext applicationContext = null;

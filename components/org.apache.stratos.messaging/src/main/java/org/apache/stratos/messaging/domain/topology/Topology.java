@@ -53,8 +53,8 @@ public class Topology implements Serializable {
     }
 
     public void addApplication (Application application) {
-        this.applicationMap.put(application.getId(), application);
-        TopologyLockHierarchy.getInstance().addApplicationLock(application.getId(), new TopologyLock());
+        this.applicationMap.put(application.getUniqueIdentifier(), application);
+        TopologyLockHierarchy.getInstance().addApplicationLock(application.getUniqueIdentifier(), new TopologyLock());
     }
 
     public Application getApplication (String applicationId) {

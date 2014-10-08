@@ -40,7 +40,7 @@ public class ApplicationMonitor extends Monitor {
 
     public ApplicationMonitor(Application application) {
         super(application);
-        this.id = application.getId();
+        this.id = application.getUniqueIdentifier();
         startDependency();
     }
 

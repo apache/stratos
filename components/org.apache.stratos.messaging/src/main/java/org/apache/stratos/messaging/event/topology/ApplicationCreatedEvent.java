@@ -40,7 +40,7 @@ public class ApplicationCreatedEvent extends TopologyEvent {
     }
 
     public String toString() {
-        return "ApplicationCreatedEvent [app id= " + application.getId() + ", groups= " + application.getGroups() + ", clusters= " +
+        return "ApplicationCreatedEvent [app id= " + application.getUniqueIdentifier() + ", groups= " + application.getGroups() + ", clusters= " +
                 application.getClusterDataMap().values() + "]";
     }
 
