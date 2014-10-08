@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.ContainerClusterContext;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;

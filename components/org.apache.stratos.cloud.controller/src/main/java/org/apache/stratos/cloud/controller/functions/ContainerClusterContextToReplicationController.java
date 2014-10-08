@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.functions;
 
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.ContainerClusterContext;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
