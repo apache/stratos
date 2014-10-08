@@ -91,7 +91,7 @@ public class TopologyLockingTest {
         topology.addApplication(app2);
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseReadLocksForServices1To2 () {
 
         TopologyManager.acquireReadLockForService("service1");
@@ -101,7 +101,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseReadLockForService("service2");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseReadLocksForServices3To4 () {
 
         TopologyManager.acquireReadLockForService("service3");
@@ -111,7 +111,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseReadLockForService("service4");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForServices1To2 () {
 
         TopologyManager.acquireWriteLockForService("service1");
@@ -121,7 +121,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseWriteLockForService("service2");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForServices3To4 () {
 
         TopologyManager.acquireWriteLockForService("service3");
@@ -131,7 +131,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseWriteLockForService("service4");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseReadLocksForClustersOfService1 () {
 
         TopologyManager.acquireReadLockForCluster("service1", "service1.cluster1.domain");
@@ -141,7 +141,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseReadLockForCluster("service1", "service1.cluster2.domain");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseReadLocksForClustersOfService2 () {
 
         TopologyManager.acquireReadLockForCluster("service2", "service2.cluster1.domain");
@@ -151,7 +151,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseReadLockForCluster("service2", "service2.cluster2.domain");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForClustersOfService1 () {
 
         TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster1.domain");
@@ -161,7 +161,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseWriteLockForCluster("service1", "service1.cluster2.domain");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForClustersOfService2 () {
 
         TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster1.domain");
@@ -171,14 +171,14 @@ public class TopologyLockingTest {
         TopologyManager.releaseWriteLockForCluster("service2", "service2.cluster2.domain");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAcquireAndReleaseReadLockForApp1 () {
 
         TopologyManager.acquireReadLockForApplication("app1");
         TopologyManager.releaseReadLockForApplication("app1");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAcquireAndReleaseWriteLockForApp1 () {
 
         TopologyManager.acquireWriteLockForApplication("app1");
@@ -192,7 +192,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseReadLockForApplication("app2");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAcquireAndReleaseWriteLockForApp2 () {
 
         TopologyManager.acquireWriteLockForApplication("app2");
