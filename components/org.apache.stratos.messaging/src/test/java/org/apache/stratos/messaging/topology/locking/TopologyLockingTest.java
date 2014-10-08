@@ -26,8 +26,6 @@ import org.junit.*;
 import java.util.HashMap;
 import java.util.Map;
 
-//@RunWith(ConcurrentRunner.class)
-//@Concurrent(threads = 12)
 public class TopologyLockingTest {
 
     private static Topology topology;
@@ -159,8 +157,8 @@ public class TopologyLockingTest {
         TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster1.domain");
         TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster2.domain");
 
-        TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster1.domain");
-        TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster2.domain");
+        TopologyManager.releaseWriteLockForCluster("service1", "service1.cluster1.domain");
+        TopologyManager.releaseWriteLockForCluster("service1", "service1.cluster2.domain");
     }
 
     @Test
@@ -169,8 +167,8 @@ public class TopologyLockingTest {
         TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster1.domain");
         TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster2.domain");
 
-        TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster1.domain");
-        TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster2.domain");
+        TopologyManager.releaseWriteLockForCluster("service2", "service2.cluster1.domain");
+        TopologyManager.releaseWriteLockForCluster("service2", "service2.cluster2.domain");
     }
 
     @Test

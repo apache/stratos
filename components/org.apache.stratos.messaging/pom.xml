@@ -78,15 +78,18 @@
 
     <build>
         <plugins>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
                 <configuration>
-                  <suiteXmlFiles>
-                    <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                  </suiteXmlFiles>
+                    <!--includes>
+                        <include>**/TopologyLockingTest.java</include>
+                    </includes-->
+                    <parallel>methods</parallel>
+                    <threadCount>15</threadCount>
                 </configuration>
-              </plugin-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
