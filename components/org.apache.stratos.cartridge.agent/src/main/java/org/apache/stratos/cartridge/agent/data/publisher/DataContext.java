@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cartridge.agent.data.publisher;
 
+import java.util.Arrays;
+
 public class DataContext {
 
     private Object [] metaData;
@@ -31,7 +33,11 @@ public class DataContext {
     }
 
     public void setMetaData(Object[] metaData) {
-        this.metaData = metaData;
+        if(metaData == null) {
+            this.metaData = new Object[0];
+        } else {
+            this.metaData = Arrays.copyOf(metaData, metaData.length);
+        }
     }
 
     public Object[] getCorrelationData() {
@@ -39,7 +45,11 @@ public class DataContext {
     }
 
     public void setCorrelationData(Object[] correlationData) {
-        this.correlationData = correlationData;
+        if(correlationData == null) {
+            this.correlationData = new Object[0];
+        } else {
+            this.correlationData = Arrays.copyOf(correlationData, correlationData.length);
+        }
     }
 
     public Object[] getPayloadData() {
@@ -47,6 +57,10 @@ public class DataContext {
     }
 
     public void setPayloadData(Object[] payloadData) {
-        this.payloadData = payloadData;
+        if(payloadData == null) {
+            this.payloadData = new Object[0];
+        } else {
+            this.payloadData = Arrays.copyOf(payloadData, payloadData.length);
+        }
     }
 }

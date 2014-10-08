@@ -21,6 +21,7 @@ package org.apache.stratos.tenant.mgt.beans;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.utils.Pageable;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,7 +36,11 @@ public class PaginatedTenantInfoBean implements Pageable {
     }
 
     public void setTenantInfoBeans(TenantInfoBean[] tenantInfoBeans) {
-        this.tenantInfoBeans = tenantInfoBeans;
+        if(tenantInfoBeans == null) {
+            this.tenantInfoBeans = new TenantInfoBean[0];
+        } else {
+            this.tenantInfoBeans = Arrays.copyOf(tenantInfoBeans, tenantInfoBeans.length);
+        }
     }
 
     public int getNumberOfPages() {

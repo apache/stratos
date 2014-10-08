@@ -37,7 +37,11 @@ public class Properties implements Serializable{
     }
 
     public void setProperties(Property[] properties) {
-        this.properties = ArrayUtils.clone(properties);
+        if(properties == null) {
+            this.properties = new Property[0];
+        } else {
+            this.properties = Arrays.copyOf(properties, properties.length);
+        }
     }
 
     @Override
