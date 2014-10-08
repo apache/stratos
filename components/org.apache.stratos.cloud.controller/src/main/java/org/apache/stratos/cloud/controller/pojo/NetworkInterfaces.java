@@ -43,7 +43,11 @@ public class NetworkInterfaces implements Serializable {
 	 * @param networkInterfaces the networkInterfaces to set
 	 */
 	public void setNetworkInterfaces(NetworkInterface[] networkInterfaces) {
-		this.networkInterfaces = networkInterfaces;
+        if(networkInterfaces == null) {
+            this.networkInterfaces = new NetworkInterface[0];
+        } else {
+            this.networkInterfaces = Arrays.copyOf(networkInterfaces, networkInterfaces.length);
+        }
 	}
 
 	@Override

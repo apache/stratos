@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,7 +81,11 @@ public class NetworkPartitionContext implements Serializable{
         super();
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
-        this.partitions = partitions;
+        if(partitions == null) {
+            this.partitions = new Partition[0];
+        } else {
+            this.partitions = Arrays.copyOf(partitions, partitions.length);
+        }
 //        this.setServiceToLBClusterId(new HashMap<String, String>());
 //        this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
 //        partitionToMemberCountMap = new HashMap<String, Integer>();

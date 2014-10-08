@@ -21,6 +21,7 @@ package org.apache.stratos.tenant.activity.beans;
 import org.wso2.carbon.utils.Pageable;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -35,7 +36,11 @@ public class PaginatedTenantDataBean implements Pageable, Serializable {
     }
 
     public void setTenantInfoBeans(TenantDataBean[] tenantInfoBeans) {
-        this.tenantInfoBeans = tenantInfoBeans;
+        if(tenantInfoBeans == null) {
+            this.tenantInfoBeans = new TenantDataBean[0];
+        } else {
+            this.tenantInfoBeans = Arrays.copyOf(tenantInfoBeans, tenantInfoBeans.length);
+        }
     }
 
     public int getNumberOfPages() {
