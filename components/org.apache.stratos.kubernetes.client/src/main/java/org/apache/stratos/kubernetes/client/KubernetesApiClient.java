@@ -175,7 +175,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		} catch (KubernetesClientException e) {
 			throw e;
 		} catch (Exception e) {
-			String msg = "Error while retrieving Pod info of Pod ID: "+podId;
+			String msg = "Error while deleting Pod with ID: "+podId;
 			log.error(msg, e);
 			throw new KubernetesClientException(msg, e);
 		}
@@ -350,7 +350,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		} catch (KubernetesClientException e) {
 			throw e;
 		} catch (Exception e) {
-			String msg = "Error while retrieving Replication Controller info of Controller ID: "+controllerId;
+			String msg = "Error while deleting Replication Controller with Controller ID: "+controllerId;
 			log.error(msg, e);
 			throw new KubernetesClientException(msg, e);
 		}
@@ -471,7 +471,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throw e;
 			
 		} catch (Exception e) {
-			String msg = "Error while retrieving Service info of Service ID: "+serviceId;
+			String msg = "Error while deleting Service with Service ID: "+serviceId;
 			log.error(msg, e);
 			throw new KubernetesClientException(msg, e);
 		}
