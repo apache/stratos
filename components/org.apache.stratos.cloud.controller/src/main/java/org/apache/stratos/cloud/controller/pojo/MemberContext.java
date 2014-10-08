@@ -60,9 +60,16 @@ public class MemberContext implements Serializable {
         this.memberId = id;
         this.clusterId = clusterId;
         this.setPartition(partition);
+        init();
     }
     
     public MemberContext() {
+        init();
+    }
+    
+    private void init() {
+        this.properties = new Properties();
+        this.properties.setProperties(new Property[0]);
     }
     
     public String getMemberId() {
