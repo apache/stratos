@@ -31,7 +31,6 @@ import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
-import org.apache.stratos.cloud.controller.stub.pojo.StartupOrder;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 
@@ -242,6 +241,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
     	List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
     	
+    	
     	if (subGroupsDef == null) {
     		subGroupsDef = new ArrayList<String>(0);
     	}
@@ -260,20 +260,14 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     	servicegroup.setCartridges(cartridges);
     	
     	DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+    			
         if (depDefs != null) {
-            List<StartupOrderDefinition> startDefs = depDefs.getStartupOrder();
-
             Dependencies deps = new Dependencies();
-            if (startDefs != null) {
-                StartupOrder [] startups = new StartupOrder [startDefs.size()];
-                for (int i = 0; i < startDefs.size(); i++) {
-                    StartupOrderDefinition stDef = startDefs.get(i);
-                    StartupOrder st = new StartupOrder();
-                    st.setStart(stDef.getStart());
-                    st.setAfter(stDef.getAfter());
-                    startups[i] = st;
-                }
-                deps.setStartupOrder(startups);
+            List<String> startupOrdersDef = depDefs.getStartupOrders();
+            if (startupOrdersDef != null) {
+            	String [] startupOrders = new String [startupOrdersDef.size()];
+            	startupOrders = startupOrdersDef.toArray(startupOrders);
+                deps.setStartupOrders(startupOrders);
             }
             deps.setKillBehaviour(depDefs.getKillBehaviour());
             servicegroup.setDependencies(deps);
@@ -291,19 +285,10 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         if (deps != null) {
             DependencyDefinitions depsDef = new DependencyDefinitions();
-            StartupOrder [] startupOrders = deps.getStartupOrder();
+            String [] startupOrders = deps.getStartupOrders();
             if (startupOrders != null && startupOrders.length > 0) {
-                List<StartupOrderDefinition> startupsDef = new ArrayList<StartupOrderDefinition>();
-                for (StartupOrder startupOrder :  startupOrders) {
-                    if (startupOrder != null) {
-                        StartupOrderDefinition astartupDef = new StartupOrderDefinition();
-                        astartupDef.setAfter(startupOrder.getAfter());
-                        astartupDef.setStart(startupOrder.getStart());
-                        startupsDef.add(astartupDef);
-                    }
-                }
-
-                depsDef.setStartupOrder(startupsDef);
+            	List<String> startupOrdersDef = Arrays.asList(startupOrders);
+                depsDef.setStartupOrders(startupOrdersDef);
             }
 
             depsDef.setKillBehaviour(deps.getKillBehaviour());

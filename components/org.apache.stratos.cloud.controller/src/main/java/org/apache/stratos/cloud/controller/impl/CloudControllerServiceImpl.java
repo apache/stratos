@@ -293,7 +293,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	
 
     	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups.length);
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups);
+            if (subGroups != null) {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups:size" + subGroups.length);
+            } else {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups: is null");
+            }
         }
     	
     	
@@ -303,13 +308,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
         }
     	
-    	StartupOrder [] startupOrder = dependencies.getStartupOrder();
+    	String [] startupOrders = dependencies.getStartupOrders();
     	
     	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder" + startupOrder);
+            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
             
-            if (startupOrder != null) {
-            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrder.length);
+            if (startupOrders != null) {
+            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
             } else {
             	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
             }

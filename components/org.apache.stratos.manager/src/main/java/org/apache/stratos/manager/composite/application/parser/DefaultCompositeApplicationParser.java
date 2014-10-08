@@ -210,9 +210,12 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             }
 
             // get top level Dependency definitions
+            
             if (compositeAppDefinition.getComponents().getDependencies() != null) {
-                compositeAppContext.setStartupOrder(getStartupOrderForApplicationComponents(compositeAppDefinition.getComponents().
-                        getDependencies().getStartupOrder()));
+            	List<String> startupOrderList = compositeAppDefinition.getComponents().getDependencies().getStartupOrders();
+            	String [] startupOrders = new String [startupOrderList.size()];
+            	startupOrders = startupOrderList.toArray(startupOrders);
+                compositeAppContext.setStartupOrders(startupOrders);
 
                 compositeAppContext.setKillBehaviour(compositeAppDefinition.getComponents().getDependencies().getKillBehaviour());
             }
@@ -298,7 +301,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         groupContext.setAlias(group.getAlias());
         groupContext.setAutoscalingPolicy(group.getAutoscalingPolicy());
         groupContext.setDeploymentPolicy(group.getDeploymentPolicy());
-        groupContext.setStartupOrder(getStartupOrderForGroup(group.getName()));
+        groupContext.setStartupOrders(getStartupOrderForGroup(group.getName()));
         groupContext.setKillBehaviour(getKillbehaviour(group.getName()));
 
         // get group level Subscribables
@@ -321,7 +324,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return groupContext;
     }
 
-    private Set<StartupOrder> getStartupOrderForGroup(String serviceGroupName) throws CompositeApplicationDefinitionException {
+    private String [] getStartupOrderForGroup(String serviceGroupName) throws CompositeApplicationDefinitionException {
 
         ServiceGroupDefinition groupDefinition;
 
@@ -337,29 +340,16 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
 
         if (groupDefinition.getDependencies() != null) {
-            if (groupDefinition.getDependencies().getStartupOrder() != null) {
-                return ParserUtils.convert(groupDefinition.getDependencies().getStartupOrder());
+            if (groupDefinition.getDependencies().getStartupOrders() != null) {
+                List<String> startupOrdersList = groupDefinition.getDependencies().getStartupOrders();
+                String [] startupOrders = new String [startupOrdersList.size()];
+                return startupOrdersList.toArray(startupOrders);
             }
         }
 
         return null;
     }
 
-    private Set<StartupOrder> getStartupOrderForApplicationComponents (List<StartupOrderDefinition> startupOrderDefinitions)
-            throws CompositeApplicationDefinitionException {
-
-        if (startupOrderDefinitions == null) {
-            return null;
-        }
-
-        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
-
-        for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
-            startupOrders.add(new StartupOrder(startupOrderDefinition.getStart(), startupOrderDefinition.getAfter()));
-        }
-
-        return startupOrders;
-    }
 
     private String getKillbehaviour (String serviceGroupName) throws CompositeApplicationDefinitionException {
 

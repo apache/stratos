@@ -21,18 +21,10 @@ package org.apache.stratos.cloud.controller.pojo.application;
 
 
 public class DependencyContext {
-
-    private StartupOrderContext[] startupOrderContexts;
+    
+    private String [] startupOrdersContexts;
 
     private String killBehaviour;
-
-    public StartupOrderContext[] getStartupOrderContext() {
-        return startupOrderContexts;
-    }
-
-    public void setStartupOrderContext(StartupOrderContext[] startupOrderContexts) {
-        this.startupOrderContexts = startupOrderContexts;
-    }
 
     public String getKillBehaviour() {
         return killBehaviour;
@@ -41,4 +33,12 @@ public class DependencyContext {
     public void setKillBehaviour(String killBehaviour) {
         this.killBehaviour = killBehaviour;
     }
+
+	public String [] getStartupOrdersContexts() {
+		return startupOrdersContexts;
+	}
+
+	public void setStartupOrdersContexts(String [] startupOrdersContexts) {
+		this.startupOrdersContexts = startupOrdersContexts;
+	}
 }

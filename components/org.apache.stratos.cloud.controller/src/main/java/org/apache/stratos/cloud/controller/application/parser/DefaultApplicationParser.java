@@ -268,8 +268,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // get top level Dependency definitions
             if (appCtxt.getComponents().getDependencyContext() != null) {
                 DependencyOrder appDependencyOrder = new DependencyOrder();
-                Set<StartupOrder>  startupOrders = getStartupOrderForApplicationComponents(new HashSet<StartupOrderContext>(Arrays.asList(appCtxt.getComponents().
-                        getDependencyContext().getStartupOrderContext())));
+                Set<StartupOrder>  startupOrders = getStartupOrderForApplicationComponents(appCtxt.getComponents().getDependencyContext().getStartupOrdersContexts());
                 if (startupOrders != null) {
                     appDependencyOrder.setStartupOrders(startupOrders);
                 }
@@ -442,13 +441,32 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (serviceGroup == null) {
             handleError("Service Group Definition not found for name " + groupContext.getName());
         }
+        
+        if (log.isDebugEnabled()) {
+        	log.debug("parsing application ... getStartupOrderForGroup: " + groupContext.getName());
+        }
 
         assert serviceGroup != null;
         if (serviceGroup.getDependencies() != null) {
-            if (serviceGroup.getDependencies().getStartupOrder() != null) {
+            if (serviceGroup.getDependencies().getStartupOrders() != null) {
+            	
+            	Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
+            	String [] st = serviceGroup.getDependencies().getStartupOrders();
+            	
+            	if (log.isDebugEnabled()) {
+                	log.debug("parsing application ... getStartupOrderForGroup # of startupOrders: " + st.length);
+                }
 
-                // convert to Startup Order with aliases
-                return ParserUtils.convert(serviceGroup.getDependencies().getStartupOrder(), groupContext);
+                for (String startupOrderContext : st) {
+                	
+                	String [] order = startupOrderContext.split(",");
+                	
+                    startupOrders.add(new StartupOrder(order[0], order[1]));
+                    if (log.isDebugEnabled()) {
+                    	log.debug("parsing application ... getStartupOrderForGroup startupOrders:start: " + order[0] + " after: " + order[1]);
+                    }
+                }
+                return startupOrders;
             }
         }
 
@@ -463,17 +481,30 @@ public class DefaultApplicationParser implements ApplicationParser {
      *
      * @throws ApplicationDefinitionException if an error occurs
      */
-    private Set<StartupOrder> getStartupOrderForApplicationComponents (Set<StartupOrderContext> startupOrderCtxts)
+    private Set<StartupOrder> getStartupOrderForApplicationComponents (String [] startupOrdersCtxts)
             throws ApplicationDefinitionException {
 
-        if (startupOrderCtxts == null) {
+        if (startupOrdersCtxts == null) {
             return null;
+        }
+        
+        if (log.isDebugEnabled()) {
+        	log.debug("parsing application ... getStartupOrderForApplicationComponents: # of: " + startupOrdersCtxts.length);
         }
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
+        /*
         for (StartupOrderContext startupOrderContext : startupOrderCtxts) {
             startupOrders.add(new StartupOrder(startupOrderContext.getStart(), startupOrderContext.getAfter()));
+        }
+        */
+        for (String startupOrderContext : startupOrdersCtxts) {
+        	String [] order = startupOrderContext.split(",");
+            startupOrders.add(new StartupOrder(order[0], order[1]));
+            if (log.isDebugEnabled()) {
+            	log.debug("parsing application ... getStartupOrderForApplicationComponents: start: " + order[0] + " /after: " + order[1]);
+            }
         }
 
         return startupOrders;

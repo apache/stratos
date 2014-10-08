@@ -25,18 +25,10 @@ import java.util.List;
 public class Dependencies implements Serializable {
 
 	private static final long serialVersionUID = 4187267350546153680L;
-
-	private StartupOrder [] startupOrder;
+	
+	private String [] startupOrders;
 
     private String killBehaviour;
-
-    public StartupOrder [] getStartupOrder() {
-        return startupOrder;
-    }
-
-    public void setStartupOrder(StartupOrder [] startupOrder) {
-        this.startupOrder = startupOrder;
-    }
 
     public String getKillBehaviour() {
         return killBehaviour;
@@ -45,4 +37,12 @@ public class Dependencies implements Serializable {
     public void setKillBehaviour(String killBehaviour) {
         this.killBehaviour = killBehaviour;
     }
+
+	public String[] getStartupOrders() {
+		return startupOrders;
+	}
+
+	public void setStartupOrders(String[] startupOrders) {
+		this.startupOrders = startupOrders;
+	}
 }
