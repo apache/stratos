@@ -1413,11 +1413,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						+ controller + " via Kubernetes layer.");
 			}
 			
+			// needs to wait few seconds before running label queries
+			Thread.sleep(3000);
+			
 			// create a label query
 			Label l = new Label();
 			l.setName(clusterId);
 			// execute the label query
 			Pod[] newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
+			
+			if (log.isDebugEnabled()) {
+			    
+			    log.debug(String.format("Pods created : %s for cluster : %s",newlyCreatedPods.length, clusterId));
+			}
+			
 			List<MemberContext> memberContexts = new ArrayList<MemberContext>();
 			
 			PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
@@ -1447,7 +1456,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			// persist in registry
 			persist();
 
-            log.info("Kubernetes entities are successfully starting up. "+containerClusterContext.toString());
+            log.info("Kubernetes entities are successfully starting up. "+memberContexts);
 
             return memberContexts.toArray(new MemberContext[0]);
 
