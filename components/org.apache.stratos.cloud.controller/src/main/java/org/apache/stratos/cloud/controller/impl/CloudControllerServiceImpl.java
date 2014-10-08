@@ -1372,7 +1372,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         try {
-            validateProperty(StratosConstants.KUBERNETES_MIN_REPLICAS, ctxt);
+            String minReplicas = validateProperty(StratosConstants.KUBERNETES_MIN_REPLICAS, ctxt);
             String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
             String kubernetesMasterIp = validateProperty(StratosConstants.KUBERNETES_MASTER_IP, containerClusterContext);
             String kubernetesPortRange = validateProperty(StratosConstants.KUBERNETES_PORT_RANGE, containerClusterContext);
@@ -1408,19 +1408,30 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			
 			kubApi.createService(service);
 			
+			// set host port
+			ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
+			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller successfully started the service "
 						+ controller + " via Kubernetes layer.");
 			}
 			
-			// needs to wait few seconds before running label queries
-			Thread.sleep(3000);
-			
 			// create a label query
 			Label l = new Label();
 			l.setName(clusterId);
 			// execute the label query
-			Pod[] newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
+			Pod[] newlyCreatedPods = new Pod[0];
+			int expectedCount = Integer.parseInt(minReplicas);
+			
+			for (int i = 0; i < expectedCount ; i++) {
+			    newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
+			    
+			    log.info("Pods "+newlyCreatedPods.length);
+			    if(newlyCreatedPods.length == expectedCount) {
+			        break;
+			    }
+			    Thread.sleep(5000);
+            }
 			
 			if (log.isDebugEnabled()) {
 			    
@@ -1436,10 +1447,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 context.setCartridgeType(cartridgeType);
                 context.setClusterId(clusterId);
                 
-                context.setProperties(CloudControllerUtil.addProperty(containerClusterContext
+                context.setProperties(CloudControllerUtil.addProperty(context
                         .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                        CloudControllerUtil.getProperty(ctxt.getProperties(),
-                                StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+                        String.valueOf(service.getPort())));
+                
                 dataHolder.addMemberContext(context);
                 
                 // trigger topology
@@ -1565,6 +1576,29 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			// we're not going to throw this error, but proceed with other deletions
 			log.error("Failed to update Kubernetes Controller with id: "+clusterId, e);
 		}
+		
+		// delete pods forcefully
+        try {
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            // execute the label query
+            Pod[] pods = kubApi.getSelectedPods(new Label[]{l});
+            
+            for (Pod pod : pods) {
+                try {
+                    // delete pods forcefully
+                    kubApi.deletePod(pod.getId());
+                } catch (KubernetesClientException ignore) {
+                    // we can't do nothing here
+                    log.warn(String.format("Failed to delete Pod [%s] forcefully!", pod.getId()));
+                }
+            }
+        } catch (KubernetesClientException e) {
+            // we're not going to throw this error, but proceed with other deletions
+            log.error("Failed to delete pods forcefully for cluster: "+clusterId, e);
+        }
+		
 		// delete the replication controller.
 		try {
 			kubApi.deleteReplicationController(clusterId);
