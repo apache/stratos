@@ -40,6 +40,7 @@ import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.ReplicationControllerList;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.kubernetes.client.model.ServiceList;
+import org.apache.stratos.kubernetes.client.rest.KubernetesResponse;
 import org.apache.stratos.kubernetes.client.rest.RestClient;
 
 import com.google.gson.Gson;
@@ -60,17 +61,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	public Pod getPod(String podId) throws KubernetesClientException{
 		try {
 		    URI uri = new URIBuilder(baseURL+"pods/"+podId).build();
-            HttpResponse res = restClient.doGet(uri);
+            KubernetesResponse res = restClient.doGet(uri);
             
             handleNullResponse("Pod ["+podId+"] retrieval failed.", res);
             
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Pod ["+podId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -91,15 +92,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		
 		try {
 		    URI uri = new URIBuilder(baseURL+"pods").build();
-			HttpResponse res = restClient.doGet(uri);
+			KubernetesResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Pod retrieval failed.", res);
 			
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new Pod[0];
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -124,19 +125,19 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 				log.debug("CreatePod Request Body : "+content);
 			}
 			URI uri = new URIBuilder(baseURL+"pods").build();
-			HttpResponse res = restClient.doPost(uri, content);
+			KubernetesResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Pod "+pod+" creation failed.", res);
 			
-			if (res.getStatusLine().getStatusCode() == HttpStatus.SC_CONFLICT) {
+			if (res.getStatusCode() == HttpStatus.SC_CONFLICT) {
 				log.warn("Pod already created. "+pod);
 				return;
 			}
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Pod ["+pod+"] creation failed. Error: "+	
-								res.getStatusLine().getReasonPhrase();
+								res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -154,20 +155,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
 		try {
 		    URI uri = new URIBuilder(baseURL+"pods/"+podId).build();
-			HttpResponse res = restClient.doDelete(uri);
+			KubernetesResponse res = restClient.doDelete(uri);
             
 			handleNullResponse("Pod ["+podId+"] deletion failed.", res);
 			
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Pod ["+podId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Pod ["+podId+"] deletion failed. Error: "+
-						res.getStatusLine().getReasonPhrase();
+						res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -186,17 +187,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
 		try {
 		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
-			HttpResponse res = restClient.doGet(uri);
+			KubernetesResponse res = restClient.doGet(uri);
 			
 			handleNullResponse("Replication Controller ["+controllerId+"] retrieval failed.", res);
             
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Replication Controller ["+controllerId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -217,15 +218,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		
 		try {
 		    URI uri = new URIBuilder(baseURL+"replicationControllers").build();
-			HttpResponse res = restClient.doGet(uri);
+			KubernetesResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Replication Controller retrieval failed.", res);
 			
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new ReplicationController[0];
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -253,15 +254,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			}
 			
 			URI uri = new URIBuilder(baseURL+"replicationControllers").build();
-			HttpResponse res = restClient.doPost(uri, content);
+			KubernetesResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Replication Controller "+controller+" creation failed.", res);
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Replication Controller [" + controller
 						+ "] creation failed. Error: "
-						+ res.getStatusLine().getReasonPhrase();
+						+ res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -299,15 +300,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			}
 			
 			URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
-			HttpResponse res = restClient.doPut(uri, content);
+			KubernetesResponse res = restClient.doPut(uri, content);
 			
 			handleNullResponse("Replication Controller ["+controllerId+"] update failed.", res);
 
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED
-					&& res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED
+					&& res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Replication Controller [" + controller
 						+ "] update failed. Error: "
-						+ res.getStatusLine().getReasonPhrase();
+						+ res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -329,20 +330,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		
 		try {
 		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
-			HttpResponse res = restClient.doDelete(uri);
+			KubernetesResponse res = restClient.doDelete(uri);
             
 			handleNullResponse("Replication Controller ["+controllerId+"] deletion failed.", res);
 			
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Replication Controller ["+controllerId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Replication Controller ["+controllerId+"] deletion failed. Error: "+
-						res.getStatusLine().getReasonPhrase();
+						res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -360,17 +361,17 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 		try {
 		    URI uri = new URIBuilder(baseURL+"services/"+serviceId).build();
-			HttpResponse res = restClient.doGet(uri);
+			KubernetesResponse res = restClient.doGet(uri);
 			
 			handleNullResponse("Service ["+serviceId+"] retrieval failed.", res);
             
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Service ["+serviceId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -389,15 +390,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 		try {
 		    
 		    URI uri = new URIBuilder(baseURL+"services").build();
-			HttpResponse res = restClient.doGet(uri);
+			KubernetesResponse res = restClient.doGet(uri);
             
 			handleNullResponse("Service retrieval failed.", res);
 			
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	return new Service[0];
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
@@ -422,14 +423,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			}
 			
 			URI uri = new URIBuilder(baseURL+"services").build();
-			HttpResponse res = restClient.doPost(uri, content);
+			KubernetesResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Service "+service+" creation failed.", res);
 			
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Service ["+service+"] creation failed. Error: "+
-						res.getStatusLine().getReasonPhrase();
+						res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -449,20 +450,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
 		try {
 		    URI uri = new URIBuilder(baseURL+"services/"+serviceId).build();
-			HttpResponse res = restClient.doDelete(uri);
+			KubernetesResponse res = restClient.doDelete(uri);
 			
 			handleNullResponse("Service ["+serviceId+"] deletion failed.", res);
             
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
             	String msg = "Service ["+serviceId+"] doesn't exist.";
 				log.error(msg);
 				throw new KubernetesClientException(msg);
             }
             
-			if (res.getStatusLine().getStatusCode() != HttpStatus.SC_ACCEPTED && 
-					res.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
+					res.getStatusCode() != HttpStatus.SC_OK) {
 				String msg = "Service ["+serviceId+"] deletion failed. Error: "+
-						res.getStatusLine().getReasonPhrase();
+						res.getReason();
 				log.error(msg);
 				throw new KubernetesClientException(msg);
 			}
@@ -482,15 +483,15 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         try {
             String labelQuery = getLabelQuery(label);
             URI uri = new URIBuilder(baseURL + "pods").addParameter("labels", labelQuery).build();
-            HttpResponse res = restClient.doGet(uri);
+            KubernetesResponse res = restClient.doGet(uri);
             
             handleNullResponse("Pod retrieval failed.", res);
             
-            if (res.getStatusLine().getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 return new Pod[0];
             }
             
-            String content = getHttpResponseString(res);
+            String content = res.getContent();
             
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
@@ -512,10 +513,10 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         for (Label l : label) {
             query = query.concat("name="+l.getName()+",");
         }
-        return query.endsWith(",") ? query.substring(0, query.length()) : query;
+        return query.endsWith(",") ? query.substring(0, query.length()-1) : query;
     }
 
-    private void handleNullResponse(String message, HttpResponse res)
+    private void handleNullResponse(String message, KubernetesResponse res)
             throws KubernetesClientException {
         if (res == null) {
             log.error(message+ " Null response receieved.");
@@ -523,32 +524,6 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 	
-	// This method gives the HTTP response string
-	private String getHttpResponseString(HttpResponse response) {
-		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					(response.getEntity().getContent())));
-
-			String output;
-			String result = "";
-
-			while ((output = reader.readLine()) != null) {
-				result += output;
-			}
-
-			return result;
-		} catch (SocketException e) {
-			log.error("Connection problem");
-			return null;
-		} catch (NullPointerException e) {
-			log.error("Null value return from server");
-			return null;
-		} catch (IOException e) {
-			log.error("IO error");
-			return null;
-		}
-	}
-
     public String getBaseURL() {
         return baseURL;
     }
