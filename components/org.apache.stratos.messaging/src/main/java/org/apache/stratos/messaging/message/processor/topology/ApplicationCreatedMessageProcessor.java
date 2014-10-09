@@ -22,10 +22,14 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
+
+import java.util.Set;
 
 public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
@@ -47,39 +51,31 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
                 return false;
             }
 
-            ApplicationCreatedEvent appCreatedEvent = (ApplicationCreatedEvent) Util.jsonToObject(message, ApplicationCreatedEvent.class);
-            if (appCreatedEvent == null) {
+            ApplicationCreatedEvent event = (ApplicationCreatedEvent) Util.jsonToObject(message, ApplicationCreatedEvent.class);
+            if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationCreatedEvent");
                 return false;
             }
 
-            // check if required properties are available
-            if (appCreatedEvent.getApplication() == null) {
-                String errorMsg = "Application object of application created event is invalid";
-                log.error(errorMsg);
-                throw new RuntimeException(errorMsg);
-            }
-
-            if (appCreatedEvent.getApplication().getId() == null || appCreatedEvent.getApplication().getId().isEmpty()) {
-                String errorMsg = "App id of application created event is invalid: [ " + appCreatedEvent.getApplication().getId() + " ]";
-                log.error(errorMsg);
-                throw new RuntimeException(errorMsg);
-            }
-
-            // check if an Application with same name exists in topology
-            if (topology.applicationExists(appCreatedEvent.getApplication().getId())) {
-                log.warn("Application with id [ " + appCreatedEvent.getApplication().getId() + " ] already exists in Topology");
-
-            } else {
-                // add application and the clusters to Topology
-                for(Cluster cluster: appCreatedEvent.getClusterList()) {
-                    topology.getService(cluster.getServiceName()).addCluster(cluster);
+            TopologyManager.acquireWriteLockForApplications();
+            Set<ClusterDataHolder> clusterDataHolders = event.getApplication().getClusterDataRecursively();
+            if (clusterDataHolders != null) {
+                for (ClusterDataHolder clusterData : clusterDataHolders) {
+                    TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
                 }
-                topology.addApplication(appCreatedEvent.getApplication());
             }
 
-            notifyEventListeners(appCreatedEvent);
-            return true;
+            try {
+                return doProcess(event, topology);
+
+            } finally {
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                    }
+                }
+                TopologyManager.releaseWriteLockForApplications();
+            }
 
         } else {
             if (nextProcessor != null) {
@@ -89,5 +85,36 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
+    }
+
+    private boolean doProcess (ApplicationCreatedEvent event,Topology topology) {
+
+        // check if required properties are available
+        if (event.getApplication() == null) {
+            String errorMsg = "Application object of application created event is invalid";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier().isEmpty()) {
+            String errorMsg = "App id of application created event is invalid: [ " + event.getApplication().getUniqueIdentifier() + " ]";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        // check if an Application with same name exists in topology
+        if (topology.applicationExists(event.getApplication().getUniqueIdentifier())) {
+            log.warn("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists in Topology");
+
+        } else {
+            // add application and the clusters to Topology
+            for(Cluster cluster: event.getClusterList()) {
+                topology.getService(cluster.getServiceName()).addCluster(cluster);
+            }
+            topology.addApplication(event.getApplication());
+        }
+
+        notifyEventListeners(event);
+        return true;
     }
 }

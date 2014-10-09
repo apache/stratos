@@ -734,25 +734,14 @@ public class PojoConverter {
 
         DependencyContext dependencyContext = new DependencyContext();
         dependencyContext.setKillBehaviour(dependencyDefinitions.getKillBehaviour());
-        if (dependencyDefinitions.getStartupOrder() != null) {
-            dependencyContext.setStartupOrderContext(getStartupOrderContextArrFromStartupDefinition(dependencyDefinitions.getStartupOrder()));
+        
+        if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
+        	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
+        	startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
+        	dependencyContext.setStartupOrdersContexts(startupOrders);
         }
 
         return dependencyContext;
-    }
-
-    private static StartupOrderContext[] getStartupOrderContextArrFromStartupDefinition (List<StartupOrderDefinition> startupOrderDefinitions) {
-
-        StartupOrderContext[] startupOrderContexts = new StartupOrderContext[startupOrderDefinitions.size()];
-        int i = 0;
-        for (StartupOrderDefinition startupOrderDefinition : startupOrderDefinitions) {
-            StartupOrderContext startupOrderContext = new StartupOrderContext();
-            startupOrderContext.setStart(startupOrderDefinition.getStart());
-            startupOrderContext.setAfter(startupOrderDefinition.getAfter());
-            startupOrderContexts[i++] = startupOrderContext;
-        }
-
-        return startupOrderContexts;
     }
 
     private static GroupContext[] getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {

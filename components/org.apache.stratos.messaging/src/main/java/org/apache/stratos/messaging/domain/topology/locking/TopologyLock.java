@@ -17,28 +17,33 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.pojo.application;
+package org.apache.stratos.messaging.domain.topology.locking;
 
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class DependencyContext {
-    
-    private String [] startupOrdersContexts;
+public class TopologyLock {
 
-    private String killBehaviour;
+    private final ReentrantReadWriteLock lock;
 
-    public String getKillBehaviour() {
-        return killBehaviour;
+    public TopologyLock () {
+        lock = new ReentrantReadWriteLock(true);
     }
 
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+    public void acquireWriteLock() {
+        lock.writeLock().lock();
     }
 
-	public String [] getStartupOrdersContexts() {
-		return startupOrdersContexts;
-	}
+    public void releaseWritelock() {
+        if (lock.isWriteLockedByCurrentThread()) {
+            lock.writeLock().unlock();
+        }
+    }
 
-	public void setStartupOrdersContexts(String [] startupOrdersContexts) {
-		this.startupOrdersContexts = startupOrdersContexts;
-	}
+    public void acquireReadLock() {
+        lock.readLock().lock();
+    }
+
+    public void releaseReadLock() {
+        lock.readLock().unlock();
+    }
 }

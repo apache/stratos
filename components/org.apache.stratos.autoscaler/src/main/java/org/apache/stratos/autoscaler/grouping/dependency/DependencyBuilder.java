@@ -54,20 +54,16 @@ public class DependencyBuilder {
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
-    public DependencyTree buildDependency(ParentBehavior component) throws DependencyBuilderException {
-        String alias = null;
-        if(component instanceof Application) {
-            alias = ((Application)component).getId();
-        } else if(component instanceof Group) {
-            alias = ((Group) component).getAlias();
-        }
-        DependencyTree dependencyTree = new DependencyTree(alias);
+    public DependencyTree buildDependency(ParentComponent component) throws DependencyBuilderException{
+
+        String identifier = component.getUniqueIdentifier();
+        DependencyTree dependencyTree = new DependencyTree(identifier);
         DependencyOrder dependencyOrder = component.getDependencyOrder();
 
         if (dependencyOrder != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Building dependency for the Application/Group " +
-                        alias);
+                        identifier);
             }
 
             //Parsing the kill behaviour
@@ -86,11 +82,20 @@ public class DependencyBuilder {
             }
 
             //Parsing the start up order
-            Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
-            ApplicationContext foundContext = null;
-            for (StartupOrder startupOrder : startupOrderSet) {
+            String [] startupOrders = dependencyOrder.getStartupOrders();
+            ApplicationContext foundContext = null; 
+            if (startupOrders == null) {
+            	if (log.isDebugEnabled()) {
+                    log.debug("startupOrders is null, returning default dependency tree (empty)");
+                }
+            	
+            	return dependencyTree;
+            }
+            for (String startupOrder : startupOrders) {
+            	String start = dependencyOrder.getStartStartupOrder(startupOrder);
                 foundContext = null;
-                for (String start : startupOrder.getStartList()) {
+                
+                if (start != null) {
                     ApplicationContext applicationContext = ApplicationContextFactory.
                                     getApplicationContext(start, component, dependencyTree);
                     String id = applicationContext.getId(); //TODO change the id
@@ -124,12 +129,9 @@ public class DependencyBuilder {
                         }
 
                     }
-
                 }
-
             }
-
-            //TODO need to parser the scalable dependencies
+                    //TODO need to parser the scalable dependencies
         }
 
 

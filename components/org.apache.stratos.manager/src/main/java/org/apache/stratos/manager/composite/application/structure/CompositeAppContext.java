@@ -30,6 +30,8 @@ public class CompositeAppContext {
     private Set<SubscribableContext> subscribableContexts;
 
     private Set<StartupOrder> startupOrder;
+    
+    private String [] startupOrders;
 
     private String killBehaviour;
 
@@ -77,7 +79,15 @@ public class CompositeAppContext {
         this.killBehaviour = killBehaviour;
     }
 
-    public boolean equals(Object other) {
+    public String [] getStartupOrders() {
+		return startupOrders;
+	}
+
+	public void setStartupOrders(String [] startupOrders) {
+		this.startupOrders = startupOrders;
+	}
+
+	public boolean equals(Object other) {
 
         if(this == other) {
             return true;

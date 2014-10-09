@@ -608,7 +608,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationDeployed(Application application,
+    public static synchronized void handleApplicationDeployed(Application application,
                                                  Set<ApplicationClusterContext> applicationClusterContexts,
                                                  Set<MetaDataHolder> metaDataHolders) {
 
@@ -617,15 +617,15 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
 
-            if (topology.applicationExists(application.getId())) {
-                log.warn("Application with id [ " + application.getId() + " ] already exists in Topology");
+            if (topology.applicationExists(application.getUniqueIdentifier())) {
+                log.warn("Application with id [ " + application.getUniqueIdentifier() + " ] already exists in Topology");
                 return;
             }
             List<Cluster> clusters = new ArrayList<Cluster>();
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
-                        applicationClusterContext.getAutoscalePolicyName(), application.getId());
+                        applicationClusterContext.getAutoscalePolicyName(), application.getUniqueIdentifier());
                 cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
@@ -634,7 +634,7 @@ public class TopologyBuilder {
                 Service service = topology.getService(applicationClusterContext.getCartridgeType());
                 if (service != null) {
                     service.addCluster(cluster);
-                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + application.getId());
+                    log.info("Added Cluster " + cluster.toString() + " to Topology for Application with id: " + application.getUniqueIdentifier());
                 } else {
                     log.error("Service " + applicationClusterContext.getCartridgeType() + " not found");
                     return;
@@ -644,7 +644,8 @@ public class TopologyBuilder {
             // add to Topology and update
             topology.addApplication(application);
             TopologyManager.updateTopology(topology);
-            log.info("Application with id [ " + application.getId() + " ] added to Topology successfully");
+
+            log.info("Application with id [ " + application.getUniqueIdentifier() + " ] added to Topology successfully");
 
             TopologyEventPublisher.sendApplicationCreatedEvent(application ,clusters);
 
@@ -653,7 +654,8 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder, String applicationId, int tenantId, String tenantDomain) {
+    public static synchronized void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder,
+                                                                String applicationId, int tenantId, String tenantDomain) {
 
         Topology topology = TopologyManager.getTopology();
 
@@ -662,16 +664,18 @@ public class TopologyBuilder {
 
             if (!topology.applicationExists(applicationId)) {
                 log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
 
             } else {
                 Application application = topology.getApplication(applicationId);
+                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
                 // remove clusters
-                for (ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
+                for (ClusterDataHolder clusterDataHolder : clusterData) {
                     Service service = topology.getService(clusterDataHolder.getServiceType());
                     if (service != null) {
                         // remove Cluster
                         service.removeCluster(clusterDataHolder.getClusterId());
+
                         if (log.isDebugEnabled()) {
                             log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
                         }
@@ -693,7 +697,7 @@ public class TopologyBuilder {
 
                 log.info("Removed application [ " + applicationId + " ] from Topology");
 
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain);
             }
 
         } finally {

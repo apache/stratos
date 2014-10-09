@@ -39,6 +39,7 @@ import org.apache.stratos.messaging.util.Constants;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * this is to send the relevant events from cloud controller to topology topic
@@ -99,13 +100,14 @@ public class TopologyEventPublisher {
         publishEvent(new ApplicationCreatedEvent(application, clusters));
     }
 
-    public static void sendApplicationRemovedEvent(String applicationId, int tenantId, String tenantDomain) {
+    public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
+                                                   int tenantId, String tenantDomain) {
 
         if(log.isInfoEnabled() || log.isDebugEnabled()) {
             log.info("Publishing Application removed event: " + applicationId + " tenantId: " + tenantId);
         }
         
-        publishEvent(new ApplicationRemovedEvent(applicationId, tenantId, tenantDomain));
+        publishEvent(new ApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain));
     }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {

@@ -26,8 +26,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
 /**
  * Defines a topology of serviceMap in Stratos.
@@ -53,7 +53,8 @@ public class Topology implements Serializable {
     }
 
     public void addApplication (Application application) {
-        this.applicationMap.put(application.getId(), application);
+        this.applicationMap.put(application.getUniqueIdentifier(), application);
+        TopologyLockHierarchy.getInstance().addApplicationLock(application.getUniqueIdentifier(), new TopologyLock());
     }
 
     public Application getApplication (String applicationId) {
@@ -62,6 +63,7 @@ public class Topology implements Serializable {
 
     public void removeApplication (String applicationId) {
         applicationMap.remove(applicationId);
+        TopologyLockHierarchy.getInstance().removeTopologyLockForApplication(applicationId);
     }
 
     public Collection<Application> getApplications () {
@@ -78,9 +80,10 @@ public class Topology implements Serializable {
 
     public void addService(Service service) {
         this.serviceMap.put(service.getServiceName(), service);
+        TopologyLockHierarchy.getInstance().addServiceLock(service.getServiceName(), new TopologyLock());
     }
 
-    public void addServices(Collection<Service> services) {
+    public synchronized void addServices(Collection<Service> services) {
         for (Service service : services) {
             addService(service);
         }
@@ -88,10 +91,12 @@ public class Topology implements Serializable {
 
     public void removeService(Service service) {
         this.serviceMap.remove(service.getServiceName());
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(service.getServiceName());
     }
 
     public void removeService(String serviceName) {
         this.serviceMap.remove(serviceName);
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(serviceName);
     }
 
     public Service getService(String serviceName) {

@@ -29,11 +29,14 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.exception.RestClientException;
 
@@ -46,6 +49,9 @@ import java.security.NoSuchAlgorithmException;
 public class DefaultRestClient implements RestClient {
 
     private static final String APPLICATION_JSON = "application/json";
+    public static final int MAX_TOTAL_CONNECTIONS = 100;
+    public static final int DEFAULT_MAX_PER_ROUTE = 20;
+
     private static Log log = LogFactory.getLog(DefaultRestClient.class);
 
     private HttpClient httpClient;
@@ -65,7 +71,18 @@ public class DefaultRestClient implements RestClient {
         } catch (KeyStoreException e) {
             throw  new RestClientException(e);
         }
-        this.httpClient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        CloseableHttpClient closableHttpClient = HttpClients.custom().setSSLSocketFactory(sslsf).setConnectionManager(getHttpConnectionManager()).build();
+        this.httpClient = closableHttpClient;
+    }
+
+    private HttpClientConnectionManager getHttpConnectionManager(){
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        // TODO: Introduce configurable variable for Max total and max per router variables.
+        cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+        cm.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
+        //HttpHost localhost = new HttpHost("locahost", 80);
+        //cm.setMaxPerRoute(new HttpRoute(localhost), 50);
+        return cm;
     }
 
     public HttpResponse doPost(String resourcePath, Object payload) throws RestClientException {

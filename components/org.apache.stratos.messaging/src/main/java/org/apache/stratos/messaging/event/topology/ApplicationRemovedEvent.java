@@ -19,6 +19,11 @@
 
 package org.apache.stratos.messaging.event.topology;
 
+
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+
+import java.util.Set;
+
 public class ApplicationRemovedEvent extends TopologyEvent {
 
     /**
@@ -26,11 +31,15 @@ public class ApplicationRemovedEvent extends TopologyEvent {
 	 */
 	private static final long serialVersionUID = -5499420725533165623L;
 	private String applicationId;
+    private Set<ClusterDataHolder> clusterData;
+
     private String tenantDomain;
     private int tenantId;
 
-    public ApplicationRemovedEvent (String applicationId, int tenantId, String tenantDomain) {
+    public ApplicationRemovedEvent (String applicationId, Set<ClusterDataHolder> clusterData,
+                                    int tenantId, String tenantDomain) {
         this.applicationId = applicationId;
+        this.clusterData = clusterData;
         this.tenantId = tenantId;
         this.tenantDomain = tenantDomain;
     }
@@ -45,5 +54,9 @@ public class ApplicationRemovedEvent extends TopologyEvent {
     
     public String getTenantDomain() {
         return tenantDomain;
+    }
+
+    public Set<ClusterDataHolder> getClusterData() {
+        return clusterData;
     }
 }

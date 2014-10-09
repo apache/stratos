@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class StartupOrder implements Serializable {
+	
+	/*
 
     private String start;
 
@@ -50,4 +52,5 @@ public class StartupOrder implements Serializable {
     public void setStartList(List<String> startList) {
         this.startList = startList;
     }
+    */
 }

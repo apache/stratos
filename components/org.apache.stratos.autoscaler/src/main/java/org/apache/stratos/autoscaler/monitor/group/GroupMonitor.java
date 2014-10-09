@@ -85,7 +85,7 @@ public class GroupMonitor extends Monitor implements EventHandler {
                 //updating the life cycle
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if(!startDep) {
-                    
+
                 }
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription

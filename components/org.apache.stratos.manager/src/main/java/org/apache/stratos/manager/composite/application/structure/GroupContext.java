@@ -35,20 +35,19 @@ public class GroupContext {
 
     private Set<SubscribableContext> subscribableContexts;
 
-    private Set<StartupOrder> startupOrder;
+    private String [] startupOrders;
 
     private String killBehaviour;
 
+    public String [] getStartupOrders() {
+		return startupOrders;
+	}
 
-    public Set<StartupOrder> getStartupOrder() {
-        return startupOrder;
-    }
+	public void setStartupOrders(String [] startupOrders) {
+		this.startupOrders = startupOrders;
+	}
 
-    public void setStartupOrder(Set<StartupOrder> startupOrder) {
-        this.startupOrder = startupOrder;
-    }
-
-    public String getKillBehaviour() {
+	public String getKillBehaviour() {
         return killBehaviour;
     }
 

@@ -27,7 +27,7 @@ import java.util.*;
  * Represents an Application in the Topology
  */
 
-public class Application implements ParentBehavior {
+public class Application extends ParentComponent {
 
     private static final long serialVersionUID = -5092959597171649688L;
     // Unique id for the Application, defined in Application Definition
@@ -40,139 +40,19 @@ public class Application implements ParentBehavior {
     private String tenantDomain;
     // tenant admin user
     private String tenantAdminUserName;
-    // Dependency Order
-    private DependencyOrder dependencyOrder;
-    // Group Map, key = Group.alias
-    private Map<String, Group> aliasToGroupMap;
-    // Cluster Id map, key = subscription alias for the cartridge type
-    private Map<String, ClusterDataHolder> aliasToClusterDataMap;
-    // Application status
-    private Status status;
 
     public Application (String id) {
+        super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
-        this.status = Status.Created;
-        aliasToGroupMap = new HashMap<String, Group>();
-        aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
 
-    @Override
-    public void addGroup(Group group) {
-        aliasToGroupMap.put(group.getName(), group);
-    }
-
-    @Override
-    public void setGroups(Map<String, Group> groupAliasToGroup) {
-        aliasToGroupMap.putAll(groupAliasToGroup);
-    }
-
-    @Override
-    public Group getGroup(String groupAlias) {
-        return aliasToGroupMap.get(groupAlias);
-    }
-
-    @Override
-    public Map<String, Group> getAliasToGroupMap() {
-        return this.aliasToGroupMap;
-    }
-
-    @Override
-    public Map<String, ClusterDataHolder> getClusterDataMap() {
-        return this.aliasToClusterDataMap;
-    }
-
-    public Set<ClusterDataHolder> getClusterDataRecursively () {
-
-        Set<ClusterDataHolder> appClusterData = new HashSet<ClusterDataHolder>();
-
-        // get top level Cluster Data
-        if (this.aliasToClusterDataMap != null && !this.aliasToClusterDataMap.isEmpty()) {
-            appClusterData.addAll(this.aliasToClusterDataMap.values());
-        }
-
-        // find other nested Cluster Data (in the Groups)
-        if (getGroups() != null) {
-            getClusterData(appClusterData, getGroups());
-        }
-
-        return appClusterData;
-    }
-
-    private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
-
-        for (Group group : groups) {
-            if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
-                clusterData.addAll(group.getClusterDataMap().values());
-                if (group.getGroups() != null) {
-                    getClusterData(clusterData, group.getGroups());
-                }
-            }
-        }
-    }
-
-    @Override
-    public Group getGroupRecursively(String groupAlias) {
-
-        return travereAndCheckRecursively(aliasToGroupMap, groupAlias);
-    }
-
-    private Group travereAndCheckRecursively (Map<String,Group> aliasToGroupMap, String groupAlias) {
-
-        if (aliasToGroupMap.containsKey(groupAlias)) {
-            synchronized (aliasToGroupMap) {
-                if (aliasToGroupMap.containsKey(groupAlias)) {
-                    return aliasToGroupMap.get(groupAlias);
-                }
-            }
-        } else {
-            for (Group group : aliasToGroupMap.values()) {
-                travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public Collection<Group> getGroups() {
-        return aliasToGroupMap.values();
-    }
-
-    @Override
-    public void setDependencyOrder(DependencyOrder dependencyOrder) {
-        this.dependencyOrder = dependencyOrder;
-    }
-
-    @Override
-    public DependencyOrder getDependencyOrder() {
-        return dependencyOrder;
-    }
-
-    @Override
-    public void setClusterData(Map<String, ClusterDataHolder> aliasToClusterData) {
-        this.aliasToClusterDataMap.putAll(aliasToClusterData);
-    }
-
-    @Override
-    public ClusterDataHolder getClusterData(String alias) {
-        return aliasToClusterDataMap.get(alias);
-    }
-
-    public String getId() {
+    public String getUniqueIdentifier() {
         return id;
     }
 
     public String getKey() {
         return key;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public int getTenantId() {
@@ -197,5 +77,22 @@ public class Application implements ParentBehavior {
 
     public void setTenantAdminUserName(String tenantAdminUserName) {
         this.tenantAdminUserName = tenantAdminUserName;
+    }
+
+    public boolean equals(Object other) {
+        if(other == null || !(other instanceof Application)) {
+            return false;
+        }
+
+        if(this == other) {
+            return true;
+        }
+
+        Application that = (Application)other;
+        return this.id.equals(that.id);
+    }
+
+    public int hashCode () {
+        return id.hashCode();
     }
 }

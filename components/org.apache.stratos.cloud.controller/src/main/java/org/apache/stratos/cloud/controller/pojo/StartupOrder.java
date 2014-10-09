@@ -24,6 +24,8 @@ import java.io.Serializable;
 public class StartupOrder implements Serializable {
 
 	private static final long serialVersionUID = 280860334002791396L;
+	
+	/*
 
 	private String start;
 
@@ -44,4 +46,5 @@ public class StartupOrder implements Serializable {
     public void setAfter(String after) {
         this.after = after;
     }
+    */
 }

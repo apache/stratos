@@ -43,8 +43,8 @@ public class ApplicationMonitor extends Monitor {
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
                                                         TopologyInConsistentException {
         super(application);
-        this.id = application.getId();
         //starting the first set of dependencies from its children
+        this.id = application.getUniqueIdentifier();
         startDependency();
     }
 

@@ -28,6 +28,7 @@ import java.util.Set;
 
 public class ParserUtils {
 
+	/*
     public static Set<StartupOrder> convert (org.apache.stratos.cloud.controller.pojo.StartupOrder [] startupOrderArr, GroupContext groupContext) {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
@@ -108,6 +109,7 @@ public class ParserUtils {
         return null;
     }
 
+*/
     private static String getAliasForServiceType (String serviceType, GroupContext groupContext) {
 
         for (SubscribableContext subCtxt : groupContext.getSubscribableContexts()) {

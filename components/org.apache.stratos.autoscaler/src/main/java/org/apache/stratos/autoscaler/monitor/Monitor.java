@@ -36,7 +36,6 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.application.status.StatusEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.*;
@@ -60,11 +59,11 @@ public abstract class Monitor implements EventHandler {
     //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
     //application/group reference from the Topology
-    protected ParentBehavior component;
+    protected ParentComponent component;
     //status of the monitor whether it is running/in_maintainable/terminated
     protected Status status;
 
-    public Monitor(ParentBehavior component) throws DependencyBuilderException {
+    public Monitor(ParentComponent component) throws DependencyBuilderException {
         aliasToGroupMonitorsMap = new HashMap<String, GroupMonitor>();
         clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.component = component;
@@ -175,7 +174,7 @@ public abstract class Monitor implements EventHandler {
         }
     }
 
-    protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentBehavior component) {
+    protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentComponent component) {
         ScheduledExecutorService adder = Executors.newSingleThreadScheduledExecutor();
 
         if (!this.aliasToGroupMonitorsMap.containsKey(dependency)) {
@@ -304,9 +303,9 @@ public abstract class Monitor implements EventHandler {
     private class GroupMonitorAdder implements Runnable {
         private String dependency;
         private Monitor parent;
-        private ParentBehavior component;
+        private ParentComponent component;
 
-        public GroupMonitorAdder(Monitor parent, String dependency, ParentBehavior group) {
+        public GroupMonitorAdder(Monitor parent, String dependency, ParentComponent group) {
             this.dependency = dependency;
             this.parent = parent;
             this.component = group;
