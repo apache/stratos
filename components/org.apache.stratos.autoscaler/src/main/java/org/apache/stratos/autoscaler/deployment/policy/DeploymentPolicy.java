@@ -100,7 +100,7 @@ public class DeploymentPolicy implements Serializable{
 	 /**
      * Sets the value of the isPublic property.
      * 
-     * @param description
+     * @param isPublic
      *     allowed object is boolean
      *     
      */
@@ -126,8 +126,12 @@ public class DeploymentPolicy implements Serializable{
 		this.tenantId = tenantId;
 	}
     
-    public void setPartitionGroups(PartitionGroup[] groups) {
-        this.partitionGroups = groups;
+    public void setPartitionGroups(PartitionGroup[] partitionGroups) {
+        if(partitionGroups == null) {
+            this.partitionGroups = new PartitionGroup[0];
+        } else {
+            this.partitionGroups = Arrays.copyOf(partitionGroups, partitionGroups.length);
+        }
     }
     
     public Partition[] getAllPartitions() {

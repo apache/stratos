@@ -56,7 +56,9 @@ import java.util.*;
  */
 public class AxiomXpathParserUtil {
 
-    private static final Log log = LogFactory.getLog(AxiomXpathParserUtil.class);
+    private static final Log LOG = LogFactory.getLog(AxiomXpathParserUtil.class);
+    
+    private AxiomXpathParserUtil(){}
     
     public static OMElement parse(File xmlSource) throws MalformedConfigurationFileException,
         IllegalArgumentException {
@@ -65,7 +67,7 @@ public class AxiomXpathParserUtil {
 
         if (xmlSource == null) {
             String msg = "File is null.";
-            log.error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
@@ -75,11 +77,11 @@ public class AxiomXpathParserUtil {
 
         } catch (XMLStreamException e) {
             String msg = "Failed to parse the configuration file : " + xmlSource.getPath();
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new MalformedConfigurationFileException(msg, e);
         } catch (FileNotFoundException e) {
             String msg = "Configuration file cannot be found : " + xmlSource.getPath();
-            log.error(msg);
+            LOG.error(msg);
             throw new MalformedConfigurationFileException(msg);
         }
 
@@ -134,13 +136,13 @@ public class AxiomXpathParserUtil {
 
     private static void neglectingWarn(final String fileName, final String elt, final int size) {
         if (size > 1) {
-            log.warn(fileName + " contains more than one " + elt + " elements!" +
+            LOG.warn(fileName + " contains more than one " + elt + " elements!" +
                      " Elements other than the first will be neglected.");
         }
     }
 
     public static void plainTextWarn(final String elt) {
-        log.warn("Unable to find a value for " + elt + " element from Secure Vault." +
+        LOG.warn("Unable to find a value for " + elt + " element from Secure Vault." +
                  "Hence we will try to assign the plain text value (if specified).");
     }
 
@@ -162,7 +164,7 @@ public class AxiomXpathParserUtil {
             return nodeList.isEmpty() ?  null : nodeList.get(0);
         } catch (JaxenException e) {
             String msg = "Error occurred while reading the Xpath (" + xpath + ")";
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new MalformedConfigurationFileException(msg, e);
         }
 
@@ -184,7 +186,7 @@ public class AxiomXpathParserUtil {
             return nodeList;
         } catch (JaxenException e) {
             String msg = "Error occurred while reading the Xpath (" + xpath + ")";
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new MalformedConfigurationFileException(msg, e);
         }
 
@@ -208,7 +210,7 @@ public class AxiomXpathParserUtil {
             return nodeList;
         } catch (JaxenException e) {
             String msg = "Error occurred while reading the Xpath (" + xpath + ")";
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new MalformedConfigurationFileException(msg, e);
         }
 

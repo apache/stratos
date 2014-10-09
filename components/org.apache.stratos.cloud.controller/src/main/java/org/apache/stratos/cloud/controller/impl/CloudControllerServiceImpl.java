@@ -1408,8 +1408,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			
 			kubApi.createService(service);
 			
-			// set host port
+			// set host port and update
 			ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
+			dataHolder.addClusterContext(ctxt);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller successfully started the service "
@@ -1426,7 +1427,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			for (int i = 0; i < expectedCount ; i++) {
 			    newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
 			    
-			    log.info("Pods "+newlyCreatedPods.length);
+			    if (log.isDebugEnabled()) {
+			        
+			        log.debug("Pods Count: "+newlyCreatedPods.length+" for cluster: "+clusterId);
+			    }
 			    if(newlyCreatedPods.length == expectedCount) {
 			        break;
 			    }
@@ -1456,7 +1460,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // trigger topology
                 // update the topology with the newly spawned member
                 TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
-                        kubernetesMasterIp, kubernetesMasterIp, context);
+                        pod.getCurrentState().getPodIP(), pod.getCurrentState().getHostIP(), context);
                 // publish data
                 // TODO
 //                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
@@ -1626,10 +1630,129 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public void updateKubernetesController(String clusterId, int replicas)
-			throws InvalidClusterException {
-		// TODO Auto-generated method stub
+	public MemberContext[] updateContainers(String clusterId, int replicas)
+			throws UnregisteredCartridgeException {
 		
+	    if(log.isDebugEnabled()) {
+            log.debug("CloudControllerServiceImpl:updateContainers for cluster : "+clusterId);
+        }
+
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        if (ctxt == null) {
+            String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String cartridgeType = ctxt.getCartridgeType();
+
+        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+
+        if (cartridge == null) {
+            String msg =
+                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType 
+                             +". [cluster id] "+ clusterId;
+            log.error(msg);
+            throw new UnregisteredCartridgeException(msg);
+        }
+
+        try {
+            String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
+            
+            KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+            
+            if (kubClusterContext == null) {
+                String msg =
+                             "Instance start-up failed. No matching Kubernetes Context Found for [id] "+kubernetesClusterId 
+                             +". [cluster id] "+ clusterId;
+                log.error(msg);
+                throw new UnregisteredCartridgeException(msg);
+            }
+            
+            KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+            
+            // update the replication controller - cluster id = replication controller id
+            if (log.isDebugEnabled()) {
+                log.debug("Cloud Controller is delegating request to update a replication controller "+clusterId+
+                        " to Kubernetes layer.");
+            }
+            
+            kubApi.updateReplicationController(clusterId, replicas);
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Cloud Controller successfully updated the controller "
+                        + clusterId + " via Kubernetes layer.");
+            }
+            
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            // execute the label query
+            Pod[] allPods = new Pod[0];
+            
+            // wait replicas*5s time in the worst case ; best case = 0s
+            for (int i = 0; i < replicas ; i++) {
+                allPods = kubApi.getSelectedPods(new Label[]{l});
+                
+                if (log.isDebugEnabled()) {
+                    
+                    log.debug("Pods Count: "+allPods.length+" for cluster: "+clusterId);
+                }
+                if(allPods.length == replicas) {
+                    break;
+                }
+                Thread.sleep(5000);
+            }
+            
+            if (log.isDebugEnabled()) {
+                
+                log.debug(String.format("Pods created : %s for cluster : %s",allPods.length, clusterId));
+            }
+            
+            List<MemberContext> memberContexts = new ArrayList<MemberContext>();
+            
+            PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
+            // generate Member Contexts
+            for (Pod pod : allPods) {
+                MemberContext context;
+                if ((context = dataHolder.getMemberContextOfMemberId(pod.getId())) == null) {
+                    
+                    context = podToMemberContextFunc.apply(pod);
+                    context.setCartridgeType(cartridgeType);
+                    context.setClusterId(clusterId);
+                    
+                    context.setProperties(CloudControllerUtil.addProperty(context
+                            .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                            ctxt.getProperties().getProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+                    
+                    dataHolder.addMemberContext(context);
+                    
+                    // trigger topology
+                    // update the topology with the newly spawned member
+                    TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
+                            pod.getCurrentState().getPodIP(), pod.getCurrentState().getHostIP(), context);
+                    
+                    memberContexts.add(context);
+                }
+                // publish data
+                // TODO
+//                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
+                
+            }
+            
+            // persist in registry
+            persist();
+
+            log.info("Kubernetes entities are successfully starting up. "+memberContexts);
+
+            return memberContexts.toArray(new MemberContext[0]);
+
+        } catch (Exception e) {
+            String msg = "Failed to update containers belong to cluster " + clusterId+". Cause: "+e.getMessage();
+            log.error(msg, e);
+            throw new IllegalStateException(msg, e);
+        }
 	}
 
 }

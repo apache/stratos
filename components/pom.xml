@@ -31,7 +31,7 @@
 	<groupId>org.apache.stratos</groupId>
 	<artifactId>stratos-components-parent</artifactId>
 	<packaging>pom</packaging>
-	<name>Apache Stratos - Components - Parent Module</name>
+	<name>Apache Stratos - Components</name>
 	<url>http://apache.org</url>
 
     <modules>
