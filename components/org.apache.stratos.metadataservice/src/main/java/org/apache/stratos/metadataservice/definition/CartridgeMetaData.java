@@ -1,6 +1,8 @@
 package org.apache.stratos.metadataservice.definition;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -20,24 +22,15 @@ public class CartridgeMetaData {
 
 	public String version;
 
-	public List<PropertyBean> properties;
+	public String properties;
 
 	@Override
 	public String toString() {
 
 		return "applicationName: " + applicationName + ", displayName: " + displayName +
 		       ", description: " + description + ", type: " + type + ", provider: " + provider +
-		       ", host: " + host + ", Version: " + version + ", properties: " + getProperties();
+		       ", host: " + host + ", Version: " + version + ", properties: " + properties;
 	}
 
-	private String getProperties() {
 
-		StringBuilder propertyBuilder = new StringBuilder();
-		if (properties != null) {
-			for (PropertyBean propertyBean : properties) {
-				propertyBuilder.append(propertyBean.toString());
-			}
-		}
-		return propertyBuilder.toString();
-	}
 }

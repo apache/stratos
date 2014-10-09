@@ -1,9 +1,28 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package org.apache.stratos.metadataservice.services;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.annotation.AuthorizationAction;
+import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
 import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.exception.RestAPIException;
 import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
@@ -24,36 +43,67 @@ public class MetaDataAdmin {
     @Context
     UriInfo uriInfo;
 
-	private static Log log = LogFactory.getLog(MetaDataAdmin.class);
-	@Context
-	HttpServletRequest httpServletRequest;
+    private static Log log = LogFactory.getLog(MetaDataAdmin.class);
+    @Context
+    HttpServletRequest httpServletRequest;
 
-	private final String DEFAULT_REG_TYPE = "carbon";
 
-	private XMLConfiguration conf;
-    DataStore registry;
+    private DataStore registry;
 
+    /**
+     * Meta data admin configuration loading
+     */
     public MetaDataAdmin(){
-        conf = ConfUtil.getInstance(null).getConfiguration();
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        String DEFAULT_REG_TYPE = "carbon";
         String registryType =  conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
         registry = DataRegistryFactory.getDataRegistryFactory(registryType);
     }
-	@POST
-	@Path("/init")
-	@AuthorizationAction("/permission/protected/manage/monitor/tenants")
-	public void initialize() throws RestAPIException {
 
-	}
+    @POST
+    @Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
+                                                @PathParam("cartridgetype") String cartridgeType,
+                                                CartridgeMetaData cartridgeMetaData) throws RestAPIException {
 
-    public boolean removeCartridgeMetaDataDetails(String applicationName, String cartridgeType)
-	                                                                                           throws Exception {
-		conf = ConfUtil.getInstance(null).getConfiguration();
-		String registryType =
-		                      conf.getString("metadataservice.govenanceregistrytype",
-                                      DEFAULT_REG_TYPE);
-		return registry.removeCartridgeMetaDataDetails(applicationName, cartridgeType);
 
-	}
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationName + "/" + cartridgeType).build();
+        try {
+            registry.addCartridgeMetaDataDetails(applicationName, cartridgeType, cartridgeMetaData);
+        } catch (Exception err) {
+            log.error("Error occurred while adding meta data details ", err);
+        }
+
+        return Response.created(url).build();
+
+    }
+
+    @GET
+    @Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
+                                                @PathParam("cartridgetype") String cartridgeType) throws RestAPIException {
+
+        String result = null;
+        try {
+            result = registry.getCartridgeMetaDataDetails(applicationName, cartridgeType);
+        } catch (Exception err) {
+            log.error("Error occurred while adding meta data details ", err);
+        }
+        Response.ResponseBuilder rb;
+        if (result == null) {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        } else {
+            rb = Response.ok().entity(result);
+        }
+        return rb.build();
+
+    }
 
     @GET
     @Path("/application/{application_id}/cluster/{cluster_id}/properties")
@@ -67,7 +117,7 @@ public class MetaDataAdmin {
         try {
             properties = registry
                     .getPropertiesOfCluster(applicationId, clusterId);
-            if(properties != null) {
+            if (properties != null) {
                 propertiesArr = new NewProperty[properties.size()];
                 propertiesArr = properties.toArray(propertiesArr);
             }
@@ -75,10 +125,10 @@ public class MetaDataAdmin {
             log.error("Error occurred while getting properties ", e);
         }
 
-        Response.ResponseBuilder rb=null;
-        if(propertiesArr == null){
+        Response.ResponseBuilder rb;
+        if (propertiesArr == null) {
             rb = Response.status(Response.Status.NOT_FOUND);
-        }else{
+        } else {
             rb = Response.ok().entity(propertiesArr);
         }
         return rb.build();
@@ -89,18 +139,21 @@ public class MetaDataAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+
     public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName){
-        List<NewProperty> properties = null;
+        List<NewProperty> properties;
+
+
         NewProperty property = null;
 
         try {
             properties = registry
                     .getPropertiesOfCluster(applicationId, clusterId);
-            if(properties == null){
+            if (properties == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            for(NewProperty p : properties){
-                if(propertyName.equals(p.getKey())){
+            for (NewProperty p : properties) {
+                if (propertyName.equals(p.getKey())) {
                     property = p;
                     break;
                 }
@@ -109,10 +162,10 @@ public class MetaDataAdmin {
             log.error("Error occurred while getting property ", e);
         }
 
-        Response.ResponseBuilder rb=null;
-        if(property == null){
+        Response.ResponseBuilder rb;
+        if (property == null) {
             rb = Response.status(Response.Status.NOT_FOUND);
-        }else{
+        } else {
             rb = Response.ok().entity(property);
         }
         return rb.build();
@@ -145,12 +198,12 @@ public class MetaDataAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addPropertiesToACluster(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, NewProperty[] properties)
             throws RestAPIException {
-        URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
 
         try {
             registry.addPropertiesToCluster(applicationId, clusterId, properties);
         } catch (Exception e) {
-           log.error("Error occurred while adding properties ", e);
+            log.error("Error occurred while adding properties ", e);
         }
 
 

@@ -58,12 +58,12 @@ public class ClusterActivatedProcessor extends MessageProcessor {
             ClusterActivatedEvent event = (ClusterActivatedEvent) Util.
                     jsonToObject(message, ClusterActivatedEvent.class);
 
-            TopologyManager.acquireWriteLockForService(event.getServiceName());
+            TopologyManager.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyManager.releaseWriteLockForService(event.getServiceName());
+                TopologyManager.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
 
         }  else {
