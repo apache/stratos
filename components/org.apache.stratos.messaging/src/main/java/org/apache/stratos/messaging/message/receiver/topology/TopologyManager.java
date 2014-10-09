@@ -464,7 +464,7 @@ public class TopologyManager {
      *
      * @param appId Application id
      */
-    public static synchronized void acquireWriteLockForApplication (String appId) {
+    public static void acquireWriteLockForApplication (String appId) {
 
         // acquire read lock for all Applications
         acquireReadLockForApplications();
@@ -487,7 +487,7 @@ public class TopologyManager {
      *
      * @param appId Application id
      */
-    public static synchronized void releaseWriteLockForApplication (String appId) {
+    public static void releaseWriteLockForApplication (String appId) {
 
         TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
         if (topologyAppLock == null)  {

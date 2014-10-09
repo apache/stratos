@@ -185,7 +185,7 @@ public class TopologyLockingTest {
         TopologyManager.releaseWriteLockForApplication("app1");
     }
 
-    @Test
+    @Test(timeout=10000)
     public void testAcquireAndReleaseReadLockForApp2 () {
 
         TopologyManager.acquireReadLockForApplication("app2");
