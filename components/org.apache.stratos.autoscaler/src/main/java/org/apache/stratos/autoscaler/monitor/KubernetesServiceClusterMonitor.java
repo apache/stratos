@@ -22,13 +22,10 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
@@ -75,51 +72,8 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     protected void monitor() {
-
-        String kubernetesClusterId = getKubernetesClusterCtxt().getKubernetesClusterID();
-        int activeMembers = getKubernetesClusterCtxt().getActiveMembers().size();
-        int pendingMembers = getKubernetesClusterCtxt().getPendingMembers().size();
-        int nonTerminatedMembers = getKubernetesClusterCtxt().getNonTerminatedMemberCount();
-        log.info(KubernetesServiceClusterMonitor.class.getName()+" is running.... Active Members: "+activeMembers
-                + " Pending Members: "+pendingMembers);
-        
-        if (nonTerminatedMembers == 0) {
-            try {
-                CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId,
-                        getClusterId());
-                for (MemberContext memberContext : memberContexts) {
-
-                    if (null != memberContext) {
-                        getKubernetesClusterCtxt().addPendingMember(memberContext);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Pending member added, [member] %s [kub cluster] %s",
-                                    memberContext.getMemberId(), kubernetesClusterId));
-                        }
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Returned member context is null, did not add to pending members");
-                        }
-                    }
-                }
-            } catch (SpawningException spawningException) {
-                if (log.isDebugEnabled()) {
-                    String message = "Cannot create containers, will retry in "
-                            + (getMonitorIntervalMilliseconds() / 1000) + "s";
-                    log.debug(message, spawningException);
-                }
-            } catch (Exception exception) {
-                if (log.isDebugEnabled()) {
-                    String message = "Error while creating containers, will retry in "
-                            + (getMonitorIntervalMilliseconds() / 1000) + "s";
-                    log.debug(message, exception);
-                }
-            }
-		} else {
-	        minCheck();
-	        scaleCheck();
-		}
+        minCheck();
+        scaleCheck();
     }
 
     private void scaleCheck() {
