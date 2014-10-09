@@ -42,12 +42,12 @@ public class ApplicationContextFactory {
                                                            boolean isKillDependent) {
         String id;
         ApplicationContext applicationContext = null;
-        if (startOrder.contains(Constants.GROUP)) {
+        if (startOrder.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(startOrder);
             applicationContext = new GroupContext(id,
                     isKillDependent);
-        } else if (startOrder.contains(Constants.CARTRIDGE)) {
+        } else if (startOrder.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
             id = getClusterFromStartupOrder(startOrder);
             //getting the cluster-id from cluster alias

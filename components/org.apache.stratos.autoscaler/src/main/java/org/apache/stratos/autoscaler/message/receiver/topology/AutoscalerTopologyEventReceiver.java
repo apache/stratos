@@ -624,9 +624,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
 
                     long end = System.currentTimeMillis();
-                    log.info("Time taken to start Napp monitor: " + (end - start) / 1000);
+                    log.info("Time taken to start app monitor: " + (end - start) / 1000);
                     success = true;
-                    //TODO exception handling
                 } catch (DependencyBuilderException e) {
                     String msg = "Application monitor creation failed for Application: ";
                     log.warn(msg, e);

@@ -42,7 +42,7 @@ public class Group extends ParentComponent {
     }
 
     public String getUniqueIdentifier() {
-        return name;
+        return alias;
     }
 
     public String getAlias() {

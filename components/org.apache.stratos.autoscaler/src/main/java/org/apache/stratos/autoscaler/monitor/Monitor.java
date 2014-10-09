@@ -122,9 +122,13 @@ public abstract class Monitor implements EventHandler {
             if (context instanceof GroupContext) {
                 startGroupMonitor(this, context.getId(), component);
             } else if (context instanceof ClusterContext) {
-                ClusterDataHolder clusterDataHolder = component.getClusterData(context.getId());
-                String clusterId = clusterDataHolder.getClusterId();
-                String serviceName = clusterDataHolder.getServiceType();
+                String clusterId = context.getId();
+                String serviceName = null;
+                for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+                    if(dataHolder.getClusterId().equals(clusterId)) {
+                        serviceName = dataHolder.getServiceType();
+                    }
+                }
                 Cluster cluster;
                 //acquire read lock for the service and cluster
                 TopologyManager.acquireReadLockForCluster(clusterId, serviceName);
