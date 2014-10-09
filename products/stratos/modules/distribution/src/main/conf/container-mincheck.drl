@@ -39,10 +39,16 @@ dialect "mvel"
 				+ " [cluster] " + clusterId + " Non terminated member count: " + nonTerminatedReplicas))
 	   eval(log.debug("[min-check] [kub-cluster] " + kubernetesClusterId
 				+ " [cluster] " + clusterId + " Minimum member count: " + minReplicas))
-	   eval (nonTerminatedReplicas < minReplicas)
+	   eval(nonTerminatedReplicas < minReplicas)
        then
-           log.info("[min-check] [kub-cluster] " + kubernetesClusterId
-	        		+ " [cluster] " + clusterId + " : min-rule not satisfied, creating more containers")
-           $delegator.delegateExpandCluster($kubernetesClusterContext.getClusterId(), minReplicas);
+           if (nonTerminatedReplicas == 0) {
+             log.info("[min-check] [kub-cluster] " + kubernetesClusterId
+	        		+ " [cluster] " + clusterId + " : min-rule not satisfied, no containers created yet, creating minReplicas : " + minReplicas);
+             $delegator.delegateCreateContainers($kubernetesClusterContext);
+	   } else {
+             log.info("[min-check] [kub-cluster] " + kubernetesClusterId
+	        		+ " [cluster] " + clusterId + " : min-rule not satisfied, expanding cluster to minReplicas : " + minReplicas);
+             $delegator.delegateExpandCluster($kubernetesClusterContext, minReplicas);
+           }
 end
 

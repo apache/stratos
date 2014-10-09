@@ -202,12 +202,11 @@ public class RuleTasksDelegator {
    	
    	public void delegateCreateContainers(KubernetesClusterContext  kubernetesClusterContext) {
         try {
+        	String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
+        	String clusterId = kubernetesClusterContext.getClusterId();
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
-			String clusterId = kubernetesClusterContext.getClusterId();
 			MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId, clusterId);
             for (MemberContext memberContext : memberContexts) {
-
                 if (null != memberContext) {
                 	kubernetesClusterContext.addPendingMember(memberContext);
                     if (log.isDebugEnabled()) {
@@ -221,12 +220,13 @@ public class RuleTasksDelegator {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Cannot create containers ", e);
         }
    	}
 
-    public void delegateExpandCluster(String clusterId, int replicas) {
+    public void delegateExpandCluster(KubernetesClusterContext kubernetesClusterContext, int replicas) {
+    	String clusterId = kubernetesClusterContext.getClusterId();
         try {
             CloudControllerClient.getInstance().updateKubernetesController(clusterId, replicas);
         } catch (Throwable e) {

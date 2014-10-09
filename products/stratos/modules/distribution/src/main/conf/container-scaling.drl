@@ -136,11 +136,11 @@ dialect "mvel"
             }
             //expand the cluster
 	    log.info("[scaling] " + " [cluster] " + clusterId + " valid number of replicas to expand : " + requiredReplicas);
-	    $delegator.delegateExpandCluster(clusterId, requiredReplicas);
+	    $delegator.delegateExpandCluster($kubernetesClusterContext, requiredReplicas);
         } else if (scaleDown) {
             log.debug("[scale-down] Decided to scale down : [kub-cluster] " + kubernetesClusterId + " [cluster] " + clusterId);
             //shrink the cluster to minReplicas
-            $delegator.delegateExpandCluster(clusterId, minReplicas);
+            $delegator.delegateExpandCluster($kubernetesClusterContext, minReplicas);
         } else {
             log.debug("[scaling] No decision made to either scale up or down ... ");
         }
