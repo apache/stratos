@@ -21,6 +21,10 @@ package org.apache.stratos.messaging.domain.topology.locking;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Represents a lock in the Topology
+ */
+
 public class TopologyLock {
 
     private final ReentrantReadWriteLock lock;
@@ -29,18 +33,30 @@ public class TopologyLock {
         lock = new ReentrantReadWriteLock(true);
     }
 
+    /**
+     * acquires write lock
+     */
     public void acquireWriteLock() {
         lock.writeLock().lock();
     }
 
+    /**
+     * releases write lock
+     */
     public void releaseWritelock() {
         lock.writeLock().unlock();
     }
 
+    /**
+     * acquires read lock
+     */
     public void acquireReadLock() {
         lock.readLock().lock();
     }
 
+    /**
+     * releases read lock
+     */
     public void releaseReadLock() {
         lock.readLock().unlock();
     }
