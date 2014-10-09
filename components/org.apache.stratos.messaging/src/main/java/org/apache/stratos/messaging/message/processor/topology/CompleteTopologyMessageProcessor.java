@@ -55,7 +55,11 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
                 TopologyManager.acquireWriteLock();
 
                 try {
-                    return doProcess(event, topology);
+                    if (!topology.isInitialized()) {
+                        return doProcess(event, topology);
+                    } else {
+                        return true;
+                    }
 
                 } finally {
                     TopologyManager.releaseWriteLock();

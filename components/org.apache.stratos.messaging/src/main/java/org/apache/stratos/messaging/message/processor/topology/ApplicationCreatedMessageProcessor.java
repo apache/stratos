@@ -58,6 +58,7 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             }
 
             TopologyManager.acquireWriteLockForApplications();
+            // since the Clusters will also get modified, acquire write locks for each Service Type
             Set<ClusterDataHolder> clusterDataHolders = event.getApplication().getClusterDataRecursively();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {

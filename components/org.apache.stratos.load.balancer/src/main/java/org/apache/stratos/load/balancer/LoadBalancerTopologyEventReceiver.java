@@ -122,7 +122,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                 MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
 
                 //TopologyManager.acquireReadLock();
-                TopologyManager.acquireWriteLockForCluster(memberActivatedEvent.getServiceName(),
+                TopologyManager.acquireReadLockForCluster(memberActivatedEvent.getServiceName(),
                         memberActivatedEvent.getClusterId());
 
                 try {
@@ -173,7 +173,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(memberActivatedEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(memberActivatedEvent.getServiceName(),
                             memberActivatedEvent.getClusterId());
                 }
             }
@@ -184,7 +184,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
 
                 MemberMaintenanceModeEvent memberMaintenanceModeEvent = (MemberMaintenanceModeEvent) event;
 
-                TopologyManager.acquireWriteLockForCluster(memberMaintenanceModeEvent.getServiceName(),
+                TopologyManager.acquireReadLockForCluster(memberMaintenanceModeEvent.getServiceName(),
                         memberMaintenanceModeEvent.getClusterId());
 
                 try {
@@ -200,7 +200,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(memberMaintenanceModeEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(memberMaintenanceModeEvent.getServiceName(),
                             memberMaintenanceModeEvent.getClusterId());
                 }
             }
@@ -210,7 +210,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
 
                 MemberSuspendedEvent memberSuspendedEvent = (MemberSuspendedEvent) event;
-                TopologyManager.acquireWriteLockForCluster(memberSuspendedEvent.getServiceName(),
+                TopologyManager.acquireReadLockForCluster(memberSuspendedEvent.getServiceName(),
                         memberSuspendedEvent.getClusterId());
 
                 try {
@@ -225,7 +225,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(memberSuspendedEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(memberSuspendedEvent.getServiceName(),
                             memberSuspendedEvent.getClusterId());
                 }
             }
@@ -237,7 +237,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                 //TopologyManager.acquireReadLock();
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
 
-                TopologyManager.acquireWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+                TopologyManager.acquireReadLockForCluster(memberTerminatedEvent.getServiceName(),
                         memberTerminatedEvent.getClusterId());
 
                 try {
@@ -251,7 +251,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(memberTerminatedEvent.getServiceName(),
                             memberTerminatedEvent.getClusterId());
                 }
             }
@@ -262,7 +262,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
 
                 // Remove cluster from context
                 ClusterRemovedEvent clusterRemovedEvent = (ClusterRemovedEvent) event;
-                TopologyManager.acquireWriteLockForCluster(clusterRemovedEvent.getServiceName(),
+                TopologyManager.acquireReadLockForCluster(clusterRemovedEvent.getServiceName(),
                         clusterRemovedEvent.getClusterId());
 
                 try {
@@ -283,7 +283,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(clusterRemovedEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(clusterRemovedEvent.getServiceName(),
                             clusterRemovedEvent.getClusterId());
                 }
             }
@@ -293,7 +293,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
 
                 ServiceRemovedEvent serviceRemovedEvent = (ServiceRemovedEvent) event;
-                TopologyManager.acquireWriteLockForServices();
+                TopologyManager.acquireReadLockForService(serviceRemovedEvent.getServiceName());
 
                 try {
                     //TopologyManager.acquireReadLock();
@@ -317,7 +317,7 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForServices();
+                    TopologyManager.releaseReadLockForService(serviceRemovedEvent.getServiceName());
                 }
             }
         });

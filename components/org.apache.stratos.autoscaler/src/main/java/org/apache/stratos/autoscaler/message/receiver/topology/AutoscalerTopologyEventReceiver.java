@@ -300,7 +300,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     log.info("Event received: " + event);
                     clusterMaitenanceEvent = (ClusterMaintenanceModeEvent) event;
                     //TopologyManager.acquireReadLock();
-                    TopologyManager.acquireWriteLockForCluster(clusterMaitenanceEvent.getServiceName(),
+                    TopologyManager.acquireReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
                             clusterMaitenanceEvent.getClusterId());
 
                     Service service = TopologyManager.getTopology().getService(clusterMaitenanceEvent.getServiceName());
@@ -319,7 +319,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     log.error("Error processing event", e);
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseWriteLockForCluster(clusterMaitenanceEvent.getServiceName(),
+                    TopologyManager.releaseReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
                             clusterMaitenanceEvent.getClusterId());
                 }
             }
