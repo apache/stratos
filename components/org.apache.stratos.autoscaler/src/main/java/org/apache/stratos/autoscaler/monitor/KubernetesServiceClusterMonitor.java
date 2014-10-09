@@ -52,7 +52,10 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                                            String serviceClusterID, String serviceId,
                                            AutoscalePolicy autoscalePolicy) {
         super(serviceClusterID, serviceId, kubernetesClusterCtxt,
-              new AutoscalerRuleEvaluator(), autoscalePolicy);
+              new AutoscalerRuleEvaluator(
+                      StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
+                      StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE),
+              autoscalePolicy);
         readConfigurations();
     }
 
@@ -144,9 +147,56 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             } catch (InterruptedException ignored) {
             }
         }
+        
+        minCheck();
+        scaleCheck();
     }
 
-    @Override
+    private void scaleCheck() {
+        boolean rifReset = getKubernetesClusterCtxt().isRifReset();
+        boolean memoryConsumptionReset = getKubernetesClusterCtxt().isMemoryConsumptionReset();
+        boolean loadAverageReset = getKubernetesClusterCtxt().isLoadAverageReset();
+        if (log.isDebugEnabled()) {
+            log.debug("flag of rifReset : " + rifReset
+                      + " flag of memoryConsumptionReset : "
+                      + memoryConsumptionReset + " flag of loadAverageReset : "
+                      + loadAverageReset);
+        }
+        String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        String clusterId = getClusterId();
+        if (rifReset || memoryConsumptionReset || loadAverageReset) {
+            getScaleCheckKnowledgeSession().setGlobal("clusterId", clusterId);
+            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
+            getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+            getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+            getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Running scale check for kub-cluster %s ", kubernetesClusterID));
+            }
+            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(
+                    getScaleCheckKnowledgeSession(), scaleCheckFactHandle, getKubernetesClusterCtxt());
+            getKubernetesClusterCtxt().setRifReset(false);
+            getKubernetesClusterCtxt().setMemoryConsumptionReset(false);
+            getKubernetesClusterCtxt().setLoadAverageReset(false);
+        } else if (log.isDebugEnabled()) {
+            log.debug(String.format("Scale check will not run since none of the statistics have not received yet for "
+                                    + "[kub-cluster] %s [cluster] %s", kubernetesClusterID, clusterId));
+        }
+    }
+
+	private void minCheck() {
+		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Running minimum check for cluster %s ",
+					getClusterId()));
+		}
+		minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+				getMinCheckKnowledgeSession(), minCheckFactHandle,
+				getKubernetesClusterCtxt());
+	}
+
+	@Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();

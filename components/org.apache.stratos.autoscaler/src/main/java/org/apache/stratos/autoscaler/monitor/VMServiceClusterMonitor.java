@@ -35,6 +35,7 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
@@ -51,7 +52,9 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     public VMServiceClusterMonitor(String clusterId, String serviceId,
                                    DeploymentPolicy deploymentPolicy,
                                    AutoscalePolicy autoscalePolicy) {
-        super(clusterId, serviceId, new AutoscalerRuleEvaluator(),
+        super(clusterId, serviceId,
+              new AutoscalerRuleEvaluator(StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+                                          StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
               deploymentPolicy, autoscalePolicy,
               new ConcurrentHashMap<String, NetworkPartitionContext>());
         readConfigurations();
