@@ -52,41 +52,31 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  *  Example 1: Acquiring write lock for a Cluster to modify the Cluster object -
  *           acquiring:
- *           1. acquire read lock for all Services
- *           2. acquire read lock for the particular Service, to which the cluster belongs to
- *           3. acquire write lock for the Cluster
+ *           public static void acquireWriteLockForCluster (String serviceName, String clusterId)
  *
  *           releasing:
- *           1. release write lock for the Cluster
- *           2. release read lock for the particular Service
- *           3. release read lock for all Services
+ *           public static void releaseWriteLockForCluster (String serviceName, String clusterId)
  *
  *  Example 2: Acquiring write lock to add a new Cluster object -
  *           acquiring:
- *           1. acquire read lock for all Services
- *           2. acquire write lock for the particular Service, to which the cluster belongs to
+ *           public static void acquireWriteLockForService (String serviceName)
  *
  *           releasing:
- *           1. release write lock for the particular Service
- *           2. release read lock for all Services
+ *           public static void releaseWriteLockForService (String serviceName)
  *
  *  Example 3: Acquiring read lock to read Cluster information
  *           acquiring:
- *           1. acquire read lock for all Services
- *           2. acquire read lock for the particular Service, to which the cluster belongs to
- *           3. acquire read lock for the relevant Cluster
+ *           public static void acquireReadLockForCluster (String serviceName, String clusterId)
  *
  *           releasing:
- *           1. release read lock for the relevant Cluster
- *           2. release read lock for the particular Service
- *           3. release read lock for all Services
+ *           public static void releaseReadLockForCluster (String serviceName, String clusterId)
  *
  *  Example 4: Acquiring the write lock to add a deploy a Cartridge (add a new Service)
  *           acquire:
- *           1. acquire write lock for all Services
+ *           public static void acquireWriteLockForServices()
  *
  *           release:
- *           1. release write lock for all Services
+ *           public static void releaseWriteLockForServices()
  */
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
