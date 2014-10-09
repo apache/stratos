@@ -660,7 +660,7 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
-		<file>
+	<file>
             <source>src/main/conf/mincheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
@@ -678,6 +678,20 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+                <!-- container-drools files -->
+        <file>
+            <source>src/main/conf/container-mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/container-scaling.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+		<!-- container-drools files -->
 		<!-- autoscaler -->
         <file>
             <source>${project.basedir}/INSTALL.txt</source>
