@@ -28,7 +28,6 @@ import org.apache.stratos.manager.exception.InvalidServiceGroupException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
-import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;

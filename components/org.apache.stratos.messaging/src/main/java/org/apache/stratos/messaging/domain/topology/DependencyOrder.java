@@ -25,24 +25,17 @@ import java.util.Set;
 
 public class DependencyOrder implements Serializable {
 
-    private Set<StartupOrder> startupOrders;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -599600831844477527L;
+
+	private String [] startupOrders;
 
     private String killbehavior;
 
     public DependencyOrder () {
-        this.startupOrders = new HashSet<StartupOrder>();
-    }
-
-    public void setStartupOrders (Set<StartupOrder> startupOrders) {
-        this.startupOrders.addAll(startupOrders);
-    }
-
-    public Set<StartupOrder> getStartupOrders() {
-        return startupOrders;
-    }
-
-    public void addStartupOrders(StartupOrder startupOrder) {
-        this.startupOrders.add(startupOrder);
+        this.setStartupOrders(null);
     }
 
     public String getKillbehavior() {
@@ -52,4 +45,22 @@ public class DependencyOrder implements Serializable {
     public void setKillbehavior(String killbehavior) {
         this.killbehavior = killbehavior;
     }
+
+	public String [] getStartupOrders() {
+		return startupOrders;
+	}
+
+	public void setStartupOrders(String [] startupOrders) {
+		this.startupOrders = startupOrders;
+	}
+	
+	public String getStartStartupOrder(String startupOrder) {
+		String [] splitStartupOrder = startupOrder.split(",");
+		return splitStartupOrder[0];
+	}
+	
+	public String getAfterStartupOrder(String startupOrder) {
+		String [] splitStartupOrder = startupOrder.split(",");
+		return splitStartupOrder[1];
+	}
 }
