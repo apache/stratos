@@ -176,7 +176,7 @@ class Cluster:
     Represents a cluster for a service
     """
 
-    def __init__(self, service_name, cluster_id, deployment_policy_name, autoscale_policy_name):
+    def __init__(self, service_name="", cluster_id="", deployment_policy_name="", autoscale_policy_name=""):
         self.service_name = service_name
         """ :type : str  """
         self.cluster_id = cluster_id
@@ -298,12 +298,13 @@ class Cluster:
         if not valid:
             raise RuntimeError("Tenant range %r is not valid" % tenant_range)
 
+
 class Member:
     """
     Represents a member on a particular cluster
     """
 
-    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id):
+    def __init__(self, service_name="", cluster_id="", network_partition_id="", parition_id="", member_id=""):
         self.service_name = service_name
         """ :type : str  """
         self.cluster_id = cluster_id
@@ -431,3 +432,4 @@ class TopologyContext:
     @staticmethod
     def update(topology):
         TopologyContext.topology = topology
+        TopologyContext.topology.initialized = True

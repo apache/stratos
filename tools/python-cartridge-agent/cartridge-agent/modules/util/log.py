@@ -35,4 +35,4 @@ class LogFactory(object):
         :return: The logger class
         :rtype: RootLogger
         """
-        self.instance.get_log(name)
+        return self.instance.get_log(name)

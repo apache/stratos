@@ -181,6 +181,9 @@ class CompleteTopologyEvent:
 
         return instance
 
+    def get_topology(self):
+        return self.topology
+
 
 class MemberStartedEvent:
 
