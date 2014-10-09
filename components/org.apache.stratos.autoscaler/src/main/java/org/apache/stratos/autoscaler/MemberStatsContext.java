@@ -77,4 +77,27 @@ public class MemberStatsContext {
         memoryConsumption.setSecondDerivative(value);
     }
 
+    public float getAverageLoadAverage() {
+        return loadAverage.getAverage();
+    }
+
+    public float getAverageMemoryConsumption() {
+        return memoryConsumption.getAverage();
+    }
+
+    public float getGradientOfLoadAverage() {
+        return loadAverage.getGradient();
+    }
+
+    public float getGradientOfMemoryConsumption() {
+        return memoryConsumption.getGradient();
+    }
+
+    public float getSecondDerivativeOfLoadAverage() {
+        return loadAverage.getSecondDerivative();
+    }
+
+    public float getSecondDerivativeOfMemoryConsumption() {
+        return memoryConsumption.getSecondDerivative();
+    }
 }
