@@ -59,7 +59,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  */
 public class CloudControllerDSComponent {
 
-	private static final Log log = LogFactory
+	private static final Log LOG = LogFactory
 			.getLog(CloudControllerDSComponent.class);
 
 	protected void activate(ComponentContext context) {
@@ -84,37 +84,35 @@ public class CloudControllerDSComponent {
 			bundleContext.registerService(CloudControllerService.class.getName(),
 			                              new CloudControllerServiceImpl(), null);
 
-			if (log.isInfoEnabled()) {
-				log.info("Scheduling tasks");
+			if (LOG.isInfoEnabled()) {
+				LOG.info("Scheduling tasks");
 			}
 
 			TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder
 					                                           .getInstance().getTaskService());
 
 		} catch (Throwable e) {
-			log.error(
-					"******* Cloud Controller Service bundle is failed to activate ****",
-					e);
+			LOG.error("Cloud Controller Service bundle is failed to activate.", e);
 		}
 	}
 
 	protected void setTaskService(TaskService taskService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting the Task Service");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Setting the Task Service");
 		}
 		ServiceReferenceHolder.getInstance().setTaskService(taskService);
 	}
 
 	protected void unsetTaskService(TaskService taskService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Unsetting the Task Service");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Unsetting the Task Service");
 		}
 		ServiceReferenceHolder.getInstance().setTaskService(null);
 	}
 
 	protected void setRegistryService(RegistryService registryService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Setting the Registry Service");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Setting the Registry Service");
 		}
 
 		try {
@@ -123,14 +121,14 @@ public class CloudControllerDSComponent {
 			ServiceReferenceHolder.getInstance().setRegistry(registry);
 		} catch (RegistryException e) {
 			String msg = "Failed when retrieving Governance System Registry.";
-			log.error(msg, e);
+			LOG.error(msg, e);
 			throw new CloudControllerException(msg, e);
 		}
 	}
 
 	protected void unsetRegistryService(RegistryService registryService) {
-		if (log.isDebugEnabled()) {
-			log.debug("Unsetting the Registry Service");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Unsetting the Registry Service");
 		}
 		ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
@@ -147,8 +145,6 @@ public class CloudControllerDSComponent {
 	}
 
 	protected void deactivate(ComponentContext ctx) {
-		// Close event publisher connections to message broker
-		// EventPublisherPool.close(Constants.TOPOLOGY_TOPIC);
 	}
 
 }
