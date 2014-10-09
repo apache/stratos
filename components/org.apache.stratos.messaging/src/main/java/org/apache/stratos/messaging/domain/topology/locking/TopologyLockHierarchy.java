@@ -29,6 +29,8 @@ public class TopologyLockHierarchy {
 
     private static final Log log = LogFactory.getLog(TopologyLockHierarchy.class);
 
+    private TopologyLock completeTopologyLock;
+
     // lock for Services
     private TopologyLock serviceLock;
 
@@ -48,6 +50,7 @@ public class TopologyLockHierarchy {
 
     private TopologyLockHierarchy () {
 
+        this.completeTopologyLock = new TopologyLock();
         this.serviceLock = new TopologyLock();
         this.applicatioLock = new TopologyLock();
         this.serviceNameToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
@@ -143,5 +146,9 @@ public class TopologyLockHierarchy {
 
     public TopologyLock getApplicatioLock() {
         return applicatioLock;
+    }
+
+    public TopologyLock getCompleteTopologyLock() {
+        return completeTopologyLock;
     }
 }

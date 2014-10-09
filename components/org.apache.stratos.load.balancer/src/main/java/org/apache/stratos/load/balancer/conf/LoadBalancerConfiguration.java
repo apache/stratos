@@ -496,12 +496,15 @@ public class LoadBalancerConfiguration {
 
                         // Add service to topology manager if not exists
                         try {
-                            TopologyManager.acquireWriteLock();
+                            // TODO - fix properly!
+                            // this lock is not needed since, this Topology is not shared. This is
+                            // used by LB only
+                            //TopologyManager.acquireWriteLock();
                             if (!TopologyManager.getTopology().serviceExists(service.getServiceName())) {
                                 TopologyManager.getTopology().addService(service);
                             }
                         } finally {
-                            TopologyManager.releaseWriteLock();
+                            //TopologyManager.releaseWriteLock();
                         }
 
                         // Add cluster to load balancer context

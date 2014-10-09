@@ -34,9 +34,7 @@ public class TopologyLock {
     }
 
     public void releaseWritelock() {
-        if (lock.isWriteLockedByCurrentThread()) {
-            lock.writeLock().unlock();
-        }
+        lock.writeLock().unlock();
     }
 
     public void acquireReadLock() {
