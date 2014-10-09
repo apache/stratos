@@ -14,15 +14,21 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
+import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
+import org.jclouds.cloudstack.domain.ServiceOffering;
+import org.jclouds.cloudstack.domain.Volume;
 import org.jclouds.cloudstack.domain.Zone;
 import org.jclouds.cloudstack.options.ListZonesOptions;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
+import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 public class CloudstackIaas extends Iaas{
 
@@ -45,7 +51,10 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public void buildTemplate() {
+
+
 ///todo implement this method
+        System.out.println("=================inside the build template method===========================");
 
         IaasProvider iaasInfo = getIaasProvider();
 
@@ -61,20 +70,24 @@ public class CloudstackIaas extends Iaas{
         TemplateBuilder templateBuilder = iaasInfo.getComputeService()
                 .templateBuilder();
 
-        //todo what is this image id???
+
+        /////////////////////////SET PROPERTIES TO templateBuilder OBJECT/////////////////
+
+
+        //PROPERTY - 1
         // set image id specified
-        templateBuilder.imageId(iaasInfo.getImage());
+       templateBuilder.imageId(iaasInfo.getImage());
 
-        System.out.println("===========iaasInfo.getImage()=============== "+iaasInfo.getImage());
-
-        //logic
-
+        //PROPERTY-2
+        //if user has specified a zone in cloud-controller.xml, set the zone into templateBuilder object
+        // (user should provide the zone id for this)
         if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for(Location location : locations) {
                 if(location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
                         location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
-                    templateBuilder.locationId(location.getId());
+                    //if the zone is valid set the zone to templateBuilder Object
+                        templateBuilder.locationId(location.getId());
                     log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
                     break;
@@ -82,12 +95,70 @@ public class CloudstackIaas extends Iaas{
             }
         }
 
+        //PROPERTY-2
+        //if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
+        //object.
+        //todo discuss this issue with niraml
+        if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
+            // set instance type eg: m1.large
+            System.out.println("==============instance type=============:" + CloudControllerConstants.INSTANCE_TYPE);
+
+            //get the hardwareID (service offering ID) correspond to the offering name specified
+            //because user has specified the service offering name.
+
+            ComputeServiceContext context = iaasInfo.getComputeService()
+                    .getContext();
+            CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
 
 
+            //get all service offerings
+            Set<ServiceOffering> serviceOfferings = cloudStackApi.getOfferingApi().listServiceOfferings();
 
+
+            for(ServiceOffering serviceOffering : serviceOfferings) {
+                if (serviceOffering.getName().equals(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE))) {
+
+                    //set service offering id to template builder object
+                    templateBuilder.hardwareId(serviceOffering.getId());
+                    break;
+                }
+            }
+        }
 
         //build the template
         Template template = templateBuilder.build();
+
+        boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
+                .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
+        template.getOptions().as(TemplateOptions.class)
+                .blockUntilRunning(blockUntilRunning);
+
+        ///////////////////////////////SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT////////////////////////
+
+        //set security group
+        //todo test this
+        if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
+            template.getOptions()
+                    .as(CloudStackTemplateOptions.class)
+                    .securityGroupIds(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
+                            .split(CloudControllerConstants.ENTRY_SEPARATOR)));
+       }
+
+        //todo error domain id and account wanted
+        //set key-pair
+        if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+            template.getOptions().as(CloudStackTemplateOptions.class).keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+        }
+
+
+        // ability to define tags
+        if (iaasInfo.getProperty(CloudControllerConstants.TAGS) != null) {
+            template.getOptions()
+                    .as(CloudStackTemplateOptions.class)
+                    .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
+                            .split(CloudControllerConstants.ENTRY_SEPARATOR)));
+        }
+
         // set Template
         iaasInfo.setTemplate(template);
 
@@ -103,24 +174,49 @@ public class CloudstackIaas extends Iaas{
     public String associateAddress(NodeMetadata node) {
 
         //todo implement this method
-        return null;
+
+        System.out.println("======================this is the associateAddress method==================");
+
+
+
+        IaasProvider iaasInfo = getIaasProvider();
+
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+
+        String ip = null;
+//todo remove hardcoded
+        ip="192.168.57.20";
+
+
+        return ip;
     }
 
     @Override
     public String associatePredefinedAddress(NodeMetadata node, String ip) {
 
+        System.out.println("======================This is the associatePredifinedAddress method=====================");
         //todo implement this method
         return null;
     }
 
     @Override
     public void releaseAddress(String ip) {
-//todo implement this method
+//todo test this method
+
+        System.out.println("======================this is the release address method============");
+        IaasProvider iaasInfo = getIaasProvider();
+
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+        cloudStackApi.getAddressApi().disassociateIPAddress(ip);
+
     }
 
     @Override
     public boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey) {
         //todo implement this method
+        System.out.println("===============inside the create key pair method===================");
         return false;
     }
 
@@ -161,20 +257,21 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public boolean isValidHost(String zone, String host) throws InvalidHostException {
-        //todo implement this method
+        //todo study more about this
 
+        IaasProvider iaasInfo = getIaasProvider();
 
+        // there's no such concept in cloudstack
+        String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
+        log.error(msg);
+        throw new InvalidHostException(msg);
 
-
-        return true;
     }
 
     @Override
     public PartitionValidator getPartitionValidator() {
         return new CloudstackPartitionValidator();
     }
-
-
 
     @Override
     public String createVolume(int sizeGB, String snapshotId) {
@@ -184,25 +281,168 @@ public class CloudstackIaas extends Iaas{
     }
 
     @Override
-    public String attachVolume(String instanceId, String volumeId, String deviceName) {
+    public String attachVolume(String instanceId, String volumeId , String deviceName) {
 
-        //todo implement this method
-        return null;
+
+        IaasProvider iaasInfo = getIaasProvider();
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+
+        //get volume
+        org.jclouds.cloudstack.domain.Volume volume = cloudStackApi.getVolumeApi().getVolume(volumeId);
+
+        //get current volume state
+        Volume.State volumeState = volume.getState();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Volume " + volumeId + " is in state " + volumeState);
+        }
+
+        //if volume is not available, not allocated or cannot use
+        //volume state ALLOCATED   means that volume has not been attached to any instance.
+
+        //TODO there is an error with logic.
+        if(!(volumeState == Volume.State.ALLOCATED || volumeState == Volume.State.CREATING || volumeState == Volume.State.READY)){
+         log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeState));
+        }
+
+        //check whether the account of volume and instance is same
+        if(!volume.getAccount().equals(cloudStackApi.getVirtualMachineApi().getVirtualMachine(instanceId).getAccount())){
+          log.error(String.format("Volume %s can not be attached. Instance account and Volume account are not the same ", volumeId));
+        }
+
+        boolean volumeBecameAvailable = false, volumeBecameAttached = false;
+
+        try {
+            if(volumeState == Volume.State.CREATING) {
+
+                volumeBecameAvailable = waitForStatus(volumeId, Volume.State.ALLOCATED, 5);
+
+            }else if(volumeState == Volume.State.READY){
+                volumeBecameAvailable = true;
+            }
+
+        } catch (TimeoutException e) {
+            log.error("[Volume ID] " + volumeId + "did not become ALLOCATED within expected timeout");
+        }
+
+        //if volume state is 'ALLOCATED'
+        if (volumeBecameAvailable) {
+
+            //attach volume into instance
+            cloudStackApi.getVolumeApi().attachVolume(volumeId, instanceId);
+
+            try {
+                volumeBecameAttached = waitForStatus(volumeId, Volume.State.READY, 2);
+            } catch (TimeoutException e) {
+                log.error("[Volume ID] " + volumeId + "did not become READY within expected timeout");
+            }
+        }
+
+        try {
+            // waiting 5seconds till volumes are actually attached.
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //If volume state is not 'READY'
+        if(!volumeBecameAttached){
+            log.error(String.format("[Volume ID] %s attachment is called, but not yet became attached", volumeId));
+        }
+
+        log.info(String.format("Volume [id]: %s attachment for instance [id]: %s was successful [status]: Attaching. of Iaas : %s", volumeId, instanceId, iaasInfo));
+
+
+        return "Attaching";
+
     }
 
     @Override
     public void detachVolume(String instanceId, String volumeId) {
-//todo implement this method
+
+
+        IaasProvider iaasInfo = getIaasProvider();
+
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Starting to detach volume %s from the instance %s", volumeId, instanceId));
+        }
+
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+
+        cloudStackApi.getVolumeApi().detachVolume(volumeId);
+
+        try {
+            //TODO this is wrong
+            if(waitForStatus(volumeId, Volume.State.ALLOCATED, 5)){
+                log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, iaasInfo));
+            }
+        } catch (TimeoutException e) {
+            log.error(String.format("Detachment of Volume [id]: %s from instance [id]: %s was unsuccessful. [volume Status] : %s", volumeId, instanceId, iaasInfo));
+        }
+
     }
 
     @Override
     public void deleteVolume(String volumeId) {
-//todo implement this method
+        IaasProvider iaasInfo = getIaasProvider();
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+
+        //todo region ignored
+
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+        cloudStackApi.getVolumeApi().deleteVolume(volumeId);
+        log.info("Deletion of Volume [id]: "+volumeId+" was successful. "
+                + " of Iaas : " + iaasInfo);
     }
 
     @Override
     public String getIaasDevice(String device)
     {//todo implement this method
         return null;
+    }
+
+    private boolean waitForStatus(String volumeId, Volume.State expectedStatus, int timeoutInMins) throws TimeoutException {
+        int timeout = 1000 * 60 * timeoutInMins;
+        long timout = System.currentTimeMillis() + timeout;
+
+        IaasProvider iaasInfo = getIaasProvider();
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+
+        //get volume
+        org.jclouds.cloudstack.domain.Volume volume = cloudStackApi.getVolumeApi().getVolume(volumeId);
+
+        Volume.State volumeState = volume.getState();
+
+        while(volumeState != expectedStatus){
+            try {
+                if(log.isDebugEnabled()){
+                    log.debug(String.format("Volume %s is still NOT in %s. Current State=%s", volumeId, expectedStatus, volumeState));
+                }
+                if(volumeState == Volume.State.FAILED || volumeState == Volume.State.DESTROYED || volumeState == Volume.State.UNRECOGNIZED){
+                    log.error("Volume " + volumeId + " is in state" + volumeState);
+                    return false;
+                }
+
+                Thread.sleep(1000);
+                volumeState = volume.getState();
+                if (System.currentTimeMillis()> timout) {
+                    throw new TimeoutException();
+                }
+            } catch (InterruptedException e) {
+                // Ignoring the exception
+            }
+        }
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Volume %s status became %s", volumeId, expectedStatus));
+        }
+
+        return true;
     }
 }

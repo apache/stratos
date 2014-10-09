@@ -31,7 +31,8 @@ public class CloudstackPartitionValidator implements PartitionValidator {
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
 
         //todo remove this
-        iaas.buildComputeServiceAndTemplate();
+        //iaas.detachVolume("ce886144-1daf-412c-942a-1c1529ed67dd","6e54ab44-521c-4922-933c-6a6641a6d1b1");
+//        iaas.buildTemplate();
 
         try {
             IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
