@@ -19,7 +19,7 @@
 -->
 <configuration>
 	<metadataservice>
-	    <govenanceregistrytype>OWN</govenanceregistrytype>
+	    <govenanceregistrytype>carbon</govenanceregistrytype>
 	    <serverurl>https://localhost:9445/services/</serverurl>
 		<username>admin</username>
 		<password>admin</password>

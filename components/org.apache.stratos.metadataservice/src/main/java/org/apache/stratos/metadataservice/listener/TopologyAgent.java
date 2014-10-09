@@ -1,5 +1,3 @@
-package org.apache.stratos.metadataservice.listener;
-
 /*
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +18,9 @@ package org.apache.stratos.metadataservice.listener;
  * under the License.
  */
 
+package org.apache.stratos.metadataservice.listener;
+
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
@@ -29,7 +30,8 @@ import org.apache.stratos.messaging.listener.topology.MemberSuspendedEventListen
 import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.metadataservice.services.MetaDataAdmin;
+import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
+import org.apache.stratos.metadataservice.util.ConfUtil;
 
 /**
  * Cartridge agent runnable.
@@ -38,7 +40,6 @@ public class TopologyAgent implements Runnable {
 
 	private static final Log log = LogFactory.getLog(TopologyAgent.class);
 
-	private boolean terminated;
 
 	@Override
 	public void run() {
@@ -51,10 +52,24 @@ public class TopologyAgent implements Runnable {
 
 	}
 
-	protected void registerTopologyEventListeners() {
+    /**
+     * Register the topology event listener
+     */
+	private void registerTopologyEventListeners() {
+        final String defaultRegType = "carbon";
+
+         XMLConfiguration conf;
+        log.info("==================Starting topology event message receiver thread=================");
 		if (log.isDebugEnabled()) {
 			log.debug("Starting topology event message receiver thread");
 		}
+        conf = ConfUtil.getInstance(null).getConfiguration();
+
+       final String registryType =
+                conf.getString("metadataservice.govenanceregistrytype",
+                        defaultRegType);
+
+
 		TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
 
 		topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
@@ -71,7 +86,7 @@ public class TopologyAgent implements Runnable {
 						log.debug("Terminated event :::::::::::::::::::: " +
 					                   memberTerminatedEvent.getServiceName());
 					}
-					new MetaDataAdmin().removeCartridgeMetaDataDetails("appA", "php");
+                    DataRegistryFactory.getDataRegistryFactory(registryType).removeCartridgeMetaDataDetails("appA", "php");
 
 				} catch (Exception e) {
 					if (log.isErrorEnabled()) {
@@ -93,7 +108,8 @@ public class TopologyAgent implements Runnable {
 						log.debug("Member suspended event received");
 					}
 					MemberSuspendedEvent memberSuspendedEvent = (MemberSuspendedEvent) event;
-					// extensionHandler.onMemberSuspendedEvent(memberSuspendedEvent);
+                    //TODO : Add the funtionalilty for the suspended event
+
 				} catch (Exception e) {
 					if (log.isErrorEnabled()) {
 						log.error("Error processing member suspended event", e);
