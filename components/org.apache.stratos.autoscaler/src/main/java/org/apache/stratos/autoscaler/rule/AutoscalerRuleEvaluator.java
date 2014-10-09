@@ -44,32 +44,36 @@ public class AutoscalerRuleEvaluator {
 	
 	private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 
-	private static final String DRL_FILE_NAME = "mincheck.drl";
-	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
-	private static final String TERMINATE_ALL_DRL_FILE_NAME = "terminateall.drl";
+	//vm drool files as default
+	private String minCheckDroolFileName = "mincheck.drl";
+	private String scaleCheckDroolFileName = "scaling.drl";
+	private String terminateAllDroolFileName = "terminateall.drl";
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
 	@SuppressWarnings("unused")
 	private static KnowledgeBase terminateAllKbase;
 
-    public AutoscalerRuleEvaluator(){
+    public AutoscalerRuleEvaluator(String minCheckDroolFileName, String scaleCheckDroolFileName){
+    	
+    	this.minCheckDroolFileName = minCheckDroolFileName;
+    	this.scaleCheckDroolFileName = scaleCheckDroolFileName;
 
-        minCheckKbase = readKnowledgeBase(DRL_FILE_NAME);
+        minCheckKbase = readKnowledgeBase(this.minCheckDroolFileName);
 
         if (log.isDebugEnabled()) {
-            log.debug("Minimum check rule is parsed successfully");
+            log.debug("Minimum check rule is parsed successfully : " + this.minCheckDroolFileName);
         }
 
-        scaleCheckKbase = readKnowledgeBase(SCALING_DRL_FILE_NAME);
+        scaleCheckKbase = readKnowledgeBase(this.scaleCheckDroolFileName);
 
         if (log.isDebugEnabled()) {
-            log.debug("Scale check rule is parsed successfully");
+            log.debug("Scale check rule is parsed successfully : " + this.scaleCheckDroolFileName);
         }
-        terminateAllKbase = readKnowledgeBase(TERMINATE_ALL_DRL_FILE_NAME);
+        terminateAllKbase = readKnowledgeBase(this.terminateAllDroolFileName);
 
         if (log.isDebugEnabled()) {
-            log.debug("Terminate all rule is parsed successfully");
+            log.debug("Terminate all rule is parsed successfully : " + this.terminateAllDroolFileName);
         }
     }
 
