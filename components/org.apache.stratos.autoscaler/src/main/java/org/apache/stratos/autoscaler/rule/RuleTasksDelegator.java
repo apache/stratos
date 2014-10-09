@@ -199,4 +199,19 @@ public class RuleTasksDelegator {
            }
        }
 
+    public void delegateExpandCluster(String clusterId, int replicas) {
+        try {
+            CloudControllerClient.getInstance().updateKubernetesController(clusterId, replicas);
+        } catch (Throwable e) {
+            log.error("Cannot update kubernetes controller", e);
+        }
+    }
+
+    public int getPredictedReplicasForStat(int minReplicas, float statUpperLimit, float statPredictedValue) {
+        if (statUpperLimit == 0) {
+            return 0;
+        }
+        float predictedValue = ((minReplicas / statUpperLimit) * statPredictedValue);
+        return (int) Math.ceil(predictedValue);
+    }
 }
