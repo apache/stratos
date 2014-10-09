@@ -55,14 +55,18 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
                 TopologyUpdater.acquireWriteLock();
 
                 try {
-                    return topology.isInitialized() || doProcess(event, topology);
+                    if (!topology.isInitialized()) {
+                        doProcess(event, topology);
+                    }
 
                 } finally {
                     TopologyUpdater.releaseWriteLock();
                 }
-            } else {
-                return true;
             }
+
+            // Notify event listeners
+            notifyEventListeners(event);
+            return true;
 
         } else {
             if (nextProcessor != null) {
@@ -73,7 +77,7 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (CompleteTopologyEvent event, Topology topology) {
+    private void doProcess (CompleteTopologyEvent event, Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -162,9 +166,5 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
 
         // Set topology initialized
         topology.setInitialized(true);
-
-        // Notify event listeners
-        notifyEventListeners(event);
-        return true;
     }
 }
