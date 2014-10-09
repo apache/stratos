@@ -50,7 +50,7 @@ public class KubernetesClusterContext implements Serializable {
     private String serviceName;
 
     private int minReplicas;
-    private int maxReplicas;
+    private int maxReplicas = 10;
     private int currentReplicas = 0;
 
     // properties

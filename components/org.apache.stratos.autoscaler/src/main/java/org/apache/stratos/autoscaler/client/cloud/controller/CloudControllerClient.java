@@ -19,21 +19,27 @@
 
 package org.apache.stratos.autoscaler.client.cloud.controller;
 
+import java.rmi.RemoteException;
+
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.api.AutoScalerServiceImpl;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.NonExistingKubernetesGroupException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.*;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
@@ -41,8 +47,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
-
-import java.rmi.RemoteException;
 
 
 /**
@@ -304,6 +308,24 @@ public class CloudControllerClient {
             log.error(msg, e);
             throw new TerminationException(msg, e);
 		} 
+    }
+
+    public synchronized void updateKubernetesController(String clusterId, int replicas)
+            throws SpawningException {
+        try {
+            log.info(String.format("Updating kubernetes replication controller via cloud controller: " +
+                                   "[cluster] %s [replicas] %s", clusterId, replicas));
+            stub.updateKubernetesController(clusterId, replicas);
+        } catch (RemoteException e) {
+            String msg = "Error while updating kubernetes controller, cannot communicate with " +
+                         "cloud controller service";
+            log.error(msg, e);
+            throw new SpawningException(e.getMessage(), e);
+        } catch (CloudControllerServiceInvalidClusterExceptionException e) {
+            String msg = "Error while updating kubernetes controller, invalid clusterId";
+            log.error(msg, e);
+            throw new SpawningException(e.getMessage(), e);
+        }
     }
 
 }

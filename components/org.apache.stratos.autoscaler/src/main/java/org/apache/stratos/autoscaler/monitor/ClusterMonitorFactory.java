@@ -46,6 +46,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
 /*
@@ -330,7 +332,8 @@ public class ClusterMonitorFactory {
      * @param cluster - the cluster which needs to be monitored
      * @return - the cluster monitor
      */
-    private static KubernetesServiceClusterMonitor getDockerServiceClusterMonitor(Cluster cluster) {
+    private static KubernetesServiceClusterMonitor getDockerServiceClusterMonitor(Cluster cluster)
+            throws PolicyValidationException {
 
         if (null == cluster) {
             return null;
@@ -342,10 +345,29 @@ public class ClusterMonitorFactory {
         }
 
         AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
+        
+        if (policy == null) {
+            String msg = "Autoscale Policy is null. Policy name: " + autoscalePolicyName;
+            log.error(msg);
+            throw new PolicyValidationException(msg);
+        }
+        
         java.util.Properties props = cluster.getProperties();
         String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
         KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID,
                                                                                       cluster.getClusterId());
+
+        String minReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
+        if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
+            int minReplicas = Integer.parseInt(minReplicasProperty);
+            kubernetesClusterCtxt.setMinReplicas(minReplicas);
+        }
+
+        String maxReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
+        if (maxReplicasProperty != null && !maxReplicasProperty.isEmpty()) {
+            int maxReplicas = Integer.parseInt(maxReplicasProperty);
+            kubernetesClusterCtxt.setMaxReplicas(maxReplicas);
+        }
 
         KubernetesServiceClusterMonitor dockerClusterMonitor = new KubernetesServiceClusterMonitor(
                 kubernetesClusterCtxt,
