@@ -30,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
@@ -320,19 +318,13 @@ public class KubernetesClusterContext implements Serializable {
                         long pendingTime = System.currentTimeMillis()
                                            - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime) {
-
-                            // terminate all containers of this cluster
-                            try {
-                                CloudControllerClient.getInstance().terminateAllContainers(clusterId);
-                                iterator.remove();
-                            } catch (TerminationException e) {
-                                log.error(e.getMessage(), e);
-                            }
-
+                        	iterator.remove();
+                        	log.info("Pending state of member: " + pendingMember.getMemberId() +
+                                    " is expired. " + "Adding as an obsoleted member.");
+                        	ctxt.addObsoleteMember(pendingMember);
                         }
                     }
                 }
-
                 try {
                     // TODO find a constant
                     Thread.sleep(15000);
@@ -367,6 +359,8 @@ public class KubernetesClusterContext implements Serializable {
                     long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
                     if (obsoleteTime >= obsoltedMemberExpiryTime) {
                         iterator.remove();
+                        log.info("Obsolete state of member: " + obsoleteMember.getMemberId() +
+                                " is expired. " + "Removing from obsolete member list");
                     }
                 }
                 try {

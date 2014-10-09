@@ -24,6 +24,7 @@ package org.apache.stratos.autoscaler.rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
@@ -198,12 +199,38 @@ public class RuleTasksDelegator {
                log.error("Cannot terminate instance", e);
            }
        }
+   	
+   	public void delegateCreateContainers(KubernetesClusterContext  kubernetesClusterContext) {
+        try {
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
+			String clusterId = kubernetesClusterContext.getClusterId();
+			MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId, clusterId);
+            for (MemberContext memberContext : memberContexts) {
+
+                if (null != memberContext) {
+                	kubernetesClusterContext.addPendingMember(memberContext);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Pending member added, [member] %s [kub cluster] %s",
+                                memberContext.getMemberId(), kubernetesClusterId));
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Returned member context is null, did not add to pending members");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot create containers ", e);
+        }
+   	}
 
     public void delegateExpandCluster(String clusterId, int replicas) {
         try {
             CloudControllerClient.getInstance().updateKubernetesController(clusterId, replicas);
         } catch (Throwable e) {
-            log.error("Cannot update kubernetes controller", e);
+            log.error("Cannot update kubernetes controller ", e);
         }
     }
 

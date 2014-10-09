@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import java.util.Properties;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,10 +30,7 @@ import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /*
  * It is monitoring a kubernetes service cluster periodically.
@@ -45,8 +40,6 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     private static final Log log = LogFactory.getLog(KubernetesServiceClusterMonitor.class);
 
     private String lbReferenceType;
-    private int numberOfReplicasInServiceCluster = 0;
-    int retryInterval = 60000;
 
     public KubernetesServiceClusterMonitor(KubernetesClusterContext kubernetesClusterCtxt,
                                            String serviceClusterID, String serviceId,
@@ -83,33 +76,14 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     protected void monitor() {
 
-        int minReplicas;
-        try {
-            TopologyManager.acquireReadLock();
-            Service service = TopologyManager.getTopology().getService(getServiceId());
-            Cluster cluster = service.getCluster(getClusterId());
-            Properties props = cluster.getProperties();
-            minReplicas = Integer.parseInt(props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS));
-        } finally {
-            TopologyManager.releaseReadLock();
-        }
-
         String kubernetesClusterId = getKubernetesClusterCtxt().getKubernetesClusterID();
         int activeMembers = getKubernetesClusterCtxt().getActiveMembers().size();
         int pendingMembers = getKubernetesClusterCtxt().getPendingMembers().size();
-        int nonTerminatedMembers = activeMembers + pendingMembers;
+        int nonTerminatedMembers = getKubernetesClusterCtxt().getNonTerminatedMemberCount();
         log.info(KubernetesServiceClusterMonitor.class.getName()+" is running.... Active Members: "+activeMembers
                 + " Pending Members: "+pendingMembers);
-
-        if (nonTerminatedMembers > 0 && nonTerminatedMembers < minReplicas) {
-            // update
-            int requiredReplicas = minReplicas - nonTerminatedMembers;
-            log.info("Required replicas : "+requiredReplicas);
-
-        } else if (nonTerminatedMembers >= minReplicas) {
-            // TODO autoscale
-            log.info("Current member count : "+nonTerminatedMembers);
-        } else {
+        
+        if (nonTerminatedMembers == 0) {
             try {
                 CloudControllerClient ccClient = CloudControllerClient.getInstance();
                 MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId,
@@ -132,24 +106,20 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             } catch (SpawningException spawningException) {
                 if (log.isDebugEnabled()) {
                     String message = "Cannot create containers, will retry in "
-                            + (retryInterval / 1000) + "s";
+                            + (getMonitorIntervalMilliseconds() / 1000) + "s";
                     log.debug(message, spawningException);
                 }
             } catch (Exception exception) {
                 if (log.isDebugEnabled()) {
                     String message = "Error while creating containers, will retry in "
-                            + (retryInterval / 1000) + "s";
+                            + (getMonitorIntervalMilliseconds() / 1000) + "s";
                     log.debug(message, exception);
                 }
             }
-            try {
-                Thread.sleep(retryInterval);
-            } catch (InterruptedException ignored) {
-            }
-        }
-        
-        minCheck();
-        scaleCheck();
+		} else {
+	        minCheck();
+	        scaleCheck();
+		}
     }
 
     private void scaleCheck() {

@@ -28,6 +28,8 @@ import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -81,7 +83,7 @@ public class CartridgeAgentConfiguration {
             clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
             networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
             partitionId = readParameterValue(CartridgeAgentConstants.PARTITION_ID);
-            memberId = readOrGenerateMemberIdValue(CartridgeAgentConstants.MEMBER_ID,clusterId);
+            memberId = readMemberIdValue(CartridgeAgentConstants.MEMBER_ID);
             cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
             appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
             repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
@@ -144,15 +146,27 @@ public class CartridgeAgentConfiguration {
 		return kubernetesClusterIdValue;
 	}
 
-	private String readOrGenerateMemberIdValue(String memberId, String clusterId) {
+	private String readMemberIdValue(String memberId) {
 		String memberIdValue = null;
 		if (parameters.containsKey(memberId) && parameters.get(memberId) != null) {
 			memberIdValue = parameters.get(memberId);
 		} else if (System.getProperty(memberId) != null) {
 			memberIdValue = System.getProperty(memberId);
-		} else {			
-			memberIdValue = clusterId + UUID.randomUUID().toString();
-			log.debug(" MemberId generated as ["+memberIdValue+"] ");
+		} else {	
+			String hostname = "unknown";
+			try {
+				log.info("Reading hostname from container");
+				InetAddress addr;
+				addr = InetAddress.getLocalHost();
+				hostname = addr.getHostName();
+			} catch (UnknownHostException e) {
+				String msg = "Hostname can not be resolved";
+				log.error(msg, e);
+			}
+			memberIdValue = hostname;
+			if (log.isDebugEnabled()) {
+				log.debug("MemberId  is taking the value of hostname : [" + memberIdValue + "] ");
+			}
 		}
 		return memberIdValue;
 	}
