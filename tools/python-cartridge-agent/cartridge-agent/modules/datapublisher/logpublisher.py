@@ -221,9 +221,10 @@ class DataPublisherConfiguration:
         self.monitoring_server_secure_port = None
         self.admin_username = None
         self.admin_password = None
+        self.cartridge_agent_config = CartridgeAgentConfiguration()
+
         self.read_config()
 
-        self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def read_config(self):
         self.enabled = True if self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() == "true" else False

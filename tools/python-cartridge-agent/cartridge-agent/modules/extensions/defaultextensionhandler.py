@@ -209,9 +209,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         self.log.debug("Complete tenant event received")
 
         tenant_list_json = complete_tenant_event.tenant_list_json
-        self.log.debug("Complete tenants:" + tenant_list_json)
+        self.log.debug("Complete tenants:" + ','.join(tenant_list_json))
 
-        env_params = {"STRATOS_TENANT_LIST_JSON": tenant_list_json}
+        env_params = {"STRATOS_TENANT_LIST_JSON": ','.join(tenant_list_json)}
 
         extensionutils.execute_complete_tenant_extension(env_params)
 
