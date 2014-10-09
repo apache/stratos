@@ -32,7 +32,7 @@ import java.util.Set;
 
 /**
  * This is to build the startup/termination dependencies
- * across all the groups and clusters
+ * across immediate children according to the start order defined.
  */
 public class DependencyBuilder {
     private static final Log log = LogFactory.getLog(DependencyBuilder.class);
@@ -97,8 +97,9 @@ public class DependencyBuilder {
                 
                 if (start != null) {
                     ApplicationContext applicationContext = ApplicationContextFactory.
-                                    getApplicationContext(start, component, dependencyTree);
-                    String id = applicationContext.getId(); //TODO change the id
+                                    getApplicationContext(start, component,
+                                                            dependencyTree.isKillDependent());
+                    String id = applicationContext.getId();
 
                     ApplicationContext existingApplicationContext =
                             dependencyTree.findApplicationContextWithId(id);
@@ -131,7 +132,7 @@ public class DependencyBuilder {
                     }
                 }
             }
-                    //TODO need to parser the scalable dependencies
+            //TODO need to parser the scalable dependencies
         }
 
 

@@ -18,44 +18,64 @@
  */
 package org.apache.stratos.autoscaler.grouping.dependency.context;
 
-import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 /**
  * Factory to create new GroupContext or ClusterContext
  */
 public class ApplicationContextFactory {
+    private static final Log log = LogFactory.getLog(ApplicationContextFactory.class);
 
+    /**
+     * Will return the GroupContext/ClusterContext based on the type in start order
+     * @param startOrder reference of group/cluster in the start order
+     * @param component The component which used to build the dependency
+     * @param isKillDependent kill dependent behaviour of this component
+     * @return Context
+     */
     public static ApplicationContext getApplicationContext(String startOrder,
                                                            ParentComponent component,
-                                                           DependencyTree dependencyTree) {
+                                                           boolean isKillDependent) {
         String id;
         ApplicationContext applicationContext = null;
-        if (startOrder.contains("group")) {
+        if (startOrder.contains(Constants.GROUP)) {
+            //getting the group alias
             id = getGroupFromStartupOrder(startOrder);
-            //TODO getting the alias of the group using groupName
-            applicationContext = new GroupContext(component.getGroup(id).getAlias(),
-                    dependencyTree.isKillDependent());
-        } else if (startOrder.contains("cartridge")) {
+            applicationContext = new GroupContext(id,
+                    isKillDependent);
+        } else if (startOrder.contains(Constants.CARTRIDGE)) {
+            //getting the cluster alias
             id = getClusterFromStartupOrder(startOrder);
-            //TODO getting the cluster id of the using cartridge name
-            applicationContext = new ClusterContext(component.getClusterData(id).getClusterId(),
-                    dependencyTree.isKillDependent());
+            //getting the cluster-id from cluster alias
+            ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
+            applicationContext = new ClusterContext(clusterDataHolder.getClusterId(),
+                    isKillDependent);
         } else {
-            //TODO throw exception
+            log.warn("[Startup Order]: " + startOrder + " contains unknown reference");
         }
         return applicationContext;
 
     }
 
+    /**
+     * Utility method to get the group alias from the startup order Eg: group.mygroup
+     * @param startupOrder startup order
+     * @return group alias
+     */
     public static String getGroupFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(6);
+        return startupOrder.substring(Constants.GROUP.length() + 1);
     }
 
+    /**
+     * Utility method to get the cluster alias from startup order Eg: cartridge.myphp
+     * @param startupOrder startup order
+     * @return cluster alias
+     */
     public static String getClusterFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(10);
+        return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
     }
-
-
-
 }

@@ -336,6 +336,7 @@ public class AutoscalerUtil {
                                             TopologyInConsistentException {
         ApplicationMonitor applicationMonitor =
                 new ApplicationMonitor(application);
+        applicationMonitor.setAppId(application.getUniqueIdentifier());
         return applicationMonitor;
 
     }

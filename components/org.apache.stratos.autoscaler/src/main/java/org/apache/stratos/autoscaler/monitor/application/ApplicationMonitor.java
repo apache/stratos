@@ -230,7 +230,11 @@ public class ApplicationMonitor extends Monitor {
         if(context.getStatusLifeCycle().isEmpty()) {
             try {
                 //if life cycle is empty, need to start the monitor
-                startDependency(statusEvent.getId());
+                boolean dependencyStarted = startDependency(statusEvent.getId());
+                if(!dependencyStarted) {
+                    //Have to check whether all other dependencies started
+
+                }
                 //updating the life cycle
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
             } catch (TopologyInConsistentException e) {

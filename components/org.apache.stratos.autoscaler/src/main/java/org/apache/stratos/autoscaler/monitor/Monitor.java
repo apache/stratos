@@ -38,10 +38,9 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Monitor is to monitor it's child monitors and
@@ -62,6 +61,8 @@ public abstract class Monitor implements EventHandler {
     protected ParentComponent component;
     //status of the monitor whether it is running/in_maintainable/terminated
     protected Status status;
+    //Application id of this particular monitor
+    protected String appId;
 
     public Monitor(ParentComponent component) throws DependencyBuilderException {
         aliasToGroupMonitorsMap = new HashMap<String, GroupMonitor>();
@@ -73,6 +74,7 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * Will monitor the immediate children upon any event triggers from parent/children
+     *
      * @param statusEvent will be sent by parent/children with the current status
      */
     protected abstract void monitor(MonitorStatusEvent statusEvent);
@@ -106,7 +108,7 @@ public abstract class Monitor implements EventHandler {
      * @param applicationContexts the found applicationContexts to be started
      */
     private boolean startDependency(List<ApplicationContext> applicationContexts)
-                                throws TopologyInConsistentException{
+            throws TopologyInConsistentException {
         if (applicationContexts == null) {
             //all the groups/clusters have been started and waiting for activation
             log.info("There is no child found for the [group]: " + this.id);
@@ -124,27 +126,32 @@ public abstract class Monitor implements EventHandler {
                 String clusterId = clusterDataHolder.getClusterId();
                 String serviceName = clusterDataHolder.getServiceType();
                 Cluster cluster;
-                //TopologyManager.acquireReadLock();
-                Topology topology = TopologyManager.getTopology();
-                if (topology.serviceExists(serviceName)) {
-                    Service service = topology.getService(serviceName);
-                    if (service.clusterExists(clusterId)) {
-                        cluster = service.getCluster(clusterId);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Dependency check starting the [cluster]" + clusterId);
+                //acquire read lock for the service and cluster
+                TopologyManager.acquireReadLockForCluster(clusterId, serviceName);
+                try {
+                    Topology topology = TopologyManager.getTopology();
+                    if (topology.serviceExists(serviceName)) {
+                        Service service = topology.getService(serviceName);
+                        if (service.clusterExists(clusterId)) {
+                            cluster = service.getCluster(clusterId);
+                            if (log.isDebugEnabled()) {
+                                log.debug("Dependency check starting the [cluster]" + clusterId);
+                            }
+                            startClusterMonitor(this, cluster);
+                        } else {
+                            String msg = "[Cluster] " + clusterId + " cannot be found in the " +
+                                    "Topology for [service] " + serviceName;
+                            throw new TopologyInConsistentException(msg);
                         }
-                        startClusterMonitor(this, cluster);
                     } else {
-                        String msg = "[Cluster] " + clusterId + " cannot be found in the " +
-                                "Topology for [service] " + serviceName;
+                        String msg = "[Service] " + serviceName + " cannot be found in the Topology";
                         throw new TopologyInConsistentException(msg);
-                    }
-                } else {
-                    String msg = "[Service] " + serviceName + " cannot be found in the Topology";
-                    throw new TopologyInConsistentException(msg);
 
+                    }
+                } finally {
+                    //release read lock for the service and cluster
+                    TopologyManager.releaseReadLockForCluster(clusterId, serviceName);
                 }
-                //TopologyManager.releaseReadLock();
             }
         }
         return true;
@@ -152,22 +159,27 @@ public abstract class Monitor implements EventHandler {
     }
 
     protected synchronized void startClusterMonitor(Monitor parent, Cluster cluster) {
-        ScheduledExecutorService adder = Executors.newSingleThreadScheduledExecutor();
+        Thread th = null;
         if (cluster.isLbCluster()
                 && !this.clusterIdToClusterMonitorsMap.containsKey(cluster.getClusterId())) {
-            adder.scheduleAtFixedRate(new LBClusterMonitorAdder(
-                    cluster), 5, 5, TimeUnit.SECONDS);
+            th = new Thread(new LBClusterMonitorAdder(
+                    cluster));
         } else if (!cluster.isLbCluster() && !this.clusterIdToClusterMonitorsMap.containsKey(cluster.getClusterId())) {
-            adder.scheduleAtFixedRate(new ClusterMonitorAdder(parent, cluster), 5, 5, TimeUnit.SECONDS);
-
+            th = new Thread(
+                    new ClusterMonitorAdder(parent, cluster));
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Cluster monitor Adder has been added: [cluster] %s ",
                                 cluster.getClusterId()));
             }
         }
-        if (adder != null) {
-            //adderIdToExecutorServiceMap.put(cluster.getClusterId(), adder);
+        if (th != null) {
+            th.start();
+            /*try {
+                th.join();
+            } catch (InterruptedException ignore) {
+            }*/
+
             log.info(String
                     .format("Cluster monitor thread has been started successfully: [cluster] %s ",
                             cluster.getClusterId()));
@@ -175,25 +187,24 @@ public abstract class Monitor implements EventHandler {
     }
 
     protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentComponent component) {
-        ScheduledExecutorService adder = Executors.newSingleThreadScheduledExecutor();
-
+        Thread th = null;
         if (!this.aliasToGroupMonitorsMap.containsKey(dependency)) {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Group monitor Adder has been added: [group] %s ",
                                 dependency));
             }
-            adder.scheduleAtFixedRate(new GroupMonitorAdder(parent, dependency, component), 5, 5, TimeUnit.SECONDS);
-
+            th = new Thread(
+                    new GroupMonitorAdder(parent, dependency, component));
         }
 
-        if (adder != null) {
+        if (th != null) {
+            th.start();
             /*try {
-                adder.awaitTermination(30, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                th.join();
+            } catch (InterruptedException ignore) {
             }*/
-            //adderIdToExecutorServiceMap.put(((Group)component).getAlias(), adder);
+
             log.info(String
                     .format("Group monitor thread has been started successfully: [group] %s ",
                             dependency));
@@ -236,6 +247,14 @@ public abstract class Monitor implements EventHandler {
         return this.clusterIdToClusterMonitorsMap.get(clusterId);
     }
 
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
     private class ClusterMonitorAdder implements Runnable {
         private Cluster cluster;
         private Monitor parent;
@@ -250,10 +269,10 @@ public abstract class Monitor implements EventHandler {
             int retries = 5;
             boolean success = false;
             do {
-                /*try {
+                try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                }*/
+                }
                 try {
                     if (log.isDebugEnabled()) {
                         log.debug("CLuster monitor is going to be started for [cluster] "

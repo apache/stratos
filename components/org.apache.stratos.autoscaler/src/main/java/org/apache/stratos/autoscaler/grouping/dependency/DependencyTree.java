@@ -166,7 +166,6 @@ public class DependencyTree {
         return childContexts;
     }
 
-
     public boolean isKillAll() {
         return killAll;
     }

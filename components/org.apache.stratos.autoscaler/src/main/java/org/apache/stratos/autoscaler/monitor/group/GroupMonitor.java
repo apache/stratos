@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.event.application.status.StatusEvent;
@@ -76,16 +77,20 @@ public class GroupMonitor extends Monitor implements EventHandler {
 
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
+        String id = statusEvent.getId();
         ApplicationContext context = this.dependencyTree.
-                findApplicationContextWithId(statusEvent.getId());
+                findApplicationContextWithId(id);
         if(context.getStatusLifeCycle().isEmpty()) {
             try {
                 //if life cycle is empty, need to start the monitor
                 boolean startDep = startDependency(statusEvent.getId());
-                //updating the life cycle
+                //updating the life cycle and current status
+                context.setStatus(status);
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if(!startDep) {
-
+                    //Checking in the children whether all are active,
+                    // since no dependency found to be started.
+                    StatusChecker.getInstance().onChildStatusChange(id, this.component, this.appId);
                 }
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
@@ -103,6 +108,7 @@ public class GroupMonitor extends Monitor implements EventHandler {
 
     public void setParent(Monitor parent) {
         this.parent = parent;
+        this.appId = parent.getAppId();
     }
 
 }

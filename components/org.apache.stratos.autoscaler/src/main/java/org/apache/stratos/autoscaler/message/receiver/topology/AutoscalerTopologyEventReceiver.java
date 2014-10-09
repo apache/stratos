@@ -114,24 +114,27 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
-                log.info("[ApplicationCreatedEvent] Received: " + event.getClass());
-
-                ApplicationCreatedEvent applicationCreatedEvent = (ApplicationCreatedEvent) event;
-
-                //acquire read lock
-                //TopologyManager.acquireReadLock();
-                TopologyManager.acquireReadLockForApplication(applicationCreatedEvent.getApplication().getUniqueIdentifier());
-
                 try {
-                    //start the application monitor
-                    //TODO catch exception by ApplicationMonitor
-                    startApplicationMonitor(applicationCreatedEvent.getApplication());
+                    log.info("[ApplicationCreatedEvent] Received: " + event.getClass());
+                    ApplicationCreatedEvent applicationCreatedEvent = (ApplicationCreatedEvent) event;
+                    try {
 
-                } finally {
-                    //release read lock
-                    TopologyManager.releaseReadLockForApplication(applicationCreatedEvent.getApplication().getUniqueIdentifier());
-                    //TopologyManager.releaseReadLock();
+                        //acquire read lock
+                        TopologyManager.acquireReadLockForApplication(
+                                applicationCreatedEvent.getApplication().getUniqueIdentifier());
+                        //start the application monitor
+                        startApplicationMonitor(applicationCreatedEvent.getApplication());
+                    } catch (Exception e) {
+                        String msg = "Error processing event " + e.getLocalizedMessage();
+                        log.error(msg, e);
+                    } finally {
+                        //release read lock
+                        TopologyManager.releaseReadLockForApplication(
+                                applicationCreatedEvent.getApplication().getUniqueIdentifier());
+                    }
+                } catch (ClassCastException e) {
+                    String msg = "Error while casting the event " + e.getLocalizedMessage();
+                    log.error(msg, e);
                 }
 
             }
@@ -153,7 +156,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 clusterMonitor.setStatus(Status.Activated);
 
                 //starting the status checker to decide on the status of it's parent
-                StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -174,7 +177,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 monitor.setStatus(Status.Activated);
 
                 //starting the status checker to decide on the status of it's parent
-                StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
+                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
         });
 
@@ -189,9 +192,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
                 appMonitor.setStatus(Status.Activated);
-                //TODO update appmonitor
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -205,7 +205,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 ApplicationRemovedEvent applicationRemovedEvent = (ApplicationRemovedEvent) event;
 
                 //acquire read lock
-                //TopologyManager.acquireReadLock();
                 TopologyManager.acquireReadLockForApplication(applicationRemovedEvent.getApplicationId());
 
                 try {
@@ -232,7 +231,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 } finally {
                     //release read lock
                     TopologyManager.releaseReadLockForApplication(applicationRemovedEvent.getApplicationId());
-                    //TopologyManager.releaseReadLock();
                 }
 
             }

@@ -86,28 +86,28 @@ public class StatusChecker {
     }
 
     /**
-     * @param groupId
-     * @param appId
+     * @param idOfChild
+     * @param component
      */
-    public void onGroupStatusChange(final String groupId, final String appId) {
-        updateChild(groupId, appId);
+    public void onChildStatusChange(final String idOfChild, final ParentComponent component,
+                                    final String appId) {
+        updateChild(idOfChild, component, appId);
     }
 
-    /**
-     * @param clusterId
-     * @param appId
-     */
-    public void onClusterStatusChange(final String clusterId, final String appId) {
-        updateChild(clusterId, appId);
-    }
-
-    private void updateChild(final String clusterId, final String appId) {
+    private void updateChild(final String idOfChild, final ParentComponent component, final String appId) {
         Runnable group = new Runnable() {
             public void run() {
-                Application application = TopologyManager.getTopology().getApplication(appId);
-                Map<String, ClusterDataHolder> clusterIds = application.getClusterDataMap();
-                Map<String, Group> groups = application.getAliasToGroupMap();
-                updateChildStatus(appId, clusterId, groups, clusterIds, application);
+                try {
+                    //TODO getting lock
+                    TopologyManager.acquireReadLockForApplication(appId);
+                    Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
+                    Map<String, Group> groups = component.getAliasToGroupMap();
+                    updateChildStatus(appId, idOfChild, groups, clusterIds, component);
+                } finally {
+                    TopologyManager.releaseReadLockForApplication(appId);
+
+                }
+
             }
         };
         Thread groupThread = new Thread(group);

@@ -255,6 +255,7 @@ abstract public class AbstractClusterMonitor implements EventHandler, Runnable {
 
     public void setParent(Monitor parent) {
         this.parent = parent;
+        this.appId = parent.getAppId();
     }
 
     @Override
