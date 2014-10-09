@@ -44,6 +44,14 @@ public interface KubernetesAPIClientInterface {
 	public Pod[] getAllPods() throws KubernetesClientException;
 	
 	/**
+	 * Run a label query and retrieve a sub set of Pods.
+	 * @param array of labels for the label query
+	 * @return Pods selected Pods by executing the label query.
+	 * @throws KubernetesClientException
+	 */
+	public Pod[] getSelectedPods(Label[] label) throws KubernetesClientException;
+	
+	/**
 	 * Create a new Pod
 	 * @param pod Pod to be created
 	 * @throws KubernetesClientException

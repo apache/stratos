@@ -100,12 +100,12 @@ public interface CloudControllerService {
     public MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
     
     /**
-     * Create containers.
-     * @param Member Context with cluster id, and host cluster details. 
-     * @return updated {@link MemberContext}
+     * Create a container cluster.
+     * @param {@link ContainerClusterContext} Context with cluster id, and host cluster details. 
+     * @return a list of {@link MemberContext}s correspond to each Pod created.
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      */
-    public MemberContext startContainers(MemberContext member) throws UnregisteredCartridgeException;
+    public MemberContext[] startContainers(ContainerClusterContext clusterContext) throws UnregisteredCartridgeException;
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.

@@ -28,8 +28,9 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.functions.MemberContextToKubernetesService;
-import org.apache.stratos.cloud.controller.functions.MemberContextToReplicationController;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
+import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
@@ -45,6 +46,8 @@ import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidato
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
+import org.apache.stratos.kubernetes.client.model.Label;
+import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -1330,32 +1333,31 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public MemberContext startContainers(MemberContext memberContext)
+	public MemberContext[] startContainers(ContainerClusterContext containerClusterContext)
 			throws UnregisteredCartridgeException {
 		
 		if(log.isDebugEnabled()) {
-    		log.debug("CloudControllerServiceImpl:startContainer");
+    		log.debug("CloudControllerServiceImpl:startContainers");
     	}
 
-        if (memberContext == null) {
-            String msg = "Instance start-up failed. Member is null.";
+        if (containerClusterContext == null) {
+            String msg = "Instance start-up failed. ContainerClusterContext is null.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
-        String clusterId = memberContext.getClusterId();
+        String clusterId = containerClusterContext.getClusterId();
         if(log.isDebugEnabled()) {
-        	log.debug("Received an instance spawn request : " + memberContext.toString());
+        	log.debug("Received an instance spawn request : " + containerClusterContext.toString());
         }
 
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
 
         if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + memberContext.toString();
+            String msg = "Instance start-up failed. Invalid cluster id. " + containerClusterContext.toString();
             log.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
         
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -1364,59 +1366,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cartridge == null) {
             String msg =
                          "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
-                                 memberContext.toString();
+                                 containerClusterContext.toString();
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
 
-        memberContext.setCartridgeType(cartridgeType);
-
         try {
-            // generating the Unique member ID...
-            String memberID = generateMemberId(clusterId);
-            memberContext.setMemberId(memberID);
-
-			String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
-					StratosConstants.KUBERNETES_CLUSTER_ID);
-			
-			if (kubernetesClusterId == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String kubernetesMasterIp = CloudControllerUtil.getProperty(memberContext.getProperties(), 
-					StratosConstants.KUBERNETES_MASTER_IP);
-			
-			if (kubernetesMasterIp == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_MASTER_IP+"'. " + memberContext;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String kubernetesPortRange = CloudControllerUtil.getProperty(memberContext.getProperties(), 
-					StratosConstants.KUBERNETES_PORT_RANGE);
-			
-			if (kubernetesPortRange == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_PORT_RANGE+"'. " + memberContext;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
+            String minReplicas = validateProperty(StratosConstants.KUBERNETES_MIN_REPLICAS, ctxt);
+            String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
+            String kubernetesMasterIp = validateProperty(StratosConstants.KUBERNETES_MASTER_IP, containerClusterContext);
+            String kubernetesPortRange = validateProperty(StratosConstants.KUBERNETES_PORT_RANGE, containerClusterContext);
 			
 			KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp, kubernetesPortRange);
 			
 			KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 			
 			// first let's create a replication controller.
-			MemberContextToReplicationController controllerFunction = new MemberContextToReplicationController();
-			ReplicationController controller = controllerFunction.apply(memberContext);
+			ContainerClusterContextToReplicationController controllerFunction = new ContainerClusterContextToReplicationController();
+			ReplicationController controller = controllerFunction.apply(containerClusterContext);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller is delegating request to start a replication controller "+controller+
-						" for "+ memberContext + " to Kubernetes layer.");
+						" for "+ containerClusterContext + " to Kubernetes layer.");
 			}
 			
 			kubApi.createReplicationController(controller);
@@ -1427,59 +1398,116 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			}
 			
 			// secondly let's create a kubernetes service proxy to load balance these containers
-			MemberContextToKubernetesService serviceFunction = new MemberContextToKubernetesService();
-			Service service = serviceFunction.apply(memberContext);
+			ContainerClusterContextToKubernetesService serviceFunction = new ContainerClusterContextToKubernetesService();
+			Service service = serviceFunction.apply(containerClusterContext);
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller is delegating request to start a service "+service+
-						" for "+ memberContext + " to Kubernetes layer.");
+						" for "+ containerClusterContext + " to Kubernetes layer.");
 			}
 			
 			kubApi.createService(service);
+			
+			// set host port
+			ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
 			
 			if (log.isDebugEnabled()) {
 				log.debug("Cloud Controller successfully started the service "
 						+ controller + " via Kubernetes layer.");
 			}
 			
-            memberContext.setPublicIpAddress(kubernetesMasterIp);
-            memberContext.setPrivateIpAddress(kubernetesMasterIp);
-            memberContext.setProperties(CloudControllerUtil.addProperty(memberContext
-                    .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                    CloudControllerUtil.getProperty(ctxt.getProperties(),
-                            StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
-            dataHolder.addMemberContext(memberContext);
-
+			// create a label query
+			Label l = new Label();
+			l.setName(clusterId);
+			// execute the label query
+			Pod[] newlyCreatedPods = new Pod[0];
+			int expectedCount = Integer.parseInt(minReplicas);
+			
+			for (int i = 0; i < expectedCount ; i++) {
+			    newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
+			    
+			    log.info("Pods "+newlyCreatedPods.length);
+			    if(newlyCreatedPods.length == expectedCount) {
+			        break;
+			    }
+			    Thread.sleep(5000);
+            }
+			
+			if (log.isDebugEnabled()) {
+			    
+			    log.debug(String.format("Pods created : %s for cluster : %s",newlyCreatedPods.length, clusterId));
+			}
+			
+			List<MemberContext> memberContexts = new ArrayList<MemberContext>();
+			
+			PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
+			// generate Member Contexts
+			for (Pod pod : newlyCreatedPods) {
+                MemberContext context = podToMemberContextFunc.apply(pod);
+                context.setCartridgeType(cartridgeType);
+                context.setClusterId(clusterId);
+                
+                context.setProperties(CloudControllerUtil.addProperty(context
+                        .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                        String.valueOf(service.getPort())));
+                
+                dataHolder.addMemberContext(context);
+                
+                // trigger topology
+                // update the topology with the newly spawned member
+                TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
+                        kubernetesMasterIp, kubernetesMasterIp, context);
+                // publish data
+                // TODO
+//                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
+                
+                memberContexts.add(context);
+            }
+			
 			// persist in registry
 			persist();
 
-			// trigger topology
-			// update the topology with the newly spawned member
-			TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
-					kubernetesMasterIp, kubernetesMasterIp, memberContext);
+            log.info("Kubernetes entities are successfully starting up. "+memberContexts);
 
-			// publish data
-			// TODO
-			// CartridgeInstanceDataPublisher.publish(memberID,
-			// memberContext.getPartition().getId(),
-			// memberContext.getNetworkPartitionId(),
-			// memberContext.getClusterId(),
-			// cartridgeType,
-			// MemberStatus.Created.toString(),
-			// node);
-
-            log.info("Kubernetes entities are successfully starting up. "+memberContext.toString());
-
-            return memberContext;
+            return memberContexts.toArray(new MemberContext[0]);
 
         } catch (Exception e) {
-            String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
+            String msg = "Failed to start an instance. " + containerClusterContext.toString()+" Cause: "+e.getMessage();
             log.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
 	}
 
-	private KubernetesClusterContext getKubernetesClusterContext(
+	private String validateProperty(String property, ClusterContext ctxt) {
+
+	    String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+        
+        if (propVal == null) {
+            String msg = "Instance start-up failed. Cannot find '"+
+                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        return propVal;
+    }
+	
+	private String validateProperty(String property, ContainerClusterContext ctxt) {
+
+        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+        
+        if (propVal == null) {
+            String msg = "Instance start-up failed. Cannot find '"+
+                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        return propVal;
+        
+    }
+
+    private KubernetesClusterContext getKubernetesClusterContext(
 			String kubernetesClusterId, String kubernetesMasterIp,
 			String kubernetesPortRange) {
 		
@@ -1548,6 +1576,29 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			// we're not going to throw this error, but proceed with other deletions
 			log.error("Failed to update Kubernetes Controller with id: "+clusterId, e);
 		}
+		
+		// delete pods forcefully
+        try {
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            // execute the label query
+            Pod[] pods = kubApi.getSelectedPods(new Label[]{l});
+            
+            for (Pod pod : pods) {
+                try {
+                    // delete pods forcefully
+                    kubApi.deletePod(pod.getId());
+                } catch (KubernetesClientException ignore) {
+                    // we can't do nothing here
+                    log.warn(String.format("Failed to delete Pod [%s] forcefully!", pod.getId()));
+                }
+            }
+        } catch (KubernetesClientException e) {
+            // we're not going to throw this error, but proceed with other deletions
+            log.error("Failed to delete pods forcefully for cluster: "+clusterId, e);
+        }
+		
 		// delete the replication controller.
 		try {
 			kubApi.deleteReplicationController(clusterId);

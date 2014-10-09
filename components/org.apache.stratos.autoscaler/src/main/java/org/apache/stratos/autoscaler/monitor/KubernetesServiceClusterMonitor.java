@@ -94,48 +94,57 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             TopologyManager.releaseReadLock();
         }
 
-        // is container created successfully?
-        boolean success = false;
         String kubernetesClusterId = getKubernetesClusterCtxt().getKubernetesClusterID();
         int activeMembers = getKubernetesClusterCtxt().getActiveMembers().size();
         int pendingMembers = getKubernetesClusterCtxt().getPendingMembers().size();
         int nonTerminatedMembers = activeMembers + pendingMembers;
+        log.info(KubernetesServiceClusterMonitor.class.getName()+" is running.... Active Members: "+activeMembers
+                + " Pending Members: "+pendingMembers);
 
-        if (nonTerminatedMembers == 0) {
-            while (!success) {
-                try {
-                    CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                    MemberContext memberContext = ccClient.createContainer(kubernetesClusterId, getClusterId());
+        if (nonTerminatedMembers > 0 && nonTerminatedMembers < minReplicas) {
+            // update
+            int requiredReplicas = minReplicas - nonTerminatedMembers;
+            log.info("Required replicas : "+requiredReplicas);
+
+        } else if (nonTerminatedMembers >= minReplicas) {
+            // TODO autoscale
+            log.info("Current member count : "+nonTerminatedMembers);
+        } else {
+            try {
+                CloudControllerClient ccClient = CloudControllerClient.getInstance();
+                MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId,
+                        getClusterId());
+                for (MemberContext memberContext : memberContexts) {
+
                     if (null != memberContext) {
                         getKubernetesClusterCtxt().addPendingMember(memberContext);
-                        success = true;
-                        numberOfReplicasInServiceCluster = minReplicas;
                         if (log.isDebugEnabled()) {
-                            log.debug(String.format("Pending member added, [member] %s [kub cluster] %s",
-                                                    memberContext.getMemberId(), kubernetesClusterId));
+                            log.debug(String.format(
+                                    "Pending member added, [member] %s [kub cluster] %s",
+                                    memberContext.getMemberId(), kubernetesClusterId));
                         }
                     } else {
                         if (log.isDebugEnabled()) {
                             log.debug("Returned member context is null, did not add to pending members");
                         }
                     }
-                } catch (SpawningException spawningException) {
-                    if (log.isDebugEnabled()) {
-                        String message = "Cannot create containers, will retry in "
-                                         + (retryInterval / 1000) + "s";
-                        log.debug(message, spawningException);
-                    }
-                } catch (Exception exception) {
-                    if (log.isDebugEnabled()) {
-                        String message = "Error while creating containers, will retry in "
-                                         + (retryInterval / 1000) + "s";
-                        log.debug(message, exception);
-                    }
                 }
-                try {
-                    Thread.sleep(retryInterval);
-                } catch (InterruptedException ignored) {
+            } catch (SpawningException spawningException) {
+                if (log.isDebugEnabled()) {
+                    String message = "Cannot create containers, will retry in "
+                            + (retryInterval / 1000) + "s";
+                    log.debug(message, spawningException);
                 }
+            } catch (Exception exception) {
+                if (log.isDebugEnabled()) {
+                    String message = "Error while creating containers, will retry in "
+                            + (retryInterval / 1000) + "s";
+                    log.debug(message, exception);
+                }
+            }
+            try {
+                Thread.sleep(retryInterval);
+            } catch (InterruptedException ignored) {
             }
         }
         

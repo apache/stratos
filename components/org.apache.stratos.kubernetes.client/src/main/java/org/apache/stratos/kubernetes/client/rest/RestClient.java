@@ -18,35 +18,23 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.ConnectException;
+import java.io.InputStreamReader;
+import java.net.SocketException;
+import java.net.URI;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 
-@SuppressWarnings("deprecation")
 public class RestClient {
 
-    private String baseURL;
     private DefaultHttpClient httpClient;
-
-    private final int TIME_OUT_PARAM = 6000000;
-
-    public RestClient(String baseURL) {
-        this.baseURL = baseURL;
-    }
-
-    public String getBaseURL() {
-		return baseURL;
-	}
 
 	/**
      * Handle http post request. Return String
@@ -62,29 +50,21 @@ public class RestClient {
      * @param password
      *              Password for basic auth
      * @return The HttpResponse
-     * @throws org.apache.http.client.ClientProtocolException and IOException
+     * @throws Exception
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(String resourcePath, String jsonParamString) throws Exception{
+    public KubernetesResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
         try {
         	httpClient = new DefaultHttpClient();
-            HttpPost postRequest = new HttpPost(baseURL+resourcePath);
+            HttpPost postRequest = new HttpPost(resourcePath);
 
             StringEntity input = new StringEntity(jsonParamString);
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            HttpResponse response = httpClient.execute(postRequest);
+            KubernetesResponse response = httpClient.execute(postRequest, new KubernetesResponseHandler());
 
             return response;
-        } catch (ClientProtocolException e) {
-            throw new ClientProtocolException();
-        } catch (ConnectException e) {
-            throw new ConnectException();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return null;
         } finally {
         	 httpClient.getConnectionManager().shutdown();
         }
@@ -105,78 +85,48 @@ public class RestClient {
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doGet(String resourcePath) throws Exception{
+    public KubernetesResponse doGet(URI resourcePath) throws Exception{
         try {
         	httpClient = new DefaultHttpClient();
-            HttpGet getRequest = new HttpGet(baseURL+resourcePath);
+            HttpGet getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
-            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
-
-            HttpResponse response = httpClient.execute(getRequest);
-
+            KubernetesResponse response = httpClient.execute(getRequest, new KubernetesResponseHandler());
             return response;
-        } catch (ClientProtocolException e) {
-            throw new ClientProtocolException();
-        } catch (ConnectException e) {
-            throw new ConnectException();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         } finally {
         	 httpClient.getConnectionManager().shutdown();
         }
     }
-
-    public HttpResponse doDelete(String resourcePath) throws Exception {
+    
+    public KubernetesResponse doDelete(URI resourcePath) throws Exception {
         try {
         	httpClient = new DefaultHttpClient();
-            HttpDelete httpDelete = new HttpDelete(baseURL+resourcePath);
+            HttpDelete httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
 
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
-            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
-
-            HttpResponse response = httpClient.execute(httpDelete);
+            KubernetesResponse response = httpClient.execute(httpDelete, new KubernetesResponseHandler());
 
             return  response;
 
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         } finally {
         	 httpClient.getConnectionManager().shutdown();
         }
     }
 
-    public HttpResponse doPut(String resourcePath, String jsonParamString) throws Exception {
+    public KubernetesResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
 
 		try {
 			httpClient = new DefaultHttpClient();
-			System.out.println(baseURL + resourcePath);
-			System.out.println(jsonParamString);
-			HttpPut putRequest = new HttpPut(baseURL + resourcePath);
+			HttpPut putRequest = new HttpPut(resourcePath);
 
 			StringEntity input = new StringEntity(jsonParamString);
 			input.setContentType("application/json");
 			putRequest.setEntity(input);
 
-			HttpResponse response = httpClient.execute(putRequest);
+			KubernetesResponse response = httpClient.execute(putRequest, new KubernetesResponseHandler());
 
 			return response;
-		} catch (ClientProtocolException e) {
-			throw new ClientProtocolException();
-		} catch (ConnectException e) {
-			throw new ConnectException();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		
 		} finally {
 			httpClient.getConnectionManager().shutdown();
 		}
