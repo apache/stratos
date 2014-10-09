@@ -21,21 +21,19 @@ package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DependencyOrder implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = -599600831844477527L;
 
-	private String [] startupOrders;
+	private Set<StartupOrder> startupOrders;
 
     private String killbehavior;
 
     public DependencyOrder () {
-        this.setStartupOrders(null);
+
     }
 
     public String getKillbehavior() {
@@ -46,21 +44,11 @@ public class DependencyOrder implements Serializable {
         this.killbehavior = killbehavior;
     }
 
-	public String [] getStartupOrders() {
+	public Set<StartupOrder> getStartupOrders() {
 		return startupOrders;
 	}
 
-	public void setStartupOrders(String [] startupOrders) {
+	public void setStartupOrders(Set<StartupOrder> startupOrders) {
 		this.startupOrders = startupOrders;
-	}
-	
-	public String getStartStartupOrder(String startupOrder) {
-		String [] splitStartupOrder = startupOrder.split(",");
-		return splitStartupOrder[0];
-	}
-	
-	public String getAfterStartupOrder(String startupOrder) {
-		String [] splitStartupOrder = startupOrder.split(",");
-		return splitStartupOrder[1];
 	}
 }

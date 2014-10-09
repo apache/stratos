@@ -82,8 +82,8 @@ public class DependencyBuilder {
             }
 
             //Parsing the start up order
-            String [] startupOrders = dependencyOrder.getStartupOrders();
-            ApplicationContext foundContext = null; 
+            Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
+            ApplicationContext foundContext;
             if (startupOrders == null) {
             	if (log.isDebugEnabled()) {
                     log.debug("startupOrders is null, returning default dependency tree (empty)");
@@ -91,46 +91,49 @@ public class DependencyBuilder {
             	
             	return dependencyTree;
             }
-            for (String startupOrder : startupOrders) {
-            	String start = dependencyOrder.getStartStartupOrder(startupOrder);
+            for (StartupOrder startupOrder : startupOrders) {
+
                 foundContext = null;
-                
-                if (start != null) {
-                    ApplicationContext applicationContext = ApplicationContextFactory.
-                                    getApplicationContext(start, component,
-                                                            dependencyTree.isKillDependent());
-                    String id = applicationContext.getId();
 
-                    ApplicationContext existingApplicationContext =
-                            dependencyTree.findApplicationContextWithId(id);
-                    if (existingApplicationContext == null) {
-                        if (foundContext != null) {
-                            //appending the start up order to existing group/cluster
-                            foundContext.addApplicationContext(applicationContext);
-                            if (log.isDebugEnabled()) {
-                                log.debug("Found an existing [dependency] " + foundContext.getId() +
-                                        " and adding the [dependency] " + id + " as the child");
+                for (String start : startupOrder.getStartList())  {
+
+                    if (start != null) {
+                        ApplicationContext applicationContext = ApplicationContextFactory.
+                                getApplicationContext(start, component, dependencyTree.isKillDependent());
+                        String id = applicationContext.getId(); //TODO change the id
+
+                        ApplicationContext existingApplicationContext =
+                                dependencyTree.findApplicationContextWithId(id);
+                        if (existingApplicationContext == null) {
+                            if (foundContext != null) {
+                                //appending the start up order to existing group/cluster
+                                foundContext.addApplicationContext(applicationContext);
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Found an existing [dependency] " + foundContext.getId() +
+                                            " and adding the [dependency] " + id + " as the child");
+                                }
+                            } else {
+                                //adding list of startup order to the dependency tree
+                                dependencyTree.addApplicationContext(applicationContext);
                             }
                         } else {
-                            //adding list of startup order to the dependency tree
-                            dependencyTree.addApplicationContext(applicationContext);
-                        }
-                    } else {
-                        if (foundContext == null) {
-                            //assigning the found context to the later use.
-                            foundContext = existingApplicationContext;
-                            if (log.isDebugEnabled()) {
-                                log.debug("Found an existing [dependency] " + id + " and setting it " +
-                                        "for the next dependency to follow");
+                            if (foundContext == null) {
+                                //assigning the found context to the later use.
+                                foundContext = existingApplicationContext;
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Found an existing [dependency] " + id + " and setting it " +
+                                            "for the next dependency to follow");
+                                }
+                            } else {
+                                String msg = "Startup order is not consistent. It contains the group/cluster " +
+                                        "which has been used more than one in another startup order";
+                                throw new DependencyBuilderException(msg);
                             }
-                        } else {
-                            String msg = "Startup order is not consistent. It contains the group/cluster " +
-                                    "which has been used more than one in another startup order";
-                            throw new DependencyBuilderException(msg);
-                        }
 
+                        }
                     }
                 }
+
             }
             //TODO need to parser the scalable dependencies
         }

@@ -34,7 +34,6 @@ import org.apache.stratos.cloud.controller.pojo.application.*;
 import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.StartupOrder;
 
 import java.util.*;
 
@@ -274,7 +273,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     	log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " + 
                     				appCtxt.getAlias() + " #: " + startupOrders.length);
                     }
-                    appDependencyOrder.setStartupOrders(startupOrders);
+                    appDependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders));
                 } else {
                 	if (log.isDebugEnabled()) {
                     	log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
@@ -401,7 +400,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // create the Dependency Ordering
         String []  startupOrders = getStartupOrderForGroup(groupCtxt);
         if (startupOrders != null) {
-            dependencyOrder.setStartupOrders(startupOrders);
+            dependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders, groupCtxt));
         }
         dependencyOrder.setKillbehavior(getKillbehaviour(groupCtxt.getName()));
         group.setDependencyOrder(dependencyOrder);

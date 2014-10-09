@@ -23,13 +23,26 @@ import org.apache.stratos.cloud.controller.pojo.application.GroupContext;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
 import org.apache.stratos.messaging.domain.topology.StartupOrder;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ParserUtils {
 
-	/*
-    public static Set<StartupOrder> convert (org.apache.stratos.cloud.controller.pojo.StartupOrder [] startupOrderArr, GroupContext groupContext) {
+    public static Set<StartupOrder> convert (String [] startupOrderArr) {
+
+        Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
+
+        if (startupOrderArr == null) {
+            return startupOrders;
+        }
+
+        for (String commaSeparatedStartupOrder : startupOrderArr) {
+            startupOrders.add(new StartupOrder(Arrays.asList(commaSeparatedStartupOrder.split(","))));
+        }
+
+        return startupOrders;
+    }
+
+    public static Set<StartupOrder> convert (String [] startupOrderArr, GroupContext groupContext) {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
@@ -38,64 +51,50 @@ public class ParserUtils {
         }
 
 
-        for (int i = 0; i < startupOrderArr.length ; i++) {
+        for (String commaSeparatedStartupOrder : startupOrderArr) {
             // convert all Startup Orders to aliases-based
-            // start
-            String startAlias;
-            if (startupOrderArr[i].getStart().startsWith("cartridge.")) {
-                String cartridgeType = startupOrderArr[i].getStart().substring(10);
-                startAlias = getAliasForServiceType(cartridgeType, groupContext);
-                if (startAlias == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
-                            "cannot find the matching alias for Service type " + cartridgeType);
-                }
-
-                startAlias = "cartridge.".concat(startAlias);
-
-            } else if (startupOrderArr[i].getStart().startsWith("group."))  {
-                String groupName = startupOrderArr[i].getStart().substring(6);
-                startAlias = getAliasForGroupName(groupName, groupContext);
-                if (startAlias == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
-                            "cannot find the matching alias for Group name " + groupName);
-                }
-
-                startAlias = "group.".concat(startAlias);
-
-            } else {
-                throw new RuntimeException("Incorrect Startup Order specified");
-            }
-
-            // after
-            String afterAlias;
-            if (startupOrderArr[i].getAfter().startsWith("cartridge.")) {
-                String cartridgeType = startupOrderArr[i].getAfter().substring(10);
-                afterAlias = getAliasForServiceType(cartridgeType, groupContext);
-                if (afterAlias == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
-                            "cannot find the matching alias for Service type " + cartridgeType);
-                }
-
-                afterAlias = "cartridge.".concat(afterAlias);
-
-            } else if (startupOrderArr[i].getAfter().startsWith("group."))  {
-                String groupName = startupOrderArr[i].getAfter().substring(6);
-                afterAlias = getAliasForGroupName(groupName, groupContext);
-                if (afterAlias == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
-                            "cannot find the matching alias for Group name " + groupName);
-                }
-
-                afterAlias = "group.".concat(afterAlias);
-
-            } else {
-                throw new RuntimeException("Incorrect Startup Order specified");
-            }
-
-            startupOrders.add(new StartupOrder(startAlias, afterAlias));
+            List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
+            startupOrders.add(getStartupOrder(components, groupContext));
         }
 
         return startupOrders;
+    }
+
+    private static StartupOrder getStartupOrder (List<String> components, GroupContext groupContext) {
+
+        List<String> aliasBasedComponents = new ArrayList<String>();
+
+        for (String component : components) {
+            component = component.trim();
+
+            String aliasBasedComponent;
+            if (component.startsWith("cartridge.")) {
+                String cartridgeType = component.substring(10);
+                aliasBasedComponent = getAliasForServiceType(cartridgeType, groupContext);
+                if (aliasBasedComponent == null) {
+                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
+                            "cannot find the matching alias for Service type " + cartridgeType);
+                }
+
+                aliasBasedComponent = "cartridge.".concat(aliasBasedComponent);
+
+            } else if (component.startsWith("group.")) {
+                String groupName = component.substring(6);
+                aliasBasedComponent = getAliasForGroupName(groupName, groupContext);
+                if (aliasBasedComponent == null) {
+                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
+                            "cannot find the matching alias for Group name " + groupName);
+                }
+
+                aliasBasedComponent = "group.".concat(aliasBasedComponent);
+
+            } else {
+                throw new RuntimeException("Incorrect Startup Order specified");
+            }
+            aliasBasedComponents.add(aliasBasedComponent);
+        }
+
+        return new StartupOrder(aliasBasedComponents);
     }
 
     private static String getAliasForGroupName (String groupName, GroupContext groupContext) {
@@ -109,7 +108,7 @@ public class ParserUtils {
         return null;
     }
 
-*/
+
     private static String getAliasForServiceType (String serviceType, GroupContext groupContext) {
 
         for (SubscribableContext subCtxt : groupContext.getSubscribableContexts()) {

@@ -23,26 +23,11 @@ import java.io.Serializable;
 import java.util.List;
 
 public class StartupOrder implements Serializable {
-	
-	/*
-
-    private String start;
-
-    private String after;
 
     private List<String> startList;
 
-    public StartupOrder (String start, String after) {
-        this.start = start;
-        this.after = after;
-    }
-
-    public String getStart() {
-        return start;
-    }
-
-    public String getAfter() {
-        return after;
+    public StartupOrder (List<String> startList) {
+        this.startList = startList;
     }
 
     public List<String> getStartList() {
@@ -52,5 +37,4 @@ public class StartupOrder implements Serializable {
     public void setStartList(List<String> startList) {
         this.startList = startList;
     }
-    */
 }
