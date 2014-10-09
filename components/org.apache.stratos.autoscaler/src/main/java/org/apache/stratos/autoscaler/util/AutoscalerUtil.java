@@ -28,8 +28,10 @@ import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
@@ -320,19 +322,25 @@ public class AutoscalerUtil {
         return clusterMonitor;
     }
 
-    public static GroupMonitor getGroupMonitor(Group group) {
+    //TODO moving it into factory class
+    public static GroupMonitor getGroupMonitor(Group group) throws DependencyBuilderException,
+                                                            TopologyInConsistentException {
         GroupMonitor groupMonitor =
                 new GroupMonitor(group);
         return groupMonitor;
 
     }
 
-    public static ApplicationMonitor getApplicationMonitor(Application application) {
+    public static ApplicationMonitor getApplicationMonitor(Application application)
+                                            throws DependencyBuilderException,
+                                            TopologyInConsistentException {
         ApplicationMonitor applicationMonitor =
                 new ApplicationMonitor(application);
         return applicationMonitor;
 
     }
+
+
 
     public static Properties getProperties(final OMElement elt) {
 

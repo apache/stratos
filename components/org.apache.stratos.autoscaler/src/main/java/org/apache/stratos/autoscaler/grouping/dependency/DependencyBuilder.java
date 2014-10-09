@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContextFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ClusterContext;
@@ -53,7 +54,7 @@ public class DependencyBuilder {
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
-    public DependencyTree buildDependency(ParentBehavior component) {
+    public DependencyTree buildDependency(ParentBehavior component) throws DependencyBuilderException {
         String alias = null;
         if(component instanceof Application) {
             alias = ((Application)component).getId();
@@ -117,9 +118,9 @@ public class DependencyBuilder {
                                         "for the next dependency to follow");
                             }
                         } else {
-                            //TODO Throw exception, since another same start order already found
-                            log.warn("Startup order is not consistent. It contains the group/cluster " +
-                                    "which has been used more than one in another startup order");
+                            String msg = "Startup order is not consistent. It contains the group/cluster " +
+                                    "which has been used more than one in another startup order";
+                            throw new DependencyBuilderException(msg);
                         }
 
                     }
@@ -149,46 +150,4 @@ public class DependencyBuilder {
         }
         return dependencyTree;
     }
-
-    /*public static Queue<String> getStartupOrder(ParentBehavior component) {
-
-
-        Queue<String> startup = new LinkedList<String>();
-        DependencyOrder dependencyOrder = component.getDependencyOrder();
-        if (dependencyOrder != null) {
-            Set<StartupOrder> startupOrderSet = dependencyOrder.getStartupOrders();
-            for (StartupOrder startupOrder : startupOrderSet) {
-
-                String start = startupOrder.getStart();
-                String after = startupOrder.getAfter();
-
-                if (!startup.contains(start)) {
-                    startup.add(start);
-                    if (!startup.contains(after)) {
-                        startup.add(after);
-
-                    } else {
-                        //TODO throw exception since after is there before start
-                    }
-                } else {
-                    if (!startup.contains(after)) {
-                        startup.add(after);
-                    } else {
-                        //TODO throw exception since start and after already there
-                    }
-                }
-            }
-        }
-        //TODO adding all the missed groups or clusters as the top child to the list
-        //TODO handle by application and group itself groupName and serviceName
-
-        if (component instanceof Application) {
-
-        } else if (component instanceof Group) {
-
-        }
-        return startup;
-
-    }*/
-
 }

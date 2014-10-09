@@ -20,6 +20,8 @@ package org.apache.stratos.autoscaler.monitor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -38,44 +40,61 @@ import org.apache.stratos.messaging.event.application.status.StatusEvent;
 public class GroupMonitor extends Monitor implements EventHandler {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
 
+    //Parent monitor of this monitor
     private Monitor parent;
 
-    public GroupMonitor(Group group) {
+    /**
+     * Constructor of GroupMonitor
+     * @param group Takes the group from the Topology
+     * @throws DependencyBuilderException throws when couldn't build the Topology
+     * @throws TopologyInConsistentException throws when topology is inconsistent
+     */
+    public GroupMonitor(Group group) throws DependencyBuilderException,
+                                            TopologyInConsistentException {
         super(group);
         this.id = group.getAlias();
         startDependency();
 
     }
 
-    /*@Override
-    public void update(Observable observable, Object event) {
-        MonitorStatusEvent1111 statusEvent = (MonitorStatusEvent1111) event;
-        Status childStatus = statusEvent.getStatus();
-        String notifier = statusEvent.getNotifierId();
-        log.info(String.format("[Monitor] %s got notified from the [child] %s" +
-                "on its state change from %s to %s", id, notifier, this.status, status));
-        if (childStatus == Status.Activated) {
-            //start the next dependency
-            startDependency(notifier);
-        } else if(childStatus == Status.In_Maintenance) {
-
-        }
-    }*/
-
-
+    /**
+     * Will set the status of the monitor based on Topology Group status/child status like scaling
+     * @param status
+     */
     public void setStatus(Status status) {
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", id, this.status, status));
         this.status = status;
         //notifying the parent
         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
-        //setChanged();
-        //notifyObservers(new MonitorStatusEvent1111(status, id));
     }
 
     @Override
     public void onEvent(MonitorStatusEvent statusEvent) {
-        this.monitor(statusEvent);
+        monitor(statusEvent);
+    }
+
+    @Override
+    protected void monitor(MonitorStatusEvent statusEvent) {
+        ApplicationContext context = this.dependencyTree.
+                findApplicationContextWithId(statusEvent.getId());
+        if(context.getStatusLifeCycle().isEmpty()) {
+            try {
+                //if life cycle is empty, need to start the monitor
+                boolean startDep = startDependency(statusEvent.getId());
+                //updating the life cycle
+                context.addStatusToLIfeCycle(statusEvent.getStatus());
+                if(!startDep) {
+                    
+                }
+            } catch (TopologyInConsistentException e) {
+                //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+                log.error(e);
+            }
+        } else {
+            //TODO act based on life cycle events
+        }
+
     }
 
     public Monitor getParent() {
@@ -86,15 +105,4 @@ public class GroupMonitor extends Monitor implements EventHandler {
         this.parent = parent;
     }
 
-    @Override
-    protected void monitor(MonitorStatusEvent statusEvent) {
-        ApplicationContext context = this.dependencyTree.
-                                            findApplicationContextWithId(statusEvent.getId());
-        if(context.getStatusLifeCycle().isEmpty()) {
-            startDependency(statusEvent.getId());
-        } else {
-            //TODO act based on life cyle events
-        }
-
-    }
 }

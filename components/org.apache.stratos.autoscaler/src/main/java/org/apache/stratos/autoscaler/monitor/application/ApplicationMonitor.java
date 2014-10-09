@@ -20,6 +20,8 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -38,29 +40,13 @@ import java.util.List;
 public class ApplicationMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
-    public ApplicationMonitor(Application application) {
+    public ApplicationMonitor(Application application) throws DependencyBuilderException,
+                                                        TopologyInConsistentException {
         super(application);
         this.id = application.getId();
+        //starting the first set of dependencies from its children
         startDependency();
     }
-
-    /*@Override
-    public void update(Observable observable, Object event) {
-        if (event instanceof MonitorStatusEvent1111) {
-            MonitorStatusEvent1111 statusEvent = (MonitorStatusEvent1111) event;
-            Status childStatus = statusEvent.getStatus();
-            String notifier = statusEvent.getNotifierId();
-            log.info(String.format("[Monitor] %s got notified from the [child] %s" +
-                    "on its state change from %s to %s", id, notifier, this.status, status));
-            if (childStatus == Status.Activated) {
-                //update the notifier as active in the dependency tree
-
-                //start the next dependency
-                startDependency(notifier);
-            }
-        }
-    }*/
-
 
     /**
      * To find all the clusters of an application
@@ -234,7 +220,7 @@ public class ApplicationMonitor extends Monitor {
 
     @Override
     public void onEvent(MonitorStatusEvent statusEvent) {
-        this.monitor(statusEvent);
+        monitor(statusEvent);
     }
 
     @Override
@@ -242,9 +228,17 @@ public class ApplicationMonitor extends Monitor {
         ApplicationContext context = this.dependencyTree.
                 findApplicationContextWithId(statusEvent.getId());
         if(context.getStatusLifeCycle().isEmpty()) {
-            startDependency(statusEvent.getId());
+            try {
+                //if life cycle is empty, need to start the monitor
+                startDependency(statusEvent.getId());
+                //updating the life cycle
+                context.addStatusToLIfeCycle(statusEvent.getStatus());
+            } catch (TopologyInConsistentException e) {
+                //TODO revert the siblings
+                log.error(e);
+            }
         } else {
-            //TODO act based on life cyle events
+            //TODO act based on life cycle events
         }
 
     }

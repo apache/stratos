@@ -21,8 +21,10 @@ package org.apache.stratos.autoscaler.monitor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
@@ -62,16 +64,17 @@ public abstract class Monitor implements EventHandler {
     //status of the monitor whether it is running/in_maintainable/terminated
     protected Status status;
 
-    public Monitor(ParentBehavior component) {
+    public Monitor(ParentBehavior component) throws DependencyBuilderException {
         aliasToGroupMonitorsMap = new HashMap<String, GroupMonitor>();
         clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
-        //preOrderTraverse = new LinkedList<String>();
         this.component = component;
+        //Building the dependency for this monitor within the immediate children
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
 
     /**
-     *
+     * Will monitor the immediate children upon any event triggers from parent/children
+     * @param statusEvent will be sent by parent/children with the current status
      */
     protected abstract void monitor(MonitorStatusEvent statusEvent);
 
@@ -81,7 +84,7 @@ public abstract class Monitor implements EventHandler {
      * it will get invoked when the monitor starts up only.
      * //TODO restarting the whole group
      */
-    public void startDependency() {
+    public void startDependency() throws TopologyInConsistentException {
         //start the first dependency
         List<ApplicationContext> applicationContexts = this.dependencyTree.getStarAbleDependencies();
         startDependency(applicationContexts);
@@ -93,9 +96,9 @@ public abstract class Monitor implements EventHandler {
      *
      * @param id alias/clusterId of which receive the activated event
      */
-    public void startDependency(String id) {
+    public boolean startDependency(String id) throws TopologyInConsistentException {
         List<ApplicationContext> applicationContexts = this.dependencyTree.getStarAbleDependencies(id);
-        startDependency(applicationContexts);
+        return startDependency(applicationContexts);
     }
 
     /**
@@ -103,10 +106,13 @@ public abstract class Monitor implements EventHandler {
      *
      * @param applicationContexts the found applicationContexts to be started
      */
-    private void startDependency(List<ApplicationContext> applicationContexts) {
+    private boolean startDependency(List<ApplicationContext> applicationContexts)
+                                throws TopologyInConsistentException{
         if (applicationContexts == null) {
             //all the groups/clusters have been started and waiting for activation
-            log.warn("There is no child found for the [group]: " + this.id);
+            log.info("There is no child found for the [group]: " + this.id);
+            return false;
+
         }
         for (ApplicationContext context : applicationContexts) {
             if (log.isDebugEnabled()) {
@@ -130,15 +136,19 @@ public abstract class Monitor implements EventHandler {
                         }
                         startClusterMonitor(this, cluster);
                     } else {
-                        log.warn("[Cluster] " + clusterId + " cannot be found in the " +
-                                "Topology for [service] " + serviceName);
+                        String msg = "[Cluster] " + clusterId + " cannot be found in the " +
+                                "Topology for [service] " + serviceName;
+                        throw new TopologyInConsistentException(msg);
                     }
                 } else {
-                    log.warn("[Service] " + serviceName + " cannot be found in the Topology");
+                    String msg = "[Service] " + serviceName + " cannot be found in the Topology";
+                    throw new TopologyInConsistentException(msg);
+
                 }
                 //TopologyManager.releaseReadLock();
             }
         }
+        return true;
 
     }
 
@@ -321,13 +331,14 @@ public abstract class Monitor implements EventHandler {
                     monitor.setParent(parent);
                     //monitor.addObserver(parent);
                     success = true;
-
-                } catch (Exception e) {
+                } catch (DependencyBuilderException e) {
                     String msg = "Group monitor creation failed for group: " + dependency;
                     log.warn(msg, e);
                     retries--;
-
-
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Group monitor creation failed for group: " + dependency;
+                    log.warn(msg, e);
+                    retries--;
                 }
             } while (!success && retries != 0);
 
@@ -335,7 +346,8 @@ public abstract class Monitor implements EventHandler {
                 String msg = "Group monitor creation failed, even after retrying for 5 times, "
                         + "for group: " + dependency;
                 log.error(msg);
-                //TODO parent.notify();
+                //TODO parent.notify(); as it got to failed
+
                 throw new RuntimeException(msg);
             }
 

@@ -24,7 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
@@ -92,8 +94,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
                 try {
                     TopologyManager.acquireReadLock();
-                    if(!topologyInitialized) {
-                          topologyInitialized = true;
+                    if (!topologyInitialized) {
+                        topologyInitialized = true;
                         for (Application application : TopologyManager.getTopology().getApplications()) {
                             startApplicationMonitor(application);
                         }
@@ -187,7 +189,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
 
 
-
         topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -203,10 +204,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     //TODO remove monitors as well as any starting or pending threads
                     ApplicationMonitor monitor = AutoscalerContext.getInstance().
                             getAppMonitor(applicationRemovedEvent.getApplicationId());
-                    if(monitor != null) {
+                    if (monitor != null) {
                         List<String> clusters = monitor.
                                 findClustersOfApplication(applicationRemovedEvent.getApplicationId());
-                        for(String clusterId: clusters) {
+                        for (String clusterId : clusters) {
                             //stopping the cluster monitor and remove it from the AS
                             AutoscalerContext.getInstance().getMonitor(clusterId).setDestroyed(true);
                             AutoscalerContext.getInstance().removeMonitor(clusterId);
@@ -233,7 +234,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
                 try {
                     MemberReadyToShutdownEvent memberReadyToShutdownEvent =
-                                                                (MemberReadyToShutdownEvent) event;
+                            (MemberReadyToShutdownEvent) event;
                     AutoscalerContext asCtx = AutoscalerContext.getInstance();
                     AbstractClusterMonitor monitor;
                     String clusterId = memberReadyToShutdownEvent.getClusterId();
@@ -253,7 +254,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     NetworkPartitionContext nwPartitionCtxt;
                     nwPartitionCtxt = monitor.getNetworkPartitionCtxt(
-                                            memberReadyToShutdownEvent.getNetworkPartitionId());
+                            memberReadyToShutdownEvent.getNetworkPartitionId());
 
                     // start a new member in the same Partition
                     String partitionId = monitor.getPartitionOfMember(memberId);
@@ -291,11 +292,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     Cluster cluster = service.getCluster(e.getClusterId());
                     if (AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getMonitor(e.getClusterId()).
-                                                        setStatus(e.getStatus());
+                                setStatus(e.getStatus());
                     } else if (AutoscalerContext.getInstance().
-                                        lbMonitorExist((cluster.getClusterId()))) {
+                            lbMonitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getLBMonitor(e.getClusterId()).
-                                                        setStatus(e.getStatus());
+                                setStatus(e.getStatus());
                     } else {
                         log.error("cluster monitor not exists for the cluster: " + cluster.toString());
                     }
@@ -323,7 +324,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     if (e.isLbCluster()) {
                         DeploymentPolicy depPolicy = PolicyManager.getInstance().
-                                                        getDeploymentPolicy(deploymentPolicy);
+                                getDeploymentPolicy(deploymentPolicy);
                         if (depPolicy != null) {
                             List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
                                     .getNetworkPartitionLbHolders(depPolicy);
@@ -396,10 +397,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
 
                     NetworkPartitionContext networkPartitionContext = monitor.
-                                                        getNetworkPartitionCtxt(networkPartitionId);
+                            getNetworkPartitionCtxt(networkPartitionId);
 
                     PartitionContext partitionContext = networkPartitionContext.
-                                                                    getPartitionCtxt(partitionId);
+                            getPartitionCtxt(partitionId);
                     String memberId = e.getMemberId();
                     partitionContext.removeMemberStatsContext(memberId);
 
@@ -471,7 +472,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Member stat context has been added " +
-                                                "successfully: [member] %s", memberId));
+                                "successfully: [member] %s", memberId));
                     }
 //                partitionContext.incrementCurrentActiveMemberCount(1);
                     partitionContext.movePendingMemberToActiveMembers(memberId);
@@ -505,16 +506,16 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     if (AutoscalerContext.getInstance().monitorExist(clusterId)) {
                         monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
                         partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).
-                                                                    getPartitionCtxt(partitionId);
+                                getPartitionCtxt(partitionId);
                     } else {
                         monitor = AutoscalerContext.getInstance().getLBMonitor(clusterId);
                         partitionContext = monitor.getNetworkPartitionCtxt(networkPartitionId).
-                                                                    getPartitionCtxt(partitionId);
+                                getPartitionCtxt(partitionId);
                     }
                     partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member has been moved as pending termination: " +
-                                                "[member] %s", memberId));
+                                "[member] %s", memberId));
                     }
                     partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
 
@@ -553,7 +554,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Application monitor thread has been started successfully: " +
-                                        "[application] %s ", application.getId()));
+                                "[application] %s ", application.getId()));
             }
         }
     }
@@ -569,23 +570,28 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             ApplicationMonitor applicationMonitor = null;
             int retries = 5;
             boolean success = false;
-             do {
-                 try {
-                     Thread.sleep(5000);
-                 } catch (InterruptedException e1) {
-                 }
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
                 try {
                     long start = System.currentTimeMillis();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("application monitor is going to be started for [application] " +
                                 application.getId());
                     }
                     applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
+
                     long end = System.currentTimeMillis();
-                    log.info("Time taken to start Napp monitor: " + (end - start)/1000);
+                    log.info("Time taken to start Napp monitor: " + (end - start) / 1000);
                     success = true;
                     //TODO exception handling
-                } catch (Exception e) {
+                } catch (DependencyBuilderException e) {
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
                     String msg = "Application monitor creation failed for Application: ";
                     log.warn(msg, e);
                     retries--;
@@ -600,11 +606,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
 
             AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
-            //TODO should start the appMonitor
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application monitor has been added successfully: " +
-                                "[application] %s", applicationMonitor.getId()));
+                        "[application] %s", applicationMonitor.getId()));
             }
         }
     }
