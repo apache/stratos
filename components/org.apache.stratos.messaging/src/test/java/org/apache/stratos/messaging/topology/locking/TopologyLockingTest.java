@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.topology.locking;
 
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.junit.*;
 
@@ -114,21 +115,21 @@ public class TopologyLockingTest {
     @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForServices1To2 () {
 
-        TopologyManager.acquireWriteLockForService("service1");
-        TopologyManager.acquireWriteLockForService("service2");
+        TopologyUpdater.acquireWriteLockForService("service1");
+        TopologyUpdater.acquireWriteLockForService("service2");
 
-        TopologyManager.releaseWriteLockForService("service1");
-        TopologyManager.releaseWriteLockForService("service2");
+        TopologyUpdater.releaseWriteLockForService("service1");
+        TopologyUpdater.releaseWriteLockForService("service2");
     }
 
     @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForServices3To4 () {
 
-        TopologyManager.acquireWriteLockForService("service3");
-        TopologyManager.acquireWriteLockForService("service4");
+        TopologyUpdater.acquireWriteLockForService("service3");
+        TopologyUpdater.acquireWriteLockForService("service4");
 
-        TopologyManager.releaseWriteLockForService("service3");
-        TopologyManager.releaseWriteLockForService("service4");
+        TopologyUpdater.releaseWriteLockForService("service3");
+        TopologyUpdater.releaseWriteLockForService("service4");
     }
 
     @Test(timeout=10000)
@@ -154,21 +155,21 @@ public class TopologyLockingTest {
     @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForClustersOfService1 () {
 
-        TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster1.domain");
-        TopologyManager.acquireWriteLockForCluster("service1", "service1.cluster2.domain");
+        TopologyUpdater.acquireWriteLockForCluster("service1", "service1.cluster1.domain");
+        TopologyUpdater.acquireWriteLockForCluster("service1", "service1.cluster2.domain");
 
-        TopologyManager.releaseWriteLockForCluster("service1", "service1.cluster1.domain");
-        TopologyManager.releaseWriteLockForCluster("service1", "service1.cluster2.domain");
+        TopologyUpdater.releaseWriteLockForCluster("service1", "service1.cluster1.domain");
+        TopologyUpdater.releaseWriteLockForCluster("service1", "service1.cluster2.domain");
     }
 
     @Test(timeout=10000)
     public void testAqcuireAndReleaseWriteLocksForClustersOfService2 () {
 
-        TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster1.domain");
-        TopologyManager.acquireWriteLockForCluster("service2", "service2.cluster2.domain");
+        TopologyUpdater.acquireWriteLockForCluster("service2", "service2.cluster1.domain");
+        TopologyUpdater.acquireWriteLockForCluster("service2", "service2.cluster2.domain");
 
-        TopologyManager.releaseWriteLockForCluster("service2", "service2.cluster1.domain");
-        TopologyManager.releaseWriteLockForCluster("service2", "service2.cluster2.domain");
+        TopologyUpdater.releaseWriteLockForCluster("service2", "service2.cluster1.domain");
+        TopologyUpdater.releaseWriteLockForCluster("service2", "service2.cluster2.domain");
     }
 
     @Test(timeout=10000)
@@ -181,8 +182,8 @@ public class TopologyLockingTest {
     @Test(timeout=10000)
     public void testAcquireAndReleaseWriteLockForApp1 () {
 
-        TopologyManager.acquireWriteLockForApplication("app1");
-        TopologyManager.releaseWriteLockForApplication("app1");
+        TopologyUpdater.acquireWriteLockForApplication("app1");
+        TopologyUpdater.releaseWriteLockForApplication("app1");
     }
 
     @Test(timeout=10000)
@@ -195,8 +196,8 @@ public class TopologyLockingTest {
     @Test(timeout=10000)
     public void testAcquireAndReleaseWriteLockForApp2 () {
 
-        TopologyManager.acquireWriteLockForApplication("app2");
-        TopologyManager.releaseWriteLockForApplication("app2");
+        TopologyUpdater.acquireWriteLockForApplication("app2");
+        TopologyUpdater.releaseWriteLockForApplication("app2");
     }
 
     @AfterClass

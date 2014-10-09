@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.event.topology.ClusterMaintenanceModeEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 public class ClusterMaintenanceModeMessageProcessor extends MessageProcessor {
@@ -50,12 +50,12 @@ public class ClusterMaintenanceModeMessageProcessor extends MessageProcessor {
             ClusterMaintenanceModeEvent event = (ClusterMaintenanceModeEvent) Util.
                                 jsonToObject(message, ClusterMaintenanceModeEvent.class);
 
-            TopologyManager.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
+            TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyManager.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
+                TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
 
         } else {

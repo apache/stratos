@@ -104,11 +104,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+                            !org.apache.stratos.messaging.message.processor.topology.updater,
                             org.apache.stratos.messaging.*,
                         </Export-Package>
-                        <!--Private-Package>
-                        	org.apache.stratos.messaging.internal;
-                        </Private-Package-->
+                        <Private-Package>
+                            org.apache.stratos.messaging.message.processor.topology.updater;
+                        </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,

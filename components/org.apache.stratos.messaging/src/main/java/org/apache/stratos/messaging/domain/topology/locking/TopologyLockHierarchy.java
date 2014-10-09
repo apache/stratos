@@ -29,25 +29,29 @@ public class TopologyLockHierarchy {
 
     private static final Log log = LogFactory.getLog(TopologyLockHierarchy.class);
 
+    // lock for te full Topology
+    private final TopologyLock completeTopologyLock;
+
     // lock for Services
-    private TopologyLock serviceLock;
+    private final TopologyLock serviceLock;
 
     // lock for Applications
-    private TopologyLock applicatioLock;
+    private final TopologyLock applicatioLock;
 
     // key = Service.name
-    private Map<String, TopologyLock> serviceNameToTopologyLockMap;
+    private final Map<String, TopologyLock> serviceNameToTopologyLockMap;
 
     // key = Application.id
-    private Map<String, TopologyLock> applicationIdToTopologyLockMap;
+    private final Map<String, TopologyLock> applicationIdToTopologyLockMap;
 
     // key = Cluster.id
-    private Map<String, TopologyLock> clusterIdToTopologyLockMap;
+    private final Map<String, TopologyLock> clusterIdToTopologyLockMap;
 
     private static volatile TopologyLockHierarchy topologyLockHierarchy;
 
     private TopologyLockHierarchy () {
 
+        this.completeTopologyLock = new TopologyLock();
         this.serviceLock = new TopologyLock();
         this.applicatioLock = new TopologyLock();
         this.serviceNameToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
@@ -143,5 +147,9 @@ public class TopologyLockHierarchy {
 
     public TopologyLock getApplicatioLock() {
         return applicatioLock;
+    }
+
+    public TopologyLock getCompleteTopologyLock() {
+        return completeTopologyLock;
     }
 }

@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -57,13 +57,13 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             ApplicationActivatedEvent event = (ApplicationActivatedEvent) Util.
                     jsonToObject(message, ApplicationActivatedEvent.class);
 
-            TopologyManager.acquireWriteLockForApplication(event.getAppId());
+            TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
 
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyManager.releaseWriteLockForApplication(event.getAppId());
+                TopologyUpdater.releaseWriteLockForApplication(event.getAppId());
             }
 
         } else {

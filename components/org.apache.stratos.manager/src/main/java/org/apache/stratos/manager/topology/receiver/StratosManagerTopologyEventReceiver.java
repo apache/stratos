@@ -28,7 +28,6 @@ import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
@@ -265,39 +264,39 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
 
                     // check and remove terminated member
-                    if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
-                        // release the read lock and acquire the write lock
-//                        TopologyManager.releaseReadLock();
-//                        TopologyManager.acquireWriteLock();
-                        TopologyManager.releaseReadLockForCluster(memberTerminatedEvent.getServiceName(),
-                                memberTerminatedEvent.getClusterId());
-                        TopologyManager.acquireWriteLockForCluster(memberTerminatedEvent.getServiceName(),
-                                memberTerminatedEvent.getClusterId());
-
-                        try {
-                            // re-check the state; another thread might have acquired the write lock and modified
-                            if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
-                                // remove the member from the cluster
-                                Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
-                                cluster.removeMember(terminatedMember);
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
-                                }
-                            }
-
-                            // downgrade to read lock - 1. acquire read lock, 2. release write lock
-                            // acquire read lock
-                            //TopologyManager.acquireReadLock();
-                            TopologyManager.acquireReadLockForCluster(memberTerminatedEvent.getServiceName(),
-                                    memberTerminatedEvent.getClusterId());
-
-                        } finally {
-                            // release the write lock
-                           // TopologyManager.releaseWriteLock();
-                            TopologyManager.releaseWriteLockForCluster(memberTerminatedEvent.getServiceName(),
-                                    memberTerminatedEvent.getClusterId());
-                        }
-                    }
+//                    if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
+//                        // release the read lock and acquire the write lock
+////                        TopologyManager.releaseReadLock();
+////                        TopologyManager.acquireWriteLock();
+//                        TopologyManager.releaseReadLockForCluster(memberTerminatedEvent.getServiceName(),
+//                                memberTerminatedEvent.getClusterId());
+//                        TopologyManager.acquireWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+//                                memberTerminatedEvent.getClusterId());
+//
+//                        try {
+//                            // re-check the state; another thread might have acquired the write lock and modified
+//                            if (cluster.memberExists(memberTerminatedEvent.getMemberId())) {
+//                                // remove the member from the cluster
+//                                Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
+//                                cluster.removeMember(terminatedMember);
+//                                if (log.isDebugEnabled()) {
+//                                    log.debug("Removed the terminated member with id " + memberTerminatedEvent.getMemberId() + " from the cluster");
+//                                }
+//                            }
+//
+//                            // downgrade to read lock - 1. acquire read lock, 2. release write lock
+//                            // acquire read lock
+//                            //TopologyManager.acquireReadLock();
+//                            TopologyManager.acquireReadLockForCluster(memberTerminatedEvent.getServiceName(),
+//                                    memberTerminatedEvent.getClusterId());
+//
+//                        } finally {
+//                            // release the write lock
+//                           // TopologyManager.releaseWriteLock();
+//                            TopologyManager.releaseWriteLockForCluster(memberTerminatedEvent.getServiceName(),
+//                                    memberTerminatedEvent.getClusterId());
+//                        }
+//                    }
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
                 } finally {
                     //release read lock

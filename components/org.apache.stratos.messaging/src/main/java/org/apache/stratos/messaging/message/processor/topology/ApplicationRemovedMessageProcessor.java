@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.Set;
@@ -65,11 +65,11 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
 	            return false;
 	        }
 
-            TopologyManager.acquireWriteLockForApplications();
+            TopologyUpdater.acquireWriteLockForApplications();
             Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
-                    TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+                    TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
                 }
             }
 
@@ -79,10 +79,10 @@ public class ApplicationRemovedMessageProcessor extends MessageProcessor {
             } finally {
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                        TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
                     }
                 }
-                TopologyManager.releaseWriteLockForApplications();
+                TopologyUpdater.releaseWriteLockForApplications();
             }
         
 	    } else {

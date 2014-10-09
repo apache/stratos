@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.Set;
@@ -57,12 +57,12 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
                 return false;
             }
 
-            TopologyManager.acquireWriteLockForApplications();
+            TopologyUpdater.acquireWriteLockForApplications();
             // since the Clusters will also get modified, acquire write locks for each Service Type
             Set<ClusterDataHolder> clusterDataHolders = event.getApplication().getClusterDataRecursively();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
-                    TopologyManager.acquireWriteLockForService(clusterData.getServiceType());
+                    TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
                 }
             }
 
@@ -72,10 +72,10 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             } finally {
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyManager.releaseWriteLockForService(clusterData.getServiceType());
+                        TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
                     }
                 }
-                TopologyManager.releaseWriteLockForApplications();
+                TopologyUpdater.releaseWriteLockForApplications();
             }
 
         } else {
