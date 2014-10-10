@@ -48,20 +48,21 @@ public class PodActivationWatcher implements Runnable {
     @Override
     public void run() {
         try {
+            FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
             Pod pod = kubApi.getPod(podId);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("PodActivationWatcher running : "+pod.getCurrentState().getStatus());
             }
-            if ("Running".equals(pod.getCurrentState().getStatus())) {
+            if ("Running".equals(pod.getCurrentState().getStatus()) && dataHolder.getMemberContextOfMemberId(podId) == null) {
                 String hostIP = pod.getCurrentState().getHost();
                 ctxt.setPublicIpAddress(hostIP);
                 ctxt.setPrivateIpAddress(hostIP);
-                FasterLookUpDataHolder.getInstance().addMemberContext(ctxt);
+                dataHolder.addMemberContext(ctxt);
                 // trigger topology
                 TopologyBuilder.handleMemberSpawned(ctxt.getCartridgeType(), ctxt.getClusterId(), 
                         null, hostIP, hostIP, ctxt);
                 
-                RegistryManager.getInstance().persist(FasterLookUpDataHolder.getInstance());
+                RegistryManager.getInstance().persist(dataHolder);
                 
             }
             
