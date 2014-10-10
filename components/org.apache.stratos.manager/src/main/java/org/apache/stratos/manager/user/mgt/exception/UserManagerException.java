@@ -19,23 +19,21 @@
 
 package org.apache.stratos.manager.user.mgt.exception;
 
+public class UserManagerException extends Exception {
 
-public class UserManagementException extends Exception {
+    private final String message;
 
-        private static final long serialVersionUID = 1L;
-
-        public UserManagementException() {
-        }
-
-        public UserManagementException(String message) {
-            super(message);
-        }
-
-        public UserManagementException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public UserManagementException(Throwable cause) {
-            super(cause);
-        }
+    public UserManagerException(String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
     }
+
+    public UserManagerException(String message) {
+        super(message);
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}
