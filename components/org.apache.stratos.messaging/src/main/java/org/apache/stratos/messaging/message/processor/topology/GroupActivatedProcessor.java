@@ -30,7 +30,7 @@ import org.apache.stratos.messaging.util.Util;
  * This processor will act upon the Group activation events
  */
 public class GroupActivatedProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterActivatedProcessor.class);
+    private static final Log log = LogFactory.getLog(GroupActivatedProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -81,7 +81,7 @@ public class GroupActivatedProcessor extends MessageProcessor {
             }
             return false;
         }
-        Group group = application.getGroup(event.getGroupId());
+        Group group = application.getGroupRecursively(event.getGroupId());
 
         if (group == null) {
             if (log.isWarnEnabled()) {

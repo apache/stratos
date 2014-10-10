@@ -773,7 +773,7 @@ public class TopologyBuilder {
             return;
         }
 
-        Group group = application.getGroup(groupActivatedEvent.getGroupId());
+        Group group = application.getGroupRecursively(groupActivatedEvent.getGroupId());
         if (group == null) {
             log.warn(String.format("Group %s does not exist",
                     groupActivatedEvent.getGroupId()));

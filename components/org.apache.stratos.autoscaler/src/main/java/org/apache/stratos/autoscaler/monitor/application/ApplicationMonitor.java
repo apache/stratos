@@ -126,7 +126,7 @@ public class ApplicationMonitor extends Monitor {
     private GroupMonitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
         for (GroupMonitor monitor : monitors) {
             // check if alias is equal, if so, return
-            if (monitor.equals(id)) {
+            if (monitor.getId().equals(id)) {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well

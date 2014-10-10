@@ -104,7 +104,7 @@ public abstract class ParentComponent implements Serializable {
             }
         } else {
             for (Group group : aliasToGroupMap.values()) {
-                travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
+                return travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
             }
         }
 
