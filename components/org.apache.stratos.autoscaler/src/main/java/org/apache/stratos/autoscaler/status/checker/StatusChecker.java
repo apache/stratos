@@ -207,7 +207,7 @@ public class StatusChecker {
     private boolean getGroupStatus(Map<String, Group> groups) {
         boolean groupActiveStatus = false;
         for (Group group : groups.values()) {
-            if (group.getStatus().equals(GroupStatus.Active)) {
+            if (group.getStatus() == Status.Activated) {
                 groupActiveStatus = true;
             } else {
                 groupActiveStatus = false;
