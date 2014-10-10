@@ -114,7 +114,7 @@ class CartridgeAgentConfiguration:
                 self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
                 self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID)
                 self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID)
-                self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID, self.cluster_id)
+                self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID)
                 self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
                 self.app_path = self.read_property(cartridgeagentconstants.APP_PATH)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL)
@@ -122,12 +122,12 @@ class CartridgeAgentConfiguration:
 
                 try:
                     self.log_file_paths = str(
-                        self.read_property(cartridgeagentconstants.CLUSTER_ID)).strip().split("|")
+                        self.read_property(cartridgeagentconstants.LOG_FILE_PATHS)).strip().split("|")
                 except ParameterNotFoundException as ex:
                     self.log.debug("Cannot read log file path : %r" % ex.get_message())
                     self.log_file_paths = None
 
-                is_multi_str = self.read_property(cartridgeagentconstants.CLUSTER_ID)
+                is_multi_str = self.read_property(cartridgeagentconstants.MULTITENANT)
                 self.is_multitenant = True if str(is_multi_str).lower().strip() == "true" else False
 
                 try:
@@ -270,6 +270,7 @@ class CartridgeAgentConfiguration:
             """
 
             param_file = self.read_property(cartridgeagentconstants.PARAM_FILE_PATH, False)
+            self.log.debug("Param file path : %r" % param_file)
 
             try:
                 if param_file is not None:
@@ -302,12 +303,18 @@ class CartridgeAgentConfiguration:
                 self.log.debug("Has key: %r" % property_key)
                 temp_str = self.properties.get("agent", property_key)
                 if temp_str != "" and temp_str is not None:
-                    return str(temp_str).strip()
+                    if str(temp_str).strip().lower() == "null":
+                        return ""
+                    else:
+                        return str(temp_str).strip()
 
             if property_key in self.payload_params:
                 temp_str = self.payload_params[property_key]
                 if temp_str != "" and temp_str is not None:
-                    return str(temp_str).strip()
+                    if str(temp_str).strip().lower() == "null":
+                        return ""
+                    else:
+                        return str(temp_str).strip()
 
             if critical:
                 raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
