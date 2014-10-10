@@ -18,23 +18,30 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.SocketException;
 import java.net.URI;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 
 public class RestClient {
 
     private DefaultHttpClient httpClient;
+    
+    public RestClient() {
+        PoolingClientConnectionManager cm = new PoolingClientConnectionManager();
+        // Increase max total connection to 200
+        cm.setMaxTotal(200);
+        // Increase default max connection per route to 50
+        cm.setDefaultMaxPerRoute(50);
+        
+        httpClient = new DefaultHttpClient(cm);
+    }
 
 	/**
      * Handle http post request. Return String
@@ -54,9 +61,9 @@ public class RestClient {
      *             if any errors occur when executing the request
      */
     public KubernetesResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
+        HttpPost postRequest = null;
         try {
-        	httpClient = new DefaultHttpClient();
-            HttpPost postRequest = new HttpPost(resourcePath);
+            postRequest = new HttpPost(resourcePath);
 
             StringEntity input = new StringEntity(jsonParamString);
             input.setContentType("application/json");
@@ -66,7 +73,7 @@ public class RestClient {
 
             return response;
         } finally {
-        	 httpClient.getConnectionManager().shutdown();
+            releaseConnection(postRequest);
         }
     }
 
@@ -86,22 +93,22 @@ public class RestClient {
      *             if any errors occur when executing the request
      */
     public KubernetesResponse doGet(URI resourcePath) throws Exception{
+        HttpGet getRequest = null;
         try {
-        	httpClient = new DefaultHttpClient();
-            HttpGet getRequest = new HttpGet(resourcePath);
+            getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
             KubernetesResponse response = httpClient.execute(getRequest, new KubernetesResponseHandler());
             return response;
         } finally {
-        	 httpClient.getConnectionManager().shutdown();
+            releaseConnection(getRequest);
         }
     }
     
     public KubernetesResponse doDelete(URI resourcePath) throws Exception {
+        HttpDelete httpDelete = null;
         try {
-        	httpClient = new DefaultHttpClient();
-            HttpDelete httpDelete = new HttpDelete(resourcePath);
+            httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
 
             KubernetesResponse response = httpClient.execute(httpDelete, new KubernetesResponseHandler());
@@ -109,15 +116,15 @@ public class RestClient {
             return  response;
 
         } finally {
-        	 httpClient.getConnectionManager().shutdown();
+        	 releaseConnection(httpDelete);
         }
     }
 
     public KubernetesResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
 
+        HttpPut putRequest = null;
 		try {
-			httpClient = new DefaultHttpClient();
-			HttpPut putRequest = new HttpPut(resourcePath);
+			putRequest = new HttpPut(resourcePath);
 
 			StringEntity input = new StringEntity(jsonParamString);
 			input.setContentType("application/json");
@@ -128,8 +135,14 @@ public class RestClient {
 			return response;
 		
 		} finally {
-			httpClient.getConnectionManager().shutdown();
+			releaseConnection(putRequest);
 		}
+    }
+    
+    private void releaseConnection(HttpRequestBase request) {
+        if (request != null) {
+            request.releaseConnection();
+        }
     }
 
 }
