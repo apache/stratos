@@ -32,6 +32,8 @@ import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.cloud.controller.InstanceNotificationClient;
+import org.apache.stratos.autoscaler.exception.SpawningException;
+import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
@@ -227,7 +229,7 @@ public class RuleTasksDelegator {
                     log.debug("Returned member context is null, did not add to pending members");
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Cannot create containers ", e);
         }
     }
@@ -260,7 +262,7 @@ public class RuleTasksDelegator {
                     log.debug("Returned array of member context is null, did not add to pending members");
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Cannot update kubernetes controller ", e);
         }
     }
@@ -269,9 +271,9 @@ public class RuleTasksDelegator {
     	try {
     		CloudControllerClient ccClient = CloudControllerClient.getInstance();
     		ccClient.terminateContainer(memberId);
-    	} catch (Throwable e) {
+    	} catch (TerminationException e) {
     		log.error("Cannot delete container ", e);
-    	}
+		}
     }
 
     public int getPredictedReplicasForStat(int minReplicas, float statUpperLimit, float statPredictedValue) {
