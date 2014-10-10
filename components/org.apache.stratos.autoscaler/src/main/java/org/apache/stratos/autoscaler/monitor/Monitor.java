@@ -109,7 +109,7 @@ public abstract class Monitor implements EventHandler {
      */
     private boolean startDependency(List<ApplicationContext> applicationContexts)
             throws TopologyInConsistentException {
-        if (applicationContexts == null) {
+        if (applicationContexts != null && applicationContexts.isEmpty()) {
             //all the groups/clusters have been started and waiting for activation
             log.info("There is no child found for the [group]: " + this.id);
             return false;
@@ -131,7 +131,7 @@ public abstract class Monitor implements EventHandler {
                 }
                 Cluster cluster;
                 //acquire read lock for the service and cluster
-                TopologyManager.acquireReadLockForCluster(clusterId, serviceName);
+                TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
                 try {
                     Topology topology = TopologyManager.getTopology();
                     if (topology.serviceExists(serviceName)) {
@@ -154,7 +154,7 @@ public abstract class Monitor implements EventHandler {
                     }
                 } finally {
                     //release read lock for the service and cluster
-                    TopologyManager.releaseReadLockForCluster(clusterId, serviceName);
+                    TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
                 }
             }
         }
@@ -284,6 +284,11 @@ public abstract class Monitor implements EventHandler {
                     }
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
                     monitor.setParent(parent);
+                    //setting the status of cluster monitor w.r.t Topology cluster
+                    if(cluster.getStatus() != Status.Created) {
+                        //updating the status, so that it will notify the parent
+                        monitor.setStatus(cluster.getStatus());
+                    }
                     //monitor.addObserver(parent);
                     success = true;
                     //TODO start the status checker
@@ -351,6 +356,11 @@ public abstract class Monitor implements EventHandler {
                     }
                     monitor = AutoscalerUtil.getGroupMonitor(component.getGroup(dependency));
                     monitor.setParent(parent);
+                    //setting the status of cluster monitor w.r.t Topology cluster
+                    if(component.getStatus() != Status.Created) {
+                        //updating the status, so that it will notify the parent
+                        monitor.setStatus(component.getStatus());
+                    }
                     //monitor.addObserver(parent);
                     success = true;
                 } catch (DependencyBuilderException e) {

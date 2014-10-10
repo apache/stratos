@@ -85,7 +85,7 @@ public class GroupMonitor extends Monitor implements EventHandler {
                 //if life cycle is empty, need to start the monitor
                 boolean startDep = startDependency(statusEvent.getId());
                 //updating the life cycle and current status
-                context.setStatus(status);
+                context.setStatus(statusEvent.getStatus());
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if(!startDep) {
                     //Checking in the children whether all are active,

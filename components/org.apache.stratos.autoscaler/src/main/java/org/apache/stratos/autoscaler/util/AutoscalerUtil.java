@@ -114,8 +114,7 @@ public class AutoscalerUtil {
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
         clusterMonitor.setAppId(cluster.getAppId());
-        //clusterMonitor.setStatus(Status.Created);
-        
+
         for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
 
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
@@ -163,6 +162,7 @@ public class AutoscalerUtil {
             }
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+            //clusterMonitor.setStatus(Status.Created);
             if(log.isInfoEnabled()){
                 log.info(String.format("Network partition context has been added: [network partition] %s",
                             networkPartitionContext.getId()));

@@ -38,7 +38,7 @@ public class ApplicationStatusGroupActivatedMessageProcessor extends MessageProc
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ClusterActivatedEvent.class.getName().equals(type)) {
+        if (GroupActivatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             GroupActivatedEvent event =
                     (GroupActivatedEvent) Util.jsonToObject(message, GroupActivatedEvent.class);
