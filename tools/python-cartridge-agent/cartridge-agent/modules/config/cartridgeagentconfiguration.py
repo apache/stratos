@@ -302,17 +302,18 @@ class CartridgeAgentConfiguration:
                 self.log.debug("Has key: %r" % property_key)
                 temp_str = self.properties.get("agent", property_key)
                 if temp_str != "" and temp_str is not None:
-                    return temp_str
+                    return str(temp_str).strip()
 
             if property_key in self.payload_params:
                 temp_str = self.payload_params[property_key]
                 if temp_str != "" and temp_str is not None:
-                    return temp_str
+                    return str(temp_str).strip()
 
             if critical:
                 raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
 
     instance = None
+    """ :type : __CartridgeAgentConfiguration"""
 
     # def __new__(cls, *args, **kwargs):
     #     if not CartridgeAgentConfiguration.instance:
@@ -327,8 +328,8 @@ class CartridgeAgentConfiguration:
     def __getattr__(self, name):
         return getattr(self.instance, name)
 
-    def __setattr__(self, name):
-        return setattr(self.instance, name)
+    def __setattr__(self, name, value):
+        return setattr(self.instance, name, value)
 
 
 from ..exception.parameternotfoundexception import ParameterNotFoundException
