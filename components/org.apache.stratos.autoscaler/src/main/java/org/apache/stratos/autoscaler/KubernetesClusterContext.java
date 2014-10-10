@@ -50,6 +50,10 @@ public class KubernetesClusterContext implements Serializable {
     private int minReplicas;
     private int maxReplicas = 10;
     private int currentReplicas = 0;
+    
+    // it will tell whether the startContainers() method succeed or not for the 1st time
+    // we should call startContainers() only once
+    private boolean isServiceClusterCreated = false;
 
     // properties
     private Properties properties;
@@ -646,5 +650,13 @@ public class KubernetesClusterContext implements Serializable {
 
 	public void setClusterId(String clusterId) {
 		this.clusterId = clusterId;
+	}
+
+	public boolean isServiceClusterCreated() {
+		return isServiceClusterCreated;
+	}
+
+	public void setServiceClusterCreated(boolean isServiceClusterCreated) {
+		this.isServiceClusterCreated = isServiceClusterCreated;
 	}
 }

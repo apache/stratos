@@ -33,22 +33,23 @@ dialect "mvel"
 	   kubernetesClusterId : String() from $kubernetesClusterContext.getKubernetesClusterID()
            minReplicas : Integer() from $kubernetesClusterContext.getMinReplicas()
            nonTerminatedReplicas : Integer() from $kubernetesClusterContext.getNonTerminatedMemberCount()
+           isServiceClusterCreated : Boolean() from $kubernetesClusterContext.isServiceClusterCreated()
 	   
            eval(log.debug("Running minimum rule: [kub-cluster] " +kubernetesClusterId + " [cluster] " + clusterId))
-	   eval(log.debug("[min-check] [kub-cluster] " + kubernetesClusterId 
-				+ " [cluster] " + clusterId + " Non terminated member count: " + nonTerminatedReplicas))
-	   eval(log.debug("[min-check] [kub-cluster] " + kubernetesClusterId
-				+ " [cluster] " + clusterId + " Minimum member count: " + minReplicas))
+           eval(log.debug("[min-check] " + " [cluster] " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
+	   eval(log.debug("[min-check] " + " [cluster] " + clusterId + " [Replicas] minReplicas : " + minReplicas))
 	   eval(nonTerminatedReplicas < minReplicas)
        then
-           if (nonTerminatedReplicas == 0) {
-             log.info("[min-check] [kub-cluster] " + kubernetesClusterId
-	        		+ " [cluster] " + clusterId + " : min-rule not satisfied, no containers created yet, creating minReplicas : " + minReplicas);
-             $delegator.delegateCreateContainers($kubernetesClusterContext);
+           if (isServiceClusterCreated) {
+             // we suceeded calling startContainer() once, can't call it again
+              log.info("[min-check] Decided to scale-up : [cluster] " + clusterId);
+ 	      log.info("[min-check] " + " [cluster] " + clusterId + " min-rule not satisfied, expanding cluster to minReplicas : " + minReplicas);
+              $delegator.delegateUpdateContainers($kubernetesClusterContext, minReplicas);
 	   } else {
-             log.info("[min-check] [kub-cluster] " + kubernetesClusterId
-	        		+ " [cluster] " + clusterId + " : min-rule not satisfied, expanding cluster to minReplicas : " + minReplicas);
-             $delegator.delegateExpandCluster($kubernetesClusterContext, minReplicas);
+             // we should call startContainer
+              log.info("[min-check] Decided to create the cluster : [cluster] " + clusterId);
+ 	      log.info("[min-check] " + " [cluster] " + clusterId + " : min-rule not satisfied, no containers created yet, creating minReplicas : " + minReplicas);
+              $delegator.delegateStartContainers($kubernetesClusterContext);
            }
 end
 

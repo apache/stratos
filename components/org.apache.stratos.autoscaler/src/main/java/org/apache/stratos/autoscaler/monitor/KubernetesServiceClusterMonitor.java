@@ -96,7 +96,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
-                        "Running scale check for kub-cluster %s ", kubernetesClusterID));
+                        "Running scale check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
             }
             scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(
                     getScaleCheckKnowledgeSession(), scaleCheckFactHandle, getKubernetesClusterCtxt());
@@ -105,16 +105,17 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             getKubernetesClusterCtxt().setLoadAverageReset(false);
         } else if (log.isDebugEnabled()) {
             log.debug(String.format("Scale check will not run since none of the statistics have not received yet for "
-                                    + "[kub-cluster] %s [cluster] %s", kubernetesClusterID, clusterId));
+                                    + "[kub-cluster] : %s [cluster] : %s", kubernetesClusterID, clusterId));
         }
     }
 
 	private void minCheck() {
 		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-		if (log.isDebugEnabled()) {
-			log.debug(String.format("Running minimum check for cluster %s ",
-					getClusterId()));
-		}
+		String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Running min check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
+        }
 		minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
 				getMinCheckKnowledgeSession(), minCheckFactHandle,
 				getKubernetesClusterCtxt());

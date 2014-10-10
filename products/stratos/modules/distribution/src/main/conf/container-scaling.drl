@@ -38,6 +38,7 @@ dialect "mvel"
 	kubernetesClusterId : String() from $kubernetesClusterContext.getKubernetesClusterID()
 	minReplicas : Integer() from $kubernetesClusterContext.getMinReplicas()
         maxReplicas : Integer() from $kubernetesClusterContext.getMaxReplicas()
+        nonTerminatedReplicas : Integer() from $kubernetesClusterContext.getNonTerminatedMemberCount()
 
         eval(log.debug("Running scaling rule : [kub-cluster] " + kubernetesClusterId + " [cluster] " + clusterId))
 	
@@ -78,6 +79,7 @@ dialect "mvel"
         scaleUp : Boolean() from (scaleUpForRif || scaleUpForMc || scaleUpForLa)
         scaleDown : Boolean() from (scaleDownForRif && scaleDownForMc &&  scaleDownForLa)
 
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
 	eval(log.debug("[scaling] " + " [cluster] " + clusterId + " [Replicas] minReplicas : " + minReplicas))
 	eval(log.debug("[scaling] " + " [cluster] " + clusterId + " [Replicas] maxReplicas : " + maxReplicas))
 
@@ -101,7 +103,6 @@ dialect "mvel"
 
 	then
         if (scaleUp) {
-	    log.info("[scale-up] Decided to scale up : [kub-cluster] " + kubernetesClusterId + " [cluster] " + clusterId);
 	    int requiredReplicas = 0;
 	    if (scaleUpForRif) {
               int predictedReplicasForRif = $delegator.getPredictedReplicasForStat(minReplicas, rifUpperLimit, rifPredictedValue);
@@ -135,14 +136,28 @@ dialect "mvel"
               requiredReplicas = minReplicas;
             }
             //expand the cluster
-	    log.info("[scaling] " + " [cluster] " + clusterId + " valid number of replicas to expand : " + requiredReplicas);
-	    $delegator.delegateExpandCluster($kubernetesClusterContext, requiredReplicas);
+            if (requiredReplicas > nonTerminatedReplicas) {
+              log.info("[scaling] Decided to scale-up : [cluster] " + clusterId);
+ 	      log.info("[scaling-up] " + " [cluster] " + clusterId + " valid number of replicas to expand : " + requiredReplicas);
+	      $delegator.delegateUpdateContainers($kubernetesClusterContext, requiredReplicas);
+            }
+            //shrink the cluster
+            if (requiredReplicas < nonTerminatedReplicas) {
+              log.info("[scaling] Decided to scale-down : [cluster] " + clusterId);
+ 	      log.info("[scaling-down] " + " [cluster] " + clusterId + " valid number of replicas to shrink : " + requiredReplicas);
+	      $delegator.delegateUpdateContainers($kubernetesClusterContext, requiredReplicas);
+            }
+            if (requiredReplicas == nonTerminatedReplicas) {
+ 	      log.info("[scaling] " + " [cluster] " + clusterId + "non terminated replicas and predicted replicas are same");
+            }
+            
         } else if (scaleDown) {
-            log.debug("[scale-down] Decided to scale down : [kub-cluster] " + kubernetesClusterId + " [cluster] " + clusterId);
+            log.info("[scaling] Decided to scale-down : [cluster] " + clusterId);
+            log.info("[scaling-down] " + " [cluster] " + clusterId + " shrink the cluster to minReplicas : " + minReplicas);
             //shrink the cluster to minReplicas
-            $delegator.delegateExpandCluster($kubernetesClusterContext, minReplicas);
+            $delegator.delegateUpdateContainers($kubernetesClusterContext, minReplicas);
         } else {
-            log.debug("[scaling] No decision made to either scale up or down ... ");
+            log.info("[scaling] No decision made to either scale up or down ... ");
         }
 end
 

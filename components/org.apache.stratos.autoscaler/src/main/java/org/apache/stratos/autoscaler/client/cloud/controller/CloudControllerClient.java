@@ -244,7 +244,7 @@ public class CloudControllerClient {
      * @return
      * @throws SpawningException
      */
-    public synchronized MemberContext[] createContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
+    public synchronized MemberContext[] startContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
         	
         	KubernetesManager kubernetesManager = KubernetesManager.getInstance();
@@ -310,22 +310,22 @@ public class CloudControllerClient {
 		} 
     }
 
-    public synchronized void updateKubernetesController(String clusterId, int replicas)
-            throws SpawningException {
+    public synchronized MemberContext[] updateContainers(String clusterId, int replicas)
+    		throws SpawningException {
         try {
             log.info(String.format("Updating kubernetes replication controller via cloud controller: " +
                                    "[cluster] %s [replicas] %s", clusterId, replicas));
-            stub.updateKubernetesController(clusterId, replicas);
+            MemberContext[] memberContexts = stub.updateContainers(clusterId, replicas);
+            return memberContexts;
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String msg = "Error while updating kubernetes controller, cartridge not found for [cluster] " + clusterId;
+            log.error(msg, e);
+            throw new SpawningException(msg, e);
         } catch (RemoteException e) {
             String msg = "Error while updating kubernetes controller, cannot communicate with " +
                          "cloud controller service";
             log.error(msg, e);
-            throw new SpawningException(e.getMessage(), e);
-        } catch (CloudControllerServiceInvalidClusterExceptionException e) {
-            String msg = "Error while updating kubernetes controller, invalid clusterId";
-            log.error(msg, e);
-            throw new SpawningException(e.getMessage(), e);
-        }
+            throw new SpawningException(msg, e);
+        } 
     }
-
 }
