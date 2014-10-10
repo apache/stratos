@@ -866,14 +866,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void logTermination(MemberContext memberContext) {
 
+	    if (memberContext == null) {
+	        return;
+	    }
+	    
+	    String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
+	    
         //updating the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), 
         		memberContext.getClusterId(), memberContext.getNetworkPartitionId(), 
-        		memberContext.getPartition().getId(), memberContext.getMemberId());
+        		partitionId, memberContext.getMemberId());
 
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
-                                                        memberContext.getPartition().getId(),
+                                                        partitionId,
                                                         memberContext.getNetworkPartitionId(),
                                                         memberContext.getClusterId(),
                                                         memberContext.getCartridgeType(),
