@@ -131,7 +131,7 @@ public abstract class Monitor implements EventHandler {
                 }
                 Cluster cluster;
                 //acquire read lock for the service and cluster
-                TopologyManager.acquireReadLockForCluster(clusterId, serviceName);
+                TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
                 try {
                     Topology topology = TopologyManager.getTopology();
                     if (topology.serviceExists(serviceName)) {
@@ -154,7 +154,7 @@ public abstract class Monitor implements EventHandler {
                     }
                 } finally {
                     //release read lock for the service and cluster
-                    TopologyManager.releaseReadLockForCluster(clusterId, serviceName);
+                    TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
                 }
             }
         }

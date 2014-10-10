@@ -59,7 +59,7 @@ public class TopologyUpdater {
 
     private static final Log log = LogFactory.getLog(TopologyUpdater.class);
 
-    private static final TopologyLockHierarchy topologyLockHierarchy = TopologyLockHierarchy.getInstance();
+    private static volatile TopologyLockHierarchy topologyLockHierarchy = TopologyLockHierarchy.getInstance();
 
     // Top level locks - should be used to lock the entire Topology
 

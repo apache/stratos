@@ -62,7 +62,7 @@ public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
     private static volatile Topology topology;
-    private static final TopologyLockHierarchy topologyLockHierarchy =
+    private static volatile TopologyLockHierarchy topologyLockHierarchy =
             TopologyLockHierarchy.getInstance();
 
     /**
