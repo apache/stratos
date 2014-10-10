@@ -42,6 +42,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -99,6 +100,16 @@ public class RestCommandLineService {
     private final String listAllUserRestEndPoint = "/stratos/admin/user/list";
     private final String getListAvailableCartridgeInfoRestEndPoint = "/stratos/admin/cartridge/available/info";
 
+    private final String deployKubernetesGroup = "/stratos/admin/kubernetes/deploy/group";
+    private final String deployKubernetesHost = "/stratos/admin/kubernetes/deploy/host";
+    private final String undeployKubernetesGroup = "/stratos/admin/kubernetes/group/{id}";
+    private final String undeployKubernetesHost = "/stratos/admin/kubernetes/host/{id}";
+    private final String updateKubernetesMaster = "/stratos/admin/kubernetes/update/master";
+    private final String updateKubernetesHost = "/stratos/admin/kubernetes/update/host";
+    private final String listKubernetesGroup = "/stratos/admin/kubernetes/group";
+    private final String getKubernetesGroup = "/stratos/admin/kubernetes/group/{id}";
+    private final String getKubernetesHost = "/stratos/admin/kubernetes/hosts/{id}";
+    private final String getKubernetesMaster = "/stratos/admin/kubernetes/master/{id}";
 
     private static class SingletonHolder {
 		private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -1937,7 +1948,181 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
-    
+
+    public void deployKubernetesGroup(String entityBody) {
+        deployEntity(deployKubernetesGroup, entityBody, "kubernetes group");
+    }
+
+    public void undeployKubernetesGroup(String groupId) {
+        undeployEntity(undeployKubernetesGroup, "kubernetes group", groupId);
+    }
+
+    public void deployKubernetesHost(String entityBody) {
+        deployEntity(deployKubernetesHost, entityBody, "kubernetes host");
+    }
+
+    public void undeployKubernetesHost(String hostId) {
+        undeployEntity(undeployKubernetesHost, "kubernetes host", hostId);
+    }
+
+    public void updateKubernetesMaster(String entityBody) {
+        updateEntity(updateKubernetesMaster, entityBody, "kubernetes master");
+    }
+
+    public void updateKubernetesHost(String entityBody) {
+        updateEntity(updateKubernetesHost, entityBody, "kubernetes host");
+    }
+
+    private void deployEntity(String serviceEndpoint, String entityBody, String entityName) {
+        try {
+            int responseCode = executePost(serviceEndpoint, entityBody);
+            if(responseCode == 201) {
+                System.out.println(String.format("Successfully deployed %s", entityName));
+            }
+        } catch (Exception e) {
+            System.out.println(String.format("Error in deploying %s", entityName));
+        }
+    }
+
+    private void undeployEntity(String serviceEndpoint, String entityName, String entityId) {
+        try {
+            int responseCode = executeDelete(serviceEndpoint, entityId);
+            if(responseCode == 404) {
+                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if(responseCode == 204) {
+                System.out.println(String.format("Successfully un-deployed %s", entityName));
+            }
+        } catch (Exception e) {
+            System.out.println(String.format("Error in un-deploying %s", entityName));
+        }
+    }
+
+    private void updateEntity(String serviceEndpoint, String entityBody, String entityName) {
+        try {
+            int responseCode = executePut(serviceEndpoint, entityBody);
+            if(responseCode == 404) {
+                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if(responseCode == 200) {
+                System.out.println(String.format("Successfully updated %s", entityName));
+            }
+        } catch (Exception e) {
+            System.out.println(String.format("Error in updating %s", entityName));
+        }
+    }
+
+    private void deleteEntity(String serviceEndpoint, String identifier, String entityName) {
+        try {
+            int responseCode = executeDelete(serviceEndpoint, identifier);
+            if(responseCode == 200) {
+                System.out.println(String.format("Successfully deleted %s", entityName));
+            }
+        } catch (Exception e) {
+            System.out.println(String.format("Error in deleting %s", entityName));
+        }
+    }
+
+    public int executePost(String serviceEndpoint, String postBody) throws ClientProtocolException, ConnectException {
+        DefaultHttpClient httpClient= new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+                    + serviceEndpoint, postBody);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode != 200) {
+                String resultString = getHttpResponseString(response);
+                if(StringUtils.isNotBlank(resultString)) {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                    if(exception != null) {
+                        System.out.println(exception);
+                    }
+                }
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public Object executeList(String serviceEndpoint, Class _class, String entityName) throws CommandException{
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpResponse response = null;
+
+        try {
+            response = restClient.doGet(httpClient, restClient.getBaseURL() + serviceEndpoint);
+            int responseCode = response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
+
+            if (resultString == null) {
+                return null;
+            }
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode != 200) {
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return null;
+            }
+
+            return gson.fromJson(resultString, _class);
+        } catch (Exception e) {
+            handleException(String.format("Error in listing %s", entityName), e);
+            return null;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public int executePut(String serviceEndpoint, String postBody) throws IOException {
+        DefaultHttpClient httpClient= new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + serviceEndpoint, postBody);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode != 200) {
+                String resultString = getHttpResponseString(response);
+                if(StringUtils.isNotBlank(resultString)) {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                    if(exception != null) {
+                        System.out.println(exception);
+                    }
+                }
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public int executeDelete(String serviceEndpoint, String identifier) throws IOException {
+        DefaultHttpClient httpClient= new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL() + serviceEndpoint.replace("{id}", identifier));
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode != 200) {
+                String resultString = getHttpResponseString(response);
+                if(StringUtils.isNotBlank(resultString)) {
+                    GsonBuilder gsonBuilder = new GsonBuilder();
+                    Gson gson = gsonBuilder.create();
+                    ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                    if(exception != null) {
+                        System.out.println(exception);
+                    }
+                }
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
 	public void sync(String alias) throws CommandException {
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 		try {
