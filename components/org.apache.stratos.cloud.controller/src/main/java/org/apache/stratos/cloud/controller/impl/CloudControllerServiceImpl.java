@@ -308,17 +308,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
         }
     	
-    	String [] startupOrders = dependencies.getStartupOrders();
-    	
-    	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
-            
-            if (startupOrders != null) {
-            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
-            } else {
-            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
-            }
-        }
+    	if (dependencies != null) {
+	    	String [] startupOrders = dependencies.getStartupOrders();
+	    	
+	    	if(log.isDebugEnabled()) {
+	            log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
+	            
+	            if (startupOrders != null) {
+	            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
+	            } else {
+	            	log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
+	            }
+	        }
+    	}
     	
     	dataHolder.addServiceGroup(servicegroup);
     	
