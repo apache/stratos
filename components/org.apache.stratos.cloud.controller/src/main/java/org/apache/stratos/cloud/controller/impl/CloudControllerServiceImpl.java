@@ -1721,12 +1721,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
                             ctxt.getProperties().getProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
                     
-                    dataHolder.addMemberContext(context);
-                    
-                    // trigger topology
-                    // update the topology with the newly spawned member
-                    TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
-                            pod.getCurrentState().getPodIP(), pod.getCurrentState().getHostIP(), context);
+                    // wait till Pod status turns to running and send member spawned.
+                    ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Cloud Controller is starting the instance start up thread.");
+                    }
+                    dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
                     
                     memberContexts.add(context);
                 }
