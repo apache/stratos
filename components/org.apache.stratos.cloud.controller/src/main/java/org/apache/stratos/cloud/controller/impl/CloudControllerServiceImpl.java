@@ -1426,8 +1426,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			    if(newlyCreatedPods.length == expectedCount) {
 			        break;
 			    }
-			    Thread.sleep(5000);
+			    Thread.sleep(10000);
             }
+
+			if (newlyCreatedPods.length == 0) {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Pods are not created for cluster : %s, hence deleting the service", clusterId));
+				}
+				terminateAllContainers(clusterId);
+				return new MemberContext[0];
+			}
 			
 			if (LOG.isDebugEnabled()) {
 			    
