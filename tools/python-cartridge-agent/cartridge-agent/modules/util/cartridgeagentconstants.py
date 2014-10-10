@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-JNDI_PROPERTIES_DIR = "jndi.properties.dir"
 PARAM_FILE_PATH = "param.file.path"
 EXTENSIONS_DIR = "extensions.dir"
 
