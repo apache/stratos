@@ -165,10 +165,9 @@ public class RestCommandLineService {
                     }
                     else {
                         System.out.println("Invalid STRATOS_URL");
-                        return false;
                     }
                 }
-                return true;
+                return false;
             } else {
                 // Just return true as we don't need to validate
                 return true;
