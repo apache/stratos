@@ -199,36 +199,67 @@ public class RuleTasksDelegator {
                log.error("Cannot terminate instance", e);
            }
        }
-   	
-   	public void delegateCreateContainers(KubernetesClusterContext  kubernetesClusterContext) {
+
+    public void delegateStartContainers(KubernetesClusterContext kubernetesClusterContext) {
         try {
-        	String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
-        	String clusterId = kubernetesClusterContext.getClusterId();
+            String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
+            String clusterId = kubernetesClusterContext.getClusterId();
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
-			MemberContext[] memberContexts = ccClient.createContainers(kubernetesClusterId, clusterId);
-            for (MemberContext memberContext : memberContexts) {
-                if (null != memberContext) {
-                	kubernetesClusterContext.addPendingMember(memberContext);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Pending member added, [member] %s [kub cluster] %s",
-                                memberContext.getMemberId(), kubernetesClusterId));
+            MemberContext[] memberContexts = ccClient.startContainers(kubernetesClusterId, clusterId);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        kubernetesClusterContext.addPendingMember(memberContext);
+                        kubernetesClusterContext.setServiceClusterCreated(true);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Pending member added, [member] %s [kub cluster] %s",
+                                    memberContext.getMemberId(), kubernetesClusterId));
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Returned member context is null, did not add any pending members");
+                        }
                     }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Returned member context is null, did not add to pending members");
-                    }
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Returned member context is null, did not add to pending members");
                 }
             }
         } catch (Throwable e) {
             log.error("Cannot create containers ", e);
         }
-   	}
+    }
 
-    public void delegateExpandCluster(KubernetesClusterContext kubernetesClusterContext, int replicas) {
-    	String clusterId = kubernetesClusterContext.getClusterId();
+    public void delegateUpdateContainers(KubernetesClusterContext kubernetesClusterContext,
+                                         int replicas) {
+        String clusterId = kubernetesClusterContext.getClusterId();
         try {
-            CloudControllerClient.getInstance().updateKubernetesController(clusterId, replicas);
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            // getting newly created pods' member contexts
+            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, replicas);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        kubernetesClusterContext.addPendingMember(memberContext);
+                        if (log.isDebugEnabled()) {
+                            String kubernetesClusterID = kubernetesClusterContext.getKubernetesClusterID();
+                            log.debug(String.format(
+                                    "Pending member added, [member] %s [kub cluster] %s",
+                                    memberContext.getMemberId(), kubernetesClusterID));
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Returned member context is null, did not add any pending members");
+                        }
+                    }
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Returned array of member context is null, did not add to pending members");
+                }
+            }
         } catch (Throwable e) {
             log.error("Cannot update kubernetes controller ", e);
         }
