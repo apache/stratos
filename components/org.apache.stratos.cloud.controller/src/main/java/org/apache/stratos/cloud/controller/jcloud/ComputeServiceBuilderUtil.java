@@ -47,7 +47,6 @@ public class ComputeServiceBuilderUtil {
     private static final Log log = LogFactory.getLog(ComputeServiceBuilderUtil.class);
     
     public static byte[] getUserData(String payloadFileName) {
-        // String userData = null;
         byte[] bytes = null;
         try {
             File file = new File(payloadFileName);
