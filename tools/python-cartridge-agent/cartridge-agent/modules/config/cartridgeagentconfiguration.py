@@ -16,8 +16,8 @@
 # under the License.
 
 import ConfigParser
-import logging
 import os
+import socket
 
 from ..util.log import LogFactory
 
@@ -114,7 +114,7 @@ class CartridgeAgentConfiguration:
                 self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
                 self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID)
                 self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID)
-                self.member_id = self.read_property(cartridgeagentconstants.MEMBER_ID)
+                self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID, self.cluster_id)
                 self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
                 self.app_path = self.read_property(cartridgeagentconstants.APP_PATH)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL)
@@ -230,6 +230,27 @@ class CartridgeAgentConfiguration:
             self.log.debug("ports: %r" % str(self.ports))
             self.log.debug("lb-private-ip: %r" % self.lb_private_ip)
             self.log.debug("lb-public-ip: %r" % self.lb_public_ip)
+
+        def get_member_id(self, member_id_field):
+            """
+            Reads the member id from the payload file or configuration file. If neither of
+            these sources contain the member id, the hostname is assigned to it and returned.
+            :param str member_id_field: the key of the member id to lookup
+            :return: The member id
+            :rtype : str
+            """
+            try:
+                member_id = self.read_property(member_id_field)
+            except ParameterNotFoundException:
+                try:
+                    self.log.info("Reading hostname from container")
+                    member_id = socket.gethostname()
+                except:
+                    self.log.exception("Hostname can not be resolved")
+                    member_id = "unknown"
+
+            self.log.debug("MemberId  is taking the value of hostname : [" + member_id + "] ")
+            return member_id
 
         def __read_conf_file(self):
             """
