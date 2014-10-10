@@ -133,22 +133,24 @@ public interface CloudControllerService {
     /**
      * Terminate all containers of the given cluster.
      * @param clusterId id of the subjected cluster.
+     * @return terminated {@link MemberContext}s
      * @throws InvalidClusterException
      */
-    void terminateAllContainers(String clusterId) throws InvalidClusterException;
+    MemberContext[] terminateAllContainers(String clusterId) throws InvalidClusterException;
     
     /**
      * Terminate a given member/Kubernetes Pod.
      * @param memberId member/Pod id to be terminated.
+     * @return terminated {@link MemberContext}
      * @throws MemberTerminationFailedException
      */
-    void terminateContainer(String memberId) throws MemberTerminationFailedException;
+    MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException;
     
     /**
      * Update the Kubernetes controller created for the given cluster with the specified number of replicas.
      * @param clusterId id of the subjected cluster.
      * @param replicas total number of replicas to be set to the controller.
-     * @return newly created Members if any.
+     * @return newly created Members if any / terminated {@link MemberContext} in scale down scenario.
      * @throws InvalidClusterException
      */
     MemberContext[] updateContainers(String clusterId, int replicas) throws UnregisteredCartridgeException;
