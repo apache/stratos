@@ -18,8 +18,6 @@
  */
 package org.apache.stratos.cloud.controller.exception;
 
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-
 /**
  * Throws when a {@link IaasProvider} is evaluated to be invalid.
  * @author nirmal
