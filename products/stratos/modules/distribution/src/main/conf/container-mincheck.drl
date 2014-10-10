@@ -26,7 +26,7 @@ global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global java.lang.String clusterId;
  
-rule "Minimum Rule"
+rule "Container Minimum Rule"
 dialect "mvel"
 	when
            $kubernetesClusterContext : KubernetesClusterContext ()
@@ -36,20 +36,37 @@ dialect "mvel"
            isServiceClusterCreated : Boolean() from $kubernetesClusterContext.isServiceClusterCreated()
 	   
            eval(log.debug("Running minimum rule: [kub-cluster] " +kubernetesClusterId + " [cluster] " + clusterId))
-           eval(log.debug("[min-check] " + " [cluster] " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
-	   eval(log.debug("[min-check] " + " [cluster] " + clusterId + " [Replicas] minReplicas : " + minReplicas))
+           eval(log.debug("[min-check] " + " [cluster] : " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
+	   eval(log.debug("[min-check] " + " [cluster] : " + clusterId + " [Replicas] minReplicas : " + minReplicas))
 	   eval(nonTerminatedReplicas < minReplicas)
        then
            if (isServiceClusterCreated) {
              // we suceeded calling startContainer() once, can't call it again
-              log.info("[min-check] Decided to scale-up : [cluster] " + clusterId);
- 	      log.info("[min-check] " + " [cluster] " + clusterId + " min-rule not satisfied, expanding cluster to minReplicas : " + minReplicas);
+              log.info("[min-check] Decided to scale-up : [cluster] : " + clusterId);
+ 	      log.info("[min-check] " + " [cluster] : " + clusterId + " ; min-rule not satisfied, expanding cluster to minReplicas : " + minReplicas);
               $delegator.delegateUpdateContainers($kubernetesClusterContext, minReplicas);
 	   } else {
              // we should call startContainer
-              log.info("[min-check] Decided to create the cluster : [cluster] " + clusterId);
- 	      log.info("[min-check] " + " [cluster] " + clusterId + " : min-rule not satisfied, no containers created yet, creating minReplicas : " + minReplicas);
+              log.info("[min-check] Decided to create the cluster : [cluster] : " + clusterId);
+ 	      log.info("[min-check] " + " [cluster] : " + clusterId + " ; min-rule not satisfied, no containers created yet, creating minReplicas : " + minReplicas);
               $delegator.delegateStartContainers($kubernetesClusterContext);
            }
 end
+
+rule "Terminate Obsoleted Containers"
+dialect "mvel"
+        when
+           $kubernetesClusterContext : KubernetesClusterContext ()
+           kubernetesClusterId : String() from $kubernetesClusterContext.getKubernetesClusterID()
+           obsoleteReplicas : Integer() from $kubernetesClusterContext.getObsoletedMembers().size()
+
+           eval(log.debug("Running obsolete containers rule [kub-cluster] : " + kubernetesClusterId + " [cluster] : " + clusterId))
+           eval(log.debug("[obsolete-check] " + "[cluster] : " + clusterId + " [Replicas] obsoleteReplicas : " + obsoleteReplicas))
+           eval($kubernetesClusterContext.getObsoletedMembers().keySet().size() > 0)
+           memberId : String() from $kubernetesClusterContext.getObsoletedMembers().keySet()
+           eval(log.debug("[obsolete-check] [kub-cluster] : " + kubernetesClusterId + " [cluster] : " + clusterId + " Member id : " + memberId))
+        then
+           $delegator.delegateTerminateContainer($kubernetesClusterContext, memberId);
+end
+
 

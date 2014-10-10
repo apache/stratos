@@ -264,6 +264,15 @@ public class RuleTasksDelegator {
             log.error("Cannot update kubernetes controller ", e);
         }
     }
+    
+    public void delegateTerminateContainer(KubernetesClusterContext kubernetesClusterContext, String memberId) {
+    	try {
+    		CloudControllerClient ccClient = CloudControllerClient.getInstance();
+    		ccClient.terminateContainer(memberId);
+    	} catch (Throwable e) {
+    		log.error("Cannot delete container ", e);
+    	}
+    }
 
     public int getPredictedReplicasForStat(int minReplicas, float statUpperLimit, float statPredictedValue) {
         if (statUpperLimit == 0) {
