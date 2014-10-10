@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
+import org.apache.stratos.cloud.controller.exception.MemberTerminationFailedException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.pojo.*;
@@ -135,6 +136,13 @@ public interface CloudControllerService {
      * @throws InvalidClusterException
      */
     void terminateAllContainers(String clusterId) throws InvalidClusterException;
+    
+    /**
+     * Terminate a given member/Kubernetes Pod.
+     * @param memberId member/Pod id to be terminated.
+     * @throws MemberTerminationFailedException
+     */
+    void terminateContainer(String memberId) throws MemberTerminationFailedException;
     
     /**
      * Update the Kubernetes controller created for the given cluster with the specified number of replicas.

@@ -1755,5 +1755,56 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 	}
 
+    @Override
+    public void terminateContainer(String memberId) throws MemberTerminationFailedException {
+
+        handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [Member id] " + memberId);
+
+        MemberContext memberContext = dataHolder.getMemberContextOfMemberId(memberId);
+
+        handleNullObject(memberContext, "Failed to terminate member. Member id not found. [Member id] " + memberId);
+
+        String clusterId = memberContext.getClusterId();
+
+        handleNullObject(clusterId, "Failed to terminate member. Cluster id is null. [Member id] " + memberId);
+
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        handleNullObject(ctxt,
+                String.format("Failed to terminate member [Member id] %s. Invalid cluster id %s ", memberId, clusterId));
+        
+        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+                StratosConstants.KUBERNETES_CLUSTER_ID);
+        
+        handleNullObject(kubernetesClusterId, String.format("Failed to terminate member [Member id] %s. Cannot find '"+
+                    StratosConstants.KUBERNETES_CLUSTER_ID+"' in [cluster context] %s ", memberId, ctxt));
+        
+        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        
+        handleNullObject(kubClusterContext, String.format("Failed to terminate member [Member id] %s. Cannot find a matching Kubernetes Cluster in [cluster context] %s ", memberId, ctxt));
+        
+        KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+        // delete the Pod
+        try {
+            // member id = pod id
+            kubApi.deletePod(memberId);
+            
+            dataHolder.removeMemberContext(memberId, clusterId);
+            // persist
+            persist();
+        } catch (KubernetesClientException e) {
+            String msg = String.format("Failed to terminate member [Member id] %s", memberId);
+            log.error(msg, e);
+            throw new MemberTerminationFailedException(msg, e);
+        }
+    }
+    
+    private void handleNullObject(Object obj, String errorMsg) {
+        if (obj == null) {
+            log.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+    }
+
 }
 
