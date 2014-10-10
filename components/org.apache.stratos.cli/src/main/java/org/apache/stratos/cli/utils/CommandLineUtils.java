@@ -18,6 +18,9 @@
  */
 package org.apache.stratos.cli.utils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -91,4 +94,21 @@ public class CommandLineUtils {
 		}
 		return message;
 	}
+
+    public static String readResource(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
 }

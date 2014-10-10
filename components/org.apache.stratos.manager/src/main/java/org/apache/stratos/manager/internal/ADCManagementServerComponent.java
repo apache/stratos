@@ -128,8 +128,8 @@ public class ADCManagementServerComponent {
             log.info("ADC management server component is activated");
 			
 		} catch (Exception e) {
-            if(log.isFatalEnabled()) {
-			    log.fatal("Could not activate ADC management server component", e);
+            if(log.isErrorEnabled()) {
+			    log.error("Could not activate ADC management server component", e);
             }
 		}
 	}
