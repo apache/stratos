@@ -19,6 +19,7 @@
 package org.apache.stratos.cli;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 
 import org.apache.http.HttpResponse;
@@ -26,6 +27,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
@@ -58,15 +60,12 @@ public class RestClient implements GenericRestClient{
      *              This should be REST endpoint
      * @param jsonParamString
      *              The json string which should be executed from the post request
-     * @param username
-     *              User name for basic auth
-     * @param password
-     *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws Exception{
+    public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString)
+            throws ClientProtocolException, ConnectException {
         try {
             HttpPost postRequest = new HttpPost(resourcePath);
 
@@ -105,10 +104,6 @@ public class RestClient implements GenericRestClient{
      *              This should be httpClient which used to connect to rest endpoint
      * @param resourcePath
      *              This should be REST endpoint
-     * @param username
-     *              User name for basic auth
-     * @param password
-     *              Password for basic auth
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
@@ -169,8 +164,24 @@ public class RestClient implements GenericRestClient{
         }
     }
 
-    public void doPut() {
-        // Not implemented
-    }
+    public HttpResponse doPut(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws IOException {
+        HttpPut httpPutRequest = new HttpPut(resourcePath);
 
+        StringEntity input = new StringEntity(jsonParamString);
+        input.setContentType("application/json");
+        httpPutRequest.setEntity(input);
+
+        String userPass = username + ":" + password;
+        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+        httpPutRequest.addHeader("Authorization", basicAuth);
+
+        httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+
+        HttpParams params = httpClient.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+        HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
+
+        HttpResponse response = httpClient.execute(httpPutRequest);
+        return response;
+    }
 }
