@@ -56,6 +56,10 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
+import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
+import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
+import org.apache.stratos.cli.beans.kubernetes.KubernetesHostList;
 import org.apache.stratos.cli.beans.topology.Cluster;
 import org.apache.stratos.cli.beans.topology.Member;
 import org.apache.stratos.cli.exception.CommandException;
@@ -101,12 +105,15 @@ public class RestCommandLineService {
     private final String getListAvailableCartridgeInfoRestEndPoint = "/stratos/admin/cartridge/available/info";
 
     private final String deployKubernetesGroup = "/stratos/admin/kubernetes/deploy/group";
-    private final String deployKubernetesHost = "/stratos/admin/kubernetes/deploy/host";
+    private final String listKubernetesGroup = "/stratos/admin/kubernetes/group";
     private final String undeployKubernetesGroup = "/stratos/admin/kubernetes/group/{id}";
+
+    private final String deployKubernetesHost = "/stratos/admin/kubernetes/deploy/host";
+    private final String listKubernetesHost = "/stratos/admin/kubernetes/hosts/{groupId}";
     private final String undeployKubernetesHost = "/stratos/admin/kubernetes/host/{id}";
+
     private final String updateKubernetesMaster = "/stratos/admin/kubernetes/update/master";
     private final String updateKubernetesHost = "/stratos/admin/kubernetes/update/host";
-    private final String listKubernetesGroup = "/stratos/admin/kubernetes/group";
     private final String getKubernetesGroup = "/stratos/admin/kubernetes/group/{id}";
     private final String getKubernetesHost = "/stratos/admin/kubernetes/hosts/{id}";
     private final String getKubernetesMaster = "/stratos/admin/kubernetes/master/{id}";
@@ -1953,12 +1960,68 @@ public class RestCommandLineService {
         deployEntity(deployKubernetesGroup, entityBody, "kubernetes group");
     }
 
+    public void listKubernetesGroups() {
+        try {
+            KubernetesGroupList list = (KubernetesGroupList) executeList(listKubernetesGroup, KubernetesGroupList.class, "kubernetes group");
+            if((list != null) && (list.getKubernetesGroup() != null) && (list.getKubernetesGroup().size() > 0)) {
+                RowMapper<KubernetesGroup> partitionMapper = new RowMapper<KubernetesGroup>() {
+                    public String[] getData(KubernetesGroup kubernetesGroup) {
+                        String[] data = new String[2];
+                        data[0] = kubernetesGroup.getGroupId();
+                        data[1] = kubernetesGroup.getDescription();
+                        return data;
+                    }
+                };
+
+                KubernetesGroup[] array = new KubernetesGroup[list.getKubernetesGroup().size()];
+                array = list.getKubernetesGroup().toArray(array);
+                System.out.println("Available kubernetes groups:" );
+                CommandLineUtils.printTable(array, partitionMapper, "Group ID", "Description");
+            } else {
+                String message = "No kubernetes groups found.";
+                System.out.println(message);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("Error in listing kubernetes groups");
+        }
+    }
+
     public void undeployKubernetesGroup(String groupId) {
         undeployEntity(undeployKubernetesGroup, "kubernetes group", groupId);
     }
 
     public void deployKubernetesHost(String entityBody) {
         deployEntity(deployKubernetesHost, entityBody, "kubernetes host");
+    }
+
+    public void listKubernetesHosts(String groupId) {
+        try {
+            KubernetesHostList list = (KubernetesHostList) executeList(listKubernetesHost.replace("{groupId}", groupId),
+                    KubernetesHostList.class, "kubernetes host");
+            if((list != null) && (list.getKubernetesHost() != null) && (list.getKubernetesHost().size() > 0)) {
+                RowMapper<KubernetesHost> partitionMapper = new RowMapper<KubernetesHost>() {
+                    public String[] getData(KubernetesHost kubernetesHost) {
+                        String[] data = new String[3];
+                        data[0] = kubernetesHost.getHostId();
+                        data[1] = kubernetesHost.getHostname();
+                        data[2] = kubernetesHost.getHostIpAddress();
+                        return data;
+                    }
+                };
+
+                KubernetesHost[] array = new KubernetesHost[list.getKubernetesHost().size()];
+                array = list.getKubernetesHost().toArray(array);
+                System.out.println("Available kubernetes hosts:" );
+                CommandLineUtils.printTable(array, partitionMapper, "Host ID", "Hostname", "IP Address");
+            } else {
+                String message = "No kubernetes hosts found.";
+                System.out.println(message);
+                return;
+            }
+        } catch (Exception e) {
+            logger.error("Error in listing kubernetes hosts");
+        }
     }
 
     public void undeployKubernetesHost(String hostId) {
@@ -2066,7 +2129,6 @@ public class RestCommandLineService {
                 System.out.println(exception);
                 return null;
             }
-
             return gson.fromJson(resultString, _class);
         } catch (Exception e) {
             handleException(String.format("Error in listing %s", entityName), e);
