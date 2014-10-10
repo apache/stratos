@@ -38,6 +38,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClu
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidMemberExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidPartitionExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceMemberTerminationFailedExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
@@ -327,5 +328,20 @@ public class CloudControllerClient {
             log.error(msg, e);
             throw new SpawningException(msg, e);
         } 
+    }
+    
+    public synchronized void terminateContainer(String memberId) throws TerminationException{
+    	try {
+			stub.terminateContainer(memberId);
+		} catch (RemoteException e) {
+            String msg = "Error while updating kubernetes controller, cannot communicate with " +
+                    "cloud controller service";
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+		} catch (CloudControllerServiceMemberTerminationFailedExceptionException e) {
+            String msg = "Error while terminating container, member not valid for member id : " + memberId;
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
+		}
     }
 }

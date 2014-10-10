@@ -381,7 +381,7 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
         // no need to do anything here
         // we will not be receiving this event for containers
-        // because we just kill the containers
+        // we will only receive member terminated event
     }
 
     @Override
@@ -390,16 +390,39 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
         // no need to do anything here
         // we will not be receiving this event for containers
-        // because we just kill the containers
+    	// we will only receive member terminated event
     }
 
     @Override
     public void handleMemberTerminatedEvent(
             MemberTerminatedEvent memberTerminatedEvent) {
 
-        // no need to do anything here
-        // we will not be receiving this event for containers
-        // because we just kill the containers
+        String memberId = memberTerminatedEvent.getMemberId();
+        if (getKubernetesClusterCtxt().removeTerminationPendingMember(memberId)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member is removed from termination pending members list: "
+                                        + "[member] %s", memberId));
+            }
+        } else if (getKubernetesClusterCtxt().removePendingMember(memberId)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member is removed from pending members list: "
+                                        + "[member] %s", memberId));
+            }
+        } else if (getKubernetesClusterCtxt().removeActiveMemberById(memberId)) {
+            log.warn(String.format("Member is in the wrong list and it is removed from "
+                                   + "active members list", memberId));
+        } else if (getKubernetesClusterCtxt().removeObsoleteMember(memberId)) {
+            log.warn(String.format("Member's obsolated timeout has been expired and "
+                                   + "it is removed from obsolated members list", memberId));
+        } else {
+            log.warn(String.format("Member is not available in any of the list active, "
+                                   + "pending and termination pending", memberId));
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Member stat context has been removed successfully: "
+                                   + "[member] %s", memberId));
+        }
     }
 
     @Override
