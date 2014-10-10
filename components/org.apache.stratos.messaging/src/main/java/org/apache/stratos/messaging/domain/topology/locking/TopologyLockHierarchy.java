@@ -127,18 +127,27 @@ public class TopologyLockHierarchy {
     }
 
     public void removeTopologyLockForApplication (String appId) {
-        applicationIdToTopologyLockMap.remove(appId);
-        log.info("Removed lock for Application " + appId);
+        if (applicationIdToTopologyLockMap.remove(appId) != null) {
+            log.info("Removed lock for Application " + appId);
+        } else {
+            log.info("Lock already removed for Application " + appId);
+        }
     }
 
     public void removeTopologyLockForService (String serviceName) {
-        serviceNameToTopologyLockMap.remove(serviceName);
-        log.info("Removed lock for Service " + serviceName);
+        if (serviceNameToTopologyLockMap.remove(serviceName) != null) {
+            log.info("Removed lock for Service " + serviceName);
+        } else {
+            log.info("Lock already removed for Service " + serviceName);
+        }
     }
 
     public void removeTopologyLockForCluster (String clusterId) {
-        clusterIdToTopologyLockMap.remove(clusterId);
-        log.info("Removed lock for Cluster " + clusterId);
+        if (clusterIdToTopologyLockMap.remove(clusterId) != null) {
+            log.info("Removed lock for Cluster " + clusterId);
+        } else {
+            log.info("Lock already removed for Cluster " + clusterId);
+        }
     }
 
     public TopologyLock getServiceLock() {
