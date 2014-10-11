@@ -53,7 +53,7 @@ public class PodActivationWatcher implements Runnable {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("PodActivationWatcher running : "+pod.getCurrentState().getStatus());
             }
-            if ("Running".equals(pod.getCurrentState().getStatus()) && dataHolder.getMemberContextOfMemberId(podId) == null) {
+            if ("Running".equals(pod.getCurrentState().getStatus()) && ctxt.getPublicIpAddress() == null) {
                 String hostIP = pod.getCurrentState().getHost();
                 ctxt.setPublicIpAddress(hostIP);
                 ctxt.setPrivateIpAddress(hostIP);
