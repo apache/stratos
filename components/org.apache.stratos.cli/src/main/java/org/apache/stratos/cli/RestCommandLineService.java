@@ -2116,14 +2116,17 @@ public class RestCommandLineService {
         try {
             response = restClient.doGet(httpClient, restClient.getBaseURL() + serviceEndpoint);
             int responseCode = response.getStatusLine().getStatusCode();
+            String resultString = getHttpResponseString(response);
 
-            if (responseCode != 200) {
-                String resultString = getHttpResponseString(response);
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode == 200) {
+                return gson.fromJson(resultString, _class);
+            } else {
                 if(StringUtils.isBlank(resultString)) {
                     return null;
                 } else {
-                    GsonBuilder gsonBuilder = new GsonBuilder();
-                    Gson gson = gsonBuilder.create();
                     ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
                     if(exception != null) {
                         System.out.println(exception);
@@ -2131,7 +2134,6 @@ public class RestCommandLineService {
                     return gson.fromJson(resultString, _class);
                 }
             }
-            return null;
         } catch (Exception e) {
             handleException(String.format("Error in listing %s", entityName), e);
             return null;
