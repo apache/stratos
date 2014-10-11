@@ -211,6 +211,8 @@ class Cluster:
         """ :type : str  """
         self.is_lb_cluster = False
         """ :type : bool  """
+        self.is_kubernetes_cluster = False
+        """ :type : bool  """
         self.status = None
         """ :type : str  """
         self.load_balancer_algorithm_name = None

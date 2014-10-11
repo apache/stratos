@@ -162,8 +162,9 @@ class CompleteTopologyEvent:
                     cluster_obj.hostnames = cluster_str["hostNames"]
                     cluster_obj.tenant_range = cluster_str["tenantRange"] if "tenantRange" in cluster_str else None
                     cluster_obj.is_lb_cluster = cluster_str["isLbCluster"]
+                    cluster_obj.is_kubernetes_cluster = cluster_str["isKubernetesCluster"]
                     cluster_obj.status = cluster_str["status"]
-                    cluster_obj.load_balancer_algorithm_name = cluster_str["loadBalanceAlgorithmName"]
+                    cluster_obj.load_balancer_algorithm_name = cluster_str["loadBalanceAlgorithmName"] if "loadBalanceAlgorithmName" in cluster_str else None
                     cluster_obj.properties = cluster_str["properties"]
                     cluster_obj.member_list_json = "["
 
@@ -180,7 +181,7 @@ class CompleteTopologyEvent:
                         member_obj.status = member_str["status"]
                         member_obj.member_ip = member_str["memberIp"]
                         member_obj.properties = member_str["properties"]
-                        member_obj.lb_cluster_id = member_str["lbClusterId"]
+                        member_obj.lb_cluster_id = member_str["lbClusterId"] if "lbClusterId" in member_str else None
                         member_obj.json_str = member_str
                         cluster_obj.member_list_json += member_str + ","
 
