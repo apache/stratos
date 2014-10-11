@@ -178,8 +178,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             clustered = self.cartridge_agent_config.is_clustered
 
-            if member.properties is not None and member.properties[
-                    cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" and clustered is not None and clustered:
+            if member.properties is not None and cartridgeagentconstants.CLUSTERING_PRIMARY_KEY in member.properties \
+                    and member.properties[cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" \
+                    and clustered is not None and clustered:
 
                 self.log.debug(" If WK member is re-spawned, update axis2.xml ")
 
