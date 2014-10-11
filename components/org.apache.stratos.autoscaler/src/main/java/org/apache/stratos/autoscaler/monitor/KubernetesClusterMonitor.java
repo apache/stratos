@@ -428,7 +428,10 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void handleClusterRemovedEvent(
             ClusterRemovedEvent clusterRemovedEvent) {
-
+    	getKubernetesClusterCtxt().getPendingMembers().clear();
+    	getKubernetesClusterCtxt().getActiveMembers().clear();
+    	getKubernetesClusterCtxt().getTerminationPendingMembers().clear();
+    	getKubernetesClusterCtxt().getObsoletedMembers().clear();
     }
 
     public KubernetesClusterContext getKubernetesClusterCtxt() {
