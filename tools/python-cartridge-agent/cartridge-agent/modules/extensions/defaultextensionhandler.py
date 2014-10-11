@@ -377,7 +377,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         service = topology.get_service(member_started_event.service_name)
         cluster = service.get_cluster(member_started_event.cluster_id)
         started_member = cluster.get_member(member_started_event.member_id)
-        lb_cluster_id = cluster.get_member(member_started_event.cluster_id).lb_cluster_id
+        lb_cluster_id = cluster.get_member(member_started_event.member_id).lb_cluster_id
 
         #check whether started member is within the same cluster, LB cluster or service group
         if extensionutils.is_relevant_member_event(
