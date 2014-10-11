@@ -26,7 +26,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.RestCommandLineService;
-import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -34,15 +33,13 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-import java.util.ArrayList;
-
-public class SubscribeCommand implements Command<StratosCommandContext> {
+public class SubscribeCartridgeCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
 
     private final Options options;
 
-    public SubscribeCommand() {
+    public SubscribeCartridgeCommand() {
         options = constructOptions();
     }
 
@@ -159,7 +156,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     alias = remainingArgs[1];
                 } else {
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 // This will check the subscribe cartridge type is multi tenant or single tenant
@@ -220,7 +217,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         }
                         System.out.println("Invalid remove on termination option value.");
                         context.getStratosApplication().printUsage(getName());
-                        return CliConstants.BAD_ARGS_CODE;
+                        return CliConstants.COMMAND_FAILED;
                     }
                 }
                 if (commandLine.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
@@ -240,7 +237,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         }
                         System.out.println("Invalid persistance mapping option value.");
                         context.getStratosApplication().printUsage(getName());
-                        return CliConstants.BAD_ARGS_CODE;
+                        return CliConstants.COMMAND_FAILED;
                     }
 
                 }
@@ -266,19 +263,19 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                 if ( ! isMultiTenant && depPolicy == null) {
                     System.out.println("Deployment policy is required.");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 if ( ! isMultiTenant && asPolicy == null) {
                     System.out.println("Autoscaling policy is required.");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 if ((!persistanceMapping) && ((size != null) || removeOnTermination)) {
                     System.out.println("You have to enable persistance mapping in cartridge subscription");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
 				if (StringUtils.isNotBlank(username) && StringUtils.isBlank(password)) {
@@ -289,18 +286,18 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                 		password, asPolicy, depPolicy, size, removeOnTermination,
                         persistanceMapping, commitsEnabled, volumeID);
 
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 

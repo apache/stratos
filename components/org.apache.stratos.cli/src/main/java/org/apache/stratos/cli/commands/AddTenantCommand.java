@@ -150,23 +150,23 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
 
                 if (admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null) {
                     System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 RestCommandLineService.getInstance().addTenant(admin, firstName, lastaName, password, domain, email);
-                return CliConstants.SUCCESSFUL_CODE;
+                return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
 
         } else {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 

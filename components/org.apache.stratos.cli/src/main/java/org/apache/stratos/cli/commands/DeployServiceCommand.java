@@ -26,17 +26,18 @@ import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class DeploymentPolicyDeploymentCommand implements Command<StratosCommandContext> {
+public class DeployServiceCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeploymentPolicyDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeployServiceCommand.class);
 
     private final Options options;
 
-    public DeploymentPolicyDeploymentCommand(){
+    public DeployServiceCommand(){
         options = constructOptions();
     }
 
@@ -44,7 +45,7 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Deployment policy deployment resource path");
+                "Deploy Service resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -52,11 +53,11 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
     }
 
     public String getName() {
-        return CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT;
+        return CliConstants.DEPLOY_SERVICE_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new deployment policy";
+        return "Add new deploy service";
     }
 
     public String getArgumentSyntax() {
@@ -70,7 +71,7 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String deploymentPolicyDeployment = null;
+            String deployServiceDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -79,7 +80,7 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Deployment policy deployment");
+                    logger.debug("Deploy Service Deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -87,31 +88,31 @@ public class DeploymentPolicyDeploymentCommand implements Command<StratosCommand
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    deploymentPolicyDeployment = readResource(resourcePath);
+                    deployServiceDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
                     System.out.println("usage: " + getName() + " [-p <resource path>]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().deployDeploymentPolicy(deploymentPolicyDeployment);
-                return CliConstants.SUCCESSFUL_CODE;
+                RestCommandLineService.getInstance().deployService(deployServiceDeployment);
+                return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println("Invalid resource path");
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
         } else {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 

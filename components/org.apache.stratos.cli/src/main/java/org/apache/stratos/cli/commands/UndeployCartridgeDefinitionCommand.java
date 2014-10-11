@@ -61,10 +61,10 @@ public class UndeployCartridgeDefinitionCommand implements Command<StratosComman
 				logger.debug("Getting undeploy cartridge definition info {}", id);
 			}
 			RestCommandLineService.getInstance().undeployCartrigdeDefinition(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

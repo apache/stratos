@@ -36,7 +36,7 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnsubscribeCommand.class);
 	
-	private final Options options;;
+	private final Options options;
 
 	public UnsubscribeCommand() {
 		options = constructOptions();
@@ -92,7 +92,7 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 						logger.debug("Unsubscribe: not enough arguments");
 					}
 					context.getStratosApplication().printUsage(getName());
-					return CliConstants.BAD_ARGS_CODE;
+					return CliConstants.COMMAND_FAILED;
 				}
 
 				if (commandLine.hasOption(CliConstants.FORCE_OPTION)) {
@@ -109,17 +109,17 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 					//CommandLineService.getInstance().unsubscribe(alias);
                     RestCommandLineService.getInstance().unsubscribe(alias);
 				}
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 
