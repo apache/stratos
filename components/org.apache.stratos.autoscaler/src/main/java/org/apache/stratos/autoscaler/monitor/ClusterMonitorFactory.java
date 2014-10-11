@@ -384,7 +384,11 @@ public class ClusterMonitorFactory {
             MemberContext memberContext = new MemberContext();
             memberContext.setMemberId(memberId);
             memberContext.setClusterId(clusterId);
-
+            
+            // if there is at least one member in the topology, that means service has been created already
+            // this is to avoid calling startContainer() method again
+            kubernetesClusterCtxt.setServiceClusterCreated(true);
+            
             if (MemberStatus.Activated.equals(member.getStatus())) {
                 dockerClusterMonitor.getKubernetesClusterCtxt().addActiveMember(memberContext);
             } else if (MemberStatus.Created.equals(member.getStatus())
