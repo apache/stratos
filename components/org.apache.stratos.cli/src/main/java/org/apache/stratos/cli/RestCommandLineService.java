@@ -299,6 +299,7 @@ public class RestCommandLineService {
             Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
             cartridges = cartridgeList.getCartridge().toArray(cartridges);
 
+            System.out.println("Cartridges found:");
             CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Description", "Version",
                     "Is Multi-Tenant", "Accessibility");
         } catch (Exception e) {
@@ -397,7 +398,7 @@ public class RestCommandLineService {
                 headers.add("Repo URL");
             }
 
-            System.out.println("Cartridge subscriptions:");
+            System.out.println("Cartridge subscriptions found:");
             CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
         } catch (Exception e) {
             String message = "Error in listing cartridge subscriptions";
