@@ -195,7 +195,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployKubernetesHostCommand();
         commands.put(command.getName(), command);
 
-        command = new UndeployKubernetesGroupCommand();
+        command = new UnDeployKubernetesGroupCommand();
         commands.put(command.getName(), command);
 
         command = new UndeployKubernetesHostCommand();

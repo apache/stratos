@@ -33,11 +33,11 @@ import java.io.IOException;
 /**
  * Un-deploy kubernetes group command.
  */
-public class UndeployKubernetesGroupCommand implements Command<StratosCommandContext> {
+public class UnDeployKubernetesGroupCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UndeployKubernetesGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(UnDeployKubernetesGroupCommand.class);
 
-    public UndeployKubernetesGroupCommand() {
+    public UnDeployKubernetesGroupCommand() {
     }
 
     @Override
