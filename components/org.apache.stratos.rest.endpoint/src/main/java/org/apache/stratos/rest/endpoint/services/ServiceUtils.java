@@ -1409,15 +1409,18 @@ public class ServiceUtils {
         return false;
     }
 
-    public static List<KubernetesHost> getKubernetesHosts(String kubernetesGroupId) throws RestAPIException {
+    public static KubernetesHost[] getKubernetesHosts(String kubernetesGroupId) throws RestAPIException {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
                 org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
                         kubernetesHosts = autoscalerServiceClient.getKubernetesHosts(kubernetesGroupId);
-                return PojoConverter.populateKubernetesHostsPojo(kubernetesHosts);
 
+                List<KubernetesHost> arrayList = PojoConverter.populateKubernetesHostsPojo(kubernetesHosts);
+                KubernetesHost[] array = new KubernetesHost[arrayList.size()];
+                array = arrayList.toArray(array);
+                return array;
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
