@@ -250,8 +250,7 @@ public class RestClient implements GenericRestClient {
     private int executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = doPost(httpClient, getBaseURL()
-                    + serviceEndpoint, postBody);
+            HttpResponse response = doPost(httpClient, getBaseURL()+ serviceEndpoint, postBody);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
@@ -288,8 +287,7 @@ public class RestClient implements GenericRestClient {
     private int executePut(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = doPut(httpClient, getBaseURL()
-                    + serviceEndpoint, postBody);
+            HttpResponse response = doPut(httpClient, getBaseURL() + serviceEndpoint, postBody);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {

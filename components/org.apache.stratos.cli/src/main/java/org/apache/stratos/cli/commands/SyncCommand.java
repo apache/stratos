@@ -55,12 +55,12 @@ public class SyncCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String alias = args[0];
+			String cartridgeSubscriptionAlias = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Synchronizing repository for cartridge subscription alias {}", alias);
+				logger.debug("Synchronizing repository for cartridge subscription alias {}", cartridgeSubscriptionAlias);
 			}
 
-			RestCommandLineService.getInstance().sync(alias);
+			RestCommandLineService.getInstance().synchronizeArtifacts(cartridgeSubscriptionAlias);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

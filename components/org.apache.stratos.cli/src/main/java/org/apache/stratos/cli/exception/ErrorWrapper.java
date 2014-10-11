@@ -41,8 +41,6 @@ public class ErrorWrapper {
 
     @Override
     public String toString() {
-        return "Exception [errorCode=" + errorCode
-                + ", errorMessage=" + errorMessage + "]";
+        return "Error [code = " + errorCode + ", message = " + errorMessage + "]";
     }
-
 }

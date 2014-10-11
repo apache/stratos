@@ -42,7 +42,7 @@ public class ActivateTenantCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getArgumentSyntax() {
-        return "[Tenant Domain]";
+        return "[tenant-domain]";
     }
 
     @Override
