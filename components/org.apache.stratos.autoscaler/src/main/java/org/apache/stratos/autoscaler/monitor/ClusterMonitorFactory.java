@@ -391,6 +391,10 @@ public class ClusterMonitorFactory {
                        || MemberStatus.Starting.equals(member.getStatus())) {
                 dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
             }
+            kubernetesClusterCtxt.addMemberStatsContext(new MemberStatsContext(memberId));
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member stat context has been added: [member] %s", memberId));
+            }
         }
 
         // find lb reference type
