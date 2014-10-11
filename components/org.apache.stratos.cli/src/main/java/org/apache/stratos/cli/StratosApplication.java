@@ -96,7 +96,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new ExitCommand();
 		commands.put(command.getName(), command);
 
-		command = new SubscribeCommand();
+		command = new SubscribeCartridgeCommand();
 		commands.put(command.getName(), command);
 
 		command = new UnsubscribeCommand();
@@ -126,16 +126,16 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ActivateTenantCommand();
         commands.put(command.getName(), command);
 
-        command = new CartridgeDeploymentCommand();
+        command = new DeployCartridgeCommand();
         commands.put(command.getName(), command);
 
-        command = new PartitionDeploymentCommand();
+        command = new DeployPartitionCommand();
         commands.put(command.getName(), command);
 
-        command = new AutoscalingPolicyDeploymentCommand();
+        command = new DeployAutoscalingPolicyCommand();
         commands.put(command.getName(), command);
 
-        command = new DeployServiceDeploymentCommand();
+        command = new DeployServiceCommand();
         commands.put(command.getName(), command);
 
         command = new UndeployServiceDefinitionCommand();
@@ -147,19 +147,19 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new UndeployCartridgeDefinitionCommand();
         commands.put(command.getName(), command);
 
-        command = new DeploymentPolicyDeploymentCommand();
+        command = new DeployDeploymentPolicyCommand();
         commands.put(command.getName(), command);
 		
 		command = new ListSubscribedCartridgesCommand();
 		commands.put(command.getName(), command);
 
-        command = new PartitionCommand();
+        command = new ListPartitionCommand();
         commands.put(command.getName(), command);
 
-        command = new AutoscalePolicyCommand();
+        command = new ListAutoscalePolicyCommand();
         commands.put(command.getName(), command);
 
-        command = new DeploymentPolicyCommand();
+        command = new ListDeploymentPolicyCommand();
         commands.put(command.getName(), command);
 		
 		command = new ListMemberCommand();
@@ -177,7 +177,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeAutoScalingPolicyCommand();
         commands.put(command.getName(), command);
         
-        command = new SubscribedCartridgeInfoCommand();
+        command = new ListCartridgeSubscriptionsCommand();
         commands.put(command.getName(), command);
 		
 		command = new SyncCommand();
@@ -292,14 +292,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 				}
 				if (commandLine.hasOption(CliConstants.HELP_ACTION)) {
 					printHelp();
-					return CliConstants.SUCCESSFUL_CODE;
+					return CliConstants.COMMAND_SUCCESSFULL;
 				}
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments when trying to login", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE; 
+				return CliConstants.COMMAND_FAILED;
 			}
 
 		}
@@ -312,7 +312,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			Command<StratosCommandContext> command = commands.get(action);
 			if (command == null) {
 				printHelp();
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 
 			boolean loginRequired = !CliConstants.HELP_ACTION.equals(action);
@@ -355,7 +355,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
 			promptLoop();
 		}
-		return CliConstants.SUCCESSFUL_CODE;
+		return CliConstants.COMMAND_SUCCESSFULL;
 	}
 
 	private boolean login(String usernameInput, String passwordInput, boolean validateLogin) {
@@ -427,7 +427,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		Command<StratosCommandContext> command = commands.get(action);
 		if (command == null) {
 			System.out.println(action + ": command not found.");
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 		try {
 			return command.execute(context, actionArgs);

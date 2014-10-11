@@ -1,0 +1,165 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+from Crypto.Cipher import AES
+import base64
+import os
+import time
+import socket
+import shutil
+
+from log import LogFactory
+
+unpad = lambda s: s[0:-ord(s[-1])]
+
+log = LogFactory().get_log(__name__)
+
+current_milli_time = lambda: int(round(time.time() * 1000))
+
+
+def decrypt_password(pass_str, secret):
+    """
+    Decrypts the given password using the given secret. The encryption is assumed to be done
+    without IV, in AES.
+    :param str pass_str: Encrypted password string in Base64 encoding
+    :param str secret: The secret string
+    :return: The decrypted password
+    :rtype: str
+    """
+
+    if pass_str is None:
+        return pass_str
+
+    dec_pass = ""
+
+    try:
+        log.debug("Decrypting password")
+        bdecoded_pass = base64.b64decode(pass_str)
+        #secret length should be 16
+        cipher = AES.new(secret, AES.MODE_ECB)
+        dec_pass = unpad(cipher.decrypt(bdecoded_pass))
+    except:
+        log.exception("Exception occurred while decrypting password")
+
+    log.debug("Decrypted PWD: [%r]" % dec_pass)
+    return dec_pass
+
+
+def create_dir(path):
+    """
+    mkdir the provided path
+    :param path: The path to the directory to be made
+    :return: True if mkdir was successful, False if dir already exists
+    :rtype: bool
+    """
+    try:
+        os.mkdir(path)
+        log.info("Successfully created directory [%r]" % path)
+        return True
+    except OSError:
+        log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
+
+    return False
+
+
+def delete_folder_tree(path):
+    """
+    Completely deletes the provided folder
+    :param str path: Full path of the folder
+    :return: void
+    """
+    try:
+        shutil.rmtree(path)
+        log.debug("Directory [%r] deleted." % path)
+    except OSError:
+        log.exception("Deletion of folder path %r failed." % path)
+
+
+def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
+    """
+    Blocks until the given list of ports become active
+    :param str ip_address: Ip address of the member to be checked
+    :param list[str] ports: List of ports to be checked
+    :param int ports_check_timeout: The timeout in milliseconds, defaults to 1000*60*10
+    :return: void
+    """
+    if ports_check_timeout is None:
+        ports_check_timeout = 1000 * 60 * 10
+
+    log.debug("Port check timeout: %r" % ports_check_timeout)
+
+    active = False
+    start_time = current_milli_time()
+    while not active:
+        log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
+        active = check_ports_active(ip_address, ports)
+        end_time = current_milli_time()
+        duration = end_time - start_time
+
+        if duration > ports_check_timeout:
+            return
+
+        time.sleep(5)
+
+    log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
+
+
+def check_ports_active(ip_address, ports):
+    """
+    Checks the given list of port addresses for active state
+    :param str ip_address: Ip address of the member to be checked
+    :param list[str] ports: The list of ports to be checked
+    :return: True if the ports are active, False if at least one is not active
+    :rtype: bool
+    """
+    if len(ports) < 1:
+        raise RuntimeError("No ports found")
+
+    for port in ports:
+        s = socket.socket()
+        s.settimeout(5)
+        try:
+            s.connect((ip_address, int(port)))
+            log.debug("Port %r is active" % port)
+            s.close()
+        except socket.error:
+            log.debug("Print %r is not active" % port)
+            return False
+
+    return True
+
+
+def get_carbon_server_property(property_key):
+    """
+    Reads the carbon.xml file and returns the value for the property key.
+    TODO: Get carbon server xml location
+    :param str property_key: Property key to look for
+    :return: The value of the property, None if the property key is invalid or not present
+    :rtype : str
+    """
+
+    raise NotImplementedError
+
+
+def get_working_dir():
+    """
+    Returns the base directory of the cartridge agent.
+    :return: Base working dir path
+    :rtype : str
+    """
+    #"/path/to/cartridge-agent/modules/util/".split("modules") returns ["/path/to/cartridge-agent/", "/util"]
+    return os.path.abspath(os.path.dirname(__file__)).split("modules")[0]

@@ -66,11 +66,11 @@ public class UndeployKubernetesHostCommand implements Command<StratosCommandCont
 
         if ((args == null) || (args.length <= 0)) {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
 
         String hostId = args[0];
         RestCommandLineService.getInstance().undeployKubernetesHost(hostId);
-        return CliConstants.SUCCESSFUL_CODE;
+        return CliConstants.COMMAND_SUCCESSFULL;
     }
 }

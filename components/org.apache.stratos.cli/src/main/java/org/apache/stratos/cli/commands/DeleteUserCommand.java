@@ -61,10 +61,10 @@ public class DeleteUserCommand implements Command<StratosCommandContext> {
 				logger.debug("Getting delete user info {}", username);
 			}
 			RestCommandLineService.getInstance().deleteUser(username);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

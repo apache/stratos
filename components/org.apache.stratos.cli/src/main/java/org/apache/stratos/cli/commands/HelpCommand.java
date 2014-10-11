@@ -55,13 +55,13 @@ public class HelpCommand implements Command<StratosCommandContext> {
 		}
 		if (args == null || args.length == 0) {
 			context.getStratosApplication().printHelp();
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else if (args != null && args.length == 1) {
 			context.getStratosApplication().printHelp(args[0]);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 
