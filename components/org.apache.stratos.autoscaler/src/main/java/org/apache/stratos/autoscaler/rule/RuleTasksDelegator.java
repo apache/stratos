@@ -279,7 +279,7 @@ public class RuleTasksDelegator {
 					if (null != memberContext) {
 						// we are not removing from active/pending list, it will be handled in AS event receiver
 						if (log.isDebugEnabled()) {
-							log.debug(String.format("Scaling down, terminating the member with id %s in cluster %s", 
+							log.debug(String.format("Scaling down, terminated the member with id %s in cluster %s", 
 									memberContext.getMemberId(), memberContext.getClusterId()));
 						}
 					}
