@@ -26,6 +26,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.RestCommandLineService;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -33,9 +34,11 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+import java.io.IOException;
+
 public class SubscribeCartridgeCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(ListCartridgeSubscriptionsCommand.class);
 
     private final Options options;
 
@@ -50,11 +53,11 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
      */
     private Options constructOptions() {
         final Options options = new Options();
-        //Option policyOption = new Option(CliConstants.POLICY_OPTION, CliConstants.POLICY_LONG_OPTION, true,
-        //		"Auto-scaling policy.\nPlease use \"" + CliConstants.POLICIES_ACTION
-        //				+ "\" command to view the available policies.");
-        //policyOption.setArgName("policy name");
-        //options.addOption(policyOption);
+
+        Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
+                "Cartridge deployment resource path");
+        resourcePath.setArgName("resource path");
+        options.addOption(resourcePath);
 
         Option autoscaling = new Option(CliConstants.AUTOSCALING_POLICY_OPTION, CliConstants.AUTOSCALING_POLICY_LONG_OPTION,
                 true, "Auto-scaling policy");
@@ -89,9 +92,6 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
         urlOption.setArgName("url");
         options.addOption(urlOption);
 
-        //options.addOption(CliConstants.PRIVATE_REPO_OPTION, CliConstants.PRIVATE_REPO_LONG_OPTION, false,
-        //		"Private repository");
-
         Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
                 "GIT repository username");
         usernameOption.setArgName("username");
@@ -121,7 +121,7 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
     }
 
     public String getArgumentSyntax() {
-        return "[Cartridge type] [Cartridge alias]";
+        return "[cartridge-type] [cartridge-subscription-alias]";
     }
 
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
@@ -138,6 +138,8 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
             String repoURL = null, username = "", password = "";
             String size = null;
             String volumeID = null;
+            String resourcePath = null;
+            String subscriptionJson = null;
 
             boolean removeOnTermination = false;
             boolean privateRepo = false;
@@ -154,6 +156,26 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
                     // Get type
                     type = remainingArgs[0];
                     alias = remainingArgs[1];
+                } else if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Resource path option is passed");
+                    }
+                    try {
+                        resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+                        subscriptionJson = CliUtils.readResource(resourcePath);
+                    } catch (IOException e) {
+                        System.out.println("Invalid resource path");
+                        return CliConstants.COMMAND_FAILED;
+                    }
+
+                    if (resourcePath == null) {
+                        System.out.println("usage: " + getName() + " [-p <resource-path>]");
+                        return CliConstants.COMMAND_FAILED;
+                    }
+
+                    RestCommandLineService.getInstance().subscribe(subscriptionJson);
+                    return CliConstants.COMMAND_FAILED;
+
                 } else {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;

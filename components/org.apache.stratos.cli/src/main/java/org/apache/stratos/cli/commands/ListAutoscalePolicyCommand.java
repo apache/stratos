@@ -51,8 +51,7 @@ public class ListAutoscalePolicyCommand implements Command<StratosCommandContext
             logger.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
-            //CommandLineService.getInstance().listAvailableCartridges();
-            RestCommandLineService.getInstance().listAutoscalePolicies();
+            RestCommandLineService.getInstance().listAutoscalingPolicies();
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

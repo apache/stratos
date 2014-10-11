@@ -97,8 +97,11 @@ class CartridgeAgentConfiguration:
             self.__read_conf_file()
             self.__read_parameter_file()
 
+            self.initialized = False
+            """ :type : bool """
+
             try:
-                service_group = self.payload_params[cartridgeagentconstants.SERVICE_GROUP] \
+                self.service_group = self.payload_params[cartridgeagentconstants.SERVICE_GROUP] \
                     if cartridgeagentconstants.SERVICE_GROUP in self.payload_params \
                     else None
 
@@ -112,12 +115,12 @@ class CartridgeAgentConfiguration:
 
                 self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
                 self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
-                self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID)
-                self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID)
+                self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID, False)
+                self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID, False)
                 self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID)
                 self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
-                self.app_path = self.read_property(cartridgeagentconstants.APP_PATH)
-                self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL)
+                self.app_path = self.read_property(cartridgeagentconstants.APP_PATH, False)
+                self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
 
                 try:
@@ -163,8 +166,8 @@ class CartridgeAgentConfiguration:
                     self.is_internal_repo = False
 
                 self.tenant_id = self.read_property(cartridgeagentconstants.TENANT_ID)
-                self.lb_cluster_id = self.read_property(cartridgeagentconstants.LB_CLUSTER_ID)
-                self.min_count = self.read_property(cartridgeagentconstants.MIN_INSTANCE_COUNT)
+                self.lb_cluster_id = self.read_property(cartridgeagentconstants.LB_CLUSTER_ID, False)
+                self.min_count = self.read_property(cartridgeagentconstants.MIN_INSTANCE_COUNT, False)
                 self.lb_private_ip = self.read_property(cartridgeagentconstants.LB_PRIVATE_IP, False)
                 self.lb_public_ip = self.read_property(cartridgeagentconstants.LB_PUBLIC_IP, False)
                 self.tenant_repository_path = self.read_property(cartridgeagentconstants.TENANT_REPO_PATH, False)

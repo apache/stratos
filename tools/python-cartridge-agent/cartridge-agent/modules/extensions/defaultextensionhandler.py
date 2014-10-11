@@ -16,8 +16,10 @@
 # under the License.
 
 import time
+import json
 
 from abstractextensionhandler import AbstractExtensionHandler
+from ..util import extensionutils, cartridgeagentutils
 
 
 class DefaultExtensionHandler(AbstractExtensionHandler):
@@ -147,28 +149,28 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         if extensionutils.is_relevant_member_event(member_activated_event.service_name,
                                                    member_activated_event.cluster_id, lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": member_activated_event.member_ip,
-                          "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": member_activated_event.member_id,
-                          "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": member_activated_event.cluster_id,
-                          "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": lb_cluster_id,
-                          "STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID": member_activated_event.network_partition_id,
-                          "STRATOS_MEMBER_ACTIVATED_SERVICE_NAME": member_activated_event.service_name}
+            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": str(member_activated_event.member_ip),
+                          "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": str(member_activated_event.member_id),
+                          "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": str(member_activated_event.cluster_id),
+                          "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": str(lb_cluster_id),
+                          "STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID": str(member_activated_event.network_partition_id),
+                          "STRATOS_MEMBER_ACTIVATED_SERVICE_NAME": str(member_activated_event.service_name)}
 
             ports = member_activated_event.port_map.values()
             ports_str = ""
             for port in ports:
-                ports_str += port.protocol + "," + port.value + "," + port.proxy + "|"
+                ports_str += port.protocol + "," + str(port.value) + "," + str(port.proxy) + "|"
 
             env_params["STRATOS_MEMBER_ACTIVATED_PORTS"] = ports_str
 
-            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_LIST_JSON"] = cluster.member_list_json
+            env_params["STRATOS_MEMBER_ACTIVATED_MEMBER_LIST_JSON"] = json.dumps(cluster.member_list_json)
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
-                env_params["STRATOS_MEMBER_ACTIVATED_LB_IP"] = member_ips[0]
-                env_params["STRATOS_MEMBER_ACTIVATED_LB_PUBLIC_IP"] = member_ips[1]
+                env_params["STRATOS_MEMBER_ACTIVATED_LB_IP"] = str(member_ips[0])
+                env_params["STRATOS_MEMBER_ACTIVATED_LB_PUBLIC_IP"] = str(member_ips[1])
 
-            env_params["STRATOS_TOPOLOGY_JSON"] = topology.json_str
+            env_params["STRATOS_TOPOLOGY_JSON"] = json.dumps(topology.json_str)
 
             extensionutils.add_properties(service.properties, env_params, "MEMBER_ACTIVATED_SERVICE_PROPERTY")
             extensionutils.add_properties(cluster.properties, env_params, "MEMBER_ACTIVATED_CLUSTER_PROPERTY")
@@ -176,8 +178,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             clustered = self.cartridge_agent_config.is_clustered
 
-            if member.properties is not None and member.properties[
-                    cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" and clustered is not None and clustered:
+            if member.properties is not None and cartridgeagentconstants.CLUSTERING_PRIMARY_KEY in member.properties \
+                    and member.properties[cartridgeagentconstants.CLUSTERING_PRIMARY_KEY] == "true" \
+                    and clustered is not None and clustered:
 
                 self.log.debug(" If WK member is re-spawned, update axis2.xml ")
 
@@ -198,8 +201,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                     env_params["STRATOS_UPDATE_WK_IP"] = "true"
 
             self.log.debug("Setting env var STRATOS_CLUSTERING to %r" % clustered)
-            env_params["STRATOS_CLUSTERING"] = clustered
-            env_params["STRATOS_WK_MEMBER_COUNT"] = self.cartridge_agent_config.min_count
+            env_params["STRATOS_CLUSTERING"] = str(clustered)
+            env_params["STRATOS_WK_MEMBER_COUNT"] = str(self.cartridge_agent_config.min_count)
 
             extensionutils.execute_member_activated_extension(env_params)
         else:
@@ -212,23 +215,48 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        consistant = extensionutils.check_topology_consistency(
+            service_name_in_payload,
+            cluster_id_in_payload,
+            member_id_in_payload)
+
+        if not consistant:
+            return
+        else:
+            self.cartridge_agent_config.initialized = True
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
         cluster = service.get_cluster(cluster_id_in_payload)
 
-        env_params = {"STRATOS_TOPOLOGY_JSON": topology.json_str, "STRATOS_MEMBER_LIST_JSON": cluster.member_list_json}
+        env_params = {"STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str), "STRATOS_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
 
         extensionutils.execute_complete_topology_extension(env_params)
+
+    def on_instance_spawned_event(self, instance_spawned_event):
+        self.log.debug("Instance Spawned event received")
+
+        service_name_in_payload = self.cartridge_agent_config.service_name
+        cluster_id_in_payload = self.cartridge_agent_config.cluster_id
+        member_id_in_payload = self.cartridge_agent_config.member_id
+
+        consistant = extensionutils.check_topology_consistency(
+            service_name_in_payload,
+            cluster_id_in_payload,
+            member_id_in_payload)
+
+        if not consistant:
+            return
+        else:
+            self.cartridge_agent_config.initialized = True
 
     def on_complete_tenant_event(self, complete_tenant_event):
         self.log.debug("Complete tenant event received")
 
         tenant_list_json = complete_tenant_event.tenant_list_json
-        self.log.debug("Complete tenants:" + ','.join(tenant_list_json))
+        self.log.debug("Complete tenants:" + json.dumps(tenant_list_json))
 
-        env_params = {"STRATOS_TENANT_LIST_JSON": ','.join(tenant_list_json)}
+        env_params = {"STRATOS_TENANT_LIST_JSON": json.dumps(tenant_list_json)}
 
         extensionutils.execute_complete_tenant_extension(env_params)
 
@@ -265,8 +293,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                           "STRATOS_MEMBER_TERMINATED_LB_CLUSTER_ID": lb_cluster_id,
                           "STRATOS_MEMBER_TERMINATED_NETWORK_PARTITION_ID": member_terminated_event.network_partition_id,
                           "STRATOS_MEMBER_TERMINATED_SERVICE_NAME": member_terminated_event.service_name,
-                          "STRATOS_MEMBER_TERMINATED_MEMBER_LIST_JSON": cluster.member_list_json,
-                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+                          "STRATOS_MEMBER_TERMINATED_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json),
+                          "STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str)}
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
@@ -314,8 +342,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                           "STRATOS_MEMBER_SUSPENDED_LB_CLUSTER_ID": lb_cluster_id,
                           "STRATOS_MEMBER_SUSPENDED_NETWORK_PARTITION_ID": member_suspended_event.network_partition_id,
                           "STRATOS_MEMBER_SUSPENDED_SERVICE_NAME": member_suspended_event.service_name,
-                          "STRATOS_MEMBER_SUSPENDED_MEMBER_LIST_JSON": cluster.member_list_json,
-                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+                          "STRATOS_MEMBER_SUSPENDED_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json),
+                          "STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str)}
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
@@ -349,7 +377,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         service = topology.get_service(member_started_event.service_name)
         cluster = service.get_cluster(member_started_event.cluster_id)
         started_member = cluster.get_member(member_started_event.member_id)
-        lb_cluster_id = cluster.get_member(member_started_event.cluster_id).lb_cluster_id
+        lb_cluster_id = cluster.get_member(member_started_event.member_id).lb_cluster_id
 
         #check whether started member is within the same cluster, LB cluster or service group
         if extensionutils.is_relevant_member_event(
@@ -363,8 +391,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                           "STRATOS_MEMBER_STARTED_LB_CLUSTER_ID": lb_cluster_id,
                           "STRATOS_MEMBER_STARTED_NETWORK_PARTITION_ID": member_started_event.network_partition_id,
                           "STRATOS_MEMBER_STARTED_SERVICE_NAME": member_started_event.service_name,
-                          "STRATOS_MEMBER_STARTED_MEMBER_LIST_JSON": cluster.member_list_json,
-                          "STRATOS_TOPOLOGY_JSON": topology.json_str}
+                          "STRATOS_MEMBER_STARTED_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json),
+                          "STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str)}
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
@@ -414,8 +442,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 self.wait_for_wk_members(env_params)
                 self.log.info("All well known members have started! Resuming start server extension...")
 
-            env_params["STRATOS_TOPOLOGY_JSON"] = topology.json_str
-            env_params["STRATOS_MEMBER_LIST_JSON"] = cluster.member_list_json
+            env_params["STRATOS_TOPOLOGY_JSON"] = json.dumps(topology.json_str)
+            env_params["STRATOS_MEMBER_LIST_JSON"] = json.dumps(cluster.member_list_json)
 
             extensionutils.execute_start_servers_extension(env_params)
 
@@ -754,7 +782,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 from ..artifactmgt.git import agentgithandler
 from ..artifactmgt.repositoryinformation import RepositoryInformation
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import extensionutils
 from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *

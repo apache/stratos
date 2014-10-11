@@ -79,6 +79,11 @@ class CartridgeAgent(threading.Thread):
         #Start tenant event receiver thread
         self.register_tenant_event_listeners()
 
+        #wait for intance spawned event
+        while not self.cartridge_agent_config.initialized:
+            self.log.debug("Waiting for Cartridge Agent to be initialized...")
+            time.sleep(1)
+
         #Execute instance started shell script
         CartridgeAgent.extension_handler.on_instance_started_event()
 
@@ -203,7 +208,7 @@ class CartridgeAgent(threading.Thread):
         try:
             CartridgeAgent.extension_handler.on_member_activated_event(event_obj)
         except:
-            self.log.exception("Error processing member terminated event")
+            self.log.exception("Error processing member activated event")
 
     def on_member_terminated(self, msg):
         self.log.debug("Member terminated event received: %r" % msg.payload)

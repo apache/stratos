@@ -41,8 +41,8 @@ def decrypt_password(pass_str, secret):
     :rtype: str
     """
 
-    if pass_str is None:
-        return pass_str
+    if pass_str is None or pass_str.strip() == "":
+        return pass_str.strip()
 
     dec_pass = ""
 

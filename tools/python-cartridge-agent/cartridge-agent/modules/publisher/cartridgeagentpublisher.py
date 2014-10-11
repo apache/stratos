@@ -77,7 +77,7 @@ def publish_instance_activated_event():
 
         if CEPPublisherConfiguration.get_instance().enabled:
             interval_default = 15  # seconds
-            interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval")
+            interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval", False)
             if interval is not None and len(interval) > 0:
                 try:
                     interval = int(interval)
