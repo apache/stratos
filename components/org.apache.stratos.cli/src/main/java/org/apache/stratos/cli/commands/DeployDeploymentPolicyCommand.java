@@ -30,13 +30,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class PartitionDeploymentCommand implements Command<StratosCommandContext> {
+public class DeployDeploymentPolicyCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(PartitionDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeployDeploymentPolicyCommand.class);
 
     private final Options options;
 
-    public PartitionDeploymentCommand(){
+    public DeployDeploymentPolicyCommand(){
         options = constructOptions();
     }
 
@@ -44,7 +44,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Partition deployment resource path");
+                "Deployment policy deployment resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -52,11 +52,11 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
     }
 
     public String getName() {
-        return CliConstants.PARTITION_DEPLOYMENT;
+        return CliConstants.DEPLOYMENT_POLICY_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new partition deployment";
+        return "Add new deployment policy";
     }
 
     public String getArgumentSyntax() {
@@ -70,7 +70,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String partionDeployment = null;
+            String deploymentPolicyDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -79,7 +79,7 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Partition deployment");
+                    logger.debug("Deployment policy deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -87,31 +87,31 @@ public class PartitionDeploymentCommand implements Command<StratosCommandContext
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    partionDeployment = readResource(resourcePath);
+                    deploymentPolicyDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
                     System.out.println("usage: " + getName() + " [-p <resource path>]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().deployPartition(partionDeployment);
-                return CliConstants.SUCCESSFUL_CODE;
+                RestCommandLineService.getInstance().deployDeploymentPolicy(deploymentPolicyDeployment);
+                return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println("Invalid resource path");
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
         } else {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 

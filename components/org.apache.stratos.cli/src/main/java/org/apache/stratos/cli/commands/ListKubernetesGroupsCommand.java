@@ -53,10 +53,10 @@ public class ListKubernetesGroupsCommand implements Command<StratosCommandContex
 		}
 		if ((args == null) || (args.length == 0)) {
             RestCommandLineService.getInstance().listKubernetesGroups();
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 

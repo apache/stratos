@@ -26,7 +26,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.RestCommandLineService;
-import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
@@ -34,18 +33,13 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-
-public class SubscribeCommand implements Command<StratosCommandContext> {
+public class SubscribeCartridgeCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(ListSubscribedCartridgesCommand.class);
 
     private final Options options;
 
-    public SubscribeCommand() {
+    public SubscribeCartridgeCommand() {
         options = constructOptions();
     }
 
@@ -61,11 +55,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         //				+ "\" command to view the available policies.");
         //policyOption.setArgName("policy name");
         //options.addOption(policyOption);
-        
-        Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Cartridge deployment resource path");
-        resourcePath.setArgName("resource path");
-        options.addOption(resourcePath);
 
         Option autoscaling = new Option(CliConstants.AUTOSCALING_POLICY_OPTION, CliConstants.AUTOSCALING_POLICY_LONG_OPTION,
                 true, "Auto-scaling policy");
@@ -149,8 +138,6 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             String repoURL = null, username = "", password = "";
             String size = null;
             String volumeID = null;
-            String resourcePath = null;
-            String subscriptionJson = null;
 
             boolean removeOnTermination = false;
             boolean privateRepo = false;
@@ -167,30 +154,9 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     // Get type
                     type = remainingArgs[0];
                     alias = remainingArgs[1];
-                } else if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Resource path option is passed");
-                    }
-                    try {
-                        resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                        subscriptionJson = readResource(resourcePath);
-                    } catch (IOException e) {
-                        // e.printStackTrace();
-                        System.out.println("Invalid resource path");
-                        return CliConstants.BAD_ARGS_CODE;
-                    }
-                    
-                    if (resourcePath == null) {
-                        System.out.println("usage: " + getName() + " [-p <resource path>]");
-                        return CliConstants.BAD_ARGS_CODE;
-                    }
-
-                    RestCommandLineService.getInstance().subscribe(subscriptionJson);
-                    return CliConstants.SUCCESSFUL_CODE;
-                    
                 } else {
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 // This will check the subscribe cartridge type is multi tenant or single tenant
@@ -251,7 +217,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         }
                         System.out.println("Invalid remove on termination option value.");
                         context.getStratosApplication().printUsage(getName());
-                        return CliConstants.BAD_ARGS_CODE;
+                        return CliConstants.COMMAND_FAILED;
                     }
                 }
                 if (commandLine.hasOption(CliConstants.PERSISTANCE_VOLUME_OPTION)) {
@@ -271,7 +237,7 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                         }
                         System.out.println("Invalid persistance mapping option value.");
                         context.getStratosApplication().printUsage(getName());
-                        return CliConstants.BAD_ARGS_CODE;
+                        return CliConstants.COMMAND_FAILED;
                     }
 
                 }
@@ -297,19 +263,19 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                 if ( ! isMultiTenant && depPolicy == null) {
                     System.out.println("Deployment policy is required.");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 if ( ! isMultiTenant && asPolicy == null) {
                     System.out.println("Autoscaling policy is required.");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 if ((!persistanceMapping) && ((size != null) || removeOnTermination)) {
                     System.out.println("You have to enable persistance mapping in cartridge subscription");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
 				if (StringUtils.isNotBlank(username) && StringUtils.isBlank(password)) {
@@ -320,37 +286,20 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                 		password, asPolicy, depPolicy, size, removeOnTermination,
                         persistanceMapping, commitsEnabled, volumeID);
 
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
-    
-    private String readResource(String fileName) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
-        try {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append("\n");
-                line = br.readLine();
-            }
-            return sb.toString();
-        } finally {
-            br.close();
-        }
-    }
 
     public Options getOptions() {
         return options;

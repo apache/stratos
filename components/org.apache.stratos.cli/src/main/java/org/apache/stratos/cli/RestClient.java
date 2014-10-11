@@ -31,7 +31,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.stratos.cli.exception.ExceptionMapper;
-import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,7 +222,7 @@ public class RestClient implements GenericRestClient {
     }
 
     private void printError(HttpResponse response) {
-        String resultString = CommandLineUtils.getHttpResponseString(response);
+        String resultString = CliUtils.getHttpResponseString(response);
         if (StringUtils.isNotBlank(resultString)) {
             // Response body found, try to extract exception information
             boolean exceptionMapperInstanceFound = false;
@@ -275,7 +275,7 @@ public class RestClient implements GenericRestClient {
                 printError(response);
                 return null;
             } else {
-                String resultString = CommandLineUtils.getHttpResponseString(response);
+                String resultString = CliUtils.getHttpResponseString(response);
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
                 return gson.fromJson(resultString, responseJsonClass);

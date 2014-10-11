@@ -68,14 +68,14 @@ public class AddDomainMappingCommand implements Command<StratosCommandContext> {
 
 			if (StringUtils.isBlank(domainToDisplay)) {
 				System.out.println("Error adding domain mapping.");
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			} else {
 				System.out.format("Your own domain is added. Please CNAME it to systems domain %s.%n", domainToDisplay);
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 

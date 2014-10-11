@@ -61,10 +61,10 @@ public class DescribeDeploymentPolicyCommand implements Command<StratosCommandCo
 				logger.debug("Getting Deployment policy info {}", id);
 			}
 			 RestCommandLineService.getInstance().describeDeploymentPolicies(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }
