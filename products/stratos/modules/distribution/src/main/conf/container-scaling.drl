@@ -164,7 +164,7 @@ dialect "mvel"
               //shrink the cluster to minReplicas
               $delegator.delegateScaleDownContainers($kubernetesClusterContext, minReplicas);
             } else {
-	      log.info("[scaling] " + " [cluster] : " + clusterId + " Even if all predicted stats < upperLimit, activeReplicas == minReplicas ; hence not scaling down ");
+	      log.info("[scaling] " + " [cluster] : " + clusterId + " Even if all predicted stats < upperLimit, still activeReplicas <= minReplicas ; hence not scaling down ");
             }
         } else {
             log.info("[scaling] No decision made to either scale up or down ... ");
