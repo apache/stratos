@@ -67,7 +67,12 @@ public class PodActivationWatcher implements Runnable {
             }
             
         } catch (Exception e) {
-            LOG.error("Container Activation Watcher Failed.. ", e);
+            // not logging exception intentionally
+            LOG.error("Container Activation Watcher Failed.. Cause: "+e.getMessage());
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(e);
+            }
         }
         
     }
