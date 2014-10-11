@@ -195,11 +195,20 @@ public class RestCommandLineService {
                 // Just return true as we don't need to validate
                 return true;
             }
-        } catch (ClientProtocolException e) {
-            System.out.println("Authentication failed!");
-            return false;
         } catch (ConnectException e) {
-            System.out.println("Could not connect to stratos manager");
+            String message = "Could not connect to stratos manager";
+            System.out.println(message);
+            logger.error(message, e);
+            return false;
+        } catch (java.lang.NoSuchMethodError e) {
+            String message = "Authentication failed!";
+            System.out.println(message);
+            logger.error(message, e);
+            return false;
+        } catch (Exception e) {
+            String message = "An unknown error occurred: " + e.getMessage();
+            System.out.println(message);
+            logger.error(message, e);
             return false;
         } finally {
             httpClient.getConnectionManager().shutdown();
