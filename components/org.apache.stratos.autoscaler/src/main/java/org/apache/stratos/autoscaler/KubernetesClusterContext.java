@@ -23,14 +23,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
@@ -38,7 +37,7 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 /*
- * It holds the runtime data of a kubernetes cluster
+ * It holds the runtime data of a kubernetes service cluster
  */
 public class KubernetesClusterContext implements Serializable {
 
@@ -49,8 +48,12 @@ public class KubernetesClusterContext implements Serializable {
     private String serviceName;
 
     private int minReplicas;
-    private int maxReplicas;
+    private int maxReplicas = 10;
     private int currentReplicas = 0;
+    
+    // it will tell whether the startContainers() method succeed or not for the 1st time
+    // we should call startContainers() only once
+    private boolean isServiceClusterCreated = false;
 
     // properties
     private Properties properties;
@@ -62,6 +65,15 @@ public class KubernetesClusterContext implements Serializable {
 
     // active members
     private List<MemberContext> activeMembers;
+    
+    // 1 day as default
+    private long obsoltedMemberExpiryTime = 1*24*60*60*1000;
+
+    // members to be terminated
+    private Map<String, MemberContext> obsoletedMembers;
+    
+    // termination pending members, member is added to this when Autoscaler send grace fully shut down event
+    private List<MemberContext> terminationPendingMembers;
 
     //Keep statistics come from CEP
     private Map<String, MemberStatsContext> memberStatsContexts;
@@ -89,6 +101,8 @@ public class KubernetesClusterContext implements Serializable {
         this.clusterId = clusterId;
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
+        this.terminationPendingMembers = new ArrayList<MemberContext>();
+        this.obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
         this.memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
         this.requestsInFlight = new RequestsInFlight();
         this.loadAverage = new LoadAverage();
@@ -103,6 +117,8 @@ public class KubernetesClusterContext implements Serializable {
 
         Thread th = new Thread(new PendingMemberWatcher(this));
         th.start();
+        Thread th2 = new Thread(new ObsoletedMemberWatcher(this));
+        th2.start();
     }
 
     public String getKubernetesClusterID() {
@@ -306,19 +322,13 @@ public class KubernetesClusterContext implements Serializable {
                         long pendingTime = System.currentTimeMillis()
                                            - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime) {
-
-                            // terminate all containers of this cluster
-                            try {
-                                CloudControllerClient.getInstance().terminateAllContainers(clusterId);
-                                iterator.remove();
-                            } catch (TerminationException e) {
-                                log.error(e.getMessage(), e);
-                            }
-
+                        	iterator.remove();
+                        	log.info("Pending state of member: " + pendingMember.getMemberId() +
+                                    " is expired. " + "Adding as an obsoleted member.");
+                        	ctxt.addObsoleteMember(pendingMember);
                         }
                     }
                 }
-
                 try {
                     // TODO find a constant
                     Thread.sleep(15000);
@@ -327,6 +337,43 @@ public class KubernetesClusterContext implements Serializable {
             }
         }
 
+    }
+    
+    private class ObsoletedMemberWatcher implements Runnable {
+        private KubernetesClusterContext ctxt;
+
+        public ObsoletedMemberWatcher(KubernetesClusterContext ctxt) {
+            this.ctxt = ctxt;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+
+                long obsoltedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
+                Map<String, MemberContext> obsoletedMembers = ctxt.getObsoletedMembers();
+                Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
+
+                while (iterator.hasNext()) {
+                    Map.Entry<String, MemberContext> pairs = iterator.next();
+                    MemberContext obsoleteMember = (MemberContext) pairs.getValue();
+                    if (obsoleteMember == null) {
+                        continue;
+                    }
+                    long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
+                    if (obsoleteTime >= obsoltedMemberExpiryTime) {
+                        iterator.remove();
+                        log.info("Obsolete state of member: " + obsoleteMember.getMemberId() +
+                                " is expired. " + "Removing from obsolete member list");
+                    }
+                }
+                try {
+                    // TODO find a constant
+                    Thread.sleep(15000);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        }
     }
 
     public float getAverageRequestsInFlight() {
@@ -511,4 +558,105 @@ public class KubernetesClusterContext implements Serializable {
         this.gradientLoadAverageReset = loadAverageReset;
         this.secondDerivativeLoadAverageRest = loadAverageReset;
     }
+    
+    public void moveActiveMemberToTerminationPendingMembers(String memberId) {
+        if (memberId == null) {
+            return;
+        }
+        Iterator<MemberContext> iterator = activeMembers.listIterator();
+        while ( iterator.hasNext()) {
+            MemberContext activeMember = iterator.next();
+            if(activeMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if(memberId.equals(activeMember.getMemberId())){
+                // member is activated
+                // remove from pending list
+                iterator.remove();
+                // add to the activated list
+                this.terminationPendingMembers.add(activeMember);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Active member is removed and added to the " +
+                            "termination pending member list. [Member Id] %s", memberId));
+                }
+                break;
+            }
+        }
+    }
+    
+    public boolean removeTerminationPendingMember(String memberId) {
+        boolean terminationPendingMemberAvailable = false;
+        for (MemberContext memberContext: terminationPendingMembers){
+            if(memberContext.getMemberId().equals(memberId)){
+                terminationPendingMemberAvailable = true;
+                terminationPendingMembers.remove(memberContext);
+                break;
+            }
+        }
+        return terminationPendingMemberAvailable;
+    }
+    
+    public long getObsoltedMemberExpiryTime() {
+        return obsoltedMemberExpiryTime;
+    }
+    
+    public void setObsoltedMemberExpiryTime(long obsoltedMemberExpiryTime) {
+        this.obsoltedMemberExpiryTime = obsoltedMemberExpiryTime;
+    }
+    
+    public void addObsoleteMember(MemberContext ctxt) {
+        this.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
+    }
+    
+    public boolean removeObsoleteMember(String memberId) {
+        if(this.obsoletedMembers.remove(memberId) == null) {
+            return false;
+        }
+        return true;
+    }
+    
+    public Map<String, MemberContext> getObsoletedMembers() {
+        return obsoletedMembers;
+    }
+        
+    public void setObsoletedMembers(Map<String, MemberContext> obsoletedMembers) {
+        this.obsoletedMembers = obsoletedMembers;
+    }
+
+    public MemberStatsContext getPartitionCtxt(String id) {
+        return this.memberStatsContexts.get(id);
+    }
+
+    public List<MemberContext> getTerminationPendingMembers() {
+        return terminationPendingMembers;
+    }
+
+    public void setTerminationPendingMembers(List<MemberContext> terminationPendingMembers) {
+        this.terminationPendingMembers = terminationPendingMembers;
+    }
+
+    public int getTotalMemberCount() {
+        return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+    }
+
+    public int getNonTerminatedMemberCount() {
+        return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+    }
+
+	public String getClusterId() {
+		return clusterId;
+	}
+
+	public void setClusterId(String clusterId) {
+		this.clusterId = clusterId;
+	}
+
+	public boolean isServiceClusterCreated() {
+		return isServiceClusterCreated;
+	}
+
+	public void setServiceClusterCreated(boolean isServiceClusterCreated) {
+		this.isServiceClusterCreated = isServiceClusterCreated;
+	}
 }

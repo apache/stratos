@@ -18,12 +18,10 @@
  */
 package org.apache.stratos.cli;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.ConnectException;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -32,8 +30,16 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.stratos.cli.exception.ExceptionMapper;
+import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class RestClient implements GenericRestClient{
+import java.io.IOException;
+
+public class RestClient implements GenericRestClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(RestClient.class);
 
     private String baseURL;
     private String username;
@@ -48,120 +54,83 @@ public class RestClient implements GenericRestClient{
     }
 
     public String getBaseURL() {
-		return baseURL;
-	}
+        return baseURL;
+    }
 
-	/**
+    /**
      * Handle http post request. Return String
      *
-     * @param  httpClient
-     *              This should be httpClient which used to connect to rest endpoint
-     * @param resourcePath
-     *              This should be REST endpoint
-     * @param jsonParamString
-     *              The json string which should be executed from the post request
+     * @param httpClient      This should be httpClient which used to connect to rest endpoint
+     * @param resourcePath    This should be REST endpoint
+     * @param jsonParamString The json string which should be executed from the post request
      * @return The HttpResponse
-     * @throws org.apache.http.client.ClientProtocolException and IOException
-     *             if any errors occur when executing the request
+     * @throws IOException if any errors occur when executing the request
      */
     public HttpResponse doPost(DefaultHttpClient httpClient, String resourcePath, String jsonParamString)
-            throws ClientProtocolException, ConnectException {
-        try {
-            HttpPost postRequest = new HttpPost(resourcePath);
+            throws IOException {
+        HttpPost postRequest = new HttpPost(resourcePath);
 
-            StringEntity input = new StringEntity(jsonParamString);
-            input.setContentType("application/json");
-            postRequest.setEntity(input);
+        StringEntity input = new StringEntity(jsonParamString);
+        input.setContentType("application/json");
+        postRequest.setEntity(input);
 
-            String userPass = username + ":" + password;
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
-            postRequest.addHeader("Authorization", basicAuth);
+        String userPass = username + ":" + password;
+        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+        postRequest.addHeader("Authorization", basicAuth);
 
-            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+        httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
-            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
+        HttpParams params = httpClient.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+        HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
 
-            HttpResponse response = httpClient.execute(postRequest);
-
-            return response;
-        } catch (ClientProtocolException e) {
-            throw new ClientProtocolException();
-        } catch (ConnectException e) {
-            throw new ConnectException();
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        HttpResponse response = httpClient.execute(postRequest);
+        return response;
     }
 
     /**
      * Handle http get request. Return String
      *
-     * @param  httpClient
-     *              This should be httpClient which used to connect to rest endpoint
-     * @param resourcePath
-     *              This should be REST endpoint
+     * @param httpClient   This should be httpClient which used to connect to rest endpoint
+     * @param resourcePath This should be REST endpoint
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
-     *             if any errors occur when executing the request
+     *                                                        if any errors occur when executing the request
      */
-    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath) throws Exception{
-        try {
-            HttpGet getRequest = new HttpGet(resourcePath);
-            getRequest.addHeader("Content-Type", "application/json");
+    public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath) throws IOException {
+        HttpGet getRequest = new HttpGet(resourcePath);
+        getRequest.addHeader("Content-Type", "application/json");
 
-            String userPass = username + ":" + password;
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
-            getRequest.addHeader("Authorization", basicAuth);
+        String userPass = username + ":" + password;
+        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+        getRequest.addHeader("Authorization", basicAuth);
 
-            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+        httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
-            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
+        HttpParams params = httpClient.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+        HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
 
-            HttpResponse response = httpClient.execute(getRequest);
-
-            return response;
-        } catch (ClientProtocolException e) {
-            throw new ClientProtocolException();
-        } catch (ConnectException e) {
-            throw new ConnectException();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        HttpResponse response = httpClient.execute(getRequest);
+        return response;
     }
 
-    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath) {
-        try {
-            HttpDelete httpDelete = new HttpDelete(resourcePath);
-            httpDelete.addHeader("Content-Type", "application/json");
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath) throws IOException {
+        HttpDelete httpDelete = new HttpDelete(resourcePath);
+        httpDelete.addHeader("Content-Type", "application/json");
 
-            String userPass = username + ":" + password;
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
-            httpDelete.addHeader("Authorization", basicAuth);
+        String userPass = username + ":" + password;
+        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(userPass.getBytes("UTF-8"));
+        httpDelete.addHeader("Authorization", basicAuth);
 
-            httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
+        httpClient = (DefaultHttpClient) WebClientWrapper.wrapClient(httpClient);
 
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
-            HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
+        HttpParams params = httpClient.getParams();
+        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT_PARAM);
+        HttpConnectionParams.setSoTimeout(params, TIME_OUT_PARAM);
 
-            HttpResponse response = httpClient.execute(httpDelete);
-
-            return  response;
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        HttpResponse response = httpClient.execute(httpDelete);
+        return response;
     }
 
     public HttpResponse doPut(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws IOException {
@@ -183,5 +152,167 @@ public class RestClient implements GenericRestClient{
 
         HttpResponse response = httpClient.execute(httpPutRequest);
         return response;
+    }
+
+    public void deployEntity(String serviceEndpoint, String entityBody, String entityName) {
+        try {
+            int responseCode = executePost(serviceEndpoint, entityBody);
+            if (responseCode == 201) {
+                System.out.println(String.format("Successfully deployed %s", entityName));
+            }
+        } catch (Exception e) {
+            String message = String.format("Error in deploying %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+        }
+    }
+
+    public void undeployEntity(String serviceEndpoint, String entityName, String entityId) {
+        try {
+            int responseCode = executeDelete(serviceEndpoint, entityId);
+            if (responseCode == 404) {
+                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if (responseCode == 204) {
+                System.out.println(String.format("Successfully un-deployed %s", entityName));
+            }
+        } catch (Exception e) {
+            String message = String.format("Error in un-deploying %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+        }
+    }
+
+    public void updateEntity(String serviceEndpoint, String entityBody, String entityName) {
+        try {
+            int responseCode = executePut(serviceEndpoint, entityBody);
+            if (responseCode == 404) {
+                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if (responseCode == 200) {
+                System.out.println(String.format("Successfully updated %s", entityName));
+            }
+        } catch (Exception e) {
+            String message = String.format("Error in updating %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+        }
+    }
+
+    public void deleteEntity(String serviceEndpoint, String identifier, String entityName) {
+        try {
+            int responseCode = executeDelete(serviceEndpoint, identifier);
+            if (responseCode == 200) {
+                System.out.println(String.format("Successfully deleted %s", entityName));
+            }
+        } catch (Exception e) {
+            String message = String.format("Error in deleting %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+        }
+    }
+
+    public Object listEntity(String serviceEndpoint, Class responseJsonClass, String entityName) {
+        try {
+            return executeList(serviceEndpoint, responseJsonClass, entityName);
+        } catch (Exception e) {
+            String message = String.format("Error in listing %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+            return null;
+        }
+    }
+
+    private void printError(HttpResponse response) {
+        String resultString = CommandLineUtils.getHttpResponseString(response);
+        if (StringUtils.isNotBlank(resultString)) {
+            // Response body found, try to extract exception information
+            boolean exceptionMapperInstanceFound = false;
+            try {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                if (exception != null) {
+                    System.out.println(exception);
+                    exceptionMapperInstanceFound = true;
+                }
+            } catch (Exception ignore) {
+                // Could not find an ExceptionMapper instance
+            } finally {
+                if (!exceptionMapperInstanceFound) {
+                    System.out.println(response.getStatusLine().toString());
+                }
+            }
+        } else {
+            // No response body found
+            System.out.println(response.getStatusLine().toString());
+        }
+    }
+
+    private int executePost(String serviceEndpoint, String postBody) throws IOException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = doPost(httpClient, getBaseURL()
+                    + serviceEndpoint, postBody);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                printError(response);
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    private Object executeList(String serviceEndpoint, Class responseJsonClass, String entityName) throws Exception {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        HttpResponse response = null;
+
+        try {
+            response = doGet(httpClient, getBaseURL() + serviceEndpoint);
+            int responseCode = response.getStatusLine().getStatusCode();
+
+            if (responseCode < 200 || responseCode >= 300) {
+                printError(response);
+                return null;
+            } else {
+                String resultString = CommandLineUtils.getHttpResponseString(response);
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                return gson.fromJson(resultString, responseJsonClass);
+            }
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    private int executePut(String serviceEndpoint, String postBody) throws IOException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = doPut(httpClient, getBaseURL()
+                    + serviceEndpoint, postBody);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                printError(response);
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    private int executeDelete(String serviceEndpoint, String identifier) throws IOException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint.replace("{id}", identifier));
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                printError(response);
+            }
+            return responseCode;
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
     }
 }

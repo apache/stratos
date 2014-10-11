@@ -21,15 +21,19 @@ package org.apache.stratos.cloud.controller.impl;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
+import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.functions.MemberContextToKubernetesService;
-import org.apache.stratos.cloud.controller.functions.MemberContextToReplicationController;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
+import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
@@ -41,10 +45,13 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
+import org.apache.stratos.kubernetes.client.model.Label;
+import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -71,7 +78,7 @@ import java.util.concurrent.Future;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-	private static final Log log = LogFactory
+	private static final Log LOG = LogFactory
 			.getLog(CloudControllerServiceImpl.class);
 	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
 			.getInstance();
@@ -100,20 +107,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					currentData.setCartridges(serializedObj.getCartridges());
 					currentData.setKubClusterIdToKubClusterContext(serializedObj.getKubClusterIdToKubClusterContext());
 
-					if(log.isDebugEnabled()) {
+					if(LOG.isDebugEnabled()) {
 					    
-					    log.debug("Cloud Controller Data is retrieved from registry.");
+					    LOG.debug("Cloud Controller Data is retrieved from registry.");
 					}
 				} else {
-				    if(log.isDebugEnabled()) {
+				    if(LOG.isDebugEnabled()) {
 				        
-				        log.debug("Cloud Controller Data cannot be found in registry.");
+				        LOG.debug("Cloud Controller Data cannot be found in registry.");
 				    }
 				}
 			} catch (Exception e) {
 
 				String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
-				log.warn(msg, e);
+				LOG.warn(msg, e);
 			}
 
 		}
@@ -121,26 +128,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException, 
     InvalidIaasProviderException {
-        if (cartridgeConfig == null) {
-            String msg = "Invalid Cartridge Definition: Definition is null.";
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
+        
+        handleNullObject(cartridgeConfig, "Invalid Cartridge Definition: Definition is null.");
 
-        }
-
-        if(log.isDebugEnabled()){
-            log.debug("Cartridge definition: " + cartridgeConfig.toString());
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Cartridge definition: " + cartridgeConfig.toString());
         }
 
         Cartridge cartridge = null;
         try {
+            // cartridge can never be null
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
             String msg =
                          "Invalid Cartridge Definition: Cartridge Type: " +
                                  cartridgeConfig.getType()+
                                  ". Cause: Cannot instantiate a Cartridge Instance with the given Config. "+e.getMessage();
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
@@ -151,7 +155,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				String msg = "Invalid Cartridge Definition: Cartridge Type: "
 						+ cartridgeConfig.getType()
 						+ ". Cause: Iaases of this Cartridge is null or empty.";
-				log.error(msg);
+				LOG.error(msg);
 				throw new InvalidCartridgeDefinitionException(msg);
 			}
 
@@ -184,7 +188,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleServiceCreated(cartridgeList);
         // transaction ends
         
-        log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
+        LOG.info("Successfully deployed the Cartridge definition: " + cartridgeType);
     }
 
     private void populateNewCartridge(Cartridge cartridge,
@@ -200,8 +204,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	    String partitionId = entry.getKey();
 			IaasProvider oldIaasProvider = entry.getValue();
 			if (newIaasProviders.contains(oldIaasProvider)) {
-				if (log.isDebugEnabled()) {
-					log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
 							+ "[partition id] : "+partitionId+" [cartridge type] "+cartridge.getType() );
 				}
 				cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
@@ -218,8 +222,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             	// invalidate partition validation cache
             	dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
             	
-            	if (log.isDebugEnabled()) {
-            		log.debug("Partition cache invalidated for cartridge "+cartridgeType);
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug("Partition cache invalidated for cartridge "+cartridgeType);
             	}
             	
                 persist();
@@ -229,14 +233,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 cartridgeList.add(cartridge);
                 TopologyBuilder.handleServiceRemoved(cartridgeList);
                 
-                if(log.isInfoEnabled()) {
-                    log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+                if(LOG.isInfoEnabled()) {
+                    LOG.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
                 }
                 return;
             }
         }
         String msg = "Cartridge [type] "+cartridgeType+" is not a deployed Cartridge type.";
-        log.error(msg);
+        LOG.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
     
@@ -244,41 +248,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public MemberContext startInstance(MemberContext memberContext) throws
         UnregisteredCartridgeException, InvalidIaasProviderException {
 
-    	if(log.isDebugEnabled()) {
-    		log.debug("CloudControllerServiceImpl:startInstance");
+    	if(LOG.isDebugEnabled()) {
+    		LOG.debug("CloudControllerServiceImpl:startInstance");
     	}
 
-        if (memberContext == null) {
-            String msg = "Instance start-up failed. Member is null.";
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+    	handleNullObject(memberContext, "Instance start-up failed. Member is null.");
 
         String clusterId = memberContext.getClusterId();
         Partition partition = memberContext.getPartition();
 
-        if(log.isDebugEnabled()) {
-        	log.debug("Received an instance spawn request : " + memberContext.toString());
+        if(LOG.isDebugEnabled()) {
+        	LOG.debug("Received an instance spawn request : " + memberContext);
         }
 
         Template template = null;
 
-        if (partition == null) {
-            String msg =
-                         "Instance start-up failed. Specified Partition is null. " +
-                                 memberContext.toString();
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(partition, "Instance start-up failed. Specified Partition is null. " +
+                                 memberContext);
 
         String partitionId = partition.getId();
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
 
-        if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + memberContext.toString();
-            log.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(ctxt, "Instance start-up failed. Invalid cluster id. " + memberContext);
 
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -288,7 +279,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String msg =
                          "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
                                  memberContext.toString();
-            log.error(msg);
+            LOG.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
 
@@ -297,8 +288,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
-        	if (log.isDebugEnabled()) {
-        		log.debug("IaasToPartitionMap "+cartridge.hashCode()
+        	if (LOG.isDebugEnabled()) {
+        		LOG.debug("IaasToPartitionMap "+cartridge.hashCode()
         				+ " for cartridge "+cartridgeType+ " and for partition: "+partitionId);
         	}
 			String msg = "Instance start-up failed. "
@@ -311,7 +302,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ cartridge.getPartitionToIaasProvider().keySet()
 							.toString() + ". " + memberContext.toString()
 					+ ". ";
-            log.fatal(msg);
+            LOG.fatal(msg);
             throw new InvalidIaasProviderException(msg);
         }
         String type = iaasProvider.getType();
@@ -336,20 +327,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Iaas iaas = iaasProvider.getIaas();
             
-            if (log.isDebugEnabled()) {
-                log.debug("Payload: " + payload.toString());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Payload: " + payload.toString());
             }
             
             if (iaas == null) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
+                if(LOG.isDebugEnabled()) {
+                    LOG.debug("Iaas is null of Iaas Provider: "+type+". Trying to build IaaS...");
                 }
                 try {
                     iaas = CloudControllerUtil.getIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg ="Instance start up failed. "+memberContext.toString()+
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type+". Cause: "+e.getMessage();
-                    log.error(msg, e);
+                    LOG.error(msg, e);
                     throw new InvalidIaasProviderException(msg, e);
                 }
                 
@@ -380,24 +371,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                              "Failed to start an instance. " +
                                      memberContext.toString() +
                                      ". Reason : Jclouds Template is null for iaas provider [type]: "+iaasProvider.getType();
-                log.error(msg);
+                LOG.error(msg);
                 throw new InvalidIaasProviderException(msg);
             }
 
             //Start instance start up in a new thread
             ThreadExecutor exec = ThreadExecutor.getInstance();
-            if (log.isDebugEnabled()) {
-            	log.debug("Cloud Controller is starting the instance start up thread.");
+            if (LOG.isDebugEnabled()) {
+            	LOG.debug("Cloud Controller is starting the instance start up thread.");
 			}
             exec.execute(new JcloudsInstanceCreator(memberContext, iaasProvider, cartridgeType));
 
-            log.info("Instance is successfully starting up. "+memberContext.toString());
+            LOG.info("Instance is successfully starting up. "+memberContext.toString());
 
             return memberContext;
 
         } catch (Exception e) {
             String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
 
@@ -411,8 +402,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		String snapshotId =  volume.getSnapshotId();
         if(StringUtils.isNotEmpty(volume.getVolumeId())){
             // volumeID is specified, so not creating additional volumes
-            if(log.isDebugEnabled()){
-                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
+            if(LOG.isDebugEnabled()){
+                LOG.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
             }
             volume.setId(volume.getVolumeId());
         }else{
@@ -428,8 +419,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		StringBuilder persistencePayload = new StringBuilder();
 		if(isPersistenceMappingAvailable(ctx)){
 			for(Volume volume : ctx.getVolumes()){
-				if(log.isDebugEnabled()){
-					log.debug("Adding persistence mapping " + volume.toString());
+				if(LOG.isDebugEnabled()){
+					LOG.debug("Adding persistence mapping " + volume.toString());
 				}
                 if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
@@ -442,8 +433,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 persistencePayload.append(volume.getMappingPath());
 			}
 		}
-        if(log.isDebugEnabled()){
-            log.debug("Persistence payload is" + persistencePayload.toString());
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Persistence payload is" + persistencePayload.toString());
         }
 		return persistencePayload;
 	}
@@ -467,7 +458,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		} catch (RegistryException e) {
 
 			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-			log.fatal(msg);
+			LOG.fatal(msg);
 			throw new CloudControllerException(msg, e);
 		}
 	}
@@ -483,7 +474,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if(memberId == null) {
             String msg = "Termination failed. Null member id.";
-            log.error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
         
@@ -491,7 +482,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         if(ctxt == null) {
             String msg = "Termination failed. Invalid Member Id: "+memberId;
-            log.error(msg);
+            LOG.error(msg);
             throw new InvalidMemberException(msg);
         }
         
@@ -521,7 +512,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // these will never be null, since we do not add null values for these.
                 Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
-                log.info("Starting to terminate an instance with member id : " + memberId +
+                LOG.info("Starting to terminate an instance with member id : " + memberId +
                          " in partition id: " + partitionId + " of cluster id: " + clusterId +
                          " and of cartridge type: " + cartridgeType);
 
@@ -530,7 +521,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                  "Termination of Member Id: " + memberId + " failed. " +
                                          "Cannot find a matching Cartridge for type: " +
                                          cartridgeType;
-                    log.error(msg);
+                    LOG.error(msg);
                     throw new InvalidCartridgeTypeException(msg);
                 }
 
@@ -540,7 +531,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     String msg =
                                  "Termination failed. Cannot find a node id for Member Id: " +
                                          memberId;
-                    log.error(msg);
+                    LOG.error(msg);
                     throw new InvalidMemberException(msg);
                 }
 
@@ -555,7 +546,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             } catch (Exception e) {
                 String msg =
                              "Instance termination failed. "+ctxt.toString();
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new CloudControllerException(msg, e);
             }
 
@@ -597,23 +588,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             			.getComputeService();
             	Template template = iaasProvider.getTemplate();
             	
-            	if (log.isDebugEnabled()) {
-            		log.debug("Cloud Controller is delegating request to start an instance for "
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug("Cloud Controller is delegating request to start an instance for "
             				+ memberContext + " to Jclouds layer.");
             	}
             	// create and start a node
             	Set<? extends NodeMetadata> nodes = computeService
             			.createNodesInGroup(group, 1, template);
             	node = nodes.iterator().next();
-            	if (log.isDebugEnabled()) {
-            		log.debug("Cloud Controller received a response for the request to start "
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug("Cloud Controller received a response for the request to start "
             				+ memberContext + " from Jclouds layer.");
             	}
             	
             	if (node == null) {
             	    String msg = "Null response received for instance start-up request to Jclouds.\n"
                             + memberContext.toString();
-                    log.error(msg);
+                    LOG.error(msg);
                     throw new IllegalStateException(msg);
             	}
             	
@@ -622,13 +613,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             	if (nodeId == null) {
             		String msg = "Node id of the starting instance is null.\n"
             				+ memberContext.toString();
-            		log.fatal(msg);
+            		LOG.fatal(msg);
             		throw new IllegalStateException(msg);
             	}
             	
             	memberContext.setNodeId(nodeId);
-            	if (log.isDebugEnabled()) {
-            		log.debug("Node id was set. " + memberContext.toString());
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug("Node id was set. " + memberContext.toString());
             	}
             	
             	// attach volumes
@@ -646,7 +637,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             						} catch (Exception e) {
             							// continue without throwing an exception, since
             							// there is an instance already running
-            							log.error("Attaching Volume to Instance [ "
+            							LOG.error("Attaching Volume to Instance [ "
             									+ instanceId + " ] failed!", e);
             						}
             					}
@@ -655,13 +646,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             	
             } catch (Exception e) {
             	String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
-            	log.error(msg, e);
+            	LOG.error(msg, e);
             	throw new IllegalStateException(msg, e);
             }
 
             try{
-            	if (log.isDebugEnabled()) {
-    				log.debug("IP allocation process started for "+memberContext);
+            	if (LOG.isDebugEnabled()) {
+    				LOG.debug("IP allocation process started for "+memberContext);
     			}
                 String autoAssignIpProp =
                                           iaasProvider.getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
@@ -679,8 +670,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     	// check if floating ip is well defined in cartridge definition
                     	if (pre_defined_ip != null) {
                     		if (isValidIpAddress(pre_defined_ip)) {
-                    			if(log.isDebugEnabled()) {
-                    				log.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
+                    			if(LOG.isDebugEnabled()) {
+                    				LOG.debug("CloudControllerServiceImpl:IpAllocator:pre_defined_ip: invoking associatePredefinedAddress" + pre_defined_ip);
                     			}
 	    	                	ip = iaas.associatePredefinedAddress(node, pre_defined_ip);
 	    	       
@@ -689,7 +680,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	       	                		String msg = "Error occurred while allocating predefined floating ip address: " + pre_defined_ip + 
 	       	                					 " / allocated ip:" + ip + 
 	       	                				     " - terminating node:"  + memberContext.toString();
-	    	                        log.error(msg);
+	    	                        LOG.error(msg);
 	    	                		// terminate instance
 	    	                        terminate(iaasProvider, 
 	    	                    			node.getId(), memberContext);
@@ -698,7 +689,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     		} else {
                     			String msg = "Invalid floating ip address configured: " + pre_defined_ip +  
   	                				     " - terminating node:"  + memberContext.toString();
-                    			log.error(msg);
+                    			LOG.error(msg);
                     			// terminate instance
                     			terminate(iaasProvider, 
 	                    			node.getId(), memberContext);
@@ -706,8 +697,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     		}
 	    	                	
                         } else {
-                        	if(log.isDebugEnabled()) {
-                        		log.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, "
+                        	if(LOG.isDebugEnabled()) {
+                        		LOG.debug("CloudControllerServiceImpl:IpAllocator:no (valid) predefined floating ip configured, "
                         		        + "selecting available one from pool");
                         	}
                             // allocate an IP address - manual IP assigning mode
@@ -715,7 +706,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             
     						if (ip != null) {
     							memberContext.setAllocatedIpAddress(ip);
-    							log.info("Allocated an ip address: "
+    							LOG.info("Allocated an ip address: "
     									+ memberContext.toString());
     						}
                         }       
@@ -732,7 +723,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         ip = node.getPublicAddresses().iterator().next();
                         publicIp = ip;
                         memberContext.setPublicIpAddress(ip);
-                        log.info("Retrieving Public IP Address : " + memberContext.toString());
+                        LOG.info("Retrieving Public IP Address : " + memberContext.toString());
                     }
 
                     // private IP
@@ -740,7 +731,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                         ip = node.getPrivateAddresses().iterator().next();
                         memberContext.setPrivateIpAddress(ip);
-                        log.info("Retrieving Private IP Address. " + memberContext.toString());
+                        LOG.info("Retrieving Private IP Address. " + memberContext.toString());
                     }
 
                     dataHolder.addMemberContext(memberContext);
@@ -764,17 +755,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                                         cartridgeType,
                                                         MemberStatus.Created.toString(),
                                                         node);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Node details: " + node.toString());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Node details: " + node.toString());
                     }
                     
-                    if (log.isDebugEnabled()) {
-        				log.debug("IP allocation process ended for "+memberContext);
+                    if (LOG.isDebugEnabled()) {
+        				LOG.debug("IP allocation process ended for "+memberContext);
         			}
 
             } catch (Exception e) {
                 String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new CloudControllerException(msg, e);
             } 
 
@@ -790,12 +781,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	@Override
 	public void terminateAllInstances(String clusterId) throws InvalidClusterException {
 
-		log.info("Starting to terminate all instances of cluster : "
+		LOG.info("Starting to terminate all instances of cluster : "
 				+ clusterId);
 		
 		if(clusterId == null) {
 		    String msg = "Instance termination failed. Cluster id is null.";
-		    log.error(msg);
+		    LOG.error(msg);
 		    throw new IllegalArgumentException(msg);
 		}
 		
@@ -803,7 +794,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		
 		if(ctxts == null) {
 		    String msg = "Instance termination failed. No members found for cluster id: "+clusterId;
-		    log.warn(msg);
+		    LOG.warn(msg);
             return;
 		}
 		
@@ -833,7 +824,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
 	                    ". Cause: Unable to build Iaas of this " + iaasProvider.toString();
-	            log.error(msg, e);
+	            LOG.error(msg, e);
 	            throw new CloudControllerException(msg, e);
 	        }
 	        
@@ -850,7 +841,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaas.releaseAddress(ctxt.getAllocatedIpAddress());
 		}
 		
-		log.info("Member is terminated: "+ctxt.toString());
+		LOG.info("Member is terminated: "+ctxt.toString());
 		return iaasProvider;
 	}
 
@@ -867,8 +858,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					Iaas iaas = iaasProvider.getIaas();
 					iaas.detachVolume(ctxt.getInstanceId(), volumeId);
 				} catch (ResourceNotFoundException ignore) {
-					if(log.isDebugEnabled()) {
-						log.debug(ignore);
+					if(LOG.isDebugEnabled()) {
+						LOG.debug(ignore);
 					}
 				}
 			}
@@ -877,14 +868,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private void logTermination(MemberContext memberContext) {
 
+	    if (memberContext == null) {
+	        return;
+	    }
+	    
+	    String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
+	    
         //updating the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(), 
         		memberContext.getClusterId(), memberContext.getNetworkPartitionId(), 
-        		memberContext.getPartition().getId(), memberContext.getMemberId());
+        		partitionId, memberContext.getMemberId());
 
         //publishing data
         CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
-                                                        memberContext.getPartition().getId(),
+                                                        partitionId,
                                                         memberContext.getNetworkPartitionId(),
                                                         memberContext.getClusterId(),
                                                         memberContext.getCartridgeType(),
@@ -911,7 +908,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if(cartridgeType == null || clusterId == null || payload == null || hostName == null) {
 	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", " +
 	                "Cluster Id: "+clusterId+", Payload: "+payload+", Host name: "+hostName;
-	        log.error(msg);
+	        LOG.error(msg);
 	        throw new IllegalArgumentException(msg);
 	    }
 	    
@@ -920,7 +917,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String msg = "Registration of cluster: "+clusterId+
                     " failed. - Unregistered Cartridge type: " + cartridgeType;
-            log.error(msg);
+            LOG.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
         
@@ -937,7 +934,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	    
 	    persist();
 	    
-	    log.info("Successfully registered: "+registrant);
+	    LOG.info("Successfully registered: "+registrant);
 	    
 		return true;
 	}
@@ -1047,7 +1044,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 		String msg = "Cannot find a Cartridge having a type of "
 				+ cartridgeType + ". Hence unable to find information.";
-		log.error(msg);
+		LOG.error(msg);
 		throw new UnregisteredCartridgeException(msg);
 	}
 
@@ -1059,7 +1056,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (ctxt == null) {
             String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
-            log.error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
         
@@ -1070,7 +1067,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cartridge == null) {
             String msg =
                          "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". ";
-            log.error(msg);
+            LOG.error(msg);
             throw new UnregisteredClusterException(msg);
         }
         
@@ -1088,7 +1085,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
 	                 if(ctxt == null) {
 	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-	                     log.error(msg);
+	                     LOG.error(msg);
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
 	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
@@ -1115,7 +1112,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                            terminateInstance(member.getMemberId());
 	                        } catch (Exception e) {
 	                            // we are not gonna stop the execution due to errors.
-	                            log.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
+	                            LOG.warn("Instance termination failed of member [id] " + member.getMemberId(), e);
 	                        }
 	                    }
 	                 }
@@ -1126,7 +1123,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
 	                 if(ctxt == null) {
 	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
-	                     log.error(msg);
+	                     LOG.error(msg);
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
 	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
@@ -1138,7 +1135,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                    CloudControllerUtil.sleep(1000);
 	                 }
 	
-	                 log.info("Unregistration of service cluster: " + clusterId_);
+	                 LOG.info("Unregistration of service cluster: " + clusterId_);
 	                 deleteVolumes(ctxt);
 	                 onClusterRemoval(clusterId_);
 	             }
@@ -1161,8 +1158,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                                        volume.setId(null);
 	                                    }
 	                                    } catch(Exception ignore) {
-	                                        if(log.isErrorEnabled()) {
-	                                            log.error("Error while deleting volume [id] "+ volume.getId(), ignore);
+	                                        if(LOG.isErrorEnabled()) {
+	                                            LOG.error("Error while deleting volume [id] "+ volume.getId(), ignore);
 	                                        }
 	                                    }
 	                                }
@@ -1187,7 +1184,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			terminateAllContainers(clusterId);
 		} catch (InvalidClusterException e) {
 			String msg = "Docker instance termination fails for cluster: "+clusterId;
-			log.error(msg, e);
+			LOG.error(msg, e);
 			throw new UnregisteredClusterException(msg, e);
 		}
     	// send cluster removal notifications and update the state
@@ -1206,8 +1203,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     		// cache hit for this cartridge
     		// get list of partitions
     		validatedPartitions = validatedCache.get(cartridgeType);
-    		if (log.isDebugEnabled()) {
-    			log.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
+    		if (LOG.isDebugEnabled()) {
+    			LOG.debug("Partition validation cache hit for cartridge type: "+cartridgeType);
     		}
     		
     	}
@@ -1215,15 +1212,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Map<String, IaasProvider> partitionToIaasProviders =
                                                              new ConcurrentHashMap<String, IaasProvider>();
         
-        if (log.isDebugEnabled()) {
-			log.debug("Deployment policy validation started for cartridge type: "+cartridgeType);
+        if (LOG.isDebugEnabled()) {
+			LOG.debug("Deployment policy validation started for cartridge type: "+cartridgeType);
 		}
 
         Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg = "Invalid Cartridge Type: " + cartridgeType;
-            log.error(msg);
+            LOG.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
         
@@ -1257,11 +1254,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             	// add to cache
             	this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
             	
-				if (log.isDebugEnabled()) {
-					log.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Partition "+partitionId+" added to the cache against cartridge type: "+cartridgeType);
 				}
             } catch (Exception e) {
-                log.error(e.getMessage(), e);
+                LOG.error(e.getMessage(), e);
                 throw new InvalidPartitionException(e.getMessage(), e);
             } 
         }
@@ -1272,7 +1269,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // persist data
         persist();
         
-        log.info("All partitions "+CloudControllerUtil.getPartitionIds(partitions)+
+        LOG.info("All partitions "+CloudControllerUtil.getPartitionIds(partitions)+
         		" were validated successfully, against the Cartridge: "+cartridgeType);
         
         return true;
@@ -1296,7 +1293,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String msg =
                          "Invalid Partition - " + partition.toString()+". Cause: Iaas Provider " +
                                  "is null for Partition Provider: "+provider;
-            log.error(msg);
+            LOG.error(msg);
             throw new InvalidPartitionException(msg);
         }
         
@@ -1310,7 +1307,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String msg =
                         "Invalid Partition - " + partition.toString() +
                         ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }
             
@@ -1330,32 +1327,31 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
 	@Override
-	public MemberContext startContainers(MemberContext memberContext)
+	public MemberContext[] startContainers(ContainerClusterContext containerClusterContext)
 			throws UnregisteredCartridgeException {
 		
-		if(log.isDebugEnabled()) {
-    		log.debug("CloudControllerServiceImpl:startContainer");
+		if(LOG.isDebugEnabled()) {
+    		LOG.debug("CloudControllerServiceImpl:startContainers");
     	}
 
-        if (memberContext == null) {
-            String msg = "Instance start-up failed. Member is null.";
-            log.error(msg);
+        if (containerClusterContext == null) {
+            String msg = "Instance start-up failed. ContainerClusterContext is null.";
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
 
-        String clusterId = memberContext.getClusterId();
-        if(log.isDebugEnabled()) {
-        	log.debug("Received an instance spawn request : " + memberContext.toString());
+        String clusterId = containerClusterContext.getClusterId();
+        if(LOG.isDebugEnabled()) {
+        	LOG.debug("Received an instance spawn request : " + containerClusterContext.toString());
         }
 
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
 
         if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + memberContext.toString();
-            log.error(msg);
+            String msg = "Instance start-up failed. Invalid cluster id. " + containerClusterContext.toString();
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
-        
         
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -1364,122 +1360,159 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (cartridge == null) {
             String msg =
                          "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". "+
-                                 memberContext.toString();
-            log.error(msg);
+                                 containerClusterContext.toString();
+            LOG.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
 
-        memberContext.setCartridgeType(cartridgeType);
-
         try {
-            // generating the Unique member ID...
-            String memberID = generateMemberId(clusterId);
-            memberContext.setMemberId(memberID);
-
-			String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
-					StratosConstants.KUBERNETES_CLUSTER_ID);
-			
-			if (kubernetesClusterId == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String kubernetesMasterIp = CloudControllerUtil.getProperty(memberContext.getProperties(), 
-					StratosConstants.KUBERNETES_MASTER_IP);
-			
-			if (kubernetesMasterIp == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_MASTER_IP+"'. " + memberContext;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
-			
-			String kubernetesPortRange = CloudControllerUtil.getProperty(memberContext.getProperties(), 
-					StratosConstants.KUBERNETES_PORT_RANGE);
-			
-			if (kubernetesPortRange == null) {
-				String msg = "Instance start-up failed. Cannot find '"+
-						StratosConstants.KUBERNETES_PORT_RANGE+"'. " + memberContext;
-				log.error(msg);
-				throw new IllegalArgumentException(msg);
-			}
+            String minReplicas = validateProperty(StratosConstants.KUBERNETES_MIN_REPLICAS, ctxt);
+            String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
+            String kubernetesMasterIp = validateProperty(StratosConstants.KUBERNETES_MASTER_IP, containerClusterContext);
+            String kubernetesPortRange = validateProperty(StratosConstants.KUBERNETES_PORT_RANGE, containerClusterContext);
 			
 			KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp, kubernetesPortRange);
 			
 			KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 			
 			// first let's create a replication controller.
-			MemberContextToReplicationController controllerFunction = new MemberContextToReplicationController();
-			ReplicationController controller = controllerFunction.apply(memberContext);
+			ContainerClusterContextToReplicationController controllerFunction = new ContainerClusterContextToReplicationController();
+			ReplicationController controller = controllerFunction.apply(containerClusterContext);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is delegating request to start a replication controller "+controller+
-						" for "+ memberContext + " to Kubernetes layer.");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Cloud Controller is delegating request to start a replication controller "+controller+
+						" for "+ containerClusterContext + " to Kubernetes layer.");
 			}
 			
 			kubApi.createReplicationController(controller);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller successfully started the controller "
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Cloud Controller successfully started the controller "
 						+ controller + " via Kubernetes layer.");
 			}
 			
 			// secondly let's create a kubernetes service proxy to load balance these containers
-			MemberContextToKubernetesService serviceFunction = new MemberContextToKubernetesService();
-			Service service = serviceFunction.apply(memberContext);
+			ContainerClusterContextToKubernetesService serviceFunction = new ContainerClusterContextToKubernetesService();
+			Service service = serviceFunction.apply(containerClusterContext);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller is delegating request to start a service "+service+
-						" for "+ memberContext + " to Kubernetes layer.");
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Cloud Controller is delegating request to start a service "+service+
+						" for "+ containerClusterContext + " to Kubernetes layer.");
 			}
 			
 			kubApi.createService(service);
 			
-			if (log.isDebugEnabled()) {
-				log.debug("Cloud Controller successfully started the service "
+			// set host port and update
+			ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
+			dataHolder.addClusterContext(ctxt);
+			
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Cloud Controller successfully started the service "
 						+ controller + " via Kubernetes layer.");
 			}
 			
-            memberContext.setPublicIpAddress(kubernetesMasterIp);
-            memberContext.setPrivateIpAddress(kubernetesMasterIp);
-            memberContext.setProperties(CloudControllerUtil.addProperty(memberContext
-                    .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                    CloudControllerUtil.getProperty(ctxt.getProperties(),
-                            StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
-            dataHolder.addMemberContext(memberContext);
+			// create a label query
+			Label l = new Label();
+			l.setName(clusterId);
+			// execute the label query
+			Pod[] newlyCreatedPods = new Pod[0];
+			int expectedCount = Integer.parseInt(minReplicas);
+			
+			for (int i = 0; i < expectedCount ; i++) {
+			    newlyCreatedPods = kubApi.getSelectedPods(new Label[]{l});
+			    
+			    if (LOG.isDebugEnabled()) {
+			        
+			        LOG.debug("Pods Count: "+newlyCreatedPods.length+" for cluster: "+clusterId);
+			    }
+			    if(newlyCreatedPods.length == expectedCount) {
+			        break;
+			    }
+			    Thread.sleep(10000);
+            }
 
+			if (newlyCreatedPods.length == 0) {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(String.format("Pods are not created for cluster : %s, hence deleting the service", clusterId));
+				}
+				terminateAllContainers(clusterId);
+				return new MemberContext[0];
+			}
+			
+			if (LOG.isDebugEnabled()) {
+			    
+			    LOG.debug(String.format("Pods created : %s for cluster : %s",newlyCreatedPods.length, clusterId));
+			}
+			
+			List<MemberContext> memberContexts = new ArrayList<MemberContext>();
+			
+			PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
+			// generate Member Contexts
+			for (Pod pod : newlyCreatedPods) {
+                MemberContext context = podToMemberContextFunc.apply(pod);
+                context.setCartridgeType(cartridgeType);
+                context.setClusterId(clusterId);
+                
+                context.setProperties(CloudControllerUtil.addProperty(context
+                        .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                        String.valueOf(service.getPort())));
+                
+                dataHolder.addMemberContext(context);
+                
+                // wait till Pod status turns to running and send member spawned.
+                ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Cloud Controller is starting the instance start up thread.");
+                }
+                dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
+                
+                memberContexts.add(context);
+            }
+			
 			// persist in registry
 			persist();
 
-			// trigger topology
-			// update the topology with the newly spawned member
-			TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId, null,
-					kubernetesMasterIp, kubernetesMasterIp, memberContext);
+            LOG.info("Kubernetes entities are successfully starting up. "+memberContexts);
 
-			// publish data
-			// TODO
-			// CartridgeInstanceDataPublisher.publish(memberID,
-			// memberContext.getPartition().getId(),
-			// memberContext.getNetworkPartitionId(),
-			// memberContext.getClusterId(),
-			// cartridgeType,
-			// MemberStatus.Created.toString(),
-			// node);
-
-            log.info("Kubernetes entities are successfully starting up. "+memberContext.toString());
-
-            return memberContext;
+            return memberContexts.toArray(new MemberContext[0]);
 
         } catch (Exception e) {
-            String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
-            log.error(msg, e);
+            String msg = "Failed to start an instance. " + containerClusterContext.toString()+" Cause: "+e.getMessage();
+            LOG.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
 	}
 
-	private KubernetesClusterContext getKubernetesClusterContext(
+	private String validateProperty(String property, ClusterContext ctxt) {
+
+	    String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+        
+        if (propVal == null) {
+            String msg = "Instance start-up failed. Cannot find '"+
+                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
+            LOG.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        return propVal;
+    }
+	
+	private String validateProperty(String property, ContainerClusterContext ctxt) {
+
+        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+        
+        if (propVal == null) {
+            String msg = "Instance start-up failed. Cannot find '"+
+                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
+            LOG.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        return propVal;
+        
+    }
+
+    private KubernetesClusterContext getKubernetesClusterContext(
 			String kubernetesClusterId, String kubernetesMasterIp,
 			String kubernetesPortRange) {
 		
@@ -1502,14 +1535,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public void terminateAllContainers(String clusterId)
+	public MemberContext[] terminateAllContainers(String clusterId)
 			throws InvalidClusterException {
 		
 		ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
 
         if (ctxt == null) {
             String msg = "Kubernetes units temrination failed. Invalid cluster id. "+clusterId;
-            log.error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
         
@@ -1519,7 +1552,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if (kubernetesClusterId == null) {
 			String msg = "Kubernetes units termination failed. Cannot find '"+
 					StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt;
-			log.error(msg);
+			LOG.error(msg);
 			throw new IllegalArgumentException(msg);
 		}
         
@@ -1528,7 +1561,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if (kubClusterContext == null) {
 			String msg = "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: " 
 							+kubernetesClusterId;
-			log.error(msg);
+			LOG.error(msg);
 			throw new IllegalArgumentException(msg);
 		}
 
@@ -1538,7 +1571,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			kubApi.deleteService(CloudControllerUtil.getCompatibleId(clusterId));
 		} catch (KubernetesClientException e) {
 			// we're not going to throw this error, but proceed with other deletions
-			log.error("Failed to delete Kubernetes service with id: "+clusterId, e);
+			LOG.error("Failed to delete Kubernetes service with id: "+clusterId, e);
 		}
 		
 		// set replicas=0 for the replication controller
@@ -1546,14 +1579,37 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			kubApi.updateReplicationController(clusterId, 0);
 		} catch (KubernetesClientException e) {
 			// we're not going to throw this error, but proceed with other deletions
-			log.error("Failed to update Kubernetes Controller with id: "+clusterId, e);
+			LOG.error("Failed to update Kubernetes Controller with id: "+clusterId, e);
 		}
+		
+		// delete pods forcefully
+        try {
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            // execute the label query
+            Pod[] pods = kubApi.getSelectedPods(new Label[]{l});
+            
+            for (Pod pod : pods) {
+                try {
+                    // delete pods forcefully
+                    kubApi.deletePod(pod.getId());
+                } catch (KubernetesClientException ignore) {
+                    // we can't do nothing here
+                    LOG.warn(String.format("Failed to delete Pod [%s] forcefully!", pod.getId()));
+                }
+            }
+        } catch (KubernetesClientException e) {
+            // we're not going to throw this error, but proceed with other deletions
+            LOG.error("Failed to delete pods forcefully for cluster: "+clusterId, e);
+        }
+		
 		// delete the replication controller.
 		try {
 			kubApi.deleteReplicationController(clusterId);
 		} catch (KubernetesClientException e) {
 			String msg = "Failed to delete Kubernetes Controller with id: "+clusterId;
-			log.error(msg, e);
+			LOG.error(msg, e);
 			throw new InvalidClusterException(msg, e);
 		}
 		
@@ -1564,22 +1620,220 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			kubClusterContext.deallocateHostPort(Integer
 					.parseInt(allocatedPort));
 		} else {
-			log.warn("Host port dealloacation failed due to a missing property: "
+			LOG.warn("Host port dealloacation failed due to a missing property: "
 					+ StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
 		}
 		
-		dataHolder.removeMemberContextsOfCluster(clusterId);
+		List<MemberContext> removedMembers = dataHolder.removeMemberContextsOfCluster(clusterId);
+		
+		for (MemberContext memberContext : removedMembers) {
+            logTermination(memberContext);
+        }
 		
 		// persist
 		persist();
+		
+		return removedMembers.toArray(new MemberContext[0]);
 	}
 
 	@Override
-	public void updateKubernetesController(String clusterId, int replicas)
-			throws InvalidClusterException {
-		// TODO Auto-generated method stub
+	public MemberContext[] updateContainers(String clusterId, int replicas)
+			throws UnregisteredCartridgeException {
 		
+	    if(LOG.isDebugEnabled()) {
+            LOG.debug("CloudControllerServiceImpl:updateContainers for cluster : "+clusterId);
+        }
+
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        if (ctxt == null) {
+            String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
+            LOG.error(msg);
+            throw new IllegalArgumentException(msg);
+        }
+        
+        String cartridgeType = ctxt.getCartridgeType();
+
+        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+
+        if (cartridge == null) {
+            String msg =
+                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType 
+                             +". [cluster id] "+ clusterId;
+            LOG.error(msg);
+            throw new UnregisteredCartridgeException(msg);
+        }
+
+        try {
+            String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
+            
+            KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+            
+            if (kubClusterContext == null) {
+                String msg =
+                             "Instance start-up failed. No matching Kubernetes Context Found for [id] "+kubernetesClusterId 
+                             +". [cluster id] "+ clusterId;
+                LOG.error(msg);
+                throw new UnregisteredCartridgeException(msg);
+            }
+            
+            KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            
+            // get the current pods - useful when scale down
+            Pod[] previousStatePods = kubApi.getSelectedPods(new Label[]{l});
+            
+            // update the replication controller - cluster id = replication controller id
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cloud Controller is delegating request to update a replication controller "+clusterId+
+                        " to Kubernetes layer.");
+            }
+            
+            kubApi.updateReplicationController(clusterId, replicas);
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Cloud Controller successfully updated the controller "
+                        + clusterId + " via Kubernetes layer.");
+            }
+            
+            // execute the label query
+            Pod[] allPods = new Pod[0];
+            
+            // wait replicas*5s time in the worst case ; best case = 0s
+            for (int i = 0; i < replicas ; i++) {
+                allPods = kubApi.getSelectedPods(new Label[]{l});
+                
+                if (LOG.isDebugEnabled()) {
+                    
+                    LOG.debug("Pods Count: "+allPods.length+" for cluster: "+clusterId);
+                }
+                if(allPods.length == replicas) {
+                    break;
+                }
+                Thread.sleep(5000);
+            }
+            
+            if (LOG.isDebugEnabled()) {
+                
+                LOG.debug(String.format("Pods created : %s for cluster : %s",allPods.length, clusterId));
+            }
+            
+            List<MemberContext> memberContexts = new ArrayList<MemberContext>();
+            
+            PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
+            // generate Member Contexts
+            for (Pod pod : allPods) {
+                MemberContext context;
+                // if member context does not exist -> a new member (scale up)
+                if ((context = dataHolder.getMemberContextOfMemberId(pod.getId())) == null) {
+                    
+                    context = podToMemberContextFunc.apply(pod);
+                    context.setCartridgeType(cartridgeType);
+                    context.setClusterId(clusterId);
+                    
+                    context.setProperties(CloudControllerUtil.addProperty(context
+                            .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                            ctxt.getProperties().getProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+                    
+                    // wait till Pod status turns to running and send member spawned.
+                    ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Cloud Controller is starting the instance start up thread.");
+                    }
+                    dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
+                    
+                    memberContexts.add(context);
+                    
+                }
+                // publish data
+                // TODO
+//                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
+                
+            }
+            
+            if (memberContexts.isEmpty()) {
+                // terminated members
+                @SuppressWarnings("unchecked")
+                List<Pod> difference = ListUtils.subtract(Arrays.asList(previousStatePods), Arrays.asList(allPods));
+                for (Pod pod : difference) {
+                    if (pod != null) {
+                        MemberContext context = dataHolder.getMemberContextOfMemberId(pod.getId());
+                        logTermination(context);
+                        memberContexts.add(context);
+                    }
+                }
+            }
+            
+            
+            // persist in registry
+            persist();
+
+            LOG.info("Kubernetes entities are successfully starting up. "+memberContexts);
+
+            return memberContexts.toArray(new MemberContext[0]);
+
+        } catch (Exception e) {
+            String msg = "Failed to update containers belong to cluster " + clusterId+". Cause: "+e.getMessage();
+            LOG.error(msg, e);
+            throw new IllegalStateException(msg, e);
+        }
 	}
+
+    @Override
+    public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
+
+        handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [Member id] " + memberId);
+
+        MemberContext memberContext = dataHolder.getMemberContextOfMemberId(memberId);
+
+        handleNullObject(memberContext, "Failed to terminate member. Member id not found. [Member id] " + memberId);
+
+        String clusterId = memberContext.getClusterId();
+
+        handleNullObject(clusterId, "Failed to terminate member. Cluster id is null. [Member id] " + memberId);
+
+        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+
+        handleNullObject(ctxt,
+                String.format("Failed to terminate member [Member id] %s. Invalid cluster id %s ", memberId, clusterId));
+        
+        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
+                StratosConstants.KUBERNETES_CLUSTER_ID);
+        
+        handleNullObject(kubernetesClusterId, String.format("Failed to terminate member [Member id] %s. Cannot find '"+
+                    StratosConstants.KUBERNETES_CLUSTER_ID+"' in [cluster context] %s ", memberId, ctxt));
+        
+        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        
+        handleNullObject(kubClusterContext, String.format("Failed to terminate member [Member id] %s. Cannot find a matching Kubernetes Cluster in [cluster context] %s ", memberId, ctxt));
+        
+        KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+        // delete the Pod
+        try {
+            // member id = pod id
+            kubApi.deletePod(memberId);
+            
+            MemberContext removedMemberContext = dataHolder.removeMemberContext(memberId, clusterId);
+            
+            logTermination(removedMemberContext);
+            
+            return removedMemberContext;
+            
+        } catch (KubernetesClientException e) {
+            String msg = String.format("Failed to terminate member [Member id] %s", memberId);
+            LOG.error(msg, e);
+            throw new MemberTerminationFailedException(msg, e);
+        }
+    }
+    
+    private void handleNullObject(Object obj, String errorMsg) {
+        if (obj == null) {
+            LOG.error(errorMsg);
+            throw new IllegalArgumentException(errorMsg);
+        }
+    }
 
 }
 

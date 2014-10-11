@@ -18,24 +18,16 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import java.util.Properties;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /*
  * It is monitoring a kubernetes service cluster periodically.
@@ -45,14 +37,15 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     private static final Log log = LogFactory.getLog(KubernetesServiceClusterMonitor.class);
 
     private String lbReferenceType;
-    private int numberOfReplicasInServiceCluster = 0;
-    int retryInterval = 60000;
 
     public KubernetesServiceClusterMonitor(KubernetesClusterContext kubernetesClusterCtxt,
                                            String serviceClusterID, String serviceId,
                                            AutoscalePolicy autoscalePolicy) {
         super(serviceClusterID, serviceId, kubernetesClusterCtxt,
-              new AutoscalerRuleEvaluator(), autoscalePolicy);
+              new AutoscalerRuleEvaluator(
+                      StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
+                      StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE),
+              autoscalePolicy);
         readConfigurations();
     }
 
@@ -79,65 +72,56 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     protected void monitor() {
+        minCheck();
+        scaleCheck();
+    }
 
-        int minReplicas;
-        try {
-            TopologyManager.acquireReadLock();
-            Service service = TopologyManager.getTopology().getService(getServiceId());
-            Cluster cluster = service.getCluster(getClusterId());
-            Properties props = cluster.getProperties();
-            minReplicas = Integer.parseInt(props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS));
-        } finally {
-            TopologyManager.releaseReadLock();
+    private void scaleCheck() {
+        boolean rifReset = getKubernetesClusterCtxt().isRifReset();
+        boolean memoryConsumptionReset = getKubernetesClusterCtxt().isMemoryConsumptionReset();
+        boolean loadAverageReset = getKubernetesClusterCtxt().isLoadAverageReset();
+        if (log.isDebugEnabled()) {
+            log.debug("flag of rifReset : " + rifReset
+                      + " flag of memoryConsumptionReset : "
+                      + memoryConsumptionReset + " flag of loadAverageReset : "
+                      + loadAverageReset);
         }
-
-        // is container created successfully?
-        boolean success = false;
-        String kubernetesClusterId = getKubernetesClusterCtxt().getKubernetesClusterID();
-        int activeMembers = getKubernetesClusterCtxt().getActiveMembers().size();
-        int pendingMembers = getKubernetesClusterCtxt().getPendingMembers().size();
-        int nonTerminatedMembers = activeMembers + pendingMembers;
-
-        if (nonTerminatedMembers == 0) {
-            while (!success) {
-                try {
-                    CloudControllerClient ccClient = CloudControllerClient.getInstance();
-                    MemberContext memberContext = ccClient.createContainer(kubernetesClusterId, getClusterId());
-                    if (null != memberContext) {
-                        getKubernetesClusterCtxt().addPendingMember(memberContext);
-                        success = true;
-                        numberOfReplicasInServiceCluster = minReplicas;
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Pending member added, [member] %s [kub cluster] %s",
-                                                    memberContext.getMemberId(), kubernetesClusterId));
-                        }
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Returned member context is null, did not add to pending members");
-                        }
-                    }
-                } catch (SpawningException spawningException) {
-                    if (log.isDebugEnabled()) {
-                        String message = "Cannot create containers, will retry in "
-                                         + (retryInterval / 1000) + "s";
-                        log.debug(message, spawningException);
-                    }
-                } catch (Exception exception) {
-                    if (log.isDebugEnabled()) {
-                        String message = "Error while creating containers, will retry in "
-                                         + (retryInterval / 1000) + "s";
-                        log.debug(message, exception);
-                    }
-                }
-                try {
-                    Thread.sleep(retryInterval);
-                } catch (InterruptedException ignored) {
-                }
+        String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        String clusterId = getClusterId();
+        if (rifReset || memoryConsumptionReset || loadAverageReset) {
+            getScaleCheckKnowledgeSession().setGlobal("clusterId", clusterId);
+            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
+            getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+            getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+            getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format(
+                        "Running scale check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
             }
+            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(
+                    getScaleCheckKnowledgeSession(), scaleCheckFactHandle, getKubernetesClusterCtxt());
+            getKubernetesClusterCtxt().setRifReset(false);
+            getKubernetesClusterCtxt().setMemoryConsumptionReset(false);
+            getKubernetesClusterCtxt().setLoadAverageReset(false);
+        } else if (log.isDebugEnabled()) {
+            log.debug(String.format("Scale check will not run since none of the statistics have not received yet for "
+                                    + "[kub-cluster] : %s [cluster] : %s", kubernetesClusterID, clusterId));
         }
     }
 
-    @Override
+	private void minCheck() {
+		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+		String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Running min check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
+        }
+		minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+				getMinCheckKnowledgeSession(), minCheckFactHandle,
+				getKubernetesClusterCtxt());
+	}
+
+	@Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();

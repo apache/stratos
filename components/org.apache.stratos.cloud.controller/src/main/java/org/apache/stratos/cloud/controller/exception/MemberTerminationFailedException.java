@@ -18,22 +18,22 @@
  */
 package org.apache.stratos.cloud.controller.exception;
 
+
 /**
- * Throws when a {@link IaasProvider} is evaluated to be invalid.
- * @author nirmal
+ * Throws when a member termination fails.
  *
  */
-public class InvalidIaasProviderException extends Exception {
+public class MemberTerminationFailedException extends Exception {
 
-    private static final long serialVersionUID = 2453133690565031869L;
+    private static final long serialVersionUID = -7883324379272628566L;
     private String message;
     
-    public InvalidIaasProviderException(String msg) {
+    public MemberTerminationFailedException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
     
-    public InvalidIaasProviderException(String msg, Exception ex) {
+    public MemberTerminationFailedException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }

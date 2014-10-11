@@ -72,6 +72,8 @@
 		<exclude>**/marshalling_1.3.6.wso2v1.jar</exclude>
 		<exclude>**/jboss-transaction-api_1.1_spec-1.0.0.Final.jar</exclude>
 		<exclude>**/org.wso2.carbon.ui_4.2.0.jar</exclude>
+		<exclude>**/httpclient_4.1.1.wso2v1.jar</exclude>
+		<exclude>**/httpcore_4.1.0.wso2v1.jar</exclude>
 	    </excludes>
 	</fileSet>
 
@@ -605,10 +607,6 @@
                 <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
                 <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
                 <include>org.eclipse.paho:mqtt-client:jar</include>
-  		<include>org.apache.stratos:org.apache.stratos.kubernetes.client:jar</include>
-		<include>org.jboss.resteasy:resteasy-jaxrs:jar</include>
-		<include>org.jboss.resteasy:resteasy-jaxb-provider:jar</include>
-		<include>org.jboss.resteasy:resteasy-jackson-provider:jar</include>
             </includes>
         </dependencySet>
         <dependencySet>
@@ -662,7 +660,7 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
-		<file>
+	<file>
             <source>src/main/conf/mincheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
@@ -680,6 +678,20 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+                <!-- container-drools files -->
+        <file>
+            <source>src/main/conf/container-mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/container-scaling.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+		<!-- container-drools files -->
 		<!-- autoscaler -->
         <file>
             <source>${project.basedir}/INSTALL.txt</source>

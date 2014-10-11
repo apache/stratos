@@ -19,7 +19,7 @@
 package org.apache.stratos.cloud.controller.functions;
 
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.pojo.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -34,16 +34,16 @@ import org.apache.stratos.kubernetes.client.model.State;
 import com.google.common.base.Function;
 
 /**
- * Is responsible for converting a {@link MemberContext} object to a Kubernetes
+ * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
  * {@link ReplicationController} Object.
  */
-public class MemberContextToReplicationController implements
-        Function<MemberContext, ReplicationController> {
+public class ContainerClusterContextToReplicationController implements
+        Function<ContainerClusterContext, ReplicationController> {
 
     private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     @Override
-    public ReplicationController apply(MemberContext memberContext) {
+    public ReplicationController apply(ContainerClusterContext memberContext) {
 
         String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
@@ -66,7 +66,7 @@ public class MemberContextToReplicationController implements
         manifest.setVersion("v1beta1");
         manifest.setId(clusterContext.getClusterId());
 
-        MemberContextToKubernetesContainer containerFunc = new MemberContextToKubernetesContainer();
+        ContainerClusterContextToKubernetesContainer containerFunc = new ContainerClusterContextToKubernetesContainer();
         Container container = containerFunc.apply(memberContext);
 
         manifest.setContainers(new Container[] { container });

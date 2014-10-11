@@ -19,7 +19,7 @@
 
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.Options;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -28,51 +28,40 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+public class ListKubernetesHostsCommand implements Command<StratosCommandContext> {
 
-/**
- * Un-deploy kubernetes group command.
- */
-public class UnDeployKubernetesGroupCommand implements Command<StratosCommandContext> {
+	private static final Logger logger = LoggerFactory.getLogger(ListKubernetesHostsCommand.class);
 
-    private static final Logger logger = LoggerFactory.getLogger(UnDeployKubernetesGroupCommand.class);
+	public ListKubernetesHostsCommand() {
+	}
 
-    public UnDeployKubernetesGroupCommand() {
-    }
+	public String getName() {
+		return "list-kubernetes-hosts";
+	}
 
-    @Override
-    public String getName() {
-        return "undeploy-kubernetes-group";
-    }
+	public String getDescription() {
+		return "List kubernetes hosts";
+	}
 
-    @Override
-    public String getDescription() {
-        return "Undeploy kubernetes group";
-    }
+	public String getArgumentSyntax() {
+		return "[group-id]";
+	}
 
-    @Override
-    public String getArgumentSyntax() {
-        return "[group-id]";
-    }
-
-    @Override
-    public Options getOptions() {
-        return null;
-    }
-
-    @Override
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing command: ", getName());
-        }
-
-        if ((args == null) || (args.length <= 0)) {
+	public int execute(StratosCommandContext context, String[] args) throws CommandException {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Executing command: ", getName());
+		}
+		if ((args == null) || (args.length == 0)) {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.BAD_ARGS_CODE;
-        }
+		} else {
+            String groupId = args[0];
+            RestCommandLineService.getInstance().listKubernetesHosts(groupId);
+            return CliConstants.SUCCESSFUL_CODE;
+		}
+	}
 
-        String groupId = args[0];
-        RestCommandLineService.getInstance().undeployKubernetesGroup(groupId);
-        return CliConstants.SUCCESSFUL_CODE;
-    }
+	public Options getOptions() {
+		return null;
+	}
 }

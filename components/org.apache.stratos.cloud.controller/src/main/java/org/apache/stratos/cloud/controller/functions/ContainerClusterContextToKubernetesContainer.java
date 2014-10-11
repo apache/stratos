@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.pojo.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -38,16 +38,16 @@ import org.apache.stratos.kubernetes.client.model.Port;
 import com.google.common.base.Function;
 
 /**
- * Is responsible for converting a {@link MemberContext} object to a Kubernetes
+ * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
  * {@link Container} Object.
  */
-public class MemberContextToKubernetesContainer implements Function<MemberContext, Container> {
+public class ContainerClusterContextToKubernetesContainer implements Function<ContainerClusterContext, Container> {
 
-    private static final Log log = LogFactory.getLog(MemberContextToKubernetesContainer.class);
+    private static final Log log = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
     private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     @Override
-    public Container apply(MemberContext memberContext) {
+    public Container apply(ContainerClusterContext memberContext) {
         String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
 
@@ -84,7 +84,6 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
         for (PortMapping portMapping : cartridge.getPortMappings()) {
             Port p = new Port();
             p.setContainerPort(Integer.parseInt(portMapping.getPort()));
-            p.setHostPort(Integer.parseInt(portMapping.getPort()));
             // In kubernetes transport protocol always be 'tcp'
             p.setProtocol("tcp");
             p.setName(p.getProtocol() + p.getContainerPort());
@@ -94,18 +93,13 @@ public class MemberContextToKubernetesContainer implements Function<MemberContex
         return portList.toArray(ports);
     }
 
-    private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, ClusterContext ctxt) {
+    private EnvironmentVariable[] getEnvironmentVars(ContainerClusterContext memberCtxt, ClusterContext ctxt) {
 
         String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
                 StratosConstants.KUBERNETES_CLUSTER_ID);
 
         List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
         addToEnvironment(envVars, ctxt.getPayload());
-        // FIXME member id, should it be unique for a container?
-        addToEnvironment(envVars, StratosConstants.MEMBER_ID, memberCtxt.getMemberId());
-        addToEnvironment(envVars, StratosConstants.LB_CLUSTER_ID, memberCtxt.getLbClusterId());
-        addToEnvironment(envVars, StratosConstants.NETWORK_PARTITION_ID,
-                memberCtxt.getNetworkPartitionId());
         addToEnvironment(envVars, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
         if (memberCtxt.getProperties() != null) {
             org.apache.stratos.cloud.controller.pojo.Properties props1 = memberCtxt.getProperties();

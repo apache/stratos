@@ -293,12 +293,14 @@ public class CloudControllerUtil {
 	
 	public static String getProperty(Properties properties, String key) {
     	if (key != null && properties != null) {
-    		for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
-				String prop = (String) iterator.next();
-				if (key.equals(prop)) {
-					return properties.getProperty(prop);
-				}
-			}
+    	    for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
+                Entry<Object, Object> type = (Entry<Object, Object>) iterator.next();
+                String propName = type.getKey().toString();
+                String propValue = type.getValue().toString();
+                if (key.equals(propName)) {
+                    return propValue;
+                }
+            }
     	}
     	
     	return null;

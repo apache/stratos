@@ -24,6 +24,7 @@ package org.apache.stratos.autoscaler.rule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
@@ -31,6 +32,8 @@ import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.cloud.controller.InstanceNotificationClient;
+import org.apache.stratos.autoscaler.exception.SpawningException;
+import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
@@ -199,4 +202,85 @@ public class RuleTasksDelegator {
            }
        }
 
+    public void delegateStartContainers(KubernetesClusterContext kubernetesClusterContext) {
+        try {
+            String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
+            String clusterId = kubernetesClusterContext.getClusterId();
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            MemberContext[] memberContexts = ccClient.startContainers(kubernetesClusterId, clusterId);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        kubernetesClusterContext.addPendingMember(memberContext);
+                        kubernetesClusterContext.setServiceClusterCreated(true);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format(
+                                    "Pending member added, [member] %s [kub cluster] %s",
+                                    memberContext.getMemberId(), kubernetesClusterId));
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Returned member context is null, did not add any pending members");
+                        }
+                    }
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Returned member context is null, did not add to pending members");
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot create containers ", e);
+        }
+    }
+
+    public void delegateUpdateContainers(KubernetesClusterContext kubernetesClusterContext,
+                                         int replicas) {
+        String clusterId = kubernetesClusterContext.getClusterId();
+        try {
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            // getting newly created pods' member contexts
+            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, replicas);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        kubernetesClusterContext.addPendingMember(memberContext);
+                        if (log.isDebugEnabled()) {
+                            String kubernetesClusterID = kubernetesClusterContext.getKubernetesClusterID();
+                            log.debug(String.format(
+                                    "Pending member added, [member] %s [kub cluster] %s",
+                                    memberContext.getMemberId(), kubernetesClusterID));
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Returned member context is null, did not add any pending members");
+                        }
+                    }
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Returned array of member context is null, did not add to pending members");
+                }
+            }
+        } catch (Exception e) {
+            log.error("Cannot update kubernetes controller ", e);
+        }
+    }
+    
+    public void delegateTerminateContainer(KubernetesClusterContext kubernetesClusterContext, String memberId) {
+    	try {
+    		CloudControllerClient ccClient = CloudControllerClient.getInstance();
+    		ccClient.terminateContainer(memberId);
+    	} catch (TerminationException e) {
+    		log.error("Cannot delete container ", e);
+		}
+    }
+
+    public int getPredictedReplicasForStat(int minReplicas, float statUpperLimit, float statPredictedValue) {
+        if (statUpperLimit == 0) {
+            return 0;
+        }
+        float predictedValue = ((minReplicas / statUpperLimit) * statPredictedValue);
+        return (int) Math.ceil(predictedValue);
+    }
 }

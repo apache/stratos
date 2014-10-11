@@ -24,10 +24,9 @@ import java.io.Serializable;
 
 /**
  * Holds information about a Member.
- * @author nirmal
  *
  */
-public class MemberContext implements Serializable{
+public class MemberContext implements Serializable {
 
     private static final long serialVersionUID = -388327475844701869L;
     // id of the member
@@ -61,9 +60,16 @@ public class MemberContext implements Serializable{
         this.memberId = id;
         this.clusterId = clusterId;
         this.setPartition(partition);
+        init();
     }
     
     public MemberContext() {
+        init();
+    }
+    
+    private void init() {
+        this.properties = new Properties();
+        this.properties.setProperties(new Property[0]);
     }
     
     public String getMemberId() {
@@ -147,15 +153,6 @@ public class MemberContext implements Serializable{
         this.networkPartitionId = networkPartitionId;
     }
 
-    @Override
-    public String toString() {
-        return "MemberContext [memberId=" + memberId + ", nodeId=" + nodeId + ", clusterId=" +
-               clusterId + ", cartridgeType=" + cartridgeType + ", privateIpAddress=" +
-               privateIpAddress + ", publicIpAddress=" + publicIpAddress + ", allocatedIpAddress=" +
-               allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId +
-               ", networkPartitionId=" + networkPartitionId + "]";
-    }
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -209,6 +206,16 @@ public class MemberContext implements Serializable{
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    @Override
+    public String toString() {
+        return "MemberContext [memberId=" + memberId + ", nodeId=" + nodeId + ", instanceId="
+                + instanceId + ", clusterId=" + clusterId + ", partition=" + partition
+                + ", cartridgeType=" + cartridgeType + ", privateIpAddress=" + privateIpAddress
+                + ", publicIpAddress=" + publicIpAddress + ", allocatedIpAddress="
+                + allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId
+                + ", networkPartitionId=" + networkPartitionId + ", properties=" + properties + "]";
     }
     
 }
