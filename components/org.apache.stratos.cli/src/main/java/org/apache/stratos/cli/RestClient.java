@@ -210,9 +210,20 @@ public class RestClient implements GenericRestClient {
         }
     }
 
+    public Object getEntity(String serviceEndpoint, Class responseJsonClass, String identifier, String entityName) {
+        try {
+            return executeGet(serviceEndpoint.replace("{id}", identifier), responseJsonClass);
+        } catch (Exception e) {
+            String message = String.format("Error in getting %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+            return null;
+        }
+    }
+
     public Object listEntity(String serviceEndpoint, Class responseJsonClass, String entityName) {
         try {
-            return executeList(serviceEndpoint, responseJsonClass, entityName);
+            return executeGet(serviceEndpoint, responseJsonClass);
         } catch (Exception e) {
             String message = String.format("Error in listing %s", entityName);
             System.out.println(message);
@@ -262,7 +273,7 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    private Object executeList(String serviceEndpoint, Class responseJsonClass, String entityName) throws Exception {
+    private Object executeGet(String serviceEndpoint, Class responseJsonClass) throws Exception {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = null;
 
@@ -270,7 +281,10 @@ public class RestClient implements GenericRestClient {
             response = doGet(httpClient, getBaseURL() + serviceEndpoint);
             int responseCode = response.getStatusLine().getStatusCode();
 
-            if (responseCode < 200 || responseCode >= 300) {
+            if((responseCode >= 400) && (responseCode < 500)) {
+                // Entity not found
+                return null;
+            } else if (responseCode < 200 || responseCode >= 300) {
                 printError(response);
                 return null;
             } else {

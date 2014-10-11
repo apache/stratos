@@ -18,22 +18,26 @@
  */
 package org.apache.stratos.cli.commands;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.stratos.cli.Command;
+import org.apache.commons.cli.ParseException;
 import org.apache.stratos.cli.RestCommandLineService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class ListCartridgeSubscriptionsCommand implements Command<StratosCommandContext>{
-	
+public class ListCartridgeSubscriptionsCommand implements Command<StratosCommandContext> {
+
 	private static final Logger logger = LoggerFactory.getLogger(ListCartridgeSubscriptionsCommand.class);
 	
 	private final Options options;
-	
+
 	public ListCartridgeSubscriptionsCommand() {
 		options = constructOptions();
 	}
@@ -44,52 +48,72 @@ public class ListCartridgeSubscriptionsCommand implements Command<StratosCommand
 	 * @return Options expected from command-line.
 	 */
 	private Options constructOptions() {
-
 		final Options options = new Options();
+		Option fullOption = new Option(CliConstants.FULL_OPTION, CliConstants.FULL_LONG_OPTION, false,
+				"Display extra details");
+		options.addOption(fullOption);
 		return options;
 	}
-	
-	@Override
+
 	public String getName() {
 		return "list-cartridge-subscriptions";
 	}
 
-	@Override
 	public String getDescription() {
 		return "List cartridge subscriptions";
 	}
 
-	@Override
 	public String getArgumentSyntax() {
 		return null;
 	}
 
-	@Override
-	public Options getOptions() {
-		return options;
-	}
-
-	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
-		
-		if (args != null && args.length > 0) {
-			String alias = args[0];
+		if (args == null || args.length == 0) {
+            RestCommandLineService.getInstance().listCartridgeSubscriptions(false);
+			//CommandLineService.getInstance().listCartridgeSubscriptions(false);
+			return CliConstants.COMMAND_SUCCESSFULL;
+		} else if (args != null && args.length > 0) {
+			String[] remainingArgs = null;
+			boolean full = false;
+			final CommandLineParser parser = new GnuParser();
+			CommandLine commandLine;
+			try {
+				commandLine = parser.parse(options, args);
+				remainingArgs = commandLine.getArgs();
+				if (!(remainingArgs == null || remainingArgs.length == 0)) {
+					context.getStratosApplication().printUsage(getName());
+					return CliConstants.COMMAND_FAILED;
+				}
 
-            if(StringUtils.isBlank(alias)){
-                System.out.println("Please specify a non blank alias");
-                return CliConstants.COMMAND_FAILED;
-            }
-            else{
-                RestCommandLineService.getInstance().listSubscribedCartridgeInfo(alias);
-                return CliConstants.COMMAND_SUCCESSFULL;
-            }
-		}else {
+				if (commandLine.hasOption(CliConstants.FULL_OPTION)) {
+					if (logger.isTraceEnabled()) {
+						logger.trace("Full option is passed");
+					}
+					full = true;
+				}
+				if (logger.isDebugEnabled()) {
+					logger.debug("Listing subscribed cartridges, Full Option: {}", full);
+				}
+                RestCommandLineService.getInstance().listCartridgeSubscriptions(full);
+				return CliConstants.COMMAND_SUCCESSFULL;
+			} catch (ParseException e) {
+				if (logger.isErrorEnabled()) {
+					logger.error("Error parsing arguments", e);
+				}
+				System.out.println(e.getMessage());
+				return CliConstants.COMMAND_FAILED;
+			}
+		} else {
 			context.getStratosApplication().printUsage(getName());
 			return CliConstants.COMMAND_FAILED;
 		}
+	}
+
+	public Options getOptions() {
+		return options;
 	}
 
 }
