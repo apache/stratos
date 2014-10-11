@@ -18,6 +18,7 @@
 import time
 
 from abstractextensionhandler import AbstractExtensionHandler
+from ..util import extensionutils, cartridgeagentutils
 
 
 class DefaultExtensionHandler(AbstractExtensionHandler):
@@ -754,7 +755,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 from ..artifactmgt.git import agentgithandler
 from ..artifactmgt.repositoryinformation import RepositoryInformation
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import extensionutils
 from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *

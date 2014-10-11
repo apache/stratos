@@ -156,7 +156,7 @@ class CompleteTopologyEvent:
                     cluster_str = service_str["clusterIdClusterMap"][cluster_id]
                     cl_service_name = cluster_str["serviceName"]
                     cl_autoscale_policy_name = cluster_str["autoscalePolicyName"]
-                    cl_deployment_policy_name = cluster_str["deploymentPolicyName"]
+                    cl_deployment_policy_name = cluster_str["deploymentPolicyName"] if "deploymentPolicyName" in cluster_str else None
 
                     cluster_obj = Cluster(cl_service_name, cluster_id, cl_deployment_policy_name, cl_autoscale_policy_name)
                     cluster_obj.hostnames = cluster_str["hostNames"]
@@ -172,8 +172,8 @@ class CompleteTopologyEvent:
                         member_str = cluster_str["memberMap"][member_id]
                         mm_service_name = member_str["serviceName"]
                         mm_cluster_id = member_str["clusterId"]
-                        mm_network_partition_id = member_str["networkPartitionId"]
-                        mm_partition_id = member_str["partitionId"]
+                        mm_network_partition_id = member_str["networkPartitionId"] if "networkPartitionId" in member_str else None
+                        mm_partition_id = member_str["partitionId"] if "partitionId" in member_str else None
 
                         member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id, mm_partition_id, member_id)
                         member_obj.member_public_ip = member_str["memberPublicIp"]
