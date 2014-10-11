@@ -1457,6 +1457,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
                         String.valueOf(service.getPort())));
                 
+                dataHolder.addMemberContext(context);
+                
                 // wait till Pod status turns to running and send member spawned.
                 ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
                 if (LOG.isDebugEnabled()) {
