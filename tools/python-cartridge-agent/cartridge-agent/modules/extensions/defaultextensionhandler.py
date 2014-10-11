@@ -159,7 +159,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             ports = member_activated_event.port_map.values()
             ports_str = ""
             for port in ports:
-                ports_str += port.protocol + "," + port.value + "," + port.proxy + "|"
+                ports_str += port.protocol + "," + str(port.value) + "," + str(port.proxy) + "|"
 
             env_params["STRATOS_MEMBER_ACTIVATED_PORTS"] = ports_str
 

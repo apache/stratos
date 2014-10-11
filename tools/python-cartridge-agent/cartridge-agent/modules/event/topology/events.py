@@ -68,6 +68,8 @@ class MemberActivatedEvent:
             port_obj = Port(port_str["protocol"], port_str["value"], port_proxy)
             instance.port_map[port_proxy] = port_obj
 
+        return instance
+
 
 class MemberTerminatedEvent:
 
@@ -96,6 +98,8 @@ class MemberTerminatedEvent:
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
 
+        return instance
+
 
 class MemberSuspendedEvent:
 
@@ -121,6 +125,8 @@ class MemberSuspendedEvent:
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+
+        return instance
 
 
 class CompleteTopologyEvent:
@@ -229,3 +235,4 @@ class MemberStartedEvent:
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
 
+        return instance
