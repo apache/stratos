@@ -149,12 +149,12 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         if extensionutils.is_relevant_member_event(member_activated_event.service_name,
                                                    member_activated_event.cluster_id, lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": member_activated_event.member_ip,
-                          "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": member_activated_event.member_id,
-                          "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": member_activated_event.cluster_id,
-                          "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": lb_cluster_id,
-                          "STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID": member_activated_event.network_partition_id,
-                          "STRATOS_MEMBER_ACTIVATED_SERVICE_NAME": member_activated_event.service_name}
+            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": str(member_activated_event.member_ip),
+                          "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": str(member_activated_event.member_id),
+                          "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": str(member_activated_event.cluster_id),
+                          "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": str(lb_cluster_id),
+                          "STRATOS_MEMBER_ACTIVATED_NETWORK_PARTITION_ID": str(member_activated_event.network_partition_id),
+                          "STRATOS_MEMBER_ACTIVATED_SERVICE_NAME": str(member_activated_event.service_name)}
 
             ports = member_activated_event.port_map.values()
             ports_str = ""
@@ -167,8 +167,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             member_ips = extensionutils.get_lb_member_ip(lb_cluster_id)
             if member_ips is not None and len(member_ips) > 1:
-                env_params["STRATOS_MEMBER_ACTIVATED_LB_IP"] = member_ips[0]
-                env_params["STRATOS_MEMBER_ACTIVATED_LB_PUBLIC_IP"] = member_ips[1]
+                env_params["STRATOS_MEMBER_ACTIVATED_LB_IP"] = str(member_ips[0])
+                env_params["STRATOS_MEMBER_ACTIVATED_LB_PUBLIC_IP"] = str(member_ips[1])
 
             env_params["STRATOS_TOPOLOGY_JSON"] = json.dumps(topology.json_str)
 
@@ -201,8 +201,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                     env_params["STRATOS_UPDATE_WK_IP"] = "true"
 
             self.log.debug("Setting env var STRATOS_CLUSTERING to %r" % clustered)
-            env_params["STRATOS_CLUSTERING"] = clustered
-            env_params["STRATOS_WK_MEMBER_COUNT"] = self.cartridge_agent_config.min_count
+            env_params["STRATOS_CLUSTERING"] = str(clustered)
+            env_params["STRATOS_WK_MEMBER_COUNT"] = str(self.cartridge_agent_config.min_count)
 
             extensionutils.execute_member_activated_extension(env_params)
         else:
