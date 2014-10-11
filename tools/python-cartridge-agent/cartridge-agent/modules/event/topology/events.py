@@ -160,7 +160,7 @@ class CompleteTopologyEvent:
 
                     cluster_obj = Cluster(cl_service_name, cluster_id, cl_deployment_policy_name, cl_autoscale_policy_name)
                     cluster_obj.hostnames = cluster_str["hostNames"]
-                    cluster_obj.tenant_range = cluster_str["tenantRange"]
+                    cluster_obj.tenant_range = cluster_str["tenantRange"] if "tenantRange" in cluster_str else None
                     cluster_obj.is_lb_cluster = cluster_str["isLbCluster"]
                     cluster_obj.status = cluster_str["status"]
                     cluster_obj.load_balancer_algorithm_name = cluster_str["loadBalanceAlgorithmName"]
