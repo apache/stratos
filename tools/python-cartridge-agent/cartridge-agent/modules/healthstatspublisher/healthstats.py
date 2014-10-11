@@ -199,9 +199,9 @@ class CEPPublisherConfiguration:
         self.server_port = None
         self.admin_username = None
         self.admin_password = None
-        self.read_config()
-
         self.cartridge_agent_config = CartridgeAgentConfiguration()
+
+        self.read_config()
 
     def read_config(self):
         self.enabled = True if self.cartridge_agent_config.read_property(
