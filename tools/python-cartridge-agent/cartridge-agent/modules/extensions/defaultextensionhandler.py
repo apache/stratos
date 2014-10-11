@@ -279,7 +279,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         service = topology.get_service(member_terminated_event.service_name)
         cluster = service.get_cluster(member_terminated_event.cluster_id)
         terminated_member = cluster.get_member(member_terminated_event.member_id)
-        lb_cluster_id = cluster.get_member(member_terminated_event.cluster_id).lb_cluster_id
+        lb_cluster_id = cluster.get_member(member_terminated_event.member_id).lb_cluster_id
 
         #check whether terminated member is within the same cluster, LB cluster or service group
         if extensionutils.is_relevant_member_event(
@@ -328,7 +328,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         service = topology.get_service(member_suspended_event.service_name)
         cluster = service.get_cluster(member_suspended_event.cluster_id)
         suspended_member = cluster.get_member(member_suspended_event.member_id)
-        lb_cluster_id = cluster.get_member(member_suspended_event.cluster_id).lb_cluster_id
+        lb_cluster_id = cluster.get_member(member_suspended_event.member_id).lb_cluster_id
 
         #check whether suspended member is within the same cluster, LB cluster or service group
         if extensionutils.is_relevant_member_event(
