@@ -40,11 +40,6 @@ public class KubernetesResponseHandler implements ResponseHandler<KubernetesResp
             IOException {
         StatusLine statusLine = response.getStatusLine();
         HttpEntity entity = response.getEntity();
-        if (statusLine.getStatusCode() >= 300) {
-            throw new HttpResponseException(
-                    statusLine.getStatusCode(),
-                    statusLine.getReasonPhrase());
-        }
         if (entity == null) {
             throw new ClientProtocolException("Response contains no content");
         }
