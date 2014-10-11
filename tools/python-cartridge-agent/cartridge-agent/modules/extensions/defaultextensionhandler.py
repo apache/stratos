@@ -213,7 +213,15 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        consistant = extensionutils.check_topology_consistency(
+            service_name_in_payload,
+            cluster_id_in_payload,
+            member_id_in_payload)
+
+        if not consistant:
+            return
+        else:
+            self.cartridge_agent_config.initialized = True
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
@@ -222,6 +230,23 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         env_params = {"STRATOS_TOPOLOGY_JSON": topology.json_str, "STRATOS_MEMBER_LIST_JSON": cluster.member_list_json}
 
         extensionutils.execute_complete_topology_extension(env_params)
+
+    def on_instance_spawned_event(self, instance_spawned_event):
+        self.log.debug("Instance Spawned event received")
+
+        service_name_in_payload = self.cartridge_agent_config.service_name
+        cluster_id_in_payload = self.cartridge_agent_config.cluster_id
+        member_id_in_payload = self.cartridge_agent_config.member_id
+
+        consistant = extensionutils.check_topology_consistency(
+            service_name_in_payload,
+            cluster_id_in_payload,
+            member_id_in_payload)
+
+        if not consistant:
+            return
+        else:
+            self.cartridge_agent_config.initialized = True
 
     def on_complete_tenant_event(self, complete_tenant_event):
         self.log.debug("Complete tenant event received")
