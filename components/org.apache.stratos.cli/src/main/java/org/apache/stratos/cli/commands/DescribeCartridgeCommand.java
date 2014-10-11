@@ -61,10 +61,10 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
 				logger.debug("Getting cartridge info {}", id);
 			}
 			 RestCommandLineService.getInstance().describeAvailableCartridges(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

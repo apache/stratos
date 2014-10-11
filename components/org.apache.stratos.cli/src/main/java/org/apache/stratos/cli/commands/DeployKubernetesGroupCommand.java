@@ -25,7 +25,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +75,7 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
 
         if ((args == null) || (args.length <= 0)) {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
 
         try {
@@ -85,24 +85,24 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
                 String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
                 if (resourcePath == null) {
                     System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
-                String resourceFileContent = CommandLineUtils.readResource(resourcePath);
+                String resourceFileContent = CliUtils.readResource(resourcePath);
                 RestCommandLineService.getInstance().deployKubernetesGroup(resourceFileContent);
-                return CliConstants.SUCCESSFUL_CODE;
+                return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
         } catch (ParseException e) {
             if (logger.isErrorEnabled()) {
                 logger.error("Error parsing arguments", e);
             }
             System.out.println(e.getMessage());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         } catch (IOException e) {
             System.out.println("Invalid resource path");
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 }

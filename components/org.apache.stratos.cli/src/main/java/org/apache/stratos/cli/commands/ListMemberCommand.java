@@ -110,27 +110,27 @@ public class ListMemberCommand implements Command<StratosCommandContext> {
                 if (type == null) {
                     System.out.println("Cartridge type is required.");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 if (alias == null) {
                     System.out.println("alis is required...");
                     context.getStratosApplication().printUsage(getName());
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
                 RestCommandLineService.getInstance().listMembersOfCluster(type, alias);
 
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

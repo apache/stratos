@@ -39,7 +39,7 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.exception.CommandException;
-import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.PolicyDefinition;
@@ -209,7 +209,7 @@ public class CommandLineService {
 			}
 
 			System.out.println("Subscribed Cartridges:");
-			CommandLineUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+			CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
 
 			System.out.println();
 
@@ -243,7 +243,7 @@ public class CommandLineService {
 			};
 
 			System.out.println("Available Multi-Tenant Cartridges:");
-			CommandLineUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+			CliUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
 			System.out.println();
 			
 			Cartridge[] singleTenantCatridges = stub.getAvailableCartridges(false);
@@ -256,7 +256,7 @@ public class CommandLineService {
 			}
 			
 			System.out.println("Available Single-Tenant Cartridges:");
-			CommandLineUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+			CliUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
 			System.out.println();
 		} catch (ApplicationManagementServiceADCExceptionException e) {
 			handleException("cannot.list.available.cartridges", e);
@@ -287,7 +287,7 @@ public class CommandLineService {
 				}
 			};
 
-			CommandLineUtils.printTable(policies, policyMapper, "Policy Name", "Description", "Default");
+			CliUtils.printTable(policies, policyMapper, "Policy Name", "Description", "Default");
 			System.out.println();
 		} catch (RemoteException e) {
 			handleException(e);
@@ -542,7 +542,7 @@ public class CommandLineService {
     	if (logger.isDebugEnabled()) {
     		logger.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
     	}
-    	String message = CommandLineUtils.getMessage(key, args);
+    	String message = CliUtils.getMessage(key, args);
         if (logger.isErrorEnabled()) {
         	logger.error(message);
         }

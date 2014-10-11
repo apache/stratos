@@ -165,23 +165,23 @@ public class AddUserCommand implements Command<StratosCommandContext> {
 
                 if (userName == null || credential == null || role == null || firstName == null || lastName == null || email == null) {
                     System.out.println("usage: " + getName() + " [-u <user name>] [-p <credential>] [-r <role>] [-f <first name>] [-l <last name>] [-e <email>] [-pr <profile name>]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
                 RestCommandLineService.getInstance().addUser(userName, credential, role, firstName, lastName, email, profileName);
-                return CliConstants.SUCCESSFUL_CODE;
+                return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
 
         } else {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 

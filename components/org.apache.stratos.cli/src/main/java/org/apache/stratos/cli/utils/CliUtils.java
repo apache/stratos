@@ -28,7 +28,7 @@ import java.net.SocketException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-public class CommandLineUtils {
+public class CliUtils {
 	
 	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("Resources");
 

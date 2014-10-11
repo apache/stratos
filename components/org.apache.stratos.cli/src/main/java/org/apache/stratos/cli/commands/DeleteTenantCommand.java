@@ -61,10 +61,10 @@ public class DeleteTenantCommand implements Command<StratosCommandContext> {
 				logger.debug("Getting delete tenant info {}", id);
 			}
 			RestCommandLineService.getInstance().deleteTenant(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

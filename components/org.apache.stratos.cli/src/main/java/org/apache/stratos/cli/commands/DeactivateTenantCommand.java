@@ -61,10 +61,10 @@ public class DeactivateTenantCommand implements Command<StratosCommandContext> {
 				logger.debug("Getting deactivate tenant info {}", id);
 			}
 			RestCommandLineService.getInstance().deactivateTenant(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

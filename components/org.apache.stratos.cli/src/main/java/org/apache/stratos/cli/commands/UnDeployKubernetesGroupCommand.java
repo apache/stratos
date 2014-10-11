@@ -28,8 +28,6 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 /**
  * Un-deploy kubernetes group command.
  */
@@ -68,11 +66,11 @@ public class UnDeployKubernetesGroupCommand implements Command<StratosCommandCon
 
         if ((args == null) || (args.length <= 0)) {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
 
         String groupId = args[0];
         RestCommandLineService.getInstance().undeployKubernetesGroup(groupId);
-        return CliConstants.SUCCESSFUL_CODE;
+        return CliConstants.COMMAND_SUCCESSFULL;
     }
 }
