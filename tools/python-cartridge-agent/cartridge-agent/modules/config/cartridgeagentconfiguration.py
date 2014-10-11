@@ -97,6 +97,9 @@ class CartridgeAgentConfiguration:
             self.__read_conf_file()
             self.__read_parameter_file()
 
+            self.initialized = False
+            """ :type : bool """
+
             try:
                 self.service_group = self.payload_params[cartridgeagentconstants.SERVICE_GROUP] \
                     if cartridgeagentconstants.SERVICE_GROUP in self.payload_params \

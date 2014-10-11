@@ -79,6 +79,11 @@ class CartridgeAgent(threading.Thread):
         #Start tenant event receiver thread
         self.register_tenant_event_listeners()
 
+        #wait for intance spawned event
+        while not self.cartridge_agent_config.initialized:
+            self.log.debug("Waiting for Cartridge Agent to be initialized...")
+            time.sleep(1)
+
         #Execute instance started shell script
         CartridgeAgent.extension_handler.on_instance_started_event()
 
