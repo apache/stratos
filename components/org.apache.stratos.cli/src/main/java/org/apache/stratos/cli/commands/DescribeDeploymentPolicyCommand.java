@@ -60,11 +60,11 @@ public class DescribeDeploymentPolicyCommand implements Command<StratosCommandCo
 			if (logger.isDebugEnabled()) {
 				logger.debug("Getting Deployment policy info {}", id);
 			}
-			 RestCommandLineService.getInstance().describeDeploymentPolicies(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			 RestCommandLineService.getInstance().describeDeploymentPolicy(id);
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

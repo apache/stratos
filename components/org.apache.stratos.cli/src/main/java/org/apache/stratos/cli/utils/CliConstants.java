@@ -34,8 +34,8 @@ public class CliConstants {
 
 	public static final String STRATOS_SHELL_PROMPT = "stratos> ";
 	
-	public static final int SUCCESSFUL_CODE = 0;
-	public static final int BAD_ARGS_CODE = 1;
+	public static final int COMMAND_SUCCESSFULL = 0;
+	public static final int COMMAND_FAILED = 1;
 	public static final int ERROR_CODE = 2;
 
 

@@ -61,10 +61,10 @@ public class DescribePartitionCommand implements Command<StratosCommandContext> 
 				logger.debug("Getting Partition info {}", id);
 			}
 			 RestCommandLineService.getInstance().describePartition(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

@@ -42,7 +42,7 @@ public class ActivateTenantCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getArgumentSyntax() {
-        return "[Tenant Domain]";
+        return "[tenant-domain]";
     }
 
     @Override
@@ -61,10 +61,10 @@ public class ActivateTenantCommand implements Command<StratosCommandContext> {
 				logger.debug("Getting deactivate tenant info {}", id);
 			}
 			RestCommandLineService.getInstance().activateTenant(id);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
     }
 }

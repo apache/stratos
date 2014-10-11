@@ -74,7 +74,7 @@ public class ListSubscribedCartridgesCommand implements Command<StratosCommandCo
 		if (args == null || args.length == 0) {
             RestCommandLineService.getInstance().listSubscribedCartridges(false);
 			//CommandLineService.getInstance().listSubscribedCartridges(false);
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else if (args != null && args.length > 0) {
 			String[] remainingArgs = null;
 			boolean full = false;
@@ -85,7 +85,7 @@ public class ListSubscribedCartridgesCommand implements Command<StratosCommandCo
 				remainingArgs = commandLine.getArgs();
 				if (!(remainingArgs == null || remainingArgs.length == 0)) {
 					context.getStratosApplication().printUsage(getName());
-					return CliConstants.BAD_ARGS_CODE;
+					return CliConstants.COMMAND_FAILED;
 				}
 
 				if (commandLine.hasOption(CliConstants.FULL_OPTION)) {
@@ -99,17 +99,17 @@ public class ListSubscribedCartridgesCommand implements Command<StratosCommandCo
 				}
                 RestCommandLineService.getInstance().listSubscribedCartridges(full);
 				//CommandLineService.getInstance().listSubscribedCartridges(full);
-				return CliConstants.SUCCESSFUL_CODE;
+				return CliConstants.COMMAND_SUCCESSFULL;
 			} catch (ParseException e) {
 				if (logger.isErrorEnabled()) {
 					logger.error("Error parsing arguments", e);
 				}
 				System.out.println(e.getMessage());
-				return CliConstants.BAD_ARGS_CODE;
+				return CliConstants.COMMAND_FAILED;
 			}
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 

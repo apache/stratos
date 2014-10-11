@@ -30,13 +30,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class AutoscalingPolicyDeploymentCommand implements Command<StratosCommandContext> {
+public class DeployPartitionCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AutoscalingPolicyDeploymentCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeployPartitionCommand.class);
 
     private final Options options;
 
-    public AutoscalingPolicyDeploymentCommand(){
+    public DeployPartitionCommand(){
         options = constructOptions();
     }
 
@@ -44,7 +44,7 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Autoscaling policy deployment resource path");
+                "Partition deployment resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 
@@ -52,11 +52,11 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
     }
 
     public String getName() {
-        return CliConstants.AUTOSCALING_POLICY_DEPLOYMENT;
+        return CliConstants.PARTITION_DEPLOYMENT;
     }
 
     public String getDescription() {
-        return "Add new autoscaling policy deployment";
+        return "Add new partition deployment";
     }
 
     public String getArgumentSyntax() {
@@ -70,7 +70,7 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String autoscalingPolicyDeployment = null;
+            String partionDeployment = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -79,7 +79,7 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Autoscaling policy deployment");
+                    logger.debug("Partition deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
@@ -87,31 +87,31 @@ public class AutoscalingPolicyDeploymentCommand implements Command<StratosComman
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    autoscalingPolicyDeployment = readResource(resourcePath);
+                    partionDeployment = readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
                     System.out.println("usage: " + getName() + " [-p <resource path>]");
-                    return CliConstants.BAD_ARGS_CODE;
+                    return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().deployAutoscalingPolicy(autoscalingPolicyDeployment);
-                return CliConstants.SUCCESSFUL_CODE;
+                RestCommandLineService.getInstance().deployPartition(partionDeployment);
+                return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
                 if (logger.isErrorEnabled()) {
                     logger.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {
                 //e.printStackTrace();
                 System.out.println("Invalid resource path");
-                return CliConstants.BAD_ARGS_CODE;
+                return CliConstants.COMMAND_FAILED;
             }
         } else {
             context.getStratosApplication().printUsage(getName());
-            return CliConstants.BAD_ARGS_CODE;
+            return CliConstants.COMMAND_FAILED;
         }
     }
 

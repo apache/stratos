@@ -31,7 +31,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.stratos.cli.exception.ExceptionMapper;
-import org.apache.stratos.cli.utils.CommandLineUtils;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,7 +222,7 @@ public class RestClient implements GenericRestClient {
     }
 
     private void printError(HttpResponse response) {
-        String resultString = CommandLineUtils.getHttpResponseString(response);
+        String resultString = CliUtils.getHttpResponseString(response);
         if (StringUtils.isNotBlank(resultString)) {
             // Response body found, try to extract exception information
             boolean exceptionMapperInstanceFound = false;
@@ -250,8 +250,7 @@ public class RestClient implements GenericRestClient {
     private int executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = doPost(httpClient, getBaseURL()
-                    + serviceEndpoint, postBody);
+            HttpResponse response = doPost(httpClient, getBaseURL()+ serviceEndpoint, postBody);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
@@ -275,7 +274,7 @@ public class RestClient implements GenericRestClient {
                 printError(response);
                 return null;
             } else {
-                String resultString = CommandLineUtils.getHttpResponseString(response);
+                String resultString = CliUtils.getHttpResponseString(response);
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
                 return gson.fromJson(resultString, responseJsonClass);
@@ -288,8 +287,7 @@ public class RestClient implements GenericRestClient {
     private int executePut(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = doPut(httpClient, getBaseURL()
-                    + serviceEndpoint, postBody);
+            HttpResponse response = doPut(httpClient, getBaseURL() + serviceEndpoint, postBody);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {

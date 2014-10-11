@@ -36,17 +36,17 @@ public class SyncCommand implements Command<StratosCommandContext> {
 
 	@Override
 	public String getName() {
-		return CliConstants.SYNC_ACTION;
+		return "synchronize-artifacts";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Synchronize GIT repository for the subscribed cartridge";
+		return "Synchronize artifacts with Git repository for cartridge subscriptions";
 	}
 
 	@Override
 	public String getArgumentSyntax() {
-		return "[Cartridge alias]";
+		return "[cartridge-subscription-alias]";
 	}
 
 	@Override
@@ -55,16 +55,16 @@ public class SyncCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String alias = args[0];
+			String cartridgeSubscriptionAlias = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Synchronizing repository for alias {}", alias);
+				logger.debug("Synchronizing repository for cartridge subscription alias {}", cartridgeSubscriptionAlias);
 			}
 
-			RestCommandLineService.getInstance().sync(alias);
-			return CliConstants.SUCCESSFUL_CODE;
+			RestCommandLineService.getInstance().synchronizeArtifacts(cartridgeSubscriptionAlias);
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 
@@ -72,5 +72,4 @@ public class SyncCommand implements Command<StratosCommandContext> {
 	public Options getOptions() {
 		return null;
 	}
-
 }

@@ -26,11 +26,6 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-import java.io.File;
-
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_DIR;
-import static org.apache.stratos.cli.utils.CliConstants.STRATOS_HISTORY_DIR;
-
 public class ExitCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExitCommand.class);
@@ -60,10 +55,10 @@ public class ExitCommand implements Command<StratosCommandContext> {
 			logger.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
-			return CliConstants.SUCCESSFUL_CODE;
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());
-			return CliConstants.BAD_ARGS_CODE;
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 
