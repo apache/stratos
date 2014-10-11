@@ -338,6 +338,7 @@ public class FasterLookUpDataHolder implements Serializable{
         if (task != null) {
             
             task.cancel(true);
+            log.info("Scheduled Pod Activation Watcher task canceled.");
         }
     }
     
