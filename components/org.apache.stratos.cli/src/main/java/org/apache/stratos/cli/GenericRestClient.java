@@ -49,7 +49,7 @@ public interface GenericRestClient {
      */
     public HttpResponse doGet(DefaultHttpClient httpClient, String resourcePath) throws Exception;
 
-    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath);
+    public HttpResponse doDelete(DefaultHttpClient httpClient, String resourcePath) throws IOException;
 
     public HttpResponse doPut(DefaultHttpClient httpClient, String resourcePath, String jsonParamString) throws IOException;
 }
