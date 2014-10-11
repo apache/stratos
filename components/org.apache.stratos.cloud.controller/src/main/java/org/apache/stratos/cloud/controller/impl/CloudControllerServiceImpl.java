@@ -21,7 +21,9 @@ package org.apache.stratos.cloud.controller.impl;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
@@ -1674,6 +1676,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             
             KubernetesApiClient kubApi = kubClusterContext.getKubApi();
+            // create a label query
+            Label l = new Label();
+            l.setName(clusterId);
+            
+            // get the current pods - useful when scale down
+            Pod[] previousStatePods = kubApi.getSelectedPods(new Label[]{l});
             
             // update the replication controller - cluster id = replication controller id
             if (LOG.isDebugEnabled()) {
@@ -1688,9 +1696,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         + clusterId + " via Kubernetes layer.");
             }
             
-            // create a label query
-            Label l = new Label();
-            l.setName(clusterId);
             // execute the label query
             Pod[] allPods = new Pod[0];
             
@@ -1719,6 +1724,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // generate Member Contexts
             for (Pod pod : allPods) {
                 MemberContext context;
+                // if member context does not exist -> a new member (scale up)
                 if ((context = dataHolder.getMemberContextOfMemberId(pod.getId())) == null) {
                     
                     context = podToMemberContextFunc.apply(pod);
@@ -1737,12 +1743,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
                     
                     memberContexts.add(context);
+                    
                 }
                 // publish data
                 // TODO
 //                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
                 
             }
+            
+            if (memberContexts.isEmpty()) {
+                // terminated members
+                @SuppressWarnings("unchecked")
+                List<Pod> difference = ListUtils.subtract(Arrays.asList(previousStatePods), Arrays.asList(allPods));
+                for (Pod pod : difference) {
+                    if (pod != null) {
+                        MemberContext context = dataHolder.getMemberContextOfMemberId(pod.getId());
+                        logTermination(context);
+                        memberContexts.add(context);
+                    }
+                }
+            }
+            
             
             // persist in registry
             persist();
