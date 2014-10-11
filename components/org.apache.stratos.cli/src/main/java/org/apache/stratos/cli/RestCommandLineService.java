@@ -1003,6 +1003,62 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
+    
+ // This method does the cartridge subscription
+    public void subscribe(String subscriptionJson)
+            throws CommandException {
+        
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        
+        try {
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + subscribCartridgeRestEndpoint,
+                    subscriptionJson);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            if ( ! responseCode.equals(CliConstants.RESPONSE_OK)) {
+                String resultString = CommandLineUtils.getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+                return;
+            }
+
+            String subscriptionOutput = CommandLineUtils.getHttpResponseString(response);
+
+            if (subscriptionOutput == null) {
+                System.out.println("Error in response");
+                return;
+            }
+
+            String  subscriptionOutputJSON = subscriptionOutput.substring(20, subscriptionOutput.length() -1);
+            SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutputJSON, SubscriptionInfo.class);
+
+            System.out.format("You have successfully subscribed.");
+
+            String repoURL;
+            String hostnames = null;
+            String hostnamesLabel = null;
+            if (subcriptionInfo != null) {
+                repoURL = subcriptionInfo.getRepositoryURL();
+                hostnames = subcriptionInfo.getHostname();
+                hostnamesLabel = "host name";
+
+                if (repoURL != null) {
+                    System.out.println("GIT Repository URL: " + repoURL);
+                }
+            }
+
+            System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
+
+        } catch (Exception e) {
+            handleException("Exception in subscribing to cartridge", e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+        
+    }
 
     // This method helps to create the new tenant
     public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email)

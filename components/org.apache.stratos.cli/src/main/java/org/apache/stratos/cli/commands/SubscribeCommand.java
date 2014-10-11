@@ -34,6 +34,9 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class SubscribeCommand implements Command<StratosCommandContext> {
@@ -58,6 +61,11 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
         //				+ "\" command to view the available policies.");
         //policyOption.setArgName("policy name");
         //options.addOption(policyOption);
+        
+        Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
+                "Cartridge deployment resource path");
+        resourcePath.setArgName("resource path");
+        options.addOption(resourcePath);
 
         Option autoscaling = new Option(CliConstants.AUTOSCALING_POLICY_OPTION, CliConstants.AUTOSCALING_POLICY_LONG_OPTION,
                 true, "Auto-scaling policy");
@@ -141,6 +149,8 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
             String repoURL = null, username = "", password = "";
             String size = null;
             String volumeID = null;
+            String resourcePath = null;
+            String subscriptionJson = null;
 
             boolean removeOnTermination = false;
             boolean privateRepo = false;
@@ -157,6 +167,27 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
                     // Get type
                     type = remainingArgs[0];
                     alias = remainingArgs[1];
+                } else if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Resource path option is passed");
+                    }
+                    try {
+                        resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+                        subscriptionJson = readResource(resourcePath);
+                    } catch (IOException e) {
+                        // e.printStackTrace();
+                        System.out.println("Invalid resource path");
+                        return CliConstants.BAD_ARGS_CODE;
+                    }
+                    
+                    if (resourcePath == null) {
+                        System.out.println("usage: " + getName() + " [-p <resource path>]");
+                        return CliConstants.BAD_ARGS_CODE;
+                    }
+
+                    RestCommandLineService.getInstance().subscribe(subscriptionJson);
+                    return CliConstants.SUCCESSFUL_CODE;
+                    
                 } else {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.BAD_ARGS_CODE;
@@ -303,6 +334,23 @@ public class SubscribeCommand implements Command<StratosCommandContext> {
 			return CliConstants.BAD_ARGS_CODE;
 		}
 	}
+    
+    private String readResource(String fileName) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(fileName));
+        try {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append("\n");
+                line = br.readLine();
+            }
+            return sb.toString();
+        } finally {
+            br.close();
+        }
+    }
 
     public Options getOptions() {
         return options;
