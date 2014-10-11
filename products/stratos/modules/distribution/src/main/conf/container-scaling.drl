@@ -31,7 +31,7 @@ global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
 
-rule "Scaling Rule"
+rule "Containers Scaling Rule"
 dialect "mvel"
 	when
         $kubernetesClusterContext : KubernetesClusterContext ()
@@ -39,8 +39,9 @@ dialect "mvel"
 	minReplicas : Integer() from $kubernetesClusterContext.getMinReplicas()
         maxReplicas : Integer() from $kubernetesClusterContext.getMaxReplicas()
         nonTerminatedReplicas : Integer() from $kubernetesClusterContext.getNonTerminatedMemberCount()
+        activeReplicas : Integer() from $kubernetesClusterContext.getActiveMemberCount()
 
-        eval(log.debug("Running scaling rule [kub-cluster] : " + kubernetesClusterId + " [cluster] : " + clusterId))
+        eval(log.info("Running scaling rule [kub-cluster] : " + kubernetesClusterId + " [cluster] : " + clusterId))
 	
 	$loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
 
@@ -72,16 +73,17 @@ dialect "mvel"
         scaleUpForMc : Boolean() from (mcReset && (mcPredictedValue > mcUpperLimit))
         scaleUpForLa : Boolean() from (laReset && (laPredictedValue > laUpperLimit))
 
-	scaleDownForRif : Boolean() from (rifReset && (rifPredictedValue < rifLowerLimit))
-        scaleDownForMc : Boolean() from (mcReset && (mcPredictedValue < mcLowerLimit)) 
-        scaleDownForLa : Boolean() from (laReset && (laPredictedValue < laLowerLimit))
+	scaleDownForRif : Boolean() from (rifPredictedValue < rifUpperLimit)
+        scaleDownForMc : Boolean() from (mcReset && (mcPredictedValue < mcUpperLimit)) 
+        scaleDownForLa : Boolean() from (laReset && (laPredictedValue < laUpperLimit))
 
         scaleUp : Boolean() from (scaleUpForRif || scaleUpForMc || scaleUpForLa)
-        scaleDown : Boolean() from (scaleDownForRif && scaleDownForMc &&  scaleDownForLa)
+        scaleDown : Boolean() from (scaleDownForRif && scaleDownForMc && scaleDownForLa)
 
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
-	eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [Replicas] minReplicas : " + minReplicas))
-	eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [Replicas] maxReplicas : " + maxReplicas))
+	eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [Replicas] minReplicas : " + minReplicas))
+	eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [Replicas] maxReplicas : " + maxReplicas))
+	eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [Replicas] nonTerminated : " + nonTerminatedReplicas))
+	eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [Replicas] activeReplicas : " + activeReplicas))
 
         eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] resetted ? : " + rifReset))
         eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] predicted value : " + rifPredictedValue))
@@ -89,17 +91,17 @@ dialect "mvel"
         eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] lower limit : " + rifLowerLimit))
 
 	eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] resetted ? : " + mcReset))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] predicted value : " + mcPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] upper limit : " + mcUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] lower limit : " + mcLowerLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] predicted value : " + mcPredictedValue))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] upper limit : " + mcUpperLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] lower limit : " + mcLowerLimit))
 
 	eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] resetted ? : " + laReset))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] predicted value : " + laPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] upper limit : " + laUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] lower limit : " + laLowerLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] predicted value : " + laPredictedValue))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] upper limit : " + laUpperLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] lower limit : " + laLowerLimit))
 
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " scale-up action : " + scaleUp))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " scale-down action : " + scaleDown))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " scale-up action : " + scaleUp))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " scale-down action : " + scaleDown))
 
 	then
         if (scaleUp) {
@@ -139,23 +141,31 @@ dialect "mvel"
             if (requiredReplicas > nonTerminatedReplicas) {
               log.info("[scaling] Decided to scale-up : [cluster] : " + clusterId);
  	      log.info("[scaling-up] " + " [cluster] : " + clusterId + " valid number of replicas to expand : " + requiredReplicas);
-	      $delegator.delegateUpdateContainers($kubernetesClusterContext, requiredReplicas);
+	      $delegator.delegateScaleUpContainers($kubernetesClusterContext, requiredReplicas);
             }
             //shrink the cluster
             if (requiredReplicas < nonTerminatedReplicas) {
-              log.info("[scaling] Decided to scale-down : [cluster] : " + clusterId);
- 	      log.info("[scaling-down] " + " [cluster] : " + clusterId + " valid number of replicas to shrink : " + requiredReplicas);
-	      $delegator.delegateUpdateContainers($kubernetesClusterContext, requiredReplicas);
+              if (requiredReplicas < activeReplicas) {
+                log.info("[scaling] Decided to scale-down : [cluster] : " + clusterId);
+ 	        log.info("[scaling-down] " + " [cluster] : " + clusterId + " valid number of replicas to shrink : " + requiredReplicas);
+	        $delegator.delegateScaleDownContainers($kubernetesClusterContext, requiredReplicas);
+              } else {
+	        log.info("[scaling] " + " [cluster] : " + clusterId + " Even if requiredReplicas < nonTerminatedReplicas, still requiredReplicas >= activeReplicas ; hence not scaling down ");
+              }
             }
             if (requiredReplicas == nonTerminatedReplicas) {
- 	      log.info("[scaling] " + " [cluster] : " + clusterId + "non terminated replicas and predicted replicas are same");
+ 	      log.info("[scaling] " + " [cluster] : " + clusterId + " Non terminated replicas and predicted replicas are same");
             }
             
         } else if (scaleDown) {
-            log.info("[scaling] Decided to scale-down [cluster] : " + clusterId);
-            log.info("[scaling-down] " + " [cluster] : " + clusterId + " shrink the cluster to minReplicas : " + minReplicas);
-            //shrink the cluster to minReplicas
-            $delegator.delegateUpdateContainers($kubernetesClusterContext, minReplicas);
+            if (activeReplicas > minReplicas) {
+              log.info("[scaling] Decided to scale-down [cluster] : " + clusterId);
+              log.info("[scaling-down] " + " [cluster] : " + clusterId + " shrink the cluster to minReplicas : " + minReplicas);
+              //shrink the cluster to minReplicas
+              $delegator.delegateScaleDownContainers($kubernetesClusterContext, minReplicas);
+            } else {
+	      log.info("[scaling] " + " [cluster] : " + clusterId + " Even if all predicted stats < upperLimit, still activeReplicas <= minReplicas ; hence not scaling down ");
+            }
         } else {
             log.info("[scaling] No decision made to either scale up or down ... ");
         }
