@@ -22,8 +22,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
@@ -46,6 +51,7 @@ import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /*
  * Every kubernetes cluster monitor should extend this class
@@ -350,8 +356,46 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
     @Override
     public void handleMemberFaultEvent(MemberFaultEvent memberFaultEvent) {
-
     	// kill the container
+        String memberId = memberFaultEvent.getMemberId();
+        Member member = getMemberByMemberId(memberId);
+        if (null == member) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
+            }
+            return;
+        }
+        if (!member.isActive()) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member activated event has not received for the member %s. "
+                                        + "Therefore ignoring" + " the member fault health stat", memberId));
+            }
+            return;
+        }
+        
+        if (!getKubernetesClusterCtxt().activeMemberExist(memberId)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Could not find the active member in kubernetes cluster context, "
+                                        + "[member] %s ", memberId));
+            }
+            return;
+        }
+        // terminate the faulty member
+        CloudControllerClient ccClient = CloudControllerClient.getInstance();
+        try {
+            ccClient.terminateContainer(memberId);
+            // remove from active member list
+            getKubernetesClusterCtxt().removeActiveMemberById(memberId);
+            if (log.isInfoEnabled()) {
+                String clusterId = memberFaultEvent.getClusterId();
+                String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+				log.info(String.format("Faulty member is terminated and removed from the active members list: "
+                                       + "[member] %s [kub-cluster] %s [cluster] %s ", memberId, kubernetesClusterID, clusterId));
+            }
+        } catch (TerminationException e) {
+            String msg = "Cannot delete a container " + e.getLocalizedMessage();
+            log.error(msg, e);
+        }
     }
 
     @Override
@@ -449,5 +493,21 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
     public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
         this.autoscalePolicy = autoscalePolicy;
+    }
+    
+    private Member getMemberByMemberId(String memberId) {
+        try {
+            TopologyManager.acquireReadLock();
+            for (Service service : TopologyManager.getTopology().getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    if (cluster.memberExists(memberId)) {
+                        return cluster.getMember(memberId);
+                    }
+                }
+            }
+            return null;
+        } finally {
+            TopologyManager.releaseReadLock();
+        }
     }
 }
