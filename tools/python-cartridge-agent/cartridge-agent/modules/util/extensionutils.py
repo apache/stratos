@@ -449,7 +449,7 @@ def add_properties(properties, params, prefix):
         return
 
     for key in properties:
-        params["STRATOS_" + prefix + "_" + key] = properties[key]
+        params["STRATOS_" + prefix + "_" + key] = str(properties[key])
         log.debug("Property added: [key] STRATOS_ " + prefix + "_" + key + "[value] " + properties[key])
 
 

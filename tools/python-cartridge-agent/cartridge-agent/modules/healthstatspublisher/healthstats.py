@@ -199,9 +199,9 @@ class CEPPublisherConfiguration:
         self.server_port = None
         self.admin_username = None
         self.admin_password = None
-        self.read_config()
-
         self.cartridge_agent_config = CartridgeAgentConfiguration()
+
+        self.read_config()
 
     def read_config(self):
         self.enabled = True if self.cartridge_agent_config.read_property(
@@ -214,22 +214,22 @@ class CEPPublisherConfiguration:
 
         self.server_ip = self.cartridge_agent_config.read_property(
             cartridgeagentconstants.CEP_RECEIVER_IP, False)
-        if self.server_ip.strip() == "":
+        if self.server_ip is None or self.server_ip.strip() == "":
             raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_IP)
 
         self.server_port = self.cartridge_agent_config.read_property(
             cartridgeagentconstants.CEP_RECEIVER_PORT, False)
-        if self.server_port.strip() == "":
+        if self.server_port is None or self.server_port.strip() == "":
             raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_PORT)
 
         self.admin_username = self.cartridge_agent_config.read_property(
             cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME, False)
-        if self.admin_username.strip() == "":
+        if self.admin_username is None or self.admin_username.strip() == "":
             raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME)
 
         self.admin_password = self.cartridge_agent_config.read_property(
             cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD, False)
-        if self.admin_password.strip() == "":
+        if self.admin_password is None or self.admin_password.strip() == "":
             raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD)
 
         CEPPublisherConfiguration.log.info("CEP Publisher configuration initialized")
