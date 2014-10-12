@@ -39,7 +39,6 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
@@ -75,49 +74,47 @@ public class RestCommandLineService {
     private RestClient restClient;
 
     // REST endpoints
-    private final String INIT_COOKIE_ENDPOINT = "/stratos/admin/cookie";
+    private static final String ENDPOINT_INIT_COOKIE = "/stratos/admin/cookie";
 
-    private final String SUBSCRIBE_CARTRIDGE_ENDPOINT = "/stratos/admin/cartridge/subscribe";
-    private final String ADD_TENANT_ENDPOINT = "/stratos/admin/tenant";
-    private final String ADD_USER_ENDPOINT = "/stratos/admin/user";
+    private static final String ENDPOINT_ADD_TENANT = "/stratos/admin/tenant";
+    private static final String ENDPOINT_ADD_USER = "/stratos/admin/user";
 
-    private final String UNSUBSCRIBE_CARTRIDGE_OF_TENANT_ENDPOINT = "/stratos/admin/cartridge/unsubscribe";
-    private final String SYNCHRONIZE_ARTIFACTS_ENDPOINT = "/stratos/admin/cartridge/sync";
+    private static final String ENDPOINT_DEPLOY_CARTRIDGE = "/stratos/admin/cartridge/definition";
+    private static final String ENDPOINT_DEPLOY_PARTITION = "/stratos/admin/policy/deployment/partition";
+    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
+    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
+    private static final String ENDPOINT_DEPLOY_SERVICE = "/stratos/admin/service/definition";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/deploy/group";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/deploy/host";
 
-    private final String DEPLOY_CARTRIDGE_ENDPOINT = "/stratos/admin/cartridge/definition";
-    private final String DEPLOY_PARTITION_ENDPOINT = "/stratos/admin/policy/deployment/partition";
-    private final String DEPLOY_AUTOSCALING_POLICY_ENDPOINT = "/stratos/admin/policy/autoscale";
-    private final String DEPLOY_DEPLOYMENT_POLICY_ENDPOINT = "/stratos/admin/policy/deployment";
-    private final String DEPLOY_SERVICE_ENDPOINT = "/stratos/admin/service/definition";
-    private final String DEPLOY_KUBERNETES_GROUP_ENDPOINT = "/stratos/admin/kubernetes/deploy/group";
-    private final String DEPLOY_KUBERNETES_HOST_ENDPOINT = "/stratos/admin/kubernetes/deploy/host";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/host/{id}";
 
-    private final String LIST_PARTITION_ENDPOINT = "/stratos/admin/partition";
-    private final String LIST_AUTOSCALING_POLICY_ENDPOINT = "/stratos/admin/policy/autoscale";
-    private final String LIST_DEPLOYMENT_POLICY_ENDPOINT = "/stratos/admin/policy/deployment";
-    private final String LIST_CARTRIDGES_ENDPOINT = "/stratos/admin/cartridge/available/list";
-    private final String LIST_CARTRIDGE_SUBSCRIPTIONS_ENDPOINT = "/stratos/admin/cartridge/list/subscribed";
-    private final String LIST_SERVICE_ENDPOINT = "/stratos/admin/service";
-    private final String LIST_TENANT_ENDPOINT = "/stratos/admin/tenant/list";
-    private final String LIST_USERS_ENDPOINT = "/stratos/admin/user/list";
-    private final String LIST_KUBERNETES_GROUP_ENDPOINT = "/stratos/admin/kubernetes/group";
-    private final String LIST_KUBERNETES_HOSTS_ENDPOINT = "/stratos/admin/kubernetes/hosts/{groupId}";
+    private static final String ENDPOINT_LIST_PARTITIONS = "/stratos/admin/partition";
+    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = "/stratos/admin/policy/autoscale";
+    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = "/stratos/admin/policy/deployment";
+    private static final String ENDPOINT_LIST_CARTRIDGES = "/stratos/admin/cartridge/available/list";
+    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = "/stratos/admin/cartridge/list/subscribed";
+    private static final String ENDPOINT_LIST_SERVICES = "/stratos/admin/service";
+    private static final String ENDPOINT_LIST_TENANTS = "/stratos/admin/tenant/list";
+    private static final String ENDPOINT_LIST_USERS = "/stratos/admin/user/list";
+    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = "/stratos/admin/kubernetes/group";
+    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = "/stratos/admin/kubernetes/hosts/{groupId}";
 
-    private final String GET_CARTRIDGE_ENDPOINT = "/stratos/admin/cartridge/available/info";
-    private final String GET_CARTRIDGE_OF_TENANT_ENDPOINT = "/stratos/admin/cartridge/info/{id}";
-    private final String GET_CLUSTER_OF_TENANT_ENDPOINT = "/stratos/admin/cluster/";
-    private final String GET_KUBERNETES_GROUP_ENDPOINT = "/stratos/admin/kubernetes/group/{id}";
-    private final String GET_KUBERNETES_MASTER_ENDPOINT = "/stratos/admin/kubernetes/master/{id}";
-    private final String GET_KUBERNETES_HOST_ENDPOINT = "/stratos/admin/kubernetes/hosts/{id}";
+    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/info/{id}";
+    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = "/stratos/admin/cluster/";
+    private static final String ENDPOINT_GET_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = "/stratos/admin/kubernetes/master/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST = "/stratos/admin/kubernetes/hosts/{id}";
 
-    private final String DEACTIVATE_TENANT_ENDPOINT = "/stratos/admin/tenant/deactivate";
-    private final String ACTIVATE_TENANT_ENDPOINT = "/stratos/admin/tenant/activate";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = "/stratos/admin/kubernetes/update/master";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = "/stratos/admin/kubernetes/update/host";
 
-    private final String UNDEPLOY_KUBERNETES_GROUP_ENDPOINT = "/stratos/admin/kubernetes/group/{id}";
-    private final String UNDEPLOY_KUBERNETES_HOST_ENDPOINT = "/stratos/admin/kubernetes/host/{id}";
-
-    private final String UPDATE_KUBERNETES_MASTER_ENDPOINT = "/stratos/admin/kubernetes/update/master";
-    private final String UPDATE_KUBERNETES_HOST_ENDPOINT = "/stratos/admin/kubernetes/update/host";
+    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = "/stratos/admin/cartridge/subscribe";
+    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/unsubscribe";
+    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = "/stratos/admin/cartridge/sync";
+    private static final String ENDPOINT_ACTIVATE_TENANT = "/stratos/admin/tenant/activate";
+    private static final String ENDPOINT_DEACTIVATE_TENANT = "/stratos/admin/tenant/deactivate";
 
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -132,7 +129,7 @@ public class RestCommandLineService {
         return gsonBuilder.create();
     }
 
-    // Loing method. This will authenticate the user
+    // Login method. This will authenticate the user
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
             // Following code will avoid validating certificate
@@ -180,7 +177,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             if (validateLogin) {
-                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + INIT_COOKIE_ENDPOINT);
+                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_INIT_COOKIE);
 
                 if (response != null) {
                     String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -240,7 +237,7 @@ public class RestCommandLineService {
 
     public Cartridge getCartridge(String cartridgeType) throws CommandException {
         try {
-            CartridgeList list = (CartridgeList) restClient.listEntity(LIST_CARTRIDGES_ENDPOINT,
+            CartridgeList list = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     CartridgeList.class, "cartridges");
 
             for (int i = 0; i < list.getCartridge().size(); i++) {
@@ -259,7 +256,7 @@ public class RestCommandLineService {
 
     public ArrayList<Cartridge> listCartridgesByServiceGroup(String serviceGroup) throws CommandException {
         try {
-            CartridgeList list = (CartridgeList) restClient.listEntity(LIST_CARTRIDGES_ENDPOINT,
+            CartridgeList list = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     CartridgeList.class, "cartridges");
 
             ArrayList<Cartridge> arrayList = new ArrayList<Cartridge>();
@@ -282,7 +279,7 @@ public class RestCommandLineService {
     // List currently available multi tenant and single tenant cartridges
     public void listCartridges() throws CommandException {
         try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(LIST_CARTRIDGES_ENDPOINT,
+            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     CartridgeList.class, "cartridges");
 
             if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
@@ -321,7 +318,7 @@ public class RestCommandLineService {
     // Describe currently available multi tenant and single tenant cartridges
     public void describeAvailableCartridges(String cartridgeType) throws CommandException {
         try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(LIST_CARTRIDGES_ENDPOINT,
+            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     CartridgeList.class, "cartridges");
 
             if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
@@ -348,7 +345,7 @@ public class RestCommandLineService {
     // List subscribe cartridges
     public void listCartridgeSubscriptions(final boolean showURLs) throws CommandException {
         try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(LIST_CARTRIDGE_SUBSCRIPTIONS_ENDPOINT,
+            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS,
                     CartridgeList.class, "cartridge subscriptions");
 
             if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
@@ -420,7 +417,7 @@ public class RestCommandLineService {
     public void describeCartridgeSubscription(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            CartridgeWrapper cartridgeWrapper = (CartridgeWrapper) restClient.getEntity(GET_CARTRIDGE_OF_TENANT_ENDPOINT,
+            CartridgeWrapper cartridgeWrapper = (CartridgeWrapper) restClient.getEntity(ENDPOINT_GET_CARTRIDGE_OF_TENANT,
                     CartridgeWrapper.class, alias, "cartridge subscription");
 
             if((cartridgeWrapper == null) || (cartridgeWrapper.getCartridge() == null)) {
@@ -490,7 +487,7 @@ public class RestCommandLineService {
             // Invoke  cluster/{clusterId}
             for (String clusterId : lbClusterIdSet) {
                 HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL()
-                        + GET_CLUSTER_OF_TENANT_ENDPOINT + "lb");
+                        + ENDPOINT_GET_CLUSTER_OF_TENANT + "lb");
 
                 String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
                 String resultStringCluster = CliUtils.getHttpResponseString(responseCluster);
@@ -572,7 +569,7 @@ public class RestCommandLineService {
 
             // Invoke  cluster/{clusterId}
             for (Member m : members) {
-                HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL() + GET_CLUSTER_OF_TENANT_ENDPOINT
+                HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_GET_CLUSTER_OF_TENANT
                         + "clusterId/" + m.getLbClusterId());
 
                 String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
@@ -602,7 +599,7 @@ public class RestCommandLineService {
     private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) throws Exception {
         try {
             HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + GET_CLUSTER_OF_TENANT_ENDPOINT + cartridgeType + "/" + alias);
+                    + ENDPOINT_GET_CLUSTER_OF_TENANT + cartridgeType + "/" + alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -692,7 +689,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + LIST_SERVICE_ENDPOINT + "/" + cartridgeType);
+                    + ENDPOINT_LIST_SERVICES + "/" + cartridgeType);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -733,7 +730,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + LIST_SERVICE_ENDPOINT + "/" + cartridgeType);
+                    + ENDPOINT_LIST_SERVICES + "/" + cartridgeType);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -810,7 +807,7 @@ public class RestCommandLineService {
 
             String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
 
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + SUBSCRIBE_CARTRIDGE_ENDPOINT,
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SUBSCRIBE_CARTRIDGE,
                     jsonSubscribeString);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -869,7 +866,7 @@ public class RestCommandLineService {
         Gson gson = gsonBuilder.create();
 
         try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + SUBSCRIBE_CARTRIDGE_ENDPOINT,
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SUBSCRIBE_CARTRIDGE,
                     subscriptionJson);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
@@ -935,7 +932,7 @@ public class RestCommandLineService {
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
 
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + ADD_TENANT_ENDPOINT, jsonString);
+                    + ENDPOINT_ADD_TENANT, jsonString);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -975,7 +972,7 @@ public class RestCommandLineService {
             String jsonString = gson.toJson(userInfoBean, UserInfoBean.class);
 
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + ADD_USER_ENDPOINT, jsonString);
+                    + ENDPOINT_ADD_USER, jsonString);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1000,7 +997,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
-                    + ADD_TENANT_ENDPOINT + "/" + tenantDomain);
+                    + ENDPOINT_ADD_TENANT + "/" + tenantDomain);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1028,7 +1025,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doDelete(httpClient, restClient.getBaseURL()
-                    + ADD_USER_ENDPOINT + "/" + userName);
+                    + ENDPOINT_ADD_USER + "/" + userName);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1056,7 +1053,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + DEACTIVATE_TENANT_ENDPOINT + "/" + tenantDomain, "");
+                    + ENDPOINT_DEACTIVATE_TENANT + "/" + tenantDomain, "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1084,7 +1081,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + ACTIVATE_TENANT_ENDPOINT + "/" + tenantDomain, "");
+                    + ENDPOINT_ACTIVATE_TENANT + "/" + tenantDomain, "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1110,7 +1107,7 @@ public class RestCommandLineService {
     // This method helps to list all tenants
     public void listAllTenants() throws CommandException {
         try {
-            TenantInfoList tenantInfoList = (TenantInfoList)restClient.listEntity(LIST_TENANT_ENDPOINT,
+            TenantInfoList tenantInfoList = (TenantInfoList)restClient.listEntity(ENDPOINT_LIST_TENANTS,
                     TenantInfoList.class, "tenants");
 
             if ((tenantInfoList == null) || (tenantInfoList.getTenantInfoBean() == null) ||
@@ -1146,7 +1143,7 @@ public class RestCommandLineService {
     // This method helps to list all users
     public void listAllUsers() throws CommandException {
         try {
-            UserInfoList userInfoList = (UserInfoList) restClient.listEntity(LIST_USERS_ENDPOINT,
+            UserInfoList userInfoList = (UserInfoList) restClient.listEntity(ENDPOINT_LIST_USERS,
                     UserInfoList.class, "users");
 
             if ((userInfoList == null) || (userInfoList.getUserInfoBean() == null) ||
@@ -1180,7 +1177,7 @@ public class RestCommandLineService {
     public void unsubscribe(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + UNSUBSCRIBE_CARTRIDGE_OF_TENANT_ENDPOINT, alias);
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT, alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1207,37 +1204,37 @@ public class RestCommandLineService {
 
     // This method helps to deploy cartridge definitions
     public void deployCartridgeDefinition(String cartridgeDefinition) throws CommandException {
-        restClient.deployEntity(DEPLOY_CARTRIDGE_ENDPOINT, cartridgeDefinition, "cartridge");
+        restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
 
     // This method helps to undeploy cartridge definitions
     public void undeployCartrigdeDefinition(String id) throws CommandException {
-        restClient.undeployEntity(DEPLOY_CARTRIDGE_ENDPOINT, "cartridge", id);
+        restClient.undeployEntity(ENDPOINT_DEPLOY_CARTRIDGE, "cartridge", id);
     }
 
     // This method helps to deploy partitions
     public void deployPartition(String partitionDefinition) throws CommandException {
-        restClient.deployEntity(DEPLOY_PARTITION_ENDPOINT, partitionDefinition, "partition");
+        restClient.deployEntity(ENDPOINT_DEPLOY_PARTITION, partitionDefinition, "partition");
     }
 
     // This method helps to deploy autoscalling polices
     public void deployAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
-        restClient.deployEntity(DEPLOY_AUTOSCALING_POLICY_ENDPOINT, autoScalingPolicy, "autoscaling policy");
+        restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
     // This method helps to deploy multi-tenant service cluster
     public void deployService(String serviceDefinition) throws CommandException {
-        restClient.deployEntity(DEPLOY_SERVICE_ENDPOINT, serviceDefinition, "service");
+        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE, serviceDefinition, "service");
     }
 
     // This method helps to undeploy multi-tenant service cluster
     public void undeployService(String id) throws CommandException {
-        restClient.undeployEntity(DEPLOY_SERVICE_ENDPOINT, "service", id);
+        restClient.undeployEntity(ENDPOINT_DEPLOY_SERVICE, "service", id);
     }
 
     public void listServices() throws CommandException {
         try {
-            ServiceDefinitionList list = (ServiceDefinitionList) restClient.listEntity(LIST_SERVICE_ENDPOINT,
+            ServiceDefinitionList list = (ServiceDefinitionList) restClient.listEntity(ENDPOINT_LIST_SERVICES,
                     ServiceDefinitionList.class, "service");
 
             if ((list == null) || (list.getServiceDefinition() == null) || (list.getServiceDefinition().size() == 0)) {
@@ -1275,13 +1272,13 @@ public class RestCommandLineService {
 
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy(String deploymentPolicy) throws CommandException {
-        restClient.deployEntity(DEPLOY_DEPLOYMENT_POLICY_ENDPOINT, deploymentPolicy, "deployment policy");
+        restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
     }
 
     // This method list available partitons
     public void listPartitions() throws CommandException {
         try {
-            PartitionList list = (PartitionList) restClient.listEntity(LIST_PARTITION_ENDPOINT,
+            PartitionList list = (PartitionList) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
                     PartitionList.class, "partitions");
 
             if ((list == null) || (list.getPartition() == null) || (list.getPartition().size() == 0)) {
@@ -1314,7 +1311,7 @@ public class RestCommandLineService {
 
     public void listAutoscalingPolicies() throws CommandException {
         try {
-            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(LIST_AUTOSCALING_POLICY_ENDPOINT,
+            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
                     AutoscalePolicyList.class, "autoscaling policies");
 
             if ((list == null) || (list.getAutoscalePolicy() == null) || (list.getAutoscalePolicy().size() == 0)) {
@@ -1346,7 +1343,7 @@ public class RestCommandLineService {
 
     public void listDeploymentPolicies() throws CommandException {
         try {
-            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(LIST_DEPLOYMENT_POLICY_ENDPOINT,
+            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
                     DeploymentPolicyList.class, "deployment policies");
 
             if ((list == null) || (list.getDeploymentPolicy() == null) || (list.getDeploymentPolicy().size() == 0)) {
@@ -1378,7 +1375,7 @@ public class RestCommandLineService {
 
     public void describeDeploymentPolicy(String id) throws CommandException {
         try {
-            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(LIST_DEPLOYMENT_POLICY_ENDPOINT,
+            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
                     DeploymentPolicyList.class, "deployment policies");
 
             if ((list == null) || (list.getDeploymentPolicy() == null) || (list.getDeploymentPolicy().size() == 0)) {
@@ -1403,7 +1400,7 @@ public class RestCommandLineService {
 
     public void describePartition(String id) throws CommandException {
         try {
-            PartitionList list = (PartitionList) restClient.listEntity(LIST_PARTITION_ENDPOINT,
+            PartitionList list = (PartitionList) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
                     PartitionList.class, "partitions");
 
             if ((list == null) || (list.getPartition() == null) || (list.getPartition().size() == 0)) {
@@ -1428,7 +1425,7 @@ public class RestCommandLineService {
 
     public void describeAutoScalingPolicy(String id) throws CommandException {
         try {
-            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(LIST_AUTOSCALING_POLICY_ENDPOINT,
+            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
                     AutoscalePolicyList.class, "autoscaling policies");
 
             if ((list == null) || (list.getAutoscalePolicy() == null) || (list.getAutoscalePolicy().size() == 0)) {
@@ -1452,12 +1449,12 @@ public class RestCommandLineService {
     }
 
     public void deployKubernetesGroup(String entityBody) {
-        restClient.deployEntity(DEPLOY_KUBERNETES_GROUP_ENDPOINT, entityBody, "kubernetes group");
+        restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_GROUP, entityBody, "kubernetes group");
     }
 
     public void listKubernetesGroups() {
         try {
-            KubernetesGroupList list = (KubernetesGroupList) restClient.listEntity(LIST_KUBERNETES_GROUP_ENDPOINT, KubernetesGroupList.class, "kubernetes group");
+            KubernetesGroupList list = (KubernetesGroupList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_GROUPS, KubernetesGroupList.class, "kubernetes group");
             if ((list != null) && (list.getKubernetesGroup() != null) && (list.getKubernetesGroup().size() > 0)) {
                 RowMapper<KubernetesGroup> partitionMapper = new RowMapper<KubernetesGroup>() {
                     public String[] getData(KubernetesGroup kubernetesGroup) {
@@ -1484,16 +1481,16 @@ public class RestCommandLineService {
     }
 
     public void undeployKubernetesGroup(String groupId) {
-        restClient.undeployEntity(UNDEPLOY_KUBERNETES_GROUP_ENDPOINT, "kubernetes group", groupId);
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_GROUP, "kubernetes group", groupId);
     }
 
     public void deployKubernetesHost(String entityBody) {
-        restClient.deployEntity(DEPLOY_KUBERNETES_HOST_ENDPOINT, entityBody, "kubernetes host");
+        restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_HOST, entityBody, "kubernetes host");
     }
 
     public void listKubernetesHosts(String groupId) {
         try {
-            KubernetesHostList list = (KubernetesHostList) restClient.listEntity(LIST_KUBERNETES_HOSTS_ENDPOINT.replace("{groupId}", groupId),
+            KubernetesHostList list = (KubernetesHostList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{groupId}", groupId),
                     KubernetesHostList.class, "kubernetes host");
             if ((list != null) && (list.getKubernetesHost() != null) && (list.getKubernetesHost().size() > 0)) {
                 RowMapper<KubernetesHost> partitionMapper = new RowMapper<KubernetesHost>() {
@@ -1522,21 +1519,21 @@ public class RestCommandLineService {
     }
 
     public void undeployKubernetesHost(String hostId) {
-        restClient.undeployEntity(UNDEPLOY_KUBERNETES_HOST_ENDPOINT, "kubernetes host", hostId);
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST, "kubernetes host", hostId);
     }
 
     public void updateKubernetesMaster(String entityBody) {
-        restClient.updateEntity(UPDATE_KUBERNETES_MASTER_ENDPOINT, entityBody, "kubernetes master");
+        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER, entityBody, "kubernetes master");
     }
 
     public void updateKubernetesHost(String entityBody) {
-        restClient.updateEntity(UPDATE_KUBERNETES_HOST_ENDPOINT, entityBody, "kubernetes host");
+        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_HOST, entityBody, "kubernetes host");
     }
 
     public void synchronizeArtifacts(String cartridgeAlias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + SYNCHRONIZE_ARTIFACTS_ENDPOINT, cartridgeAlias);
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SYNCHRONIZE_ARTIFACTS, cartridgeAlias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1744,7 +1741,7 @@ public class RestCommandLineService {
     public boolean isMultiTenant(String type) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + LIST_CARTRIDGES_ENDPOINT);
+            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_LIST_CARTRIDGES);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
             String resultString = CliUtils.getHttpResponseString(response);
