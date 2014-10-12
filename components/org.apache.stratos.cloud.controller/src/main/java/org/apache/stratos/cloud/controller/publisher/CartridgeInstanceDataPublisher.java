@@ -84,16 +84,16 @@ public class CartridgeInstanceDataPublisher {
         payload.add(memberId);
         payload.add(serviceName);
         payload.add(clusterId);
-        payload.add(memberContext.getLbClusterId());
-        payload.add(partitionId);
-        payload.add(networkId);
+        payload.add(handleNull(memberContext.getLbClusterId()));
+        payload.add(handleNull(partitionId));
+        payload.add(handleNull(networkId));
 		if (cartridge != null) {
-			payload.add(String.valueOf(cartridge.isMultiTenant()));
+			payload.add(handleNull(String.valueOf(cartridge.isMultiTenant())));
 		} else {
 			payload.add("");
 		}
-        payload.add(memberContext.getPartition().getProvider());
-        payload.add(status);
+        payload.add(handleNull(memberContext.getPartition().getProvider()));
+        payload.add(handleNull(status));
 
         if(metadata != null) {
             payload.add(metadata.getHostname());
@@ -117,9 +117,9 @@ public class CartridgeInstanceDataPublisher {
             payload.add("");
         }
 
-        payload.add(memberContext.getPrivateIpAddress());
-        payload.add(memberContext.getPublicIpAddress());
-        payload.add(memberContext.getAllocatedIpAddress());
+        payload.add(handleNull(memberContext.getPrivateIpAddress()));
+        payload.add(handleNull(memberContext.getPublicIpAddress()));
+        payload.add(handleNull(memberContext.getAllocatedIpAddress()));
 
         Event event = new Event();
         event.setPayloadData(payload.toArray());
@@ -201,5 +201,13 @@ public class CartridgeInstanceDataPublisher {
             throw new CloudControllerException(msg, e);
         }
     }
+    
+    private static String handleNull(String val) {
+        if (val == null) {
+            return "";
+        }
+        return val;
+    }
+
     
 }

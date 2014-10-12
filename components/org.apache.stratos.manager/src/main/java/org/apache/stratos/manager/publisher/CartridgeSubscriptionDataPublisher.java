@@ -77,17 +77,17 @@ public class CartridgeSubscriptionDataPublisher {
 		
 		// Payload values
 		payload.add(String.valueOf(tenantID));
-		payload.add(adminUser);
-		payload.add(cartridgeAlias);
+		payload.add(handleNull(adminUser));
+		payload.add(handleNull(cartridgeAlias));
 		payload.add(cartridgeType);
-		payload.add(repositoryUrl);
-		payload.add(String.valueOf(isMultiTenant));
-		payload.add(autoScalingPolicy);
-		payload.add(deploymentPolicy);
+		payload.add(handleNull(repositoryUrl));
+		payload.add(handleNull(String.valueOf(isMultiTenant)));
+		payload.add(handleNull(autoScalingPolicy));
+		payload.add(handleNull(deploymentPolicy));
 		payload.add(String.valueOf(clusterID));
-		payload.add(hostName);
-		payload.add(mappedDomain);
-		payload.add(action);
+		payload.add(handleNull(hostName));
+		payload.add(handleNull(mappedDomain));
+		payload.add(handleNull(action));
 
 		Event event = new Event();
 		event.setPayloadData(payload.toArray());
@@ -164,6 +164,13 @@ public class CartridgeSubscriptionDataPublisher {
 			log.error(msg, e);
 			throw new ADCException(msg, e);
 		}
+	}
+	
+	private static String handleNull(String val) {
+	    if (val == null) {
+	        return "";
+	    }
+	    return val;
 	}
 
 }
