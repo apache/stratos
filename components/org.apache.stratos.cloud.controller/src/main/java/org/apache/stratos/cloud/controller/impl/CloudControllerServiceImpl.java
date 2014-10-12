@@ -1712,7 +1712,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(allPods.length == replicas) {
                     break;
                 }
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             }
             
             if (LOG.isDebugEnabled()) {
