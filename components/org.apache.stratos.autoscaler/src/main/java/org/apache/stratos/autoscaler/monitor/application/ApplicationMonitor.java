@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Status;
 
@@ -225,9 +226,10 @@ public class ApplicationMonitor extends Monitor {
 
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
-        ApplicationContext context = this.dependencyTree.
+        /*ApplicationContext context = this.dependencyTree.
                 findApplicationContextWithId(statusEvent.getId());
-        if(context.getStatusLifeCycle().isEmpty()) {
+        //TODO remove activated
+        if(context.getStatusLifeCycle().isEmpty() || context.getStatus() == Status.Activated) {
             try {
                 //if life cycle is empty, need to start the monitor
                 boolean dependencyStarted = startDependency(statusEvent.getId());
@@ -243,7 +245,31 @@ public class ApplicationMonitor extends Monitor {
             }
         } else {
             //TODO act based on life cycle events
+        }*/
+
+        String id = statusEvent.getId();
+        ApplicationContext context = this.dependencyTree.
+                findApplicationContextWithId(id);
+        if(context.getStatusLifeCycle().isEmpty()) {
+            try {
+                //if life cycle is empty, need to start the monitor
+                boolean startDep = startDependency(statusEvent.getId());
+                //updating the life cycle and current status
+                context.setStatus(statusEvent.getStatus());
+                context.addStatusToLIfeCycle(statusEvent.getStatus());
+                if(!startDep) {
+                    //Checking in the children whether all are active,
+                    // since no dependency found to be started.
+                    StatusChecker.getInstance().onChildStatusChange(id, this.component, this.appId);
+                }
+            } catch (TopologyInConsistentException e) {
+                //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+                log.error(e);
+            }
+        } else {
+            //TODO act based on life cycle events
         }
+
 
     }
 }
