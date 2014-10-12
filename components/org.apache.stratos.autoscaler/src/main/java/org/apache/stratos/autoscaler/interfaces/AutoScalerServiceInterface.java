@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
@@ -177,4 +178,11 @@ public interface AutoScalerServiceInterface {
     public String getDefaultLBClusterId(String deploymentPolicyName);
 
     public String getServiceLBClusterId(String serviceType, String deploymentPolicyName);
+    
+    /**
+     * Dynamically update the properties of an Autoscaling Cluster Monitor
+     * @param clusterId id of the cluster.
+     * @param properties updated properties.
+     */
+    void updateClusterMonitor(String clusterId, Properties properties);
 }

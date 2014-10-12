@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
@@ -157,6 +158,8 @@ public abstract class AbstractClusterMonitor implements Runnable {
     public abstract void handleMemberTerminatedEvent(MemberTerminatedEvent memberTerminatedEvent);
 
     public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
+    
+    public abstract void handleDynamicUpdates(Properties properties);
 
     public String getClusterId() {
         return clusterId;

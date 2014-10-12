@@ -225,4 +225,10 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
     }
+
+    @Override
+    public void handleDynamicUpdates(Properties properties) {
+        // TODO 
+        
+    }
 }

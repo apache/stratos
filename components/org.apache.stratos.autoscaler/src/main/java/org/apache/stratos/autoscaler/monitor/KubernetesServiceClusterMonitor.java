@@ -18,7 +18,12 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
@@ -26,8 +31,12 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /*
  * It is monitoring a kubernetes service cluster periodically.
@@ -156,5 +165,28 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     public void setLbReferenceType(String lbReferenceType) {
         this.lbReferenceType = lbReferenceType;
+    }
+
+    @Override
+    public void handleDynamicUpdates(Properties properties) {
+        
+        if (properties != null) {
+            Property[] propertyArray = properties.getProperties();
+            if (propertyArray == null) {
+                return;
+            }
+            List<Property> propertyList = Arrays.asList(propertyArray);
+            
+            for (Property property : propertyList) {
+                String key = property.getName();
+                String value = property.getValue();
+                
+                if (StratosConstants.KUBERNETES_MIN_REPLICAS.equals(key)) {
+                    getKubernetesClusterCtxt().setMinReplicas(Integer.parseInt(value));
+                    break;
+                }
+            }
+            
+        }
     }
 }
