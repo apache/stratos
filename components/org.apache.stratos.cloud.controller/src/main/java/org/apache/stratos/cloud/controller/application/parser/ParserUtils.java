@@ -108,7 +108,8 @@ public class ParserUtils {
                 aliasBasedComponent = "group.".concat(aliasBasedComponent);
 
             } else {
-                throw new ApplicationDefinitionException("Incorrect Startup Order specified");
+                throw new ApplicationDefinitionException("Incorrect Startup Order specified, " +
+                        "should start with 'cartridge.' or 'group.'");
             }
             aliasBasedComponents.add(aliasBasedComponent);
         }
