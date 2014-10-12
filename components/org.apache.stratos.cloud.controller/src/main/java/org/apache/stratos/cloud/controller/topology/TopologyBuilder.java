@@ -482,7 +482,7 @@ public class TopologyBuilder {
         Member member = cluster.getMember(memberId);
 
 		if (member == null) {
-			log.warn(String.format("Member with nodeID %s does not exist",
+			log.warn(String.format("Member with member id %s does not exist",
 					memberId));
 			return;
 		}

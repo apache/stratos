@@ -1624,16 +1624,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
 		}
 		
-		List<MemberContext> removedMembers = dataHolder.removeMemberContextsOfCluster(clusterId);
+		List<MemberContext> membersToBeRemoved = dataHolder.getMemberContextsOfClusterId(clusterId);
 		
-		for (MemberContext memberContext : removedMembers) {
+		for (MemberContext memberContext : membersToBeRemoved) {
             logTermination(memberContext);
         }
 		
 		// persist
 		persist();
 		
-		return removedMembers.toArray(new MemberContext[0]);
+		return membersToBeRemoved.toArray(new MemberContext[0]);
 	}
 
 	@Override
@@ -1815,11 +1815,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // member id = pod id
             kubApi.deletePod(memberId);
             
-            MemberContext removedMemberContext = dataHolder.removeMemberContext(memberId, clusterId);
+            MemberContext memberToBeRemoved = dataHolder.getMemberContextOfMemberId(memberId);
             
-            logTermination(removedMemberContext);
+            logTermination(memberToBeRemoved);
             
-            return removedMemberContext;
+            return memberToBeRemoved;
             
         } catch (KubernetesClientException e) {
             String msg = String.format("Failed to terminate member [Member id] %s", memberId);
