@@ -47,43 +47,43 @@ class InstanceNotifierEventMessageListener implements MqttCallback {
 	}
 
 	@Override
-	public void connectionLost(Throwable arg0) {
+	public void connectionLost(Throwable err) {
 		if (log.isDebugEnabled()) {
-			log.debug("MQTT connection lost");
+			log.debug("MQTT connection lost" , err);
 		}
 
 	}
 
 	@Override
-	public void deliveryComplete(IMqttDeliveryToken arg0) {
-
+	public void deliveryComplete(IMqttDeliveryToken err) {
+		log.debug("Message delivery completed");
 	}
 
 	@Override
-	public void messageArrived(String topicName, MqttMessage message) throws Exception {
-		if (message instanceof MqttMessage) {
+	public void messageArrived(String topicName, MqttMessage message)
+			throws Exception {
 
-			TextMessage receivedMessage = new ActiveMQTextMessage();
+		TextMessage receivedMessage = new ActiveMQTextMessage();
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("instance notifier messege received...."));
+
+		}
+
+		receivedMessage.setText(new String(message.getPayload()));
+		receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
+				Util.getEventNameForTopic(topicName));
+
+		try {
 			if (log.isDebugEnabled()) {
-				log.debug(String.format("instance notifier messege received...."));
-
+				log.debug(String.format(
+						"Instance notifier message received: %s",
+						((TextMessage) message).getText()));
 			}
+			// Add received message to the queue
+			messageQueue.add(receivedMessage);
 
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  Util.getEventNameForTopic(topicName));
-
-			try {
-				if (log.isDebugEnabled()) {
-					log.debug(String.format("Instance notifier message received: %s",
-					                        ((TextMessage) message).getText()));
-				}
-				// Add received message to the queue
-				messageQueue.add(receivedMessage);
-
-			} catch (JMSException e) {
-				log.error(e.getMessage(), e);
-			}
+		} catch (JMSException e) {
+			log.error(e.getMessage(), e);
 		}
 
 	}
