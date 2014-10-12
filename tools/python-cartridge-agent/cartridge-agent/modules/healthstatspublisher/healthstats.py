@@ -72,13 +72,17 @@ class HealthStatisticsPublisherManager(Thread):
             self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
             self.publisher.publish_load_average(cartridge_stats.load_avg)
 
+        self.publisher.publisher.disconnect()
+
 
 class HealthStatisticsPublisher:
     """
     Publishes memory usage and load average to thrift server
     """
+    log = LogFactory().get_log(__name__)
+
     def __init__(self):
-        self.log = LogFactory().get_log(__name__)
+
         self.ports = []
         self.ports.append(CEPPublisherConfiguration.get_instance().server_port)
 
@@ -89,10 +93,13 @@ class HealthStatisticsPublisher:
             self.ports,
             int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
         cep_active = cartridgeagentutils.check_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
+        HealthStatisticsPublisher.log.debug("CHECKED PORTS ACTIVITY")
         if not cep_active:
+            HealthStatisticsPublisher.log.debug("CEP PORTS NOT ACTIVE")
             raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
         self.stream_definition = HealthStatisticsPublisher.create_stream_definition()
+        HealthStatisticsPublisher.log.debug("Stream definition created: %r" % str(self.stream_definition))
         self.publisher = ThriftPublisher(
             CEPPublisherConfiguration.get_instance().server_ip,
             CEPPublisherConfiguration.get_instance().server_port,
@@ -100,13 +107,14 @@ class HealthStatisticsPublisher:
             CEPPublisherConfiguration.get_instance().admin_password,
             self.stream_definition)
 
-        self.log.debug("HealthStatisticsPublisher initialized")
+        HealthStatisticsPublisher.log.debug("HealthStatisticsPublisher initialized")
 
     @staticmethod
     def create_stream_definition():
         """
         Create a StreamDefinition for publishing to CEP
         """
+        HealthStatisticsPublisher.log.debug("Creating Stream Definition for CEP publisher")
         stream_def = StreamDefinition()
         stream_def.name = HealthStatisticsPublisherManager.STREAM_NAME
         stream_def.version = HealthStatisticsPublisherManager.STREAM_VERSION
@@ -119,6 +127,8 @@ class HealthStatisticsPublisher:
         stream_def.add_payloaddata_attribute("partition_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("health_description", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("value", StreamDefinition.DOUBLE)
+
+        HealthStatisticsPublisher.log.debug("Created stream definition : %r" % str(stream_def))
 
         return stream_def
 
@@ -136,7 +146,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(cartridgeagentconstants.MEMORY_CONSUMPTION)
         event.payloadData.append(memory_usage)
 
-        self.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
+        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
         self.publisher.publish(event)
 
     def publish_load_average(self, load_avg):
@@ -153,7 +163,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(cartridgeagentconstants.LOAD_AVERAGE)
         event.payloadData.append(load_avg)
 
-        self.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
+        HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
         self.publisher.publish(event)
 
 

@@ -307,10 +307,13 @@ class CartridgeAgent(threading.Thread):
 
 def main():
     cartridge_agent = CartridgeAgent()
+    log = LogFactory().get_log(__name__)
 
     try:
+        log.debug("Starting cartridge agent")
         cartridge_agent.start()
     except:
+        log.exception("Cartridge Agent Exception")
         cartridge_agent.terminate()
 
 
