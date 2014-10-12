@@ -48,6 +48,9 @@ class HealthStatisticsPublisherManager(Thread):
 
         self.publish_interval = publish_interval
         """:type : int"""
+
+        self.log.debug("Initializing health stat publisher manager with interval %r" % publish_interval)
+
         self.terminated = False
 
         self.publisher = HealthStatisticsPublisher()
@@ -57,6 +60,8 @@ class HealthStatisticsPublisherManager(Thread):
         """:type : AbstractHealthStatisticsReader"""
 
     def run(self):
+        self.log.debug("Pubilsher manager thread started")
+
         while not self.terminated:
             time.sleep(self.publish_interval)
 
@@ -95,6 +100,7 @@ class HealthStatisticsPublisher:
             CEPPublisherConfiguration.get_instance().admin_password,
             self.stream_definition)
 
+        self.log.debug("HealthStatisticsPublisher initialized")
 
     @staticmethod
     def create_stream_definition():
@@ -156,11 +162,16 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
     Default implementation of the AbstractHealthStatisticsReader
     """
 
+    def __init__(self):
+        self.log = LogFactory().get_log(__name__)
+        self.log.debug("Stats reader initialized")
+
     def stat_cartridge_health(self):
         cartridge_stats = CartridgeHealthStatistics()
         cartridge_stats.memory_usage = DefaultHealthStatisticsReader.__read_mem_usage()
         cartridge_stats.load_avg = DefaultHealthStatisticsReader.__read_load_avg()
 
+        self.log.debug("Memory read: %r, CPU read: %r" % (cartridge_stats.memory_usage, cartridge_stats.load_avg))
         return cartridge_stats
 
     @staticmethod

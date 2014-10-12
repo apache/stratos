@@ -45,6 +45,7 @@ class ArtifactUpdatedEvent:
         instance.repo_username = json_obj["repoUserName"] if "repoUserName" in json_obj else None
         instance.repo_password = json_obj["repoPassword"] if "repoPassword" in json_obj else None
         instance.tenant_id = json_obj["tenantId"] if "tenantId" in json_obj else None
+        instance.repo_url = json_obj["repoUrl"] if "repoUrl" in json_obj else ""
         instance.commit_enabled = json_obj["commitEnabled"] if "commitEnabled" in json_obj else None
 
         return instance

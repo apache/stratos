@@ -385,7 +385,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 member_started_event.cluster_id,
                 lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_STARTED_MEMBER_IP": member_started_event.member_ip,
+            env_params = {"STRATOS_MEMBER_STARTED_MEMBER_IP": started_member.member_ip,
                           "STRATOS_MEMBER_STARTED_MEMBER_ID": member_started_event.member_id,
                           "STRATOS_MEMBER_STARTED_CLUSTER_ID": member_started_event.cluster_id,
                           "STRATOS_MEMBER_STARTED_LB_CLUSTER_ID": lb_cluster_id,
