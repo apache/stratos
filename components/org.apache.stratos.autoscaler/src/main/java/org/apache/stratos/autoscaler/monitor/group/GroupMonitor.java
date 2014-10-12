@@ -55,6 +55,7 @@ public class GroupMonitor extends Monitor implements EventHandler {
         super(group);
         this.id = group.getAlias();
         startDependency();
+        this.status = Status.Created;
 
     }
 
@@ -84,6 +85,8 @@ public class GroupMonitor extends Monitor implements EventHandler {
             try {
                 //if life cycle is empty, need to start the monitor
                 boolean startDep = startDependency(statusEvent.getId());
+                log.info("started a child: " + startDep + " by the group/cluster: " + id);
+
                 //updating the life cycle and current status
                 context.setStatus(statusEvent.getStatus());
                 context.addStatusToLIfeCycle(statusEvent.getStatus());

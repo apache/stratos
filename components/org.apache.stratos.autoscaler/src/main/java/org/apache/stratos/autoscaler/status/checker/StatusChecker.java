@@ -26,7 +26,6 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.util.GroupStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
@@ -100,9 +99,11 @@ public class StatusChecker {
                 try {
                     //TODO getting lock
                     TopologyManager.acquireReadLockForApplication(appId);
-                    Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
-                    Map<String, Group> groups = component.getAliasToGroupMap();
-                    updateChildStatus(appId, idOfChild, groups, clusterIds, component);
+                    ParentComponent component1 = TopologyManager.getTopology().
+                            getApplication(appId).getGroupRecursively(component.getUniqueIdentifier());
+                    Map<String, ClusterDataHolder> clusterIds = component1.getClusterDataMap();
+                    Map<String, Group> groups = component1.getAliasToGroupMap();
+                    updateChildStatus(appId, idOfChild, groups, clusterIds, component1);
                 } finally {
                     TopologyManager.releaseReadLockForApplication(appId);
 
@@ -169,17 +170,30 @@ public class StatusChecker {
                 clusterFound = true;
             }
         }
+        log.info("cluster found: " + clusterFound);
         if (clusterFound || groups.containsKey(id)) {
             childFound = true;
             if (!clusterData.isEmpty() && !groups.isEmpty()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("group active found: " + clusterFound);
+                }
                 clustersActive = getClusterStatus(clusterData);
                 groupsActive = getGroupStatus(groups);
+                if(log.isDebugEnabled()) {
+                    log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
+                }
                 groupActive = clustersActive && groupsActive;
             } else if (!groups.isEmpty()) {
                 groupsActive = getGroupStatus(groups);
+                if(log.isDebugEnabled()) {
+                    log.info("group active found: " + clusterFound);
+                }
                 groupActive = groupsActive;
             } else if (!clusterData.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
+                if(log.isDebugEnabled()) {
+                    log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
+                }
                 groupActive = clustersActive;
             } else {
                 log.warn("Clusters/groups not found in this [component] "+ appId);
@@ -187,10 +201,12 @@ public class StatusChecker {
             //send the activation event
             if (parent instanceof Application && groupActive) {
                 //send application activated event
+                log.info("sending app activate found: " + appId);
                 StatusEventPublisher.sendApplicationActivatedEvent(appId);
             } else if (parent instanceof Group && groupActive) {
                 //send activation to the parent
-                StatusEventPublisher.sendGroupActivatedEvent(appId, ((Group) parent).getAlias());
+                log.info("sending group activate found: " + parent.getUniqueIdentifier());
+                StatusEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
             }
             return childFound;
         } else {

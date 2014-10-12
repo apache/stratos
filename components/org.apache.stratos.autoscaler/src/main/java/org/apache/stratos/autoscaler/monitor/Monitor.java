@@ -285,7 +285,8 @@ public abstract class Monitor implements EventHandler {
                     monitor = AutoscalerUtil.getClusterMonitor(cluster);
                     monitor.setParent(parent);
                     //setting the status of cluster monitor w.r.t Topology cluster
-                    if(cluster.getStatus() != Status.Created) {
+                    //if(cluster.getStatus() != Status.Created &&
+                    if(cluster.getStatus() != monitor.getStatus()) {
                         //updating the status, so that it will notify the parent
                         monitor.setStatus(cluster.getStatus());
                     }
@@ -354,12 +355,14 @@ public abstract class Monitor implements EventHandler {
                         log.debug("Group monitor is going to be started for [group] "
                                 + dependency);
                     }
-                    monitor = AutoscalerUtil.getGroupMonitor(component.getGroup(dependency));
+                    Group group = component.getGroup(dependency);
+                    monitor = AutoscalerUtil.getGroupMonitor(group);
                     monitor.setParent(parent);
                     //setting the status of cluster monitor w.r.t Topology cluster
-                    if(component.getStatus() != Status.Created) {
+                    //if(group.getStatus() != Status.Created &&
+                    if(group.getStatus() != monitor.getStatus()) {
                         //updating the status, so that it will notify the parent
-                        monitor.setStatus(component.getStatus());
+                        monitor.setStatus(group.getStatus());
                     }
                     //monitor.addObserver(parent);
                     success = true;
