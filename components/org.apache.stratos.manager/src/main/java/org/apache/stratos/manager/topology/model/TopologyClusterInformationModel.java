@@ -88,6 +88,16 @@ public class TopologyClusterInformationModel {
     	return cluster;
     }
     
+    public Cluster getCluster (int tenantId, String subscriptionAlias) {
+
+        String clusterId = dataInsertionNRetrievalMgr.getCartridgeSubscription(tenantId, subscriptionAlias).getClusterDomain();
+        Cluster cluster = clusterIdToClusterMap.get(clusterId);
+        if(log.isDebugEnabled()) {
+            log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
+        }
+        return cluster;
+    }
+    
     public Cluster getCluster (String cartridgeType) {
 
     	Service service;

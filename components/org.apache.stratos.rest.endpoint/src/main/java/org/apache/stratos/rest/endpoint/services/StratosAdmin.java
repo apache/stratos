@@ -479,6 +479,18 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return Response.ok().entity(cluster).build();
     }
+    
+    @PUT
+    @Path("/subscriptions/{subscriptionAlias}/properties")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/subscription")
+    public Response updateSubscriptionProperties(@PathParam("subscriptionAlias") String alias, CartridgeInfoBean cartridgeInfoBean) throws RestAPIException {
+        if (cartridgeInfoBean == null) {
+            Response.notModified().build();
+        }
+        ServiceUtils.updateSubscriptionProperties(getConfigContext(), alias, cartridgeInfoBean.getProperty());
+        return Response.ok().build();
+    }
 
     @POST
     @Path("/cartridge/unsubscribe")
@@ -1384,4 +1396,5 @@ public class StratosAdmin extends AbstractAdmin {
         }
         return Response.noContent().build();
     }
+    
 }
