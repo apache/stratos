@@ -101,6 +101,31 @@ public class CompositeApplicationParseTest {
     }
 
     @Test(expected = ApplicationDefinitionException.class)
+    public void testParseSimpleApplicationWithNullAppId () throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // no app id
+        simpleAppCtxt.setAlias("simpleAppAlias");
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
+    @Test(expected = ApplicationDefinitionException.class)
+    public void testParseSimpleApplicationWithEmptyAppId () throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // empty app id
+        simpleAppCtxt.setApplicationId("");
+        simpleAppCtxt.setAlias("simpleAppAlias");
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
+    @Test(expected = ApplicationDefinitionException.class)
     public void testParseSimpleApplicationWithInvalidCartridge() throws ApplicationDefinitionException {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
