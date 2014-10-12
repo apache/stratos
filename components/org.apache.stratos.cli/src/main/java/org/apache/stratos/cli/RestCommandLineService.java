@@ -116,6 +116,8 @@ public class RestCommandLineService {
     private static final String ENDPOINT_ACTIVATE_TENANT = "/stratos/admin/tenant/activate";
     private static final String ENDPOINT_DEACTIVATE_TENANT = "/stratos/admin/tenant/deactivate";
 
+    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = "/stratos/admin/subscriptions/{alias}/properties";
+    
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
     }
@@ -1781,5 +1783,10 @@ public class RestCommandLineService {
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
+    }
+
+    public void updateSubscritptionProperties(String alias, String subscriptionJson) {
+        String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{alias}", alias);
+        restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
     }
 }
