@@ -25,10 +25,7 @@ import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.Dependencies;
 import org.apache.stratos.cloud.controller.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
-import org.apache.stratos.cloud.controller.pojo.application.ComponentContext;
-import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
-import org.apache.stratos.cloud.controller.pojo.application.SubscribableInfoContext;
+import org.apache.stratos.cloud.controller.pojo.application.*;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -104,7 +101,7 @@ public class CompositeApplicationParseTest {
     }
 
     @Test(expected = ApplicationDefinitionException.class)
-    public void testParseSimpleInvalidCartridgeApplication() throws ApplicationDefinitionException {
+    public void testParseSimpleApplicationWithInvalidCartridge() throws ApplicationDefinitionException {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
         ApplicationContext simpleAppCtxt = new ApplicationContext();
@@ -131,6 +128,133 @@ public class CompositeApplicationParseTest {
         simpleAppSubscribableInfoCtxt.setRepoUsername("admin");
         simpleAppSubscribableInfoCtxt.setRepoUrl("admin123");
         simpleAppCtxt.setSubscribableInfoContext(new SubscribableInfoContext[]{simpleAppSubscribableInfoCtxt});
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
+    @Test(expected = ApplicationDefinitionException.class)
+    public void testParseSimpleApplicationWithoutSubcriptionInformation() throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // app id
+        simpleAppCtxt.setApplicationId("simpleInvalidApp");
+        simpleAppCtxt.setAlias("simpleInvalidAppAlias");
+        // tenant info
+        simpleAppCtxt.setTenantId(-1234);
+        // components
+        ComponentContext simpleAppComponentCtxt = new ComponentContext();
+        SubscribableContext simpleAppSubscribableContext = new SubscribableContext();
+        // give invalid cartridge type
+        simpleAppSubscribableContext.setType("php1");
+        simpleAppSubscribableContext.setAlias("myphp");
+        simpleAppComponentCtxt.setSubscribableContexts(new SubscribableContext[]{simpleAppSubscribableContext});
+        simpleAppCtxt.setComponents(simpleAppComponentCtxt);
+        // invalid Subscription information
+        SubscribableInfoContext simpleAppEmptySubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppCtxt.setSubscribableInfoContext(new SubscribableInfoContext[]{simpleAppEmptySubscribableInfoCtxt});
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
+    @Test
+    public void testParseSimpleApplicationWithMultipleSubsriptions () throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // app id
+        simpleAppCtxt.setApplicationId("simpleInvalidApp");
+        simpleAppCtxt.setAlias("simpleInvalidAppAlias");
+        // tenant info
+        simpleAppCtxt.setTenantId(-1234);
+        // components
+        ComponentContext simpleAppComponentCtxt = new ComponentContext();
+        SubscribableContext simpleAppPhpSubscribableContext = new SubscribableContext();
+        simpleAppPhpSubscribableContext.setType("php");
+        simpleAppPhpSubscribableContext.setAlias("myphp");
+        SubscribableContext simpleAppMySqlSubscribableContext = new SubscribableContext();
+        simpleAppMySqlSubscribableContext.setType("mysql");
+        simpleAppMySqlSubscribableContext.setAlias("mysql1");
+        simpleAppComponentCtxt.setSubscribableContexts(new SubscribableContext[]{simpleAppPhpSubscribableContext,
+                simpleAppMySqlSubscribableContext});
+
+        DependencyContext simpleAppDependecyCtxt = new DependencyContext();
+        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"cartridge.mysql1,cartridge.myphp"});
+        simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);
+
+        simpleAppCtxt.setComponents(simpleAppComponentCtxt);
+
+        // subscribable information
+        SubscribableInfoContext simpleAppPhpSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppPhpSubscribableInfoCtxt.setAlias("myphp");
+        simpleAppPhpSubscribableInfoCtxt.setAutoscalingPolicy("deployment_policy_1");
+        simpleAppPhpSubscribableInfoCtxt.setAutoscalingPolicy("autoscale_policy_1");
+        simpleAppPhpSubscribableInfoCtxt.setRepoUrl("www.mygit.com/myphp.git");
+        simpleAppPhpSubscribableInfoCtxt.setPrivateRepo(true);
+        simpleAppPhpSubscribableInfoCtxt.setRepoUsername("admin");
+        simpleAppPhpSubscribableInfoCtxt.setRepoUrl("admin123");
+
+        SubscribableInfoContext simpleAppMySqlSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppMySqlSubscribableInfoCtxt.setAlias("mysql1");
+        simpleAppMySqlSubscribableInfoCtxt.setAutoscalingPolicy("deployment_policy_2");
+        simpleAppMySqlSubscribableInfoCtxt.setAutoscalingPolicy("autoscale_policy_2");
+
+        simpleAppCtxt.setSubscribableInfoContext(new SubscribableInfoContext[]{simpleAppPhpSubscribableInfoCtxt,
+                simpleAppMySqlSubscribableInfoCtxt});
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
+    @Test(expected = ApplicationDefinitionException.class)
+    public void testParseSimpleApplicationWithMultipleSubsriptionsInvalidStartupOrder () throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // app id
+        simpleAppCtxt.setApplicationId("simpleInvalidApp");
+        simpleAppCtxt.setAlias("simpleInvalidAppAlias");
+        // tenant info
+        simpleAppCtxt.setTenantId(-1234);
+        // components
+        ComponentContext simpleAppComponentCtxt = new ComponentContext();
+        SubscribableContext simpleAppPhpSubscribableContext = new SubscribableContext();
+        simpleAppPhpSubscribableContext.setType("php");
+        simpleAppPhpSubscribableContext.setAlias("myphp");
+        SubscribableContext simpleAppMySqlSubscribableContext = new SubscribableContext();
+        simpleAppMySqlSubscribableContext.setType("mysql");
+        simpleAppMySqlSubscribableContext.setAlias("mysql1");
+        simpleAppComponentCtxt.setSubscribableContexts(new SubscribableContext[]{simpleAppPhpSubscribableContext,
+                simpleAppMySqlSubscribableContext});
+
+        DependencyContext simpleAppDependecyCtxt = new DependencyContext();
+        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        // startup order is invalid, without prefix 'cartridge.' for mysql1
+        simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"mysql1,cartridge.myphp"});
+        simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);
+
+        simpleAppCtxt.setComponents(simpleAppComponentCtxt);
+
+        // subscribable information
+        SubscribableInfoContext simpleAppPhpSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppPhpSubscribableInfoCtxt.setAlias("myphp");
+        simpleAppPhpSubscribableInfoCtxt.setAutoscalingPolicy("deployment_policy_1");
+        simpleAppPhpSubscribableInfoCtxt.setAutoscalingPolicy("autoscale_policy_1");
+        simpleAppPhpSubscribableInfoCtxt.setRepoUrl("www.mygit.com/myphp.git");
+        simpleAppPhpSubscribableInfoCtxt.setPrivateRepo(true);
+        simpleAppPhpSubscribableInfoCtxt.setRepoUsername("admin");
+        simpleAppPhpSubscribableInfoCtxt.setRepoUrl("admin123");
+
+        SubscribableInfoContext simpleAppMySqlSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppMySqlSubscribableInfoCtxt.setAlias("mysql1");
+        simpleAppMySqlSubscribableInfoCtxt.setAutoscalingPolicy("deployment_policy_2");
+        simpleAppMySqlSubscribableInfoCtxt.setAutoscalingPolicy("autoscale_policy_2");
+
+        simpleAppCtxt.setSubscribableInfoContext(new SubscribableInfoContext[]{simpleAppPhpSubscribableInfoCtxt,
+                simpleAppMySqlSubscribableInfoCtxt});
 
         // parse
         applicationParser.parse(simpleAppCtxt);

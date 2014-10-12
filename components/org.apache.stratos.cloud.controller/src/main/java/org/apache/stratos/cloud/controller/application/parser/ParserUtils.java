@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cloud.controller.application.parser;
 
+import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.pojo.application.GroupContext;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
 import org.apache.stratos.messaging.domain.topology.StartupOrder;
@@ -27,7 +28,7 @@ import java.util.*;
 
 public class ParserUtils {
 
-    public static Set<StartupOrder> convert (String [] startupOrderArr) {
+    public static Set<StartupOrder> convert (String [] startupOrderArr) throws ApplicationDefinitionException {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
@@ -36,13 +37,30 @@ public class ParserUtils {
         }
 
         for (String commaSeparatedStartupOrder : startupOrderArr) {
-            startupOrders.add(new StartupOrder(Arrays.asList(commaSeparatedStartupOrder.split(","))));
+            startupOrders.add(getStartupOrder(commaSeparatedStartupOrder));
         }
 
         return startupOrders;
     }
 
-    public static Set<StartupOrder> convert (String [] startupOrderArr, GroupContext groupContext) {
+    private static StartupOrder getStartupOrder (String commaSeparatedStartupOrder) throws ApplicationDefinitionException{
+
+        List<String> startupOrders = new ArrayList<String>();
+
+        for (String startupOrder : Arrays.asList(commaSeparatedStartupOrder.split(","))) {
+            startupOrder = startupOrder.trim();
+            if (!startupOrder.startsWith("cartridge.")) {
+                throw new ApplicationDefinitionException("Incorrect Startup Order specified, should start with 'cartridge.'");
+            }
+
+            startupOrders.add(startupOrder);
+        }
+
+        return new StartupOrder(startupOrders);
+    }
+
+    public static Set<StartupOrder> convert (String [] startupOrderArr, GroupContext groupContext)
+            throws ApplicationDefinitionException {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
@@ -60,7 +78,8 @@ public class ParserUtils {
         return startupOrders;
     }
 
-    private static StartupOrder getStartupOrder (List<String> components, GroupContext groupContext) {
+    private static StartupOrder getStartupOrder (List<String> components, GroupContext groupContext)
+            throws ApplicationDefinitionException {
 
         List<String> aliasBasedComponents = new ArrayList<String>();
 
@@ -72,7 +91,7 @@ public class ParserUtils {
                 String cartridgeType = component.substring(10);
                 aliasBasedComponent = getAliasForServiceType(cartridgeType, groupContext);
                 if (aliasBasedComponent == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
+                    throw new ApplicationDefinitionException("Unable convert Startup Order to alias-based; " +
                             "cannot find the matching alias for Service type " + cartridgeType);
                 }
 
@@ -82,14 +101,14 @@ public class ParserUtils {
                 String groupName = component.substring(6);
                 aliasBasedComponent = getAliasForGroupName(groupName, groupContext);
                 if (aliasBasedComponent == null) {
-                    throw new RuntimeException("Unable convert Startup Order to alias-based; " +
+                    throw new ApplicationDefinitionException("Unable convert Startup Order to alias-based; " +
                             "cannot find the matching alias for Group name " + groupName);
                 }
 
                 aliasBasedComponent = "group.".concat(aliasBasedComponent);
 
             } else {
-                throw new RuntimeException("Incorrect Startup Order specified");
+                throw new ApplicationDefinitionException("Incorrect Startup Order specified");
             }
             aliasBasedComponents.add(aliasBasedComponent);
         }
