@@ -42,6 +42,6 @@
 		<expiryTimeout>900000</expiryTimeout>
 	    </member>
 	    <!-- monitor task interval -->
-	    <monitorInterval>90000</monitorInterval>
+	    <monitorInterval>60000</monitorInterval>
 	</autoscaler>
 </configuration>
