@@ -49,8 +49,8 @@ public class ParserUtils {
 
         for (String startupOrder : Arrays.asList(commaSeparatedStartupOrder.split(","))) {
             startupOrder = startupOrder.trim();
-            if (!startupOrder.startsWith("cartridge.")) {
-                throw new ApplicationDefinitionException("Incorrect Startup Order specified, should start with 'cartridge.'");
+            if (!startupOrder.startsWith("cartridge.") && !startupOrder.startsWith("group.")) {
+                throw new ApplicationDefinitionException("Incorrect Startup Order specified, should start with 'cartridge.' or 'group.'");
             }
 
             startupOrders.add(startupOrder);
