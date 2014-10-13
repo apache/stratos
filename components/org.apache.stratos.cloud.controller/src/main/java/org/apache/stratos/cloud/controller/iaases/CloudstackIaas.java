@@ -15,7 +15,6 @@ import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
-import org.jclouds.cloudstack.domain.ServiceOffering;
 import org.jclouds.cloudstack.domain.Volume;
 import org.jclouds.cloudstack.domain.Zone;
 import org.jclouds.cloudstack.options.ListZonesOptions;
@@ -34,27 +33,18 @@ public class CloudstackIaas extends Iaas{
 
     private static final Log log = LogFactory.getLog(CloudstackIaas.class);
 
-
-
     public CloudstackIaas(IaasProvider iaasProvider) {super(iaasProvider);}
 
     @Override
     public void buildComputeServiceAndTemplate() {
-
         // builds and sets Compute Service
         ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
         // builds and sets Template
         buildTemplate();
-
     }
-
 
     @Override
     public void buildTemplate() {
-
-
-///todo implement this method
-        System.out.println("=================inside the build template method===========================");
 
         IaasProvider iaasInfo = getIaasProvider();
 
@@ -70,17 +60,20 @@ public class CloudstackIaas extends Iaas{
         TemplateBuilder templateBuilder = iaasInfo.getComputeService()
                 .templateBuilder();
 
+        //*************************SET PROPERTIES TO templateBuilder OBJECT*******************************************//
 
-        /////////////////////////SET PROPERTIES TO templateBuilder OBJECT/////////////////
-
-
-        //PROPERTY - 1
-        // set image id specified
+        /**
+         * PROPERTY - 1
+         * set image id specified
+         */
        templateBuilder.imageId(iaasInfo.getImage());
 
-        //PROPERTY-2
-        //if user has specified a zone in cloud-controller.xml, set the zone into templateBuilder object
-        // (user should provide the zone id for this)
+        /**
+         *  PROPERTY-2
+         *  if user has specified a zone in cloud-controller.xml, set the zone into templateBuilder object
+         *  (user should provide the zone id for this)
+         */
+
         if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for(Location location : locations) {
@@ -95,48 +88,38 @@ public class CloudstackIaas extends Iaas{
             }
         }
 
-        //PROPERTY-2
-        //if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
-        //object.
-        //todo discuss this issue with niraml
+        /**
+         * PROPERTY-3
+         * if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
+         * object.
+         *Important:Specify the Service Offering type ID. Not the name. Because the name is not unique.
+        */
         if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
-            // set instance type eg: m1.large
-            System.out.println("==============instance type=============:" + CloudControllerConstants.INSTANCE_TYPE);
-
-            //get the hardwareID (service offering ID) correspond to the offering name specified
-            //because user has specified the service offering name.
-
-            ComputeServiceContext context = iaasInfo.getComputeService()
-                    .getContext();
-            CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
-
-
-            //get all service offerings
-            Set<ServiceOffering> serviceOfferings = cloudStackApi.getOfferingApi().listServiceOfferings();
-
-
-            for(ServiceOffering serviceOffering : serviceOfferings) {
-                if (serviceOffering.getName().equals(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE))) {
-
-                    //set service offering id to template builder object
-                    templateBuilder.hardwareId(serviceOffering.getId());
-                    break;
-                }
-            }
+            templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
         }
 
         //build the template
         Template template = templateBuilder.build();
 
+
+        // if you wish to auto assign IPs, instance spawning call should be
+        // blocking, but if you
+        // wish to assign IPs manually, it can be non-blocking.
+        // is auto-assign-ip mode or manual-assign-ip mode?
         boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
                 .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
         template.getOptions().as(TemplateOptions.class)
                 .blockUntilRunning(blockUntilRunning);
 
-        ///////////////////////////////SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT////////////////////////
+        // this is required in order to avoid creation of additional security
+        // groups by Jclouds.
+        template.getOptions().as(TemplateOptions.class)
+                .inboundPorts(new int[] {});
+
+
+        //*******************SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT*********************************//
 
         //set security group
-        //todo test this
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
@@ -144,13 +127,29 @@ public class CloudstackIaas extends Iaas{
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
        }
 
-        //todo error domain id and account wanted
-        //set key-pair
-        if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
-            template.getOptions().as(CloudStackTemplateOptions.class).keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+        //set user name
+        if (iaasInfo.getProperty(CloudControllerConstants.USER_NAME) != null) {
+            template.getOptions().as(CloudStackTemplateOptions.class)
+                    .account(iaasInfo.getProperty(CloudControllerConstants.USER_NAME));
+        }
+        //set domain ID
+        if (iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID) != null) {
+            template.getOptions().as(CloudStackTemplateOptions.class)
+                    .domainId(iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID));
         }
 
+        /**
+         * set key-pair (here we use already created key pair for the corresponding account)
+         * in cloudstack we cannot access a key pair without specifying user name and domain ID
+         */
+        if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null &&
+                iaasInfo.getProperty(CloudControllerConstants.USER_NAME)!= null &&
+                iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID) != null ) {
+            template.getOptions().as(CloudStackTemplateOptions.class)
+                    .keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+        }
 
+         //todo this is not working
         // ability to define tags
         if (iaasInfo.getProperty(CloudControllerConstants.TAGS) != null) {
             template.getOptions()
@@ -158,11 +157,10 @@ public class CloudstackIaas extends Iaas{
                     .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
         }
+        //todo add disk offering
 
         // set Template
         iaasInfo.setTemplate(template);
-
-
     }
 
     @Override
@@ -175,20 +173,10 @@ public class CloudstackIaas extends Iaas{
 
         //todo implement this method
 
-        System.out.println("======================this is the associateAddress method==================");
-
-
-
         IaasProvider iaasInfo = getIaasProvider();
-
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
-
         String ip = null;
-//todo remove hardcoded
-        ip="192.168.57.20";
-
-
         return ip;
     }
 
@@ -392,9 +380,6 @@ public class CloudstackIaas extends Iaas{
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService()
                 .getContext();
-
-        //todo region ignored
-
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         cloudStackApi.getVolumeApi().deleteVolume(volumeId);
         log.info("Deletion of Volume [id]: "+volumeId+" was successful. "
