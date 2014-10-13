@@ -85,5 +85,13 @@
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
                 </iaasProviderVCLOUD_PROVIDER_END>
+                <GCE_PROVIDER_STARTiaasProvider type="gce" name="GCE specific details">
+                        <className>org.apache.stratos.cloud.controller.iaases.GCEIaas</className>
+                        <provider>google-compute-engine</provider>
+                        <identity svns:secretAlias="cloud.controller.gce.identity">GCE_IDENTITY</identity>
+                        <credential svns:secretAlias="cloud.controller.gce.credential">GCE_CREDENTIAL</credential>
+                        <property name="projectName" value="GCE_PROJECTNAME" />>
+                       <property name="autoAssignIp" value="true" />
+                </iaasProviderGCE_PROVIDER_END>
         </iaasProviders>
 </cloudController>

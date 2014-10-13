@@ -166,6 +166,11 @@
             <version>1.8.0-stratos</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>gce</artifactId>
+            <version>1.8.0-stratos</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>${gson2.version}</version>
@@ -299,6 +304,7 @@
                                 <bundleDef>org.apache.stratos:ec2:1.8.0-stratos</bundleDef>
                                 <bundleDef>org.apache.stratos:openstack-nova:1.8.0-stratos</bundleDef>
                                 <bundleDef>org.apache.stratos:vcloud:1.8.0-stratos</bundleDef>
+                                <bundleDef>org.apache.stratos:gce:1.8.0-stratos</bundleDef>
                                 <bundleDef>org.apache.stratos:docker:1.8.0-stratos</bundleDef>
                                 <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>

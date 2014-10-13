@@ -59,5 +59,7 @@ ${SED} -i "s@EC2_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@EC2_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@GCE_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@GCE_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
 
 popd
