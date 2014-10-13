@@ -1,7 +1,7 @@
 {
     "name": "group1",
     "cartridges": [
-        "mytest","tomcat"
+        "tomcat1","tomcat"
     ],
     "dependencies": {
         "killBehaviour": "kill-none"

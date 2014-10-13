@@ -1,6 +1,6 @@
 {
     "applicationId": "test_app_3",
-    "alias": "mytestapp2",
+    "alias": "phpapp2",
     "components": {
         "groups": [
             {
@@ -12,11 +12,6 @@
                     {
                         "type": "tomcat",
                         "alias": "mygroup2tomcat"
-
-                    },
-		   {
-                        "type": "mytest",
-                        "alias": "mygroup2mytest"
 
                     }
                 ],
@@ -41,8 +36,8 @@
 
                     },
 		   {
-                        "type": "mytest",
-                        "alias": "mygroup1mytest"
+                        "type": "tomcat1",
+                        "alias": "mygroup1tomcat1"
 
                     }
 
@@ -90,18 +85,11 @@
             "repoPassword": "yyyy"
         },
 	{
-            "alias": "mygroup1mytest",
+            "alias": "mygroup1tomcat1",
             "deploymentPolicy": "deployment_policy_1",
             "autoscalingPolicy": "autoscale_policy_1"
-        },
-        {
-            "alias": "mygroup2mytest",
-            "deploymentPolicy": "deployment_policy_1",
-            "autoscalingPolicy": "autoscale_policy_1",
-            "repoURL": "www.mygit.com/php.git",
-            "privateRepo": "true",
-            "repoUsername": "admin",
-            "repoPassword": "xxxx"
         }
-    ]
+
+            ]
 }
+

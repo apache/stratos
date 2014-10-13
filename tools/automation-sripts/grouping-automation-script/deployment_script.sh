@@ -20,7 +20,8 @@ curl -X POST -H "Content-Type: application/json" -d @'samples/ec2/tomcat.json' -
 
 sleep 5
 
-curl -X POST -H "Content-Type: application/json" -d @'samples/ec2/mytest.json' -k -v -u admin:admin https://localhost:9443/stratos/admin/cartridge/definition
+curl -X POST -H "Content-Type: application/json" -d @'samples/ec2/tomcat1.json' -k -v -u admin:admin https://localhost:9443/stratos/admin/cartridge/definition
+
 
 sleep 5
 
