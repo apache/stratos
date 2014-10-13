@@ -336,6 +336,58 @@ public class CompositeApplicationParseTest {
         applicationParser.parse(simpleAppCtxt);
     }
 
+    @Test (expected = ApplicationDefinitionException.class)
+    public void testAppWithOneCartridgeAndInvalidGroup () throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        ApplicationContext simpleAppCtxt = new ApplicationContext();
+        // app id
+        simpleAppCtxt.setApplicationId("simpleApp");
+        simpleAppCtxt.setAlias("simpleAppAlias");
+        // tenant info
+        simpleAppCtxt.setTenantId(-1234);
+        // components
+        ComponentContext simpleAppComponentCtxt = new ComponentContext();
+        // top level cartridges
+        SubscribableContext simpleAppSubscribableContext = new SubscribableContext();
+        simpleAppSubscribableContext.setType("php");
+        simpleAppSubscribableContext.setAlias("myphp");
+        simpleAppComponentCtxt.setSubscribableContexts(new SubscribableContext[]{simpleAppSubscribableContext});
+        // top level group
+        GroupContext simpleGroupContext = new GroupContext();
+        // invalid Group 'group11'
+        simpleGroupContext.setName("group11");
+        simpleGroupContext.setAlias("mygroup1");
+        simpleGroupContext.setAutoscalingPolicy("group_autoscaling_policy_1");
+        simpleGroupContext.setDeploymentPolicy("group_deployment_policy_1");
+        SubscribableContext groupSubscribableCtxt = new SubscribableContext();
+        groupSubscribableCtxt.setType("mysql");
+        groupSubscribableCtxt.setAlias("mygroup1mysql");
+        simpleGroupContext.setSubscribableContexts(new SubscribableContext[]{groupSubscribableCtxt});
+        simpleAppComponentCtxt.setGroupContexts(new GroupContext[]{simpleGroupContext});
+        simpleAppCtxt.setComponents(simpleAppComponentCtxt);
+        // subscribable information
+        SubscribableInfoContext simpleAppSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppSubscribableInfoCtxt.setAlias("myphp");
+        simpleAppSubscribableInfoCtxt.setAutoscalingPolicy("deployment_policy_1");
+        simpleAppSubscribableInfoCtxt.setAutoscalingPolicy("autoscale_policy_1");
+        simpleAppSubscribableInfoCtxt.setRepoUrl("www.mygit.com/myphp.git");
+        simpleAppSubscribableInfoCtxt.setPrivateRepo(true);
+        simpleAppSubscribableInfoCtxt.setRepoUsername("admin");
+        simpleAppSubscribableInfoCtxt.setRepoUrl("admin123");
+
+        SubscribableInfoContext simpleAppGroupSubscribableInfoCtxt = new SubscribableInfoContext();
+        simpleAppGroupSubscribableInfoCtxt.setAlias("mygroup1mysql");
+        simpleAppGroupSubscribableInfoCtxt.setAutoscalingPolicy("mysql_autoscaling_policy");
+        simpleAppGroupSubscribableInfoCtxt.setDeploymentPolicy("mysql_deployment_policy");
+
+        simpleAppCtxt.setSubscribableInfoContext(new SubscribableInfoContext[]{simpleAppSubscribableInfoCtxt,
+                simpleAppGroupSubscribableInfoCtxt});
+
+        // parse
+        applicationParser.parse(simpleAppCtxt);
+    }
+
     @Test
     public void testAppWithOneCartridgeAndOneGroupWithDependencies () throws ApplicationDefinitionException {
 
