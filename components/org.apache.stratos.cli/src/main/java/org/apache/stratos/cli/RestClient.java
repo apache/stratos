@@ -232,32 +232,6 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    private void printError(HttpResponse response) {
-        String resultString = CliUtils.getHttpResponseString(response);
-        if (StringUtils.isNotBlank(resultString)) {
-            // Response body found, try to extract exception information
-            boolean exceptionMapperInstanceFound = false;
-            try {
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                if (exception != null) {
-                    System.out.println(exception);
-                    exceptionMapperInstanceFound = true;
-                }
-            } catch (Exception ignore) {
-                // Could not find an ExceptionMapper instance
-            } finally {
-                if (!exceptionMapperInstanceFound) {
-                    System.out.println(response.getStatusLine().toString());
-                }
-            }
-        } else {
-            // No response body found
-            System.out.println(response.getStatusLine().toString());
-        }
-    }
-
     private int executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -265,7 +239,7 @@ public class RestClient implements GenericRestClient {
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
-                printError(response);
+                CliUtils.printError(response);
             }
             return responseCode;
         } finally {
@@ -285,7 +259,7 @@ public class RestClient implements GenericRestClient {
                 // Entity not found
                 return null;
             } else if (responseCode < 200 || responseCode >= 300) {
-                printError(response);
+                CliUtils.printError(response);
                 return null;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -305,7 +279,7 @@ public class RestClient implements GenericRestClient {
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
-                printError(response);
+                CliUtils.printError(response);
             }
             return responseCode;
         } finally {
@@ -320,7 +294,7 @@ public class RestClient implements GenericRestClient {
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
-                printError(response);
+                CliUtils.printError(response);
             }
             return responseCode;
         } finally {
