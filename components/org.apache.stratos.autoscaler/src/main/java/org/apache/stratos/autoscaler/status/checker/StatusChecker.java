@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -48,40 +49,38 @@ public class StatusChecker {
     }
 
     /**
-     *
-     * @param clusterId1
+     * Calculating whether the cluster has all min instances as active and send the
+     * ClusterActivatedEvent.
+     * @param clusterId id of the cluster
      */
-    public void onMemberStatusChange(String clusterId1) {
-        final String clusterId = clusterId1;
-        Runnable exCluster = new Runnable() {
-            public void run() {
-                ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-                boolean clusterActive = false;
-                for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
-                    //minimum check per partition
-                    for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                        if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
-                            clusterActive = true;
-                        } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
-                            log.info("cluster already activated...");
-                            clusterActive = true;
-                        } else {
-                            clusterActive = false;
-                        }
-                    }
-                }
-                // if active then notify upper layer
-                if (clusterActive) {
-                    //send event to cluster status topic
-                    StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
-                            monitor.getServiceId(), monitor.getClusterId());
+    public void onMemberStatusChange(String clusterId) {
+        ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+        boolean clusterActive = clusterActive(monitor);
+        // if active then notify upper layer
+        if (clusterActive) {
+            //send event to cluster status topic
+            StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
+                    monitor.getServiceId(), monitor.getClusterId());
+        }
+    }
 
+    private boolean clusterActive(AbstractClusterMonitor monitor) {
+        boolean clusterActive = false;
+        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+            //minimum check per partition
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
+                    clusterActive = true;
+                } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
+                    log.info("cluster already activated...");
+                    clusterActive = true;
+                } else {
+                    clusterActive = false;
+                    return clusterActive;
                 }
-
             }
-        };
-        Thread clusterThread = new Thread(exCluster);
-        clusterThread.start();
+        }
+        return clusterActive;
     }
 
     /**
@@ -267,6 +266,7 @@ public class StatusChecker {
                 groupActiveStatus = true;
             } else {
                 groupActiveStatus = false;
+                break;
             }
         }
         return groupActiveStatus;
@@ -282,6 +282,7 @@ public class StatusChecker {
                 clusterActiveStatus = true;
             } else {
                 clusterActiveStatus = false;
+                break;
             }
         }
         return clusterActiveStatus;
