@@ -85,22 +85,34 @@ public class StatusChecker {
     }
 
     /**
+     *
      * @param idOfChild
-     * @param component
+     * @param groupId
+     * @param appId
      */
-    public void onChildStatusChange(final String idOfChild, final ParentComponent component,
+    public void onChildStatusChange(final String idOfChild, final String groupId,
                                     final String appId) {
-        updateChild(idOfChild, component, appId);
+        updateChild(idOfChild, groupId, appId);
     }
 
-    private void updateChild(final String idOfChild, final ParentComponent component, final String appId) {
+    /**
+     * This will calculate whether the children of an application are active or not. If active, then
+     * it will send the ApplicationActivatedEvent.
+     * @param idOfChild
+     * @param appId
+     */
+    public void onChildStatusChange(final String idOfChild, final String appId) {
+        updateChild(idOfChild, appId);
+    }
+
+    private void updateChild(final String idOfChild, final String groupId, final String appId) {
         Runnable group = new Runnable() {
             public void run() {
                 try {
                     //TODO getting lock
                     TopologyManager.acquireReadLockForApplication(appId);
                     ParentComponent component1 = TopologyManager.getTopology().
-                            getApplication(appId).getGroupRecursively(component.getUniqueIdentifier());
+                            getApplication(appId).getGroupRecursively(groupId);
                     Map<String, ClusterDataHolder> clusterIds = component1.getClusterDataMap();
                     Map<String, Group> groups = component1.getAliasToGroupMap();
                     updateChildStatus(appId, idOfChild, groups, clusterIds, component1);
@@ -114,6 +126,29 @@ public class StatusChecker {
         Thread groupThread = new Thread(group);
         groupThread.start();
     }
+
+    private void updateChild(final String idOfChild, final String appId) {
+        Runnable group = new Runnable() {
+            public void run() {
+                try {
+                    //TODO getting lock
+                    TopologyManager.acquireReadLockForApplication(appId);
+                    ParentComponent component = TopologyManager.getTopology().
+                            getApplication(appId);
+                    Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
+                    Map<String, Group> groups = component.getAliasToGroupMap();
+                    updateChildStatus(appId, idOfChild, groups, clusterIds, component);
+                } finally {
+                    TopologyManager.releaseReadLockForApplication(appId);
+
+                }
+
+            }
+        };
+        Thread groupThread = new Thread(group);
+        groupThread.start();
+    }
+
 
     /**
      * @param clusterId
@@ -157,6 +192,15 @@ public class StatusChecker {
         faultHandlingThread.start();
     }
 
+    /**
+     * This will use to calculate whether  all children of a particular component is active by travesing Top
+     * @param appId
+     * @param id
+     * @param groups
+     * @param clusterData
+     * @param parent
+     * @return
+     */
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
         boolean groupActive = false;
@@ -210,12 +254,8 @@ public class StatusChecker {
             }
             return childFound;
         } else {
-            if (!groups.isEmpty()) {
-                for (Group group : groups.values()) {
-                    return updateChildStatus(appId, id, group.getAliasToGroupMap(), group.getClusterDataMap(), group);
-
-                }
-            }
+            log.warn("There is no child found in the [group/cluster] " + id + " found in the " +
+                    "[component]" + parent.getUniqueIdentifier());
         }
         return childFound;
     }

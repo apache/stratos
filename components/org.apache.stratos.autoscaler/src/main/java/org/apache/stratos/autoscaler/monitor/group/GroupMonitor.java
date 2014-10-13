@@ -85,15 +85,17 @@ public class GroupMonitor extends Monitor implements EventHandler {
             try {
                 //if life cycle is empty, need to start the monitor
                 boolean startDep = startDependency(statusEvent.getId());
-                log.info("started a child: " + startDep + " by the group/cluster: " + id);
+                if(log.isDebugEnabled()) {
+                    log.debug("started a child: " + startDep + " by the group/cluster: " + id);
 
+                }
                 //updating the life cycle and current status
                 context.setStatus(statusEvent.getStatus());
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if(!startDep) {
                     //Checking in the children whether all are active,
                     // since no dependency found to be started.
-                    StatusChecker.getInstance().onChildStatusChange(id, this.component, this.appId);
+                    StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 }
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription

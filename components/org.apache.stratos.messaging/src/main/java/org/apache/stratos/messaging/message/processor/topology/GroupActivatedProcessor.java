@@ -91,9 +91,9 @@ public class GroupActivatedProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             group.setStatus(Status.Activated);
-            if (log.isInfoEnabled()) {
+            if (log.isInfoEnabled())     {
                 log.info(String.format("Group updated as activated : %s",
-                        group.toString()));
+                        group.getUniqueIdentifier()));
             }
         }
 
