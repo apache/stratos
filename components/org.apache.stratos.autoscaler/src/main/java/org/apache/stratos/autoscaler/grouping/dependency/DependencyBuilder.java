@@ -61,10 +61,7 @@ public class DependencyBuilder {
         DependencyOrder dependencyOrder = component.getDependencyOrder();
 
         if (dependencyOrder != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Building dependency for the Application/Group " +
-                        identifier);
-            }
+            log.info("Building dependency for the Application/Group " + identifier);
 
             //Parsing the kill behaviour
             String killBehavior = dependencyOrder.getKillbehavior();
@@ -76,21 +73,16 @@ public class DependencyBuilder {
             } else if (Constants.KILL_DEPENDENTS.equals(killBehavior)) {
                 dependencyTree.setKillDependent(true);
             }
-            if (log.isDebugEnabled()) {
-                log.debug("Setting the [killBehavior] " + killBehavior + " to the " +
+
+            log.info("Setting the [killBehavior] " + killBehavior + " to the " +
                         "[dependency-tree] " + dependencyTree.getId());
-            }
+
 
             //Parsing the start up order
             Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
             ApplicationContext foundContext;
             ApplicationContext parentContext;
-            /*if (startupOrders == null) {
-            	if (log.isDebugEnabled()) {
-                    log.debug("startupOrders is null, returning default dependency tree (empty)");
-                }
-                return dependencyTree;
-            }*/
+
             if (startupOrders != null) {
                 for (StartupOrder startupOrder : startupOrders) {
                     foundContext = null;
