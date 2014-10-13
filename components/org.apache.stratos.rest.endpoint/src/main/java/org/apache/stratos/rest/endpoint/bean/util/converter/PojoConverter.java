@@ -41,6 +41,8 @@ import org.apache.stratos.rest.endpoint.bean.topology.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 public class PojoConverter {
@@ -372,6 +374,7 @@ public class PojoConverter {
         cluster1.clusterId = cluster.getClusterId();
         cluster1.isLbCluster = cluster.isLbCluster();
         cluster1.tenantRange = cluster.getTenantRange();
+        cluster1.property = getPropertyBeans(cluster.getProperties());
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
 
@@ -394,7 +397,7 @@ public class PojoConverter {
             }
             member.serviceName = tmp.getServiceName();
             member.status = tmp.getStatus().toString();
-            member.properties = tmp.getProperties();
+            member.property = getPropertyBeans(tmp.getProperties());
             cluster1.member.add(member);
         }
 
@@ -494,6 +497,25 @@ public class PojoConverter {
                 PropertyBean propertyBean = new PropertyBean();
                 propertyBean.name = propertyArr[i].getName();
                 propertyBean.value = propertyArr[i].getValue();
+                propertyBeans.add(propertyBean);
+            }
+        }
+        return propertyBeans;
+    }
+    
+    private static List<PropertyBean> getPropertyBeans(java.util.Properties properties) {
+
+        List<PropertyBean> propertyBeans = null;
+        if (properties != null && !properties.isEmpty()) {
+            Enumeration<?> e = properties.propertyNames();
+            propertyBeans = new ArrayList<PropertyBean>();
+
+            while (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                String value = properties.getProperty(key);
+                PropertyBean propertyBean = new PropertyBean();
+                propertyBean.name = key;
+                propertyBean.value = value;
                 propertyBeans.add(propertyBean);
             }
         }

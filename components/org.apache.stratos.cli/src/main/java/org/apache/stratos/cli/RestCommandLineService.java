@@ -563,6 +563,7 @@ public class RestCommandLineService {
                 }
                 System.out.println("\tMemberPrivateIp : " + member.getMemberIp());
                 System.out.println("\tMemberFloatingIp : " + member.getMemberPublicIp());
+                System.out.println("\tMember Properties : " + member.getProperty());
                 System.out.println("\t-----------------------");
             }
 
@@ -585,9 +586,13 @@ public class RestCommandLineService {
                     System.out.println(exception);
                     break;
                 }
-
-                printLBs(resultStringCluster);
+                if (resultStringCluster != null && !resultStringCluster.isEmpty()) {
+                    
+                    printLBs(resultStringCluster);
+                }
             }
+            
+            System.out.println("==================================================");
 
         } catch (Exception e) {
             String message = "Error in listing members";
@@ -640,7 +645,6 @@ public class RestCommandLineService {
         }
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-
         return gson.fromJson(resultString, Cluster.class);
     }
 

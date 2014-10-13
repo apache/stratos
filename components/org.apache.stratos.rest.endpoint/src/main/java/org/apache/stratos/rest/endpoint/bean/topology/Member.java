@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.rest.endpoint.bean.topology;
 
-import java.util.Properties;
-
+import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 
 @XmlRootElement
 public class Member {
@@ -34,6 +34,15 @@ public class Member {
     public String memberIp;
     public String lbClusterId;
     public String memberPublicIp;
-    public Properties properties;
-
+    public List<PropertyBean> property;
+    
+    @Override
+    public String toString() {
+        return "Member [serviceName=" + serviceName + ", clusterId=" + clusterId + ", networkPartitionId="
+                + networkPartitionId + ", partitionId=" + partitionId + ", memberId=" + memberId + ", status=" + status
+                + ", memberIp=" + memberIp + ", lbClusterId=" + lbClusterId + ", memberPublicIp=" + memberPublicIp
+                + ", property=" + property + "]";
+    }
+    
+    
 }
