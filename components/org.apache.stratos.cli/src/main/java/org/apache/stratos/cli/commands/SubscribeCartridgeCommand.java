@@ -55,7 +55,7 @@ public class SubscribeCartridgeCommand implements Command<StratosCommandContext>
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Cartridge deployment resource path");
+                "Cartridge subscription resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
 

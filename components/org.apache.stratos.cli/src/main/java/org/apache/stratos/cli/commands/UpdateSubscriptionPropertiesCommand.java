@@ -54,7 +54,7 @@ public class UpdateSubscriptionPropertiesCommand implements Command<StratosComma
         final Options options = new Options();
 
         Option resourcePath = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Cartridge deployment resource path");
+                "Update subscription properties resource path");
         resourcePath.setArgName("resource path");
         options.addOption(resourcePath);
         
