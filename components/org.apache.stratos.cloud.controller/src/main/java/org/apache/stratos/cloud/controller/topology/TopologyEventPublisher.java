@@ -154,9 +154,9 @@ public class TopologyEventPublisher {
 				.toJavaUtilProperties(context.getProperties()));
 		if (log.isInfoEnabled()) {
 			log.info(String
-					.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s",
+					.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s [properties] %s",
 							serviceName, clusterId, networkPartitionId,
-							partitionId, memberId, lbClusterId));
+							partitionId, memberId, lbClusterId, context.getProperties()));
 		}
 		publishEvent(instanceSpawnedEvent);
 	}

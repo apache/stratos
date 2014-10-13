@@ -118,10 +118,11 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             	cluster.addMember(member);
             	
             	if (log.isInfoEnabled()) {
-            		log.info(String.format("Member created: [service] %s [cluster] %s [member] %s",
+            		log.info(String.format("Member created: [service] %s [cluster] %s [member] %s [properties] %s",
             				event.getServiceName(),
             				event.getClusterId(),
-            				event.getMemberId()));
+            				event.getMemberId(),
+            				event.getProperties()));
             	}
             }
 

@@ -72,7 +72,7 @@ public class TopologyClusterInformationModel {
     public void addCluster (Cluster cluster) {
 
         if(log.isDebugEnabled()) {
-    		log.debug(" Adding cluster ["+cluster.getClusterId()+"] ");
+    		log.debug(" Adding cluster ["+cluster+"] ");
     	}
     	clusterIdToClusterMap.put(cluster.getClusterId(), cluster);
     	serviceNameToClusterMap.put(cluster.getServiceName(), cluster);
