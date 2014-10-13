@@ -102,6 +102,15 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
      */
     protected void addDataToMap(InEvent event) {
         String id = (String) event.getData()[memberIdAttrIndex];
+        //checking whether this member is the topology.
+        //sometimes there can be a delay between publishing member terminated events
+        //and actually terminating instances. Hence CEP might get events for already terminated members
+        //so we are checking the topology for the member existence
+        Member member = getMemberFromId(id);
+        if (null == member) {
+			log.debug("Member not found in the toplogy. Event rejected");
+			return;
+		}
         if (StringUtils.isNotEmpty(id)) {
             memberTimeStampMap.put(id, event.getTimeStamp());
         } else {
