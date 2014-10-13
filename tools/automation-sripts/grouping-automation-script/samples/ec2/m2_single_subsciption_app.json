@@ -1,0 +1,107 @@
+{
+    "applicationId": "test_app_3",
+    "alias": "mytestapp2",
+    "components": {
+        "groups": [
+            {
+                "name": "group2",
+                "alias": "mygroup2",
+                "deploymentPolicy": "deployment_policy_1",
+                "autoscalingPolicy": "autoscale_policy_1",
+                "subscribables": [
+                    {
+                        "type": "tomcat",
+                        "alias": "mygroup2tomcat"
+
+                    },
+		   {
+                        "type": "mytest",
+                        "alias": "mygroup2mytest"
+
+                    }
+                ],
+                "subGroups": [
+                    {
+                        "name": "group1",
+                        "alias": "mygroup1"
+
+                    }
+                ]
+
+            },
+            {
+                "name": "group1",
+                "alias": "mygroup1",
+                "deploymentPolicy": "dep_policy_group1",
+                "autoscalingPolicy": "autoscale_policy_group1",
+                "subscribables": [
+                    {
+                        "type": "tomcat",
+                        "alias": "mygroup1tomcat"
+
+                    },
+		   {
+                        "type": "mytest",
+                        "alias": "mygroup1mytest"
+
+                    }
+
+                ]
+
+            }
+
+        ],
+        "subscribables": [
+            {
+                "type": "tomcat",
+                "alias": "mytomcat"
+            }
+        ],
+        "dependencies": {
+            "startupOrders": [
+                "group.mygroup2,cartridge.mytomcat"
+            ],
+            "killBehaviour": "kill-dependents"
+        }
+
+    },
+    "subscribableInfo": [
+        {
+            "alias": "mygroup1tomcat",
+            "deploymentPolicy": "deployment_policy_1",
+            "autoscalingPolicy": "autoscale_policy_1"
+        },
+        {
+            "alias": "mygroup2tomcat",
+            "deploymentPolicy": "deployment_policy_1",
+            "autoscalingPolicy": "autoscale_policy_1",
+            "repoURL": "www.mygit.com/php.git",
+            "privateRepo": "true",
+            "repoUsername": "admin",
+            "repoPassword": "xxxx"
+        },
+        {
+            "alias": "mytomcat",
+            "deploymentPolicy": "deployment_policy_1",
+            "autoscalingPolicy": "autoscale_policy_1",
+            "repoURL": "www.mygit.com/tomcat.git",
+            "privateRepo": "false",
+            "repoUsername": "admin",
+            "repoPassword": "yyyy"
+        },
+	{
+            "alias": "mygroup1mytest",
+            "deploymentPolicy": "deployment_policy_1",
+            "autoscalingPolicy": "autoscale_policy_1"
+        },
+        {
+            "alias": "mygroup2mytest",
+            "deploymentPolicy": "deployment_policy_1",
+            "autoscalingPolicy": "autoscale_policy_1",
+            "repoURL": "www.mygit.com/php.git",
+            "privateRepo": "true",
+            "repoUsername": "admin",
+            "repoPassword": "xxxx"
+        }
+    ]
+}

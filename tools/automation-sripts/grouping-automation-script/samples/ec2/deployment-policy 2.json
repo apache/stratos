@@ -1,0 +1,14 @@
+{
+    "id": "dep_policy_mysql",
+    "partitionGroup": {
+      "id": "openstack",
+      "partitionAlgo": "one-after-another",
+      "partition": [
+        {
+          "id": "P1",
+          "partitionMax": "10",
+          "partitionMin": "1"
+        }
+      ]
+    }
+}

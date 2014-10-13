@@ -1,0 +1,17 @@
+{
+    "id": "autoscale_policy_mysql",
+    "loadThresholds": {
+      "requestsInFlight": {
+         "upperLimit": 30, 
+         "lowerLimit": 5
+      },
+      "memoryConsumption": {
+         "upperLimit": 40, 
+         "lowerLimit": 15
+      },
+      "loadAverage": {
+         "upperLimit": 150, 
+         "lowerLimit": 100
+      }
+    }  
+}
