@@ -18,7 +18,13 @@
  */
 package org.apache.stratos.cli.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.stratos.cli.exception.ExceptionMapper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -29,8 +35,9 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 public class CliUtils {
-	
-	private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("Resources");
+    private static Log log = LogFactory.getLog(CliUtils.class);
+
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("Resources");
 
 	public static <T> void printTable(T[] data, RowMapper<T> mapper, String... headers) {
 		if (data == null) {
@@ -123,25 +130,57 @@ public class CliUtils {
      */
     public static String getHttpResponseString (HttpResponse response) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
-
             String output;
             String result = "";
 
-            while ((output = reader.readLine()) != null) {
-                result += output;
+            if((response != null) && (response.getEntity() != null) && (response.getEntity().getContent() != null)) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader((response.getEntity().getContent())));
+                while ((output = reader.readLine()) != null) {
+                    result += output;
+                }
             }
-
             return result;
         } catch (SocketException e) {
-            System.out.println("Connection problem");
-            return null;
-        } catch (NullPointerException e) {
-            System.out.println("Null value return from server");
+            String message = "A connection error occurred while reading response message: " + e.getMessage();
+            System.out.println(message);
+            log.error(message, e);
             return null;
         } catch (IOException e) {
-            System.out.println("IO error");
+            String message = "An IO error occurred while reading response message: " + e.getMessage();
+            System.out.println(message);
+            log.error(message, e);
             return null;
+        } catch(Exception e) {
+            String message = "An unknown error occurred while reading response message: " + e.getMessage();
+            System.out.println(message);
+            log.error(message, e);
+            return null;
+        }
+    }
+
+    public static void printError(HttpResponse response) {
+        String resultString = CliUtils.getHttpResponseString(response);
+        if (StringUtils.isNotBlank(resultString)) {
+            // Response body found, try to extract exception information
+            boolean exceptionMapperInstanceFound = false;
+            try {
+                GsonBuilder gsonBuilder = new GsonBuilder();
+                Gson gson = gsonBuilder.create();
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                if (exception != null) {
+                    System.out.println(exception);
+                    exceptionMapperInstanceFound = true;
+                }
+            } catch (Exception ignore) {
+                // Could not find an ExceptionMapper instance
+            } finally {
+                if (!exceptionMapperInstanceFound) {
+                    System.out.println(response.getStatusLine().toString());
+                }
+            }
+        } else {
+            // No response body found
+            System.out.println(response.getStatusLine().toString());
         }
     }
 }

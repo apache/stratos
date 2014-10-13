@@ -156,14 +156,6 @@ public class Cluster implements Serializable {
 		this.isKubernetesCluster = isKubernetesCluster;
 	}
 
-	@Override
-    public String toString() {
-        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId +
-                ", autoscalePolicyName=" + autoscalePolicyName + ", deploymentPolicyName=" +
-                deploymentPolicyName + ", hostNames=" + hostNames + ", tenantRange=" + tenantRange +
-                ", isLbCluster=" + isLbCluster + ", isKubernetesCluster=" + isKubernetesCluster + ", properties=" + properties + "]";
-    }
-
     /**
      * Check whether a given tenant id is in tenant range of the cluster.
      *
@@ -218,6 +210,15 @@ public class Cluster implements Serializable {
 
     public void setStatus(ClusterStatus status) {
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId + ", autoscalePolicyName="
+                + autoscalePolicyName + ", deploymentPolicyName=" + deploymentPolicyName + ", hostNames=" + hostNames
+                + ", tenantRange=" + tenantRange + ", isLbCluster=" + isLbCluster + ", isKubernetesCluster="
+                + isKubernetesCluster + ", memberMap=" + memberMap + ", status=" + status
+                + ", loadBalanceAlgorithmName=" + loadBalanceAlgorithmName + ", properties=" + properties + "]";
     }
 }
 

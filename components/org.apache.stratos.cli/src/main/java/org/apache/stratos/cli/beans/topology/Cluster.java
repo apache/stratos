@@ -22,6 +22,9 @@ package org.apache.stratos.cli.beans.topology;
 
 
 import java.util.List;
+import java.util.Properties;
+
+import org.apache.stratos.cli.beans.autoscaler.partition.PropertyBean;
 
 public class Cluster {
     private String serviceName;
@@ -35,6 +38,8 @@ public class Cluster {
     private List<String> hostNames;
 
     private boolean isLbCluster;
+    
+    private List<PropertyBean> property;
 
     public String getServiceName() {
         return serviceName;
@@ -99,4 +104,13 @@ public class Cluster {
     public void setLbCluster(boolean lbCluster) {
         isLbCluster = lbCluster;
     }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
+
 }

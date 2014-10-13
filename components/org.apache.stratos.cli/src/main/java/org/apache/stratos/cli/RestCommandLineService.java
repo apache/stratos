@@ -69,7 +69,7 @@ import com.google.gson.GsonBuilder;
 
 public class RestCommandLineService {
 
-    private static final Logger logger = LoggerFactory.getLogger(RestCommandLineService.class);
+    private static final Logger log = LoggerFactory.getLogger(RestCommandLineService.class);
 
     private RestClient restClient;
 
@@ -168,8 +168,8 @@ public class RestCommandLineService {
         try {
             initializeRestClient(serverURL, username, password);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Initialized REST Client for user {}", username);
+            if (log.isDebugEnabled()) {
+                log.debug("Initialized REST Client for user {}", username);
             }
         } catch (AxisFault e) {
             System.out.println("Error connecting to the back-end");
@@ -197,17 +197,17 @@ public class RestCommandLineService {
         } catch (ConnectException e) {
             String message = "Could not connect to stratos manager";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return false;
         } catch (java.lang.NoSuchMethodError e) {
             String message = "Authentication failed!";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return false;
         } catch (Exception e) {
             String message = "An unknown error occurred: " + e.getMessage();
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return false;
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -251,7 +251,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in getting cartridge";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
         return null;
     }
@@ -273,7 +273,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing cartridges";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -313,7 +313,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing cartridges";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -340,7 +340,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in describing cartridge: " + cartridgeType;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -411,7 +411,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing cartridge subscriptions";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -467,7 +467,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in getting cartridge subscription";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -526,7 +526,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in getting load balancer ip list";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -543,8 +543,8 @@ public class RestCommandLineService {
             }
 
             if (members.length == 0) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("No members found");
+                if (log.isDebugEnabled()) {
+                    log.debug("No members found");
                 }
                 System.out.println("No members found for the corresponding cluster for type " + cartridgeType
                         + ", alias " + alias);
@@ -563,6 +563,7 @@ public class RestCommandLineService {
                 }
                 System.out.println("\tMemberPrivateIp : " + member.getMemberIp());
                 System.out.println("\tMemberFloatingIp : " + member.getMemberPublicIp());
+                System.out.println("\tMember Properties : " + member.getProperty());
                 System.out.println("\t-----------------------");
             }
 
@@ -585,14 +586,18 @@ public class RestCommandLineService {
                     System.out.println(exception);
                     break;
                 }
-
-                printLBs(resultStringCluster);
+                if (resultStringCluster != null && !resultStringCluster.isEmpty()) {
+                    
+                    printLBs(resultStringCluster);
+                }
             }
+            
+            System.out.println("==================================================");
 
         } catch (Exception e) {
             String message = "Error in listing members";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -627,7 +632,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing members";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return null;
         }
     }
@@ -640,7 +645,6 @@ public class RestCommandLineService {
         }
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-
         return gson.fromJson(resultString, Cluster.class);
     }
 
@@ -665,8 +669,8 @@ public class RestCommandLineService {
         members = cluster.getMember().toArray(members);
 
         if (members.length == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No subscribed cartridges found");
+            if (log.isDebugEnabled()) {
+                log.debug("No subscribed cartridges found");
             }
             System.out.println("There are no subscribed cartridges");
             return;
@@ -1138,7 +1142,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing users";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1171,7 +1175,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing users";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1180,25 +1184,18 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT, alias);
+            int responseCode = response.getStatusLine().getStatusCode();
 
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-
-            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have successfully unsubscribed " + alias + " cartridge");
+            if ((responseCode >= 200) || (responseCode < 300)) {
+                System.out.println("You have successfully unsubscribed from cartridge: " + alias);
                 return;
             } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
+                CliUtils.printError(response);
             }
-
         } catch (Exception e) {
-            String message = "Error in un-subscribing cartridge";
+            String message = "Error in unsubscribing cartridge: " + alias;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -1268,7 +1265,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing services";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1307,7 +1304,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing partitions";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1339,7 +1336,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing autoscaling policies";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1371,7 +1368,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing deployment policies";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1396,7 +1393,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in describing deployment policy: " + id;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1421,7 +1418,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in describing partition: " + id;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1446,7 +1443,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in describing autoscaling policy: " + id;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1478,7 +1475,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing kubernetes groups";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1516,7 +1513,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in listing kubernetes hosts";
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         }
     }
 
@@ -1552,7 +1549,7 @@ public class RestCommandLineService {
         } catch (Exception e) {
             String message = "Error in synchronizing artifacts for cartridge subscription alias: " + cartridgeAlias;
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -1710,14 +1707,14 @@ public class RestCommandLineService {
 
     // This is for handle exception
     private void handleException(String key, Exception e, Object... args) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
+        if (log.isDebugEnabled()) {
+            log.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
         }
 
         String message = CliUtils.getMessage(key, args);
 
-        if (logger.isErrorEnabled()) {
-            logger.error(message);
+        if (log.isErrorEnabled()) {
+            log.error(message);
         }
 
         System.out.println(message);

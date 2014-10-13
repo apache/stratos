@@ -39,4 +39,10 @@ public class PropertyBean {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "Property [name=" + name + ", value=" + value + "]";
+    }
+    
 }

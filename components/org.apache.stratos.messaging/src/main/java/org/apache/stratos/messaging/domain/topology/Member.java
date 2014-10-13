@@ -151,5 +151,13 @@ public class Member implements Serializable {
         this.memberPublicIp = memberPublicIp;
     }
 
+    @Override
+    public String toString() {
+        return "Member [serviceName=" + serviceName + ", clusterId=" + clusterId + ", networkPartitionId="
+                + networkPartitionId + ", partitionId=" + partitionId + ", memberId=" + memberId + ", portMap="
+                + portMap + ", memberPublicIp=" + memberPublicIp + ", status=" + status + ", memberIp=" + memberIp
+                + ", properties=" + properties + ", lbClusterId=" + lbClusterId + "]";
+    }
+
 }
 
