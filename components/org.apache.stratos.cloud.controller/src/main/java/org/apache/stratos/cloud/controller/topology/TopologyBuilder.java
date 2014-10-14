@@ -240,6 +240,7 @@ public class TopologyBuilder {
 		String memberId = context.getMemberId();
 		String networkPartitionId = context.getNetworkPartitionId();
 		String lbClusterId = context.getLbClusterId();
+		long initTime = context.getInitTime();
 
 		if (cluster.memberExists(memberId)) {
 			log.warn(String.format("Member %s already exists", memberId));
@@ -249,7 +250,7 @@ public class TopologyBuilder {
 		try {
 			TopologyManager.acquireWriteLock();
 			Member member = new Member(serviceName, clusterId,
-					networkPartitionId, partitionId, memberId);
+					networkPartitionId, partitionId, memberId, initTime);
 			member.setStatus(MemberStatus.Created);
 			member.setMemberIp(privateIp);
 			member.setLbClusterId(lbClusterId);

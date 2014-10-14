@@ -109,7 +109,7 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             } else {
             	
             	// Apply changes to the topology
-            	Member member = new Member(event.getServiceName(), event.getClusterId(), event.getNetworkPartitionId(), event.getPartitionId(), event.getMemberId());
+            	Member member = new Member(event.getServiceName(), event.getClusterId(), event.getNetworkPartitionId(), event.getPartitionId(), event.getMemberId(), event.getInitTime());
             	member.setStatus(MemberStatus.Created);
             	member.setMemberPublicIp(event.getMemberPublicIp());
             	member.setMemberIp(event.getMemberIp());

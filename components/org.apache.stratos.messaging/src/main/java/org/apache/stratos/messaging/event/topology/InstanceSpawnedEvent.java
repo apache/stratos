@@ -34,18 +34,20 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    private final long initTime;
     private String lbClusterId;
     private String memberPublicIp;
     private String memberIp;
     private Properties properties;
 
 
-    public InstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+    public InstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
+        this.initTime = initTime;
     }
 
     public String getServiceName() {
@@ -66,6 +68,10 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     public String getMemberId() {
         return memberId;
+    }
+    
+    public long getInitTime() {
+    	return initTime;
     }
 
     public String getLbClusterId() {
