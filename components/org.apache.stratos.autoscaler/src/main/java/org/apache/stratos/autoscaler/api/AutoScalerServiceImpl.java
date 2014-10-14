@@ -327,7 +327,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     }
 
-    public void updateClusterMonitor(String clusterId, Properties properties) {
+    public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Updating Cluster monitor [Cluster id] %s ", clusterId));
         }

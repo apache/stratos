@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -159,7 +160,7 @@ public abstract class AbstractClusterMonitor implements Runnable {
 
     public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
     
-    public abstract void handleDynamicUpdates(Properties properties);
+    public abstract void handleDynamicUpdates(Properties properties) throws InvalidArgumentException;
 
     public String getClusterId() {
         return clusterId;
