@@ -184,5 +184,5 @@ public interface AutoScalerServiceInterface {
      * @param clusterId id of the cluster.
      * @param properties updated properties.
      */
-    void updateClusterMonitor(String clusterId, Properties properties);
+    void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
 }

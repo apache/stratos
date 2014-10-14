@@ -27,6 +27,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -168,7 +169,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     }
 
     @Override
-    public void handleDynamicUpdates(Properties properties) {
+    public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
         
         if (properties != null) {
             Property[] propertyArray = properties.getProperties();
@@ -182,7 +183,15 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                 String value = property.getValue();
                 
                 if (StratosConstants.KUBERNETES_MIN_REPLICAS.equals(key)) {
-                    getKubernetesClusterCtxt().setMinReplicas(Integer.parseInt(value));
+                    int min = Integer.parseInt(value);
+                    int max = getKubernetesClusterCtxt().getMaxReplicas();
+                    if (min > max) {
+                        String msg = String.format("%s should be less than %s . But %s is not less than %s.", 
+                                StratosConstants.KUBERNETES_MIN_REPLICAS, StratosConstants.KUBERNETES_MAX_REPLICAS, min, max);
+                        log.error(msg);
+                        throw new InvalidArgumentException(msg);
+                    }
+                    getKubernetesClusterCtxt().setMinReplicas(min);
                     break;
                 }
             }

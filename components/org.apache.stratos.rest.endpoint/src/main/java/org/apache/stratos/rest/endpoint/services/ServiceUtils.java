@@ -1491,8 +1491,13 @@ public class ServiceUtils {
                 if (property != null) {
                     autoscalerServiceClient.updateClusterMonitor(cluster.getClusterId(), PojoConverter.getProperties(property));
                 }
-            } catch(Exception e) {
-                log.error(e.getMessage(), e);
+            } catch(AutoScalerServiceInvalidArgumentExceptionException e) {
+                String message = e.getFaultMessage().getInvalidArgumentException().getMessage();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
+            } catch (RemoteException e) {
+                String msg = "Error while connecting to Autoscaler Service. "+e.getMessage();
+                log.error(msg, e);
                 throw new RestAPIException(e.getMessage(), e);
             }
         }

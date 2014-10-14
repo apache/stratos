@@ -265,7 +265,7 @@ public class AutoscalerServiceClient {
         return stub.updateKubernetesHost(kubernetesHost);
     }
     
-    public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException {
+    public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
         stub.updateClusterMonitor(clusterId, properties);
     }
 }

@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -167,7 +168,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     }
 
     @Override
-    public void handleDynamicUpdates(Properties properties) {
+    public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
         // TODO 
         
     }
