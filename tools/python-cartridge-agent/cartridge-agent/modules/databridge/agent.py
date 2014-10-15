@@ -148,7 +148,6 @@ class ThriftPublisher:
         :param ThriftEvent event: The log event to be published
         :return: void
         """
-        ThriftPublisher.log.debug("ABOUT TO PUBLISH: POPULATING DATA")
         event_bundler = EventBundle()
         ThriftPublisher.assign_attributes(event.metaData, event_bundler)
         ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
@@ -184,16 +183,21 @@ class ThriftPublisher:
         if attributes is not None and len(attributes) > 0:
             for attrib in attributes:
                 if isinstance(attrib, int):
+                    ThriftPublisher.log.debug("Int : %r" % attrib)
                     event_bundler.addIntAttribute(attrib)
                 elif isinstance(attrib, long):
+                    ThriftPublisher.log.debug("Long : %r" % attrib)
                     event_bundler.addLongAttribute(attrib)
                 elif isinstance(attrib, float):
+                    ThriftPublisher.log.debug("Float : %r" % attrib)
                     event_bundler.addDoubleAttribute(attrib)
                 elif isinstance(attrib, bool):
+                    ThriftPublisher.log.debug("Bool : %r" % attrib)
                     event_bundler.addBoolAttribute(attrib)
                 elif isinstance(attrib, str):
+                    ThriftPublisher.log.debug("Str : %r" % attrib)
                     event_bundler.addStringAttribute(attrib)
                 else:
                     ThriftPublisher.log.error("Undefined attribute type: %r" % attrib)
-
-        ThriftPublisher.log.debug("Empty attribute list")
+        else:
+            ThriftPublisher.log.debug("Empty attribute list")

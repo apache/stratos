@@ -22,6 +22,7 @@ sys.path.append("gen")
 
 from gen.ThriftSecureEventTransmissionService import ThriftSecureEventTransmissionService
 from gen.ThriftSecureEventTransmissionService.ttypes import *
+from gen.Data.ttypes import ThriftEventBundle
 
 from thrift.transport import TSSLSocket
 from thrift.transport import TTransport
@@ -64,6 +65,7 @@ class Publisher:
         event.addStringAttribute(self.streamId)
         #event.addStringAttribute(msg)
         # Publish
+        print "TO THE WIRE!!! "
         Publisher.client.publish(event.getEventBundle())
 
     def disconnect(self):
@@ -105,7 +107,7 @@ class EventBundle:
         self.__stringAttributeList.append(attr)
 
     def getEventBundle(self):
-        return Data.ttypes.ThriftEventBundle(self.__sessionId, self.__eventNum, self.__intAttributeList,
+        return ThriftEventBundle(self.__sessionId, self.__eventNum, self.__intAttributeList,
                                              self.__longAttributeList, self.__doubleAttributeList,
                                              self.__boolAttributeList, self.__stringAttributeList,
                                              self.__arbitraryDataMapMap)
