@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -224,5 +225,11 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     public void setHasPrimary(boolean hasPrimary) {
         this.hasPrimary = hasPrimary;
+    }
+
+    @Override
+    public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
+        // TODO 
+        
     }
 }

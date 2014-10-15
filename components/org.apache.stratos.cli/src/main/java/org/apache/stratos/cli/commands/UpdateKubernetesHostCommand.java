@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.*;
@@ -32,29 +31,28 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Deploy kubernetes group command.
+ * Update kubernetes host command.
  */
-public class DeployKubernetesGroupCommand implements Command<StratosCommandContext> {
+public class UpdateKubernetesHostCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(DeployKubernetesGroupCommand.class);
 
     private Options options;
 
-    public DeployKubernetesGroupCommand() {
+    public UpdateKubernetesHostCommand() {
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Kubernetes group resource path");
+                "Kubernetes host resource path");
         options.addOption(option);
     }
-
     @Override
     public String getName() {
-        return "deploy-kubernetes-group";
+        return "update-kubernetes-host";
     }
 
     @Override
     public String getDescription() {
-        return "Deploy kubernetes group";
+        return "Update kubernetes host";
     }
 
     @Override
@@ -84,14 +82,14 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
             if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
                 String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployKubernetesGroup(resourceFileContent);
+                RestCommandLineService.getInstance().updateKubernetesHost(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
-                System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+                context.getStratosApplication().printUsage(getName());
                 return CliConstants.COMMAND_FAILED;
             }
         } catch (ParseException e) {

@@ -155,6 +155,7 @@ public class StratosConstants {
     public static final String ALLOCATED_SERVICE_HOST_PORT = "ALLOCATED_SERVICE_HOST_PORT";
     
     //drools related constants
+    public static final String DROOLS_DIR_NAME = "drools";
     public static final String CONTAINER_SCALE_CHECK_DROOL_FILE = "container-scaling.drl";
     public static final String VM_SCALE_CHECK_DROOL_FILE = "scaling.drl";
     public static final String CONTAINER_MIN_CHECK_DROOL_FILE = "container-mincheck.drl";

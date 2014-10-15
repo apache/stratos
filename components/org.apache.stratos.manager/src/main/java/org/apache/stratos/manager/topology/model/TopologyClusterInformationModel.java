@@ -72,7 +72,7 @@ public class TopologyClusterInformationModel {
     public void addCluster (Cluster cluster) {
 
         if(log.isDebugEnabled()) {
-    		log.debug(" Adding cluster ["+cluster.getClusterId()+"] ");
+    		log.debug(" Adding cluster ["+cluster+"] ");
     	}
     	clusterIdToClusterMap.put(cluster.getClusterId(), cluster);
     	serviceNameToClusterMap.put(cluster.getServiceName(), cluster);
@@ -86,6 +86,16 @@ public class TopologyClusterInformationModel {
     		log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
     	}
     	return cluster;
+    }
+    
+    public Cluster getCluster (int tenantId, String subscriptionAlias) {
+
+        String clusterId = dataInsertionNRetrievalMgr.getCartridgeSubscription(tenantId, subscriptionAlias).getClusterDomain();
+        Cluster cluster = clusterIdToClusterMap.get(clusterId);
+        if(log.isDebugEnabled()) {
+            log.debug(" Found cluster ["+cluster+"] with id ["+clusterId+"] ");
+        }
+        return cluster;
     }
     
     public Cluster getCluster (String cartridgeType) {

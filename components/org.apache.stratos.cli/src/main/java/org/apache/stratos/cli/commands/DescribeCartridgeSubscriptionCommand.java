@@ -19,48 +19,77 @@
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
-import org.apache.stratos.cli.RestCommandLineService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.Command;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ListCartridgesCommand implements Command<StratosCommandContext> {
-
-	private static final Logger logger = LoggerFactory.getLogger(ListCartridgesCommand.class);
-
-	public ListCartridgesCommand() {
+public class DescribeCartridgeSubscriptionCommand implements Command<StratosCommandContext>{
+	
+	private static final Logger logger = LoggerFactory.getLogger(DescribeCartridgeSubscriptionCommand.class);
+	
+	private final Options options;
+	
+	public DescribeCartridgeSubscriptionCommand() {
+		options = constructOptions();
 	}
+	
+	/**
+	 * Construct Options.
+	 * 
+	 * @return Options expected from command-line.
+	 */
+	private Options constructOptions() {
 
+		final Options options = new Options();
+		return options;
+	}
+	
+	@Override
 	public String getName() {
-		return CliConstants.CARTRIDGES_ACTION;
+		return "describe-cartridge-subscription";
 	}
 
+	@Override
 	public String getDescription() {
-		return "List available cartridges";
+		return "Describe cartridge subscription";
 	}
 
+	@Override
 	public String getArgumentSyntax() {
-		return null;
+		return "[cartridge-subscription-alias]";
 	}
 
+	@Override
+	public Options getOptions() {
+		return options;
+	}
+
+	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
-		if (args == null || args.length == 0) {
-            RestCommandLineService.getInstance().listCartridges();
-			return CliConstants.COMMAND_SUCCESSFULL;
+		
+		if (args != null && args.length > 0) {
+			String cartridgeSubscriptionAlias = args[0];
+
+            if(StringUtils.isBlank(cartridgeSubscriptionAlias)){
+                System.out.println("Please specify a non blank alias");
+                return CliConstants.COMMAND_FAILED;
+            }
+            else{
+                RestCommandLineService.getInstance().describeCartridgeSubscription(cartridgeSubscriptionAlias);
+                return CliConstants.COMMAND_SUCCESSFULL;
+            }
 		} else {
 			context.getStratosApplication().printUsage(getName());
 			return CliConstants.COMMAND_FAILED;
 		}
-	}
-
-	public Options getOptions() {
-		return null;
 	}
 
 }

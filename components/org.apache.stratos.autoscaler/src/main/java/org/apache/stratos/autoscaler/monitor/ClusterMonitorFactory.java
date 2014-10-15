@@ -142,15 +142,24 @@ public class ClusterMonitorFactory {
                         MemberContext memberContext = new MemberContext();
                         memberContext.setClusterId(member.getClusterId());
                         memberContext.setMemberId(memberId);
+                        memberContext.setInitTime(member.getInitTime());
                         memberContext.setPartition(partition);
                         memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
                         if (MemberStatus.Activated.equals(member.getStatus())) {
+                        	if (log.isDebugEnabled()) {
+                        		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+            					log.debug(msg);
+            				}
                             partitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
                         } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
+                        	if (log.isDebugEnabled()) {
+                        		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+            					log.debug(msg);
+            				}
                             partitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
@@ -273,13 +282,22 @@ public class ClusterMonitorFactory {
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);
                     memberContext.setPartition(partition);
+                    memberContext.setInitTime(member.getInitTime());
 
                     if (MemberStatus.Activated.equals(member.getStatus())) {
+                    	if (log.isDebugEnabled()) {
+                    		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+        					log.debug(msg);
+        				}
                         partitionContext.addActiveMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
                                MemberStatus.Starting.equals(member.getStatus())) {
+                    	if (log.isDebugEnabled()) {
+                    		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+        					log.debug(msg);
+        				}
                         partitionContext.addPendingMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
@@ -384,12 +402,30 @@ public class ClusterMonitorFactory {
             MemberContext memberContext = new MemberContext();
             memberContext.setMemberId(memberId);
             memberContext.setClusterId(clusterId);
-
+            memberContext.setInitTime(member.getInitTime());
+            
+            // if there is at least one member in the topology, that means service has been created already
+            // this is to avoid calling startContainer() method again
+            kubernetesClusterCtxt.setServiceClusterCreated(true);
+            
             if (MemberStatus.Activated.equals(member.getStatus())) {
+            	if (log.isDebugEnabled()) {
+            		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+					log.debug(msg);
+				}
                 dockerClusterMonitor.getKubernetesClusterCtxt().addActiveMember(memberContext);
             } else if (MemberStatus.Created.equals(member.getStatus())
                        || MemberStatus.Starting.equals(member.getStatus())) {
+            	if (log.isDebugEnabled()) {
+            		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+					log.debug(msg);
+				}
                 dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
+            }
+            
+            kubernetesClusterCtxt.addMemberStatsContext(new MemberStatsContext(memberId));
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member stat context has been added: [member] %s", memberId));
             }
         }
 

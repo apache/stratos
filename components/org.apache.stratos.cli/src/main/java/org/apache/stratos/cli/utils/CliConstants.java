@@ -148,6 +148,11 @@ public class CliConstants {
 	 * Give information of a cartridge.
 	 */
 	public static final String INFO_ACTION = "info";
+	
+	/**
+     * Update a subscription.
+     */
+    public static final String UPDATE_SUBSCRIPTION_ACTION = "update-subscription";
 
 	/**
 	 * Synchronize repository

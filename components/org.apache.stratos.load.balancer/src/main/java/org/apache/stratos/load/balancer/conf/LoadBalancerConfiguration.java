@@ -470,7 +470,9 @@ public class LoadBalancerConfiguration {
 
                         for (Node memberNode : membersNode.getChildNodes()) {
                             String memberId = memberNode.getName();
-                            Member member = new Member(cluster.getServiceName(), cluster.getClusterId(), Constants.STATIC_NETWORK_PARTITION, Constants.STATIC_PARTITION, memberId);
+                            // we are making it as 1 because we are not using this for static loadbalancer configuration
+                            long initTime = -1;
+                            Member member = new Member(cluster.getServiceName(), cluster.getClusterId(), Constants.STATIC_NETWORK_PARTITION, Constants.STATIC_PARTITION, memberId, initTime);
                             String ip = memberNode.getProperty(Constants.CONF_PROPERTY_IP);
                             validateRequiredPropertyInNode(Constants.CONF_PROPERTY_IP, ip, String.format("member %s", memberId));
 

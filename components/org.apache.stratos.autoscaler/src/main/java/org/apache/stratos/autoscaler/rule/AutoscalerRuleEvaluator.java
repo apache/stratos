@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
 import org.drools.builder.*;
@@ -176,7 +177,8 @@ public class AutoscalerRuleEvaluator {
         
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
         String configDir = CarbonUtils.getCarbonConfigDirPath();
-        Resource resource = ResourceFactory.newFileResource(configDir + File.separator + drlFileName );
+        String droolsDir = configDir + File.separator + StratosConstants.DROOLS_DIR_NAME;
+        Resource resource = ResourceFactory.newFileResource(droolsDir + File.separator + drlFileName);
 		kbuilder.add(resource, ResourceType.DRL);
         KnowledgeBuilderErrors errors = kbuilder.getErrors();
         if (errors.size() > 0) {

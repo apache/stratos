@@ -150,7 +150,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployDeploymentPolicyCommand();
         commands.put(command.getName(), command);
 		
-		command = new ListSubscribedCartridgesCommand();
+		command = new ListCartridgeSubscriptionsCommand();
 		commands.put(command.getName(), command);
 
         command = new ListPartitionCommand();
@@ -177,7 +177,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeAutoScalingPolicyCommand();
         commands.put(command.getName(), command);
         
-        command = new ListCartridgeSubscriptionsCommand();
+        command = new DescribeCartridgeSubscriptionCommand();
         commands.put(command.getName(), command);
 		
 		command = new SyncCommand();
@@ -199,6 +199,15 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         commands.put(command.getName(), command);
 
         command = new UndeployKubernetesHostCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateKubernetesMasterCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateKubernetesHostCommand();
+        commands.put(command.getName(), command);
+        
+        command = new UpdateSubscriptionPropertiesCommand();
         commands.put(command.getName(), command);
 
 		if (logger.isDebugEnabled()) {

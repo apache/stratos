@@ -234,13 +234,13 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateUpdateContainers(KubernetesClusterContext kubernetesClusterContext,
-                                         int replicas) {
+    public void delegateScaleUpContainers(KubernetesClusterContext kubernetesClusterContext,
+                                         int newReplicasCount) {
         String clusterId = kubernetesClusterContext.getClusterId();
         try {
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             // getting newly created pods' member contexts
-            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, replicas);
+            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
             if (null != memberContexts) {
                 for (MemberContext memberContext : memberContexts) {
                     if (null != memberContext) {
@@ -263,8 +263,31 @@ public class RuleTasksDelegator {
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot update kubernetes controller ", e);
+            log.error("Scaling up failed, couldn't update kubernetes controller ", e);
         }
+    }
+    
+    public void delegateScaleDownContainers(KubernetesClusterContext kubernetesClusterContext, 
+    										int newReplicasCount) {
+    	String clusterId = kubernetesClusterContext.getClusterId();
+    	try {
+    		CloudControllerClient ccClient = CloudControllerClient.getInstance();
+    		// getting terminated pods's member contexts
+    		MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
+    		if (null != memberContexts) {
+				for (MemberContext memberContext : memberContexts) {
+					if (null != memberContext) {
+						// we are not removing from active/pending list, it will be handled in AS event receiver
+						if (log.isDebugEnabled()) {
+							log.debug(String.format("Scaling down, terminated the member with id %s in cluster %s", 
+									memberContext.getMemberId(), memberContext.getClusterId()));
+						}
+					}
+				}
+			}
+     	} catch (Exception e) {
+    		log.error("Scaling down failed, couldn't update kubernetes controller ", e);
+    	}
     }
     
     public void delegateTerminateContainer(KubernetesClusterContext kubernetesClusterContext, String memberId) {

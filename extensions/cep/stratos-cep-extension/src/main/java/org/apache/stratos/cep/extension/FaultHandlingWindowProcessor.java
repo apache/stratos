@@ -102,6 +102,15 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
      */
     protected void addDataToMap(InEvent event) {
         String id = (String) event.getData()[memberIdAttrIndex];
+        //checking whether this member is the topology.
+        //sometimes there can be a delay between publishing member terminated events
+        //and actually terminating instances. Hence CEP might get events for already terminated members
+        //so we are checking the topology for the member existence
+        Member member = getMemberFromId(id);
+        if (null == member) {
+			log.debug("Member not found in the toplogy. Event rejected");
+			return;
+		}
         if (StringUtils.isNotEmpty(id)) {
             memberTimeStampMap.put(id, event.getTimeStamp());
         } else {
@@ -167,26 +176,30 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
             return null;
         }
         if (TopologyManager.getTopology().isInitialized()){
-            TopologyManager.acquireReadLock();
-            if (TopologyManager.getTopology().getServices() == null){
-                return null;
-            }
-
-            // TODO make this efficient by adding APIs to messaging component
-            for (Service service : TopologyManager.getTopology().getServices()) {
-                if (service.getClusters() != null) {
-                    for (Cluster cluster : service.getClusters()) {
-                        if (cluster.getMembers() != null) {
-                            for (Member member : cluster.getMembers()){
-                                if (memberId.equals(member.getMemberId())){
-                                    return member;
+        	try {
+                TopologyManager.acquireReadLock();
+                if (TopologyManager.getTopology().getServices() == null){
+                    return null;
+                }
+                // TODO make this efficient by adding APIs to messaging component
+                for (Service service : TopologyManager.getTopology().getServices()) {
+                    if (service.getClusters() != null) {
+                        for (Cluster cluster : service.getClusters()) {
+                            if (cluster.getMembers() != null) {
+                                for (Member member : cluster.getMembers()){
+                                    if (memberId.equals(member.getMemberId())){
+                                        return member;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
-            TopologyManager.releaseReadLock();
+        	} catch (Exception e) {
+        		log.error("Error while reading topology" + e);
+        	} finally {
+        		TopologyManager.releaseReadLock();
+        	}
         }
         return null;
     }

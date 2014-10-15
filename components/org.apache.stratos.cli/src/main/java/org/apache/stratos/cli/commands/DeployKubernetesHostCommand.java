@@ -95,13 +95,16 @@ public class DeployKubernetesHostCommand implements Command<StratosCommandContex
                 return CliConstants.COMMAND_FAILED;
             }
         } catch (ParseException e) {
-            if (logger.isErrorEnabled()) {
-                logger.error("Error parsing arguments", e);
-            }
+            logger.error("Error parsing arguments", e);
             System.out.println(e.getMessage());
             return CliConstants.COMMAND_FAILED;
         } catch (IOException e) {
             System.out.println("Invalid resource path");
+            return CliConstants.COMMAND_FAILED;
+        } catch (Exception e) {
+            String message = "Unknown error occurred: " + e.getMessage();
+            System.out.println(message);
+            logger.error(message, e);
             return CliConstants.COMMAND_FAILED;
         }
     }

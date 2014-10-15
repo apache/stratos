@@ -19,18 +19,12 @@
 package org.apache.stratos.rest.endpoint.bean.topology;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+
 import java.util.List;
 
 @XmlRootElement
 public class Cluster {
-
-    @Override
-	public String toString() {
-		return "Cluster [serviceName=" + serviceName + ", clusterId="
-				+ clusterId + ", member=" + member + ", tenantRange="
-				+ tenantRange + ", hostNames=" + hostNames + ", isLbCluster="
-				+ isLbCluster + "]";
-	}
 
 	public String serviceName;
 
@@ -43,4 +37,15 @@ public class Cluster {
     public List<String> hostNames;
 
     public boolean isLbCluster;
+    
+    public List<PropertyBean> property;
+
+    @Override
+    public String toString() {
+        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId + ", member=" + member
+                + ", tenantRange=" + tenantRange + ", hostNames=" + hostNames + ", isLbCluster=" + isLbCluster
+                + ", property=" + property + "]";
+    }
+
+    
 }

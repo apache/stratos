@@ -1,4 +1,10 @@
 package org.apache.stratos.cli.beans.topology;
+
+import java.util.List;
+import java.util.Properties;
+
+import org.apache.stratos.cli.beans.autoscaler.partition.PropertyBean;
+
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,6 +38,7 @@ public class Member {
     private String memberIp;
     private String lbClusterId;
     private String memberPublicIp;
+    private List<PropertyBean> property;
 
     public String getServiceName() {
         return serviceName;
@@ -103,6 +110,14 @@ public class Member {
 
 	public void setMemberPublicIp(String memberPublicIp) {
 		this.memberPublicIp = memberPublicIp;
-	}   
-    
+	}
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
+
 }

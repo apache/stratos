@@ -51,7 +51,6 @@ public class ListDeploymentPolicyCommand implements Command<StratosCommandContex
             logger.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
-            //CommandLineService.getInstance().listAvailableCartridges();
             RestCommandLineService.getInstance().listDeploymentPolicies();
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {

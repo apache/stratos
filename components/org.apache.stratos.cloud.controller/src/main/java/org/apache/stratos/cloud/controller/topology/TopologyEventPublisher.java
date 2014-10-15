@@ -144,9 +144,11 @@ public class TopologyEventPublisher {
 			String clusterId, String networkPartitionId, String partitionId,
 			String memberId, String lbClusterId, String publicIp,
 			String privateIp, MemberContext context) {
+		
+		long initTime = context.getInitTime();
 		InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(
 				serviceName, clusterId, networkPartitionId, partitionId,
-				memberId);
+				memberId, initTime);
 		instanceSpawnedEvent.setLbClusterId(lbClusterId);
 		instanceSpawnedEvent.setMemberIp(privateIp);
 		instanceSpawnedEvent.setMemberPublicIp(publicIp);
@@ -154,9 +156,9 @@ public class TopologyEventPublisher {
 				.toJavaUtilProperties(context.getProperties()));
 		if (log.isInfoEnabled()) {
 			log.info(String
-					.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s",
+					.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s [properties] %s",
 							serviceName, clusterId, networkPartitionId,
-							partitionId, memberId, lbClusterId));
+							partitionId, memberId, lbClusterId, context.getProperties()));
 		}
 		publishEvent(instanceSpawnedEvent);
 	}

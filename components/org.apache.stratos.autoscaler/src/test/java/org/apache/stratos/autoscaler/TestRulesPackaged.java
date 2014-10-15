@@ -32,9 +32,9 @@ import static org.junit.Assert.assertEquals;
 
 public class TestRulesPackaged {
     private static final Log log = LogFactory.getLog(TestRulesPackaged.class);
-    private String minCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/mincheck.drl";
-    private String scalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/scaling.drl";
-    private String terminateAllDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/terminateall.drl";
+    private String minCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/mincheck.drl";
+    private String scalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/scaling.drl";
+    private String terminateAllDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/terminateall.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
 

@@ -47,42 +47,37 @@ public class HealthStatEventMessageListener implements MqttCallback {
 	}
 
 	@Override
-	public void connectionLost(Throwable arg0) {
-		// TODO Auto-generated method stub
-
+	public void connectionLost(Throwable err) {
+		log.debug("MQTT connection lost", err);
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		// TODO Auto-generated method stub
-
+		log.debug("Message delivery completed");
 	}
 
 	@Override
-	public void messageArrived(String topicName, MqttMessage message) throws Exception {
-		if (message instanceof MqttMessage) {
-
-			TextMessage receivedMessage = new ActiveMQTextMessage();
-			if (log.isDebugEnabled()) {
-				log.debug(String.format("Health stat event messege received...."));
-
-			}
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  Util.getEventNameForTopic(topicName));
-
-			try {
-				if (log.isDebugEnabled()) {
-					log.debug(String.format("Health stat event message received: %s",
-					                        ((TextMessage) message).getText()));
-				}
-				// Add received message to the queue
-				messageQueue.add(receivedMessage);
-
-			} catch (JMSException e) {
-				log.error(e.getMessage(), e);
-			}
+	public void messageArrived(String topicName, MqttMessage message)
+			throws Exception {
+		TextMessage receivedMessage = new ActiveMQTextMessage();
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Health stat event messege received...."));
 		}
+		receivedMessage.setText(new String(message.getPayload()));
+		receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
+				Util.getEventNameForTopic(topicName));
 
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug(String.format(
+						"Health stat event message received: %s",
+						((TextMessage) message).getText()));
+			}
+			// Add received message to the queue
+			messageQueue.add(receivedMessage);
+
+		} catch (JMSException e) {
+			log.error(e.getMessage(), e);
+		}
 	}
 }

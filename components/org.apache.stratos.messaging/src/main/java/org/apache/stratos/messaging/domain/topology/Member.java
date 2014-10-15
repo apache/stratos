@@ -39,6 +39,8 @@ public class Member implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    // member initiated time
+    private final long initTime;
     // Key: Port.proxy
     @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<Integer, Port> portMap;
@@ -49,13 +51,14 @@ public class Member implements Serializable {
     private Properties properties;
     private String lbClusterId;
 
-    public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+    public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<Integer, Port>();
+        this.initTime = initTime;
     }
 
     public String getServiceName() {
@@ -69,7 +72,11 @@ public class Member implements Serializable {
     public String getMemberId() {
         return memberId;
     }
-
+    
+    public long getInitTime() {
+        return initTime;
+    }
+    
     public MemberStatus getStatus() {
         return status;
     }
@@ -149,6 +156,14 @@ public class Member implements Serializable {
 
     public void setMemberPublicIp(String memberPublicIp) {
         this.memberPublicIp = memberPublicIp;
+    }
+
+    @Override
+    public String toString() {
+        return "Member [serviceName=" + serviceName + ", clusterId=" + clusterId + ", networkPartitionId="
+                + networkPartitionId + ", partitionId=" + partitionId + ", memberId=" + memberId + ", initTime=" + initTime + ", portMap="
+                + portMap + ", memberPublicIp=" + memberPublicIp + ", status=" + status + ", memberIp=" + memberIp
+                + ", properties=" + properties + ", lbClusterId=" + lbClusterId + "]";
     }
 
 }

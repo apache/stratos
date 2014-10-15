@@ -531,6 +531,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     String msg =
                                  "Termination failed. Cannot find a node id for Member Id: " +
                                          memberId;
+
+                    // log information
+                    logTermination(ctxt);
                     LOG.error(msg);
                     throw new InvalidMemberException(msg);
                 }
@@ -1624,16 +1627,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
 		}
 		
-		List<MemberContext> removedMembers = dataHolder.removeMemberContextsOfCluster(clusterId);
+		List<MemberContext> membersToBeRemoved = dataHolder.getMemberContextsOfClusterId(clusterId);
 		
-		for (MemberContext memberContext : removedMembers) {
+		for (MemberContext memberContext : membersToBeRemoved) {
             logTermination(memberContext);
         }
 		
 		// persist
 		persist();
 		
-		return removedMembers.toArray(new MemberContext[0]);
+		return membersToBeRemoved.toArray(new MemberContext[0]);
 	}
 
 	@Override
@@ -1712,7 +1715,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if(allPods.length == replicas) {
                     break;
                 }
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             }
             
             if (LOG.isDebugEnabled()) {
@@ -1735,7 +1738,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     
                     context.setProperties(CloudControllerUtil.addProperty(context
                             .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                            ctxt.getProperties().getProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+                            CloudControllerUtil.getProperty(ctxt.getProperties(), 
+                                    StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
                     
                     // wait till Pod status turns to running and send member spawned.
                     ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
@@ -1815,11 +1819,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // member id = pod id
             kubApi.deletePod(memberId);
             
-            MemberContext removedMemberContext = dataHolder.removeMemberContext(memberId, clusterId);
+            MemberContext memberToBeRemoved = dataHolder.getMemberContextOfMemberId(memberId);
             
-            logTermination(removedMemberContext);
+            logTermination(memberToBeRemoved);
             
-            return removedMemberContext;
+            return memberToBeRemoved;
             
         } catch (KubernetesClientException e) {
             String msg = String.format("Failed to terminate member [Member id] %s", memberId);

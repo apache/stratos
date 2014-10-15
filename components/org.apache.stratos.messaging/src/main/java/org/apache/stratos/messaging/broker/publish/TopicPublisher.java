@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import com.google.gson.Gson;
@@ -69,56 +70,45 @@ public class TopicPublisher {
 	public void publish(Object messageObj, boolean retry) {
 
 		synchronized (TopicPublisher.class) {
-			Gson gson = new Gson();
-			String message = gson.toJson(messageObj);
-			boolean published = false;
-			while (!published)
-				try {
-					mqttClient = MQTTConnector.getMQTTConClient();
+            Gson gson = new Gson();
+            String message = gson.toJson(messageObj);
+            boolean published = false;
+            while (!published) {
+                mqttClient = MQTTConnector.getMQTTConClient();
+                MqttMessage mqttMSG = new MqttMessage(message.getBytes());
 
-					MqttMessage mqttMSG = new MqttMessage(message.getBytes());
+                mqttMSG.setQos(QOS);
+                MqttConnectOptions connOpts = new MqttConnectOptions();
+                connOpts.setCleanSession(true);
+                try {
+                    mqttClient.connect(connOpts);
+                    mqttClient.publish(topic, mqttMSG);
 
-					mqttMSG.setQos(QOS);
-					MqttConnectOptions connOpts = new MqttConnectOptions();
-					connOpts.setCleanSession(true);
-					mqttClient.connect(connOpts);
-					mqttClient.publish(topic, mqttMSG);
-					mqttClient.disconnect();
-					published = true;
-				} catch (Exception e) {
-					initialized = false;
-					if (log.isErrorEnabled()) {
-						log.error("Error while publishing to the topic: " + topic, e);
-					}
-					if (!retry) {
-						if (log.isDebugEnabled()) {
-							log.debug("Retry disabled for topic " + topic);
-						}
-						throw new RuntimeException(e);
-					}
+                    published = true;
+                } catch (MqttException e) {
+                    initialized = false;
+                    if (!retry) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Retry disabled for topic " + topic);
+                        }
+                        throw new RuntimeException(e);
+                    }
 
-					if (log.isInfoEnabled()) {
-						log.info("Will try to re-publish in 60 sec");
-					}
-					try {
-						Thread.sleep(60000);
-					} catch (InterruptedException ignore) {
-					}
-				}
-				finally {
+                    if (log.isInfoEnabled()) {
+                        log.info("Will try to re-publish in 60 sec");
+                    }
+                    try {
+                        Thread.sleep(60000);
+                    } catch (InterruptedException ignore) {
+                    }
+                } finally {
+                    try {
+                        mqttClient.disconnect();
+                    } catch (MqttException ignore) {
 
-				}
-		}
+                    }
+                }
+            }
+        }
 	}
-
-	public void close() {
-		synchronized (TopicPublisher.class) {
-			// closes all sessions/connections
-			try {
-
-			} catch (Exception ignore) {
-			}
-		}
-	}
-
 }

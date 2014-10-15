@@ -24,6 +24,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
@@ -87,7 +88,7 @@ public class DeployPartitionCommand implements Command<StratosCommandContext> {
                         logger.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    partionDeployment = readResource(resourcePath);
+                    partionDeployment = CliUtils.readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
@@ -105,30 +106,12 @@ public class DeployPartitionCommand implements Command<StratosCommandContext> {
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {
-                //e.printStackTrace();
                 System.out.println("Invalid resource path");
                 return CliConstants.COMMAND_FAILED;
             }
         } else {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
-        }
-    }
-
-    private String readResource(String fileName) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
-        try {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append("\n");
-                line = br.readLine();
-            }
-            return sb.toString();
-        } finally {
-            br.close();
         }
     }
 

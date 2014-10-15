@@ -20,17 +20,20 @@ package org.apache.stratos.autoscaler.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
@@ -324,5 +327,19 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     }
 
+    public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Updating Cluster monitor [Cluster id] %s ", clusterId));
+        }
+        AutoscalerContext asCtx = AutoscalerContext.getInstance();
+        AbstractClusterMonitor monitor = asCtx.getClusterMonitor(clusterId);
+        
+        if (monitor != null) {
+            monitor.handleDynamicUpdates(properties);
+        } else {
+            log.debug(String.format("Updating Cluster monitor failed: Cluster monitor [Cluster id] %s not found.", 
+                    clusterId));
+        }
+    }
 
 }

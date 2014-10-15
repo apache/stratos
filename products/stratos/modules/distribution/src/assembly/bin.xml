@@ -660,38 +660,40 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
+		<!-- drools files start-->
 	<file>
-            <source>src/main/conf/mincheck.drl</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <source>src/main/conf/drools/mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/scaling.drl</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <source>src/main/conf/drools/scaling.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/terminateall.drl</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <source>src/main/conf/drools/terminateall.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
                 <!-- container-drools files -->
         <file>
-            <source>src/main/conf/container-mincheck.drl</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <source>src/main/conf/drools/container-mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/container-scaling.drl</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <source>src/main/conf/drools/container-scaling.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
 		<!-- container-drools files -->
+		<!-- /drools files end-->
 		<!-- autoscaler -->
         <file>
             <source>${project.basedir}/INSTALL.txt</source>

@@ -52,7 +52,6 @@ public class EventPublisherPool {
     public static void close(String topicName) {
         synchronized (EventPublisherPool.class) {
             if(topicNameEventPublisherMap.containsKey(topicName)) {
-                topicNameEventPublisherMap.get(topicName).close();
                 topicNameEventPublisherMap.remove(topicName);
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Event publisher closed and removed from pool: [topic] %s", topicName));
