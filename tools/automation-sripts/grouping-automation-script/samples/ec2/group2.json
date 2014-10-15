@@ -1,0 +1,15 @@
+{
+    "name": "group2",
+    "subGroups": [
+        "group1"
+    ],
+    "cartridges": [
+        "tomcat"
+    ],
+    "dependencies": {
+        "startupOrders": [
+             "group.group1,cartridge.tomcat"
+	],
+        "killBehaviour": "kill-dependents"
+    }
+}
