@@ -28,22 +28,23 @@ public interface MetaDataServiceClient {
 
     /**
      * Initialize the MetaDataServiceClient. Should be called once before using the MetaDataServiceClient.
+     *
      * @throws MetaDataServiceClientExeption
      */
-    public void initialize ();
+    public void initialize();
 
     /**
      * Adds a property key value pair for the relevant cluster of the specified app
      *
-     * @param appId Application id
-     * @param clusterId Cluster id
-     * @param propertyKey Key of the Property
+     * @param appId         Application id
+     * @param clusterId     Cluster id
+     * @param propertyKey   Key of the Property
      * @param propertyValue Value of the Property
      * @throws MetaDataServiceClientExeption
      */
     public void addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue) throws MetaDataServiceClientExeption;
 
-//    /**
+    //    /**
 //     * Adds a property key value pair for the specified app
 //     *
 //     * @param appId Application id
@@ -61,9 +62,9 @@ public interface MetaDataServiceClient {
 //     * @return Map of Keys and Values for the specified cluster in the relevant app. Each key can have multiple Values.
 //     * @throws MetaDataServiceClientExeption
 //     */
-    public Map<String, Set<String>> getProperties (String appId, String clusterId) throws MetaDataServiceClientExeption;
+    public Map<String, Set<String>> getProperties(String appId, String clusterId) throws MetaDataServiceClientExeption;
 
-//    /**
+    //    /**
 //     * Retrieves the property key value pairs of the specified app
 //     *
 //     * @param appId Application id
@@ -80,23 +81,23 @@ public interface MetaDataServiceClient {
 //     * @return Set of Values for specified Key of the relevant app.
 //     * @throws MetaDataServiceClientExeption
 //     */
-    public Set<String> getProperty (String appId, String propertyKey) throws MetaDataServiceClientExeption;
+    public Set<String> getProperty(String appId, String propertyKey) throws MetaDataServiceClientExeption;
 
     /**
      * Retrieves the property values for the specified key of the relevant cluster and app
      *
-     * @param appId Application id
-     * @param clusterId Cluster id
+     * @param appId       Application id
+     * @param clusterId   Cluster id
      * @param propertyKey Key of the Property
      * @return Set of Values for specified Key of the relevant cluster in the relevant app.
      * @throws MetaDataServiceClientExeption
      */
-    public Set<String> getProperty (String appId, String clusterId, String propertyKey) throws MetaDataServiceClientExeption;
+    public Set<String> getProperty(String appId, String clusterId, String propertyKey) throws MetaDataServiceClientExeption;
 
     /**
      * Shutdown the MetaDataServiceClient. Should be called once after using the client.
      *
      * @throws MetaDataServiceClientExeption
      */
-    public void terminate () throws MetaDataServiceClientExeption;
+    public void terminate() throws MetaDataServiceClientExeption;
 }

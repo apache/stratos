@@ -29,6 +29,4 @@ public class MetaDataClientConstants {
 
     public static final String METADATA_SERVICE_PASSWORD = "metadataService.password";
 
-    public static final String METADATA_CLIENT_DATA_EXTRACTOR_CLASS = "metadataClient.dataExtractorClass";
-
 }

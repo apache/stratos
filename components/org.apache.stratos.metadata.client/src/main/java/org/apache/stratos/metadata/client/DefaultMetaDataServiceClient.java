@@ -21,7 +21,6 @@ package org.apache.stratos.metadata.client;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.apache.stratos.metadata.client.beans.PropertyBean;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
 import org.apache.stratos.metadata.client.exception.RestClientException;
@@ -34,14 +33,19 @@ import java.util.Set;
 
 public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
 
-    private static Log log = LogFactory.getLog(DefaultMetaDataServiceClient.class);
+    private static final Log log = LogFactory.getLog(DefaultMetaDataServiceClient.class);
 
     private RestClient restClient;
-    private String baseUrl;
+    private final String baseUrl;
 
-    public DefaultMetaDataServiceClient (String baseUrl) throws RestClientException {
+    public DefaultMetaDataServiceClient(String baseUrl) throws RestClientException {
         this.baseUrl = baseUrl;
-        restClient = new DefaultRestClient();
+        this.restClient = new DefaultRestClient();
+    }
+
+    public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient) throws RestClientException {
+        this.baseUrl = baseUrl;
+        this.restClient = restClient;
     }
 
     public void initialize() {
@@ -59,31 +63,10 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
         }
     }
 
-    public void addPropertyToApplication(String appId, String propertyKey, String propertyValue)
-            throws MetaDataServiceClientExeption {
-        String applicationPath = baseUrl.concat("application/").concat(appId).concat("/property");
-        PropertyBean property = new PropertyBean(propertyKey, propertyValue);
-        HttpResponse x;
-        try {
-            x = restClient.doPost(applicationPath, property);
-        } catch (RestClientException e) {
-            log.error(String.format("Error occurred while adding property %s", propertyKey));
-        }
-    }
-
-//    public void addPropertyToCluster(String appId, String propertyKey, String propertyValue)
-//            throws MetaDataServiceClientExeption {
-//        //To change body of implemented methods use File | Settings | File Templates.
-//    }
-
     public Map<String, Set<String>> getProperties(String appId, String clusterId)
             throws MetaDataServiceClientExeption {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
-
-//    public Map<String, Set<String>> getProperties(String appId) throws MetaDataServiceClientExeption {
-//        return null;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
 
     public Set<String> getProperty(String appId, String propertyKey) throws MetaDataServiceClientExeption {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

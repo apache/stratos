@@ -48,34 +48,32 @@ import java.security.NoSuchAlgorithmException;
 
 public class DefaultRestClient implements RestClient {
 
+    private static final int MAX_TOTAL_CONNECTIONS = 100;
+    private static final int DEFAULT_MAX_PER_ROUTE = 20;
     private static final String APPLICATION_JSON = "application/json";
-    public static final int MAX_TOTAL_CONNECTIONS = 100;
-    public static final int DEFAULT_MAX_PER_ROUTE = 20;
-
-    private static Log log = LogFactory.getLog(DefaultRestClient.class);
+    private static final Log log = LogFactory.getLog(DefaultRestClient.class);
 
     private HttpClient httpClient;
 
-    public DefaultRestClient() throws  RestClientException{
+    public DefaultRestClient() throws RestClientException {
         SSLContextBuilder builder = new SSLContextBuilder();
 
-        SSLConnectionSocketFactory sslsf = null;
+        SSLConnectionSocketFactory sslConnectionFactory;
         try {
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-            sslsf = new SSLConnectionSocketFactory(
-                    builder.build());
+            sslConnectionFactory = new SSLConnectionSocketFactory(builder.build());
         } catch (NoSuchAlgorithmException e) {
-            throw  new RestClientException(e);
+            throw new RestClientException(e);
         } catch (KeyManagementException e) {
-            throw  new RestClientException(e);
+            throw new RestClientException(e);
         } catch (KeyStoreException e) {
-            throw  new RestClientException(e);
+            throw new RestClientException(e);
         }
-        CloseableHttpClient closableHttpClient = HttpClients.custom().setSSLSocketFactory(sslsf).setConnectionManager(getHttpConnectionManager()).build();
+        CloseableHttpClient closableHttpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionFactory).setConnectionManager(getHttpConnectionManager()).build();
         this.httpClient = closableHttpClient;
     }
 
-    private HttpClientConnectionManager getHttpConnectionManager(){
+    private HttpClientConnectionManager getHttpConnectionManager() {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         // TODO: Introduce configurable variable for Max total and max per router variables.
         cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
@@ -97,7 +95,7 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing POST statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
-        }finally {
+        } finally {
             post.releaseConnection();
         }
     }
@@ -105,7 +103,7 @@ public class DefaultRestClient implements RestClient {
     private void setAuthHeader(HttpPost post) {
         String username = getUsername();
         String password = getPassword();
-        String identity = username+":"+password;
+        String identity = username + ":" + password;
         String encoding = new String(Base64.encodeBase64(identity.getBytes()));
         post.setHeader("Authorization", "Basic " + encoding);
     }
@@ -122,7 +120,7 @@ public class DefaultRestClient implements RestClient {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 
-        String payloadText =  gson.toJson(payload, payload.getClass());
+        String payloadText = gson.toJson(payload, payload.getClass());
         addStringPayload(post, payloadText);
     }
 
@@ -137,7 +135,7 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing GET statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
-        }finally {
+        } finally {
             get.releaseConnection();
         }
     }
@@ -153,20 +151,24 @@ public class DefaultRestClient implements RestClient {
             String errorMsg = "Error while executing DELETE statement";
             log.error(errorMsg, e);
             throw new RestClientException(errorMsg, e);
-        }finally {
+        } finally {
             delete.releaseConnection();
         }
     }
 
 
     private void addStringPayload(HttpPost post, String payloadText) {
+        if(org.apache.commons.lang.StringUtils.isEmpty(payloadText)){
+            throw new IllegalArgumentException("Payload text can not be null or empty");
+        }
         StringEntity stringEntity = null;
         try {
             stringEntity = new StringEntity(payloadText);
+            stringEntity.setContentType(APPLICATION_JSON);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        stringEntity.setContentType(APPLICATION_JSON);
+
         post.setEntity(stringEntity);
     }
 }

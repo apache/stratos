@@ -24,9 +24,9 @@ import org.apache.stratos.metadata.client.exception.RestClientException;
 
 public interface RestClient {
 
-    public HttpResponse doPost (String resourcePath, Object payload) throws RestClientException;
+    public HttpResponse doPost(String resourcePath, Object payload) throws RestClientException;
 
-    public HttpResponse doGet (String resourcePath) throws RestClientException;
+    public HttpResponse doGet(String resourcePath) throws RestClientException;
 
-    public HttpResponse doDelete (String resourcePath) throws RestClientException;
+    public HttpResponse doDelete(String resourcePath) throws RestClientException;
 }

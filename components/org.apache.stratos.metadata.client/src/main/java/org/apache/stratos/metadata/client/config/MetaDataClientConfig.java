@@ -21,89 +21,27 @@ package org.apache.stratos.metadata.client.config;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.metadata.client.sample.MetaDataServiceClientSample;
 import org.apache.stratos.metadata.client.util.MetaDataClientConstants;
-
 
 import java.io.File;
 
 public class MetaDataClientConfig {
 
-    private static final Log log = LogFactory.getLog(MetaDataServiceClientSample.class);
-
+    private static final Log log = LogFactory.getLog(MetaDataClientConfig.class);
+    private static volatile MetaDataClientConfig metaDataClientConfig;
     private String metaDataServiceBaseUrl;
-
-    private String dataExtractorClass;
-
     private String username;
-
     private String password;
-
     private XMLConfiguration config;
 
-    private static volatile MetaDataClientConfig metaDataClientConfig;
-
-    private MetaDataClientConfig () {
+    private MetaDataClientConfig() {
         readConfig();
     }
 
-    private void readConfig () throws RuntimeException{
-
-        // the config file path is found from a system property
-        String configFilePath = System.getProperty(MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
-        if (configFilePath == null) {
-            throw new RuntimeException("Unable to load the configuration file; no System Property found for " + MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
-        }
-        loadConfig(configFilePath);
-
-        // read configurations
-        metaDataServiceBaseUrl = config.getString(MetaDataClientConstants.METADATA_SERVICE_BASE_URL);
-        if (metaDataServiceBaseUrl == null) {
-            throw new RuntimeException("Unable to find metadata service base URL [ " +
-                    MetaDataClientConstants.METADATA_SERVICE_BASE_URL  + " ] in the config file");
-        }
-
-        username = config.getString(MetaDataClientConstants.METADATA_SERVICE_USERNAME);
-        if (username == null) {
-            throw new RuntimeException("Meta data service username not defined in the configuration");
-        }
-
-        password = config.getString(MetaDataClientConstants.METADATA_SERVICE_PASSWORD);
-        if (password == null) {
-            throw new RuntimeException("Meta data service password not defined in the configuration");
-        }
-
-        dataExtractorClass = config.getString(MetaDataClientConstants.METADATA_CLIENT_DATA_EXTRACTOR_CLASS);
-        if (dataExtractorClass == null) {
-            if(log.isDebugEnabled()) {
-                log.debug("No custom Data Extractor class detected in the configuration");
-            }
-        }
-    }
-
-    private void  loadConfig (String configFilePath) {
-
-        try {
-
-            File confFile;
-            if (configFilePath != null && !configFilePath.isEmpty()) {
-                confFile = new File(configFilePath);
-
-            } else {
-                confFile = new File(configFilePath);
-            }
-
-            config = new XMLConfiguration(confFile);
-
-        } catch (ConfigurationException e) {
-            String errorMsg = "Unable to load configuration file at " + configFilePath;
-            throw new RuntimeException(errorMsg);
-        }
-    }
-
-    public static MetaDataClientConfig getInstance () {
+    public static MetaDataClientConfig getInstance() {
 
         if (metaDataClientConfig == null) {
             synchronized (MetaDataClientConfig.class) {
@@ -116,12 +54,48 @@ public class MetaDataClientConfig {
         return metaDataClientConfig;
     }
 
-    public String getMetaDataServiceBaseUrl() {
-        return metaDataServiceBaseUrl;
+    private void readConfig() throws RuntimeException {
+
+        // the config file path is found from a system property
+        String configFilePath = System.getProperty(MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
+        if (configFilePath == null) {
+            throw new RuntimeException("Unable to load the configuration file; no System Property found for " + MetaDataClientConstants.METADATA_CLIENT_CONFIG_FILE);
+        }
+        loadConfig(configFilePath);
+
+        // read configurations
+        metaDataServiceBaseUrl = config.getString(MetaDataClientConstants.METADATA_SERVICE_BASE_URL);
+        if (metaDataServiceBaseUrl == null) {
+            throw new RuntimeException("Unable to find metadata service base URL [ " +
+                    MetaDataClientConstants.METADATA_SERVICE_BASE_URL + " ] in the config file");
+        }
+
+        username = config.getString(MetaDataClientConstants.METADATA_SERVICE_USERNAME);
+        if (username == null) {
+            throw new RuntimeException("Meta data service username not defined in the configuration");
+        }
+
+        password = config.getString(MetaDataClientConstants.METADATA_SERVICE_PASSWORD);
+        if (password == null) {
+            throw new RuntimeException("Meta data service password not defined in the configuration");
+        }
     }
 
-    public String getDataExtractorClass() {
-        return dataExtractorClass;
+    private void loadConfig(String configFilePath) {
+
+        if(StringUtils.isEmpty(configFilePath)){
+            throw new IllegalArgumentException("Confguration file path can not be null or empaty");
+        }
+        try {
+            config = new XMLConfiguration(new File(configFilePath));
+        } catch (ConfigurationException e) {
+            String errorMsg = "Unable to load configuration file at " + configFilePath;
+            throw new RuntimeException(errorMsg);
+        }
+    }
+
+    public String getMetaDataServiceBaseUrl() {
+        return metaDataServiceBaseUrl;
     }
 
     public String getUsername() {
