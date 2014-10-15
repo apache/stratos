@@ -24,14 +24,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@XmlRootElement(name="properties")
+@XmlRootElement(name = "properties")
 public class PropertyBean {
     private String key;
     private List<String> values = new ArrayList<String>();
 
-    public PropertyBean(){}
-    public PropertyBean(String key, String value){
-        this.key=key;
+    public PropertyBean() {
+    }
+
+    public PropertyBean(String key, String value) {
+        this.key = key;
         this.values.add(value);
     }
 
@@ -43,22 +45,21 @@ public class PropertyBean {
         this.key = key;
     }
 
-    public String[] getValues(){
+    public String[] getValues() {
         String[] values = new String[this.values.size()];
         values = this.values.toArray(values);
         return values;
+    }
+
+    public void setValues(String value) {
+        this.values.add(value);
     }
 
     public void setValues(String[] values) {
         this.values.addAll(Arrays.asList(values));
     }
 
-
-    public void setValues(String value) {
-        this.values.add(value);
-    }
-
-    public void addValue(String value){
+    public void addValue(String value) {
         this.values.add(value);
     }
 }

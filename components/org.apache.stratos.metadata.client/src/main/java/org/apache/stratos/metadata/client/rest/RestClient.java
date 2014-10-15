@@ -23,10 +23,28 @@ import org.apache.http.HttpResponse;
 import org.apache.stratos.metadata.client.exception.RestClientException;
 
 public interface RestClient {
+    /**
+     * Perform a HTTP POST request to @resourcePath with request body containing @payload converted to JSON.
+     * @param resourcePath Resource path to where is request is sent.
+     * @param payload request message body.
+     * @return Response of the request.
+     * @throws RestClientException
+     */
+    public HttpResponse doPost(String resourcePath, Object payload) throws RestClientException;
 
-    public HttpResponse doPost (String resourcePath, Object payload) throws RestClientException;
+    /**
+     * Perform a HTTP GET request to @resourcePath.
+     * @param resourcePath
+     * @return Response of the request.
+     * @throws RestClientException
+     */
+    public HttpResponse doGet(String resourcePath) throws RestClientException;
 
-    public HttpResponse doGet (String resourcePath) throws RestClientException;
-
-    public HttpResponse doDelete (String resourcePath) throws RestClientException;
+    /**
+     * Perform a HTTP DELETE request to @resourcePath.
+     * @param resourcePath
+     * @return Response of the request.
+     * @throws RestClientException
+     */
+    public HttpResponse doDelete(String resourcePath) throws RestClientException;
 }
