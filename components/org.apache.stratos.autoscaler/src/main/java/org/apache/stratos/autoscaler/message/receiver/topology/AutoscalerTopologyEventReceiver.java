@@ -97,7 +97,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     TopologyManager.acquireReadLock();
                     try {
                         for (Application application : TopologyManager.getTopology().getApplications()) {
-                            startApplicationMonitor(application);
+                            startApplicationMonitor(application.getUniqueIdentifier());
                         }
 
                         topologyInitialized = true;
@@ -123,7 +123,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         TopologyManager.acquireReadLockForApplication(
                                 applicationCreatedEvent.getApplication().getUniqueIdentifier());
                         //start the application monitor
-                        startApplicationMonitor(applicationCreatedEvent.getApplication());
+                        startApplicationMonitor(applicationCreatedEvent.getApplication().getUniqueIdentifier());
                     } catch (Exception e) {
                         String msg = "Error processing event " + e.getLocalizedMessage();
                         log.error(msg, e);
@@ -577,12 +577,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         terminated = true;
     }
 
-    protected synchronized void startApplicationMonitor(Application application) {
+    protected synchronized void startApplicationMonitor(String applicationId) {
         Thread th = null;
         if (!AutoscalerContext.getInstance()
-                .appMonitorExist(application.getUniqueIdentifier())) {
+                .appMonitorExist(applicationId)) {
             th = new Thread(
-                    new ApplicationMonitorAdder(application));
+                    new ApplicationMonitorAdder(applicationId));
         }
       //  if (th != null) {
             th.start();
@@ -594,16 +594,16 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Application monitor thread has been started successfully: " +
-                                        "[application] %s ", application.getUniqueIdentifier()));
+                                        "[application] %s ", applicationId));
             }
       //  }
     }
 
     private class ApplicationMonitorAdder implements Runnable {
-        private Application application;
+        private String  appId;
 
-        public ApplicationMonitorAdder(Application application) {
-            this.application = application;
+        public ApplicationMonitorAdder(String appId) {
+            this.appId = appId;
         }
 
         public void run() {
@@ -619,9 +619,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     long start = System.currentTimeMillis();
                     if (log.isDebugEnabled()) {
                         log.debug("application monitor is going to be started for [application] " +
-                                application.getUniqueIdentifier());
+                                appId);
                     }
-                    applicationMonitor = AutoscalerUtil.getApplicationMonitor(application);
+                    applicationMonitor = AutoscalerUtil.getApplicationMonitor(appId);
 
                     long end = System.currentTimeMillis();
                     log.info("Time taken to start app monitor: " + (end - start) / 1000);
@@ -639,7 +639,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                        + "for Application: " + application.getUniqueIdentifier();
+                        + "for Application: " + appId;
                 log.error(msg);
                 throw new RuntimeException(msg);
             }

@@ -57,8 +57,6 @@ public abstract class Monitor implements EventHandler {
     protected Map<String, AbstractClusterMonitor> clusterIdToClusterMonitorsMap;
     //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
-    //application/group reference from the Topology
-    protected ParentComponent component;
     //status of the monitor whether it is running/in_maintainable/terminated
     protected Status status;
     //Application id of this particular monitor
@@ -67,7 +65,8 @@ public abstract class Monitor implements EventHandler {
     public Monitor(ParentComponent component) throws DependencyBuilderException {
         aliasToGroupMonitorsMap = new HashMap<String, GroupMonitor>();
         clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
-        this.component = component;
+        this.id = component.getUniqueIdentifier();
+        this.status = component.getStatus();
         //Building the dependency for this monitor within the immediate children
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
@@ -120,15 +119,18 @@ public abstract class Monitor implements EventHandler {
                 log.debug("Dependency check for the Group " + context.getId() + " started");
             }
             if (context instanceof GroupContext) {
-                startGroupMonitor(this, context.getId(), component);
+                startGroupMonitor(this, context.getId());
             } else if (context instanceof ClusterContext) {
                 String clusterId = context.getId();
                 String serviceName = null;
-                for(ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+                Group group = getGroupFromTopology(this.id);
+
+                for(ClusterDataHolder dataHolder : group.getClusterDataMap().values()) {
                     if(dataHolder.getClusterId().equals(clusterId)) {
                         serviceName = dataHolder.getServiceType();
                     }
                 }
+
                 Cluster cluster;
                 //acquire read lock for the service and cluster
                 TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
@@ -162,6 +164,22 @@ public abstract class Monitor implements EventHandler {
 
     }
 
+    private Group getGroupFromTopology(String groupId) throws TopologyInConsistentException {
+        Application application = TopologyManager.getTopology().getApplication(this.appId);
+        if(application != null) {
+            Group group = application.getGroupRecursively(groupId);
+            if(group != null) {
+                return group;
+            } else {
+                String msg = "[Group] " + groupId + " cannot be found in the Topology";
+                throw new TopologyInConsistentException(msg);
+            }
+        } else {
+            String msg = "[Application] " + this.appId + " cannot be found in the Topology";
+            throw new TopologyInConsistentException(msg);
+        }
+    }
+
     protected synchronized void startClusterMonitor(Monitor parent, Cluster cluster) {
         Thread th = null;
         if (cluster.isLbCluster()
@@ -190,16 +208,17 @@ public abstract class Monitor implements EventHandler {
         }
     }
 
-    protected synchronized void startGroupMonitor(Monitor parent, String dependency, ParentComponent component) {
+    protected synchronized void startGroupMonitor(Monitor parent, String groupId) {
         Thread th = null;
-        if (!this.aliasToGroupMonitorsMap.containsKey(dependency)) {
+        //String groupId = group.getUniqueIdentifier();
+        if (!this.aliasToGroupMonitorsMap.containsKey(groupId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Group monitor Adder has been added: [group] %s ",
-                                dependency));
+                                groupId));
             }
             th = new Thread(
-                    new GroupMonitorAdder(parent, dependency, component));
+                    new GroupMonitorAdder(parent, groupId, this.appId));
         }
 
         if (th != null) {
@@ -211,7 +230,7 @@ public abstract class Monitor implements EventHandler {
 
             log.info(String
                     .format("Group monitor thread has been started successfully: [group] %s ",
-                            dependency));
+                            groupId));
         }
     }
 
@@ -330,14 +349,14 @@ public abstract class Monitor implements EventHandler {
     }
 
     private class GroupMonitorAdder implements Runnable {
-        private String dependency;
         private Monitor parent;
-        private ParentComponent component;
+        private String groupId;
+        private String appId;
 
-        public GroupMonitorAdder(Monitor parent, String dependency, ParentComponent group) {
-            this.dependency = dependency;
+        public GroupMonitorAdder(Monitor parent, String groupId, String appId) {
             this.parent = parent;
-            this.component = group;
+            this.groupId = groupId;
+            this.appId = appId;
         }
 
         public void run() {
@@ -353,25 +372,21 @@ public abstract class Monitor implements EventHandler {
                 try {
                     if (log.isDebugEnabled()) {
                         log.debug("Group monitor is going to be started for [group] "
-                                + dependency);
+                                + groupId);
                     }
-                    Group group = component.getGroup(dependency);
-                    monitor = AutoscalerUtil.getGroupMonitor(group);
+                    monitor = AutoscalerUtil.getGroupMonitor(groupId, appId);
                     monitor.setParent(parent);
                     //setting the status of cluster monitor w.r.t Topology cluster
                     //if(group.getStatus() != Status.Created &&
-                    if(group.getStatus() != monitor.getStatus()) {
-                        //updating the status, so that it will notify the parent
-                        monitor.setStatus(group.getStatus());
-                    }
+
                     //monitor.addObserver(parent);
                     success = true;
                 } catch (DependencyBuilderException e) {
-                    String msg = "Group monitor creation failed for group: " + dependency;
+                    String msg = "Group monitor creation failed for group: " + groupId;
                     log.warn(msg, e);
                     retries--;
                 } catch (TopologyInConsistentException e) {
-                    String msg = "Group monitor creation failed for group: " + dependency;
+                    String msg = "Group monitor creation failed for group: " + groupId;
                     log.warn(msg, e);
                     retries--;
                 }
@@ -379,19 +394,19 @@ public abstract class Monitor implements EventHandler {
 
             if (monitor == null) {
                 String msg = "Group monitor creation failed, even after retrying for 5 times, "
-                        + "for group: " + dependency;
+                        + "for group: " + groupId;
                 log.error(msg);
                 //TODO parent.notify(); as it got to failed
 
                 throw new RuntimeException(msg);
             }
 
-            aliasToGroupMonitorsMap.put(dependency, monitor);
+            aliasToGroupMonitorsMap.put(groupId, monitor);
             //parent.addObserver(monitor);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Group monitor has been added successfully: [group] %s",
-                        dependency));
+                        groupId));
             }
         }
     }

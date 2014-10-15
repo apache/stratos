@@ -45,6 +45,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.xml.namespace.QName;
@@ -323,20 +324,44 @@ public class AutoscalerUtil {
     }
 
     //TODO moving it into factory class
-    public static GroupMonitor getGroupMonitor(Group group) throws DependencyBuilderException,
+    public static GroupMonitor getGroupMonitor(String groupId, String appId) throws DependencyBuilderException,
                                                             TopologyInConsistentException {
-        GroupMonitor groupMonitor =
-                new GroupMonitor(group);
+        GroupMonitor groupMonitor;
+        TopologyManager.acquireReadLockForApplication(appId);
+
+        try {
+            Group group = TopologyManager.getTopology().getApplication(appId).getGroupRecursively(groupId);
+            groupMonitor = new GroupMonitor(group);
+            groupMonitor.setAppId(appId);
+            if(group.getStatus() != groupMonitor.getStatus()) {
+                //updating the status, so that it will notify the parent
+                groupMonitor.setStatus(group.getStatus());
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+
+        }
         return groupMonitor;
 
     }
 
-    public static ApplicationMonitor getApplicationMonitor(Application application)
+    public static ApplicationMonitor getApplicationMonitor(String appId)
                                             throws DependencyBuilderException,
                                             TopologyInConsistentException {
-        ApplicationMonitor applicationMonitor =
-                new ApplicationMonitor(application);
-        applicationMonitor.setAppId(application.getUniqueIdentifier());
+        ApplicationMonitor applicationMonitor;
+        TopologyManager.acquireReadLockForApplication(appId);
+        try {
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if(application != null) {
+                applicationMonitor = new ApplicationMonitor(application);
+            } else {
+                String msg = "[Application] " + appId + " cannot be found in the Topology";
+                throw new TopologyInConsistentException(msg);
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
+
         return applicationMonitor;
 
     }

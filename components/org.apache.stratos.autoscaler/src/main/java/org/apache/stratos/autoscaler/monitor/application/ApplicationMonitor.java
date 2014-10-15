@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.ParentComponent;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
@@ -44,9 +45,10 @@ public class ApplicationMonitor extends Monitor {
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
                                                         TopologyInConsistentException {
         super(application);
+        this.appId = application.getUniqueIdentifier();
         //starting the first set of dependencies from its children
-        this.id = application.getUniqueIdentifier();
         startDependency();
+
     }
 
     /**

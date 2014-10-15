@@ -43,6 +43,9 @@ public class GroupMonitor extends Monitor implements EventHandler {
 
     //Parent monitor of this monitor
     private Monitor parent;
+    //Application id of this particular monitor
+    protected String appId;
+
 
     /**
      * Constructor of GroupMonitor
@@ -53,10 +56,7 @@ public class GroupMonitor extends Monitor implements EventHandler {
     public GroupMonitor(Group group) throws DependencyBuilderException,
                                             TopologyInConsistentException {
         super(group);
-        this.id = group.getAlias();
         startDependency();
-        this.status = Status.Created;
-
     }
 
     /**
@@ -113,7 +113,14 @@ public class GroupMonitor extends Monitor implements EventHandler {
 
     public void setParent(Monitor parent) {
         this.parent = parent;
-        this.appId = parent.getAppId();
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
 }
