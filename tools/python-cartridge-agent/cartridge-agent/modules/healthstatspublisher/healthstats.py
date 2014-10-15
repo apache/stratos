@@ -93,9 +93,7 @@ class HealthStatisticsPublisher:
             self.ports,
             int(self.cartridge_agent_config.read_property("port.check.timeout", critical=False)))
         cep_active = cartridgeagentutils.check_ports_active(CEPPublisherConfiguration.get_instance().server_ip, self.ports)
-        HealthStatisticsPublisher.log.debug("CHECKED PORTS ACTIVITY")
         if not cep_active:
-            HealthStatisticsPublisher.log.debug("CEP PORTS NOT ACTIVE")
             raise CEPPublisherException("CEP server not active. Health statistics publishing aborted.")
 
         self.stream_definition = HealthStatisticsPublisher.create_stream_definition()

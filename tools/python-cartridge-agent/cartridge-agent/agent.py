@@ -54,7 +54,6 @@ class CartridgeAgent(threading.Thread):
             mb_port)
 
         self.__tenant_context_initialized = False
-        self.__topology_context_initialized = False
 
         self.log_publish_manager = None
 
@@ -198,12 +197,27 @@ class CartridgeAgent(threading.Thread):
         self.__topology_event_subscriber.register_handler("MemberSuspendedEvent", self.on_member_suspended)
         self.__topology_event_subscriber.register_handler("CompleteTopologyEvent", self.on_complete_topology)
         self.__topology_event_subscriber.register_handler("MemberStartedEvent", self.on_member_started)
+        self.__topology_event_subscriber.register_handler("InstanceSpawnedEvent", self.on_instance_spawned)
 
         self.__topology_event_subscriber.start()
         self.log.info("Cartridge Agent topology receiver thread started")
 
+    def on_instance_spawned(self, msg):
+        self.log.debug("Instance spawned event received: %r" % msg.payload)
+        if self.cartridge_agent_config.initialized:
+            return
+
+        event_obj = InstanceSpawnedEvent.create_from_json(msg.payload)
+        try:
+            CartridgeAgent.extension_handler.on_instance_spawned_event(event_obj)
+        except:
+            self.log.exception("Error processing instance spawned event")
+
     def on_member_activated(self, msg):
         self.log.debug("Member activated event received: %r" % msg.payload)
+        if not self.cartridge_agent_config.initialized:
+            return
+
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
         try:
             CartridgeAgent.extension_handler.on_member_activated_event(event_obj)
@@ -212,6 +226,9 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_terminated(self, msg):
         self.log.debug("Member terminated event received: %r" % msg.payload)
+        if not self.cartridge_agent_config.initialized:
+            return
+
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
         try:
             CartridgeAgent.extension_handler.on_member_terminated_event(event_obj)
@@ -220,6 +237,9 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_suspended(self, msg):
         self.log.debug("Member suspended event received: %r" % msg.payload)
+        if not self.cartridge_agent_config.initialized:
+            return
+
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
         try:
             CartridgeAgent.extension_handler.on_member_suspended_event(event_obj)
@@ -227,11 +247,10 @@ class CartridgeAgent(threading.Thread):
             self.log.exception("Error processing member suspended event")
 
     def on_complete_topology(self, msg):
-        if not self.__topology_context_initialized:
+        if not self.cartridge_agent_config.initialized:
             self.log.debug("Complete topology event received")
             event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
             TopologyContext.update(event_obj.topology)
-            self.__topology_context_initialized = True
             try:
                 CartridgeAgent.extension_handler.on_complete_topology_event(event_obj)
             except:
@@ -241,6 +260,9 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_started(self, msg):
         self.log.debug("Member started event received: %r" % msg.payload)
+        if not self.cartridge_agent_config.initialized:
+            return
+
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
         try:
             CartridgeAgent.extension_handler.on_member_started_event(event_obj)

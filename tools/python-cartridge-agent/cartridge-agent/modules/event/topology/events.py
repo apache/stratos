@@ -97,6 +97,7 @@ class MemberTerminatedEvent:
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.properties = json_obj["properties"] if "properties" in json_obj else None
 
         return instance
 
@@ -234,5 +235,46 @@ class MemberStartedEvent:
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.properties = json_obj["properties"] if "properties" in json_obj else None
+
+        return instance
+
+
+class InstanceSpawnedEvent:
+
+    def __init__(self):
+        self.service_name = None
+        """ :type : str  """
+        self.cluster_id = None
+        """ :type : str  """
+        self.network_partition_id = None
+        """ :type : str  """
+        self.partition_id = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.lb_cluster_id = None
+        """ :type : str  """
+        self.member_public_ip = None
+        """ :type : str  """
+        self.member_ip = None
+        """ :type : str  """
+        self.properties = {}
+        """ :type : dict[str, str]  """
+
+    @staticmethod
+    def create_from_json(json_str):
+        json_obj = json.loads(json_str)
+        instance = InstanceSpawnedEvent()
+
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.lb_cluster_id = json_obj["lbClusterId"] if "lbClusterId" in json_obj else None
+        instance.member_public_ip = json_obj["memberPublicIp"] if "memberPublicIp" in json_obj else None
+        instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None
+        instance.properties = json_obj["properties"]
 
         return instance

@@ -86,8 +86,6 @@ def publish_instance_activated_event():
             else:
                 interval = interval_default
 
-            log.debug("interval 3: %r" % interval)
-
             health_stats_publisher = HealthStatisticsPublisherManager(interval)
             log.info("Starting Health statistics publisher with interval %r" % interval_default)
             health_stats_publisher.start()

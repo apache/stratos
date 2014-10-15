@@ -46,14 +46,14 @@ class StreamDefinition:
         self.payload_data = []
         """:type : list[str]"""
 
-    def add_metadata_attribute(self, name, attr_type):
-        self.meta_data.append({"name": name, "type": attr_type})
+    def add_metadata_attribute(self, attr_name, attr_type):
+        self.meta_data.append({"name": attr_name, "type": attr_type})
 
-    def add_payloaddata_attribute(self, name, attr_type):
-        self.payload_data.append({"name": name, "type": attr_type})
+    def add_payloaddata_attribute(self, attr_name, attr_type):
+        self.payload_data.append({"name": attr_name, "type": attr_type})
 
-    def add_correlationdata_attribute(self, name, attr_type):
-        self.correlation_data.append({"name": name, "type": attr_type})
+    def add_correlationdata_attribute(self, attr_name, attr_type):
+        self.correlation_data.append({"name": attr_name, "type": attr_type})
 
     def __str__(self):
         """
@@ -67,26 +67,26 @@ class StreamDefinition:
         json_str += "\"description\":\"" + self.description + "\","
 
         # add metadata attributes if exists
-        if len(self.meta_data > 0):
+        if len(self.meta_data) > 0:
             json_str += "\"metaData\":["
             for metadatum in self.meta_data:
-                json_str += "{\"name\":\"" + metadatum["name"] + ", \"type\": \"" + metadatum["type"] + "\"},"
+                json_str += "{\"name\":\"" + metadatum["name"] + "\", \"type\": \"" + metadatum["type"] + "\"},"
 
             json_str = json_str[:-1] + "],"
 
         # add correlationdata attributes if exists
-        if len(self.correlation_data > 0):
+        if len(self.correlation_data) > 0:
             json_str += "\"correlationData\":["
             for coredatum in self.correlation_data:
-                json_str += "{\"name\":\"" + coredatum["name"] + ", \"type\": \"" + coredatum["type"] + "\"},"
+                json_str += "{\"name\":\"" + coredatum["name"] + "\", \"type\": \"" + coredatum["type"] + "\"},"
 
             json_str = json_str[:-1] + "],"
 
         # add payloaddata attributes if exists
-        if len(self.payload_data > 0):
+        if len(self.payload_data) > 0:
             json_str += "\"payloadData\":["
             for payloaddatum in self.payload_data:
-                json_str += "{\"name\":\"" + payloaddatum["name"] + ", \"type\": \"" + payloaddatum["type"] + "\"},"
+                json_str += "{\"name\":\"" + payloaddatum["name"] + "\", \"type\": \"" + payloaddatum["type"] + "\"},"
 
             json_str = json_str[:-1] + "],"
 
@@ -129,10 +129,17 @@ class ThriftPublisher:
         :return: ThriftPublisher object
         :rtype: ThriftPublisher
         """
-        self.__publisher = Publisher(ip, port)
+        try:
+            port_number = int(port)
+        except ValueError:
+            raise RuntimeError("Port number for Thrift Publisher is invalid: %r" % port)
+
+        self.__publisher = Publisher(ip, port_number)
+        ThriftPublisher.log.debug("CREATED PUBLISHER.. CONNECTING WITH USERNAME AND PASSWORD %r:%r" % (username, password))
         self.__publisher.connect(username, password)
+        ThriftPublisher.log.debug("Connected THRIFT ")
         self.__publisher.defineStream(str(stream_definition))
-        ThriftPublisher.log.debug("Connected to %r:%r with stream definition %r" % (ip, port, str(stream_definition)))
+        ThriftPublisher.log.debug("DEFINED STREAM to %r:%r with stream definition %r" % (ip, port, str(stream_definition)))
 
     def publish(self, event):
         """
@@ -141,12 +148,15 @@ class ThriftPublisher:
         :param ThriftEvent event: The log event to be published
         :return: void
         """
+        ThriftPublisher.log.debug("ABOUT TO PUBLISH: POPULATING DATA")
         event_bundler = EventBundle()
         ThriftPublisher.assign_attributes(event.metaData, event_bundler)
         ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
         ThriftPublisher.assign_attributes(event.payloadData, event_bundler)
+        ThriftPublisher.log.debug("ABOUT TO PUBLISH")
 
-        self.__publisher.publish(event)
+        self.__publisher.publish(event_bundler)
+        ThriftPublisher.log.debug("PUBLISHED EVENT BUNDLED TO THRIFT MODULE")
 
     def disconnect(self):
         """
@@ -154,6 +164,7 @@ class ThriftPublisher:
         :return: void
         """
         self.__publisher.disconnect()
+        ThriftPublisher.log.debug("DISCONNECTED FROM THRIFT PUBLISHER")
 
     @staticmethod
     def assign_attributes(attributes, event_bundler):
