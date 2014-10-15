@@ -83,8 +83,8 @@ public class MetaDataClientConfig {
 
     private void loadConfig(String configFilePath) {
 
-        if(StringUtils.isEmpty(configFilePath)){
-            throw new IllegalArgumentException("Confguration file path can not be null or empaty");
+        if (StringUtils.isEmpty(configFilePath)) {
+            throw new IllegalArgumentException("Configuration file path can not be null or empty");
         }
         try {
             config = new XMLConfiguration(new File(configFilePath));

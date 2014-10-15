@@ -25,8 +25,9 @@ import org.apache.stratos.metadata.client.exception.RestClientException;
 public interface RestClient {
     /**
      * Perform a HTTP POST request to @resourcePath with request body containing @payload converted to JSON.
+     *
      * @param resourcePath Resource path to where is request is sent.
-     * @param payload request message body.
+     * @param payload      request message body.
      * @return Response of the request.
      * @throws RestClientException
      */
@@ -34,7 +35,8 @@ public interface RestClient {
 
     /**
      * Perform a HTTP GET request to @resourcePath.
-     * @param resourcePath
+     *
+     * @param resourcePath Resource path to where is request is sent.
      * @return Response of the request.
      * @throws RestClientException
      */
@@ -42,7 +44,8 @@ public interface RestClient {
 
     /**
      * Perform a HTTP DELETE request to @resourcePath.
-     * @param resourcePath
+     *
+     * @param resourcePath Resource path to where is request is sent.
      * @return Response of the request.
      * @throws RestClientException
      */

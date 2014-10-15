@@ -56,8 +56,8 @@ public class DefaultRestClient implements RestClient {
     private HttpClient httpClient;
 
     public DefaultRestClient(String username, String password) throws RestClientException {
-        this.username  =username;
-        this.password=password;
+        this.username = username;
+        this.password = password;
 
         SSLContextBuilder builder = new SSLContextBuilder();
         SSLConnectionSocketFactory sslConnectionFactory;
@@ -149,7 +149,7 @@ public class DefaultRestClient implements RestClient {
 
 
     private void addStringPayload(HttpPost post, String payloadText) {
-        if(org.apache.commons.lang.StringUtils.isEmpty(payloadText)){
+        if (org.apache.commons.lang.StringUtils.isEmpty(payloadText)) {
             throw new IllegalArgumentException("Payload text can not be null or empty");
         }
         StringEntity stringEntity = null;

@@ -19,25 +19,25 @@
 
 package org.apache.stratos.metadata.client.exception;
 
-public class MetaDataServiceClientExeption extends Exception {
+public class MetaDataServiceClientException extends Exception {
 
     private String message;
 
-    public MetaDataServiceClientExeption() {
+    public MetaDataServiceClientException() {
         super();
     }
 
-    public MetaDataServiceClientExeption(String message, Throwable cause) {
+    public MetaDataServiceClientException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public MetaDataServiceClientExeption(String message) {
+    public MetaDataServiceClientException(String message) {
         super(message);
         this.message = message;
     }
 
-    public MetaDataServiceClientExeption(Throwable cause) {
+    public MetaDataServiceClientException(Throwable cause) {
         super(cause);
     }
 
