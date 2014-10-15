@@ -21,6 +21,7 @@ package org.apache.stratos.metadataservice.util;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.Constants;
@@ -45,7 +46,7 @@ public class ConfUtil {
 		try {
 
 			File confFile;
-			if (configFilePath != null && !configFilePath.isEmpty()) {
+			if (StringUtils.isNotEmpty(configFilePath)) {
 				confFile = new File(configFilePath);
 
 			} else {
