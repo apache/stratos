@@ -29,14 +29,13 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.exception.RestClientException;
 
@@ -48,16 +47,19 @@ import java.security.NoSuchAlgorithmException;
 
 public class DefaultRestClient implements RestClient {
 
-    private static final int MAX_TOTAL_CONNECTIONS = 100;
-    private static final int DEFAULT_MAX_PER_ROUTE = 20;
     private static final String APPLICATION_JSON = "application/json";
     private static final Log log = LogFactory.getLog(DefaultRestClient.class);
 
+    private final String username;
+    private final String password;
+
     private HttpClient httpClient;
 
-    public DefaultRestClient() throws RestClientException {
-        SSLContextBuilder builder = new SSLContextBuilder();
+    public DefaultRestClient(String username, String password) throws RestClientException {
+        this.username  =username;
+        this.password=password;
 
+        SSLContextBuilder builder = new SSLContextBuilder();
         SSLConnectionSocketFactory sslConnectionFactory;
         try {
             builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
@@ -69,18 +71,9 @@ public class DefaultRestClient implements RestClient {
         } catch (KeyStoreException e) {
             throw new RestClientException(e);
         }
-        CloseableHttpClient closableHttpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionFactory).setConnectionManager(getHttpConnectionManager()).build();
+        CloseableHttpClient closableHttpClient = HttpClients.custom().setSSLSocketFactory(sslConnectionFactory)
+                .setConnectionManager(HTTPConnectionManager.getInstance().getHttpConnectionManager()).build();
         this.httpClient = closableHttpClient;
-    }
-
-    private HttpClientConnectionManager getHttpConnectionManager() {
-        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        // TODO: Introduce configurable variable for Max total and max per router variables.
-        cm.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-        cm.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
-        //HttpHost localhost = new HttpHost("locahost", 80);
-        //cm.setMaxPerRoute(new HttpRoute(localhost), 50);
-        return cm;
     }
 
     public HttpResponse doPost(String resourcePath, Object payload) throws RestClientException {
@@ -100,9 +93,7 @@ public class DefaultRestClient implements RestClient {
         }
     }
 
-    private void setAuthHeader(HttpPost post) {
-        String username = getUsername();
-        String password = getPassword();
+    private void setAuthHeader(HttpRequestBase post) {
         String identity = username + ":" + password;
         String encoding = new String(Base64.encodeBase64(identity.getBytes()));
         post.setHeader("Authorization", "Basic " + encoding);

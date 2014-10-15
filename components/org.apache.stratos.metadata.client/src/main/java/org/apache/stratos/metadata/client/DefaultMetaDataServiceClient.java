@@ -22,6 +22,7 @@ package org.apache.stratos.metadata.client;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadata.client.beans.PropertyBean;
+import org.apache.stratos.metadata.client.config.MetaDataClientConfig;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExeption;
 import org.apache.stratos.metadata.client.exception.RestClientException;
 import org.apache.stratos.metadata.client.rest.DefaultRestClient;
@@ -39,8 +40,11 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
     private final String baseUrl;
 
     public DefaultMetaDataServiceClient(String baseUrl) throws RestClientException {
-        this.baseUrl = baseUrl;
-        this.restClient = new DefaultRestClient();
+        MetaDataClientConfig metaDataClientConfig = MetaDataClientConfig.getInstance();
+        this.baseUrl = metaDataClientConfig.getMetaDataServiceBaseUrl();
+        String username = metaDataClientConfig.getUsername();
+        String password = metaDataClientConfig.getPassword();
+        this.restClient = new DefaultRestClient(username, password);
     }
 
     public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient) throws RestClientException {
