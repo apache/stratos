@@ -49,8 +49,6 @@ class HealthStatisticsPublisherManager(Thread):
         self.publish_interval = publish_interval
         """:type : int"""
 
-        self.log.debug("Initializing health stat publisher manager with interval %r" % publish_interval)
-
         self.terminated = False
 
         self.publisher = HealthStatisticsPublisher()
@@ -60,8 +58,6 @@ class HealthStatisticsPublisherManager(Thread):
         """:type : AbstractHealthStatisticsReader"""
 
     def run(self):
-        self.log.debug("Pubilsher manager thread started")
-
         while not self.terminated:
             time.sleep(self.publish_interval)
 
@@ -112,7 +108,6 @@ class HealthStatisticsPublisher:
         """
         Create a StreamDefinition for publishing to CEP
         """
-        HealthStatisticsPublisher.log.debug("Creating Stream Definition for CEP publisher")
         stream_def = StreamDefinition()
         stream_def.name = HealthStatisticsPublisherManager.STREAM_NAME
         stream_def.version = HealthStatisticsPublisherManager.STREAM_VERSION
@@ -125,8 +120,6 @@ class HealthStatisticsPublisher:
         stream_def.add_payloaddata_attribute("partition_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("health_description", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("value", StreamDefinition.DOUBLE)
-
-        HealthStatisticsPublisher.log.debug("Created stream definition : %r" % str(stream_def))
 
         return stream_def
 
@@ -172,7 +165,6 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
 
     def __init__(self):
         self.log = LogFactory().get_log(__name__)
-        self.log.debug("Stats reader initialized")
 
     def stat_cartridge_health(self):
         cartridge_stats = CartridgeHealthStatistics()

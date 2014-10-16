@@ -137,11 +137,8 @@ class ThriftPublisher:
             raise RuntimeError("Port number for Thrift Publisher is invalid: %r" % port)
 
         self.__publisher = Publisher(ip, port_number)
-        ThriftPublisher.log.debug("CREATED PUBLISHER.. CONNECTING WITH USERNAME AND PASSWORD %r:%r" % (username, password))
         self.__publisher.connect(username, password)
-        ThriftPublisher.log.debug("Connected THRIFT ")
         self.__publisher.defineStream(str(stream_definition))
-        ThriftPublisher.log.debug("DEFINED STREAM to %r:%r with stream definition %r" % (ip, port, str(stream_definition)))
 
         self.stream_definition = stream_definition
         self.stream_id = self.__publisher.streamId
@@ -161,10 +158,9 @@ class ThriftPublisher:
         ThriftPublisher.assign_attributes(event.metaData, event_bundler)
         ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
         ThriftPublisher.assign_attributes(event.payloadData, event_bundler)
-        ThriftPublisher.log.debug("ABOUT TO PUBLISH")
 
         self.__publisher.publish(event_bundler)
-        ThriftPublisher.log.debug("PUBLISHED EVENT BUNDLED TO THRIFT MODULE")
+        self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
 
     def disconnect(self):
         """
@@ -172,7 +168,6 @@ class ThriftPublisher:
         :return: void
         """
         self.__publisher.disconnect()
-        ThriftPublisher.log.debug("DISCONNECTED FROM THRIFT PUBLISHER")
 
     @staticmethod
     def assign_attributes(attributes, event_bundler):
@@ -192,19 +187,14 @@ class ThriftPublisher:
         if attributes is not None and len(attributes) > 0:
             for attrib in attributes:
                 if isinstance(attrib, int):
-                    ThriftPublisher.log.debug("Int : %r" % attrib)
                     event_bundler.addIntAttribute(attrib)
                 elif isinstance(attrib, long):
-                    ThriftPublisher.log.debug("Long : %r" % attrib)
                     event_bundler.addLongAttribute(attrib)
                 elif isinstance(attrib, float):
-                    ThriftPublisher.log.debug("Float : %r" % attrib)
                     event_bundler.addDoubleAttribute(attrib)
                 elif isinstance(attrib, bool):
-                    ThriftPublisher.log.debug("Bool : %r" % attrib)
                     event_bundler.addBoolAttribute(attrib)
                 elif isinstance(attrib, str):
-                    ThriftPublisher.log.debug("Str : %r" % attrib)
                     event_bundler.addStringAttribute(attrib)
                 else:
                     ThriftPublisher.log.error("Undefined attribute type: %r" % attrib)
