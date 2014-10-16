@@ -81,8 +81,6 @@ if [[ ( -n $mysql_user && -n $mysql_pass ) ]]; then
 	fi
 fi
 echo 'Stopping Carbon java processes'
-jps -mlV
-
 #killing carbon processes
 for pid in $(ps aux | grep "[o]rg.wso2.carbon.bootstrap.Bootstrap" | awk '{print $2}')
 do
