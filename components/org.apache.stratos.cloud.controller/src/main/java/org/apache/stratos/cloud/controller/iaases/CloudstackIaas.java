@@ -26,6 +26,8 @@ import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -157,7 +159,12 @@ public class CloudstackIaas extends Iaas{
                     .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
         }
-        //todo add disk offering
+        //todo check whether this is working or not
+        if (iaasInfo.getProperty(CloudControllerConstants.DISK_OFFERING) != null) {
+            template.getOptions()
+                    .as(CloudStackTemplateOptions.class)
+                    .diskOfferingId(iaasInfo.getProperty(CloudControllerConstants.DISK_OFFERING));
+        }
 
         // set Template
         iaasInfo.setTemplate(template);
@@ -165,7 +172,15 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public void setDynamicPayload() {
-        ///todo implement this method
+        System.out.println("=====================inside set setDynamicPayload method=================================");
+
+        IaasProvider iaasInfo = getIaasProvider();
+        if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
+        //todo check whether this is working or not
+         iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
+                 .userMetadata(convertByteArrayToHashMap(iaasInfo.getPayload()));
+
+        }
     }
 
     @Override
@@ -183,16 +198,16 @@ public class CloudstackIaas extends Iaas{
     @Override
     public String associatePredefinedAddress(NodeMetadata node, String ip) {
 
-        System.out.println("======================This is the associatePredifinedAddress method=====================");
+        System.out.println("======================This is the associatePredefinedAddress method=====================");
         //todo implement this method
         return null;
     }
 
     @Override
     public void releaseAddress(String ip) {
-//todo test this method
+        //todo test this method
 
-        System.out.println("======================this is the release address method============");
+        System.out.println("======================this is the releaseAddress method============");
         IaasProvider iaasInfo = getIaasProvider();
 
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
@@ -211,12 +226,9 @@ public class CloudstackIaas extends Iaas{
     @Override
     public boolean isValidRegion(String region) throws InvalidRegionException {
 
-
-        //todo study more about this
-
         IaasProvider iaasInfo = getIaasProvider();
 
-        //no such a method in jclouds
+        //no such method in Jclouds cloudstack api
         String msg = "Invalid region: " + region +" in the iaas: " +iaasInfo.getType();
         log.error(msg);
         throw new InvalidRegionException(msg);
@@ -245,11 +257,9 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public boolean isValidHost(String zone, String host) throws InvalidHostException {
-        //todo study more about this
 
         IaasProvider iaasInfo = getIaasProvider();
-
-        // there's no such concept in cloudstack
+        // there's no such method in jclouds cloustack api
         String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
         log.error(msg);
         throw new InvalidHostException(msg);
@@ -429,5 +439,22 @@ public class CloudstackIaas extends Iaas{
         }
 
         return true;
+    }
+
+    private Map<String,String> convertByteArrayToHashMap(byte[] byteArray){
+
+        Map<String, String> map = new HashMap<String, String>();
+
+        String stringFromByteArray =  new String(byteArray);
+        String[] keyValuePairs = stringFromByteArray.split(",");
+
+        for(String keyValuePair : keyValuePairs){
+            String[] keyValue = keyValuePair.split("=");
+            if(keyValue.length>1) {
+                map.put(keyValue[0], keyValue[1]);
+            }
+        }
+
+        return map;
     }
 }
