@@ -29,6 +29,7 @@ import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublis
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
@@ -239,7 +240,7 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             Member member = new Member(serviceName, clusterId,
                     networkPartitionId, partitionId, memberId);
-            member.setStatus(MemberStatus.Created);
+            //member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
             member.setLbClusterId(lbClusterId);
             member.setMemberPublicIp(publicIp);
@@ -255,7 +256,7 @@ public class TopologyBuilder {
                 publicIp, privateIp, context);
     }
 
-    public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
+    public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) throws InvalidLifecycleTransitionException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceStartedEvent.getServiceName());
         if (service == null) {
@@ -301,6 +302,7 @@ public class TopologyBuilder {
 
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
             member.setStatus(MemberStatus.Starting);
             log.info("member started event adding status started");
 
@@ -320,7 +322,7 @@ public class TopologyBuilder {
                 null);
     }
 
-    public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
+    public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) throws InvalidLifecycleTransitionException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceActivatedEvent.getServiceName());
         if (service == null) {
@@ -369,6 +371,7 @@ public class TopologyBuilder {
         memberActivatedEvent.setGroupId(instanceActivatedEvent.getGroupId());
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
             member.setStatus(MemberStatus.Activated);
             log.info("member started event adding status activated");
             Cartridge cartridge = FasterLookUpDataHolder.getInstance().
@@ -404,7 +407,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
-            throws InvalidMemberException, InvalidCartridgeTypeException {
+            throws InvalidMemberException, InvalidCartridgeTypeException, InvalidLifecycleTransitionException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
         //update the status of the member
@@ -476,7 +479,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
-            throws InvalidMemberException, InvalidCartridgeTypeException {
+            throws InvalidMemberException, InvalidCartridgeTypeException, InvalidLifecycleTransitionException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
         //update the status of the member
@@ -531,6 +534,7 @@ public class TopologyBuilder {
                 instanceMaintenanceModeEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
             member.setStatus(MemberStatus.In_Maintenance);
             log.info("member maintenance mode event adding status started");
 
@@ -822,5 +826,4 @@ public class TopologyBuilder {
         //publishing data
         TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
     }
-
 }

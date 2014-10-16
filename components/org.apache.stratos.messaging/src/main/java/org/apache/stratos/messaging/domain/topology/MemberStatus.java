@@ -19,21 +19,62 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents status of a member during its lifecycle.
  */
 @XmlRootElement
-public enum MemberStatus {
-    Created(1),
-    Starting(2),
-    Activated(3),
-    In_Maintenance(4),
-    ReadyToShutDown(5),
-    Terminated(6),
-    Suspended(0),
-    ShuttingDown(0);
+public enum MemberStatus implements LifeCycleState {
+
+    Created(1) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting));
+        }
+    },
+    Starting(2) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated));
+        }
+    },
+    Activated(3) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Suspended,
+                    MemberStatus.In_Maintenance));
+        }
+    },
+    In_Maintenance(4) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.ReadyToShutDown));
+        }
+    },
+    ReadyToShutDown(5) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
+        }
+    },
+    Suspended(0) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
+        }
+    },
+    Terminated(6) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return null;
+        }
+    };
 
     private int code;
 

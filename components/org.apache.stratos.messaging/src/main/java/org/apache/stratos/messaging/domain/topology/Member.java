@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -43,11 +45,12 @@ public class Member implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<Integer, Port> portMap;
     private String memberPublicIp;
-    private MemberStatus status;
+    //private MemberStatus status;
     private String memberIp;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String lbClusterId;
+    private LifeCycleStateManager<MemberStatus> memberStateManager;
 
     public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -56,6 +59,7 @@ public class Member implements Serializable {
         this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<Integer, Port>();
+        this.memberStateManager = new LifeCycleStateManager<MemberStatus>(MemberStatus.Created);
     }
 
     public String getServiceName() {
@@ -71,15 +75,15 @@ public class Member implements Serializable {
     }
 
     public MemberStatus getStatus() {
-        return status;
+        return memberStateManager.getCurrentState();
     }
 
-    public void setStatus(MemberStatus status) {
-        this.status = status;
+    public void setStatus(MemberStatus status) throws InvalidLifecycleTransitionException {
+        this.memberStateManager.changeState(status);
     }
 
     public boolean isActive() {
-        return (this.status == MemberStatus.Activated);
+        return (this.memberStateManager.getCurrentState() == MemberStatus.Activated);
     }
 
     public Collection<Port> getPorts() {
@@ -150,6 +154,5 @@ public class Member implements Serializable {
     public void setMemberPublicIp(String memberPublicIp) {
         this.memberPublicIp = memberPublicIp;
     }
-
 }
 

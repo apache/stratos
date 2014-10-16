@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.topic.instance.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -48,27 +49,56 @@ public class InstanceStatusEventMessageDelegator implements Runnable {
                 if (InstanceStartedEvent.class.getName().equals(type)) {
                     // retrieve the actual message
                     String json = message.getText();
-                    TopologyBuilder.handleMemberStarted((InstanceStartedEvent) Util.
-                            jsonToObject(json, InstanceStartedEvent.class));
+                    try {
+                        TopologyBuilder.handleMemberStarted((InstanceStartedEvent) Util.
+                                jsonToObject(json, InstanceStartedEvent.class));
+
+                    } catch (InvalidLifecycleTransitionException e) {
+                        //TODO: handle properly
+                        log.error(e);
+                    }
+
                 } else if (InstanceActivatedEvent.class.getName().equals(type)) {
                     // retrieve the actual message
                     String json = message.getText();
-                    TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) Util.
-                            jsonToObject(json, InstanceActivatedEvent.class));
+                    try {
+                        TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) Util.
+                                jsonToObject(json, InstanceActivatedEvent.class));
+
+                    } catch (InvalidLifecycleTransitionException e) {
+                        //TODO: handle properly
+                        log.error(e);
+                    }
+
                 } else if (InstanceReadyToShutdownEvent.class.getName().equals(type)) {
                     //retrieve the actual message
                     String json = message.getText();
-                    TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) Util.
-                            jsonToObject(json, InstanceReadyToShutdownEvent.class));
+                    try {
+                        TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) Util.
+                                jsonToObject(json, InstanceReadyToShutdownEvent.class));
+
+                    } catch (InvalidLifecycleTransitionException e) {
+                        //TODO: handle properly
+                        log.error(e);
+                    }
+
                 } else if (InstanceMaintenanceModeEvent.class.getName().equals(type)) {
                     //retrieve the actual message
                     String json = message.getText();
-                    TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) Util.
-                            jsonToObject(json, InstanceMaintenanceModeEvent.class));
+                    try {
+                        TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) Util.
+                                jsonToObject(json, InstanceMaintenanceModeEvent.class));
+
+                    } catch (InvalidLifecycleTransitionException e) {
+                        //TODO: handle properly
+                        log.error(e);
+                    }
+
                 } else {
                     log.warn("Event message received is not InstanceStartedEvent or InstanceActivatedEvent");
                 }
-            } catch (Exception e) {
+
+                } catch (Exception e) {
                 String error = "Failed to retrieve the instance status event message";
                 log.error(error, e);
                 // Commenting throwing the error. Otherwise thread will not execute if an exception is thrown.

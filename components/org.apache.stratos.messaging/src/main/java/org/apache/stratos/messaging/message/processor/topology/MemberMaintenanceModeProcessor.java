@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -56,6 +57,10 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
             try {
                 return doProcess(event, topology);
 
+            } catch (InvalidLifecycleTransitionException e) {
+                log.error(e);
+                return false;
+
             } finally {
                 TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
@@ -70,7 +75,7 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (MemberMaintenanceModeEvent event,Topology topology) {
+    private boolean doProcess (MemberMaintenanceModeEvent event,Topology topology) throws InvalidLifecycleTransitionException {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {

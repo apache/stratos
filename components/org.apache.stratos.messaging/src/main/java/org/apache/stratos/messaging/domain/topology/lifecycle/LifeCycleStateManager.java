@@ -1,0 +1,64 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.messaging.domain.topology.lifecycle;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.topology.TopologyEvent;
+
+import java.io.Serializable;
+import java.util.Stack;
+
+public class LifeCycleStateManager<T extends LifeCycleState> implements Serializable {
+
+    private static Log log = LogFactory.getLog(LifeCycleStateManager.class);
+
+    private Stack<T> stateStack;
+
+    public LifeCycleStateManager(T initialState) {
+        stateStack = new Stack<T>();
+        stateStack.push(initialState);
+    }
+
+    public void changeState (T nextState) throws InvalidLifecycleTransitionException {
+
+        if(getCurrentState().getNextStates().contains(nextState)) {
+            // do the transition
+            stateStack.push(nextState);
+            //if (log.isDebugEnabled()) {
+                log.info("Life Cycle State successfully updated from " + getCurrentState() + " to " + nextState);
+            //}
+        } else {
+            // invalid state transition
+            String errorMsg = "Attempted transition from " + getCurrentState() + " to " + nextState
+                    + " is invalid";
+            log.error(errorMsg);
+            throw new InvalidLifecycleTransitionException(errorMsg);
+        }
+    }
+
+    public Stack<T> getStateStack () {
+        return stateStack;
+    }
+
+    public T getCurrentState () {
+        return stateStack.peek();
+    }
+}
