@@ -45,6 +45,8 @@ class StreamDefinition:
         """:type : list[str]"""
         self.payload_data = []
         """:type : list[str]"""
+        self.stream_id =  None
+        """ :type : str """
 
     def add_metadata_attribute(self, attr_name, attr_type):
         self.meta_data.append({"name": attr_name, "type": attr_type})
@@ -140,6 +142,13 @@ class ThriftPublisher:
         ThriftPublisher.log.debug("Connected THRIFT ")
         self.__publisher.defineStream(str(stream_definition))
         ThriftPublisher.log.debug("DEFINED STREAM to %r:%r with stream definition %r" % (ip, port, str(stream_definition)))
+
+        self.stream_definition = stream_definition
+        self.stream_id = self.__publisher.streamId
+        self.ip = ip
+        self.port = port
+        self.username = username
+        self.password = password
 
     def publish(self, event):
         """
