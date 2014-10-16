@@ -80,8 +80,23 @@ if [[ ( -n $mysql_user && -n $mysql_pass ) ]]; then
     		exit 1
 	fi
 fi
-echo 'Stopping all java processes'
-killall java
+echo 'Stopping Carbon java processes'
+jps -mlV
+
+#killing carbon processes
+for pid in $(ps aux | grep "[o]rg.wso2.carbon.bootstrap.Bootstrap" | awk '{print $2}')
+do
+    echo "killing Carbon process $pid"
+    kill $pid
+done
+
+#killing activemq
+for pid in $(ps aux | grep "[a]pache-activemq" | awk '{print $2}')
+do
+    echo "killing ActiveMQ $pid"
+    kill $pid
+done
+
 echo 'Waiting for applications to exit'
 sleep 15
 
