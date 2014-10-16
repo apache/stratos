@@ -42,21 +42,21 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
     private final String baseUrl;
     private RestClient restClient;
 
-    public DefaultMetaDataServiceClient() throws RestClientException {
+    public DefaultMetaDataServiceClient() throws MetaDataServiceClientException {
         MetaDataClientConfig metaDataClientConfig = MetaDataClientConfig.getInstance();
         this.baseUrl = metaDataClientConfig.getMetaDataServiceBaseUrl();
         String username = metaDataClientConfig.getUsername();
         String password = metaDataClientConfig.getPassword();
-        this.restClient = new DefaultRestClient(username, password);
+        try {
+            this.restClient = new DefaultRestClient(username, password);
+        } catch (RestClientException e) {
+            throw new MetaDataServiceClientException("Error occurred while creating REST client ", e);
+        }
     }
 
-    public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient) throws RestClientException {
+    public DefaultMetaDataServiceClient(String baseUrl, RestClient restClient){
         this.baseUrl = baseUrl;
         this.restClient = restClient;
-    }
-
-    public void initialize() {
-        // initialization, if any
     }
 
     public void addPropertyToCluster(String appId, String clusterId, String propertyKey, String propertyValue)

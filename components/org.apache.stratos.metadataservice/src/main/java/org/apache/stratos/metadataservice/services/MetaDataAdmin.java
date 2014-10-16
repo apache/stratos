@@ -22,7 +22,6 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.annotation.AuthorizationAction;
-import org.apache.stratos.metadataservice.definition.CartridgeMetaData;
 import org.apache.stratos.metadataservice.definition.NewProperty;
 import org.apache.stratos.metadataservice.exception.RestAPIException;
 import org.apache.stratos.metadataservice.registry.DataRegistryFactory;
@@ -58,51 +57,6 @@ public class MetaDataAdmin {
         String DEFAULT_REG_TYPE = "carbon";
         String registryType =  conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
         registry = DataRegistryFactory.getDataRegistryFactory(registryType);
-    }
-
-    @POST
-    @Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
-                                                @PathParam("cartridgetype") String cartridgeType,
-                                                CartridgeMetaData cartridgeMetaData) throws RestAPIException {
-
-
-        URI url = uriInfo.getAbsolutePathBuilder().path(applicationName + "/" + cartridgeType).build();
-        try {
-            registry.addCartridgeMetaDataDetails(applicationName, cartridgeType, cartridgeMetaData);
-        } catch (Exception err) {
-            log.error("Error occurred while adding meta data details ", err);
-        }
-
-        return Response.created(url).build();
-
-    }
-
-    @GET
-    @Path("/cartridge/metadata/{applicationname}/{cartridgetype}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getCartridgeMetaDataDetails(@PathParam("applicationname") String applicationName,
-                                                @PathParam("cartridgetype") String cartridgeType) throws RestAPIException {
-
-        String result = null;
-        try {
-            result = registry.getCartridgeMetaDataDetails(applicationName, cartridgeType);
-        } catch (Exception err) {
-            log.error("Error occurred while adding meta data details ", err);
-        }
-        Response.ResponseBuilder rb;
-        if (result == null) {
-            rb = Response.status(Response.Status.NOT_FOUND);
-        } else {
-            rb = Response.ok().entity(result);
-        }
-        return rb.build();
-
     }
 
     @GET
@@ -188,7 +142,6 @@ public class MetaDataAdmin {
         }
 
         return Response.created(url).build();
-
     }
 
     @POST
@@ -205,7 +158,6 @@ public class MetaDataAdmin {
         } catch (Exception e) {
             log.error("Error occurred while adding properties ", e);
         }
-
 
         return Response.created(url).build();
     }

@@ -26,7 +26,7 @@ public interface MetaDataServiceClient {
     /**
      * Initialize the MetaDataServiceClient. Should be called once before using the MetaDataServiceClient.
      */
-    public void initialize();
+    //public void initialize();
 
     /**
      * Adds a property key value pair for the relevant cluster of the specified app

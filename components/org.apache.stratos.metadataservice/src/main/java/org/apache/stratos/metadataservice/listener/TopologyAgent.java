@@ -86,7 +86,7 @@ public class TopologyAgent implements Runnable {
 						log.debug("Terminated event :::::::::::::::::::: " +
 					                   memberTerminatedEvent.getServiceName());
 					}
-                    DataRegistryFactory.getDataRegistryFactory(registryType).removeCartridgeMetaDataDetails("appA", "php");
+                    //DataRegistryFactory.getDataRegistryFactory(registryType).removeCartridgeMetaDataDetails("appA", "php");
 
 				} catch (Exception e) {
 					if (log.isErrorEnabled()) {
