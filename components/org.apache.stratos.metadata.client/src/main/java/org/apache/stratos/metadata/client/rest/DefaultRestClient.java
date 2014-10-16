@@ -22,6 +22,7 @@ package org.apache.stratos.metadata.client.rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
@@ -94,6 +95,9 @@ public class DefaultRestClient implements RestClient {
     }
 
     private void setAuthHeader(HttpRequestBase post) {
+        if(StringUtils.isEmpty(username) || StringUtils.isEmpty(password)){
+            return;
+        }
         String identity = username + ":" + password;
         String encoding = new String(Base64.encodeBase64(identity.getBytes()));
         post.setHeader("Authorization", "Basic " + encoding);
