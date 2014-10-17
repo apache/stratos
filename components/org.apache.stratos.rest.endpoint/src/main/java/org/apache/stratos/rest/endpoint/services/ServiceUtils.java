@@ -51,12 +51,12 @@ import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
+import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -1577,5 +1577,50 @@ public class ServiceUtils {
 		}
 
         log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
+    }
+
+    public static Object getApplicationInfo(String applicationId, ConfigurationContext configContext) {
+
+        TopologyManager.acquireReadLock();
+        Application application = TopologyManager.getTopology().getApplication(applicationId);
+        ApplicationBean applicationBean = applicationToBean(application);
+
+        Map<String, ClusterDataHolder> topLevelClusterDataMap  = application.getClusterDataMap();
+        for(Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()){
+            String alias = entry.getKey();
+            ClusterDataHolder clusterDataHolder = entry.getValue();
+            String clusterId = clusterDataHolder.getClusterId();
+            Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterDataHolder.getServiceType()).getCluster(clusterId);
+        }
+
+        Collection<Group> groups = application.getGroups();
+        for(Group group :  groups){
+            GroupBean groupBean = toGroupBean(group);
+            setSubGroups(group, groupBean);
+            applicationBean.addGroup(groupBean);
+        }
+        TopologyManager.releaseReadLock();
+        return null;
+    }
+
+    private static void setSubGroups(Group group, GroupBean groupBean) {
+        Collection<Group> subgroups = group.getGroups();
+        for(Group subGroup : subgroups){
+            GroupBean subGroupBean = toGroupBean(subGroup);
+            setSubGroups(subGroup, subGroupBean);
+            groupBean.addGroup(subGroupBean);
+        }
+    }
+
+    private static GroupBean toGroupBean(Group group) {
+        GroupBean groupBean = new GroupBean();
+        groupBean.alias = group.getUniqueIdentifier();
+        return groupBean;
+    }
+
+    private static ApplicationBean applicationToBean(Application application) {
+        ApplicationBean applicationBean = new ApplicationBean();
+        applicationBean.id = application.getUniqueIdentifier();
+        return applicationBean;
     }
 }
