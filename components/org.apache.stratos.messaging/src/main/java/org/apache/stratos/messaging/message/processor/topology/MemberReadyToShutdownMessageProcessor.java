@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -56,10 +55,6 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
             try {
                 return doProcess(event, topology);
 
-            } catch (InvalidLifecycleTransitionException e) {
-                log.error(e);
-                return false;
-
             } finally {
                 TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
@@ -74,7 +69,7 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
         }
     }
 
-    private boolean doProcess (MemberReadyToShutdownEvent event,Topology topology) throws InvalidLifecycleTransitionException {
+    private boolean doProcess (MemberReadyToShutdownEvent event,Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -147,6 +142,9 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+            }
             member.setStatus(MemberStatus.ReadyToShutDown);
 
             if (log.isInfoEnabled()) {

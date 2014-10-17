@@ -306,7 +306,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     AbstractClusterMonitor monitor;
                     if (AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
                         monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterMaitenanceEvent.getClusterId());
-                        monitor.setStatus(Status.In_Active);
+                        monitor.setStatus(Status.In_Maintenance);
                     } else if (AutoscalerContext.getInstance().
                             lbMonitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getLBMonitor(clusterMaitenanceEvent.getClusterId()).
@@ -589,19 +589,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             th = new Thread(
                     new ApplicationMonitorAdder(applicationId));
         }
-        //  if (th != null) {
-        th.start();
+
+        if (th != null) {
+            th.start();
         //    try {
         //        th.join();
         //    } catch (InterruptedException ignore) {
-        //    }
 
-        if (log.isDebugEnabled()) {
-            log.debug(String
+            if (log.isDebugEnabled()) {
+                log.debug(String
                     .format("Application monitor thread has been started successfully: " +
                             "[application] %s ", applicationId));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Application monitor thread already exists: " +
+                                "[application] %s ", applicationId));
+            }
         }
-        //  }
     }
 
     private class ApplicationMonitorAdder implements Runnable {

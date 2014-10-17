@@ -283,7 +283,7 @@ public class StatusChecker {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             if (service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
-                    getStatus() == Status.Activated) {
+                    getStatus() == ClusterStatus.Active) {
                 clusterActiveStatus = true;
             } else {
                 clusterActiveStatus = false;

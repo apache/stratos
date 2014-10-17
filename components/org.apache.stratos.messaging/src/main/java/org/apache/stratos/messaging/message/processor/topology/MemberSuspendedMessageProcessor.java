@@ -25,7 +25,6 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.event.topology.MemberSuspendedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -60,10 +59,6 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
             try {
                 return doProcess(event, topology);
 
-            } catch (InvalidLifecycleTransitionException e) {
-                log.error(e);
-                return false;
-
             } finally {
                 TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
@@ -78,7 +73,7 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (MemberSuspendedEvent event,Topology topology) throws InvalidLifecycleTransitionException {
+    private boolean doProcess (MemberSuspendedEvent event,Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -150,6 +145,9 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.Suspended)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Suspended);
+            }
             member.setStatus(MemberStatus.Suspended);
 
             if (log.isInfoEnabled()) {

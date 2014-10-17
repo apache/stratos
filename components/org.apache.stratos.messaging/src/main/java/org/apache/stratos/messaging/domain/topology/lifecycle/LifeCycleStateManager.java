@@ -35,23 +35,24 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     public LifeCycleStateManager(T initialState) {
         stateStack = new Stack<T>();
         stateStack.push(initialState);
+        //if (log.isDebugEnabled()) {
+            log.info("Life Cycle State Manager created, initial state: " + initialState.toString());
+        //}
     }
 
-    public void changeState (T nextState) throws InvalidLifecycleTransitionException {
+    public <S extends TopologyEvent> boolean isPreConditionsValid (T nextState, S topologyEvent) {
+        // TODO: implement
+        return true;
+    }
 
-        if(getCurrentState().getNextStates().contains(nextState)) {
-            // do the transition
-            stateStack.push(nextState);
-            //if (log.isDebugEnabled()) {
-                log.info("Life Cycle State successfully updated from " + getCurrentState() + " to " + nextState);
-            //}
-        } else {
-            // invalid state transition
-            String errorMsg = "Attempted transition from " + getCurrentState() + " to " + nextState
-                    + " is invalid";
-            log.error(errorMsg);
-            throw new InvalidLifecycleTransitionException(errorMsg);
-        }
+    public boolean isStateTransitionValid (T nextState) {
+
+        return stateStack.peek().getNextStates().contains(nextState);
+    }
+
+    public void changeState (T nextState)  {
+
+        stateStack.push(nextState);
     }
 
     public Stack<T> getStateStack () {
@@ -60,5 +61,9 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
 
     public T getCurrentState () {
         return stateStack.peek();
+    }
+
+    public T getPreviousState () {
+        return stateStack.get(1);
     }
 }

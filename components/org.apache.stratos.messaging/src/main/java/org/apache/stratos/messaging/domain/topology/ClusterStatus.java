@@ -18,13 +18,38 @@
  */
 
 package org.apache.stratos.messaging.domain.topology;
-public enum ClusterStatus {
-    Created(1),
-    In_Maintenance(2),
-    terminating(3),
-    Removed(4),
-    Running(5),
-    Active(6);
+
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+public enum ClusterStatus implements LifeCycleState {
+    Created(0) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active));
+        }
+    },
+    Active(1) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Inactive));
+        }
+    },
+    Inactive(3) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active, ClusterStatus.Terminated));
+        }
+    },
+    Terminated(4) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return null;
+        }
+    };
 
     private int code;
 
@@ -35,5 +60,4 @@ public enum ClusterStatus {
     public int getCode() {
         return code;
     }
-
 }

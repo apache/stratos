@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
@@ -33,7 +33,7 @@ import java.util.*;
  * Key: serviceName, clusterId, memberId
  */
 @XmlRootElement
-public class Member implements Serializable {
+public class Member implements Serializable, LifeCycleStateTransitionBehavior<MemberStatus> {
     private static final long serialVersionUID = 4179661867903664661L;
 
     private final String serviceName;
@@ -74,16 +74,27 @@ public class Member implements Serializable {
         return memberId;
     }
 
+    @Override
+    public boolean isStateTransitionValid(MemberStatus newState) {
+        return memberStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
     public MemberStatus getStatus() {
         return memberStateManager.getCurrentState();
     }
 
-    public void setStatus(MemberStatus status) throws InvalidLifecycleTransitionException {
-        this.memberStateManager.changeState(status);
+    public Stack<MemberStatus> getTransitionedStates () {
+        return memberStateManager.getStateStack();
     }
 
-    public boolean isActive() {
-        return (this.memberStateManager.getCurrentState() == MemberStatus.Activated);
+    @Override
+    public void setStatus(MemberStatus newState) {
+        memberStateManager.changeState(newState);
+    }
+
+    public boolean isActive () {
+        return memberStateManager.getCurrentState().equals(MemberStatus.Activated);
     }
 
     public Collection<Port> getPorts() {

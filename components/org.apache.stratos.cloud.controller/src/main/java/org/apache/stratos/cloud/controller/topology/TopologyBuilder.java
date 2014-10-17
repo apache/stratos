@@ -29,7 +29,6 @@ import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublis
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
@@ -151,7 +150,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setStatus(Status.Created);
+                //cluster.setStatus(Status.Created);
                 service.addCluster(cluster);
             }
             TopologyManager.updateTopology(topology);
@@ -210,7 +209,11 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.getCluster(ctxt.getClusterId());
-            cluster.setStatus(Status.In_Active);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
+            }
+            cluster.setStatus(ClusterStatus.Inactive);
+            //cluster.setStatus(Status.In_Maintenance);
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
@@ -256,7 +259,7 @@ public class TopologyBuilder {
                 publicIp, privateIp, context);
     }
 
-    public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) throws InvalidLifecycleTransitionException {
+    public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceStartedEvent.getServiceName());
         if (service == null) {
@@ -303,6 +306,9 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.Starting)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Starting);
+            }
             member.setStatus(MemberStatus.Starting);
             log.info("member started event adding status started");
 
@@ -322,7 +328,7 @@ public class TopologyBuilder {
                 null);
     }
 
-    public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) throws InvalidLifecycleTransitionException {
+    public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceActivatedEvent.getServiceName());
         if (service == null) {
@@ -372,6 +378,9 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.Activated)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
+            }
             member.setStatus(MemberStatus.Activated);
             log.info("member started event adding status activated");
             Cartridge cartridge = FasterLookUpDataHolder.getInstance().
@@ -407,7 +416,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
-            throws InvalidMemberException, InvalidCartridgeTypeException, InvalidLifecycleTransitionException {
+            throws InvalidMemberException, InvalidCartridgeTypeException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceReadyToShutdownEvent.getServiceName());
         //update the status of the member
@@ -459,6 +468,10 @@ public class TopologyBuilder {
                 instanceReadyToShutdownEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
+
+            if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+            }
             member.setStatus(MemberStatus.ReadyToShutDown);
             log.info("Member Ready to shut down event adding status started");
 
@@ -479,7 +492,7 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberMaintenance(InstanceMaintenanceModeEvent instanceMaintenanceModeEvent)
-            throws InvalidMemberException, InvalidCartridgeTypeException, InvalidLifecycleTransitionException {
+            throws InvalidMemberException, InvalidCartridgeTypeException {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceMaintenanceModeEvent.getServiceName());
         //update the status of the member
@@ -535,6 +548,9 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.In_Maintenance)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.In_Maintenance);
+            }
             member.setStatus(MemberStatus.In_Maintenance);
             log.info("member maintenance mode event adding status started");
 
@@ -630,7 +646,7 @@ public class TopologyBuilder {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
                         applicationClusterContext.getAutoscalePolicyName(), application.getUniqueIdentifier());
-                cluster.setStatus(Status.Created);
+                //cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
                 clusters.add(cluster);
@@ -756,7 +772,8 @@ public class TopologyBuilder {
                         clusterActivatedEvent.getClusterId());
         try {
             TopologyManager.acquireWriteLock();
-            cluster.setStatus(Status.Activated);
+            //cluster.setStatus(Status.Activated);
+            cluster.setStatus(ClusterStatus.Active);
             log.info("Cluster activated adding status started");
 
             TopologyManager.updateTopology(topology);

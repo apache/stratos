@@ -32,7 +32,6 @@ import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.load.balancer.exception.InvalidConfigurationException;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.lifecycle.InvalidLifecycleTransitionException;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.File;
@@ -489,12 +488,7 @@ public class LoadBalancerConfiguration {
                                 Port port = new Port(portNode.getName(), Integer.valueOf(value), Integer.valueOf(proxy));
                                 member.addPort(port);
                             }
-                            try {
-                                member.setStatus(MemberStatus.Activated);
-
-                            } catch (InvalidLifecycleTransitionException e) {
-                                log.error(e);
-                            }
+                            member.setStatus(MemberStatus.Activated);
                             cluster.addMember(member);
                         }
                         // Add cluster to service

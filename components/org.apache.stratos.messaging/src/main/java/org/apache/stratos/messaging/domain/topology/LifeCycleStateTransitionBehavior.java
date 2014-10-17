@@ -17,31 +17,19 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology.lifecycle;
+package org.apache.stratos.messaging.domain.topology;
 
-public class InvalidLifecycleTransitionException extends Exception {
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-    private String message;
+import java.util.Stack;
 
-    public InvalidLifecycleTransitionException() {
-        super();
-    }
+public interface LifeCycleStateTransitionBehavior<T extends LifeCycleState> {
 
-    public InvalidLifecycleTransitionException(String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
-    }
+    public boolean isStateTransitionValid(T newState);
 
-    public InvalidLifecycleTransitionException(String message) {
-        super(message);
-        this.message = message;
-    }
+    public Stack<T> getTransitionedStates ();
 
-    public InvalidLifecycleTransitionException(Throwable cause) {
-        super(cause);
-    }
+    public T getStatus();
 
-    public String getMessage() {
-        return message;
-    }
+    public void setStatus(T newState);
 }

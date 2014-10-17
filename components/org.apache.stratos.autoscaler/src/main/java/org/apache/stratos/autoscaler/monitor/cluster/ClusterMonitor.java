@@ -84,12 +84,12 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if (!ClusterStatus.In_Maintenance.equals(status)) {
+                if (!ClusterStatus.Inactive.equals(status)) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is suspended as the cluster is in " +
-                                ClusterStatus.In_Maintenance + " mode......");
+                                ClusterStatus.Inactive + " mode......");
                     }
                 }
             } catch (Exception e) {
