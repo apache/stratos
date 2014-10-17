@@ -485,7 +485,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         AbstractClusterMonitor monitor;
 
         if(asCtx.monitorExist(clusterId)){
-            monitor = asCtx.getMonitor(clusterId);
+            monitor = (AbstractClusterMonitor) asCtx.getMonitor(clusterId);
         }else if(asCtx.lbMonitorExist(clusterId)){
             monitor = asCtx.getLBMonitor(clusterId);
         }else{
@@ -558,7 +558,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
         	return null;
         }
-        AbstractClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(member.getClusterId());
+        AbstractClusterMonitor monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(member.getClusterId());
         if(null == monitor){
 
             monitor = AutoscalerContext.getInstance().getLBMonitor(member.getClusterId());

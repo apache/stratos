@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 /**
@@ -32,8 +33,9 @@ public class ApplicationContextFactory {
 
     /**
      * Will return the GroupContext/ClusterContext based on the type in start order
-     * @param startOrder reference of group/cluster in the start order
-     * @param component The component which used to build the dependency
+     *
+     * @param startOrder      reference of group/cluster in the start order
+     * @param component       The component which used to build the dependency
      * @param isKillDependent kill dependent behaviour of this component
      * @return Context
      */
@@ -45,15 +47,14 @@ public class ApplicationContextFactory {
         if (startOrder.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(startOrder);
-            applicationContext = new GroupContext(id,
-                    isKillDependent);
+            applicationContext = getGroupContext(id, isKillDependent);
         } else if (startOrder.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
             id = getClusterFromStartupOrder(startOrder);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
-            applicationContext = new ClusterContext(clusterDataHolder.getClusterId(),
-                    isKillDependent);
+            applicationContext = getClusterContext(clusterDataHolder, isKillDependent);
+
         } else {
             log.warn("[Startup Order]: " + startOrder + " contains unknown reference");
         }
@@ -63,6 +64,7 @@ public class ApplicationContextFactory {
 
     /**
      * Utility method to get the group alias from the startup order Eg: group.mygroup
+     *
      * @param startupOrder startup order
      * @return group alias
      */
@@ -72,10 +74,27 @@ public class ApplicationContextFactory {
 
     /**
      * Utility method to get the cluster alias from startup order Eg: cartridge.myphp
+     *
      * @param startupOrder startup order
      * @return cluster alias
      */
     public static String getClusterFromStartupOrder(String startupOrder) {
         return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
+    }
+
+    public static ApplicationContext getClusterContext(ClusterDataHolder dataHolder,
+                                                       boolean isKillDependent) {
+        ApplicationContext applicationContext;
+        applicationContext = new ClusterContext(dataHolder.getClusterId(),
+                isKillDependent);
+        ((ClusterContext) applicationContext).setServiceName(dataHolder.getServiceType());
+        return  applicationContext;
+    }
+
+    public static ApplicationContext getGroupContext(String id, boolean isKillDependent) {
+        ApplicationContext applicationContext;
+        applicationContext = new GroupContext(id,
+                isKillDependent);
+        return applicationContext;
     }
 }

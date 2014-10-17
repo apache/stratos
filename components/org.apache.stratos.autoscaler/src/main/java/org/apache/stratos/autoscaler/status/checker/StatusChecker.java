@@ -54,7 +54,7 @@ public class StatusChecker {
      * @param clusterId id of the cluster
      */
     public void onMemberStatusChange(String clusterId) {
-        ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
+        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
         boolean clusterActive = clusterActive(monitor);
         // if active then notify upper layer
         if (clusterActive) {
@@ -62,6 +62,13 @@ public class StatusChecker {
             StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                     monitor.getServiceId(), monitor.getClusterId());
         }
+    }
+
+    public void onMemberTermination(String clusterId) {
+        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+        //TODO get Topology status
+        // if cluster not having any members and if the cluster was in_active then send created Events
+        // if cluster was in terminating, then send terminated event.
     }
 
     private boolean clusterActive(AbstractClusterMonitor monitor) {
@@ -81,6 +88,42 @@ public class StatusChecker {
             }
         }
         return clusterActive;
+    }
+
+    /**
+     * @param clusterId
+     * @param appId
+     * @param partitionContext is to decide in which partition has less members while others have active members
+     */
+    public void onMemberFaultEvent(final String clusterId, final String appId, final PartitionContext partitionContext) {
+        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+        boolean clusterInActive = getClusterInActive(monitor, partitionContext);
+        if (clusterInActive) {
+            //TODO evaluate life cycle
+            //send cluster In-Active event to cluster status topic
+
+        } else {
+            boolean clusterActive = clusterActive(monitor);
+            if(clusterActive) {
+                //TODO evaluate life cycle
+                //send clusterActive event to cluster status topic
+            }
+        }
+    }
+
+    private boolean getClusterInActive(AbstractClusterMonitor monitor, PartitionContext partitionContext) {
+        boolean clusterInActive = false;
+        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+            for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
+                if (partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
+                        partition.getActiveMemberCount() < partition.getMinimumMemberCount()) {
+                    clusterInActive = true;
+                    return clusterInActive;
+                }
+            }
+
+        }
+        return clusterInActive;
     }
 
     /**
@@ -149,47 +192,7 @@ public class StatusChecker {
     }
 
 
-    /**
-     * @param clusterId
-     * @param appId
-     * @param partitionContext is to decide in which partition has less members while others have active members
-     */
-    public void onMemberFaultEvent(final String clusterId, final String appId, final PartitionContext partitionContext) {
-        Runnable memberFault = new Runnable() {
-            public void run() {
-                ClusterMonitor monitor = AutoscalerContext.getInstance().getMonitor(clusterId);
-                boolean clusterActive = false;
-                boolean clusterInMaintenance = false;
-                for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
-                    for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
-                        if (partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
-                                partition.getActiveMemberCount() < partition.getMinimumMemberCount()) {
-                            clusterInMaintenance = true;
-                        } else {
-                            log.info(String.format("Hence the [partition] %s, in [networkpartition], " +
-                                            "%s has exceeded the [minimum], %d with current active " +
-                                            "[members], %d the [cluster], %s is still in active mode."
-                                    , partition.getPartitionId(), partition.getNetworkPartitionId(),
-                                    partition.getMinimumMemberCount(), partition.getActiveMemberCount(), clusterId));
-                        }
-                        if (partitionContext.getMinimumMemberCount() >= partitionContext.getActiveMemberCount()) {
-                            clusterActive = true;
-                        }
-                        clusterActive = false;
-                    }
 
-                }
-                // if in maintenance then notify upper layer
-                if (clusterActive && clusterInMaintenance) {
-                    //send clusterInmaintenance event to cluster status topic
-
-                }
-
-            }
-        };
-        Thread faultHandlingThread = new Thread(memberFault);
-        faultHandlingThread.start();
-    }
 
     /**
      * This will use to calculate whether  all children of a particular component is active by travesing Top

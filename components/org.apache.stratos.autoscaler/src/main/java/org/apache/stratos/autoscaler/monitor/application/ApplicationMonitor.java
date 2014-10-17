@@ -25,11 +25,10 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ParentComponent;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ import java.util.List;
 /**
  * ApplicationMonitor is to control the child monitors
  */
-public class ApplicationMonitor extends Monitor {
+public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
@@ -60,10 +59,10 @@ public class ApplicationMonitor extends Monitor {
     public List<String> findClustersOfApplication(String appId) {
         List<String> clusters = new ArrayList<String>();
         //considering only one level
-        for (AbstractClusterMonitor monitor : this.clusterIdToClusterMonitorsMap.values()) {
+        /*for (AbstractClusterMonitor monitor : this.clusterIdToClusterMonitorsMap.values()) {
             clusters.add(monitor.getClusterId());
-        }
-        //TODO rest
+        }*/
+        //TODO restart and read from Topology
         return clusters;
 
     }
@@ -75,8 +74,9 @@ public class ApplicationMonitor extends Monitor {
      * @return the found cluster monitor
      */
     public AbstractClusterMonitor findClusterMonitorWithId(String clusterId) {
-        return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(),
-                aliasToGroupMonitorsMap.values());
+        /*return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(),
+                aliasToMonitorsMap.values());*/
+        return null;
 
     }
 
@@ -88,9 +88,9 @@ public class ApplicationMonitor extends Monitor {
      * @param groupMonitors   group monitors found in the app monitor
      * @return the found cluster monitor
      */
-    private AbstractClusterMonitor findClusterMonitor(String clusterId,
+    /*private AbstractClusterMonitor findClusterMonitor(String clusterId,
                                                       Collection<AbstractClusterMonitor> clusterMonitors,
-                                                      Collection<GroupMonitor> groupMonitors) {
+                                                      Collection<Monitor> groupMonitors) {
         for (AbstractClusterMonitor monitor : clusterMonitors) {
             // check if alias is equal, if so, return
             if (monitor.equals(clusterId)) {
@@ -98,7 +98,7 @@ public class ApplicationMonitor extends Monitor {
             }
         }
 
-        for (GroupMonitor groupMonitor : groupMonitors) {
+        for (Monitor groupMonitor : groupMonitors) {
             return findClusterMonitor(clusterId,
                     groupMonitor.getClusterIdToClusterMonitorsMap().values(),
                     groupMonitor.getAliasToGroupMonitorsMap().values());
@@ -106,15 +106,15 @@ public class ApplicationMonitor extends Monitor {
         return null;
 
     }
-
+*/
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
      *
      * @param groupId the unique alias of the Group
      * @return the found GroupMonitor
      */
-    public GroupMonitor findGroupMonitorWithId(String groupId) {
-        return findGroupMonitor(groupId, aliasToGroupMonitorsMap.values());
+    public Monitor findGroupMonitorWithId(String groupId) {
+        return findGroupMonitor(groupId, aliasToMonitorsMap.values());
 
     }
 
@@ -126,88 +126,19 @@ public class ApplicationMonitor extends Monitor {
      * @param monitors the group monitors found in the app monitor
      * @return the found GroupMonitor
      */
-    private GroupMonitor findGroupMonitor(String id, Collection<GroupMonitor> monitors) {
-        for (GroupMonitor monitor : monitors) {
+    private Monitor findGroupMonitor(String id, Collection<Monitor> monitors) {
+        for (Monitor monitor : monitors) {
             // check if alias is equal, if so, return
             if (monitor.getId().equals(id)) {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor.getAliasToGroupMonitorsMap() != null) {
-                    return findGroupMonitor(id, monitor.getAliasToGroupMonitorsMap().values());
+                if (monitor.getAliasToMonitorsMap() != null) {
+                    return findGroupMonitor(id, monitor.getAliasToMonitorsMap().values());
                 }
             }
         }
         return null;
-    }
-
-
-    /**
-     * To find the parent monitor of a group's associate monitor
-     *
-     * @param groupId the id of the group
-     * @return the found parent monitor of the group
-     */
-    public Monitor findParentMonitorOfGroup(String groupId) {
-        return findParentMonitorForGroup(groupId, this);
-    }
-
-    /**
-     * Find the parent monitor of the given group in the app monitor
-     *
-     * @param groupId the id of the group
-     * @param monitor the app monitor
-     * @return the found parent monitor of the group
-     */
-    private Monitor findParentMonitorForGroup(String groupId, Monitor monitor) {
-        //if this monitor has the group, return it as the parent
-        if (monitor.getAliasToGroupMonitorsMap().containsKey(groupId)) {
-            return monitor;
-        } else {
-            if (monitor.getAliasToGroupMonitorsMap() != null) {
-                //check whether the children has the group and find its parent
-                for (GroupMonitor groupMonitor : monitor.getAliasToGroupMonitorsMap().values()) {
-                    return findParentMonitorForGroup(groupId, groupMonitor);
-
-                }
-            }
-        }
-        return null;
-
-    }
-
-    /**
-     * Find the parent monitor of the given cluster in the app monitor
-     *
-     * @param clusterId the id of the cluster
-     * @return the found parent monitor of the cluster
-     */
-    public Monitor findParentMonitorOfCluster(String clusterId) {
-        return findParentMonitorForCluster(clusterId, this);
-    }
-
-    /**
-     * Find the parent monitor of the given cluster in the app monitor
-     *
-     * @param clusterId the id of the cluster
-     * @param monitor   the app monitor
-     * @return the found parent monitor of the cluster
-     */
-    private Monitor findParentMonitorForCluster(String clusterId, Monitor monitor) {
-        //if this monitor has the group, return it as the parent
-        if (monitor.getClusterIdToClusterMonitorsMap().containsKey(clusterId)) {
-            return monitor;
-        } else {
-            if (monitor.getAliasToGroupMonitorsMap() != null) {
-                //check whether the children has the group and find its parent
-                for (GroupMonitor groupMonitor : monitor.getAliasToGroupMonitorsMap().values()) {
-                    return findParentMonitorForCluster(clusterId, groupMonitor);
-
-                }
-            }
-        }
-        return null;
-
     }
 
     /**
@@ -261,7 +192,7 @@ public class ApplicationMonitor extends Monitor {
 
                 }
                 //updating the life cycle and current status
-                context.setStatus(statusEvent.getStatus());
+                context.setCurrentStatus(statusEvent.getStatus());
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if(!startDep) {
                     //Checking in the children whether all are active,

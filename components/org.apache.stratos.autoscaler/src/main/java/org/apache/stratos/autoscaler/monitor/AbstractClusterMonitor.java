@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -44,7 +43,7 @@ import java.util.Map;
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */
-abstract public class AbstractClusterMonitor implements EventHandler, Runnable {
+abstract public class AbstractClusterMonitor extends Monitor implements Runnable {
 
     private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
     // Map<NetworkpartitionId, Network Partition Context>
@@ -68,7 +67,7 @@ abstract public class AbstractClusterMonitor implements EventHandler, Runnable {
 
     protected Status status;
 
-    protected Monitor parent;
+    protected ParentComponentMonitor parent;
 
     protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
 
@@ -249,11 +248,11 @@ abstract public class AbstractClusterMonitor implements EventHandler, Runnable {
 
     }
 
-    public Monitor getParent() {
+    public ParentComponentMonitor getParent() {
         return parent;
     }
 
-    public void setParent(Monitor parent) {
+    public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
         this.appId = parent.getAppId();
     }

@@ -24,28 +24,25 @@ import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
-import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.Status;
-import org.apache.stratos.messaging.event.application.status.StatusEvent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
  * groups and clusters
  */
-public class GroupMonitor extends Monitor implements EventHandler {
+public class GroupMonitor extends ParentComponentMonitor implements EventHandler {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
 
     //Parent monitor of this monitor
-    private Monitor parent;
-    //Application id of this particular monitor
-    protected String appId;
-
+    private ParentComponentMonitor parent;
 
     /**
      * Constructor of GroupMonitor
@@ -53,9 +50,10 @@ public class GroupMonitor extends Monitor implements EventHandler {
      * @throws DependencyBuilderException throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
-    public GroupMonitor(Group group) throws DependencyBuilderException,
+    public GroupMonitor(Group group, String appId) throws DependencyBuilderException,
                                             TopologyInConsistentException {
         super(group);
+        this.appId = appId;
         startDependency();
     }
 
@@ -79,39 +77,87 @@ public class GroupMonitor extends Monitor implements EventHandler {
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
-        ApplicationContext context = this.dependencyTree.
-                findApplicationContextWithId(id);
-        if(context.getStatusLifeCycle().isEmpty()) {
-            try {
-                //if life cycle is empty, need to start the monitor
-                boolean startDep = startDependency(statusEvent.getId());
-                if(log.isDebugEnabled()) {
-                    log.debug("started a child: " + startDep + " by the group/cluster: " + id);
+        Status status1 = statusEvent.getStatus();
+        ApplicationContext context = this.dependencyTree.findApplicationContextWithId(id);
+        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+        //TODO if statusEvent is for active, then start the next one if any available
+        if(!isParent(id)) {
+            if(status1 == Status.Activated) {
+                try {
+                    //if life cycle is empty, need to start the monitor
+                    boolean startDep = startDependency(statusEvent.getId());
+                    if (log.isDebugEnabled()) {
+                        log.debug("started a child: " + startDep + " by the group/cluster: " + id);
 
+                    }
+                    //updating the life cycle and current status
+                    if (startDep) {
+                        context.setCurrentStatus(Status.Created);
+                        context.addStatusToLIfeCycle(Status.Created);
+                    } else {
+                        StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+                    }
+
+                } catch (TopologyInConsistentException e) {
+                    //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+                    log.error(e);
                 }
-                //updating the life cycle and current status
-                context.setStatus(statusEvent.getStatus());
-                context.addStatusToLIfeCycle(statusEvent.getStatus());
-                if(!startDep) {
-                    //Checking in the children whether all are active,
-                    // since no dependency found to be started.
-                    StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            } else if(status1 == Status.In_Active) {
+                //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
+                //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
+                //TODO check whether dependent in_active. Then kill c1.
+                //evaluate termination behavior and take action based on that.
+
+                List<ApplicationContext> terminationList = new ArrayList<ApplicationContext>();
+                terminationList = this.dependencyTree.getTerminationDependencies(id);
+
+                //check whether all the children are in_active state
+                for(ApplicationContext terminationContext : terminationList) {
+                   //terminationContext
                 }
-            } catch (TopologyInConsistentException e) {
-                //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
-                log.error(e);
+
+                /*if(terminationList != null && !terminationList.isEmpty()) {
+                    for(ApplicationContext context1 : terminationList) {
+                        if(context1 instanceof ClusterContext) {
+                            AbstractClusterMonitor monitor = this.clusterIdToClusterMonitorsMap.
+                                    get(context1.getId());
+                            //Whether life cycle change to Created
+                            if(monitor.getStatus() == Status.Created) {
+                                canTerminate = true;
+                            } else {
+                                //TODO sending group in_active event to dependent cluster/group
+                                StatusEventPublisher.sendGroupActivatedEvent(this.appId, this.id);
+                                //not all dependent clusters are in created state.
+                                canTerminate = false;
+                            }
+                        }
+                    }
+                    if(canTerminate) {
+                       //
+                    }*/
+                } else {
+                    //TODO get dependents
+                    List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
+                }
+
+
+
+
+
+            } else if(status1 == Status.Created) {
+                //the dependent goes to be created state, so terminate the dependents
             }
-        } else {
-            //TODO act based on life cycle events
         }
 
-    }
 
-    public Monitor getParent() {
+
+
+
+    public ParentComponentMonitor getParent() {
         return parent;
     }
 
-    public void setParent(Monitor parent) {
+    public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
     }
 
@@ -122,5 +168,17 @@ public class GroupMonitor extends Monitor implements EventHandler {
     public void setAppId(String appId) {
         this.appId = appId;
     }
+
+    private boolean isParent(String id) {
+        if(this.parent.getId().equals(id)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+
+
 
 }

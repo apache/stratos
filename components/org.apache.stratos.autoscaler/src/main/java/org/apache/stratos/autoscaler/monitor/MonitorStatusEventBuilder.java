@@ -32,22 +32,22 @@ import org.apache.stratos.messaging.domain.topology.Status;
 public class MonitorStatusEventBuilder {
     private static final Log log = LogFactory.getLog(MonitorStatusEventBuilder.class);
 
-    public static void handleClusterStatusEvent(Monitor parent, Status status, String clusterId) {
+    public static void handleClusterStatusEvent(ParentComponentMonitor parent, Status status, String clusterId) {
         ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId);
         notifyParent(parent, clusterStatusEvent);
     }
 
-    public static void handleGroupStatusEvent(Monitor parent, Status status, String groupId) {
+    public static void handleGroupStatusEvent(ParentComponentMonitor parent, Status status, String groupId) {
         GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId);
         notifyParent(parent, groupStatusEvent);
     }
 
-    public static void handleApplicationStatusEvent(Monitor parent, Status status, String appId) {
+    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, Status status, String appId) {
         ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId);
         notifyParent(parent, applicationStatusEvent);
     }
 
-    private static void notifyParent(Monitor parent, MonitorStatusEvent statusEvent) {
+    private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
        parent.onEvent(statusEvent);
     }
 

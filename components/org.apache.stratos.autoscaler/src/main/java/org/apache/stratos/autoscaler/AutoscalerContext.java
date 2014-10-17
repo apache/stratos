@@ -22,9 +22,8 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 
@@ -37,9 +36,18 @@ import java.util.Map;
 public class AutoscalerContext {
 
     private static final Log log = LogFactory.getLog(AutoscalerContext.class);
+    // Map<ClusterId, ClusterMonitor>
+    private Map<String, Monitor> monitors;
+    // Map<ClusterId, ClusterMonitor>
+    private Map<String, StatusChecker> statusCheckers;
+    // Map<LBClusterId, LBClusterMonitor>
+    private Map<String, LbClusterMonitor> lbMonitors;
+    private Map<String, ApplicationMonitor> appMonitors;
+
+
     private AutoscalerContext() {
         try {
-            setMonitors(new HashMap<String, ClusterMonitor>());
+            setMonitors(new HashMap<String, Monitor>());
             setLbMonitors(new HashMap<String, LbClusterMonitor>());
             setAppMonitors(new HashMap<String, ApplicationMonitor>());
         } catch (Exception e) {
@@ -47,49 +55,34 @@ public class AutoscalerContext {
         }
     }
 
-    // Map<ClusterId, ClusterMonitor>
-    private Map<String, ClusterMonitor> monitors;
-
-    // Map<ClusterId, ClusterMonitor>
-    private Map<String, StatusChecker> statusCheckers;
-    // Map<LBClusterId, LBClusterMonitor>
-    private Map<String, LbClusterMonitor> lbMonitors;
-
-
-    private Map<String, ApplicationMonitor> appMonitors;
+    public static AutoscalerContext getInstance() {
+        return Holder.INSTANCE;
+    }
 
     public Map<String, ApplicationMonitor> getAppMonitors() {
         return appMonitors;
-    }
-
-    public ApplicationMonitor getAppMonitor(String applicationId) {
-        return appMonitors.get(applicationId);
     }
 
     public void setAppMonitors(Map<String, ApplicationMonitor> appMonitors) {
         this.appMonitors = appMonitors;
     }
 
+    public ApplicationMonitor getAppMonitor(String applicationId) {
+        return appMonitors.get(applicationId);
+    }
+
     public Map<String, StatusChecker> getStatusCheckers() {
         return statusCheckers;
     }
 
-    private static class Holder {
-		private static final AutoscalerContext INSTANCE = new AutoscalerContext();
-	}
-
-	public static AutoscalerContext getInstance() {
-		return Holder.INSTANCE;
-	}
-
-    public void addMonitor(ClusterMonitor monitor) {
-        monitors.put(monitor.getClusterId(), monitor);
+    public void addMonitor(Monitor monitor) {
+        monitors.put(monitor.getId(), monitor);
     }
 
-    public ClusterMonitor getMonitor(String clusterId) {
+    public Monitor getMonitor(String clusterId) {
         return monitors.get(clusterId);
     }
-    
+
     public boolean monitorExist(String clusterId) {
         return monitors.containsKey(clusterId);
     }
@@ -101,38 +94,38 @@ public class AutoscalerContext {
     public boolean appMonitorExist(String appId) {
         return appMonitors.containsKey(appId);
     }
-    
+
     public boolean lbMonitorExist(String clusterId) {
         return lbMonitors.containsKey(clusterId);
     }
-    
+
     public LbClusterMonitor getLBMonitor(String clusterId) {
         return lbMonitors.get(clusterId);
     }
 
-    public ClusterMonitor removeMonitor(String clusterId) {
-    	if(!monitorExist(clusterId)) {
-    		log.fatal("Cluster monitor not found for cluster id: "+clusterId);
-    		return null;
-    	}
-    	log.info("Removed monitor [cluster id]: " + clusterId);
+    public Monitor removeMonitor(String clusterId) {
+        if (!monitorExist(clusterId)) {
+            log.fatal("Cluster monitor not found for cluster id: " + clusterId);
+            return null;
+        }
+        log.info("Removed monitor [cluster id]: " + clusterId);
         return monitors.remove(clusterId);
     }
+
     public LbClusterMonitor removeLbMonitor(String clusterId) {
-    	if(!lbMonitorExist(clusterId)) {
-    		log.fatal("LB monitor not found for cluster id: "+clusterId);
-    		return null;
-    	}
-    	log.info("Removed LB monitor [cluster id]: " + clusterId);
+        if (!lbMonitorExist(clusterId)) {
+            log.fatal("LB monitor not found for cluster id: " + clusterId);
+            return null;
+        }
+        log.info("Removed LB monitor [cluster id]: " + clusterId);
         return lbMonitors.remove(clusterId);
     }
 
-    public Map<String, ClusterMonitor> getMonitors() {
+    public Map<String, Monitor> getMonitors() {
         return monitors;
     }
 
-
-    public void setMonitors(Map<String, ClusterMonitor> monitors) {
+    public void setMonitors(Map<String, Monitor> monitors) {
         this.monitors = monitors;
     }
 
@@ -145,12 +138,16 @@ public class AutoscalerContext {
     }
 
     public ApplicationMonitor removeAppMonitor(String appId) {
-        if(!appMonitorExist(appId)) {
-            log.fatal("LB monitor not found for App id: "+ appId);
+        if (!appMonitorExist(appId)) {
+            log.fatal("LB monitor not found for App id: " + appId);
             return null;
         }
         log.info("Removed APP monitor [App id]: " + appId);
         return appMonitors.remove(appId);
+    }
+
+    private static class Holder {
+        private static final AutoscalerContext INSTANCE = new AutoscalerContext();
     }
 
 }

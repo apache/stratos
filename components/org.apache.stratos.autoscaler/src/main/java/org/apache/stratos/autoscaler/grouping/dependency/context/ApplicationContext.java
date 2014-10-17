@@ -22,6 +22,7 @@ import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * This is to keep track of the
@@ -35,13 +36,13 @@ public abstract class ApplicationContext {
 
     private Status status;
 
-    private List<Status> statusLifeCycle;
+    private Stack<Status> statusLifeCycle;
 
     protected boolean killDependent;
 
     public ApplicationContext(String id, boolean killDependent) {
         applicationContextList = new ArrayList<ApplicationContext>();
-        statusLifeCycle = new ArrayList<Status>();
+        statusLifeCycle = new Stack<Status>();
         this.killDependent = killDependent;
         this.id = id;
     }
@@ -60,7 +61,7 @@ public abstract class ApplicationContext {
     }
 
     public void addStatusToLIfeCycle(Status status) {
-       this.statusLifeCycle.add(status);
+       this.statusLifeCycle.push(status);
     }
 
     public String getId() {
@@ -71,11 +72,11 @@ public abstract class ApplicationContext {
         this.id = id;
     }
 
-    public Status getStatus() {
+    public Status getCurrentStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setCurrentStatus(Status status) {
         this.status = status;
     }
 
@@ -83,7 +84,15 @@ public abstract class ApplicationContext {
         return statusLifeCycle;
     }
 
-    public void setStatusLifeCycle(List<Status> statusLifeCycle) {
-        this.statusLifeCycle = statusLifeCycle;
+    public boolean hasChild() {
+        boolean hasChild;
+        if(this.applicationContextList.isEmpty()) {
+            hasChild = false;
+        } else {
+            hasChild = true;
+        }
+        return hasChild;
     }
+
+
 }

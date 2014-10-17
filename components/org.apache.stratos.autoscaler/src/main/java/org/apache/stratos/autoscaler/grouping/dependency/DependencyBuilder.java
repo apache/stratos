@@ -140,14 +140,16 @@ public class DependencyBuilder {
         // as they can start in parallel.
         for (Group group1 : component.getAliasToGroupMap().values()) {
             if (dependencyTree.findApplicationContextWithId(group1.getAlias()) == null) {
-                dependencyTree.addApplicationContext(new GroupContext(group1.getAlias(),
-                        dependencyTree.isKillDependent()));
+                ApplicationContext context = ApplicationContextFactory.
+                        getGroupContext(group1.getAlias(), dependencyTree.isKillDependent());
+                dependencyTree.addApplicationContext(context);
             }
         }
         for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
             if (dependencyTree.findApplicationContextWithId(dataHolder.getClusterId()) == null) {
-                dependencyTree.addApplicationContext(new ClusterContext(dataHolder.getClusterId(),
-                        dependencyTree.isKillDependent()));
+                ApplicationContext context = ApplicationContextFactory.getClusterContext(dataHolder,
+                                                                dependencyTree.isKillDependent());
+                dependencyTree.addApplicationContext(context);
 
             }
         }

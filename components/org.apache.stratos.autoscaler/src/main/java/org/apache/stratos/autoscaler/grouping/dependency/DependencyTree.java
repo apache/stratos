@@ -46,6 +46,10 @@ public class DependencyTree {
 
     private boolean killDependent;
 
+    private boolean startupOder;
+
+    private boolean reverseStartupOrder;
+
     private String id;
 
     public DependencyTree(String id) {
@@ -88,7 +92,7 @@ public class DependencyTree {
      */
     private ApplicationContext findApplicationContextWithId(String id, List<ApplicationContext> contexts) {
         for (ApplicationContext context : contexts) {
-            if (context.getId().equals(id)) {
+            if (context.getId().equals(id) && context.getCurrentStatus() == null) {
                 return context;
             }
         }
@@ -130,23 +134,23 @@ public class DependencyTree {
      * @param id the alias/id of group/cluster in which terminated event received
      * @return all the kill able children dependencies
      */
-    public List<ApplicationContext> getKillDependencies(String id) {
+    public List<ApplicationContext> getTerminationDependencies(String id) {
         List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
+        ApplicationContext applicationContext = findApplicationContextWithId(id);
 
-        if (killDependent) {
+        if (this.killDependent) {
             //finding the ApplicationContext of the given id
-            ApplicationContext applicationContext = findApplicationContextWithId(id);
             //finding all the children of the found application context
-            findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
-                    allChildrenOfAppContext);
-            return allChildrenOfAppContext;
-        } else if (killAll) {
+                findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
+                        allChildrenOfAppContext);
+                return allChildrenOfAppContext;
+        } else if (this.killAll) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
                     allChildrenOfAppContext);
 
         }
-        //return empty for the kill-none case
+        //return empty for the kill-none case, what ever returns here will be killed in
         return allChildrenOfAppContext;
     }
 
@@ -220,5 +224,21 @@ public class DependencyTree {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isStartupOder() {
+        return startupOder;
+    }
+
+    public void setStartupOder(boolean startupOder) {
+        this.startupOder = startupOder;
+    }
+
+    public boolean isReverseStartupOrder() {
+        return reverseStartupOrder;
+    }
+
+    public void setReverseStartupOrder(boolean reverseStartupOrder) {
+        this.reverseStartupOrder = reverseStartupOrder;
     }
 }
