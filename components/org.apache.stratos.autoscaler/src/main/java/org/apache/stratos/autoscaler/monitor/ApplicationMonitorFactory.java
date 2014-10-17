@@ -63,6 +63,9 @@ public class ApplicationMonitorFactory {
             monitor = getGroupMonitor(context.getId(), appId);
         } else if (context instanceof ClusterContext) {
             monitor = getClusterMonitor((ClusterContext) context, appId);
+            //Start the thread
+            Thread th = new Thread((AbstractClusterMonitor)monitor);
+            th.start();
         } else {
             monitor = getApplicationMonitor(appId);
         }
