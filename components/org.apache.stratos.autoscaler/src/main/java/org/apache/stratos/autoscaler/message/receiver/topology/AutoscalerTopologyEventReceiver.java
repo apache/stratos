@@ -306,7 +306,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     AbstractClusterMonitor monitor;
                     if (AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
                         monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterMaitenanceEvent.getClusterId());
-                        monitor.setStatus(Status.In_Active);
+                        monitor.setStatus(Status.In_Maintenance);
                     } else if (AutoscalerContext.getInstance().
                             lbMonitorExist((cluster.getClusterId()))) {
                         AutoscalerContext.getInstance().getLBMonitor(clusterMaitenanceEvent.getClusterId()).

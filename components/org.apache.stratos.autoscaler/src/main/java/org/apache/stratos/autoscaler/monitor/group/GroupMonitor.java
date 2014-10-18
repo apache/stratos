@@ -102,7 +102,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                     log.error(e);
                 }
-            } else if(status1 == Status.In_Active) {
+            } else if(status1 == Status.In_Maintenance) {
                 //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
                 //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
                 //TODO check whether dependent in_active. Then kill c1.
