@@ -51,11 +51,14 @@ public class StatusChecker {
     /**
      * Calculating whether the cluster has all min instances as active and send the
      * ClusterActivatedEvent.
+     *
      * @param clusterId id of the cluster
      */
     public void onMemberStatusChange(String clusterId) {
         ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
         boolean clusterActive = clusterActive(monitor);
+        log.info("Status checker running for [cluster] " + clusterId +
+                " the status [clusterActive] " + clusterActive);
         // if active then notify upper layer
         if (clusterActive) {
             //send event to cluster status topic
@@ -104,7 +107,7 @@ public class StatusChecker {
 
         } else {
             boolean clusterActive = clusterActive(monitor);
-            if(clusterActive) {
+            if (clusterActive) {
                 //TODO evaluate life cycle
                 //send clusterActive event to cluster status topic
             }
@@ -127,7 +130,6 @@ public class StatusChecker {
     }
 
     /**
-     *
      * @param idOfChild
      * @param groupId
      * @param appId
@@ -140,6 +142,7 @@ public class StatusChecker {
     /**
      * This will calculate whether the children of an application are active or not. If active, then
      * it will send the ApplicationActivatedEvent.
+     *
      * @param idOfChild
      * @param appId
      */
@@ -192,10 +195,9 @@ public class StatusChecker {
     }
 
 
-
-
     /**
      * This will use to calculate whether  all children of a particular component is active by travesing Top
+     *
      * @param appId
      * @param id
      * @param groups
@@ -211,8 +213,8 @@ public class StatusChecker {
         boolean childFound = false;
         boolean clusterFound = false;
 
-        for(ClusterDataHolder clusterDataHolder : clusterData.values()) {
-            if(clusterDataHolder.getClusterId().equals(id)) {
+        for (ClusterDataHolder clusterDataHolder : clusterData.values()) {
+            if (clusterDataHolder.getClusterId().equals(id)) {
                 clusterFound = true;
             }
         }
@@ -220,29 +222,29 @@ public class StatusChecker {
         if (clusterFound || groups.containsKey(id)) {
             childFound = true;
             if (!clusterData.isEmpty() && !groups.isEmpty()) {
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("group active found: " + clusterFound);
                 }
                 clustersActive = getClusterStatus(clusterData);
                 groupsActive = getGroupStatus(groups);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
                 }
                 groupActive = clustersActive && groupsActive;
             } else if (!groups.isEmpty()) {
                 groupsActive = getGroupStatus(groups);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.info("group active found: " + clusterFound);
                 }
                 groupActive = groupsActive;
             } else if (!clusterData.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
                 }
                 groupActive = clustersActive;
             } else {
-                log.warn("Clusters/groups not found in this [component] "+ appId);
+                log.warn("Clusters/groups not found in this [component] " + appId);
             }
             //send the activation event
             if (parent instanceof Application && groupActive) {

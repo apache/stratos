@@ -38,6 +38,7 @@ import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
@@ -54,17 +55,29 @@ import java.util.Map;
 public class ApplicationMonitorFactory {
     private static final Log log = LogFactory.getLog(ApplicationMonitorFactory.class);
 
-    public static Monitor getMonitor(ApplicationContext context, String appId)
+    /**
+     * Factor method used to create relevant monitors based on the given context
+     *
+     * @param context       Application/Group/Cluster context
+     * @param appId         appId of the application which requires to create app monitor
+     * @param parentMonitor parent of the monitor
+     * @return Monitor which can be ApplicationMonitor/GroupMonitor/ClusterMonitor
+     * @throws TopologyInConsistentException throws while traversing thr topology
+     * @throws DependencyBuilderException    throws while building dependency for app monitor
+     * @throws PolicyValidationException     throws while validating the policy associated with cluster
+     * @throws PartitionValidationException  throws while validating the partition used in a cluster
+     */
+    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
         Monitor monitor;
 
         if (context instanceof GroupContext) {
-            monitor = getGroupMonitor(context.getId(), appId);
+            monitor = getGroupMonitor(parentMonitor, context.getId(), appId);
         } else if (context instanceof ClusterContext) {
-            monitor = getClusterMonitor((ClusterContext) context, appId);
+            monitor = getClusterMonitor(parentMonitor, (ClusterContext) context, appId);
             //Start the thread
-            Thread th = new Thread((AbstractClusterMonitor)monitor);
+            Thread th = new Thread((AbstractClusterMonitor) monitor);
             th.start();
         } else {
             monitor = getApplicationMonitor(appId);
@@ -72,7 +85,18 @@ public class ApplicationMonitorFactory {
         return monitor;
     }
 
-    public static Monitor getGroupMonitor(String groupId, String appId) throws DependencyBuilderException,
+    /**
+     * This will create the GroupMonitor based on given groupId by going thr Topology
+     *
+     * @param parentMonitor parent of the monitor
+     * @param groupId       groupId of the group
+     * @param appId         appId of the relevant application
+     * @return Group monitor
+     * @throws DependencyBuilderException    throws while building dependency for app monitor
+     * @throws TopologyInConsistentException throws while traversing thr topology
+     */
+    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, String groupId, String appId)
+            throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
         TopologyManager.acquireReadLockForApplication(appId);
@@ -81,8 +105,10 @@ public class ApplicationMonitorFactory {
             Group group = TopologyManager.getTopology().getApplication(appId).getGroupRecursively(groupId);
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
+            groupMonitor.setParent(parentMonitor);
             if (group.getStatus() != groupMonitor.getStatus()) {
-                //updating the status, so that it will notify the parent
+                //updating the status, if the group is not in created state when creating group Monitor
+                //so that groupMonitor will notify the parent (useful when restarting stratos)
                 groupMonitor.setStatus(group.getStatus());
             }
         } finally {
@@ -93,6 +119,15 @@ public class ApplicationMonitorFactory {
 
     }
 
+    /**
+     * This will create a new app monitor based on the give appId by getting the
+     * application from Topology
+     *
+     * @param appId appId of the application which requires to create app monitor
+     * @return ApplicationMonitor
+     * @throws DependencyBuilderException    throws while building dependency for app monitor
+     * @throws TopologyInConsistentException throws while traversing thr topology
+     */
     public static ApplicationMonitor getApplicationMonitor(String appId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
@@ -117,12 +152,14 @@ public class ApplicationMonitorFactory {
     /**
      * Updates ClusterContext for given cluster
      *
+     * @param parentMonitor parent of the monitor
      * @param context
      * @return ClusterMonitor - Updated ClusterContext
      * @throws org.apache.stratos.autoscaler.exception.PolicyValidationException
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
-    public static ClusterMonitor getClusterMonitor(ClusterContext context, String appId)
+    public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
+                                                   ClusterContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
@@ -131,6 +168,7 @@ public class ApplicationMonitorFactory {
         String serviceName = context.getServiceName();
 
         Cluster cluster;
+        ClusterMonitor clusterMonitor;
         //acquire read lock for the service and cluster
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
@@ -154,101 +192,111 @@ public class ApplicationMonitorFactory {
                 throw new TopologyInConsistentException(msg);
 
             }
-        } finally {
-            //release read lock for the service and cluster
-            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
-        }
 
-        String autoscalePolicyName = cluster.getAutoscalePolicyName();
-        String deploymentPolicyName = cluster.getDeploymentPolicyName();
+            String autoscalePolicyName = cluster.getAutoscalePolicyName();
+            String deploymentPolicyName = cluster.getDeploymentPolicyName();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + deploymentPolicyName);
-            log.debug("Autoscaler policy name: " + autoscalePolicyName);
-        }
+            if (log.isDebugEnabled()) {
+                log.debug("Deployment policy name: " + deploymentPolicyName);
+                log.debug("Autoscaler policy name: " + autoscalePolicyName);
+            }
 
-        AutoscalePolicy policy =
-                PolicyManager.getInstance()
-                        .getAutoscalePolicy(autoscalePolicyName);
-        DeploymentPolicy deploymentPolicy =
-                PolicyManager.getInstance()
-                        .getDeploymentPolicy(deploymentPolicyName);
+            AutoscalePolicy policy =
+                    PolicyManager.getInstance()
+                            .getAutoscalePolicy(autoscalePolicyName);
+            DeploymentPolicy deploymentPolicy =
+                    PolicyManager.getInstance()
+                            .getDeploymentPolicy(deploymentPolicyName);
 
-        if (deploymentPolicy == null) {
-            String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-            log.error(msg);
-            throw new PolicyValidationException(msg);
-        }
+            if (deploymentPolicy == null) {
+                String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
+                log.error(msg);
+                throw new PolicyValidationException(msg);
+            }
 
-        Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-        if (allPartitions == null) {
-            String msg =
-                    "Deployment Policy's Partitions are null. Policy name: " +
-                            deploymentPolicyName;
-            log.error(msg);
-            throw new PolicyValidationException(msg);
-        }
+            Partition[] allPartitions = deploymentPolicy.getAllPartitions();
+            if (allPartitions == null) {
+                String msg =
+                        "Deployment Policy's Partitions are null. Policy name: " +
+                                deploymentPolicyName;
+                log.error(msg);
+                throw new PolicyValidationException(msg);
+            }
 
-        CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
+            CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
 
-        ClusterMonitor clusterMonitor =
-                new ClusterMonitor(cluster.getClusterId(),
-                        cluster.getServiceName(),
-                        deploymentPolicy, policy);
-        clusterMonitor.setAppId(cluster.getAppId());
+            clusterMonitor = new ClusterMonitor(cluster.getClusterId(), cluster.getServiceName(),
+                    deploymentPolicy, policy);
+            clusterMonitor.setAppId(cluster.getAppId());
 
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+            for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
-                    partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions());
+                NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+                        partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions());
 
-            for (Partition partition : partitionGroup.getPartitions()) {
-                PartitionContext partitionContext = new PartitionContext(partition);
-                partitionContext.setServiceName(cluster.getServiceName());
-                partitionContext.setProperties(cluster.getProperties());
-                partitionContext.setNetworkPartitionId(partitionGroup.getId());
+                for (Partition partition : partitionGroup.getPartitions()) {
+                    PartitionContext partitionContext = new PartitionContext(partition);
+                    partitionContext.setServiceName(cluster.getServiceName());
+                    partitionContext.setProperties(cluster.getProperties());
+                    partitionContext.setNetworkPartitionId(partitionGroup.getId());
 
-                for (Member member : cluster.getMembers()) {
-                    String memberId = member.getMemberId();
-                    if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
-                        MemberContext memberContext = new MemberContext();
-                        memberContext.setClusterId(member.getClusterId());
-                        memberContext.setMemberId(memberId);
-                        memberContext.setPartition(partition);
-                        memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
+                    for (Member member : cluster.getMembers()) {
+                        String memberId = member.getMemberId();
+                        if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
+                            MemberContext memberContext = new MemberContext();
+                            memberContext.setClusterId(member.getClusterId());
+                            memberContext.setMemberId(memberId);
+                            memberContext.setPartition(partition);
+                            memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
-                        if (MemberStatus.Activated.equals(member.getStatus())) {
-                            partitionContext.addActiveMember(memberContext);
+                            if (MemberStatus.Activated.equals(member.getStatus())) {
+                                partitionContext.addActiveMember(memberContext);
+                                //triggering the status checker
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
-                        } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
-                            partitionContext.addPendingMember(memberContext);
+                            } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
+                                partitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
-                        } else if (MemberStatus.Suspended.equals(member.getStatus())) {
+                            } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                            partitionContext.addFaultyMember(memberId);
+                            }
+                            partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                            if (log.isInfoEnabled()) {
+                                log.info(String.format("Member stat context has been added: [member] %s", memberId));
+                            }
                         }
-                        partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Member stat context has been added: [member] %s", memberId));
-                        }
+
                     }
-
+                    if (cluster.hasMembers()) {
+                        //triggering the status checker if cluster has members to decide
+                        // on the current status of the cluster
+                        StatusChecker.getInstance().onMemberStatusChange(clusterId);
+                    }
+                    networkPartitionContext.addPartitionContext(partitionContext);
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Partition context has been added: [partition] %s",
+                                partitionContext.getPartitionId()));
+                    }
                 }
-                networkPartitionContext.addPartitionContext(partitionContext);
+
+                clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+                clusterMonitor.setParent(parentMonitor);
+                //clusterMonitor.setCurrentStatus(Status.Created);
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Partition context has been added: [partition] %s",
-                            partitionContext.getPartitionId()));
+                    log.info(String.format("Network partition context has been added: [network partition] %s",
+                            networkPartitionContext.getId()));
                 }
             }
 
-            clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-            //clusterMonitor.setCurrentStatus(Status.Created);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition context has been added: [network partition] %s",
-                        networkPartitionContext.getId()));
+            if (cluster.getStatus() != clusterMonitor.getStatus()) {
+                //updating the status, so that it will notify the parent
+                clusterMonitor.setStatus(cluster.getStatus());
             }
+        } finally {
+            //release read lock for the service and cluster
+            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
 
         // set hasPrimary property

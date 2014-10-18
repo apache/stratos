@@ -18,22 +18,19 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.messaging.domain.topology.ParentComponent;
-
 import java.util.Map;
 
 /**
  * Abstract class for the monitoring functionality in autoscaler.
  */
 public abstract class Monitor implements EventHandler {
+    //Id of the monitor, cluster=clusterId, group=group-alias, application=app-alias
     protected String id;
-
+    //The parent app which this monitor relates to
     protected String appId;
-
+    //Parent monitor of this monitor, for appMonitor parent will be none.
     protected ParentComponentMonitor parent;
-
-    //GroupMonitor map, key=GroupAlias and value=GroupMonitor
+    //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToMonitorsMap;
 
     public String getId() {

@@ -40,10 +40,13 @@ import java.util.List;
  */
 public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
+    //status of the monitor whether it is running/in_maintainable/terminated
+    protected Status status;
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
-                                                        TopologyInConsistentException {
+            TopologyInConsistentException {
         super(application);
+        //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         //starting the first set of dependencies from its children
         startDependency();
@@ -107,6 +110,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 */
+
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
      *
@@ -183,18 +187,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         String id = statusEvent.getId();
         ApplicationContext context = this.dependencyTree.
                 findApplicationContextWithId(id);
-        if(context.getStatusLifeCycle().isEmpty()) {
+        if (context.getStatusLifeCycle().isEmpty()) {
             try {
                 //if life cycle is empty, need to start the monitor
                 boolean startDep = startDependency(statusEvent.getId());
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("started a child: " + startDep + " by the group/cluster: " + id);
 
                 }
                 //updating the life cycle and current status
                 context.setCurrentStatus(statusEvent.getStatus());
                 context.addStatusToLIfeCycle(statusEvent.getStatus());
-                if(!startDep) {
+                if (!startDep) {
                     //Checking in the children whether all are active,
                     // since no dependency found to be started.
                     StatusChecker.getInstance().onChildStatusChange(id, this.appId);

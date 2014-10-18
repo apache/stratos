@@ -24,8 +24,8 @@ import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
-import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
+import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Group;
@@ -40,33 +40,22 @@ import java.util.List;
  */
 public class GroupMonitor extends ParentComponentMonitor implements EventHandler {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
-
-    //Parent monitor of this monitor
-    private ParentComponentMonitor parent;
+    //status of the monitor whether it is running/in_maintainable/terminated
+    private Status status;
 
     /**
      * Constructor of GroupMonitor
+     *
      * @param group Takes the group from the Topology
-     * @throws DependencyBuilderException throws when couldn't build the Topology
+     * @throws DependencyBuilderException    throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
     public GroupMonitor(Group group, String appId) throws DependencyBuilderException,
-                                            TopologyInConsistentException {
+            TopologyInConsistentException {
         super(group);
         this.appId = appId;
+        this.setStatus(group.getStatus());
         startDependency();
-    }
-
-    /**
-     * Will set the status of the monitor based on Topology Group status/child status like scaling
-     * @param status
-     */
-    public void setStatus(Status status) {
-        log.info(String.format("[Monitor] %s is notifying the parent" +
-                "on its state change from %s to %s", id, this.status, status));
-        this.status = status;
-        //notifying the parent
-        MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
     }
 
     @Override
@@ -81,8 +70,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         ApplicationContext context = this.dependencyTree.findApplicationContextWithId(id);
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         //TODO if statusEvent is for active, then start the next one if any available
-        if(!isParent(id)) {
-            if(status1 == Status.Activated) {
+        if (!isParent(id)) {
+            if (status1 == Status.Activated) {
                 try {
                     //if life cycle is empty, need to start the monitor
                     boolean startDep = startDependency(statusEvent.getId());
@@ -102,7 +91,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                     log.error(e);
                 }
-            } else if(status1 == Status.In_Maintenance) {
+            } else if (status1 == Status.In_Active) {
                 //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
                 //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
                 //TODO check whether dependent in_active. Then kill c1.
@@ -112,8 +101,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 terminationList = this.dependencyTree.getTerminationDependencies(id);
 
                 //check whether all the children are in_active state
-                for(ApplicationContext terminationContext : terminationList) {
-                   //terminationContext
+                for (ApplicationContext terminationContext : terminationList) {
+                    //terminationContext
                 }
 
                 /*if(terminationList != null && !terminationList.isEmpty()) {
@@ -135,23 +124,16 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     if(canTerminate) {
                        //
                     }*/
-                } else {
-                    //TODO get dependents
-                    List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
-                }
-
-
-
-
-
-            } else if(status1 == Status.Created) {
-                //the dependent goes to be created state, so terminate the dependents
+            } else {
+                //TODO get dependents
+                List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
             }
+
+
+        } else if (status1 == Status.Created) {
+            //the dependent goes to be created state, so terminate the dependents
         }
-
-
-
-
+    }
 
     public ParentComponentMonitor getParent() {
         return parent;
@@ -170,15 +152,27 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     private boolean isParent(String id) {
-        if(this.parent.getId().equals(id)) {
+        if (this.parent.getId().equals(id)) {
             return true;
         } else {
             return false;
         }
     }
 
+    public Status getStatus() {
+        return status;
+    }
 
-
-
-
+    /**
+     * Will set the status of the monitor based on Topology Group status/child status like scaling
+     *
+     * @param status
+     */
+    public void setStatus(Status status) {
+        log.info(String.format("[Monitor] %s is notifying the parent" +
+                "on its state change from %s to %s", id, this.status, status));
+        this.status = status;
+        //notifying the parent
+        MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+    }
 }

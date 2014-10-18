@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,13 +43,8 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     //id of the monitor, it can be alias or the id
     protected String id;
-
-    //AbstractMonitor map, key=clusterId and value=AbstractMonitors
-    //protected Map<String, AbstractClusterMonitor> clusterIdToClusterMonitorsMap;
     //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
-    //status of the monitor whether it is running/in_maintainable/terminated
-    protected Status status;
     //Application id of this particular monitor
     protected String appId;
 
@@ -58,7 +52,6 @@ public abstract class ParentComponentMonitor extends Monitor {
         aliasToMonitorsMap = new HashMap<String, Monitor>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
-        this.status = component.getStatus();
         //Building the dependency for this monitor within the immediate children
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
@@ -118,10 +111,6 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
     public String getId() {
         return this.id;
     }
@@ -171,7 +160,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         public void run() {
             Monitor monitor = null;
             int retries = 5;
-            boolean success = false;
+            boolean success;
             do {
                 try {
                     Thread.sleep(5000);
@@ -183,10 +172,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                             + context.getId());
                 }
                 try {
-                    monitor = ApplicationMonitorFactory.getMonitor(context, appId);
-                    monitor.setParent(parent);
-                    //TODO start the status checker
-
+                    monitor = ApplicationMonitorFactory.getMonitor(parent, context, appId);
                 } catch (DependencyBuilderException e) {
                     String msg = "Monitor creation failed for: " + context.getId();
                     log.warn(msg, e);
