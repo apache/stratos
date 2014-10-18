@@ -110,7 +110,7 @@ public class ClusterMaintenanceModeMessageProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            cluster.setStatus(Status.In_Maintenance);
+            cluster.setStatus(Status.In_Active);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster updated as maintenance mode: %s",
                         cluster.toString()));

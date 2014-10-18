@@ -124,7 +124,7 @@ public class TopologyEventPublisher {
     public static void sendClusterMaintenanceModeEvent(ClusterContext ctxt) {
 
         ClusterMaintenanceModeEvent clusterMaintenanceModeEvent = new ClusterMaintenanceModeEvent(ctxt.getCartridgeType(), ctxt.getClusterId());
-        clusterMaintenanceModeEvent.setStatus(Status.In_Maintenance);
+        clusterMaintenanceModeEvent.setStatus(Status.In_Active);
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster maintenance mode event: [service] %s [cluster] %s",
                     clusterMaintenanceModeEvent.getServiceName(), clusterMaintenanceModeEvent.getClusterId()));

@@ -209,7 +209,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.getCluster(ctxt.getClusterId());
-            cluster.setStatus(Status.In_Maintenance);
+            cluster.setStatus(Status.In_Active);
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
