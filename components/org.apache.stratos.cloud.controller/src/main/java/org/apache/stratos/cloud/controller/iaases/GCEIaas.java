@@ -18,11 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -41,7 +38,6 @@ import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.jclouds.domain.Location;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.jclouds.collect.IterableWithMarker;
@@ -109,10 +105,6 @@ public class GCEIaas extends Iaas {
 
 		// set image id specified
 		templateBuilder.imageId(iaasInfo.getImage());
-
-		if(!(iaasInfo instanceof IaasProvider)) {
-			templateBuilder.locationId(iaasInfo.getType());
-		}
 
 		String zone = iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
 		if(zone != null) {
@@ -366,7 +358,6 @@ public class GCEIaas extends Iaas {
 
 	@Override
 	public void detachVolume(String instanceId, String volumeId) {
-		DiskApi diskApi = getGCEDiskApi();
 		InstanceApi instApi = getGCEInstanceApi();
 		String zone = getZone();
 		Instance inst = instApi.getInZone(zone, instanceId);
