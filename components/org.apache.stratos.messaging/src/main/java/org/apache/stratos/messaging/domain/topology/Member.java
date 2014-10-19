@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
@@ -90,7 +89,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
 
     @Override
     public void setStatus(MemberStatus newState) {
-        memberStateManager.changeState(newState);
+        this.memberStateManager.changeState(newState);
     }
 
     public boolean isActive () {

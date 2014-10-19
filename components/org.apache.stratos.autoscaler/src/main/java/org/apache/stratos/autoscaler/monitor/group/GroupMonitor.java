@@ -54,7 +54,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        this.setStatus(group.getStatus());
+        this.setStatus(group.getTempStatus());
         startDependency();
     }
 
@@ -92,6 +92,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     log.error(e);
                 }
             } else if (status1 == Status.In_Active) {
+
                 //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
                 //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
                 //TODO check whether dependent in_active. Then kill c1.

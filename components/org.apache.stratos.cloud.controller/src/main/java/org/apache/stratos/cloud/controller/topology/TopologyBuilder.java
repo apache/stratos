@@ -213,6 +213,8 @@ public class TopologyBuilder {
                 log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
             }
             cluster.setStatus(ClusterStatus.Inactive);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.In_Active);
             //cluster.setStatus(Status.In_Maintenance);
             TopologyManager.updateTopology(topology);
         } finally {
@@ -774,6 +776,9 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             //cluster.setStatus(Status.Activated);
             cluster.setStatus(ClusterStatus.Active);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.Activated);
+
             log.info("Cluster activated adding status started");
 
             TopologyManager.updateTopology(topology);
@@ -807,7 +812,7 @@ public class TopologyBuilder {
                         groupActivatedEvent.getGroupId());
         try {
             TopologyManager.acquireWriteLock();
-            group.setStatus(Status.Activated);
+            group.setTempStatus(Status.Activated);
             log.info("Group activated adding status started");
 
             TopologyManager.updateTopology(topology);
@@ -833,7 +838,7 @@ public class TopologyBuilder {
                         applicationActivatedEvent.getAppId());
         try {
             TopologyManager.acquireWriteLock();
-            application.setStatus(Status.Activated);
+            application.setTempStatus(Status.Activated);
             log.info("Application activated adding status started for Topology");
 
             TopologyManager.updateTopology(topology);

@@ -33,36 +33,69 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     private Stack<T> stateStack;
 
     public LifeCycleStateManager(T initialState) {
+
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        //if (log.isDebugEnabled()) {
-            log.info("Life Cycle State Manager created, initial state: " + initialState.toString());
-        //}
+        log.info("Life Cycle State Manager created, initial state: " + initialState.toString());
     }
 
+    /**
+     * checks if any conditions that should be met for the state transfer is valid
+     *
+     * @param nextState possible next state for the topology element
+     * @param topologyEvent relevant ToplogyEvent
+     * @param <S> subclass of Topology event
+     * @return
+     */
     public <S extends TopologyEvent> boolean isPreConditionsValid (T nextState, S topologyEvent) {
         // TODO: implement
         return true;
     }
 
+    /**
+     * Checks if the state transition is valid
+     *
+     * @param nextState possible next state for the topology element
+     * @return true if transitioning for nextState from current state is valid, else false
+     */
     public boolean isStateTransitionValid (T nextState) {
-
         return stateStack.peek().getNextStates().contains(nextState);
     }
 
+    /**
+     * Changes the current state to nextState
+     *
+     * @param nextState
+     */
     public void changeState (T nextState)  {
-
         stateStack.push(nextState);
+        log.info("Life Cycle State changed from [ " + getPreviousState() + " ] to [ " +
+                getCurrentState() + " ]");
     }
 
+    /**
+     * Get all the states this element has gone through
+     *
+     * @return Stack of states
+     */
     public Stack<T> getStateStack () {
         return stateStack;
     }
 
+    /**
+     * Get the current state
+     *
+     * @return the current state
+     */
     public T getCurrentState () {
         return stateStack.peek();
     }
 
+    /**
+     * Retrieves the previous state
+     *
+     * @return previous state
+     */
     public T getPreviousState () {
         return stateStack.get(1);
     }

@@ -19,11 +19,15 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+
+import java.util.Stack;
+
 /**
  * Represents a Group/nested Group in an Application/Group
  */
 
-public class Group extends ParentComponent {
+public class Group extends ParentComponent implements LifeCycleStateTransitionBehavior<GroupStatus> {
 
     private static final long serialVersionUID = 8347096598203655846L;
     // Name of the Group, specified in Group Definition
@@ -34,11 +38,14 @@ public class Group extends ParentComponent {
     private String deploymentPolicy;
     // Group level autoscaling policy
     private String autoscalingPolicy;
+    // Life cycle state manager
+    protected LifeCycleStateManager<GroupStatus> groupStateManager;
 
     public Group (String name, String alias) {
         super();
         this.name = name;
         this.alias = alias;
+        this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created);
     }
 
     public String getUniqueIdentifier() {
@@ -65,6 +72,26 @@ public class Group extends ParentComponent {
         this.autoscalingPolicy = autoscalingPolicy;
     }
 
+    @Override
+    public boolean isStateTransitionValid(GroupStatus newState) {
+        return groupStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
+    public Stack<GroupStatus> getTransitionedStates() {
+        return groupStateManager.getStateStack();
+    }
+
+    @Override
+    public GroupStatus getStatus() {
+        return groupStateManager.getCurrentState();
+    }
+
+    @Override
+    public void setStatus(GroupStatus newState) {
+        this.groupStateManager.changeState(newState);
+    }
+
     public boolean equals(Object other) {
         if(other == null || !(other instanceof Group)) {
             return false;
@@ -81,5 +108,4 @@ public class Group extends ParentComponent {
     public int hashCode () {
         return name.hashCode() + alias.hashCode();
     }
-
 }

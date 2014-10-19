@@ -50,7 +50,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
 
-    //private Status status;
+    private Status tempStatus;
 
     private String appId;
 
@@ -69,6 +69,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
         this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created);
+        // temporary; should be removed
+        this.tempStatus = Status.Created;
     }
 
     public String getServiceName() {
@@ -249,6 +251,14 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
 
     public String getAppId() {
         return appId;
+    }
+
+    public Status getTempStatus () {
+        return tempStatus;
+    }
+
+    public void setTempStatus (Status tempStatus)  {
+        this.tempStatus = tempStatus;
     }
 }
 

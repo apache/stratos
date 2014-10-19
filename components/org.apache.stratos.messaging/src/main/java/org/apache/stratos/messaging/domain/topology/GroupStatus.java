@@ -16,7 +16,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
@@ -25,42 +24,33 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum ClusterStatus implements LifeCycleState {
+public enum GroupStatus implements LifeCycleState {
 
     Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
-                    ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Active, GroupStatus.Terminating));
         }
     },
     Active(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Inactive,
-                    ClusterStatus.Patching, ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Terminating));
         }
     },
-    Patching (2) {
+    Inactive(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminating));
         }
     },
-    Inactive(3) {
+    Terminating(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
-                    ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminated));
         }
     },
-    Terminating(4) {
-        @Override
-        public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminated));
-        }
-    },
-    Terminated(5) {
+    Terminated(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return null;
@@ -69,11 +59,12 @@ public enum ClusterStatus implements LifeCycleState {
 
     private int code;
 
-    private ClusterStatus(int code) {
+    private GroupStatus(int code) {
         this.code = code;
     }
 
     public int getCode() {
         return code;
     }
+
 }

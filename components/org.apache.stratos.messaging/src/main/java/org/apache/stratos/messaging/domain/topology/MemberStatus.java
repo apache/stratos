@@ -32,38 +32,38 @@ import java.util.Set;
 @XmlRootElement
 public enum MemberStatus implements LifeCycleState {
 
-    Created(1) {
+    Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting));
         }
     },
-    Starting(2) {
+    Starting(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated));
         }
     },
-    Activated(3) {
+    Activated(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Suspended,
-                    MemberStatus.In_Maintenance));
+                    MemberStatus.In_Maintenance, MemberStatus.Starting));
         }
     },
-    In_Maintenance(4) {
+    In_Maintenance(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.ReadyToShutDown));
         }
     },
-    ReadyToShutDown(5) {
+    ReadyToShutDown(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
         }
     },
-    Suspended(0) {
+    Suspended(5) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));

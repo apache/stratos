@@ -88,7 +88,7 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
-            application.setStatus(Status.Activated);
+            application.setTempStatus(Status.Activated);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as activated : %s",
                         application.toString()));

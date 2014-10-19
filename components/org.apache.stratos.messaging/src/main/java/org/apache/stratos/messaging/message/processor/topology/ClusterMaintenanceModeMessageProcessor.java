@@ -114,6 +114,8 @@ public class ClusterMaintenanceModeMessageProcessor extends MessageProcessor {
                 log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
             }
             cluster.setStatus(ClusterStatus.Inactive);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.In_Active);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster updated as maintenance mode: %s",
                         cluster.toString()));

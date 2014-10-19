@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -25,42 +25,34 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum ClusterStatus implements LifeCycleState {
+public enum ApplicationStatus implements LifeCycleState {
 
-    Created(0) {
+    Created (0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
-                    ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Active,
+                    ApplicationStatus.Terminating));
         }
     },
-    Active(1) {
+    Active (1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Inactive,
-                    ClusterStatus.Patching, ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Inactive));
         }
     },
-    Patching (2) {
+    Inactive (2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminating));
         }
     },
-    Inactive(3) {
+    Terminating (3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
-                    ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminated));
         }
     },
-    Terminating(4) {
-        @Override
-        public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminated));
-        }
-    },
-    Terminated(5) {
+    Terminated (4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return null;
@@ -69,7 +61,7 @@ public enum ClusterStatus implements LifeCycleState {
 
     private int code;
 
-    private ClusterStatus(int code) {
+    private ApplicationStatus (int code) {
         this.code = code;
     }
 
