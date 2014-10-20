@@ -253,6 +253,11 @@
             <artifactId>vcloud</artifactId>
             <version>1.8.0-stratos</version>
         </dependency>
+        <dependency>
+          <groupId>org.apache.stratos</groupId>
+          <artifactId>gce</artifactId>
+          <version>1.8.0-stratos</version>
+        </dependency>
 
         <dependency>
             <groupId>com.jamesmurty.utils.wso2</groupId>

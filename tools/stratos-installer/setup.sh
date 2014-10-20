@@ -191,7 +191,8 @@ function cc_related_popup() {
 }
 
 function cc_conf_validate() {
-    if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" && $vcloud_provider_enabled = "false" ]]; then
+    if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" && $vcloud_provider_enabled = "false" \
+          && $gce_provider_enabled = "false" ]]; then
         echo "Please enable at least one of the IaaS providers in conf/setup.conf file"
         exit 1
     fi
@@ -210,6 +211,12 @@ function cc_conf_validate() {
     if [[ $vcloud_provider_enabled = "true" ]]; then
         if [[ ( -z $vcloud_identity || -z $vcloud_credential || -z $vcloud_jclouds_endpoint ) ]]; then
             echo "Please set vcloud configuration information in conf/setup.conf file"
+            exit 1
+        fi
+    fi
+    if [[ $gce_provider_enabled = "true" ]]; then
+        if [[ ( -z $gce_identity || -z $gce_credential ) ]]; then
+            echo "Please set GCE configuration information in conf/setup.conf file"
             exit 1
         fi
     fi
@@ -232,6 +239,9 @@ function cc_setup() {
     fi
     if [[ $vcloud_provider_enabled = true ]]; then
         ./vcloud.sh $stratos_extract_path
+    fi
+    if [[ $gce_provider_enabled = true ]]; then
+        ./gce.sh $stratos_extract_path
     fi
 
     pushd $stratos_extract_path
