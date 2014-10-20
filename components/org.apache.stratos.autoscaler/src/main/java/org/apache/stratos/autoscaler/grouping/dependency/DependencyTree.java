@@ -92,7 +92,8 @@ public class DependencyTree {
      */
     private ApplicationContext findApplicationContextWithId(String id, List<ApplicationContext> contexts) {
         for (ApplicationContext context : contexts) {
-            if (context.getId().equals(id) && context.getCurrentStatus() == null) {
+            //TODO check for the status
+            if (context.getId().equals(id)) {
                 return context;
             }
         }

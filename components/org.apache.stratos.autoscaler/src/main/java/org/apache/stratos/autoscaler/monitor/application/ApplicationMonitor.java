@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.ComponentStatus;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
@@ -78,7 +79,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public AbstractClusterMonitor findClusterMonitorWithId(String clusterId) {
         /*return findClusterMonitor(clusterId, clusterIdToClusterMonitorsMap.values(),
-                aliasToMonitorsMap.values());*/
+                aliasToActiveMonitorsMap.values());*/
         return null;
 
     }
@@ -118,7 +119,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @return the found GroupMonitor
      */
     public Monitor findGroupMonitorWithId(String groupId) {
-        return findGroupMonitor(groupId, aliasToMonitorsMap.values());
+        return findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
 
     }
 
@@ -137,8 +138,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor.getAliasToMonitorsMap() != null) {
-                    return findGroupMonitor(id, monitor.getAliasToMonitorsMap().values());
+                if (monitor.getAliasToActiveMonitorsMap() != null) {
+                    return findGroupMonitor(id, monitor.getAliasToActiveMonitorsMap().values());
                 }
             }
         }
@@ -196,8 +197,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                 }
                 //updating the life cycle and current status
-                context.setCurrentStatus(statusEvent.getStatus());
-                context.addStatusToLIfeCycle(statusEvent.getStatus());
                 if (!startDep) {
                     //Checking in the children whether all are active,
                     // since no dependency found to be started.

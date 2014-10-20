@@ -49,7 +49,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected String appId;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
-        aliasToMonitorsMap = new HashMap<String, Monitor>();
+        aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the dependency for this monitor within the immediate children
@@ -103,8 +103,12 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (log.isDebugEnabled()) {
                 log.debug("Dependency check for the Group " + context.getId() + " started");
             }
-            startMonitor(this, context);
-            //context.setCurrentStatus(Status.Created);
+            if(!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+                //to avoid if it is already started
+                startMonitor(this, context);
+            } else if(this.aliasToInActiveMonitorsMap.containsKey(context.getId())) {
+                //need to trigger the cluster monitor
+            }
         }
 
         return true;
@@ -129,7 +133,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     protected synchronized void startMonitor(ParentComponentMonitor parent, ApplicationContext context) {
         Thread th = null;
-        if (!this.aliasToMonitorsMap.containsKey(context.getId())) {
+        if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
             th = new Thread(
                     new MonitorAdder(parent, context, this.appId));
             if (log.isDebugEnabled()) {
@@ -205,7 +209,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
 
             AutoscalerContext.getInstance().addMonitor(monitor);
-            aliasToMonitorsMap.put(context.getId(), monitor);
+            aliasToActiveMonitorsMap.put(context.getId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Monitor has been added successfully for: %s",
                         context.getId()));
@@ -217,7 +221,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     /*protected synchronized void startGroupMonitor(ParentComponentMonitor parent, GroupContext groupContext) {
         Thread th = null;
         //String groupId = group.getUniqueIdentifier();
-        if (!this.aliasToMonitorsMap.containsKey(groupId)) {
+        if (!this.aliasToActiveMonitorsMap.containsKey(groupId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String
                         .format("Group monitor Adder has been added: [group] %s ",
@@ -259,7 +263,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     /*protected synchronized void startClusterMonitor(ParentComponentMonitor parent, ApplicationContext clusterContext) {
         Thread th = null;
-        if (!this.aliasToMonitorsMap.containsKey(clusterContext.getId())) {
+        if (!this.aliasToActiveMonitorsMap.containsKey(clusterContext.getId())) {
             th = new Thread(
                     new ClusterMonitorAdder(parent, clusterContext));
             if (log.isDebugEnabled()) {
@@ -357,7 +361,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             th.start();
 
             AutoscalerContext.getInstance().addMonitor(monitor);
-            aliasToMonitorsMap.put(cluster.getClusterId(), monitor);
+            aliasToActiveMonitorsMap.put(cluster.getClusterId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster monitor has been added successfully: [cluster] %s",
                         cluster.getClusterId()));
@@ -421,7 +425,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 throw new RuntimeException(msg);
             }
 
-            aliasToMonitorsMap.put(groupId, monitor);
+            aliasToActiveMonitorsMap.put(groupId, monitor);
             //parent.addObserver(monitor);
 
             if (log.isInfoEnabled()) {
@@ -473,7 +477,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             Thread th = new Thread(monitor);
             th.start();
             AutoscalerContext.getInstance().addLbMonitor(monitor);
-            aliasToMonitorsMap.put(cluster.getClusterId(), monitor);
+            aliasToActiveMonitorsMap.put(cluster.getClusterId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("LB Cluster monitor has been added successfully: [cluster] %s",
                         cluster.getClusterId()));

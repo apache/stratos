@@ -24,8 +24,18 @@ import org.apache.stratos.messaging.domain.topology.Status;
  * This will use to notify observers upon a group activation events received in Topology.
  */
 public class GroupStatusEvent extends MonitorStatusEvent {
+    private Status status;
 
     public GroupStatusEvent(Status status, String id) {
-        super(status, id);
+        super(id);
+        this.status = status;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

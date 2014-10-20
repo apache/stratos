@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -160,6 +161,26 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
+        topologyEventReceiver.addEventListener(new ClusterInActivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+
+                ClusterInActivateEvent clusterInActivateEvent = (ClusterInActivateEvent) event;
+                String appId = clusterInActivateEvent.getAppId();
+                String clusterId = clusterInActivateEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(Status.In_Active);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
         topologyEventReceiver.addEventListener(new GroupActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -175,6 +196,27 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(Status.Activated);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new GroupInActivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[GroupInActivateEvent] Received: " + event.getClass());
+
+                GroupInActivateEvent groupInActivateEvent = (GroupInActivateEvent) event;
+                String appId = groupInActivateEvent.getAppId();
+                String groupId = groupInActivateEvent.getGroupId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                GroupMonitor monitor = (GroupMonitor) appMonitor.findGroupMonitorWithId(groupId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(Status.In_Active);
 
                 //starting the status checker to decide on the status of it's parent
                 //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
@@ -209,14 +251,14 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 try {
                     //TODO remove monitors as well as any starting or pending threads
-                    /*ApplicationMonitor monitor = AutoscalerContext.getInstance().
+                    ApplicationMonitor monitor = AutoscalerContext.getInstance().
                             getAppMonitor(applicationRemovedEvent.getApplicationId());
                     if (monitor != null) {
                         List<String> clusters = monitor.
                                 findClustersOfApplication(applicationRemovedEvent.getApplicationId());
                         for (String clusterId : clusters) {
                             //stopping the cluster monitor and remove it from the AS
-                            AutoscalerContext.getInstance().getMonitor(clusterId).setDestroyed(true);
+                            ((ClusterMonitor)AutoscalerContext.getInstance().getMonitor(clusterId)).setDestroyed(true);
                             AutoscalerContext.getInstance().removeMonitor(clusterId);
                         }
                         //removing the application monitor
@@ -225,7 +267,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     } else {
                         log.warn("Application Monitor cannot be found for the removed [application] "
                                 + applicationRemovedEvent.getApplicationId());
-                    }*/
+                    }
 
 
                 } finally {

@@ -70,8 +70,15 @@ public class StatusChecker {
     public void onMemberTermination(String clusterId) {
         ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
         //TODO get Topology status
-        // if cluster not having any members and if the cluster was in_active then send created Events
-        // if cluster was in terminating, then send terminated event.
+        boolean clusterMonitorHasMembers;
+        clusterMonitorHasMembers = clusterMonitorHasMembers(monitor);
+        if(clusterMonitorHasMembers) {
+            //monitor.pause();
+            // if cluster not having any members and if the cluster was in_active then send created Events
+            StatusEventPublisher.sendClusterCreatedEvent(monitor.getAppId(), monitor.getServiceId(),
+                    monitor.getClusterId());
+        }
+        // TODO if cluster was in terminating, then send terminated event.
     }
 
     private boolean clusterActive(AbstractClusterMonitor monitor) {
@@ -93,6 +100,20 @@ public class StatusChecker {
         return clusterActive;
     }
 
+    private boolean clusterMonitorHasMembers(AbstractClusterMonitor monitor) {
+        boolean hasMember = false;
+        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+            //minimum check per partition
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                if (partitionContext.getNonTerminatedMemberCount() > 0) {
+                    hasMember = true;
+                    return hasMember;
+                }
+            }
+        }
+        return hasMember;
+    }
+
     /**
      * @param clusterId
      * @param appId
@@ -104,6 +125,7 @@ public class StatusChecker {
         if (clusterInActive) {
             //TODO evaluate life cycle
             //send cluster In-Active event to cluster status topic
+            StatusEventPublisher.sendGroupInActivateEvent(appId, monitor.getParent().getId());
 
         } else {
             boolean clusterActive = clusterActive(monitor);

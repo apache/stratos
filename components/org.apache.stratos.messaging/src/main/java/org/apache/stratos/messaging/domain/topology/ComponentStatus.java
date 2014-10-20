@@ -16,28 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.events;
-
-import org.apache.stratos.messaging.domain.topology.ComponentStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
+package org.apache.stratos.messaging.domain.topology;
 
 /**
- * Monitor Status Event
+ * Created by reka on 10/18/14.
  */
-public abstract class MonitorStatusEvent {
-    protected String id;
+public interface ComponentStatus {
 
-    public MonitorStatusEvent(String id) {
-        this.setId(id);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public abstract ComponentStatus getStatus();
 }

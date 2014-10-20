@@ -25,12 +25,18 @@ import org.apache.stratos.messaging.domain.topology.Status;
  */
 public class ClusterStatusEvent extends MonitorStatusEvent {
 
+    private Status status;
+
     public ClusterStatusEvent(Status status, String id) {
-        super(status, id);
+        super(id);
+        this.status = status;
     }
 
     public Status getStatus() {
-        return super.getStatus();
+        return this.status;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 }

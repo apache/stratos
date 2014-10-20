@@ -31,7 +31,9 @@ public abstract class Monitor implements EventHandler {
     //Parent monitor of this monitor, for appMonitor parent will be none.
     protected ParentComponentMonitor parent;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
-    protected Map<String, Monitor> aliasToMonitorsMap;
+    protected Map<String, Monitor> aliasToActiveMonitorsMap;
+    //monitors map, stopped monitors
+    protected Map<String, Monitor> aliasToInActiveMonitorsMap;
 
     public String getId() {
         return id;
@@ -50,12 +52,12 @@ public abstract class Monitor implements EventHandler {
         this.appId = appId;
     }
 
-    public Map<String, Monitor> getAliasToMonitorsMap() {
-        return aliasToMonitorsMap;
+    public Map<String, Monitor> getAliasToActiveMonitorsMap() {
+        return aliasToActiveMonitorsMap;
     }
 
-    public void setAliasToMonitorsMap(Map<String, Monitor> aliasToMonitorsMap) {
-        this.aliasToMonitorsMap = aliasToMonitorsMap;
+    public void setAliasToActiveMonitorsMap(Map<String, Monitor> aliasToActiveMonitorsMap) {
+        this.aliasToActiveMonitorsMap = aliasToActiveMonitorsMap;
     }
 
     public ParentComponentMonitor getParent() {

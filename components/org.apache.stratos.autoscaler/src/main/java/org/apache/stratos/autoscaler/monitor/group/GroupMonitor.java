@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.topology.ComponentStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.Status;
 
@@ -66,7 +67,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
-        Status status1 = statusEvent.getStatus();
+        ComponentStatus status1 = statusEvent.getStatus();
         ApplicationContext context = this.dependencyTree.findApplicationContextWithId(id);
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         //TODO if statusEvent is for active, then start the next one if any available
@@ -92,7 +93,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     log.error(e);
                 }
             } else if (status1 == Status.In_Active) {
-                //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
+                //TODO if C1 depends on C2, then if C2 is in_active, then by getting kill depend as C1 and
                 //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
                 //TODO check whether dependent in_active. Then kill c1.
                 //evaluate termination behavior and take action based on that.
@@ -100,10 +101,30 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 List<ApplicationContext> terminationList = new ArrayList<ApplicationContext>();
                 terminationList = this.dependencyTree.getTerminationDependencies(id);
 
-                //check whether all the children are in_active state
-                for (ApplicationContext terminationContext : terminationList) {
-                    //terminationContext
+                if(terminationList != null) {
+                    //Move to in_active monitors list
+                    this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
+                    boolean allInActive = false;
+                    //check whether all the children are in_active state
+                    for (ApplicationContext terminationContext : terminationList) {
+                        //Check for whether all dependent are in_active
+                        if(this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
+                            allInActive = true;
+                        } else {
+                            allInActive = false;
+                        }
+                    }
+
+                    if(allInActive) {
+                        //Then kill-all of each termination dependents and get a lock for CM
+                        //if start order then can kill only the first one, rest of them will get killed based on created event of first one.
+                    }
                 }
+
+
+
+
+
 
                 /*if(terminationList != null && !terminationList.isEmpty()) {
                     for(ApplicationContext context1 : terminationList) {
@@ -124,9 +145,50 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     if(canTerminate) {
                        //
                     }*/
-            } else {
+            } else if(status1 == Status.Created) {
                 //TODO get dependents
                 List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
+                // if no dependencies then start the cluster monitor. if all are in created, then start them in the order.
+                if(dependents != null) {
+                    boolean allCreated = false;
+                    //check whether all the children are in_active state
+                    for (ApplicationContext terminationContext : dependents) {
+                        //Check for whether all dependent are in_active
+                        if(this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
+                            allCreated = true;
+                        } else {
+                            allCreated = false;
+                        }
+                    }
+
+                    String firstChildToBeStarted = null;
+
+                    if(allCreated) {
+                        //start the CM according to startup order and releasing the lock for it
+                        try {
+                            //if life cycle is empty, need to start the monitor
+                            boolean startDep = startDependency(firstChildToBeStarted);
+                            if (log.isDebugEnabled()) {
+                                log.debug("started a child: " + startDep + " by the group/cluster: " + firstChildToBeStarted);
+
+                            }
+                            //updating the life cycle and current status
+                            if (startDep) {
+                                context.setCurrentStatus(Status.Created);
+                                context.addStatusToLIfeCycle(Status.Created);
+                            } else {
+                                StatusChecker.getInstance().onChildStatusChange(id, firstChildToBeStarted, this.appId);
+                            }
+
+                        } catch (TopologyInConsistentException e) {
+                            //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+                            log.error(e);
+                        }
+                    } else {
+                        //kill other dependents cluster
+                        
+                    }
+                }
             }
 
 
