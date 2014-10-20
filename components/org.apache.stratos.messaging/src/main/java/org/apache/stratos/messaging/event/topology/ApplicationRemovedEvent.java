@@ -30,7 +30,7 @@ public class ApplicationRemovedEvent extends TopologyEvent {
      *
      */
     private static final long serialVersionUID = -5499420725533165623L;
-    private String applicationId;
+    private final String applicationId;
     private Set<ClusterDataHolder> clusterData;
 
     private String tenantDomain;

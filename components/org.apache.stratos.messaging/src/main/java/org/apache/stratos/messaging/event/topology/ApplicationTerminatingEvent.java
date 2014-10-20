@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.topology;
  * This event will be sent to Topology upon terminating of application
  */
 public class ApplicationTerminatingEvent extends TopologyEvent {
-    private String appId;
+    private final String appId;
 
     public ApplicationTerminatingEvent(String appId) {
         this.appId = appId;

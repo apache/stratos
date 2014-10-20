@@ -26,7 +26,7 @@ import java.util.List;
 
 public class ApplicationCreatedEvent extends TopologyEvent {
 
-    private Application application;
+    private final Application application;
 
     private List<Cluster> clusterList;
 

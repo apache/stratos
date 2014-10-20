@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.topology;
  * This event will be sent to Topology upon inactivation of application
  */
 public class ApplicationInactivatedEvent extends TopologyEvent {
-    private String appId;
+    private final String appId;
 
     public ApplicationInactivatedEvent(String appId) {
         this.appId = appId;
