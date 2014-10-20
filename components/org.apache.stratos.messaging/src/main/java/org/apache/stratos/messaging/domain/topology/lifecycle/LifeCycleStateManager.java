@@ -59,6 +59,15 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @return true if transitioning for nextState from current state is valid, else false
      */
     public boolean isStateTransitionValid (T nextState) {
+        if (log.isDebugEnabled()) {
+            // print all transitions till now
+            StringBuilder stateTransitions = new StringBuilder("Transitioned States:  [ START --> ");
+            for (int i = 0 ; i < stateStack.size() ; i++) {
+                stateTransitions.append(stateStack.get(i) + " --> ");
+            }
+            stateTransitions.append(" END ]");
+            log.debug(stateTransitions);
+        }
         return stateStack.peek().getNextStates().contains(nextState);
     }
 
