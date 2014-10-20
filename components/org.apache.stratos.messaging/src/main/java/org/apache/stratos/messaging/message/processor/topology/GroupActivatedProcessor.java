@@ -90,7 +90,10 @@ public class GroupActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            group.setStatus(Status.Activated);
+            if (!group.isStateTransitionValid(GroupStatus.Active)) {
+                log.error("Invalid State Transition from " + application.getTempStatus() + " to " + GroupStatus.Active);
+            }
+            group.setTempStatus(Status.Activated);
             if (log.isInfoEnabled())     {
                 log.info(String.format("Group updated as activated : %s",
                         group.getUniqueIdentifier()));

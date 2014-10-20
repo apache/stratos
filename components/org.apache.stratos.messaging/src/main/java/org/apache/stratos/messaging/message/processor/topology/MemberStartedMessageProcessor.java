@@ -145,6 +145,9 @@ public class MemberStartedMessageProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.Starting)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Starting);
+            }
             member.setStatus(MemberStatus.Starting);
 
             if (log.isInfoEnabled()) {

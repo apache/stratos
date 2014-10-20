@@ -143,6 +143,9 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.In_Maintenance)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.In_Maintenance);
+            }
             member.setStatus(MemberStatus.In_Maintenance);
 
             if (log.isInfoEnabled()) {

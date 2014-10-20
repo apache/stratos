@@ -142,6 +142,9 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+            }
             member.setStatus(MemberStatus.ReadyToShutDown);
 
             if (log.isInfoEnabled()) {

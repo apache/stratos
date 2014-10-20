@@ -289,7 +289,7 @@ public class StatusChecker {
     private boolean getGroupStatus(Map<String, Group> groups) {
         boolean groupActiveStatus = false;
         for (Group group : groups.values()) {
-            if (group.getStatus() == Status.Activated) {
+            if (group.getTempStatus() == Status.Activated) {
                 groupActiveStatus = true;
             } else {
                 groupActiveStatus = false;
@@ -305,7 +305,7 @@ public class StatusChecker {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             if (service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
-                    getStatus() == Status.Activated) {
+                    getStatus() == ClusterStatus.Active) {
                 clusterActiveStatus = true;
             } else {
                 clusterActiveStatus = false;

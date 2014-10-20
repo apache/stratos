@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
@@ -33,7 +34,7 @@ import java.util.*;
  * Key: serviceName, clusterId
  */
 @XmlRootElement
-public class Cluster implements Serializable {
+public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<ClusterStatus> {
 
 	private static final long serialVersionUID = -361960242360176077L;
 	
@@ -49,13 +50,14 @@ public class Cluster implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
 
-    private Status status;
+    private Status tempStatus;
 
     private String appId;
 
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
+    private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
@@ -66,6 +68,9 @@ public class Cluster implements Serializable {
         this.hostNames = new ArrayList<String>();
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
+        this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created);
+        // temporary; should be removed
+        this.tempStatus = Status.Created;
     }
 
     public String getServiceName() {
@@ -207,12 +212,24 @@ public class Cluster implements Serializable {
         return partitionIds.keySet();
     }
 
-    public Status getStatus() {
-        return status;
+    @Override
+    public boolean isStateTransitionValid(ClusterStatus newState) {
+        return clusterStateManager.isStateTransitionValid(newState);
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    @Override
+    public Stack<ClusterStatus> getTransitionedStates() {
+        return clusterStateManager.getStateStack();
+    }
+
+    public ClusterStatus getStatus() {
+        //return status;
+        return clusterStateManager.getCurrentState();
+    }
+
+    public void setStatus(ClusterStatus newStatus) {
+        clusterStateManager.changeState(newStatus);
+        //this.status = newStatus;
     }
 
     public boolean equals(Object other) {
@@ -234,6 +251,14 @@ public class Cluster implements Serializable {
 
     public String getAppId() {
         return appId;
+    }
+
+    public Status getTempStatus () {
+        return tempStatus;
+    }
+
+    public void setTempStatus (Status tempStatus)  {
+        this.tempStatus = tempStatus;
     }
 }
 

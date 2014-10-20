@@ -631,19 +631,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             th = new Thread(
                     new ApplicationMonitorAdder(applicationId));
         }
-        //  if (th != null) {
-        th.start();
+
+        if (th != null) {
+            th.start();
         //    try {
         //        th.join();
         //    } catch (InterruptedException ignore) {
-        //    }
 
-        if (log.isDebugEnabled()) {
-            log.debug(String
+            if (log.isDebugEnabled()) {
+                log.debug(String
                     .format("Application monitor thread has been started successfully: " +
                             "[application] %s ", applicationId));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Application monitor thread already exists: " +
+                                "[application] %s ", applicationId));
+            }
         }
-        //  }
     }
 
     private class ApplicationMonitorAdder implements Runnable {

@@ -48,27 +48,32 @@ public class InstanceStatusEventMessageDelegator implements Runnable {
                 if (InstanceStartedEvent.class.getName().equals(type)) {
                     // retrieve the actual message
                     String json = message.getText();
-                    TopologyBuilder.handleMemberStarted((InstanceStartedEvent) Util.
-                            jsonToObject(json, InstanceStartedEvent.class));
+                        TopologyBuilder.handleMemberStarted((InstanceStartedEvent) Util.
+                                jsonToObject(json, InstanceStartedEvent.class));
+
                 } else if (InstanceActivatedEvent.class.getName().equals(type)) {
                     // retrieve the actual message
                     String json = message.getText();
                     TopologyBuilder.handleMemberActivated((InstanceActivatedEvent) Util.
-                            jsonToObject(json, InstanceActivatedEvent.class));
+                                jsonToObject(json, InstanceActivatedEvent.class));
+
                 } else if (InstanceReadyToShutdownEvent.class.getName().equals(type)) {
                     //retrieve the actual message
                     String json = message.getText();
                     TopologyBuilder.handleMemberReadyToShutdown((InstanceReadyToShutdownEvent) Util.
-                            jsonToObject(json, InstanceReadyToShutdownEvent.class));
+                                jsonToObject(json, InstanceReadyToShutdownEvent.class));
+
                 } else if (InstanceMaintenanceModeEvent.class.getName().equals(type)) {
                     //retrieve the actual message
                     String json = message.getText();
                     TopologyBuilder.handleMemberMaintenance((InstanceMaintenanceModeEvent) Util.
-                            jsonToObject(json, InstanceMaintenanceModeEvent.class));
+                                jsonToObject(json, InstanceMaintenanceModeEvent.class));
+
                 } else {
                     log.warn("Event message received is not InstanceStartedEvent or InstanceActivatedEvent");
                 }
-            } catch (Exception e) {
+
+                } catch (Exception e) {
                 String error = "Failed to retrieve the instance status event message";
                 log.error(error, e);
                 // Commenting throwing the error. Otherwise thread will not execute if an exception is thrown.

@@ -160,6 +160,9 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
             // Apply changes to the topology
             member.addPorts(event.getPorts());
             member.setMemberIp(event.getMemberIp());
+            if (!member.isStateTransitionValid(MemberStatus.Activated)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
+            }
             member.setStatus(MemberStatus.Activated);
 
             if (log.isInfoEnabled()) {

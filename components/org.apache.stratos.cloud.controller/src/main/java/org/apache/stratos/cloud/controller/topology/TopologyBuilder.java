@@ -150,7 +150,7 @@ public class TopologyBuilder {
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                cluster.setStatus(Status.Created);
+                //cluster.setStatus(Status.Created);
                 service.addCluster(cluster);
             }
             TopologyManager.updateTopology(topology);
@@ -209,7 +209,13 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             Cluster cluster = service.getCluster(ctxt.getClusterId());
-            cluster.setStatus(Status.In_Active);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
+            }
+            cluster.setStatus(ClusterStatus.Inactive);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.In_Active);
+            //cluster.setStatus(Status.In_Maintenance);
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
@@ -239,7 +245,7 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             Member member = new Member(serviceName, clusterId,
                     networkPartitionId, partitionId, memberId);
-            member.setStatus(MemberStatus.Created);
+            //member.setStatus(MemberStatus.Created);
             member.setMemberIp(privateIp);
             member.setLbClusterId(lbClusterId);
             member.setMemberPublicIp(publicIp);
@@ -301,6 +307,10 @@ public class TopologyBuilder {
 
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.Starting)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Starting);
+            }
             member.setStatus(MemberStatus.Starting);
             log.info("member started event adding status started");
 
@@ -369,6 +379,10 @@ public class TopologyBuilder {
         memberActivatedEvent.setGroupId(instanceActivatedEvent.getGroupId());
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.Activated)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
+            }
             member.setStatus(MemberStatus.Activated);
             log.info("member started event adding status activated");
             Cartridge cartridge = FasterLookUpDataHolder.getInstance().
@@ -456,6 +470,10 @@ public class TopologyBuilder {
                 instanceReadyToShutdownEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
+
+            if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+            }
             member.setStatus(MemberStatus.ReadyToShutDown);
             log.info("Member Ready to shut down event adding status started");
 
@@ -531,6 +549,10 @@ public class TopologyBuilder {
                 instanceMaintenanceModeEvent.getMemberId());
         try {
             TopologyManager.acquireWriteLock();
+            // try update lifecycle state
+            if (!member.isStateTransitionValid(MemberStatus.In_Maintenance)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.In_Maintenance);
+            }
             member.setStatus(MemberStatus.In_Maintenance);
             log.info("member maintenance mode event adding status started");
 
@@ -626,7 +648,7 @@ public class TopologyBuilder {
                 Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
                         applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
                         applicationClusterContext.getAutoscalePolicyName(), application.getUniqueIdentifier());
-                cluster.setStatus(Status.Created);
+                //cluster.setStatus(Status.Created);
                 cluster.addHostName(applicationClusterContext.getHostName());
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
                 clusters.add(cluster);
@@ -752,7 +774,11 @@ public class TopologyBuilder {
                         clusterActivatedEvent.getClusterId());
         try {
             TopologyManager.acquireWriteLock();
-            cluster.setStatus(Status.Activated);
+            //cluster.setStatus(Status.Activated);
+            cluster.setStatus(ClusterStatus.Active);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.Activated);
+
             log.info("Cluster activated adding status started");
 
             TopologyManager.updateTopology(topology);
@@ -786,7 +812,7 @@ public class TopologyBuilder {
                         groupActivatedEvent.getGroupId());
         try {
             TopologyManager.acquireWriteLock();
-            group.setStatus(Status.Activated);
+            group.setTempStatus(Status.Activated);
             log.info("Group activated adding status started");
 
             TopologyManager.updateTopology(topology);
@@ -812,7 +838,7 @@ public class TopologyBuilder {
                         applicationActivatedEvent.getAppId());
         try {
             TopologyManager.acquireWriteLock();
-            application.setStatus(Status.Activated);
+            application.setTempStatus(Status.Activated);
             log.info("Application activated adding status started for Topology");
 
             TopologyManager.updateTopology(topology);
@@ -822,5 +848,4 @@ public class TopologyBuilder {
         //publishing data
         TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
     }
-
 }

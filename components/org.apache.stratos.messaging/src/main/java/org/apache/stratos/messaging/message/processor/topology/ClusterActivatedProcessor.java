@@ -20,10 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Status;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -118,7 +115,12 @@ public class ClusterActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            cluster.setStatus(Status.Activated);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Active)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Active);
+            }
+            cluster.setStatus(ClusterStatus.Active);
+            // temporary; should be removed
+            cluster.setTempStatus(Status.Activated);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster updated as activated : %s",
                         cluster.toString()));

@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 
 import java.util.*;
 
@@ -27,7 +28,7 @@ import java.util.*;
  * Represents an Application in the Topology
  */
 
-public class Application extends ParentComponent {
+public class Application extends ParentComponent implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
 
     private static final long serialVersionUID = -5092959597171649688L;
     // Unique id for the Application, defined in Application Definition
@@ -40,11 +41,15 @@ public class Application extends ParentComponent {
     private String tenantDomain;
     // tenant admin user
     private String tenantAdminUserName;
+    // Life cycle state manager
+    protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
 
     public Application (String id) {
         super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
+        this.applicationStateManager =
+                new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created);
     }
 
     public String getUniqueIdentifier() {
@@ -77,6 +82,26 @@ public class Application extends ParentComponent {
 
     public void setTenantAdminUserName(String tenantAdminUserName) {
         this.tenantAdminUserName = tenantAdminUserName;
+    }
+
+    @Override
+    public boolean isStateTransitionValid(ApplicationStatus newState) {
+        return this.applicationStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
+    public Stack<ApplicationStatus> getTransitionedStates() {
+        return this.applicationStateManager.getStateStack();
+    }
+
+    @Override
+    public ApplicationStatus getStatus() {
+        return this.applicationStateManager.getCurrentState();
+    }
+
+    @Override
+    public void setStatus(ApplicationStatus newState) {
+        this.applicationStateManager.changeState(newState);
     }
 
     public boolean equals(Object other) {

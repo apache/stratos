@@ -145,6 +145,9 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.Suspended)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Suspended);
+            }
             member.setStatus(MemberStatus.Suspended);
 
             if (log.isInfoEnabled()) {
