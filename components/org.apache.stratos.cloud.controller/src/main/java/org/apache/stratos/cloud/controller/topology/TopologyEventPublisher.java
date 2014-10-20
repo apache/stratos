@@ -91,13 +91,13 @@ public class TopologyEventPublisher {
 
     }
 
-    public static void sendApplicationCreatedEvent (Application application, List<Cluster> clusters) {
+    public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {
 
         if(log.isInfoEnabled()) {
-            log.info("Publishing Application created event: " + application.toString());
+            log.info("Publishing Application created event: " + applicationCreatedEvent.toString());
         }
 
-        publishEvent(new ApplicationCreatedEvent(application, clusters));
+        publishEvent(applicationCreatedEvent);
     }
 
     public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
@@ -269,5 +269,29 @@ public class TopologyEventPublisher {
     public static void publishEvent(Event event) {
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TOPOLOGY_TOPIC);
         eventPublisher.publish(event);
+    }
+
+    public static void sendApplicationInactivatedEvent(ApplicationInactivatedEvent applicationActivatedEvent1) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing application in activated event: [appId] %s",
+                    applicationActivatedEvent1.getAppId()));
+        }
+        publishEvent(applicationActivatedEvent1);
+    }
+
+    public static void sendApplicationTerminatingEvent(ApplicationTerminatingEvent applicationTerminatingEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing application terminating event: [appId] %s",
+                    applicationTerminatingEvent.getAppId()));
+        }
+        publishEvent(applicationTerminatingEvent);
+    }
+
+    public static void sendApplicationTerminatedEvent(ApplicationTerminatedEvent applicationTerminatedEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing application terminated event: [appId] %s",
+                    applicationTerminatedEvent.getAppId()));
+        }
+        publishEvent(applicationTerminatedEvent);
     }
 }

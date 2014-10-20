@@ -111,6 +111,16 @@ public class StatusEventPublisher {
         publishEvent(applicationActivatedEvent);
     }
 
+    public static void sendApplicationInactivatedEvent(String appId){
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application Inactivated event for [application]: " + appId);
+        }
+
+        ApplicationInactivatedEvent applicationInActivatedEvent = new ApplicationInactivatedEvent(appId);
+
+        publishEvent(applicationInActivatedEvent);
+    }
+
     public static void sendGroupInMaintenanceEvent(String appId, String groupId) {
 
         if (log.isInfoEnabled()) {

@@ -22,10 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.listener.application.status.ApplicationActivatedEventListener;
+import org.apache.stratos.messaging.event.application.status.*;
+import org.apache.stratos.messaging.listener.application.status.*;
 import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
 import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
 import org.apache.stratos.messaging.message.receiver.application.status.ApplicationStatusEventReceiver;
@@ -89,6 +87,39 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleApplicationActivatedEvent((ApplicationActivatedEvent) event);
+
+            }
+        });
+
+        statusEventReceiver.addEventListener(new ApplicationInActivatedEventListener() {
+
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleApplicationInActivatedEvent((ApplicationInactivatedEvent) event);
+
+            }
+        });
+
+        statusEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleApplicationCreatedEvent((ApplicationCreatedEvent) event);
+
+            }
+        });
+
+        statusEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleApplicationTerminatingEvent((ApplicationTerminatingEvent) event);
+
+            }
+        });
+
+        statusEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleApplicationTerminatedEvent((ApplicationTerminatedEvent) event);
 
             }
         });
