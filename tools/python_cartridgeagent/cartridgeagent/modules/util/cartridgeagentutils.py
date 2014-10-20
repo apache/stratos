@@ -22,11 +22,11 @@ import time
 import socket
 import shutil
 
-from log import LogFactory
+#from log import LogFactory
 
 unpad = lambda s: s[0:-ord(s[-1])]
 
-log = LogFactory().get_log(__name__)
+#log = LogFactory().get_log(__name__)
 
 current_milli_time = lambda: int(round(time.time() * 1000))
 
@@ -47,15 +47,16 @@ def decrypt_password(pass_str, secret):
     dec_pass = ""
 
     try:
-        log.debug("Decrypting password")
+        #log.debug("Decrypting password")
         bdecoded_pass = base64.b64decode(pass_str)
         #secret length should be 16
         cipher = AES.new(secret, AES.MODE_ECB)
         dec_pass = unpad(cipher.decrypt(bdecoded_pass))
     except:
-        log.exception("Exception occurred while decrypting password")
+        pass
+        #log.exception("Exception occurred while decrypting password")
 
-    log.debug("Decrypted PWD: [%r]" % dec_pass)
+    #log.debug("Decrypted PWD: [%r]" % dec_pass)
     return dec_pass
 
 
@@ -68,10 +69,11 @@ def create_dir(path):
     """
     try:
         os.mkdir(path)
-        log.info("Successfully created directory [%r]" % path)
+        #log.info("Successfully created directory [%r]" % path)
         return True
     except OSError:
-        log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
+        pass
+        #log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
 
     return False
 
@@ -84,9 +86,10 @@ def delete_folder_tree(path):
     """
     try:
         shutil.rmtree(path)
-        log.debug("Directory [%r] deleted." % path)
+        #log.debug("Directory [%r] deleted." % path)
     except OSError:
-        log.exception("Deletion of folder path %r failed." % path)
+        pass
+        #log.exception("Deletion of folder path %r failed." % path)
 
 
 def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
@@ -100,12 +103,12 @@ def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
-    log.debug("Port check timeout: %r" % ports_check_timeout)
+    #log.debug("Port check timeout: %r" % ports_check_timeout)
 
     active = False
     start_time = current_milli_time()
     while not active:
-        log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
+        #log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
         active = check_ports_active(ip_address, ports)
         end_time = current_milli_time()
         duration = end_time - start_time
@@ -115,7 +118,7 @@ def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
 
         time.sleep(5)
 
-    log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
+    #log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
 
 
 def check_ports_active(ip_address, ports):
@@ -134,10 +137,10 @@ def check_ports_active(ip_address, ports):
         s.settimeout(5)
         try:
             s.connect((ip_address, int(port)))
-            log.debug("Port %r is active" % port)
+            #log.debug("Port %r is active" % port)
             s.close()
         except socket.error:
-            log.debug("Print %r is not active" % port)
+            #log.debug("Print %r is not active" % port)
             return False
 
     return True
