@@ -46,10 +46,10 @@ def test_decrypt_password():
     #     return mocklog
     #
     # monkeypatch.delattr("LogFactory().get_log")
+    # TODO: enable logging in cartridgeagentutils
 
     plain_password = "plaintext"
-    secret_key = "secret"
-    encrypted_password= "v5UltRskmSGbwTIbXym7jQ=="
-    b64encoded_encrypted_password = "djVVbHRSc2ttU0did1RJYlh5bTdqUT09"
+    secret_key = "tvnw63ufg9gh5111"
+    encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
 
-    assert cartridgeagentutils.decrypt_password(b64encoded_encrypted_password, secret_key) == plain_password, "Password decryption failed"
+    assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) == plain_password, "Password decryption failed"
