@@ -18,18 +18,43 @@
  */
 package org.apache.stratos.rest.endpoint.bean;
 
+import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlRootElement(name="groups")
 public class GroupBean {
-    List<GroupBean> subGroups = null;
+    private List<GroupBean> subGroups = null;
+    private List<Cluster> clusters = null;
     public String alias;
 
     public GroupBean(){
-        this.subGroups = new ArrayList<GroupBean>();
+        this.setClusters(new ArrayList<Cluster>());
+        this.setSubGroups(new ArrayList<GroupBean>());
     }
 
     public void addGroup(GroupBean groupBean){
-        subGroups.add(groupBean);
+        getSubGroups().add(groupBean);
+    }
+    public void addCluster(Cluster cluster){
+        getClusters().add(cluster);
+    }
+
+    public List<GroupBean> getSubGroups() {
+        return subGroups;
+    }
+
+    public void setSubGroups(List<GroupBean> subGroups) {
+        this.subGroups = subGroups;
+    }
+
+    public List<Cluster> getClusters() {
+        return clusters;
+    }
+
+    public void setClusters(List<Cluster> clusters) {
+        this.clusters = clusters;
     }
 }

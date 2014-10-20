@@ -52,6 +52,8 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
@@ -66,6 +68,7 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBea
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.rest.endpoint.bean.topology.*;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
@@ -1591,6 +1594,7 @@ public class ServiceUtils {
             ClusterDataHolder clusterDataHolder = entry.getValue();
             String clusterId = clusterDataHolder.getClusterId();
             Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterDataHolder.getServiceType()).getCluster(clusterId);
+            applicationBean.clusters.add(toClusterBean(topLevelCluster));
         }
 
         Collection<Group> groups = application.getGroups();
@@ -1600,15 +1604,27 @@ public class ServiceUtils {
             applicationBean.addGroup(groupBean);
         }
         TopologyManager.releaseReadLock();
-        return null;
+        return applicationBean;
     }
 
     private static void setSubGroups(Group group, GroupBean groupBean) {
         Collection<Group> subgroups = group.getGroups();
+        addClustersToGroupBean(group, groupBean);
         for(Group subGroup : subgroups){
             GroupBean subGroupBean = toGroupBean(subGroup);
+
             setSubGroups(subGroup, subGroupBean);
             groupBean.addGroup(subGroupBean);
+        }
+    }
+
+    private static void addClustersToGroupBean(Group group, GroupBean groupBean) {
+        Map<String, ClusterDataHolder> clustersDatamap = group.getClusterDataMap();
+        for(Map.Entry<String, ClusterDataHolder> x : clustersDatamap.entrySet()){
+            String alias = x.getKey();
+            ClusterDataHolder clusterHolder = x.getValue();
+            Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterHolder.getServiceType()).getCluster(clusterHolder.getClusterId());
+            groupBean.addCluster(toClusterBean(topLevelCluster));
         }
     }
 
@@ -1622,5 +1638,11 @@ public class ServiceUtils {
         ApplicationBean applicationBean = new ApplicationBean();
         applicationBean.id = application.getUniqueIdentifier();
         return applicationBean;
+    }
+
+    private static org.apache.stratos.rest.endpoint.bean.topology.Cluster toClusterBean(Cluster cluster){
+        org.apache.stratos.rest.endpoint.bean.topology.Cluster clusterBean = new org.apache.stratos.rest.endpoint.bean.topology.Cluster();
+        clusterBean.serviceName=cluster.getServiceName();
+        return clusterBean;
     }
 }

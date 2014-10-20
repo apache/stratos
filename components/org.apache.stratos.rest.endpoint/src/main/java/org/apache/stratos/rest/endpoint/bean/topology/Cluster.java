@@ -21,7 +21,7 @@ package org.apache.stratos.rest.endpoint.bean.topology;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
+@XmlRootElement(name="clusters")
 public class Cluster {
 
     @Override

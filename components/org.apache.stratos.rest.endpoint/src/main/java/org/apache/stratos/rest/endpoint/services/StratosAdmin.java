@@ -456,7 +456,11 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationInfo(@PathParam("appId") String applicationId) throws RestAPIException {
         Object application = ServiceUtils.getApplicationInfo(applicationId, getConfigContext());
-        return Response.status(Response.Status.NOT_FOUND).build();
+        if(application == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }else{
+            return  Response.ok().entity(application).build();
+        }
     }
 
     @GET
