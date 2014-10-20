@@ -18,29 +18,50 @@
 import time
 from threading import Thread
 
+class AbstractAsyncScheduledTask:
+    """
+    Exposes the contract to follow to implement a scheduled task to be executed by the ScheduledExecutor
+    """
 
-class AsyncScheduledTask(Thread):
+    def execute_task(self):
+        """
+        Override this method and implement the task to be executed by the ScheduledExecutor with a specified
+        interval.
+        """
+        raise NotImplementedError
+
+
+class ScheduledExecutor(Thread):
     """
     Executes a given task with a given interval until being terminated
     """
 
     def __init__(self, delay, task):
+        """
+        Creates a ScheduledExecutor thread to handle interval based repeated execution of a given task of type
+        AbstractAsyncScheduledTask
+        :param int delay: The interval to keep between executions
+        :param AbstractAsyncScheduledTask task: The task to be implemented
+        :return:
+        """
+
         Thread.__init__(self)
         self.delay = delay
         """ :type : int  """
         self.task = task
-        """ :type : Thread  """
+        """ :type : AbstractAsyncScheduledTask  """
         self.terminated = False
         """ :type : bool  """
 
     def run(self):
         """
-        Start the scheuled task with a sleep time of delay in between
+        Start the scheduled task with a sleep time of delay in between
         :return:
         """
         while not self.terminated:
             time.sleep(self.delay)
-            self.task.start()
+            task_thread = Thread(target=self.task.execute_task)
+            task_thread.start()
 
     def terminate(self):
         """
