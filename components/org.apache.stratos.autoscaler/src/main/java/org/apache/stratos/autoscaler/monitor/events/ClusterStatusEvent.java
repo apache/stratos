@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 /**
@@ -25,18 +26,18 @@ import org.apache.stratos.messaging.domain.topology.Status;
  */
 public class ClusterStatusEvent extends MonitorStatusEvent {
 
-    private Status status;
+    private ClusterStatus status;
 
-    public ClusterStatusEvent(Status status, String id) {
+    public ClusterStatusEvent(ClusterStatus status, String id) {
         super(id);
         this.status = status;
     }
 
-    public Status getStatus() {
+    public ClusterStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ClusterStatus status) {
         this.status = status;
     }
 }

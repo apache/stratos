@@ -65,7 +65,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
             log.debug("ClusterMonitor:autoScalePolicy:" + autoscalePolicy);
         }
         networkPartitionCtxts = new ConcurrentHashMap<String, NetworkPartitionContext>();
-        status = Status.Created;
+        status = ClusterStatus.Created;
     }
 
 

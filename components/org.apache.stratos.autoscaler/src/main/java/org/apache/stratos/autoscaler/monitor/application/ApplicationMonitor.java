@@ -29,8 +29,7 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ComponentStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +41,7 @@ import java.util.List;
 public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
     //status of the monitor whether it is running/in_maintainable/terminated
-    protected Status status;
+    protected ApplicationStatus status;
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
@@ -151,7 +150,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      *
      * @param status the status
      */
-    public void setStatus(Status status) {
+    public void setStatus(ApplicationStatus status) {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
         this.status = status;

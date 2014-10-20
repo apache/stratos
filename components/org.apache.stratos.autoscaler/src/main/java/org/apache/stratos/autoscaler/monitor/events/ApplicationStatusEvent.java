@@ -18,25 +18,25 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 
 /**
  * This will use to notify observers upon a application activation events received in Topology.
  */
 public class ApplicationStatusEvent extends MonitorStatusEvent {
 
-    private Status status;
+    private ApplicationStatus status;
 
-    public ApplicationStatusEvent(Status status, String id) {
+    public ApplicationStatusEvent(ApplicationStatus status, String id) {
         super(id);
         this.status = status;
     }
 
-    public Status getStatus() {
+    public ApplicationStatus getStatus() {
         return this.status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ApplicationStatus status) {
         this.status = status;
     }
 }

@@ -28,10 +28,7 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
@@ -65,7 +62,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     protected String serviceId;
     protected String appId;
 
-    protected Status status;
+    protected ClusterStatus status;
 
     protected ParentComponentMonitor parent;
 
@@ -235,11 +232,11 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
         return monitorInterval;
     }
 
-    public Status getStatus() {
+    public ClusterStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ClusterStatus status) {
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", clusterId, this.status, status));
         this.status = status;

@@ -106,11 +106,12 @@ public class ApplicationMonitorFactory {
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
             groupMonitor.setParent(parentMonitor);
-            if (group.getTempStatus() != groupMonitor.getStatus()) {
+            //TODO
+            /*if (group.getTempStatus() != groupMonitor.getStatus()) {
                 //updating the status, if the group is not in created state when creating group Monitor
                 //so that groupMonitor will notify the parent (useful when restarting stratos)
                 groupMonitor.setStatus(group.getTempStatus());
-            }
+            }*/
         } finally {
             TopologyManager.releaseReadLockForApplication(appId);
 
@@ -289,11 +290,11 @@ public class ApplicationMonitorFactory {
                             networkPartitionContext.getId()));
                 }
             }
-
-            if (cluster.getTempStatus() != clusterMonitor.getStatus()) {
+            //TODO
+            /*if (cluster.getTempStatus() != clusterMonitor.getStatus()) {
                 //updating the status, so that it will notify the parent
                 clusterMonitor.setStatus(cluster.getTempStatus());
-            }
+            }*/
         } finally {
             //release read lock for the service and cluster
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);

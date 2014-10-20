@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-public enum Status implements ComponentStatus {
+public enum Status {
 
     Created(1),
     Running(2),

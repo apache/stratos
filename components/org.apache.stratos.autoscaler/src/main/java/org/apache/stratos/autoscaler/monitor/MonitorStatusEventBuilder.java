@@ -24,6 +24,9 @@ import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.Status;
 
 /**
@@ -32,17 +35,17 @@ import org.apache.stratos.messaging.domain.topology.Status;
 public class MonitorStatusEventBuilder {
     private static final Log log = LogFactory.getLog(MonitorStatusEventBuilder.class);
 
-    public static void handleClusterStatusEvent(ParentComponentMonitor parent, Status status, String clusterId) {
+    public static void handleClusterStatusEvent(ParentComponentMonitor parent, ClusterStatus status, String clusterId) {
         ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId);
         notifyParent(parent, clusterStatusEvent);
     }
 
-    public static void handleGroupStatusEvent(ParentComponentMonitor parent, Status status, String groupId) {
+    public static void handleGroupStatusEvent(ParentComponentMonitor parent, GroupStatus status, String groupId) {
         GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId);
         notifyParent(parent, groupStatusEvent);
     }
 
-    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, Status status, String appId) {
+    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, ApplicationStatus status, String appId) {
         ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId);
         notifyParent(parent, applicationStatusEvent);
     }

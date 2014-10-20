@@ -18,8 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.topology.ComponentStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 /**
  * Monitor Status Event
@@ -39,5 +38,5 @@ public abstract class MonitorStatusEvent {
         this.id = id;
     }
 
-    public abstract ComponentStatus getStatus();
+    public abstract LifeCycleState getStatus();
 }

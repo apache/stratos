@@ -28,9 +28,10 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.ComponentStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ import java.util.List;
 public class GroupMonitor extends ParentComponentMonitor implements EventHandler {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
     //status of the monitor whether it is running/in_maintainable/terminated
-    private Status status;
+    private GroupStatus status;
 
     /**
      * Constructor of GroupMonitor
@@ -55,7 +56,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        this.setStatus(group.getTempStatus());
+        //TODO this.setStatus(group.getTempStatus());
         startDependency();
     }
 
@@ -67,12 +68,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
-        ComponentStatus status1 = statusEvent.getStatus();
+        LifeCycleState status1 = statusEvent.getStatus();
         ApplicationContext context = this.dependencyTree.findApplicationContextWithId(id);
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         //TODO if statusEvent is for active, then start the next one if any available
         if (!isParent(id)) {
-            if (status1 == Status.Activated) {
+            if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
                 try {
                     //if life cycle is empty, need to start the monitor
                     boolean startDep = startDependency(statusEvent.getId());
@@ -81,10 +82,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
                     }
                     //updating the life cycle and current status
-                    if (startDep) {
-                        context.setCurrentStatus(Status.Created);
-                        context.addStatusToLIfeCycle(Status.Created);
-                    } else {
+                    if (!startDep) {
                         StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                     }
 
@@ -92,7 +90,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                     log.error(e);
                 }
-            } else if (status1 == Status.In_Active) {
+            } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
 
                 //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
                 //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
@@ -102,21 +100,21 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 List<ApplicationContext> terminationList = new ArrayList<ApplicationContext>();
                 terminationList = this.dependencyTree.getTerminationDependencies(id);
 
-                if(terminationList != null) {
+                if (terminationList != null) {
                     //Move to in_active monitors list
                     this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
                     boolean allInActive = false;
                     //check whether all the children are in_active state
                     for (ApplicationContext terminationContext : terminationList) {
                         //Check for whether all dependent are in_active
-                        if(this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
+                        if (this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
                             allInActive = true;
                         } else {
                             allInActive = false;
                         }
                     }
 
-                    if(allInActive) {
+                    if (allInActive) {
                         //Then kill-all of each termination dependents and get a lock for CM
                         //if start order then can kill only the first one, rest of them will get killed based on created event of first one.
                     }
@@ -146,16 +144,16 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     if(canTerminate) {
                        //
                     }*/
-            } else if(status1 == Status.Created) {
+            } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
                 //TODO get dependents
                 List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
                 // if no dependencies then start the cluster monitor. if all are in created, then start them in the order.
-                if(dependents != null) {
+                if (dependents != null) {
                     boolean allCreated = false;
                     //check whether all the children are in_active state
                     for (ApplicationContext terminationContext : dependents) {
                         //Check for whether all dependent are in_active
-                        if(this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
+                        if (this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
                             allCreated = true;
                         } else {
                             allCreated = false;
@@ -164,7 +162,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
                     String firstChildToBeStarted = null;
 
-                    if(allCreated) {
+                    if (allCreated) {
                         //start the CM according to startup order and releasing the lock for it
                         try {
                             //if life cycle is empty, need to start the monitor
@@ -174,10 +172,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
                             }
                             //updating the life cycle and current status
-                            if (startDep) {
-                                context.setCurrentStatus(Status.Created);
-                                context.addStatusToLIfeCycle(Status.Created);
-                            } else {
+                            if (!startDep) {
                                 StatusChecker.getInstance().onChildStatusChange(id, firstChildToBeStarted, this.appId);
                             }
 
@@ -187,13 +182,13 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                         }
                     } else {
                         //kill other dependents cluster
-                        
+
                     }
                 }
             }
 
 
-        } else if (status1 == Status.Created) {
+        } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
             //the dependent goes to be created state, so terminate the dependents
         }
     }
@@ -222,7 +217,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         }
     }
 
-    public Status getStatus() {
+    public GroupStatus getStatus() {
         return status;
     }
 
@@ -231,7 +226,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      *
      * @param status
      */
-    public void setStatus(Status status) {
+    public void setStatus(GroupStatus status) {
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", id, this.status, status));
         this.status = status;

@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.autoscaler.grouping.dependency.context;
 
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +34,15 @@ public abstract class ApplicationContext {
     protected boolean started;
     protected boolean terminated;
 
-    private Status status;
+    private ClusterStatus status;
 
-    private Stack<Status> statusLifeCycle;
+    private Stack<ClusterStatus> statusLifeCycle;
 
     protected boolean killDependent;
 
     public ApplicationContext(String id, boolean killDependent) {
         applicationContextList = new ArrayList<ApplicationContext>();
-        statusLifeCycle = new Stack<Status>();
+        statusLifeCycle = new Stack<ClusterStatus>();
         this.killDependent = killDependent;
         this.id = id;
     }
@@ -60,7 +60,7 @@ public abstract class ApplicationContext {
 
     }
 
-    public void addStatusToLIfeCycle(Status status) {
+    public void addStatusToLIfeCycle(ClusterStatus status) {
        this.statusLifeCycle.push(status);
     }
 
@@ -72,15 +72,15 @@ public abstract class ApplicationContext {
         this.id = id;
     }
 
-    public Status getCurrentStatus() {
+    public ClusterStatus getCurrentStatus() {
         return status;
     }
 
-    public void setCurrentStatus(Status status) {
+    public void setCurrentStatus(ClusterStatus status) {
         this.status = status;
     }
 
-    public List<Status> getStatusLifeCycle() {
+    public List<ClusterStatus> getStatusLifeCycle() {
         return statusLifeCycle;
     }
 
