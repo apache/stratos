@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.event.application.status;
 import java.io.Serializable;
 
 /**
- * This event will be fired upon the application activated is detected.
+ * This event will be fired upon the application created is detected.
  */
 public class ApplicationCreatedEvent extends StatusEvent implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;

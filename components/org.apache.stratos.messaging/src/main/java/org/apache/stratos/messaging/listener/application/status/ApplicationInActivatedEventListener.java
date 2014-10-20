@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.listener.application.status;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- * This listener will get triggered upon the application In activated event.
+ * This listener will get triggered upon the application inactivated event.
  */
 public abstract class ApplicationInActivatedEventListener extends EventListener {
 }

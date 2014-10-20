@@ -30,7 +30,7 @@ public class ApplicationCreatedEvent extends TopologyEvent {
 
     private List<Cluster> clusterList;
 
-    public ApplicationCreatedEvent (Application application, List<Cluster> clusters) {
+    public ApplicationCreatedEvent(Application application, List<Cluster> clusters) {
         this.application = application;
         this.setClusterList(clusters);
     }

@@ -24,15 +24,13 @@ import org.apache.stratos.messaging.event.application.status.ApplicationInactiva
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-/**
- * Created by reka on 9/25/14.
- */
 public class ApplicationStatusAppInActivatedMessageProcessor extends MessageProcessor {
     private static final Log log =
             LogFactory.getLog(ApplicationStatusAppInActivatedMessageProcessor.class);
 
 
     private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;

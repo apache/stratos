@@ -27,17 +27,17 @@ import java.util.Set;
 public class ApplicationRemovedEvent extends TopologyEvent {
 
     /**
-	 * 
-	 */
-	private static final long serialVersionUID = -5499420725533165623L;
-	private String applicationId;
+     *
+     */
+    private static final long serialVersionUID = -5499420725533165623L;
+    private String applicationId;
     private Set<ClusterDataHolder> clusterData;
 
     private String tenantDomain;
     private int tenantId;
 
-    public ApplicationRemovedEvent (String applicationId, Set<ClusterDataHolder> clusterData,
-                                    int tenantId, String tenantDomain) {
+    public ApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
+                                   int tenantId, String tenantDomain) {
         this.applicationId = applicationId;
         this.clusterData = clusterData;
         this.tenantId = tenantId;
@@ -47,11 +47,11 @@ public class ApplicationRemovedEvent extends TopologyEvent {
     public String getApplicationId() {
         return applicationId;
     }
-    
+
     public int getTenantId() {
         return tenantId;
     }
-    
+
     public String getTenantDomain() {
         return tenantDomain;
     }
