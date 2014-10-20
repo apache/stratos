@@ -24,7 +24,7 @@ from ... util.log import LogFactory
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
 from gitrepository import GitRepository
 from ... config import cartridgeagentconfiguration
-from ... util.asyncscheduledtask import AsyncScheduledTask
+from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ... artifactmgt.repositoryinformation import RepositoryInformation
 
 class AgentGitHandler:
@@ -449,7 +449,7 @@ class AgentGitHandler:
         if repo_context.scheduled_update_task is None:
             #TODO: make thread safe
             artifact_update_task = ArtifactUpdateTask(repo_info, auto_checkout, auto_commit)
-            async_task = AsyncScheduledTask(update_interval, artifact_update_task)
+            async_task = ScheduledExecutor(update_interval, artifact_update_task)
 
             repo_context.scheduled_update_task = async_task
             async_task.start()
@@ -481,16 +481,18 @@ class AgentGitHandler:
         return True
 
 
-class ArtifactUpdateTask(Thread):
+class ArtifactUpdateTask(AbstractAsyncScheduledTask):
+    """
+    Checks if the autocheckout and autocommit are enabled and executes respective tasks
+    """
 
     def __init__(self, repo_info, auto_checkout, auto_commit):
         self.log = LogFactory().get_log(__name__)
-        Thread.__init__(self)
         self.repo_info = repo_info
         self.auto_checkout = auto_checkout
         self.auto_commit = auto_commit
 
-    def run(self):
+    def execute_task(self):
         try:
             if self.auto_checkout:
                 AgentGitHandler.checkout(self.repo_info)
