@@ -32,3 +32,6 @@ target/
 
 #Backup files
 *~
+
+#Python binary files
+*.pyc
