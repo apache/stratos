@@ -1459,7 +1459,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         TopologyBuilder.handleApplicationUndeployed(dataHolder, applicationId, tenantId, tenantDomain);
 
-        persist();
+        //persist();
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {

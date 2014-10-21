@@ -252,6 +252,47 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
+        topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ApplicationUndeployedEvent] Received: " + event.getClass());
+
+                ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
+                TopologyManager.acquireReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+
+                try {
+                    ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
+                            getAppMonitor(applicationUndeployedEvent.getApplicationId());
+
+                    // update the status as Terminating
+                    appMonitor.setStatus(ApplicationStatus.Terminating);
+
+                    if (appMonitor != null) {
+                        List<String> clusters = appMonitor.
+                                findClustersOfApplication(applicationUndeployedEvent.getApplicationId());
+
+                        for (String clusterId : clusters) {
+                            //stopping the cluster monitor and remove it from the AS
+                            ClusterMonitor clusterMonitor =
+                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
+                            clusterMonitor.setDestroyed(true);
+                            clusterMonitor.setStatus(ClusterStatus.Terminating);
+                            AutoscalerContext.getInstance().removeMonitor(clusterId);
+                        }
+
+                    } else {
+                        log.warn("Application Monitor cannot be found for the removed [application] "
+                                + applicationUndeployedEvent.getApplicationId());
+                    }
+
+                } finally {
+                    TopologyManager.
+                            releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+                }
+            }
+        });
+
 
         topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
             @Override

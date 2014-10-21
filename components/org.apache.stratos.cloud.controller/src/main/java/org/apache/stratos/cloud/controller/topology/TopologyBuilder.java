@@ -674,52 +674,110 @@ public class TopologyBuilder {
     public static synchronized void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder,
                                                                 String applicationId, int tenantId, String tenantDomain) {
 
-        Topology topology = TopologyManager.getTopology();
+        Set<ClusterDataHolder> clusterData;
+
+        // update the Application and Cluster Statuses as 'Terminating'
+        TopologyManager.acquireWriteLock();
 
         try {
-            TopologyManager.acquireWriteLock();
+
+            Topology topology = TopologyManager.getTopology();
 
             if (!topology.applicationExists(applicationId)) {
                 log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
-                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+                return;
+            }
 
-            } else {
-                Application application = topology.getApplication(applicationId);
-                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-                // remove clusters
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    Service service = topology.getService(clusterDataHolder.getServiceType());
-                    if (service != null) {
-                        // remove Cluster
-                        service.removeCluster(clusterDataHolder.getClusterId());
+            Application application = topology.getApplication(applicationId);
+            // check and update application status to 'Terminating'
+            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
+                log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
+            }
+            // for now anyway update the status forcefully
+            application.setStatus(ApplicationStatus.Terminating);
+            log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
 
-                        if (log.isDebugEnabled()) {
-                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
+            // update all the Clusters' statuses to 'Terminating'
+            clusterData = application.getClusterDataRecursively();
+            for (ClusterDataHolder clusterDataHolder : clusterData) {
+                Service service = topology.getService(clusterDataHolder.getServiceType());
+                if (service != null) {
+                    Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
+                    if (aCluster != null) {
+                        // validate state transition
+                        if (aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                            log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
+                                    + ClusterStatus.Terminating + " successfully");
                         }
+                        // for now anyway update the status forcefully
+                        aCluster.setStatus(ClusterStatus.Terminating);
+                        log.info("Cluster " + clusterDataHolder.getClusterId() + "'s status updated to "
+                                + ClusterStatus.Terminating + " successfully");
+
                     } else {
-                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+                        log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
+                        " in Topology");
                     }
 
-                    // remove runtime data
-                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
-                    if(log.isDebugEnabled()) {
-                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
-                    }
+                } else {
+                    log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
                 }
-
-                // remove application
-                topology.removeApplication(applicationId);
-                TopologyManager.updateTopology(topology);
-
-                log.info("Removed application [ " + applicationId + " ] from Topology");
-
-                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain);
             }
 
         } finally {
             TopologyManager.releaseWriteLock();
         }
+
+        TopologyEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
+
+
+//        Topology topology = TopologyManager.getTopology();
+//
+//        try {
+//            TopologyManager.acquireWriteLock();
+//
+//            if (!topology.applicationExists(applicationId)) {
+//                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
+//                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+//
+//            } else {
+//                Application application = topology.getApplication(applicationId);
+//                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
+//                // remove clusters
+//                for (ClusterDataHolder clusterDataHolder : clusterData) {
+//                    Service service = topology.getService(clusterDataHolder.getServiceType());
+//                    if (service != null) {
+//                        // remove Cluster
+//                        service.removeCluster(clusterDataHolder.getClusterId());
+//
+//                        if (log.isDebugEnabled()) {
+//                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
+//                        }
+//                    } else {
+//                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+//                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+//                    }
+//
+//                    // remove runtime data
+//                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
+//                    if(log.isDebugEnabled()) {
+//                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
+//                    }
+//                }
+//
+//                // remove application
+//                topology.removeApplication(applicationId);
+//                TopologyManager.updateTopology(topology);
+//
+//                log.info("Removed application [ " + applicationId + " ] from Topology");
+//
+//                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain);
+//            }
+//
+//        } finally {
+//            TopologyManager.releaseWriteLock();
+//        }
     }
 
     public static void handleCompositeApplicationCreated(ConfigCompositeApplication messConfigApp) {

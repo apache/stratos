@@ -48,6 +48,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private GroupActivatedProcessor groupActivatedProcessor;
     //private CompositeApplicationRemovedMessageProcessor compositeApplicationRemovedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
+    private ApplicationUndeployedMessageProcessor applicationUndeployedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
     private ApplicationActivatedMessageProcessor applicationActivatedMessageProcessor;
 
@@ -98,6 +99,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
 
+        applicationUndeployedMessageProcessor = new ApplicationUndeployedMessageProcessor();
+        add(applicationUndeployedMessageProcessor);
+
         applicationRemovedMessageProcessor = new ApplicationRemovedMessageProcessor();
         add(applicationRemovedMessageProcessor);
 
@@ -140,6 +144,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             groupActivatedProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationUndeployedEventListener) {
+            applicationUndeployedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationRemovedEventListener) {
             applicationRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {

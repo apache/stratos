@@ -88,7 +88,6 @@ public class TopologyEventPublisher {
             log.info("Publishing cluster created event: " +clusterId);
         }
         publishEvent(clusterCreatedEvent);
-
     }
 
     public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {
@@ -98,6 +97,15 @@ public class TopologyEventPublisher {
         }
 
         publishEvent(applicationCreatedEvent);
+    }
+
+    public static void sendApplicationUndeployedEvent (String applicationId, Set<ClusterDataHolder> clusterData) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application undeployed event for Application: " + applicationId);
+        }
+
+        publishEvent(new ApplicationUndeployedEvent(applicationId, clusterData));
     }
 
     public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,

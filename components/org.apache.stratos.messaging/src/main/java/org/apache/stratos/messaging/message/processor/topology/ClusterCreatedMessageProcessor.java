@@ -98,6 +98,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
         // Validate event properties
         /*Cluster cluster = event.getCluster();
+
         if(cluster == null) {
             String msg = "Cluster object of cluster created event is null.";
             log.error(msg);
