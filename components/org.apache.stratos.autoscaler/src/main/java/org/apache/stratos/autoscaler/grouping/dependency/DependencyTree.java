@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,6 @@ public class DependencyTree {
     private static final Log log = LogFactory.getLog(DependencyTree.class);
 
     private List<ApplicationContext> applicationContextList;
-
-    private Status status;
 
     private boolean started;
 
@@ -115,11 +112,11 @@ public class DependencyTree {
 
     private List<ApplicationContext> findAllParent(List<ApplicationContext> parentContexts, String id) {
         ApplicationContext context = findParentContextWithId(null, id, this.applicationContextList);
-        if(context != null) {
+        if (context != null) {
             parentContexts.add(context);
             findAllParent(parentContexts, context.getId());
         }
-        return  parentContexts;
+        return parentContexts;
     }
 
 
@@ -137,6 +134,7 @@ public class DependencyTree {
         }
         return null;
     }
+
     /**
      * Getting the next start able dependencies upon the activate event
      * received for a group/cluster which is part of this tree.
@@ -175,9 +173,9 @@ public class DependencyTree {
         if (this.killDependent) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
-                findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
-                        allChildrenOfAppContext);
-                return allChildrenOfAppContext;
+            findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
+                    allChildrenOfAppContext);
+            return allChildrenOfAppContext;
         } else if (this.killAll) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
@@ -234,14 +232,6 @@ public class DependencyTree {
 
     public void setTerminated(boolean terminated) {
         this.terminated = terminated;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public boolean isKillDependent() {

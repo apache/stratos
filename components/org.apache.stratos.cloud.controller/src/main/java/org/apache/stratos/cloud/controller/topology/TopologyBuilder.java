@@ -114,7 +114,7 @@ public class TopologyBuilder {
     }
 
     public static void handleClusterCreated(Registrant registrant, boolean isLb) {
-        Topology topology = TopologyManager.getTopology();
+        /*Topology topology = TopologyManager.getTopology();
         Service service;
         try {
             TopologyManager.acquireWriteLock();
@@ -156,7 +156,7 @@ public class TopologyBuilder {
 
         } finally {
             TopologyManager.releaseWriteLock();
-        }
+        }*/
     }
 
     public static void handleClusterRemoved(ClusterContext ctxt) {
@@ -187,7 +187,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterRemovedEvent(ctxt, deploymentPolicy);
     }
 
-    public static void handleClusterMaintenanceMode(ClusterContext ctxt) {
+    /*public static void handleClusterMaintenanceMode(ClusterContext ctxt) {
 
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());
@@ -211,15 +211,12 @@ public class TopologyBuilder {
                 log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
             }
             cluster.setStatus(ClusterStatus.Inactive);
-            // temporary; should be removed
-            cluster.setTempStatus(Status.In_Active);
-            //cluster.setStatus(Status.In_Maintenance);
             TopologyManager.updateTopology(topology);
         } finally {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendClusterMaintenanceModeEvent(ctxt);
-    }
+    }*/
 
 
     public static void handleMemberSpawned(String serviceName,
@@ -774,8 +771,6 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             //cluster.setStatus(Status.Activated);
             cluster.setStatus(ClusterStatus.Active);
-            // temporary; should be removed
-            cluster.setTempStatus(Status.Activated);
 
             log.info("Cluster activated adding status started");
 
@@ -810,7 +805,7 @@ public class TopologyBuilder {
                         groupActivatedEvent.getGroupId());
         try {
             TopologyManager.acquireWriteLock();
-            group.setTempStatus(Status.Activated);
+            group.setStatus(GroupStatus.Active);
             log.info("Group activated adding status started");
 
             TopologyManager.updateTopology(topology);

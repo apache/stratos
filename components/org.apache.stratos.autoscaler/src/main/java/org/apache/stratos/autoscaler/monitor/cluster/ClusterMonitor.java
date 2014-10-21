@@ -31,7 +31,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;

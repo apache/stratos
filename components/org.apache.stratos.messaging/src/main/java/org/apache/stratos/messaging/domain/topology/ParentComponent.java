@@ -36,10 +36,8 @@ public abstract class ParentComponent implements Serializable {
     // Cluster Id map, key = subscription alias for the cartridge type
     private Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Application status
-    private Status tempStatus;
 
     public ParentComponent () {
-        this.tempStatus = Status.Created;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
@@ -210,13 +208,5 @@ public abstract class ParentComponent implements Serializable {
                 }
             }
         }
-    }
-
-    public Status getTempStatus() {
-        return tempStatus;
-    }
-
-    public void setTempStatus(Status status) {
-        this.tempStatus = status;
     }
 }

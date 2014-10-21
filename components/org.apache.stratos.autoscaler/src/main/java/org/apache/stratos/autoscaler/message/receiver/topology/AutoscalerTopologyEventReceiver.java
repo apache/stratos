@@ -344,41 +344,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
         });
 
-
-        topologyEventReceiver.addEventListener(new ClusterMaintenanceModeEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-
-                ClusterMaintenanceModeEvent clusterMaitenanceEvent = null;
-
-                try {
-                    log.info("Event received: " + event);
-                    clusterMaitenanceEvent = (ClusterMaintenanceModeEvent) event;
-                    //TopologyManager.acquireReadLock();
-                    TopologyManager.acquireReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
-                            clusterMaitenanceEvent.getClusterId());
-
-                    Service service = TopologyManager.getTopology().getService(clusterMaitenanceEvent.getServiceName());
-                    Cluster cluster = service.getCluster(clusterMaitenanceEvent.getClusterId());
-                    AbstractClusterMonitor monitor;
-                    if (AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
-                        monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterMaitenanceEvent.getClusterId());
-                        monitor.setStatus(ClusterStatus.Inactive);
-                    } else {
-                        log.error("cluster monitor not exists for the cluster: " + cluster.toString());
-                    }
-                } catch (Exception e) {
-                    log.error("Error processing event", e);
-                } finally {
-                    //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
-                            clusterMaitenanceEvent.getClusterId());
-                }
-            }
-
-        });
-
-
         topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {

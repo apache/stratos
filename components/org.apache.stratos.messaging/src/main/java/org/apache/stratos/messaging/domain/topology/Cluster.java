@@ -36,9 +36,9 @@ import java.util.*;
 @XmlRootElement
 public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<ClusterStatus> {
 
-	private static final long serialVersionUID = -361960242360176077L;
-	
-	private final String serviceName;
+    private static final long serialVersionUID = -361960242360176077L;
+
+    private final String serviceName;
     private final String clusterId;
     private final String autoscalePolicyName;
     private final String deploymentPolicyName;
@@ -50,7 +50,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
 
-    private Status tempStatus;
+    private ClusterStatus status;
 
     private String appId;
 
@@ -70,7 +70,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         this.appId = appId;
         this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created);
         // temporary; should be removed
-        this.tempStatus = Status.Created;
+        this.status = ClusterStatus.Created;
     }
 
     public String getServiceName() {
@@ -103,9 +103,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     }
 
     public boolean hasMembers() {
-        return  memberMap.isEmpty();
+        return memberMap.isEmpty();
     }
-
 
 
     public void addMember(Member member) {
@@ -136,9 +135,9 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         return autoscalePolicyName;
     }
 
-	public String getDeploymentPolicyName() {
-		return deploymentPolicyName;
-	}
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
 
     public String getLoadBalanceAlgorithmName() {
         return loadBalanceAlgorithmName;
@@ -155,7 +154,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     public void setLbCluster(boolean isLbCluster) {
         this.isLbCluster = isLbCluster;
     }
-    
+
     @Override
     public String toString() {
         return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId +
@@ -171,24 +170,22 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
      * @return
      */
     public boolean tenantIdInRange(int tenantId) {
-        if(StringUtils.isBlank(getTenantRange())) {
+        if (StringUtils.isBlank(getTenantRange())) {
             return false;
         }
 
-        if("*".equals(getTenantRange())) {
+        if ("*".equals(getTenantRange())) {
             return true;
-        }
-        else {
+        } else {
             String[] array = getTenantRange().split("-");
             int tenantStart = Integer.parseInt(array[0]);
-            if(tenantStart <= tenantId) {
+            if (tenantStart <= tenantId) {
                 String tenantEndStr = array[1];
-                if("*".equals(tenantEndStr)) {
+                if ("*".equals(tenantEndStr)) {
                     return true;
-                }
-                else {
+                } else {
                     int tenantEnd = Integer.parseInt(tenantEndStr);
-                    if(tenantId <= tenantEnd) {
+                    if (tenantId <= tenantEnd) {
                         return true;
                     }
                 }
@@ -204,8 +201,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
      */
     public Collection<String> findPartitionIds() {
         Map<String, Boolean> partitionIds = new HashMap<String, Boolean>();
-        for(Member member : getMembers()) {
-            if((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
+        for (Member member : getMembers()) {
+            if ((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
                 partitionIds.put(member.getPartitionId(), true);
             }
         }
@@ -233,19 +230,19 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     }
 
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof Cluster)) {
+        if (other == null || !(other instanceof Cluster)) {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
-        Cluster that = (Cluster)other;
+        Cluster that = (Cluster) other;
         return this.clusterId.equals(that.clusterId);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return clusterId.hashCode();
     }
 
@@ -253,12 +250,12 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         return appId;
     }
 
-    public Status getTempStatus () {
-        return tempStatus;
+    public ClusterStatus getTempStatus() {
+        return status;
     }
 
-    public void setTempStatus (Status tempStatus)  {
-        this.tempStatus = tempStatus;
+    public void setTempStatus(ClusterStatus status) {
+        this.status = status;
     }
 }
 

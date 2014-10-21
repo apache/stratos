@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -76,7 +76,7 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ApplicationActivatedEvent event, Topology topology) {
+    private boolean doProcess(ApplicationActivatedEvent event, Topology topology) {
 
         // Validate event against the existing topology
         Application application = topology.getApplication(event.getAppId());
@@ -88,7 +88,7 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
-            application.setTempStatus(Status.Activated);
+            application.setStatus(ApplicationStatus.Active);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as activated : %s",
                         application.toString()));

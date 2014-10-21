@@ -37,7 +37,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ServiceRemovedMessageProcessor serviceRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterActivatedProcessor clusterActivatedProcessor;
-    private ClusterMaintenanceModeMessageProcessor clusterMaintenanceModeMessageProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
@@ -68,9 +67,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterActivatedProcessor = new ClusterActivatedProcessor();
         add(clusterActivatedProcessor);
-
-        clusterMaintenanceModeMessageProcessor = new ClusterMaintenanceModeMessageProcessor();
-        add(clusterMaintenanceModeMessageProcessor);
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
@@ -120,8 +116,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterMaintenanceModeEventListener) {
-            clusterMaintenanceModeMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceSpawnedEventListener) {
