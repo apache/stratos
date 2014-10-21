@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -39,6 +40,7 @@ import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.util.Constants;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Properties;
@@ -730,54 +732,6 @@ public class TopologyBuilder {
         }
 
         TopologyEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
-
-
-//        Topology topology = TopologyManager.getTopology();
-//
-//        try {
-//            TopologyManager.acquireWriteLock();
-//
-//            if (!topology.applicationExists(applicationId)) {
-//                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
-//                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
-//
-//            } else {
-//                Application application = topology.getApplication(applicationId);
-//                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-//                // remove clusters
-//                for (ClusterDataHolder clusterDataHolder : clusterData) {
-//                    Service service = topology.getService(clusterDataHolder.getServiceType());
-//                    if (service != null) {
-//                        // remove Cluster
-//                        service.removeCluster(clusterDataHolder.getClusterId());
-//
-//                        if (log.isDebugEnabled()) {
-//                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
-//                        }
-//                    } else {
-//                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-//                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
-//                    }
-//
-//                    // remove runtime data
-//                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
-//                    if(log.isDebugEnabled()) {
-//                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
-//                    }
-//                }
-//
-//                // remove application
-//                topology.removeApplication(applicationId);
-//                TopologyManager.updateTopology(topology);
-//
-//                log.info("Removed application [ " + applicationId + " ] from Topology");
-//
-//                TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain);
-//            }
-//
-//        } finally {
-//            TopologyManager.releaseWriteLock();
-//        }
     }
 
     public static void handleCompositeApplicationCreated(ConfigCompositeApplication messConfigApp) {
@@ -986,28 +940,86 @@ public class TopologyBuilder {
     }
 
     public static void handleApplicationTerminatedEvent(ApplicationTerminatedEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
+//        Topology topology = TopologyManager.getTopology();
+//        Application application = topology.getApplication(event.getAppId());
+//        //update the status of the Group
+//        if (application == null) {
+//            log.warn(String.format("Application %s does not exist",
+//                    event.getAppId()));
+//            return;
+//        }
+//
+//        org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent applicationTerminatedEvent =
+//                new org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent(
+//                        event.getAppId());
+//        try {
+//            TopologyManager.acquireWriteLock();
+//            application.setStatus(ApplicationStatus.Terminated);
+//            log.info("Application terminated adding status started for Topology");
+//
+//            TopologyManager.updateTopology(topology);
+//        } finally {
+//            TopologyManager.releaseWriteLock();
+//        }
+//        //publishing data
+//        TopologyEventPublisher.sendApplicationTerminatedEvent(applicationTerminatedEvent);
 
-        org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent applicationTerminatedEvent =
-                new org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent(
-                        event.getAppId());
+
+     Topology topology = TopologyManager.getTopology();
+
         try {
             TopologyManager.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Terminated);
-            log.info("Application terminated adding status started for Topology");
 
-            TopologyManager.updateTopology(topology);
+            if (!topology.applicationExists(event.getAppId())) {
+                log.warn("Application with id [ " + event.getAppId() + " ] doesn't exist in Topology");
+                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
+
+            } else {
+                Application application = topology.getApplication(event.getAppId());
+                int tenantId = application.getTenantId();
+                String tenantDomain = application.getTenantDomain();
+                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
+                // remove clusters
+                for (ClusterDataHolder clusterDataHolder : clusterData) {
+                    Service service = topology.getService(clusterDataHolder.getServiceType());
+                    if (service != null) {
+                        // remove Cluster
+                        service.removeCluster(clusterDataHolder.getClusterId());
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
+                        }
+                    } else {
+                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+                    }
+
+                    // remove runtime data
+                    FasterLookUpDataHolder dataHolder =  FasterLookUpDataHolder.getInstance();
+                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
+                    if(log.isDebugEnabled()) {
+                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
+                    }
+
+                    try {
+                        RegistryManager.getInstance().persist(dataHolder);
+                    } catch (RegistryException e) {
+                        log.error("Unable to persist data in Registry", e);
+                    }
+                }
+
+                // remove application
+                topology.removeApplication(event.getAppId());
+                TopologyManager.updateTopology(topology);
+
+                log.info("Removed application [ " + event.getAppId() + " ] from Topology");
+
+                TopologyEventPublisher.sendApplicationRemovedEvent(event.getAppId(),
+                        clusterData, tenantId, tenantDomain);
+            }
+
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        //publishing data
-        TopologyEventPublisher.sendApplicationTerminatedEvent(applicationTerminatedEvent);
     }
 }

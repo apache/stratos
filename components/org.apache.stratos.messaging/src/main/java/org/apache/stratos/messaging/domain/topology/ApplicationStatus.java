@@ -37,13 +37,15 @@ public enum ApplicationStatus implements LifeCycleState {
     Active (1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Inactive));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminating,
+                    ApplicationStatus.Inactive));
         }
     },
     Inactive (2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Active,
+                    ApplicationStatus.Terminating));
         }
     },
     Terminating (3) {

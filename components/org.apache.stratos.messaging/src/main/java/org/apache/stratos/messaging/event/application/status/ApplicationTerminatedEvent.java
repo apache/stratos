@@ -18,7 +18,10 @@
  */
 package org.apache.stratos.messaging.event.application.status;
 
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * This event will be fired upon the application terminated is detected.
@@ -27,12 +30,18 @@ public class ApplicationTerminatedEvent extends StatusEvent implements Serializa
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
+    private Set<ClusterDataHolder> clusterData;
 
-    public ApplicationTerminatedEvent(String appId) {
+    public ApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
         this.appId = appId;
+        this.clusterData = clusterData;
     }
 
     public String getAppId() {
         return appId;
+    }
+
+    public Set<ClusterDataHolder> getClusterData() {
+        return clusterData;
     }
 }

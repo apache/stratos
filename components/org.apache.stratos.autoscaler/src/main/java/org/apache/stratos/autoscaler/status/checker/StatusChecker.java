@@ -276,6 +276,7 @@ public class StatusChecker {
                 if (parent instanceof Application) {
                     //send application activated event
                     log.info("sending app terminated: " + appId);
+                    StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
                     //StatusEventPublisher.sendApp(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
