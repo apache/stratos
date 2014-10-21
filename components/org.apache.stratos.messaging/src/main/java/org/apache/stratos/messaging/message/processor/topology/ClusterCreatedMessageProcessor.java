@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
@@ -96,7 +97,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
         }
 
         // Validate event properties
-        Cluster cluster = event.getCluster();
+        /*Cluster cluster = event.getCluster();
         if(cluster == null) {
             String msg = "Cluster object of cluster created event is null.";
             log.error(msg);
@@ -104,7 +105,7 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
         }
         if (cluster.getHostNames().isEmpty()) {
             throw new RuntimeException("Host name/s not found in cluster created event");
-        }
+        }*/
         // Validate event against the existing topology
         Service service = topology.getService(event.getServiceName());
         if (service == null) {
@@ -122,7 +123,8 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
         } else {
 
             // Apply changes to the topology
-            service.addCluster(cluster);
+            Cluster cluster = service.getCluster(event.getClusterId());
+            cluster.setStatus(ClusterStatus.Created);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster created: %s",
                         cluster.toString()));

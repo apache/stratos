@@ -50,6 +50,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         super(application);
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
+        this.status = application.getStatus();
         //starting the first set of dependencies from its children
         startDependency();
 
@@ -120,8 +121,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @return the found GroupMonitor
      */
     public Monitor findGroupMonitorWithId(String groupId) {
-        return findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
-
+        Monitor monitor;
+        monitor = findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
+        if(monitor == null) {
+            monitor = findGroupMonitor(groupId, aliasToInActiveMonitorsMap.values());
+        }
+        return monitor;
     }
 
 

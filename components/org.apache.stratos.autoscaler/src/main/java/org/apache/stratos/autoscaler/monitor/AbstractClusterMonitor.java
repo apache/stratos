@@ -242,8 +242,14 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", clusterId, this.status, status));
         this.status = status;
-        //notifying the parent monitor about the state change
-        MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+        /**
+         * notifying the parent monitor about the state change
+         * If the cluster in_active and if it is a in_dependent cluster,
+         * then won't send the notification to parent.
+         */
+        if(status == ClusterStatus.Inactive && !this.hasDependent) {
+            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+        }
 
     }
 

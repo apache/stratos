@@ -34,8 +34,11 @@ public abstract class Monitor implements EventHandler {
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //monitors map, stopped monitors
     protected Map<String, Monitor> aliasToInActiveMonitorsMap;
+    //flag will get set to true in MonitorTerminateAllEvent when termination of
+    // this monitor decided by its parent
+    protected boolean terminateChildren = false;
 
-    protected boolean killChildren;
+    protected boolean hasDependent;
 
     public String getId() {
         return id;
@@ -44,7 +47,6 @@ public abstract class Monitor implements EventHandler {
     public void setId(String id) {
         this.id = id;
     }
-
 
     public String getAppId() {
         return appId;
@@ -76,5 +78,13 @@ public abstract class Monitor implements EventHandler {
             hasMonitor = true;
         }
         return hasMonitor;
+    }
+
+    public boolean isHasDependent() {
+        return hasDependent;
+    }
+
+    public void setHasDependent(boolean hasDependent) {
+        this.hasDependent = hasDependent;
     }
 }

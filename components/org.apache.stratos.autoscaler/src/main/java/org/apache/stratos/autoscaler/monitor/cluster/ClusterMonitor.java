@@ -71,20 +71,13 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     @Override
     public void run() {
-
-        /*try {
-            // TODO make this configurable(**Remove this as LB will be a seperate monitor),
-            // this is the delay the min check of normal cluster monitor to wait until LB monitor is added
-            Thread.sleep(60000);
-        } catch (InterruptedException ignore) {
-        }*/
-        //this.status = Status.Running;
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if (!ClusterStatus.Inactive.equals(status)) {
+                if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
+                        (this.status == ClusterStatus.Inactive && !hasDependent)) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {

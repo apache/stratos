@@ -108,6 +108,20 @@ public class DependencyTree {
         return findParentContextWithId(null, id, this.applicationContextList);
     }
 
+    public List<ApplicationContext> findAllParentContextWithId(String id) {
+        List<ApplicationContext> applicationContexts = new ArrayList<ApplicationContext>();
+        return findAllParent(applicationContexts, id);
+    }
+
+    private List<ApplicationContext> findAllParent(List<ApplicationContext> parentContexts, String id) {
+        ApplicationContext context = findParentContextWithId(null, id, this.applicationContextList);
+        if(context != null) {
+            parentContexts.add(context);
+            findAllParent(parentContexts, context.getId());
+        }
+        return  parentContexts;
+    }
+
 
     private ApplicationContext findParentContextWithId(ApplicationContext parent, String id,
                                                        List<ApplicationContext> contexts) {

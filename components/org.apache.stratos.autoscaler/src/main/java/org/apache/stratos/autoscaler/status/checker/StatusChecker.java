@@ -289,7 +289,7 @@ public class StatusChecker {
                 if (parent instanceof Application) {
                     //send application activated event
                     log.info("sending app in-active found: " + appId);
-                    StatusEventPublisher.sendApplicationInActivatedEvent(appId);
+                    StatusEventPublisher.sendApplicationInactivatedEvent(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
                     log.info("sending group in-active found: " + parent.getUniqueIdentifier());

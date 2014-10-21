@@ -106,8 +106,6 @@ public abstract class ParentComponentMonitor extends Monitor {
             if(!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 //to avoid if it is already started
                 startMonitor(this, context);
-            } else if(this.aliasToInActiveMonitorsMap.containsKey(context.getId())) {
-                //need to trigger the cluster monitor
             }
         }
 

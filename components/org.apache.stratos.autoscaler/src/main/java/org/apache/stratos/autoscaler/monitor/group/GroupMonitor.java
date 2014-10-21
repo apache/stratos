@@ -57,7 +57,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        //TODO this.setStatus(group.getTempStatus());
+        this.setStatus(group.getStatus());
         startDependency();
     }
 
@@ -68,6 +68,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     @Override
     public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+        this.terminateChildren = true;
 
     }
 
@@ -82,30 +83,27 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         LifeCycleState status1 = statusEvent.getStatus();
         ApplicationContext context = this.dependencyTree.findApplicationContextWithId(id);
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
-        //TODO if statusEvent is for active, then start the next one if any available
         if (!isParent(id)) {
             if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
                 try {
-                    //if life cycle is empty, need to start the monitor
+                    //if the activated monitor is in in_active map move it to active map
+                    if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                        this.aliasToActiveMonitorsMap.put(id, this.aliasToInActiveMonitorsMap.remove(id));
+                    }
                     boolean startDep = startDependency(statusEvent.getId());
                     if (log.isDebugEnabled()) {
                         log.debug("started a child: " + startDep + " by the group/cluster: " + id);
 
                     }
-                    //updating the life cycle and current status
                     if (!startDep) {
                         StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                     }
-
                 } catch (TopologyInConsistentException e) {
                     //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                     log.error(e);
                 }
+
             } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-                //TODO if C1 depends on C2, then if C2 is in_active, then by getting killdepend as C1 and
-                //TODO need to send in_active for c1. When C1 in_active receives, get dependent and
-                //TODO check whether dependent in_active. Then kill c1.
-                //evaluate termination behavior and take action based on that.
 
                 List<ApplicationContext> terminationList;
                 Monitor monitor;
@@ -114,105 +112,116 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
 
                 if (terminationList != null) {
-                    //Move to in_active monitors list
-                    boolean allInActive = false;
-                    //check whether all the children are in_active state
+                    //Checking the termination dependents status
                     for (ApplicationContext terminationContext : terminationList) {
-                        //Check for whether all dependent are in_active
-                        if (this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
-                            monitor = this.aliasToInActiveMonitorsMap.
-                                    get(terminationContext.getId());
-                            //start to kill it
-                            monitor.onEvent(new MonitorTerminateAllEvent(terminationContext.getId()));
-
+                        //Check whether dependent is in_active, then start to kill it
+                        monitor = this.aliasToActiveMonitorsMap.
+                                get(terminationContext.getId());
+                        //start to kill it
+                        if(monitor.hasMonitors()) {
+                            //it is a group
+                            StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
                         } else {
-                            monitor = this.aliasToActiveMonitorsMap.
-                                                            get(terminationContext.getId());
-                            if(monitor.hasMonitors()) {
-                                //it is a group
-                                StatusEventPublisher.sendGroupInActivateEvent(this.appId, terminationContext.getId());
-                            } else {
-                                StatusEventPublisher.sendClusterInActivateEvent(this.appId,
-                                        ((AbstractClusterMonitor)monitor).getServiceId(), terminationContext.getId());
-
-                            }
+                            StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                                    ((AbstractClusterMonitor)monitor).getServiceId(), terminationContext.getId());
 
                         }
-                    }
-
-                    if (allInActive) {
-                        //Then kill-all of each termination dependents and get a lock for CM
-                        //if start order then can kill only the first one,
-                        // rest of them will get killed based on created event of first one.
                     }
                 } else {
-                    //find any other immediate dependent which is in_active/created state
-                    ApplicationContext context1 = this.dependencyTree.findParentContextWithId(id);
-                    if(context1 != null) {
-                        if(this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
-                            monitor = this.aliasToInActiveMonitorsMap.get(id);
-                            //killall
-                            monitor.onEvent(new MonitorTerminateAllEvent(id));
+                log.warn("Wrong inActive event received from [Child] " + id + "  to the [parent]"
+                    + " where child is identified as a independent");
+                /*//find any other immediate dependent which is in_active/created state
+                ApplicationContext context1 = this.dependencyTree.findParentContextWithId(id);
+                if(context1 != null) {
+                    if(this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                        monitor = this.aliasToInActiveMonitorsMap.get(id);
+                        //killall
+                        monitor.onEvent(new MonitorTerminateAllEvent(id));
 
-                        } else {
-                            monitor = this.aliasToActiveMonitorsMap.get(context1.getId());
-                        }
                     } else {
-                        //Independent monitor
+                        log.warn("Wrong inActive event received from [Child] " + id + "  to the [parent]"
+                        + " where child is identified as a independent");
                     }
-
+                }*/
                 }
-
-
                 //To update the status of the Group
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
-            } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-                //TODO get dependents
-                List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);
-                // if no dependencies then start the cluster monitor. if all are in created, then start them in the order.
-                if (dependents != null) {
-                    boolean allCreated = false;
-                    //check whether all the children are in_active state
-                    for (ApplicationContext terminationContext : dependents) {
-                        //Check for whether all dependent are in_active
-                        if (this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
-                            allCreated = true;
-                        } else {
-                            allCreated = false;
-                        }
-                    }
+            } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+                //Check whether hasDependent true
+                if(!this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                    this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
+                }
 
-                    String firstChildToBeStarted = null;
-
-                    if (allCreated) {
-                        //start the CM according to startup order and releasing the lock for it
-                        try {
-                            //if life cycle is empty, need to start the monitor
-                            boolean startDep = startDependency(firstChildToBeStarted);
-                            if (log.isDebugEnabled()) {
-                                log.debug("started a child: " + startDep + " by the group/cluster: " + firstChildToBeStarted);
-
-                            }
-                            //updating the life cycle and current status
-                            if (!startDep) {
-                                StatusChecker.getInstance().onChildStatusChange(id, firstChildToBeStarted, this.appId);
-                            }
-
-                        } catch (TopologyInConsistentException e) {
-                            //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
-                            log.error(e);
-                        }
+                Monitor monitor = this.aliasToInActiveMonitorsMap.get(id);
+                for(Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                    if(monitor.hasMonitors()) {
+                        StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
                     } else {
-                        //kill other dependents cluster
-
+                        StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                                ((AbstractClusterMonitor)monitor1).getServiceId(), monitor.getId());
                     }
                 }
+                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
+                //Check whether all dependent goes Terminated and then start them in parallel.
+                this.aliasToInActiveMonitorsMap.remove(id);
+                if(this.status != GroupStatus.Terminating) {
+                    List<ApplicationContext> terminationList;
+                    boolean allDependentTerminated = true;
+                    terminationList = this.dependencyTree.getTerminationDependencies(id);
+                    if(terminationList != null) {
+                        for(ApplicationContext context1 : terminationList) {
+                            if(this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                                log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                                        + " to be terminated");
+                                allDependentTerminated = false;
+                            } else if(this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                                log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
+                                allDependentTerminated = false;
+                            } else {
+                                allDependentTerminated = true;
+                            }
+                        }
+
+                        if(allDependentTerminated) {
+
+                        }
+                    } else {
+                        List<ApplicationContext> parentContexts = this.dependencyTree.findAllParentContextWithId(id);
+                        boolean canStart = false;
+                        if(parentContexts != null) {
+                            for(ApplicationContext context1 : parentContexts) {
+                                if(this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                                    log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                                            + " to be terminated");
+                                    canStart = false;
+                                } else if(this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                                    if(canStart) {
+                                        log.warn("Found the Dependent [monitor] " + context1.getId()
+                                                + " in the active list wrong state");
+                                    }
+                                } else {
+                                    log.info("[Parent Monitor] " + context1.getId()
+                                            + " has already been terminated");
+                                    canStart = true;
+                                }
+                            }
+
+                            if(canStart) {
+                                //start the monitor
+                            }
+
+                        } else {
+                           //Start the monitor
+                        }
+
+                    }
+                } else {
+                    StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+                    log.info("Executing the un-subscription request for the [monitor] " + id);
+                }
             }
-
-
-        } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            //the dependent goes to be created state, so terminate the dependents
         }
     }
 

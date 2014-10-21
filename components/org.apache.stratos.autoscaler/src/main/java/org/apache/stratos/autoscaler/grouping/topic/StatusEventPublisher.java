@@ -58,6 +58,30 @@ public class StatusEventPublisher {
         publishEvent(clusterActivatedEvent);*/
     }
 
+    public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Cluster in-activate event for [application]: " + appId +
+                    " [cluster]: " + clusterId);
+        }
+
+        /*ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
+
+        publishEvent(clusterActivatedEvent);*/
+    }
+
+    public static void sendClusterTerminatedEvent(String appId, String serviceName, String clusterId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Cluster in-activate event for [application]: " + appId +
+                    " [cluster]: " + clusterId);
+        }
+
+        /*ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
+
+        publishEvent(clusterActivatedEvent);*/
+    }
+
     public static void sendClusterInMaintenanceEvent(String appId, String serviceName, String clusterId) {
 
         if (log.isInfoEnabled()) {
@@ -98,6 +122,30 @@ public class StatusEventPublisher {
 
         if (log.isInfoEnabled()) {
             log.info("Publishing Group in-activate event for [application]: " + appId +
+                    " [group]: " + groupId);
+        }
+
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
+
+        publishEvent(groupInActivateEvent);
+    }
+
+    public static void sendGroupTerminatingEvent(String appId, String groupId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group terminating event for [application]: " + appId +
+                    " [group]: " + groupId);
+        }
+
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
+
+        publishEvent(groupInActivateEvent);
+    }
+
+    public static void sendGroupTerminatedEvent(String appId, String groupId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group terminated event for [application]: " + appId +
                     " [group]: " + groupId);
         }
 

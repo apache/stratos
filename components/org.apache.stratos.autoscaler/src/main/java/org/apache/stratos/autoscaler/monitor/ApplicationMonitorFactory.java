@@ -73,7 +73,7 @@ public class ApplicationMonitorFactory {
         Monitor monitor;
 
         if (context instanceof GroupContext) {
-            monitor = getGroupMonitor(parentMonitor, context.getId(), appId);
+            monitor = getGroupMonitor(parentMonitor, context, appId);
         } else if (context instanceof ClusterContext) {
             monitor = getClusterMonitor(parentMonitor, (ClusterContext) context, appId);
             //Start the thread
@@ -89,29 +89,36 @@ public class ApplicationMonitorFactory {
      * This will create the GroupMonitor based on given groupId by going thr Topology
      *
      * @param parentMonitor parent of the monitor
-     * @param groupId       groupId of the group
+     * @param context       groupId of the group
      * @param appId         appId of the relevant application
      * @return Group monitor
      * @throws DependencyBuilderException    throws while building dependency for app monitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
-    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, String groupId, String appId)
+    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
         TopologyManager.acquireReadLockForApplication(appId);
 
         try {
-            Group group = TopologyManager.getTopology().getApplication(appId).getGroupRecursively(groupId);
+            Group group = TopologyManager.getTopology().getApplication(appId).getGroupRecursively(context.getId());
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
-            groupMonitor.setParent(parentMonitor);
-            //TODO
-            /*if (group.getTempStatus() != groupMonitor.getStatus()) {
-                //updating the status, if the group is not in created state when creating group Monitor
-                //so that groupMonitor will notify the parent (useful when restarting stratos)
-                groupMonitor.setStatus(group.getTempStatus());
-            }*/
+            if(parentMonitor != null) {
+                groupMonitor.setParent(parentMonitor);
+                if(!parentMonitor.isHasDependent() && !context.hasChild()) {
+                    groupMonitor.setHasDependent(true);
+                }
+                //TODO make sure when it is async
+
+                if (group.getStatus() != groupMonitor.getStatus()) {
+                    //updating the status, if the group is not in created state when creating group Monitor
+                    //so that groupMonitor will notify the parent (useful when restarting stratos)
+                    groupMonitor.setStatus(group.getStatus());
+                }
+            }
+
         } finally {
             TopologyManager.releaseReadLockForApplication(appId);
 
@@ -284,17 +291,21 @@ public class ApplicationMonitorFactory {
 
                 clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
                 clusterMonitor.setParent(parentMonitor);
+                if(!parentMonitor.isHasDependent() && !context.hasChild()) {
+                    clusterMonitor.setHasDependent(true);
+                }
                 //clusterMonitor.setCurrentStatus(Status.Created);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Network partition context has been added: [network partition] %s",
                             networkPartitionContext.getId()));
                 }
             }
-            //TODO
-            /*if (cluster.getTempStatus() != clusterMonitor.getStatus()) {
+            //TODO to make sure when group monitor is async
+            //if cluster is not in created state then notify the parent monitor
+            if (cluster.getStatus() != clusterMonitor.getStatus()) {
                 //updating the status, so that it will notify the parent
-                clusterMonitor.setStatus(cluster.getTempStatus());
-            }*/
+                clusterMonitor.setStatus(cluster.getStatus());
+            }
         } finally {
             //release read lock for the service and cluster
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
