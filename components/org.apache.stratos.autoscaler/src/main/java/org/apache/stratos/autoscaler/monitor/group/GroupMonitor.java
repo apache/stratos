@@ -23,10 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.monitor.EventHandler;
-import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.*;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
@@ -66,6 +67,16 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
+    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+
+    }
+
+    @Override
+    public void onEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
+    @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
         LifeCycleState status1 = statusEvent.getStatus();
@@ -96,53 +107,66 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 //TODO check whether dependent in_active. Then kill c1.
                 //evaluate termination behavior and take action based on that.
 
-                List<ApplicationContext> terminationList = new ArrayList<ApplicationContext>();
+                List<ApplicationContext> terminationList;
+                Monitor monitor;
                 terminationList = this.dependencyTree.getTerminationDependencies(id);
+                //Temporarily move the group/cluster to inactive list
+                this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
 
                 if (terminationList != null) {
                     //Move to in_active monitors list
-                    this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
                     boolean allInActive = false;
                     //check whether all the children are in_active state
                     for (ApplicationContext terminationContext : terminationList) {
                         //Check for whether all dependent are in_active
                         if (this.aliasToInActiveMonitorsMap.containsKey(terminationContext.getId())) {
-                            allInActive = true;
+                            monitor = this.aliasToInActiveMonitorsMap.
+                                    get(terminationContext.getId());
+                            //start to kill it
+                            monitor.onEvent(new MonitorTerminateAllEvent(terminationContext.getId()));
+
                         } else {
-                            allInActive = false;
+                            monitor = this.aliasToActiveMonitorsMap.
+                                                            get(terminationContext.getId());
+                            if(monitor.hasMonitors()) {
+                                //it is a group
+                                StatusEventPublisher.sendGroupInActivateEvent(this.appId, terminationContext.getId());
+                            } else {
+                                StatusEventPublisher.sendClusterInActivateEvent(this.appId,
+                                        ((AbstractClusterMonitor)monitor).getServiceId(), terminationContext.getId());
+
+                            }
+
                         }
                     }
 
                     if (allInActive) {
                         //Then kill-all of each termination dependents and get a lock for CM
-                        //if start order then can kill only the first one, rest of them will get killed based on created event of first one.
+                        //if start order then can kill only the first one,
+                        // rest of them will get killed based on created event of first one.
                     }
+                } else {
+                    //find any other immediate dependent which is in_active/created state
+                    ApplicationContext context1 = this.dependencyTree.findParentContextWithId(id);
+                    if(context1 != null) {
+                        if(this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                            monitor = this.aliasToInActiveMonitorsMap.get(id);
+                            //killall
+                            monitor.onEvent(new MonitorTerminateAllEvent(id));
+
+                        } else {
+                            monitor = this.aliasToActiveMonitorsMap.get(context1.getId());
+                        }
+                    } else {
+                        //Independent monitor
+                    }
+
                 }
 
 
+                //To update the status of the Group
+                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
-
-
-
-                /*if(terminationList != null && !terminationList.isEmpty()) {
-                    for(ApplicationContext context1 : terminationList) {
-                        if(context1 instanceof ClusterContext) {
-                            AbstractClusterMonitor monitor = this.clusterIdToClusterMonitorsMap.
-                                    get(context1.getId());
-                            //Whether life cycle change to Created
-                            if(monitor.getStatus() == Status.Created) {
-                                canTerminate = true;
-                            } else {
-                                //TODO sending group in_active event to dependent cluster/group
-                                StatusEventPublisher.sendGroupActivatedEvent(this.appId, this.id);
-                                //not all dependent clusters are in created state.
-                                canTerminate = false;
-                            }
-                        }
-                    }
-                    if(canTerminate) {
-                       //
-                    }*/
             } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
                 //TODO get dependents
                 List<ApplicationContext> dependents = this.dependencyTree.getTerminationDependencies(id);

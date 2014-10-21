@@ -18,7 +18,9 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 
 /**
  * Event Handler to notify the observer/to receive notification
@@ -30,4 +32,18 @@ public interface EventHandler {
      * @param statusEvent
      */
     public abstract void onEvent(MonitorStatusEvent statusEvent);
+
+    /**
+     * Triggered when termination decision is made.
+     *
+     * @param terminateAllEvent
+     */
+    public abstract void onEvent(MonitorTerminateAllEvent terminateAllEvent);
+
+    /**
+     * Triggered when scaling decision is made.
+     *
+     * @param scalingEvent
+     */
+    public abstract void onEvent(MonitorScalingEvent scalingEvent);
 }

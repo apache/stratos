@@ -18,24 +18,12 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-
 /**
- * Monitor Status Event
+ * This will handle the termination of all groups/clusters of a group.
  */
-public abstract class MonitorStatusEvent extends MonitorEvent {
+public class GroupTerminateAllEvent extends MonitorTerminateAllEvent {
 
-    public MonitorStatusEvent(String id) {
+    public GroupTerminateAllEvent(String id) {
         super(id);
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public abstract LifeCycleState getStatus();
 }

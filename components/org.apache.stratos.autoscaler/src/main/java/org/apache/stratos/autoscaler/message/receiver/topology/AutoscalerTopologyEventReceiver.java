@@ -141,7 +141,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
                 log.info("[ClusterActivatedEvent] Received: " + event.getClass());
 
                 ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
@@ -152,6 +151,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Active);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+
+                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
+                String clusterId = clusterCreatedEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(ClusterStatus.Created);
 
                 //starting the status checker to decide on the status of it's parent
                 //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);

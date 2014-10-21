@@ -42,11 +42,11 @@ public abstract class ParentComponentMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
 
     //id of the monitor, it can be alias or the id
-    protected String id;
+    //protected String id;
     //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
     //Application id of this particular monitor
-    protected String appId;
+    //protected String appId;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();

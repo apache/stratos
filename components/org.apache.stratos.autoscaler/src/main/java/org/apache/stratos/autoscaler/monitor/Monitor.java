@@ -35,6 +35,8 @@ public abstract class Monitor implements EventHandler {
     //monitors map, stopped monitors
     protected Map<String, Monitor> aliasToInActiveMonitorsMap;
 
+    protected boolean killChildren;
+
     public String getId() {
         return id;
     }
@@ -66,5 +68,13 @@ public abstract class Monitor implements EventHandler {
 
     public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
+    }
+
+    public boolean hasMonitors() {
+        boolean hasMonitor = false;
+        if(this.aliasToActiveMonitorsMap != null ) {
+            hasMonitor = true;
+        }
+        return hasMonitor;
     }
 }

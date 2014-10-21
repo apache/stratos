@@ -18,24 +18,14 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-
 /**
- * Monitor Status Event
+ * Created by reka on 10/20/14.
  */
-public abstract class MonitorStatusEvent extends MonitorEvent {
+public abstract class MonitorEvent {
+    protected String id;
 
-    public MonitorStatusEvent(String id) {
-        super(id);
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
+    public MonitorEvent(String id) {
         this.id = id;
     }
 
-    public abstract LifeCycleState getStatus();
 }

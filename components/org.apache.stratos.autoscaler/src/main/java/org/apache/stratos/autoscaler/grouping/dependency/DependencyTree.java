@@ -104,6 +104,25 @@ public class DependencyTree {
         return null;
     }
 
+    public ApplicationContext findParentContextWithId(String id) {
+        return findParentContextWithId(null, id, this.applicationContextList);
+    }
+
+
+    private ApplicationContext findParentContextWithId(ApplicationContext parent, String id,
+                                                       List<ApplicationContext> contexts) {
+        for (ApplicationContext context : contexts) {
+            //TODO check for the status
+            if (context.getId().equals(id)) {
+                return parent;
+            }
+        }
+        //if not found in the top level search recursively
+        for (ApplicationContext context : this.applicationContextList) {
+            return findParentContextWithId(context, id, context.getApplicationContextList());
+        }
+        return null;
+    }
     /**
      * Getting the next start able dependencies upon the activate event
      * received for a group/cluster which is part of this tree.

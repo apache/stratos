@@ -125,7 +125,7 @@ public class StatusChecker {
         if (clusterInActive) {
             //TODO evaluate life cycle
             //send cluster In-Active event to cluster status topic
-            StatusEventPublisher.sendGroupInActivateEvent(appId, monitor.getParent().getId());
+            StatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
 
         } else {
             boolean clusterActive = clusterActive(monitor);
@@ -230,8 +230,8 @@ public class StatusChecker {
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
         boolean groupActive = false;
-        boolean clustersActive;
-        boolean groupsActive;
+        ClusterStatus clustersActive;
+        GroupStatus groupsActive;
         boolean childFound = false;
         boolean clusterFound = false;
 
@@ -243,41 +243,71 @@ public class StatusChecker {
         log.info("cluster found: " + clusterFound);
         if (clusterFound || groups.containsKey(id)) {
             childFound = true;
-            if (!clusterData.isEmpty() && !groups.isEmpty()) {
+            /*if (!clusterData.isEmpty() && !groups.isEmpty()) {
                 if (log.isDebugEnabled()) {
                     log.debug("group active found: " + clusterFound);
                 }
-                clustersActive = getClusterStatus(clusterData);
-                groupsActive = getGroupStatus(groups);
+
                 if (log.isDebugEnabled()) {
                     log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
                 }
-                groupActive = clustersActive && groupsActive;
+                groupActive = clustersActive == ClusterStatus.Active && groupsActive == GroupStatus.Active;
             } else if (!groups.isEmpty()) {
                 groupsActive = getGroupStatus(groups);
                 if (log.isDebugEnabled()) {
                     log.info("group active found: " + clusterFound);
                 }
-                groupActive = groupsActive;
+                groupActive = groupsActive == GroupStatus.Active;
             } else if (!clusterData.isEmpty()) {
                 clustersActive = getClusterStatus(clusterData);
                 if (log.isDebugEnabled()) {
                     log.debug("Active cluster" + clustersActive + " and group: " + groupActive);
                 }
-                groupActive = clustersActive;
+                groupActive = clustersActive == ClusterStatus.Active;
+            } */
+
+            clustersActive = getClusterStatus(clusterData);
+            groupsActive = getGroupStatus(groups);
+
+            if (groupsActive == null && clustersActive == ClusterStatus.Active ||
+                    clustersActive == null && groupsActive == GroupStatus.Active ||
+                    groupsActive == GroupStatus.Active && clustersActive == ClusterStatus.Active) {
+                //send activation event
+                if (parent instanceof Application) {
+                    //send application activated event
+                    log.info("sending app activate found: " + appId);
+                    StatusEventPublisher.sendApplicationActivatedEvent(appId);
+                } else if (parent instanceof Group) {
+                    //send activation to the parent
+                    log.info("sending group activate found: " + parent.getUniqueIdentifier());
+                    StatusEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
+                }
+            } else if (groupsActive == null && clustersActive == ClusterStatus.Inactive ||
+                    clustersActive == null && groupsActive == GroupStatus.Inactive ||
+                    groupsActive == GroupStatus.Inactive && clustersActive == ClusterStatus.Inactive) {
+                    //send the in activation event
+                if (parent instanceof Application) {
+                    //send application activated event
+                    log.info("sending app in-active found: " + appId);
+                    StatusEventPublisher.sendApplicationInActivatedEvent(appId);
+                } else if (parent instanceof Group) {
+                    //send activation to the parent
+                    log.info("sending group in-active found: " + parent.getUniqueIdentifier());
+                    StatusEventPublisher.sendGroupInActivateEvent(appId, parent.getUniqueIdentifier());
+                }
+            } else if (groupsActive == null && clustersActive == ClusterStatus.Terminating ||
+                    clustersActive == null && groupsActive == GroupStatus.Terminating ||
+                    groupsActive == GroupStatus.Terminating && clustersActive == ClusterStatus.Terminating) {
+                    //send the terminating event
+            } else if (groupsActive == null && clustersActive == ClusterStatus.Terminated ||
+                    clustersActive == null && groupsActive == GroupStatus.Terminated ||
+                    groupsActive == GroupStatus.Terminated && clustersActive == ClusterStatus.Terminated) {
+                    //send the terminated event
             } else {
                 log.warn("Clusters/groups not found in this [component] " + appId);
             }
-            //send the activation event
-            if (parent instanceof Application && groupActive) {
-                //send application activated event
-                log.info("sending app activate found: " + appId);
-                StatusEventPublisher.sendApplicationActivatedEvent(appId);
-            } else if (parent instanceof Group && groupActive) {
-                //send activation to the parent
-                log.info("sending group activate found: " + parent.getUniqueIdentifier());
-                StatusEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
-            }
+
+
             return childFound;
         } else {
             log.warn("There is no child found in the [group/cluster] " + id + " found in the " +
@@ -286,33 +316,56 @@ public class StatusChecker {
         return childFound;
     }
 
-    private boolean getGroupStatus(Map<String, Group> groups) {
+    private GroupStatus getGroupStatus(Map<String, Group> groups) {
         boolean groupActiveStatus = false;
+        GroupStatus status = null;
+
         for (Group group : groups.values()) {
-            if (group.getTempStatus() == Status.Activated) {
+            /*if (group.getTempStatus() == Status.Activated) {
                 groupActiveStatus = true;
             } else {
                 groupActiveStatus = false;
                 break;
+            }*/
+
+            if (group.getStatus() == GroupStatus.Active) {
+                status = GroupStatus.Active;
+            } else if(group.getStatus() == GroupStatus.Inactive){
+                status = GroupStatus.Inactive;
+                break;
+            } else if(group.getStatus() == GroupStatus.Created) {
+                status = GroupStatus.Created;
+            } else if(group.getStatus() == GroupStatus.Terminating) {
+                status = GroupStatus.Terminating;
+                break;
+            } else if(group.getStatus() == GroupStatus.Terminated) {
+                status = GroupStatus.Terminated;
             }
         }
-        return groupActiveStatus;
+        return status;
 
     }
 
-    private boolean getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
-        boolean clusterActiveStatus = false;
+    private ClusterStatus getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
+        ClusterStatus status = null;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
-            if (service.getCluster(clusterDataHolderEntry.getValue().getClusterId()).
-                    getStatus() == ClusterStatus.Active) {
-                clusterActiveStatus = true;
-            } else {
-                clusterActiveStatus = false;
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            if (cluster.getStatus() == ClusterStatus.Active) {
+                status = ClusterStatus.Active;
+            } else if(cluster.getStatus() == ClusterStatus.Inactive){
+                status = ClusterStatus.Inactive;
                 break;
+            } else if(cluster.getStatus() == ClusterStatus.Created) {
+                status = ClusterStatus.Created;
+            } else if(cluster.getStatus() == ClusterStatus.Terminating) {
+                status = ClusterStatus.Terminating;
+                break;
+            } else if(cluster.getStatus() == ClusterStatus.Terminated) {
+                status = ClusterStatus.Terminated;
             }
         }
-        return clusterActiveStatus;
+        return status;
     }
 
     private static class Holder {

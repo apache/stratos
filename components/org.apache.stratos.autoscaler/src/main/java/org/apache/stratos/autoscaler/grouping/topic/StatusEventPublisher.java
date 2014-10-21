@@ -6,7 +6,13 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.event.topology.GroupInActivateEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 /**
@@ -95,9 +101,9 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        /*GroupActivatedEvent groupActivatedEvent = new GroupActivatedEvent(appId, groupId);
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
 
-        publishEvent(groupActivatedEvent);*/
+        publishEvent(groupInActivateEvent);
     }
 
     public static void sendApplicationActivatedEvent(String appId) {
