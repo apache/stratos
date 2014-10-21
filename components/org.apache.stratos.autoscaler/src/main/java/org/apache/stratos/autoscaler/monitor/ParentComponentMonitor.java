@@ -28,8 +28,13 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +67,127 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param statusEvent will be sent by parent/children with the current status
      */
     protected abstract void monitor(MonitorStatusEvent statusEvent);
+
+
+    protected void onChildActivatedEvent(MonitorStatusEvent statusEvent) {
+        try {
+            //if the activated monitor is in in_active map move it to active map
+            if (this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                this.aliasToActiveMonitorsMap.put(id, this.aliasToInActiveMonitorsMap.remove(id));
+            }
+            boolean startDep = startDependency(statusEvent.getId());
+            if (log.isDebugEnabled()) {
+                log.debug("started a child: " + startDep + " by the group/cluster: " + id);
+
+            }
+            if (!startDep) {
+                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            }
+        } catch (TopologyInConsistentException e) {
+            //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+            log.error(e);
+        }
+
+    }
+
+    protected void onChildTerminatingEvent() {
+        //Check whether hasDependent true
+        if (!this.aliasToInActiveMonitorsMap.containsKey(id)) {
+            this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
+        }
+
+        Monitor monitor = this.aliasToInActiveMonitorsMap.get(id);
+        for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+            if (monitor.hasMonitors()) {
+                StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
+            } else {
+                StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                        ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+            }
+        }
+    }
+
+    protected void onChildInActiveEvent() {
+        List<ApplicationContext> terminationList;
+        Monitor monitor;
+        terminationList = this.dependencyTree.getTerminationDependencies(id);
+        //Temporarily move the group/cluster to inactive list
+        this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(id));
+
+        if (terminationList != null) {
+            //Checking the termination dependents status
+            for (ApplicationContext terminationContext : terminationList) {
+                //Check whether dependent is in_active, then start to kill it
+                monitor = this.aliasToActiveMonitorsMap.
+                        get(terminationContext.getId());
+                //start to kill it
+                if (monitor.hasMonitors()) {
+                    //it is a group
+                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
+                } else {
+                    StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                            ((AbstractClusterMonitor) monitor).getServiceId(), terminationContext.getId());
+
+                }
+            }
+        } else {
+            log.warn("Wrong inActive event received from [Child] " + id + "  to the [parent]"
+                    + " where child is identified as a independent");
+        }
+    }
+
+    protected void onChildTerminatedEvent() {
+        List<ApplicationContext> terminationList;
+        boolean allDependentTerminated = true;
+        terminationList = this.dependencyTree.getTerminationDependencies(id);
+        if (terminationList != null) {
+            for (ApplicationContext context1 : terminationList) {
+                if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                    log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                            + " to be terminated");
+                    allDependentTerminated = false;
+                } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                    log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
+                    allDependentTerminated = false;
+                } else {
+                    allDependentTerminated = true;
+                }
+            }
+
+            if (allDependentTerminated) {
+
+            }
+        } else {
+            List<ApplicationContext> parentContexts = this.dependencyTree.findAllParentContextWithId(id);
+            boolean canStart = false;
+            if (parentContexts != null) {
+                for (ApplicationContext context1 : parentContexts) {
+                    if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                        log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                                + " to be terminated");
+                        canStart = false;
+                    } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                        if (canStart) {
+                            log.warn("Found the Dependent [monitor] " + context1.getId()
+                                    + " in the active list wrong state");
+                        }
+                    } else {
+                        log.info("[Parent Monitor] " + context1.getId()
+                                + " has already been terminated");
+                        canStart = true;
+                    }
+                }
+
+                if (canStart) {
+                    //start the monitor
+                }
+
+            } else {
+                //Start the monitor
+            }
+
+        }
+    }
 
 
     /**

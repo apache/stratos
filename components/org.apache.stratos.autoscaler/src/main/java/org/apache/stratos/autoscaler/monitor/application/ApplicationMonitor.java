@@ -32,6 +32,9 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,33 +89,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 
-    /**
-     * utility method to recursively search for cluster monitors in the App monitor
-     *
-     * @param clusterId       cluster id of the monitor to be searched
-     * @param clusterMonitors cluster monitors found in the app Monitor
-     * @param groupMonitors   group monitors found in the app monitor
-     * @return the found cluster monitor
-     */
-    /*private AbstractClusterMonitor findClusterMonitor(String clusterId,
-                                                      Collection<AbstractClusterMonitor> clusterMonitors,
-                                                      Collection<Monitor> groupMonitors) {
-        for (AbstractClusterMonitor monitor : clusterMonitors) {
-            // check if alias is equal, if so, return
-            if (monitor.equals(clusterId)) {
-                return monitor;
-            }
-        }
-
-        for (Monitor groupMonitor : groupMonitors) {
-            return findClusterMonitor(clusterId,
-                    groupMonitor.getClusterIdToClusterMonitorsMap().values(),
-                    groupMonitor.getAliasToGroupMonitorsMap().values());
-        }
-        return null;
-
-    }
-*/
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
@@ -180,52 +156,27 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     @Override
     protected void monitor(MonitorStatusEvent statusEvent) {
-        /*ApplicationContext context = this.dependencyTree.
-                findApplicationContextWithId(statusEvent.getId());
-        //TODO remove activated
-        if(context.getStatusLifeCycle().isEmpty() || context.getStatus() == Status.Activated) {
-            try {
-                //if life cycle is empty, need to start the monitor
-                boolean dependencyStarted = startDependency(statusEvent.getId());
-                if(!dependencyStarted) {
-                    //Have to check whether all other dependencies started
-
-                }
-                //updating the life cycle
-                context.addStatusToLIfeCycle(statusEvent.getStatus());
-            } catch (TopologyInConsistentException e) {
-                //TODO revert the siblings
-                log.error(e);
-            }
-        } else {
-            //TODO act based on life cycle events
-        }*/
-
         String id = statusEvent.getId();
-        ApplicationContext context = this.dependencyTree.
-                findApplicationContextWithId(id);
-        if (context.getStatusLifeCycle().isEmpty()) {
-            try {
-                //if life cycle is empty, need to start the monitor
-                boolean startDep = startDependency(statusEvent.getId());
-                if (log.isDebugEnabled()) {
-                    log.debug("started a child: " + startDep + " by the group/cluster: " + id);
-
-                }
-                //updating the life cycle and current status
-                if (!startDep) {
-                    //Checking in the children whether all are active,
-                    // since no dependency found to be started.
-                    StatusChecker.getInstance().onChildStatusChange(id, this.appId);
-                }
-            } catch (TopologyInConsistentException e) {
-                //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
-                log.error(e);
+        LifeCycleState status1 = statusEvent.getStatus();
+        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+        if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
+            onChildActivatedEvent(statusEvent);
+        } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+            onChildInActiveEvent();
+            //TODO update the status of the Application as in_active when child becomes in_active
+        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+            onChildTerminatingEvent();
+            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+        } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
+            //Check whether all dependent goes Terminated and then start them in parallel.
+            this.aliasToInActiveMonitorsMap.remove(id);
+            if (this.status != ApplicationStatus.Terminating) {
+                onChildTerminatedEvent();
+            } else {
+                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+                log.info("Executing the un-subscription request for the [monitor] " + id);
             }
-        } else {
-            //TODO act based on life cycle events
         }
-
 
     }
 }
