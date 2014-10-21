@@ -57,6 +57,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
         this.terminateDependencyKnowledgeSession = autoscalerRuleEvaluator.getTerminateDependencyStatefulSession();
+        this.terminateAllKnowledgeSession = autoscalerRuleEvaluator.getTerminateAllStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
         this.autoscalePolicy = autoscalePolicy;
@@ -94,6 +95,18 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         }
 
 
+    }
+
+    @Override
+    public void terminateAllMembers() {
+
+        for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+            //if (log.isDebugEnabled()) {
+                log.info("Starting to terminate all members in Network Partition " + networkPartitionContext.getId());
+           // }
+            terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
+                    (terminateAllKnowledgeSession, terminateAllFactHandle, networkPartitionContext);
+        }
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {

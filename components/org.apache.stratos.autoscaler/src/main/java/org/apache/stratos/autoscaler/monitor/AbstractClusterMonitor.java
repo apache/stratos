@@ -54,10 +54,12 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle minCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
     protected FactHandle terminateDependencyFactHandle;
+    protected FactHandle terminateAllFactHandle;
 
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
     protected StatefulKnowledgeSession terminateDependencyKnowledgeSession;
+    protected StatefulKnowledgeSession terminateAllKnowledgeSession;
     protected boolean isDestroyed;
 
     protected String clusterId;
@@ -123,6 +125,8 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
             log.debug("Cluster Monitor Drools session has been disposed. " + this.toString());
         }
     }
+
+    public abstract void terminateAllMembers ();
 
     public boolean isDestroyed() {
         return isDestroyed;

@@ -47,6 +47,7 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
         this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+        this.terminateAllKnowledgeSession = autoscalerRuleEvaluator.getTerminateAllStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
         this.deploymentPolicy = deploymentPolicy;
@@ -77,6 +78,11 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
             } catch (InterruptedException ignore) {
             }
         }
+    }
+
+    @Override
+    public void terminateAllMembers() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private void monitor() {

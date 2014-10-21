@@ -265,10 +265,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
                             getAppMonitor(applicationUndeployedEvent.getApplicationId());
 
-                    // update the status as Terminating
-                    appMonitor.setStatus(ApplicationStatus.Terminating);
-
                     if (appMonitor != null) {
+                        // update the status as Terminating
+                        appMonitor.setStatus(ApplicationStatus.Terminating);
+
                         List<String> clusters = appMonitor.
                                 findClustersOfApplication(applicationUndeployedEvent.getApplicationId());
 
@@ -278,11 +278,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                     ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
                             clusterMonitor.setDestroyed(true);
                             clusterMonitor.setStatus(ClusterStatus.Terminating);
-                            AutoscalerContext.getInstance().removeMonitor(clusterId);
+                            clusterMonitor.terminateAllMembers();
                         }
 
                     } else {
-                        log.warn("Application Monitor cannot be found for the removed [application] "
+                        log.warn("Application Monitor cannot be found for the undeployed [application] "
                                 + applicationUndeployedEvent.getApplicationId());
                     }
 
