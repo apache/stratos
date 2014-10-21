@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.parser.CompositeApplicationParser;
 import org.apache.stratos.manager.composite.application.parser.DefaultCompositeApplicationParser;
 import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
@@ -28,7 +28,7 @@ public class CompositeApplicationManager {
         cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
     }
 	
-	public void deployCompositeApplication (CompositeAppDefinition compositeAppDefinition, int tenantId, String tenantDomain,
+	public void deployCompositeApplication (ApplicationDefinition compositeAppDefinition, int tenantId, String tenantDomain,
                                             String tenantAdminUsername) throws CompositeApplicationException, CompositeApplicationDefinitionException,
             PersistenceManagerException {
 

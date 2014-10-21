@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.application.*;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
@@ -677,7 +677,7 @@ public class PojoConverter {
     
 	private static Log log = LogFactory.getLog(PojoConverter.class);
 
-    public static ApplicationContext convertApplicationBeanToApplicationContext (CompositeAppDefinition compositeAppDefinition) {
+    public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
         ApplicationContext applicationContext = new ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());

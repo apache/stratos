@@ -25,7 +25,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.exception.StratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
@@ -143,9 +143,9 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     // Grouping
-    public Response deployApplicationDefinition(CompositeAppDefinition applicationDefinitionBean)
+    public Response deployApplicationDefinition(ApplicationDefinition applicationDefinitionBean)
             throws RestAPIException {
-         ServiceUtils.deployCompositeApplicationDefintion(applicationDefinitionBean, getConfigContext(),
+         ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(),
                 getUsername(), getTenantDomain());
 
          URI url =  uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
