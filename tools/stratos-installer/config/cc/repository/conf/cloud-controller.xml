@@ -53,8 +53,8 @@
         	<EC2_PROVIDER_STARTiaasProvider type="ec2" name="ec2 specific details">
                 	<className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
                         <provider>aws-ec2</provider>
-                        <identity svns:secretAlias="elastic.scaler.openstack.identity">EC2_IDENTITY</identity>
-                        <credential svns:secretAlias="elastic.scaler.openstack.credential">EC2_CREDENTIAL</credential>
+                        <identity svns:secretAlias="cloud.controller.ec2.identity">EC2_IDENTITY</identity>
+                        <credential svns:secretAlias="cloud.controller.ec2.credential">EC2_CREDENTIAL</credential>
                         <property name="jclouds.ec2.ami-query" value="owner-id=EC2_OWNER_ID;state=available;image-type=machine"/>
                         <property name="availabilityZone" value="EC2_AVAILABILITY_ZONE"/>
                         <property name="securityGroups" value="EC2_SECURITY_GROUPS"/>
