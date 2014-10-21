@@ -41,7 +41,7 @@ class TestTask(AbstractAsyncScheduledTask):
             f.write("%1.4f" % (time.time()*1000))
 
 
-def test_decrypt_password():
+def test_decrypt_password_success():
     # def mockgetlog(path):
     #     return mocklog
     #
@@ -53,3 +53,29 @@ def test_decrypt_password():
     encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
 
     assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) == plain_password, "Password decryption failed"
+
+
+def test_decrypt_password_failure():
+    plain_password = "plaintext"
+    secret_key = "notsecretkeyhere"
+    encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
+    assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) != plain_password, "Password decrypted for wrong key"
+
+
+def test_create_dir_normal():
+    assert True
+
+def test_create_dir_system_path():
+    assert True
+
+def test_create_dir_existing_dir():
+    assert True
+
+def test_wait_for_ports_activity_normal():
+    assert True
+
+def test_wait_for_ports_activity_non_existent():
+    assert True
+
+def test_wait_for_ports_activity_timeout():
+    assert True
