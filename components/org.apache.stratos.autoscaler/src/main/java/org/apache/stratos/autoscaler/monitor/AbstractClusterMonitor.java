@@ -77,6 +77,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     public AbstractClusterMonitor() {
         readConfigurations();
+        status = ClusterStatus.Created;
     }
 
     private void readConfigurations() {

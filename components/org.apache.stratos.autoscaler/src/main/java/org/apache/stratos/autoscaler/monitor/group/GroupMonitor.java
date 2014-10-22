@@ -54,7 +54,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        this.setStatus(group.getStatus());
+        this.status = group.getStatus();
         startDependency();
     }
 
