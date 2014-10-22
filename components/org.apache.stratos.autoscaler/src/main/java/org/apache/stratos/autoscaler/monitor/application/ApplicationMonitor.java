@@ -30,15 +30,11 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -67,13 +63,23 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public List<String> findClustersOfApplication(String appId) {
         List<String> clusters = new ArrayList<String>();
-        //considering only one level
-        /*for (AbstractClusterMonitor monitor : this.clusterIdToClusterMonitorsMap.values()) {
-            clusters.add(monitor.getClusterId());
-        }*/
-        //TODO restart and read from Topology
-        return clusters;
+        Set<ClusterDataHolder> clusterData;
 
+        TopologyManager.acquireReadLockForApplication(appId);
+        try {
+            clusterData = TopologyManager.getTopology().getApplication(appId).getClusterDataRecursively();
+
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
+
+        if (clusterData != null) {
+            for (ClusterDataHolder clusterDataHolder : clusterData) {
+                clusters.add(clusterDataHolder.getClusterId());
+            }
+        }
+
+        return clusters;
     }
 
     /**

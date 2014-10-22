@@ -73,9 +73,9 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
         stateStack.push(nextState);
         if (log.isDebugEnabled()) {
             printStateTransitions(stateStack);
+//            log.debug("Life Cycle State changed from [ " + getPreviousState() + " ] to [ " +
+//                    getCurrentState() + " ]");
         }
-        log.info("Life Cycle State changed from [ " + getPreviousState() + " ] to [ " +
-                getCurrentState() + " ]");
     }
 
     /**
