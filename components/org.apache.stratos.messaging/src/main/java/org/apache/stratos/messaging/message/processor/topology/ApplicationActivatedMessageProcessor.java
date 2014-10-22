@@ -88,6 +88,10 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
+            if (!application.isStateTransitionValid(ApplicationStatus.Active)) {
+                log.error("Invalid State transfer from [ " + application.getStatus() +
+                        " ] to [ " + ApplicationStatus.Active + " ]");
+            }
             application.setStatus(ApplicationStatus.Active);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as activated : %s",

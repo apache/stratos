@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.processor.topology.updater;
+package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationInactivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -87,7 +88,11 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
-            application.setStatus(ApplicationStatus.Inactive);
+            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
+                log.error("Invalid State transfer from [ " + application.getStatus() +
+                        " ] to [ " + ApplicationStatus.Terminating + " ]");
+            }
+            application.setStatus(ApplicationStatus.Terminating);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as activated : %s",
                         application.toString()));

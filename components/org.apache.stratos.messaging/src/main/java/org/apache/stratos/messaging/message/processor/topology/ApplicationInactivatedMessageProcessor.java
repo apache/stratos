@@ -88,7 +88,11 @@ public class ApplicationInactivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
-            application.setStatus(ApplicationStatus.Terminated);
+            if (!application.isStateTransitionValid(ApplicationStatus.Inactive)) {
+                log.error("Invalid State transfer from [ " + application.getStatus() +
+                        " ] to [ " + ApplicationStatus.Inactive + " ]");
+            }
+            application.setStatus(ApplicationStatus.Inactive);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as inactivated : %s",
                         application.toString()));

@@ -27,7 +27,6 @@ import org.apache.stratos.messaging.listener.application.status.ApplicationTermi
 import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.topology.updater.ApplicationTerminatingMessageProcessor;
 
 /**
  * Defines default topology message processor chain.

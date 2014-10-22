@@ -88,7 +88,11 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the topology
-            application.setStatus(ApplicationStatus.Terminating);
+            if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
+                log.error("Invalid State transfer from [ " + application.getStatus() +
+                        " ] to [ " + ApplicationStatus.Terminated + " ]");
+            }
+            application.setStatus(ApplicationStatus.Terminated);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application updated as terminating : %s",
                         application.toString()));
