@@ -70,6 +70,7 @@ public abstract class Monitor implements EventHandler {
 
     public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
+        this.appId = parent.getAppId();
     }
 
     public boolean hasMonitors() {

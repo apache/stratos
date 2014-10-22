@@ -236,7 +236,6 @@ public class ApplicationMonitorFactory {
 
             clusterMonitor = new ClusterMonitor(cluster.getClusterId(), cluster.getServiceName(),
                     deploymentPolicy, policy);
-            clusterMonitor.setAppId(cluster.getAppId());
 
             for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 

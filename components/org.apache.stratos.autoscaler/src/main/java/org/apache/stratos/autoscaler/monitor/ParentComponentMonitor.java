@@ -52,6 +52,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
+        aliasToInActiveMonitorsMap = new HashMap<String, Monitor>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the dependency for this monitor within the immediate children
