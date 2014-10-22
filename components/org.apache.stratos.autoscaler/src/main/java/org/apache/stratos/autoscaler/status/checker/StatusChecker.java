@@ -56,7 +56,11 @@ public class StatusChecker {
      */
     public void onMemberStatusChange(String clusterId) {
         ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
-        boolean clusterActive = clusterActive(monitor);
+        boolean clusterActive = false;
+        if(monitor != null) {
+            clusterActive = clusterActive(monitor);
+
+        }
         log.info("Status checker running for [cluster] " + clusterId +
                 " the status [clusterActive] " + clusterActive);
         // if active then notify upper layer
