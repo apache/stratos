@@ -276,9 +276,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             //stopping the cluster monitor and remove it from the AS
                             ClusterMonitor clusterMonitor =
                                     ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
-                            clusterMonitor.setDestroyed(true);
-                            clusterMonitor.setStatus(ClusterStatus.Terminating);
-                            clusterMonitor.terminateAllMembers();
+                            if (clusterMonitor != null) {
+                                clusterMonitor.setDestroyed(true);
+                                clusterMonitor.setStatus(ClusterStatus.Terminating);
+                                clusterMonitor.terminateAllMembers();
+                            } else {
+                                log.warn("No Cluster Monitor found for cluster id " + clusterId);
+                            }
                         }
 
                     } else {

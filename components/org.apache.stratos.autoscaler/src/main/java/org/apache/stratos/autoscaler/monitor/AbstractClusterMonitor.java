@@ -120,6 +120,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     public void destroy() {
         minCheckKnowledgeSession.dispose();
         scaleCheckKnowledgeSession.dispose();
+        terminateAllKnowledgeSession.dispose();
         terminateDependencyKnowledgeSession.dispose();
         setDestroyed(true);
         if (log.isDebugEnabled()) {
