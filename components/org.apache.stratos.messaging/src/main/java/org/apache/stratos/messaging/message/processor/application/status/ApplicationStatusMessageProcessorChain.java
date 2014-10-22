@@ -34,7 +34,9 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
     private static final Log log = LogFactory.getLog(ApplicationStatusMessageProcessorChain.class);
 
     private ApplicationStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
+    private ApplicationStatusClusterInActivateMessageProcessor clusterInActivateMessageProcessor;
     private ApplicationStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
+    private ApplicationStatusGroupInActivateMessageProcessor groupInActivateMessageProcessor;
     private ApplicationStatusAppActivatedMessageProcessor appActivatedMessageProcessor;
     private ApplicationStatusAppCreatedMessageProcessor applicationStatusAppCreatedMessageProcessor;
     private ApplicationStatusAppInActivatedMessageProcessor applicationStatusAppInActivatedMessageProcessor;
@@ -45,8 +47,16 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
         // Add instance notifier event processors
         clusterActivatedMessageProcessor = new ApplicationStatusClusterActivatedMessageProcessor();
         add(clusterActivatedMessageProcessor);
+
+        clusterInActivateMessageProcessor = new ApplicationStatusClusterInActivateMessageProcessor();
+        add(clusterInActivateMessageProcessor);
+
         groupActivatedMessageProcessor = new ApplicationStatusGroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
+
+        groupInActivateMessageProcessor = new ApplicationStatusGroupInActivateMessageProcessor();
+        add(groupInActivateMessageProcessor);
+
         appActivatedMessageProcessor = new ApplicationStatusAppActivatedMessageProcessor();
         add(appActivatedMessageProcessor);
 
@@ -71,8 +81,12 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
     public void addEventListener(EventListener eventListener) {
         if (eventListener instanceof ClusterActivatedEventListener) {
             clusterActivatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInActivateEventListener) {
+            clusterInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof GroupInActivateEventListener) {
+            groupInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
             appActivatedMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ApplicationInActivatedEventListener){

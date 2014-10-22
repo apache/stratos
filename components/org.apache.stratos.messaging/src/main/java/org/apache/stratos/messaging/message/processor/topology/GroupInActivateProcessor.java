@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.topology.GroupInActivateEvent;
@@ -92,9 +93,7 @@ public class GroupInActivateProcessor extends MessageProcessor {
                         event.getGroupId()));
             }
         } else {
-            // Apply changes to the topology
-            //TODO
-            // group.setStatus(Status.Activated);
+            group.setStatus(GroupStatus.Inactive);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Group updated as activated : %s",
                         group.getUniqueIdentifier()));

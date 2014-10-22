@@ -22,10 +22,14 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationInActivatedEventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatedEventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatingEventListener;
+import org.apache.stratos.messaging.listener.application.status.*;
 import org.apache.stratos.messaging.listener.topology.*;
+import org.apache.stratos.messaging.listener.topology.ApplicationActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ApplicationCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInActivateEventListener;
+import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.GroupInActivateEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -40,6 +44,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ServiceRemovedMessageProcessor serviceRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterActivatedProcessor clusterActivatedProcessor;
+    private ClusterInActivateProcessor clusterInActivateProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
@@ -49,7 +54,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
     private GroupActivatedProcessor groupActivatedProcessor;
-    //private CompositeApplicationRemovedMessageProcessor compositeApplicationRemovedMessageProcessor;
+    private GroupInActivateProcessor groupInActivateProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
     private ApplicationUndeployedMessageProcessor applicationUndeployedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
@@ -74,6 +79,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterActivatedProcessor = new ClusterActivatedProcessor();
         add(clusterActivatedProcessor);
+
+        clusterInActivateProcessor = new ClusterInActivateProcessor();
+        add(clusterInActivateProcessor);
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
@@ -101,6 +109,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         groupActivatedProcessor = new GroupActivatedProcessor();
         add(groupActivatedProcessor);
+
+        groupInActivateProcessor = new GroupInActivateProcessor();
+        add(groupInActivateProcessor);
 
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
@@ -135,6 +146,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInActivateEventListener) {
+            clusterInActivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceSpawnedEventListener) {
@@ -157,6 +170,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             memberMaintenanceModeProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof GroupInActivateEventListener) {
+            groupInActivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationUndeployedEventListener) {
