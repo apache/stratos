@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(ApplicationCreatedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(ApplicationUndeployedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -113,9 +113,9 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
                 Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
                 if (aCluster != null) {
                     // validate state transition
-                    if (aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                    if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
                         log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
-                                + ClusterStatus.Terminating + " successfully");
+                                + ClusterStatus.Terminating);
                     }
                     // for now anyway update the status forcefully
                     aCluster.setStatus(ClusterStatus.Terminating);
@@ -133,6 +133,7 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
             }
         }
 
+        notifyEventListeners(event);
         return true;
     }
 }
