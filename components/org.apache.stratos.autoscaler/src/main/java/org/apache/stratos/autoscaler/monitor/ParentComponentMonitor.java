@@ -95,13 +95,17 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
 
         Monitor monitor = this.aliasToInActiveMonitorsMap.get(idOfEvent);
-        for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
-            if (monitor.hasMonitors()) {
-                StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
-            } else {
-                StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
-                        ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+        if (monitor != null) {
+            for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                if (monitor.hasMonitors()) {
+                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
+                } else {
+                    StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                            ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+                }
             }
+        } else {
+            log.warn("Active Monitor not found for the id " + idOfEvent);
         }
     }
 
