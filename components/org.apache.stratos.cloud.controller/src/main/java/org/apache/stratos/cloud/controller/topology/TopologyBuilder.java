@@ -707,14 +707,14 @@ public class TopologyBuilder {
                     Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
                     if (aCluster != null) {
                         // validate state transition
-                        if (aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                        if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
                             log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
-                                    + ClusterStatus.Terminating + " successfully");
+                                    + ClusterStatus.Terminating);
                         }
                         // for now anyway update the status forcefully
                         aCluster.setStatus(ClusterStatus.Terminating);
                         log.info("Cluster " + clusterDataHolder.getClusterId() + "'s status updated to "
-                                + ClusterStatus.Terminating + " successfully");
+                                + ClusterStatus.Terminating);
 
                     } else {
                         log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
@@ -723,7 +723,7 @@ public class TopologyBuilder {
 
                 } else {
                     log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] not found");
                 }
             }
 

@@ -29,31 +29,34 @@ public enum GroupStatus implements LifeCycleState {
     Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Active, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Created,
+                    GroupStatus.Active, GroupStatus.Terminating));
         }
     },
     Active(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Active,
+                    GroupStatus.Inactive, GroupStatus.Terminating));
         }
     },
     Inactive(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Terminating));
         }
     },
     Terminating(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminated));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminating,
+                    GroupStatus.Terminated));
         }
     },
     Terminated(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return null;
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminated));
         }
     };
 

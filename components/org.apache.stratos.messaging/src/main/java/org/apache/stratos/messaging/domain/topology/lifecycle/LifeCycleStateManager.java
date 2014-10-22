@@ -36,7 +36,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
 
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        log.info("Life Cycle State Manager created, initial state: " + initialState.toString());
+        log.info("Life Cycle State Manager started, initial state: " + initialState.toString());
     }
 
     /**

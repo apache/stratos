@@ -35,44 +35,47 @@ public enum MemberStatus implements LifeCycleState {
     Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Created, MemberStatus.Starting));
         }
     },
     Starting(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting, MemberStatus.Activated));
         }
     },
     Activated(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Suspended,
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated, MemberStatus.Suspended,
                     MemberStatus.In_Maintenance, MemberStatus.Starting));
         }
     },
     In_Maintenance(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.ReadyToShutDown));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.In_Maintenance,
+                    MemberStatus.ReadyToShutDown));
         }
     },
     ReadyToShutDown(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.ReadyToShutDown,
+                    MemberStatus.Terminated));
         }
     },
     Suspended(5) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Suspended,
+                    MemberStatus.Terminated));
         }
     },
     Terminated(6) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return null;
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
         }
     };
 
