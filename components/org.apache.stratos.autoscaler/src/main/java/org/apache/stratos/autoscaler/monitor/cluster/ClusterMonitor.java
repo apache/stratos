@@ -51,6 +51,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     public ClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                           AutoscalePolicy autoscalePolicy) {
         this.clusterId = clusterId;
+        this.id = clusterId;
         this.serviceId = serviceId;
 
         this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
