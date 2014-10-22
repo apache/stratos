@@ -1212,7 +1212,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
-        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
+        /*TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
 
         Runnable terminateInTimeout = new Runnable() {
             @Override
@@ -1309,7 +1309,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         };
         new Thread(terminateInTimeout).start();
-        new Thread(unregister).start();
+        new Thread(unregister).start();*/
 
     }
 
@@ -1459,7 +1459,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         TopologyBuilder.handleApplicationUndeployed(dataHolder, applicationId, tenantId, tenantDomain);
 
-        persist();
+        //persist();
     }
 
     private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {

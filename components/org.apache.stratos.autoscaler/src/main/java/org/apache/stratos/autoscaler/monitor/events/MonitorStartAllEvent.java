@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,10 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.listener.topology;
+package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.listener.EventListener;
-
-public abstract class ClusterMaintenanceModeEventListener extends EventListener {
-
+/**
+ * This will use to start the child monitors
+ */
+public class MonitorStartAllEvent extends MonitorEvent {
+    public MonitorStartAllEvent(String id) {
+        super(id);
+    }
 }

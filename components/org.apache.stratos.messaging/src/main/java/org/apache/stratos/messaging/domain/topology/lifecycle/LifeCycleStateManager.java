@@ -36,7 +36,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
 
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        log.info("Life Cycle State Manager created, initial state: " + initialState.toString());
+        log.info("Life Cycle State Manager started, initial state: " + initialState.toString());
     }
 
     /**
@@ -59,6 +59,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @return true if transitioning for nextState from current state is valid, else false
      */
     public boolean isStateTransitionValid (T nextState) {
+
         return stateStack.peek().getNextStates().contains(nextState);
     }
 
@@ -68,7 +69,11 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @param nextState
      */
     public void changeState (T nextState)  {
+
         stateStack.push(nextState);
+        if (log.isDebugEnabled()) {
+            printStateTransitions(stateStack);
+        }
         log.info("Life Cycle State changed from [ " + getPreviousState() + " ] to [ " +
                 getCurrentState() + " ]");
     }
@@ -97,6 +102,20 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @return previous state
      */
     public T getPreviousState () {
-        return stateStack.get(1);
+        return stateStack.get(stateStack.size() - 2);
+    }
+
+    /**
+     * Print utility to print transitioned states
+     */
+    private static <T extends LifeCycleState> void printStateTransitions (Stack<T> stateStack) {
+
+        // print all transitions till now
+        StringBuilder stateTransitions = new StringBuilder("Transitioned States:  [ START --> ");
+        for (int i = 0 ; i < stateStack.size() ; i++) {
+            stateTransitions.append(stateStack.get(i) + " --> ");
+        }
+        stateTransitions.append(" END ]");
+        log.debug(stateTransitions);
     }
 }

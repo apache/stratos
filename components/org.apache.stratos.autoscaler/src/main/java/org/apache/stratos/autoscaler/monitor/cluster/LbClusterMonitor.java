@@ -27,7 +27,6 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LbClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(LbClusterMonitor.class);
-    private Status status;
 
     public LbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
                             AutoscalePolicy autoscalePolicy) {
@@ -49,6 +47,7 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
         this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+        this.terminateAllKnowledgeSession = autoscalerRuleEvaluator.getTerminateAllStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
         this.deploymentPolicy = deploymentPolicy;
@@ -63,12 +62,12 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if( !ClusterStatus.Inactive.equals(status)) {
+                if (!ClusterStatus.Inactive.equals(status)) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("LB Cluster monitor is suspended as the cluster is in " +
-                                    ClusterStatus.Inactive + " mode......");
+                                ClusterStatus.Inactive + " mode......");
                     }
                 }
             } catch (Exception e) {
@@ -79,6 +78,11 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
             } catch (InterruptedException ignore) {
             }
         }
+    }
+
+    @Override
+    public void terminateAllMembers() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private void monitor() {
@@ -92,7 +96,7 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
                 if (partitionContext != null) {
                     minCheckKnowledgeSession.setGlobal("clusterId", clusterId);
                     minCheckKnowledgeSession.setGlobal("isPrimary", false);
-                    
+
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Running minimum check for partition %s ",
                                 partitionContext.getPartitionId()));
@@ -115,7 +119,6 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
     public String toString() {
         return "LbClusterMonitor [clusterId=" + clusterId + ", serviceId=" + serviceId + "]";
     }
-
 
 
 }

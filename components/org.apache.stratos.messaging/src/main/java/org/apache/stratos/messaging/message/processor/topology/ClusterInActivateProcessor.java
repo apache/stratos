@@ -21,10 +21,9 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Status;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.topology.ClusterInActivateEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -67,7 +66,7 @@ public class ClusterInActivateProcessor extends MessageProcessor {
                 TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
 
-        }  else {
+        } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, topology);
@@ -77,9 +76,8 @@ public class ClusterInActivateProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ClusterInActivateEvent event,Topology topology) {
-
-        // Apply service filter
+    private boolean doProcess(ClusterInActivateEvent event, Topology topology) {
+// Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
             if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
                 // Service is excluded, do not update topology or fire event
@@ -119,10 +117,12 @@ public class ClusterInActivateProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            //TODO
-            // cluster.setStatus(Status.Activated);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
+            }
+            cluster.setStatus(ClusterStatus.Inactive);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster updated as activated : %s",
+                log.info(String.format("Cluster updated as maintenance mode: %s",
                         cluster.toString()));
             }
         }
@@ -131,5 +131,4 @@ public class ClusterInActivateProcessor extends MessageProcessor {
         notifyEventListeners(event);
         return true;
     }
-
 }

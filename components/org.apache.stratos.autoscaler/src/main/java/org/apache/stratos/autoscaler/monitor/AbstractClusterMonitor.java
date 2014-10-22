@@ -23,7 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -52,10 +54,12 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle minCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
     protected FactHandle terminateDependencyFactHandle;
+    protected FactHandle terminateAllFactHandle;
 
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
     protected StatefulKnowledgeSession terminateDependencyKnowledgeSession;
+    protected StatefulKnowledgeSession terminateAllKnowledgeSession;
     protected boolean isDestroyed;
 
     protected String clusterId;
@@ -121,6 +125,8 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
             log.debug("Cluster Monitor Drools session has been disposed. " + this.toString());
         }
     }
+
+    public abstract void terminateAllMembers ();
 
     public boolean isDestroyed() {
         return isDestroyed;
@@ -240,8 +246,14 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", clusterId, this.status, status));
         this.status = status;
-        //notifying the parent monitor about the state change
-        MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+        /**
+         * notifying the parent monitor about the state change
+         * If the cluster in_active and if it is a in_dependent cluster,
+         * then won't send the notification to parent.
+         */
+        if(status == ClusterStatus.Inactive && !this.hasDependent) {
+            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+        }
 
     }
 
@@ -258,4 +270,15 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     public void onEvent(MonitorStatusEvent statusEvent) {
 
     }
+
+    @Override
+    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+
+    }
+
+    @Override
+    public void onEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
 }

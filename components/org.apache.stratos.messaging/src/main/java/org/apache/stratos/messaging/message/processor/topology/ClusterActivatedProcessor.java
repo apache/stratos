@@ -20,7 +20,10 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -63,7 +66,7 @@ public class ClusterActivatedProcessor extends MessageProcessor {
                 TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
 
-        }  else {
+        } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, topology);
@@ -73,7 +76,7 @@ public class ClusterActivatedProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ClusterActivatedEvent event,Topology topology) {
+    private boolean doProcess(ClusterActivatedEvent event, Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -119,8 +122,6 @@ public class ClusterActivatedProcessor extends MessageProcessor {
                 log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Active);
             }
             cluster.setStatus(ClusterStatus.Active);
-            // temporary; should be removed
-            cluster.setTempStatus(Status.Activated);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster updated as activated : %s",
                         cluster.toString()));

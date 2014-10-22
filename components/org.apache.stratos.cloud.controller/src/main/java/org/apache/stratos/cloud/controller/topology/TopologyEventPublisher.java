@@ -81,14 +81,13 @@ public class TopologyEventPublisher {
         }
     }
 
-    public static void sendClusterCreatedEvent(String serviceName, String clusterId, Cluster cluster) {
-        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(serviceName, clusterId, cluster);
+    public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
+        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(appId,serviceName, clusterId);
 
         if(log.isInfoEnabled()) {
-            log.info("Publishing cluster created event: " +cluster.toString());
+            log.info("Publishing cluster created event: " +clusterId);
         }
         publishEvent(clusterCreatedEvent);
-
     }
 
     public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {
@@ -98,6 +97,15 @@ public class TopologyEventPublisher {
         }
 
         publishEvent(applicationCreatedEvent);
+    }
+
+    public static void sendApplicationUndeployedEvent (String applicationId, Set<ClusterDataHolder> clusterData) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application undeployed event for Application: " + applicationId);
+        }
+
+        publishEvent(new ApplicationUndeployedEvent(applicationId, clusterData));
     }
 
     public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
@@ -118,18 +126,6 @@ public class TopologyEventPublisher {
             log.info(String.format("Publishing cluster removed event: [service] %s [cluster] %s", ctxt.getCartridgeType(), ctxt.getClusterId()));
         }
         publishEvent(clusterRemovedEvent);
-
-    }
-
-    public static void sendClusterMaintenanceModeEvent(ClusterContext ctxt) {
-
-        ClusterMaintenanceModeEvent clusterMaintenanceModeEvent = new ClusterMaintenanceModeEvent(ctxt.getCartridgeType(), ctxt.getClusterId());
-        clusterMaintenanceModeEvent.setStatus(Status.In_Active);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster maintenance mode event: [service] %s [cluster] %s",
-                    clusterMaintenanceModeEvent.getServiceName(), clusterMaintenanceModeEvent.getClusterId()));
-        }
-        publishEvent(clusterMaintenanceModeEvent);
 
     }
 

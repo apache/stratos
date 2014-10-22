@@ -19,7 +19,6 @@
 package org.apache.stratos.autoscaler.monitor.events;
 
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 /**
  * This will use to notify observers upon a cluster activation events received in Topology.

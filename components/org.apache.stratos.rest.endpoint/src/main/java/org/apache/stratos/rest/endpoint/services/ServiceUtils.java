@@ -34,7 +34,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationCont
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
@@ -126,148 +126,16 @@ public class ServiceUtils {
         }
     }
     
-    // Grouping
-    /*
-    static StratosAdminResponse deployApplication(CompositeApplicationDefinitionBean applicationDefinitionBean, ConfigurationContext ctxt,
-            String userName, String tenantDomain) throws RestAPIException {
 
-    		log.info("Starting to deploy a application " + applicationDefinitionBean);
-    		
-    		if (log.isDebugEnabled()) {
-    			log.debug("application data id:" + applicationDefinitionBean.applicationId + " /alias: " + 
-    					applicationDefinitionBean.alias);
-    			if (applicationDefinitionBean.components != null) {
-    				log.debug("application config groups size " + applicationDefinitionBean.components.size());
-    				for (ComponentDefinition cfg : applicationDefinitionBean.components) {
-    					log.debug("listing application config groups "  + cfg.alias + " /sub " + 
-    				               cfg.subscribables + " /dep " + cfg.dependencies);
-    					if (cfg.dependencies != null) {
-    						log.debug("listing application group dependencies: kill: " +  
-    					               cfg.dependencies.kill_behavior + " / startup: " + 
-    					               cfg.dependencies.startup_order);
-    						if (cfg.dependencies.startup_order != null) {
-    							for (ConfigDependencies.Pair pair :  cfg.dependencies.startup_order) {
-    								log.debug("listing dependencies pairs : " + pair.getKey() + " / " + pair.getValue());
-    							}
-    						}
-    					}
-    				}
-    			} else {
-    				log.debug("no config group in application");
-    			}
-
-    		}
-
-    		// convert to json
-    		String applicationId = applicationDefinitionBean.applicationId;
-    		
-    		if (log.isDebugEnabled()) {
-    			log.debug("publishing application created event " + applicationId);
-    		}
-    		
-    		// convert to domain object - move to ojoConverted
-    		ConfigCompositeApplication app = PojoConverter.convertToCompositeApplication(applicationDefinitionBean);
-    		if (log.isDebugEnabled()) {
-    			log.debug("converted application to CompositeApplication " + app);
-    		}
-    		CompositeApplicationManager manager = new CompositeApplicationManager();
-    		
-    		
-			try {
-				manager.deployCompositeApplication(app);
-			} catch (ADCException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				String message = e.getMessage();
-				log.error(message, e);
-				throw new RestAPIException(message, e);
-			}
-    		
-    		log.info("l [type] " + applicationDefinitionBean);
-    		// deploy to cloud controller
-    		CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-            
-    		
-    		if (log.isDebugEnabled()) {
-    			log.debug("deployeing composite app in cloud controller");
-    		}
-            
-            ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, ctxt, userName, tenantDomain);
-    		 
-            if (log.isDebugEnabled()) {
-    			log.debug("done deployeing composite app in cloud controller");
-    		}
-
-    		StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-    		stratosAdminResponse.setMessage("Successfully deployed application definition w" + applicationDefinitionBean);
-    		return stratosAdminResponse;
-    } */
-    /*
-    static StratosAdminResponse deployApplicationDefinition (CompositeApplicationDefinitionBean compositeApplicationDefinition, ConfigurationContext ctxt,
-            String userName, String tenantDomain) throws RestAPIException {
-
-            log.info("Starting to deploy composite application definition "+  compositeApplicationDefinition);
-            
-            CompositeApplicationDefinition appConfig = PojoConverter.convertToCompositeApplicationForCC(compositeApplicationDefinition);
-            
-
-            CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-            
-            if (cloudControllerServiceClient != null) {
-    			// call CC
-            	try {
-					cloudControllerServiceClient.deployApplicationDefinition(appConfig);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					log.error(e.getMessage(), e);
-    				throw new RestAPIException(e.getMessage(), e);
-				} catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					//String message = e.getFaultMessage().getInvalidCompositeApplicationDefinitionException().getMessage();
-					String message = "CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException";
-    				log.error(message, e);
-    				throw new RestAPIException(message, e);
-				} catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
-    				log.error(message, e);
-    				throw new RestAPIException(message, e);
-				}
-            	
-                log.info("Successfully deployed composite application to Cloud Controller");
-                    
-            }
-
-            StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-            stratosAdminResponse.setMessage("Successfully deployed composite application to cloud controller");
-            return stratosAdminResponse;
-        }
-*/
-    static void deployCompositeApplicationDefintion (CompositeAppDefinition compositeAppDefinition, ConfigurationContext ctxt,
+    static void deployApplicationDefinition (ApplicationDefinition appDefinition, ConfigurationContext ctxt,
                                                                      String userName, String tenantDomain)
             throws RestAPIException {
-//
-//        int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
-//
-//        try {
-//            compositeApplicationManager.deployCompositeApplication(compositeAppDefinition, tenantId, tenantDomain, userName);
-//
-//        } catch (CompositeApplicationDefinitionException e) {
-//            throw new RestAPIException(e);
-//        } catch (PersistenceManagerException e) {
-//            throw new RestAPIException(e);
-//        } catch (CompositeApplicationException e) {
-//            throw new RestAPIException(e);
-//        }
 
     	// check if an application with same id already exists
         // check if application with same appId / tenant already exists
         CartridgeSubscriptionManager subscriptionMgr = new CartridgeSubscriptionManager();
         int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
-        String appId = compositeAppDefinition.getApplicationId();
+        String appId = appDefinition.getApplicationId();
 
         try {
             if (subscriptionMgr.getApplicationSubscription(appId, tenantId) != null) {
@@ -278,7 +146,7 @@ public class ServiceUtils {
             throw new RestAPIException(e1);
         }
     	
-        ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(compositeAppDefinition);
+        ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);

@@ -4,10 +4,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.event.topology.GroupInActivateEvent;
 import org.apache.stratos.messaging.util.Constants;
+
+import java.util.Set;
 
 /**
  * This will publish application related events to application status topic.
@@ -41,6 +51,30 @@ public class StatusEventPublisher {
     }
 
     public static void sendClusterInActivateEvent(String appId, String serviceName, String clusterId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Cluster in-activate event for [application]: " + appId +
+                    " [cluster]: " + clusterId);
+        }
+
+        /*ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
+
+        publishEvent(clusterActivatedEvent);*/
+    }
+
+    public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Cluster in-activate event for [application]: " + appId +
+                    " [cluster]: " + clusterId);
+        }
+
+        /*ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
+
+        publishEvent(clusterActivatedEvent);*/
+    }
+
+    public static void sendClusterTerminatedEvent(String appId, String serviceName, String clusterId) {
 
         if (log.isInfoEnabled()) {
             log.info("Publishing Cluster in-activate event for [application]: " + appId +
@@ -95,9 +129,33 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        /*GroupActivatedEvent groupActivatedEvent = new GroupActivatedEvent(appId, groupId);
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
 
-        publishEvent(groupActivatedEvent);*/
+        publishEvent(groupInActivateEvent);
+    }
+
+    public static void sendGroupTerminatingEvent(String appId, String groupId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group terminating event for [application]: " + appId +
+                    " [group]: " + groupId);
+        }
+
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
+
+        publishEvent(groupInActivateEvent);
+    }
+
+    public static void sendGroupTerminatedEvent(String appId, String groupId) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group terminated event for [application]: " + appId +
+                    " [group]: " + groupId);
+        }
+
+        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
+
+        publishEvent(groupInActivateEvent);
     }
 
     public static void sendApplicationActivatedEvent(String appId) {
@@ -132,6 +190,17 @@ public class StatusEventPublisher {
                 new GroupMaintenanceModeEvent(appId, groupId);
 
         publishEvent(groupMaintenanceModeEvent);
+    }
+
+    public static void sendApplicationTerminatingEvent (String appId) {
+        // TODO: implement
+    }
+
+    public static void sendApplicationTerminatedEvent (String appId, Set<ClusterDataHolder> clusterData) {
+
+        ApplicationTerminatedEvent applicationTerminatedEvent =
+                new ApplicationTerminatedEvent(appId, clusterData);
+        publishEvent(applicationTerminatedEvent);
     }
 
     public static void publishEvent(Event event) {

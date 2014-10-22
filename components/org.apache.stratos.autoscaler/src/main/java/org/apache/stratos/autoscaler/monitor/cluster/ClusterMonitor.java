@@ -31,7 +31,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +57,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
         this.terminateDependencyKnowledgeSession = autoscalerRuleEvaluator.getTerminateDependencyStatefulSession();
+        this.terminateAllKnowledgeSession = autoscalerRuleEvaluator.getTerminateAllStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
         this.autoscalePolicy = autoscalePolicy;
@@ -71,20 +71,13 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     @Override
     public void run() {
-
-        /*try {
-            // TODO make this configurable(**Remove this as LB will be a seperate monitor),
-            // this is the delay the min check of normal cluster monitor to wait until LB monitor is added
-            Thread.sleep(60000);
-        } catch (InterruptedException ignore) {
-        }*/
-        //this.status = Status.Running;
         while (!isDestroyed()) {
             if (log.isDebugEnabled()) {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if (!ClusterStatus.Inactive.equals(status)) {
+                if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
+                        (this.status == ClusterStatus.Inactive && !hasDependent)) {
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
@@ -102,6 +95,18 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         }
 
 
+    }
+
+    @Override
+    public void terminateAllMembers() {
+
+        for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+            //if (log.isDebugEnabled()) {
+                log.info("Starting to terminate all members in Network Partition " + networkPartitionContext.getId());
+           // }
+            terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
+                    (terminateAllKnowledgeSession, terminateAllFactHandle, networkPartitionContext);
+        }
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {

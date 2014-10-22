@@ -28,7 +28,9 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 import java.util.HashMap;
@@ -42,11 +44,11 @@ public abstract class ParentComponentMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
 
     //id of the monitor, it can be alias or the id
-    protected String id;
+    //protected String id;
     //The monitors dependency tree with all the startable/killable dependencies
     protected DependencyTree dependencyTree;
     //Application id of this particular monitor
-    protected String appId;
+    //protected String appId;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
@@ -64,6 +66,136 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected abstract void monitor(MonitorStatusEvent statusEvent);
 
 
+    protected void onChildActivatedEvent(String idOfEvent) {
+        try {
+            //if the activated monitor is in in_active map move it to active map
+            if (this.aliasToInActiveMonitorsMap.containsKey(idOfEvent)) {
+                this.aliasToActiveMonitorsMap.put(id, this.aliasToInActiveMonitorsMap.remove(idOfEvent));
+            }
+            boolean startDep = startDependency(idOfEvent);
+            if (log.isDebugEnabled()) {
+                log.debug("started a child: " + startDep + " by the group/cluster: " + idOfEvent);
+
+            }
+            if (!startDep) {
+                StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
+            }
+        } catch (TopologyInConsistentException e) {
+            //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
+            log.error(e);
+        }
+
+    }
+
+    protected void onChildTerminatingEvent(String idOfEvent) {
+        //Check whether hasDependent true
+        if (!this.aliasToInActiveMonitorsMap.containsKey(idOfEvent)) {
+            this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(idOfEvent));
+        }
+
+        Monitor monitor = this.aliasToInActiveMonitorsMap.get(idOfEvent);
+        for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+            if (monitor.hasMonitors()) {
+                StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
+            } else {
+                StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                        ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+            }
+        }
+    }
+
+    protected void onChildInActiveEvent(String idOfEvent) {
+        List<ApplicationContext> terminationList;
+        Monitor monitor;
+        terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
+        //Temporarily move the group/cluster to inactive list
+        this.aliasToInActiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
+
+        if (terminationList != null) {
+            //Checking the termination dependents status
+            for (ApplicationContext terminationContext : terminationList) {
+                //Check whether dependent is in_active, then start to kill it
+                monitor = this.aliasToActiveMonitorsMap.
+                        get(terminationContext.getId());
+                //start to kill it
+                if (monitor.hasMonitors()) {
+                    //it is a group
+                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
+                } else {
+                    StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                            ((AbstractClusterMonitor) monitor).getServiceId(), terminationContext.getId());
+
+                }
+            }
+        } else {
+            log.warn("Wrong inActive event received from [Child] " + idOfEvent + "  to the [parent]"
+                    + " where child is identified as a independent");
+        }
+    }
+
+    protected void onChildTerminatedEvent(String idOfEvent) {
+        List<ApplicationContext> terminationList;
+        boolean allDependentTerminated = true;
+
+        ApplicationContext context = this.dependencyTree.findApplicationContextWithId(idOfEvent);
+        context.setTerminated(true);
+
+        terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
+        /**
+         * Make sure that all the dependents have been terminated properly to start the recovery
+         */
+        if (terminationList != null) {
+            for (ApplicationContext context1 : terminationList) {
+                if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                    allDependentTerminated = false;
+                } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                    log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
+                    allDependentTerminated = false;
+                } else {
+                    allDependentTerminated = true;
+                }
+            }
+        }
+
+        List<ApplicationContext> parentContexts = this.dependencyTree.findAllParentContextWithId(idOfEvent);
+        boolean canStart = false;
+        if (parentContexts != null) {
+            for (ApplicationContext context1 : parentContexts) {
+                if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                    log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                            + " to be terminated");
+                    canStart = false;
+                } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                    if (canStart) {
+                        log.warn("Found the Dependent [monitor] " + context1.getId()
+                                + " in the active list wrong state");
+                    }
+                } else {
+                    log.info("[Parent Monitor] " + context1.getId()
+                            + " has already been terminated");
+                    canStart = true;
+                }
+            }
+        }
+
+        if((terminationList != null && allDependentTerminated || terminationList == null) &&
+                (parentContexts != null && canStart || parentContexts == null)) {
+            //Find the non existent monitor by traversing dependency tree
+
+            try {
+                this.startDependency();
+            } catch (TopologyInConsistentException e) {
+                e.printStackTrace();
+            }
+        } else {
+            log.info("Waiting for the dependent of [monitor] " + idOfEvent
+                    + " to be terminated");
+        }
+
+
+    }
+
+
     /**
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
@@ -72,6 +204,19 @@ public abstract class ParentComponentMonitor extends Monitor {
     public void startDependency() throws TopologyInConsistentException {
         //start the first dependency
         List<ApplicationContext> applicationContexts = this.dependencyTree.getStarAbleDependencies();
+        startDependency(applicationContexts);
+
+    }
+
+    /**
+     * This will start the parallel dependencies at once from the top level
+     * by traversing to find the terminated dependencies.
+     * it will get invoked when start a child monitor on termination of a sub tree
+     */
+    public void startDependencyOnTermination() throws TopologyInConsistentException {
+        //start the first dependency which went to terminated
+        List<ApplicationContext> applicationContexts = this.dependencyTree.
+                                                            getStarAbleDependenciesByTermination();
         startDependency(applicationContexts);
 
     }
@@ -103,11 +248,9 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (log.isDebugEnabled()) {
                 log.debug("Dependency check for the Group " + context.getId() + " started");
             }
-            if(!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+            if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 //to avoid if it is already started
                 startMonitor(this, context);
-            } else if(this.aliasToInActiveMonitorsMap.containsKey(context.getId())) {
-                //need to trigger the cluster monitor
             }
         }
 

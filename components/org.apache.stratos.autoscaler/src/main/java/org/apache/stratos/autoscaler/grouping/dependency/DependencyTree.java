@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.messaging.domain.topology.Status;
+import org.apache.stratos.messaging.domain.topology.Application;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,6 @@ public class DependencyTree {
     private static final Log log = LogFactory.getLog(DependencyTree.class);
 
     private List<ApplicationContext> applicationContextList;
-
-    private Status status;
 
     private boolean started;
 
@@ -104,6 +102,40 @@ public class DependencyTree {
         return null;
     }
 
+    public ApplicationContext findParentContextWithId(String id) {
+        return findParentContextWithId(null, id, this.applicationContextList);
+    }
+
+    public List<ApplicationContext> findAllParentContextWithId(String id) {
+        List<ApplicationContext> applicationContexts = new ArrayList<ApplicationContext>();
+        return findAllParent(applicationContexts, id);
+    }
+
+    private List<ApplicationContext> findAllParent(List<ApplicationContext> parentContexts, String id) {
+        ApplicationContext context = findParentContextWithId(null, id, this.applicationContextList);
+        if (context != null) {
+            parentContexts.add(context);
+            findAllParent(parentContexts, context.getId());
+        }
+        return parentContexts;
+    }
+
+
+    private ApplicationContext findParentContextWithId(ApplicationContext parent, String id,
+                                                       List<ApplicationContext> contexts) {
+        for (ApplicationContext context : contexts) {
+            //TODO check for the status
+            if (context.getId().equals(id)) {
+                return parent;
+            }
+        }
+        //if not found in the top level search recursively
+        for (ApplicationContext context : this.applicationContextList) {
+            return findParentContextWithId(context, id, context.getApplicationContextList());
+        }
+        return null;
+    }
+
     /**
      * Getting the next start able dependencies upon the activate event
      * received for a group/cluster which is part of this tree.
@@ -128,6 +160,27 @@ public class DependencyTree {
         return this.applicationContextList;
     }
 
+    public List<ApplicationContext> getStarAbleDependenciesByTermination() {
+        //Breadth First search over the graph to find out which level has the terminated contexts
+        return traverseGraphByLevel(this.applicationContextList);
+    }
+
+
+    private List<ApplicationContext> traverseGraphByLevel(List<ApplicationContext> contexts) {
+        for(ApplicationContext context : contexts) {
+            if(context.isTerminated()) {
+                return contexts;
+            }
+        }
+
+        for(ApplicationContext context : contexts) {
+            return traverseGraphByLevel(context.getApplicationContextList());
+        }
+        return null;
+    }
+
+
+
     /**
      * When one group/cluster terminates/in_maintenance, need to consider about other
      * dependencies
@@ -142,9 +195,9 @@ public class DependencyTree {
         if (this.killDependent) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
-                findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
-                        allChildrenOfAppContext);
-                return allChildrenOfAppContext;
+            findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
+                    allChildrenOfAppContext);
+            return allChildrenOfAppContext;
         } else if (this.killAll) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
@@ -201,14 +254,6 @@ public class DependencyTree {
 
     public void setTerminated(boolean terminated) {
         this.terminated = terminated;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
     }
 
     public boolean isKillDependent() {

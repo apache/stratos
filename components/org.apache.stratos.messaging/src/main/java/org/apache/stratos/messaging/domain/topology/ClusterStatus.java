@@ -30,40 +30,41 @@ public enum ClusterStatus implements LifeCycleState {
     Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
-                    ClusterStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Created,
+                    ClusterStatus.Active, ClusterStatus.Terminating));
         }
     },
     Active(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Inactive,
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active, ClusterStatus.Inactive,
                     ClusterStatus.Patching, ClusterStatus.Terminating));
         }
     },
     Patching (2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active));
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Patching, ClusterStatus.Active));
         }
     },
     Inactive(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Active,
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Inactive, ClusterStatus.Active,
                     ClusterStatus.Terminating));
         }
     },
     Terminating(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminated));
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminating,
+                    ClusterStatus.Terminated));
         }
     },
     Terminated(5) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return null;
+            return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminated));
         }
     };
 

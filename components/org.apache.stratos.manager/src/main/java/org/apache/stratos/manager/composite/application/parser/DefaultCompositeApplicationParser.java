@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
@@ -55,10 +55,10 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
     @Override
     public CompositeAppContext parse(Object obj) throws CompositeApplicationDefinitionException {
 
-        CompositeAppDefinition compositeAppDefinition = null;
+        ApplicationDefinition compositeAppDefinition = null;
 
-        if (obj instanceof CompositeAppDefinition) {
-            compositeAppDefinition = (CompositeAppDefinition) obj;
+        if (obj instanceof ApplicationDefinition) {
+            compositeAppDefinition = (ApplicationDefinition) obj;
         }
 
         if (compositeAppDefinition == null) {
@@ -102,7 +102,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return buildCompositeAppStructure (compositeAppDefinition, definedGroups, subscribablesInfo);
     }
 
-    private Map<String, GroupDefinition> getDefinedGroups (CompositeAppDefinition compositeAppDefinition) throws
+    private Map<String, GroupDefinition> getDefinedGroups (ApplicationDefinition compositeAppDefinition) throws
             CompositeApplicationDefinitionException {
 
         // map [group alias -> Group Definition]
@@ -146,7 +146,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         return definedGroups;
     }
 
-    private Map<String, SubscribableInfo> getSubscribableInformation (CompositeAppDefinition compositeAppDefinition) throws
+    private Map<String, SubscribableInfo> getSubscribableInformation (ApplicationDefinition compositeAppDefinition) throws
             CompositeApplicationDefinitionException {
 
         // map [cartridge alias -> Subscribable Information]
@@ -189,7 +189,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
 
     }
 
-    private CompositeAppContext buildCompositeAppStructure (CompositeAppDefinition compositeAppDefinition,
+    private CompositeAppContext buildCompositeAppStructure (ApplicationDefinition compositeAppDefinition,
                                                             Map<String, GroupDefinition> definedGroups,
                                                             Map<String, SubscribableInfo> subscribableInformation)
             throws CompositeApplicationDefinitionException {

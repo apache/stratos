@@ -16,25 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.monitor.events;
 
-package org.apache.stratos.messaging.domain.topology;
+/**
+ * This will handle the termination of all groups/clusters of a group.
+ */
+public class GroupTerminateAllEvent extends MonitorTerminateAllEvent {
 
-public enum Status {
-
-    Created(1),
-    Running(2),
-    Activated(3),
-    In_Active(4),
-    Terminating(4),
-    Terminated(5);
-
-    private int code;
-
-    private Status(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
+    public GroupTerminateAllEvent(String id) {
+        super(id);
     }
 }

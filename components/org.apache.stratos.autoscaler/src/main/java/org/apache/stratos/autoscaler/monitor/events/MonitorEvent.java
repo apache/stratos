@@ -16,32 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.application.status;
-
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
-
-import java.io.Serializable;
-import java.util.Set;
+package org.apache.stratos.autoscaler.monitor.events;
 
 /**
- * This event will be fired upon the application terminated is detected.
+ * Created by reka on 10/20/14.
  */
-public class ApplicationTerminatedEvent extends StatusEvent implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
+public abstract class MonitorEvent {
+    protected String id;
 
-    private String appId;
-    private Set<ClusterDataHolder> clusterData;
-
-    public ApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
-        this.appId = appId;
-        this.clusterData = clusterData;
+    public MonitorEvent(String id) {
+        this.id = id;
     }
 
-    public String getAppId() {
-        return appId;
-    }
-
-    public Set<ClusterDataHolder> getClusterData() {
-        return clusterData;
-    }
 }

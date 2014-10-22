@@ -141,7 +141,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
                 log.info("[ClusterActivatedEvent] Received: " + event.getClass());
 
                 ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
@@ -152,6 +151,25 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Active);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+
+                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
+                String clusterId = clusterCreatedEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(ClusterStatus.Created);
 
                 //starting the status checker to decide on the status of it's parent
                 //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
@@ -231,6 +249,47 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
                 appMonitor.setStatus(ApplicationStatus.Active);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ApplicationUndeployedEvent] Received: " + event.getClass());
+
+                ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
+                TopologyManager.acquireReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+
+                try {
+                    ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
+                            getAppMonitor(applicationUndeployedEvent.getApplicationId());
+
+                    if (appMonitor != null) {
+                        // update the status as Terminating
+                        appMonitor.setStatus(ApplicationStatus.Terminating);
+
+                        List<String> clusters = appMonitor.
+                                findClustersOfApplication(applicationUndeployedEvent.getApplicationId());
+
+                        for (String clusterId : clusters) {
+                            //stopping the cluster monitor and remove it from the AS
+                            ClusterMonitor clusterMonitor =
+                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
+                            clusterMonitor.setDestroyed(true);
+                            clusterMonitor.setStatus(ClusterStatus.Terminating);
+                            clusterMonitor.terminateAllMembers();
+                        }
+
+                    } else {
+                        log.warn("Application Monitor cannot be found for the undeployed [application] "
+                                + applicationUndeployedEvent.getApplicationId());
+                    }
+
+                } finally {
+                    TopologyManager.
+                            releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+                }
             }
         });
 
@@ -325,41 +384,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
 
         });
-
-
-        topologyEventReceiver.addEventListener(new ClusterMaintenanceModeEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-
-                ClusterMaintenanceModeEvent clusterMaitenanceEvent = null;
-
-                try {
-                    log.info("Event received: " + event);
-                    clusterMaitenanceEvent = (ClusterMaintenanceModeEvent) event;
-                    //TopologyManager.acquireReadLock();
-                    TopologyManager.acquireReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
-                            clusterMaitenanceEvent.getClusterId());
-
-                    Service service = TopologyManager.getTopology().getService(clusterMaitenanceEvent.getServiceName());
-                    Cluster cluster = service.getCluster(clusterMaitenanceEvent.getClusterId());
-                    AbstractClusterMonitor monitor;
-                    if (AutoscalerContext.getInstance().monitorExist((cluster.getClusterId()))) {
-                        monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterMaitenanceEvent.getClusterId());
-                        monitor.setStatus(ClusterStatus.Inactive);
-                    } else {
-                        log.error("cluster monitor not exists for the cluster: " + cluster.toString());
-                    }
-                } catch (Exception e) {
-                    log.error("Error processing event", e);
-                } finally {
-                    //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForCluster(clusterMaitenanceEvent.getServiceName(),
-                            clusterMaitenanceEvent.getClusterId());
-                }
-            }
-
-        });
-
 
         topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
             @Override

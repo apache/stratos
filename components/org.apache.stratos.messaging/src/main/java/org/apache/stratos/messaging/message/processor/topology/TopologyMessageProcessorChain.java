@@ -41,7 +41,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ServiceRemovedMessageProcessor serviceRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterActivatedProcessor clusterActivatedProcessor;
-    private ClusterMaintenanceModeMessageProcessor clusterMaintenanceModeMessageProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
@@ -53,6 +52,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private GroupActivatedProcessor groupActivatedProcessor;
     //private CompositeApplicationRemovedMessageProcessor compositeApplicationRemovedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
+    private ApplicationUndeployedMessageProcessor applicationUndeployedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
     private ApplicationActivatedMessageProcessor applicationActivatedMessageProcessor;
     private ApplicationInactivatedMessageProcessor applicationInactivatedMessageProcessor;
@@ -75,9 +75,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterActivatedProcessor = new ClusterActivatedProcessor();
         add(clusterActivatedProcessor);
-
-        clusterMaintenanceModeMessageProcessor = new ClusterMaintenanceModeMessageProcessor();
-        add(clusterMaintenanceModeMessageProcessor);
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
@@ -109,6 +106,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
 
+        applicationUndeployedMessageProcessor = new ApplicationUndeployedMessageProcessor();
+        add(applicationUndeployedMessageProcessor);
+
         applicationRemovedMessageProcessor = new ApplicationRemovedMessageProcessor();
         add(applicationRemovedMessageProcessor);
 
@@ -136,8 +136,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterMaintenanceModeEventListener) {
-            clusterMaintenanceModeMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceSpawnedEventListener) {
@@ -162,6 +160,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             groupActivatedProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationUndeployedEventListener) {
+            applicationUndeployedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationRemovedEventListener) {
             applicationRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
