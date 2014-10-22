@@ -28,7 +28,9 @@ import java.util.List;
 public class GroupBean {
     private List<GroupBean> subGroups = null;
     private List<Cluster> clusters = null;
-    public String alias;
+    private String alias;
+    private String deploymentPolicy;
+    private String autoScalingPolicy;
 
     public GroupBean(){
         this.setClusters(new ArrayList<Cluster>());
@@ -56,5 +58,29 @@ public class GroupBean {
 
     public void setClusters(List<Cluster> clusters) {
         this.clusters = clusters;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public void setAutoScalingPolicy(String autoScalingPolicy) {
+        this.autoScalingPolicy = autoScalingPolicy;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public String getAutoScalingPolicy() {
+        return autoScalingPolicy;
     }
 }

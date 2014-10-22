@@ -37,6 +37,7 @@ import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
+import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
@@ -455,7 +456,7 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationInfo(@PathParam("appId") String applicationId) throws RestAPIException {
-        Object application = ServiceUtils.getApplicationInfo(applicationId, getConfigContext());
+        ApplicationBean application = ServiceUtils.getApplicationInfo(applicationId, getConfigContext());
         if(application == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }else{

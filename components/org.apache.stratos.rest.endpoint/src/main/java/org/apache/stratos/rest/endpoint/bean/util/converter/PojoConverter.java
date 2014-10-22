@@ -19,8 +19,9 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.application.*;
 import org.apache.stratos.manager.composite.application.beans.CompositeAppDefinition;
@@ -30,9 +31,12 @@ import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
+import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
@@ -40,7 +44,6 @@ import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.Deploy
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
-import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -787,6 +790,31 @@ public class PojoConverter {
         SubscribableContext subscribableContext = new SubscribableContext();
         subscribableContext.setType(subscribableDefinition.getType());
         return subscribableContext;
+    }
+
+    public static ApplicationBean applicationToBean(Application application) {
+
+        if(application == null){
+            return null;
+        }
+
+        ApplicationBean applicationBean = new ApplicationBean();
+        applicationBean.setId(application.getUniqueIdentifier());
+        applicationBean.setTenantDomain(application.getTenantDomain());
+        applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        return applicationBean;
+    }
+
+    public static GroupBean toGroupBean(Group group) {
+        if(group == null){
+            return null;
+        }
+
+        GroupBean groupBean = new GroupBean();
+        groupBean.setAlias(group.getUniqueIdentifier());
+        groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
+        groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
+        return groupBean;
     }
 	
 	/*

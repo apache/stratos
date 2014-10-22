@@ -52,8 +52,6 @@ import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
@@ -68,7 +66,6 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBea
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.rest.endpoint.bean.topology.*;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
@@ -1582,28 +1579,43 @@ public class ServiceUtils {
         log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
     }
 
-    public static Object getApplicationInfo(String applicationId, ConfigurationContext configContext) {
+    public static ApplicationBean getApplicationInfo(String applicationId, ConfigurationContext configContext) {
+        ApplicationBean applicationBean = null;
+        try{
+            TopologyManager.acquireReadLockForApplication(applicationId);
+            Application application = TopologyManager.getTopology().getApplication(applicationId);
+            if(application == null){
+                return null;
+            }
+            applicationBean = PojoConverter.applicationToBean(application);
 
-        TopologyManager.acquireReadLock();
-        Application application = TopologyManager.getTopology().getApplication(applicationId);
-        ApplicationBean applicationBean = applicationToBean(application);
+            Map<String, ClusterDataHolder> topLevelClusterDataMap  = application.getClusterDataMap();
+            for(Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()){
+                ClusterDataHolder clusterDataHolder = entry.getValue();
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceType = clusterDataHolder.getServiceType();
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                Cluster topLevelCluster;
 
-        Map<String, ClusterDataHolder> topLevelClusterDataMap  = application.getClusterDataMap();
-        for(Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()){
-            String alias = entry.getKey();
-            ClusterDataHolder clusterDataHolder = entry.getValue();
-            String clusterId = clusterDataHolder.getClusterId();
-            Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterDataHolder.getServiceType()).getCluster(clusterId);
-            applicationBean.clusters.add(toClusterBean(topLevelCluster));
+                try {
+                    topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                }finally {
+                    TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+                }
+                applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster));
+            }
+
+            Collection<Group> groups = application.getGroups();
+            for(Group group :  groups){
+                GroupBean groupBean = PojoConverter.toGroupBean(group);
+                setSubGroups(group, groupBean);
+                applicationBean.addGroup(groupBean);
+            }
+        }finally {
+            TopologyManager.releaseReadLockForApplication(applicationId);
         }
 
-        Collection<Group> groups = application.getGroups();
-        for(Group group :  groups){
-            GroupBean groupBean = toGroupBean(group);
-            setSubGroups(group, groupBean);
-            applicationBean.addGroup(groupBean);
-        }
-        TopologyManager.releaseReadLock();
+
         return applicationBean;
     }
 
@@ -1611,7 +1623,7 @@ public class ServiceUtils {
         Collection<Group> subgroups = group.getGroups();
         addClustersToGroupBean(group, groupBean);
         for(Group subGroup : subgroups){
-            GroupBean subGroupBean = toGroupBean(subGroup);
+            GroupBean subGroupBean = PojoConverter.toGroupBean(subGroup);
 
             setSubGroups(subGroup, subGroupBean);
             groupBean.addGroup(subGroupBean);
@@ -1624,25 +1636,8 @@ public class ServiceUtils {
             String alias = x.getKey();
             ClusterDataHolder clusterHolder = x.getValue();
             Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterHolder.getServiceType()).getCluster(clusterHolder.getClusterId());
-            groupBean.addCluster(toClusterBean(topLevelCluster));
+            groupBean.addCluster(PojoConverter.populateClusterPojos(topLevelCluster));
         }
     }
 
-    private static GroupBean toGroupBean(Group group) {
-        GroupBean groupBean = new GroupBean();
-        groupBean.alias = group.getUniqueIdentifier();
-        return groupBean;
-    }
-
-    private static ApplicationBean applicationToBean(Application application) {
-        ApplicationBean applicationBean = new ApplicationBean();
-        applicationBean.id = application.getUniqueIdentifier();
-        return applicationBean;
-    }
-
-    private static org.apache.stratos.rest.endpoint.bean.topology.Cluster toClusterBean(Cluster cluster){
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster clusterBean = new org.apache.stratos.rest.endpoint.bean.topology.Cluster();
-        clusterBean.serviceName=cluster.getServiceName();
-        return clusterBean;
-    }
 }
