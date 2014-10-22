@@ -350,8 +350,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                 //TODO parent.notify();
                 throw new RuntimeException(msg);
             }
-
-            AutoscalerContext.getInstance().addMonitor(monitor);
             aliasToActiveMonitorsMap.put(context.getId(), monitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Monitor has been added successfully for: %s",

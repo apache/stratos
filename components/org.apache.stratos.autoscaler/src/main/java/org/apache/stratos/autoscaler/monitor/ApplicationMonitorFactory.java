@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
@@ -277,11 +278,6 @@ public class ApplicationMonitorFactory {
                         }
 
                     }
-                    if (cluster.hasMembers()) {
-                        //triggering the status checker if cluster has members to decide
-                        // on the current status of the cluster
-                        StatusChecker.getInstance().onMemberStatusChange(clusterId);
-                    }
                     networkPartitionContext.addPartitionContext(partitionContext);
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Partition context has been added: [partition] %s",
@@ -294,7 +290,7 @@ public class ApplicationMonitorFactory {
                 if(!parentMonitor.isHasDependent() && !context.hasChild()) {
                     clusterMonitor.setHasDependent(true);
                 }
-                //clusterMonitor.setCurrentStatus(Status.Created);
+                AutoscalerContext.getInstance().addMonitor(clusterMonitor);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Network partition context has been added: [network partition] %s",
                             networkPartitionContext.getId()));
@@ -305,6 +301,12 @@ public class ApplicationMonitorFactory {
             if (cluster.getStatus() != clusterMonitor.getStatus()) {
                 //updating the status, so that it will notify the parent
                 clusterMonitor.setStatus(cluster.getStatus());
+            }
+
+            if (!cluster.hasMembers()) {
+                //triggering the status checker if cluster has members to decide
+                // on the current status of the cluster
+                StatusChecker.getInstance().onMemberStatusChange(clusterId);
             }
         } finally {
             //release read lock for the service and cluster
