@@ -155,6 +155,8 @@ class ThriftPublisher:
         :return: void
         """
         event_bundler = EventBundle()
+        event_bundler.addStringAttribute(self.stream_id)
+        event_bundler.addLongAttribute(time.time() * 1000)
         ThriftPublisher.assign_attributes(event.metaData, event_bundler)
         ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
         ThriftPublisher.assign_attributes(event.payloadData, event_bundler)

@@ -15,9 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from ...util.asyncscheduledtask import AsyncScheduledTask
-from gittle import Gittle
-from git import *
 
 class GitRepository:
     """
@@ -48,4 +45,4 @@ class GitRepository:
         self.commit_enabled = False
         """ :type : bool  """
         self.scheduled_update_task = None
-        """:type : AsyncScheduledTask """
+        """:type : ScheduledExecutor """

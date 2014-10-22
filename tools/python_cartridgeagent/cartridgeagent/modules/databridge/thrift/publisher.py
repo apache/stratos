@@ -42,6 +42,8 @@ class Publisher:
         self.sessionId = None
         self.streamId = None
 
+        self.event_num = 0
+
     def connect(self, username, password):
         # Create a client to use the protocol encoder
         Publisher.client = ThriftSecureEventTransmissionService.Client(self.protocol)
@@ -57,12 +59,10 @@ class Publisher:
 
     def publish(self, event):
         # Build thrift event bundle
-        #event = EventBundle()
         event.setSessionId(self.sessionId)
-        event.setEventNum(0)
-        event.addStringAttribute(self.streamId)
-        event.addLongAttribute(time.time() * 1000)
-        #event.addStringAttribute(msg)
+        event.setEventNum(self.event_num)
+        self.event_num += 1
+
         # Publish
         Publisher.client.publish(event.getEventBundle())
 

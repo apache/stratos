@@ -164,5 +164,5 @@ def get_working_dir():
     :return: Base working dir path
     :rtype : str
     """
-    #"/path/to/cartridge-agent/modules/util/".split("modules") returns ["/path/to/cartridge-agent/", "/util"]
+    #"/path/to/cartridgeagent/modules/util/".split("modules") returns ["/path/to/cartridgeagent/", "/util"]
     return os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
