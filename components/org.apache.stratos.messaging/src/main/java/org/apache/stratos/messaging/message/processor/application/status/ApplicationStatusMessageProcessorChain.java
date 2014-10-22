@@ -43,6 +43,9 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
     private ApplicationStatusAppTerminatedMessageProcessor applicationStatusAppTerminatedMessageProcessor;
     private ApplicationStatusAppTerminatingMessageProcessor applicationStatusAppTerminatingMessageProcessor;
 
+    private ApplicationStatusGroupTerminatedMessageProcessor groupTerminatedMessageProcessor;
+    private ApplicationStatusGroupTerminatingMessageProcessor groupTerminatingMessageProcessor;
+
     public void initialize() {
         // Add instance notifier event processors
         clusterActivatedMessageProcessor = new ApplicationStatusClusterActivatedMessageProcessor();
@@ -72,6 +75,11 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
         applicationStatusAppTerminatingMessageProcessor = new ApplicationStatusAppTerminatingMessageProcessor();
         this.add(applicationStatusAppTerminatingMessageProcessor);
 
+        groupTerminatedMessageProcessor = new ApplicationStatusGroupTerminatedMessageProcessor();
+        this.add(groupTerminatedMessageProcessor);
+
+        groupTerminatingMessageProcessor = new ApplicationStatusGroupTerminatingMessageProcessor();
+        this.add(groupTerminatingMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Instance notifier message processor chain initialized");
@@ -97,7 +105,12 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
             applicationStatusAppTerminatingMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ApplicationTerminatedEventListener){
             applicationStatusAppTerminatedMessageProcessor.addEventListener(eventListener);
-        } else {
+        } else if (eventListener instanceof GroupInTerminatingEventListener){
+            groupTerminatingMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof  GroupInTerminatedEventListener){
+            groupTerminatedMessageProcessor.addEventListener(eventListener);
+        } else
+        {
             throw new RuntimeException("Unknown event listener");
         }
     }

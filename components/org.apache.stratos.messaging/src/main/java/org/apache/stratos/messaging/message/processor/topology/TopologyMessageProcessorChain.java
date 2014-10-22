@@ -22,14 +22,10 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.application.status.*;
+import org.apache.stratos.messaging.listener.application.status.ApplicationInActivatedEventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatedEventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.listener.topology.ApplicationActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ApplicationCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterInActivateEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupInActivateEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -62,6 +58,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ApplicationInactivatedMessageProcessor applicationInactivatedMessageProcessor;
     private ApplicationTerminatedMessageProcessor applicationTerminatedMessageProcessor;
     private ApplicationTerminatingMessageProcessor applicationTerminatingMessageProcessor;
+    private GroupTerminatingProcessor groupTerminatingProcessor;
+    private GroupTerminatedProcessor groupTerminatedProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -112,6 +110,12 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         groupInActivateProcessor = new GroupInActivateProcessor();
         add(groupInActivateProcessor);
+
+        groupTerminatingProcessor = new GroupTerminatingProcessor();
+        add(groupTerminatingProcessor);
+
+        groupTerminatedProcessor = new GroupTerminatedProcessor();
+        add(groupTerminatedProcessor);
 
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
@@ -172,6 +176,10 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             groupActivatedProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInActivateEventListener) {
             groupInActivateProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof GroupTerminatedEventListener){
+            groupTerminatedProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof GroupTerminatingEventListener){
+            groupTerminatingProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationUndeployedEventListener) {

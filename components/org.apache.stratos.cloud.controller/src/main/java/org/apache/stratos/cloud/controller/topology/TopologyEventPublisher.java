@@ -26,11 +26,6 @@ import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
-import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.ServiceType;
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
@@ -289,5 +284,21 @@ public class TopologyEventPublisher {
                     applicationTerminatedEvent.getAppId()));
         }
         publishEvent(applicationTerminatedEvent);
+    }
+
+    public static void sendGroupTerminatedEvent(GroupTerminatedEvent groupTerminatedTopologyEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing group terminated event: [appId] %s",
+                    groupTerminatedTopologyEvent.getAppId()));
+        }
+        publishEvent(groupTerminatedTopologyEvent);
+    }
+
+    public static void sendGroupTerminatingEvent(GroupTerminatingEvent groupTerminatingTopologyEvent) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing group terminating event: [appId] %s",
+                    groupTerminatingTopologyEvent.getAppId()));
+        }
+        publishEvent(groupTerminatingTopologyEvent);
     }
 }

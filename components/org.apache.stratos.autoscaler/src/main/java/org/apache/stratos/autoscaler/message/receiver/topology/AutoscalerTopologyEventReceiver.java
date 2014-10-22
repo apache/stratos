@@ -35,9 +35,14 @@ import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.status.GroupInTerminatingEvent;
 import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.listener.application.status.GroupInTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -232,6 +237,48 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(GroupStatus.Inactive);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new GroupTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[GroupTerminatedEven] Received: " + event.getClass());
+
+                GroupTerminatingEvent groupTerminatingEvent = (GroupTerminatingEvent) event;
+                String appId = groupTerminatingEvent.getAppId();
+                String groupId = groupTerminatingEvent.getGroupId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                GroupMonitor monitor = (GroupMonitor) appMonitor.findGroupMonitorWithId(groupId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(GroupStatus.Terminating);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new GroupTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[GroupTerminatedEven] Received: " + event.getClass());
+
+                GroupTerminatedEvent groupTerminatedEvent = (GroupTerminatedEvent) event;
+                String appId = groupTerminatedEvent.getAppId();
+                String groupId = groupTerminatedEvent.getGroupId();
+
+                ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+                GroupMonitor monitor = (GroupMonitor) appMonitor.findGroupMonitorWithId(groupId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(GroupStatus.Terminated);
 
                 //starting the status checker to decide on the status of it's parent
                 //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);

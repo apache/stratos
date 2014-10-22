@@ -32,14 +32,18 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.application.status.*;
+import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationCreatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationTerminatingEvent;
+import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.event.topology.*;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
@@ -1021,5 +1025,73 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
+    }
+
+    public static void handleGroupTerminatedEvent(GroupInTerminatedEvent event) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(event.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    event.getAppId()));
+            return;
+        }
+
+        Group group = application.getGroupRecursively(event.getGroupId());
+        if (group == null) {
+            log.warn(String.format("Group %s does not exist",
+                    event.getGroupId()));
+            return;
+        }
+
+        org.apache.stratos.messaging.event.topology.GroupTerminatedEvent groupTerminatedTopologyEvent =
+                new org.apache.stratos.messaging.event.topology.GroupTerminatedEvent(
+                        event.getAppId(),
+                        event.getGroupId());
+        try {
+            TopologyManager.acquireWriteLock();
+            group.setStatus(GroupStatus.Terminated);
+            log.info("Group activated adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendGroupTerminatedEvent(groupTerminatedTopologyEvent);
+    }
+
+    public static void handleGroupTerminatingEvent(GroupInTerminatingEvent event) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(event.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    event.getAppId()));
+            return;
+        }
+
+        Group group = application.getGroupRecursively(event.getGroupId());
+        if (group == null) {
+            log.warn(String.format("Group %s does not exist",
+                    event.getGroupId()));
+            return;
+        }
+
+        org.apache.stratos.messaging.event.topology.GroupTerminatingEvent groupTerminatingTopologyEvent =
+                new org.apache.stratos.messaging.event.topology.GroupTerminatingEvent(
+                        event.getAppId(),
+                        event.getGroupId());
+        try {
+            TopologyManager.acquireWriteLock();
+            group.setStatus(GroupStatus.Terminating);
+            log.info("Group activated adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendGroupTerminatingEvent(groupTerminatingTopologyEvent);
     }
 }
