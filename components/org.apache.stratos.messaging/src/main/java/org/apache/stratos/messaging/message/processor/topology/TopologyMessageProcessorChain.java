@@ -22,8 +22,12 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationInActivatedEventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatedEventListener;
+import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
+import org.apache.stratos.messaging.message.processor.topology.updater.ApplicationTerminatingMessageProcessor;
 
 /**
  * Defines default topology message processor chain.
@@ -51,6 +55,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
     private ApplicationRemovedMessageProcessor applicationRemovedMessageProcessor;
     private ApplicationActivatedMessageProcessor applicationActivatedMessageProcessor;
+    private ApplicationInactivatedMessageProcessor applicationInactivatedMessageProcessor;
+    private ApplicationTerminatedMessageProcessor applicationTerminatedMessageProcessor;
+    private ApplicationTerminatingMessageProcessor applicationTerminatingMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -108,6 +115,15 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         applicationActivatedMessageProcessor = new ApplicationActivatedMessageProcessor();
         add(applicationActivatedMessageProcessor);
 
+        applicationInactivatedMessageProcessor = new ApplicationInactivatedMessageProcessor();
+        add(applicationInactivatedMessageProcessor);
+
+        applicationTerminatedMessageProcessor = new ApplicationTerminatedMessageProcessor();
+        add(applicationTerminatedMessageProcessor);
+
+        applicationTerminatingMessageProcessor = new ApplicationTerminatingMessageProcessor();
+        add(applicationTerminatingMessageProcessor);
+
         if (log.isDebugEnabled()) {
             log.debug("Topology message processor chain initialized X1");
         }
@@ -150,7 +166,14 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             applicationRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
             applicationActivatedMessageProcessor.addEventListener(eventListener);
-        } else {
+        } else  if (eventListener instanceof ApplicationInActivatedEventListener){
+            applicationInactivatedMessageProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof ApplicationTerminatedEventListener){
+            applicationTerminatedMessageProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof ApplicationTerminatingEventListener){
+            applicationTerminatingMessageProcessor.addEventListener(eventListener);
+        }
+        else {
             throw new RuntimeException("Unknown event listener");
         }
     }
