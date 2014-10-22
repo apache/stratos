@@ -160,18 +160,22 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(statusEvent);
+            onChildActivatedEvent(id);
+
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            onChildInActiveEvent();
+            onChildInActiveEvent(id);
             //TODO update the status of the Application as in_active when child becomes in_active
+
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            onChildTerminatingEvent();
+            onChildTerminatingEvent(id);
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
             this.aliasToInActiveMonitorsMap.remove(id);
-            if (this.status != ApplicationStatus.Terminating) {
-                onChildTerminatedEvent();
+            if (this.status != ApplicationStatus.Terminating && !this.aliasToInActiveMonitorsMap.isEmpty() &&
+                    !this.aliasToActiveMonitorsMap.isEmpty()) {
+                onChildTerminatedEvent(id);
             } else {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);

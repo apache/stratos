@@ -32,7 +32,7 @@ public abstract class ApplicationContext {
 
     private String id;
     protected boolean started;
-    protected boolean terminated;
+    private boolean terminated;
 
     private ClusterStatus status;
 
@@ -95,4 +95,11 @@ public abstract class ApplicationContext {
     }
 
 
+    public boolean isTerminated() {
+        return terminated;
+    }
+
+    public void setTerminated(boolean terminated) {
+        this.terminated = terminated;
+    }
 }

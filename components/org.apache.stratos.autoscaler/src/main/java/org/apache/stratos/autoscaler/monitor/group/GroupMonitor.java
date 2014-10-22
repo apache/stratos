@@ -22,9 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
-import org.apache.stratos.autoscaler.monitor.*;
+import org.apache.stratos.autoscaler.monitor.EventHandler;
+import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
+import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
@@ -33,8 +33,6 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-
-import java.util.List;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -82,19 +80,23 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(statusEvent);
+            onChildActivatedEvent(id);
+
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            onChildInActiveEvent();
+            onChildInActiveEvent(id);
             //To update the status of the Group
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            onChildTerminatingEvent();
+            onChildTerminatingEvent(id);
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
             this.aliasToInActiveMonitorsMap.remove(id);
-            if (this.status != GroupStatus.Terminating) {
-                onChildTerminatedEvent();
+            if (this.status != GroupStatus.Terminating && !this.aliasToInActiveMonitorsMap.isEmpty() &&
+                                !this.aliasToActiveMonitorsMap.isEmpty()) {
+                onChildTerminatedEvent(id);
             } else {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);

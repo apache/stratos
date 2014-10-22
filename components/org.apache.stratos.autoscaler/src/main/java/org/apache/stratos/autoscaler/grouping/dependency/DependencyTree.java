@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.messaging.domain.topology.Application;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,6 +159,27 @@ public class DependencyTree {
         //returning the top level as the monitor is in initializing state
         return this.applicationContextList;
     }
+
+    public List<ApplicationContext> getStarAbleDependenciesByTermination() {
+        //Breadth First search over the graph to find out which level has the terminated contexts
+        return traverseGraphByLevel(this.applicationContextList);
+    }
+
+
+    private List<ApplicationContext> traverseGraphByLevel(List<ApplicationContext> contexts) {
+        for(ApplicationContext context : contexts) {
+            if(context.isTerminated()) {
+                return contexts;
+            }
+        }
+
+        for(ApplicationContext context : contexts) {
+            return traverseGraphByLevel(context.getApplicationContextList());
+        }
+        return null;
+    }
+
+
 
     /**
      * When one group/cluster terminates/in_maintenance, need to consider about other
