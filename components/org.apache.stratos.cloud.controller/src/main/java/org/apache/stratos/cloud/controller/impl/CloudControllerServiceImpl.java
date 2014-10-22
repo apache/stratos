@@ -95,7 +95,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
                     currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
                     currentData.setCartridges(serializedObj.getCartridges());
-                    currentData.setConfigCompositeApplication(serializedObj.getConfigCompositeApplication());
                     currentData.setServiceGroups(serializedObj.getServiceGroups());
 
                     if(log.isDebugEnabled()) {
@@ -115,50 +114,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
         }
-        // restore compostie application
-        List<ConfigCompositeApplication> apps = restoreConfigCompositeApplication();
-        if (apps == null) {
-            this.dataHolder.setConfigCompositeApplication(new ArrayList<ConfigCompositeApplication>());
-
-        }
+        
     }
 
-
-    public void deployCompositeApplicationDefinition(CompositeApplicationDefinition compositeApplicationDefinition) throws InvalidCompositeApplicationDefinitionException,
-            InvalidIaasProviderException {
-
-        String alias = compositeApplicationDefinition.getAlias();
-        if(log.isDebugEnabled()){
-            log.debug("composite application alias  : " + alias);
-        }
-
-        ConfigCompositeApplication messConfigApp = null;//TopologyBuilder.convertCompositeApplication(compositeApplicationDefinition);
-        String key = "compositeApplicationAlias"; //app.getAlias()
-
-
-        List<ConfigCompositeApplication> data = new ArrayList<ConfigCompositeApplication>();
-        data.add(messConfigApp);
-        dataHolder.setConfigCompositeApplication(data);
-
-        // persist
-        persist();
-
-        if(log.isDebugEnabled()){
-            log.debug("deploying composite application in cloud controller: " + compositeApplicationDefinition);
-        }
-
-        TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
-    }
-
-    public void unDeployCompositeApplicationDefinition(String appAlias) throws InvalidCompositeApplicationDefinitionException,
-            InvalidIaasProviderException {
-        if(log.isDebugEnabled()){
-            log.debug("undeploying composite application in cloud controller, removing all composite apps ");
-            dataHolder.removeAllConfigCompositeApplications();
-            persist();
-            TopologyBuilder.handleCompositeApplicationRemoved(appAlias);
-        }
-    }
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException {
@@ -1460,27 +1418,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleApplicationUndeployed(dataHolder, applicationId, tenantId, tenantDomain);
 
         //persist();
-    }
-
-    private List<ConfigCompositeApplication> restoreConfigCompositeApplication () {
-        List<ConfigCompositeApplication> apps = this.dataHolder.getConfigCompositeApplication();
-        if (apps == null) {
-            if (log.isDebugEnabled()) {
-                log.debug("composite applications  for cloud controller is null while restoring ");
-            }
-            return apps;
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("trying to  restore composite applications  for cloud controller " + apps.size());
-        }
-        for (ConfigCompositeApplication messConfigApp : apps) {
-            if (log.isDebugEnabled()) {
-                log.debug(" restoring composite application for cloud controller " + messConfigApp.getAlias());
-            }
-            TopologyBuilder.handleCompositeApplicationCreated(messConfigApp);
-        }
-
-        return apps;
     }
 
 }

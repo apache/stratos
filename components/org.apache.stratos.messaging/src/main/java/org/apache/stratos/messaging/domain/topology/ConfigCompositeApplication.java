@@ -8,6 +8,7 @@ import java.util.List;
 
 public class ConfigCompositeApplication  implements Serializable {
 	
+	/* grouping_poc */
 	private String applicationId;
 	private String alias;
 	private List<ConfigGroup> components;
@@ -38,5 +39,4 @@ public class ConfigCompositeApplication  implements Serializable {
 		this.cartridges = cartridges;
 	}
 	
-
 }

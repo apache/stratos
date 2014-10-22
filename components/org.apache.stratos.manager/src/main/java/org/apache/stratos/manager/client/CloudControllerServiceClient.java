@@ -132,7 +132,7 @@ public class CloudControllerServiceClient {
 
 
 	public void deployApplicationDefinition(ApplicationContext applicationContext)
-            throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException,
+            throws RemoteException, 
             CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceApplicationDefinitionExceptionException {
 
 		stub.deployApplicationDefinition(applicationContext);
@@ -145,12 +145,6 @@ public class CloudControllerServiceClient {
         stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
     }
 	
-	public void unDeployCompositeApplicationDefinition(String appAlias) throws RemoteException, CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException, CloudControllerServiceInvalidIaasProviderExceptionException   {
-		stub.unDeployCompositeApplicationDefinition(appAlias);
-    }
-
-
-
 
     @SuppressWarnings("unused")
     private Properties

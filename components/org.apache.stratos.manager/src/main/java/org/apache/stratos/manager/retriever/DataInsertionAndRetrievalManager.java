@@ -31,7 +31,6 @@ import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 import java.util.Collection;
 import java.util.Set;

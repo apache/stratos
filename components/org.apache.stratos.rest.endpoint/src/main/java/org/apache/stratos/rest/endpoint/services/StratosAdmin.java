@@ -183,42 +183,6 @@ public class StratosAdmin extends AbstractAdmin {
     }
     
 
-//
-//    @DELETE
-//    @Path("/application/definition/{applicationAlias}")
-//    @Produces("application/json")
-//    @Consumes("application/json")
-//    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-//    @SuperTenantService(true)
-//    // Grouping
-//    public Response unDeployApplicationDefinitionX(@PathParam("applicationAlias")String  configCompositeApplicationAlias)
-//            throws RestAPIException {
-//
-//         ServiceUtils.unDeployApplication(configCompositeApplicationAlias, getConfigContext(), getUsername(),
-//                 getTenantDomain());
-//        return Response.noContent().build();
-//
-//    }
-    
-    
-    
-    /*
-     * Grouping --- fix  API, use this instead of POST to remove application !!!!
-   
-    @DELETE
-    @Path("/cartridge/definition/{cartridgeType}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    @SuperTenantService(true)
-    public StratosAdminResponse unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-
-        return ServiceUtils.undeployCartridge(cartridgeType);
-    }
-    nnnnnn
-    */
-    
-
     @POST
     @Path("/cartridge/definition/")
     @Produces("application/json")

@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 
 import java.io.Serializable;
@@ -87,8 +86,6 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * List of deployed service groups
 	 */
 	private List<ServiceGroup> serviceGroups;
-	
-	private List<ConfigCompositeApplication> configCompositeApplication;
 
 	/**
 	 * List of IaaS Providers.
@@ -134,8 +131,6 @@ public class FasterLookUpDataHolder implements Serializable{
 
 		cartridges = new ArrayList<Cartridge>();
 		serviceGroups = new ArrayList<ServiceGroup>();
-		configCompositeApplication = new ArrayList<ConfigCompositeApplication>();
-		
 	}
 
 	public List<Cartridge> getCartridges() {
@@ -154,20 +149,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		return this.serviceGroups;
 	}
 
-	public List<ConfigCompositeApplication> getConfigCompositeApplication() {
-		return configCompositeApplication;
-	}
-
-	public void setConfigCompositeApplication(
-			List<ConfigCompositeApplication> configCompositeApplication) {
-		this.configCompositeApplication = configCompositeApplication;
-	}
-	
-	public void removeAllConfigCompositeApplications() {
-		if (this.configCompositeApplication != null) {
-			this.configCompositeApplication.removeAll(configCompositeApplication);
-		}
-	}
 
 	public Cartridge getCartridge(String cartridgeType) {
 		for (Cartridge cartridge : cartridges) {
@@ -177,7 +158,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		}
 
 		return null;
-
 	}
 	
 	public void addCartridge(Cartridge newCartridges) {

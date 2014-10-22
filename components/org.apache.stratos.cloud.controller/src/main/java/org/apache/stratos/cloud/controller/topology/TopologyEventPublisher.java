@@ -228,27 +228,6 @@ public class TopologyEventPublisher {
         publishEvent(completeTopologyEvent);
     }
 
-    // Grouping
-    public static void sendConfigApplicationCreatedEventEvent(ConfigCompositeApplication configCompositeApplication) {
-
-        CompositeApplicationCreatedEvent compositeApplicationCreatedEvent = new CompositeApplicationCreatedEvent(configCompositeApplication);
-
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Publishing compositeApplicationCreatedEvent: " + compositeApplicationCreatedEvent));
-        }
-        publishEvent(compositeApplicationCreatedEvent);
-    }
-
-    public static void sendConfigApplicationRemovedEventEvent(String alias) {
-
-        CompositeApplicationRemovedEvent compositeApplicationCreatedEvent = new CompositeApplicationRemovedEvent(alias);
-
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Publishing compositeApplicationRemovedEvent: " + compositeApplicationCreatedEvent));
-        }
-        publishEvent(compositeApplicationCreatedEvent);
-    }
-
     public static void sendApplicationActivatedEvent(ApplicationActivatedEvent applicationActivatedEvent) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing application activated event: [appId] %s",

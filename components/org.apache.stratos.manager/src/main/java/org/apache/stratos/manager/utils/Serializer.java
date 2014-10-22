@@ -26,7 +26,6 @@ import org.apache.stratos.manager.lookup.ClusterIdToSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.GroupSubscription;
-import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

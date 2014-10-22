@@ -738,28 +738,6 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
     }
 
-    public static void handleCompositeApplicationCreated(ConfigCompositeApplication messConfigApp) {
-        Topology topology = TopologyManager.getTopology();
-
-        //ConfigCompositeApplication messConfigApp;
-        try {
-
-            TopologyManager.acquireWriteLock();
-            String key = "compositeApplicationAlias"; //app.getAlias()
-            topology.addConfigCompositeApplication(key, messConfigApp);
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        TopologyEventPublisher.sendConfigApplicationCreatedEventEvent(messConfigApp);
-        log.info("TopolgyBuilder: sending sendConfigApplicationCreatedEventEvent ");
-
-    }
-
-    public static void handleCompositeApplicationRemoved(String alias) {
-        log.info("TopolgyBuilder: sending sendConfigApplicationRemovedEventEvent ");
-        TopologyEventPublisher.sendConfigApplicationRemovedEventEvent(alias);
-    }
 
     public static void handleClusterActivatedEvent(ClusterActivatedEvent clusterActivatedEvent) {
         Topology topology = TopologyManager.getTopology();

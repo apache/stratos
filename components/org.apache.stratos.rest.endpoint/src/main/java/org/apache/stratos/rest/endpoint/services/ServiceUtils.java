@@ -33,7 +33,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.composite.application.CompositeApplicationManager;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
@@ -86,7 +85,6 @@ public class ServiceUtils {
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceGroupingManager serviceGropingManager = new ServiceGroupingManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
-    private static CompositeApplicationManager compositeApplicationManager = new CompositeApplicationManager();
 
     static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                                 String userName, String tenantDomain) throws RestAPIException {
@@ -155,8 +153,6 @@ public class ServiceUtils {
             CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
 
         } catch (RemoteException e) {
-            throw new RestAPIException(e);
-        } catch (CloudControllerServiceInvalidCompositeApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
             throw new RestAPIException(e);
