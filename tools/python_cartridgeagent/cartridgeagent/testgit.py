@@ -6,7 +6,7 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -16,37 +16,12 @@
 # under the License.
 
 
-[formatters]
-keys=default
+from modules.extensions.defaultextensionhandler import *
+from modules.event.instance.notifier.events import ArtifactUpdatedEvent
 
-[formatter_default]
-format=[%(asctime)s] %(levelname)s {%(filename)s:%(funcName)s} - %(message)s
-class=logging.Formatter
+event_msg = '{"clusterId":"php.php.domain","repoPassword":"","repoURL":"https://github.com/chamilad/NeWoice","tenantId":"-1234","commitEnabled":false}'
+event = ArtifactUpdatedEvent.create_from_json(event_msg)
 
-[handlers]
-keys=console, error_file, log_file
+extension_handler = DefaultExtensionHandler()
+extension_handler.on_artifact_updated_event(event)
 
-[handler_console]
-class=logging.StreamHandler
-formatter=default
-args=tuple()
-
-[handler_log_file]
-class=logging.FileHandler
-level=LOG_LEVEL
-formatter=default
-args=("agent.log", "w")
-
-[handler_error_file]
-class=logging.FileHandler
-level=ERROR
-formatter=default
-args=("error.log", "w")
-
-[loggers]
-keys=root
-
-[logger_root]
-level=LOG_LEVEL
-formatter=default
-handlers=console,error_file,log_file

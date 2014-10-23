@@ -99,7 +99,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 auto_checkout = self.cartridge_agent_config.is_checkout_enabled
 
                 try:
-                    update_interval = len(
+                    update_interval = int(
                         self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL, False))
                 except ParameterNotFoundException:
                     self.log.exception("Invalid artifact sync interval specified ")
@@ -110,14 +110,17 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                 self.log.info("Artifact updating task enabled, update interval: %r seconds" % update_interval)
 
-                self.log.info("Auto Commit is turned %r " % "on" if auto_commit else "off")
-                self.log.info("Auto Checkout is turned %r " % "on" if auto_checkout else "off")
+                self.log.info("Auto Commit is turned %r " % ("on" if auto_commit else "off"))
+                self.log.info("Auto Checkout is turned %r " % ("on" if auto_checkout else "off"))
 
-                agentgithandler.AgentGitHandler.schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit,
-                                                                        update_interval)
+                agentgithandler.AgentGitHandler.schedule_artifact_update_scheduled_task(
+                    repo_info,
+                    auto_checkout,
+                    auto_commit,
+                    update_interval)
 
     def on_artifact_update_scheduler_event(self, tenant_id):
-        env_params = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": tenant_id, "STRATOS_ARTIFACT_UPDATED_SCHEDULER": True}
+        env_params = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": str(tenant_id), "STRATOS_ARTIFACT_UPDATED_SCHEDULER": str(True)}
 
         extensionutils.execute_artifacts_updated_extension(env_params)
 

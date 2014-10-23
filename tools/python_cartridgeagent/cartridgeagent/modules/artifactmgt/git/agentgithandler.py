@@ -19,6 +19,7 @@ from threading import current_thread, Thread
 from git import *
 from gittle import Gittle, GittleAuth  # GitPython and Gittle are both used at the time being for pros and cons of both
 import urllib2
+import os
 
 from ... util.log import LogFactory
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
@@ -26,6 +27,7 @@ from gitrepository import GitRepository
 from ... config import cartridgeagentconfiguration
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ... artifactmgt.repositoryinformation import RepositoryInformation
+
 
 class AgentGitHandler:
     """
@@ -81,7 +83,7 @@ class AgentGitHandler:
         else:
             #subscribing run.. need to clone
             subscribe_run = True
-            repo_context = AgentGitHandler.clone(repo_context)
+            repo_context = AgentGitHandler.clone(repo_info)
 
         return subscribe_run, repo_context
 
@@ -133,13 +135,15 @@ class AgentGitHandler:
     @staticmethod
     def pull(repo_context):
         repo = Repo(repo_context.local_repo_path)
-        from ....agent import CartridgeAgent
-        AgentGitHandler.extension_handler = CartridgeAgent.extension_handler
+        import agent
+        AgentGitHandler.extension_handler = agent.CartridgeAgent.extension_handler
         try:
             repo.git.checkout("master")
             pull_output = repo.git.pull()
             if "Already up-to-date." not in pull_output:
                 AgentGitHandler.log.debug("Artifacts were updated as a result of the pull operation, thread: %r - %r" % (current_thread().getName(), current_thread().ident))
+            else:
+                AgentGitHandler.log.debug("Pull operation: Already up-to-date, thread: %r - %r" % (current_thread().getName(), current_thread().ident))
 
             AgentGitHandler.extension_handler.on_artifact_update_scheduler_event(repo_context.tenant_id)
         except GitCommandError as ex:
@@ -235,9 +239,10 @@ class AgentGitHandler:
         :rtype: GittleAuth
         """
         if repo_context.key_based_auth:
-            pkey = AgentGitHandler.get_private_key()
-            auth = GittleAuth(pkey=pkey)
-        elif repo_context.repo_username.strip() != "" and repo_context.repo_password.strip() != "":
+            private_key = AgentGitHandler.get_private_key()
+            auth = GittleAuth(pkey=private_key)
+        elif repo_context.repo_username is not None and repo_context.repo_username.strip() != "" and \
+                        repo_context.repo_password is not None and repo_context.repo_password.strip() != "":
             auth = GittleAuth(username=repo_context.repo_username, password=repo_context.repo_password)
         else:
             auth = None
@@ -349,7 +354,7 @@ class AgentGitHandler:
                 #"app_path"
                 repo_path += git_local_repo_path
 
-                if super_tenant_repo_path is not None  and super_tenant_repo_path != "":
+                if super_tenant_repo_path is not None and super_tenant_repo_path != "":
                     super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") else "/" + super_tenant_repo_path
                     super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") else  super_tenant_repo_path + "/"
                     #"app_path/repository/deploy/server/"
@@ -495,9 +500,11 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
     def execute_task(self):
         try:
             if self.auto_checkout:
+                self.log.debug("Running checkout job")
                 AgentGitHandler.checkout(self.repo_info)
         except:
             self.log.exception("Auto checkout task failed")
 
         if self.auto_commit:
+            self.log.debug("Running commit job")
             AgentGitHandler.commit(self.repo_info)
