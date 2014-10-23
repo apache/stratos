@@ -23,13 +23,13 @@ package org.apache.stratos.messaging.event.application.status;
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class GroupInActivateEvent extends StatusEvent {
+public class GroupInactivateEvent extends StatusEvent {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String groupId;
     private String appId;
 
-    public GroupInActivateEvent(String appId, String groupId) {
+    public GroupInactivateEvent(String appId, String groupId) {
         this.appId = appId;
         this.groupId = groupId;
     }

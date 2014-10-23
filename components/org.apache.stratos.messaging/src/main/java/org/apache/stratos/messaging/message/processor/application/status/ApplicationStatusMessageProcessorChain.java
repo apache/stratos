@@ -34,7 +34,7 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
     private ApplicationStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
     private ApplicationStatusClusterInActivateMessageProcessor clusterInActivateMessageProcessor;
     private ApplicationStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
-    private ApplicationStatusGroupInActivateMessageProcessor groupInActivateMessageProcessor;
+    private ApplicationStatusGroupInActivatedMessageProcessor groupInActivateMessageProcessor;
     private ApplicationStatusAppActivatedMessageProcessor appActivatedMessageProcessor;
     private ApplicationStatusAppCreatedMessageProcessor applicationStatusAppCreatedMessageProcessor;
     private ApplicationStatusAppInActivatedMessageProcessor applicationStatusAppInActivatedMessageProcessor;
@@ -55,7 +55,7 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
         groupActivatedMessageProcessor = new ApplicationStatusGroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
 
-        groupInActivateMessageProcessor = new ApplicationStatusGroupInActivateMessageProcessor();
+        groupInActivateMessageProcessor = new ApplicationStatusGroupInActivatedMessageProcessor();
         add(groupInActivateMessageProcessor);
 
         appActivatedMessageProcessor = new ApplicationStatusAppActivatedMessageProcessor();
@@ -91,7 +91,7 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
             clusterInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupInActivateEventListener) {
+        } else if (eventListener instanceof GroupInactivateEventListener) {
             groupInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
             appActivatedMessageProcessor.addEventListener(eventListener);
@@ -103,13 +103,13 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
             applicationStatusAppTerminatingMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ApplicationTerminatedEventListener){
             applicationStatusAppTerminatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupInTerminatingEventListener){
+        } else if (eventListener instanceof GroupTerminatingEventListener){
             groupTerminatingMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof  GroupInTerminatedEventListener){
+        } else if (eventListener instanceof GroupTerminatedEventListener){
             groupTerminatedMessageProcessor.addEventListener(eventListener);
         } else
         {
-            throw new RuntimeException("Unknown event listener");
+            throw new RuntimeException("Unknown event listener " + eventListener.toString());
         }
     }
 }

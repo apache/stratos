@@ -21,14 +21,13 @@ package org.apache.stratos.messaging.message.processor.application.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupInActivateEvent;
+import org.apache.stratos.messaging.event.application.status.GroupInactivateEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-public class ApplicationStatusGroupInActivateMessageProcessor extends MessageProcessor {
+public class ApplicationStatusGroupInActivatedMessageProcessor extends MessageProcessor {
     private static final Log log =
-            LogFactory.getLog(ApplicationStatusGroupInActivateMessageProcessor.class);
+            LogFactory.getLog(ApplicationStatusGroupInActivatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -38,10 +37,10 @@ public class ApplicationStatusGroupInActivateMessageProcessor extends MessagePro
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (GroupInActivateEvent.class.getName().equals(type)) {
+        if (GroupInactivateEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            GroupInActivateEvent event =
-                    (GroupInActivateEvent) Util.jsonToObject(message, GroupInActivateEvent.class);
+            GroupInactivateEvent event =
+                    (GroupInactivateEvent) Util.jsonToObject(message, GroupInactivateEvent.class);
 
             if (log.isDebugEnabled()) {
                 log.debug("Received GroupInActivateEvent: " + event.toString());

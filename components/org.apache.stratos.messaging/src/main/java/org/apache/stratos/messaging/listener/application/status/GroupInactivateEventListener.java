@@ -23,5 +23,5 @@ import org.apache.stratos.messaging.listener.EventListener;
 /**
  * Created by reka on 9/22/14.
  */
-public abstract class GroupInTerminatedEventListener extends EventListener {
+public abstract class GroupInactivateEventListener extends EventListener {
 }

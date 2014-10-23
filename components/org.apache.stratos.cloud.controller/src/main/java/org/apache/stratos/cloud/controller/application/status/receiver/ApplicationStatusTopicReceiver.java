@@ -37,7 +37,6 @@ public class ApplicationStatusTopicReceiver implements Runnable {
         addEventListeners();
     }
 
-    @Override
     public void run() {
         //FIXME this activated before autoscaler deployer activated.
         try {
@@ -80,7 +79,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
-        statusEventReceiver.addEventListener(new GroupInTerminatedEventListener() {
+        statusEventReceiver.addEventListener(new GroupTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupTerminatedEvent((GroupInTerminatedEvent) event);
@@ -88,7 +87,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
-        statusEventReceiver.addEventListener(new GroupInTerminatingEventListener() {
+        statusEventReceiver.addEventListener(new GroupTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupTerminatingEvent((GroupInTerminatingEvent) event);
