@@ -414,6 +414,16 @@ public class StratosAdmin extends AbstractAdmin {
         return  Response.ok().entity(subscriptions).build();
     }
 
+    /**
+     * This API provides information about the application denoted by the given appId. Details includes,
+     *  Application details,
+     *  Top level cluster details
+     *  details of the group and sub groups.
+     * @param applicationId Id of the application.
+     * @return Json representing the application details with 200 as HTTP status. HTTP 404 is returned when there is
+     * no application with given Id.
+     * @throws RestAPIException is thrown in case of failure occurs.
+     */
 
     @GET
     @Path("/application/{appId}")
