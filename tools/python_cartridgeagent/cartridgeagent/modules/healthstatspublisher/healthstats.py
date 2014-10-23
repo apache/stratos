@@ -19,6 +19,7 @@ from threading import Thread
 import time
 import psutil
 import os
+import multiprocessing
 
 from abstracthealthstatisticspublisher import *
 from ..databridge.agent import *
@@ -181,7 +182,9 @@ class DefaultHealthStatisticsReader(AbstractHealthStatisticsReader):
     @staticmethod
     def __read_load_avg():
         (one, five, fifteen) = os.getloadavg()
-        return one
+        cores = multiprocessing.cpu_count()
+
+        return (one/cores) * 100
 
 
 class CEPPublisherConfiguration:
