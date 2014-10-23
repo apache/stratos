@@ -172,6 +172,11 @@ public class RuleTasksDelegator {
     }
 
     public void delegateTerminate(PartitionContext partitionContext, String memberId) {
+
+        log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
+                partitionContext.getPartitionId() + " ], NW Partition [ " +
+                partitionContext.getNetworkPartitionId() + " ]");
+
         try {
             //calling SM to send the instance notification event.
             InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);

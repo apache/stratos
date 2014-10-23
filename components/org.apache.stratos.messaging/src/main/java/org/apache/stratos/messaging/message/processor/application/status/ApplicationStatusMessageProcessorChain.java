@@ -22,8 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.application.status.*;
-import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**

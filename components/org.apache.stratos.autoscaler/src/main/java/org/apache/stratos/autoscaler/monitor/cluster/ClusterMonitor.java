@@ -102,11 +102,16 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     public void terminateAllMembers() {
 
         for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
-            //if (log.isDebugEnabled()) {
-                log.info("Starting to terminate all members in Network Partition " + networkPartitionContext.getId());
-           // }
-            terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
-                    (terminateAllKnowledgeSession, terminateAllFactHandle, networkPartitionContext);
+            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                //if (log.isDebugEnabled()) {
+                log.info("Starting to terminate all members in Network Partition [ " +
+                        networkPartitionContext.getId() + " ], Partition [ " +
+                        partitionContext.getPartitionId() + " ]");
+                // }
+
+                terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
+                        (terminateAllKnowledgeSession, terminateAllFactHandle, partitionContext);
+            }
         }
     }
 

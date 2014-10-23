@@ -23,13 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.topology.GroupTerminatedEvent;
-import org.apache.stratos.messaging.event.topology.GroupTerminatingEvent;
 import org.apache.stratos.messaging.listener.application.status.*;
-import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupTerminatedEventListener;
-import org.apache.stratos.messaging.listener.topology.GroupTerminatingEventListener;
 import org.apache.stratos.messaging.message.receiver.application.status.ApplicationStatusEventReceiver;
 
 public class ApplicationStatusTopicReceiver implements Runnable {
@@ -86,7 +80,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
-        statusEventReceiver.addEventListener(new GroupTerminatedEventListener() {
+        statusEventReceiver.addEventListener(new GroupInTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupTerminatedEvent((GroupInTerminatedEvent) event);
@@ -94,7 +88,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
-        statusEventReceiver.addEventListener(new GroupTerminatingEventListener() {
+        statusEventReceiver.addEventListener(new GroupInTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupTerminatingEvent((GroupInTerminatingEvent) event);

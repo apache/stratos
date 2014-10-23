@@ -68,6 +68,7 @@ public class AutoscalerRuleEvaluator {
         if (log.isDebugEnabled()) {
             log.debug("Scale check rule is parsed successfully");
         }
+
         terminateAllKbase = readKnowledgeBase(TERMINATE_ALL_DRL_FILE_NAME);
 
         if (log.isDebugEnabled()) {
@@ -172,7 +173,7 @@ public class AutoscalerRuleEvaluator {
     }
     public StatefulKnowledgeSession getTerminateAllStatefulSession() {
         StatefulKnowledgeSession ksession;
-        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+        ksession = terminateAllKbase.newStatefulKnowledgeSession();
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
