@@ -122,10 +122,7 @@ public class ClusterActivatedProcessor extends MessageProcessor {
                 log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Active);
             }
             cluster.setStatus(ClusterStatus.Active);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster updated as activated : %s",
-                        cluster.toString()));
-            }
+
         }
 
         // Notify event listeners

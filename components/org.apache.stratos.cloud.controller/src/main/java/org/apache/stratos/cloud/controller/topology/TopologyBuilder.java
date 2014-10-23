@@ -717,8 +717,6 @@ public class TopologyBuilder {
                         }
                         // for now anyway update the status forcefully
                         aCluster.setStatus(ClusterStatus.Terminating);
-                        log.info("Cluster " + clusterDataHolder.getClusterId() + "'s status updated to "
-                                + ClusterStatus.Terminating);
 
                     } else {
                         log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +

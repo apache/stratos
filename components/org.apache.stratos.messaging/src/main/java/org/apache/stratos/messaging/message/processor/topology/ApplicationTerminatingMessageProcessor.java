@@ -93,10 +93,7 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
                         " ] to [ " + ApplicationStatus.Terminating + " ]");
             }
             application.setStatus(ApplicationStatus.Terminating);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Application updated as activated : %s",
-                        application.toString()));
-            }
+
         }
 
         // Notify event listeners

@@ -68,7 +68,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         this.hostNames = new ArrayList<String>();
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
-        this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created);
+        this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
         // temporary; should be removed
         //this.status = ClusterStatus.Created;
     }

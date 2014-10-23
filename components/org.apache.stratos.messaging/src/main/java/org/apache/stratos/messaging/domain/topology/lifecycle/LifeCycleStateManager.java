@@ -32,11 +32,17 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
 
     private Stack<T> stateStack;
 
-    public LifeCycleStateManager(T initialState) {
+    // a unique id which points to the relevant topology member
+    // ex.: member id in a Member
+    private String identifier;
 
+    public LifeCycleStateManager(T initialState, String identifier) {
+
+        this.identifier = identifier;
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        log.info("Life Cycle State Manager started, initial state: " + initialState.toString());
+        log.info("Life Cycle State Manager started for Topology element [ " + identifier +
+                " ], initial state: " + initialState.toString());
     }
 
     /**
@@ -45,7 +51,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @param nextState possible next state for the topology element
      * @param topologyEvent relevant ToplogyEvent
      * @param <S> subclass of Topology event
-     * @return
+     * @return true if preconditions are valid and satisfied, else false
      */
     public <S extends TopologyEvent> boolean isPreConditionsValid (T nextState, S topologyEvent) {
         // TODO: implement
@@ -66,15 +72,15 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     /**
      * Changes the current state to nextState
      *
-     * @param nextState
+     * @param nextState the next state to change
      */
     public void changeState (T nextState)  {
 
         stateStack.push(nextState);
+        log.info("Topology element [ " + identifier + " ]'s life Cycle State changed from [ " +
+                getPreviousState() + " ] to [ " + getCurrentState() + " ]");
         if (log.isDebugEnabled()) {
             printStateTransitions(stateStack);
-//            log.debug("Life Cycle State changed from [ " + getPreviousState() + " ] to [ " +
-//                    getCurrentState() + " ]");
         }
     }
 
@@ -112,10 +118,14 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
 
         // print all transitions till now
         StringBuilder stateTransitions = new StringBuilder("Transitioned States:  [ START --> ");
-        for (int i = 0 ; i < stateStack.size() ; i++) {
-            stateTransitions.append(stateStack.get(i) + " --> ");
+        for (T aStateStack : stateStack) {
+            stateTransitions.append(aStateStack).append(" --> ");
         }
         stateTransitions.append(" END ]");
         log.debug(stateTransitions);
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 }

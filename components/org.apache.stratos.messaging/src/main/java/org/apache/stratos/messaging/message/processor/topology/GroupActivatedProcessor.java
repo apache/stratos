@@ -94,10 +94,7 @@ public class GroupActivatedProcessor extends MessageProcessor {
                 log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Active);
             }
             group.setStatus(GroupStatus.Active);
-            if (log.isInfoEnabled())     {
-                log.info(String.format("Group updated as activated : %s",
-                        group.getUniqueIdentifier()));
-            }
+
         }
 
         // Notify event listeners

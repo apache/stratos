@@ -49,7 +49,7 @@ public class Application extends ParentComponent implements LifeCycleStateTransi
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.applicationStateManager =
-                new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created);
+                new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
     public String getUniqueIdentifier() {

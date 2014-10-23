@@ -93,10 +93,7 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
                         " ] to [ " + ApplicationStatus.Active + " ]");
             }
             application.setStatus(ApplicationStatus.Active);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Application updated as activated : %s",
-                        application.toString()));
-            }
+
         }
 
         // Notify event listeners

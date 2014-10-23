@@ -58,7 +58,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<Integer, Port>();
-        this.memberStateManager = new LifeCycleStateManager<MemberStatus>(MemberStatus.Created);
+        this.memberStateManager = new LifeCycleStateManager<MemberStatus>(MemberStatus.Created, memberId);
     }
 
     public String getServiceName() {

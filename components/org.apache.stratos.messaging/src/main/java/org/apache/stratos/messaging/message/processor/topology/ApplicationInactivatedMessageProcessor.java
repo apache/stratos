@@ -93,10 +93,7 @@ public class ApplicationInactivatedMessageProcessor extends MessageProcessor {
                         " ] to [ " + ApplicationStatus.Inactive + " ]");
             }
             application.setStatus(ApplicationStatus.Inactive);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Application updated as inactivated : %s",
-                        application.toString()));
-            }
+
         }
 
         // Notify event listeners

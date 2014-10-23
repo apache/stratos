@@ -102,7 +102,6 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
         }
         // for now anyway update the status forcefully
         application.setStatus(ApplicationStatus.Terminating);
-        log.info("Application " + event.getApplicationId() + "'s status updated to " + ApplicationStatus.Terminating);
 
         // update all the Clusters' statuses to 'Terminating'
         Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
@@ -119,8 +118,6 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
                     }
                     // for now anyway update the status forcefully
                     aCluster.setStatus(ClusterStatus.Terminating);
-                    log.info("Cluster " + clusterDataHolder.getClusterId() + "'s status updated to "
-                            + ClusterStatus.Terminating + " successfully");
 
                 } else {
                     log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +

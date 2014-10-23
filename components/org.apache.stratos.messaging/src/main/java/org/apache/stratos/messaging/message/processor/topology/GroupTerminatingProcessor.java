@@ -97,10 +97,7 @@ public class GroupTerminatingProcessor extends MessageProcessor {
                 log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Active);
             }
             group.setStatus(GroupStatus.Terminating);
-            if (log.isInfoEnabled())     {
-                log.info(String.format("Group updated as Terminating : %s",
-                        group.getUniqueIdentifier()));
-            }
+
         }
 
         // Notify event listeners

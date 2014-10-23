@@ -45,7 +45,7 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
         super();
         this.name = name;
         this.alias = alias;
-        this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created);
+        this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
 
     public String getUniqueIdentifier() {
