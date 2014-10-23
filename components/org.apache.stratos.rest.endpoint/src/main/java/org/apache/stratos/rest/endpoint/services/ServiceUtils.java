@@ -1462,6 +1462,7 @@ public class ServiceUtils {
                 Cluster topLevelCluster;
 
                 try {
+                    TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
                     topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
                 }finally {
                     TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
