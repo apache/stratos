@@ -468,7 +468,7 @@ def get_lb_member_ip(lb_cluster_id):
     return None
 
 
-def execute_command(command, env_params=None):
+def execute_command(command, env_params=None, cwd=None):
     """
     Executes the given command string with given environment parameters
     :param str command: Command with arguments to be executed

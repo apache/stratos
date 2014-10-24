@@ -20,6 +20,8 @@ from git import *
 from gittle import Gittle, GittleAuth  # GitPython and Gittle are both used at the time being for pros and cons of both
 import urllib2
 import os
+import pexpect
+import subprocess
 
 from ... util.log import LogFactory
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
@@ -205,6 +207,7 @@ class AgentGitHandler:
             if not os.path.isdir(repo_context.local_repo_path):
                 cartridgeagentutils.create_dir(repo_context.local_repo_path)
 
+            #TODO: remove gittle stuff
             auth = AgentGitHandler.create_auth_configuration(repo_context)
 
             if auth is not None:
@@ -396,52 +399,90 @@ class AgentGitHandler:
         """
         tenant_id = repo_info.tenant_id
         repo_context = AgentGitHandler.get_repo_context(tenant_id)
-        gittle_repo = repo_context.gittle_repo
-        try:
-            modified = True if gittle_repo.modified_unstaged_files.count > 0 else False
-        except OSError:
-            # removed files
-            modified = True
+        #check if modified
+        modified, unstaged_files = AgentGitHandler.get_unstaged_files(repo_context.local_repo_path)
+
+        AgentGitHandler.log.debug("Modified: %r" % str(modified))
 
         if not modified:
             AgentGitHandler.log.debug("No changes detected in the local repository for tenant " + tenant_id)
             return
 
-        gittle_repo.stage(gittle_repo.untracked_files)
-        gittle_repo.stage(gittle_repo.removed_files)
-        gittle_repo.stage(gittle_repo.modified_unstaged_files)
+        AgentGitHandler.stage_all(repo_context.local_repo_path)
 
         #commit to local repositpory
         commit_message = "tenant " + tenant_id + "'s artifacts committed to local repo at " + repo_context.local_repo_path
+        commit_name="First Author"
+        commit_email="author@example.org"
+        #git config
+        (output, errors) = AgentGitHandler.execute_git_command(["config", "user.email", commit_email], repo_context.local_repo_path)
+        (output, errors) = AgentGitHandler.execute_git_command(["config", "user.name", commit_name], repo_context.local_repo_path)
 
-        try:
-            commit_hash = gittle_repo.commit(name="First Author", email="author@example.org", message=commit_message)
+        #commit
+        (output, errors) = AgentGitHandler.execute_git_command(["commit", "-m", commit_message], repo_context.local_repo_path)
+        if errors.strip() == "":
+            commit_hash = AgentGitHandler.find_between(output, "[master", "]").strip()
             AgentGitHandler.log.debug("Committed artifacts for tenant : " + tenant_id + " : " + commit_hash)
-        except:
+        else:
             AgentGitHandler.log.exception("Committing artifacts to local repository failed for tenant " + tenant_id)
 
         #push to remote
         try:
-            repo = repo_context.repo
             #TODO: check key based authentication
-            credentialed_remote_url = AgentGitHandler.get_credentialed_remote_url(repo_context)
-            push_remote = repo.create_remote('push_remote', credentialed_remote_url)
-            push_remote.push()
+
+            push_op = pexpect.spawn('git push origin master', cwd=repo_context.local_repo_path)
+            #push_op.logfile = sys.stdout
+            push_op.expect("Username for .*")
+            push_op.sendline(repo_context.repo_username)
+            push_op.expect("Password for .*")
+            push_op.sendline(repo_context.repo_password)
+            # result = push_op.expect([commit_hash + "  master -> master", "Authentication failed for"])
+            # if result != 0:
+            #     raise Exception
+            #TODO: handle push failure scenarios
+            push_op.interact()
+
             AgentGitHandler.log.debug("Pushed artifacts for tenant : " + tenant_id)
         except:
             AgentGitHandler.log.exception("Pushing artifacts to remote repository failed for tenant " + tenant_id)
 
     @staticmethod
-    def get_credentialed_remote_url(repo_context):
-        """
-        Creates a remote url including the credentials
-        :param repo_context:
-        :return:
-        """
-        username = repo_context.repo_username
-        password = repo_context.repo_password
+    def get_unstaged_files(repo_path):
 
-        raise NotImplementedError
+        (output, errors) = AgentGitHandler.execute_git_command(["status"], repo_path=repo_path)
+        unstaged_files = {"modified":[], "untracked":[]}
+
+        if "nothing to commit" in output:
+            return False, unstaged_files
+
+        if "Changes not staged for commit" in output:
+            #there are modified files
+            modified_lines = output.split("\n\n")[2].split("\n")
+            for mod_line in modified_lines:
+                file_name = mod_line.split(":")[1].strip()
+                unstaged_files["modified"].append(file_name)
+
+        if "Untracked files" in output:
+            #there are untracked files
+            untracked_files = output.split("Untracked files:")[1].split("\n\n")[1].split("\n")
+            for unt_line in untracked_files:
+                unstaged_files["untracked"].append(unt_line.strip())
+
+        return True, unstaged_files
+
+    @staticmethod
+    def stage_all(repo_path):
+        (output, errors) = AgentGitHandler.execute_git_command(["add", "--all"], repo_path=repo_path)
+        return True if errors.strip() == "" else False
+
+    @staticmethod
+    def find_between( s, first, last ):
+        try:
+            start = s.index( first ) + len( first )
+            end = s.index( last, start )
+            return s[start:end]
+        except ValueError:
+            return ""
 
     @staticmethod
     def schedule_artifact_update_scheduled_task(repo_info, auto_checkout, auto_commit, update_interval):
@@ -452,7 +493,6 @@ class AgentGitHandler:
             return
 
         if repo_context.scheduled_update_task is None:
-            #TODO: make thread safe
             artifact_update_task = ArtifactUpdateTask(repo_info, auto_checkout, auto_commit)
             async_task = ScheduledExecutor(update_interval, artifact_update_task)
 
@@ -484,6 +524,27 @@ class AgentGitHandler:
         AgentGitHandler.log.info("git repository deleted for tenant %r" % repo_context.tenant_id)
 
         return True
+
+    @staticmethod
+    def execute_git_command(command, repo_path):
+        """
+        Executes the given command string with given environment parameters
+        :param list command: Command with arguments to be executed
+        :param dict[str, str] env_params: Environment variables to be used
+        :return: output and error string tuple, RuntimeError if errors occur
+        :rtype: tuple(str, str)
+        :exception: RuntimeError
+        """
+        os_env = os.environ.copy()
+
+        command.insert(0, "/usr/bin/git")
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env, cwd=repo_path)
+        output, errors = p.communicate()
+        if len(errors) > 0:
+            raise RuntimeError("Git Command execution failed: \n %r" % errors)
+
+        return output, errors
+
 
 
 class ArtifactUpdateTask(AbstractAsyncScheduledTask):

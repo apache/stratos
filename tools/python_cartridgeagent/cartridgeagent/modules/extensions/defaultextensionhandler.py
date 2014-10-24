@@ -100,7 +100,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                 try:
                     update_interval = int(
-                        self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL, False))
+                        self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
                 except ParameterNotFoundException:
                     self.log.exception("Invalid artifact sync interval specified ")
                     update_interval = 10
