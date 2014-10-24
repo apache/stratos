@@ -1475,7 +1475,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			// persist in registry
 			persist();
 
-            LOG.info("Kubernetes entities are successfully starting up. "+memberContexts);
+            LOG.info("Kubernetes entities are successfully starting up: " + memberContexts);
 
             return memberContexts.toArray(new MemberContext[0]);
 

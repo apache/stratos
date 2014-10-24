@@ -54,7 +54,7 @@ public class InstanceStatusEventMessageListener implements MqttCallback {
 	}
 
 	@Override
-	public void messageArrived(String arg0, MqttMessage message)
+	public void messageArrived(String topic, MqttMessage message)
 			throws Exception {
 		if (message instanceof MqttMessage) {
 
@@ -68,7 +68,7 @@ public class InstanceStatusEventMessageListener implements MqttCallback {
 				}
 				receivedMessage.setText(new String(message.getPayload()));
 				receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-						ORG_APACHE_STRATOS_MESSAGING_EVENT.concat(arg0.replace(
+						ORG_APACHE_STRATOS_MESSAGING_EVENT.concat(topic.replace(
 								"/", ".")));
 
 				// Add received message to the queue
