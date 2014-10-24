@@ -186,8 +186,7 @@ public class StratosAdmin extends AbstractAdmin {
             throws RestAPIException {
 
         ServiceUtils.updateAutoscalingPolicy(autoscalePolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
-        return Response.ok(url).build();
+        return Response.ok().build();
     }
 
     @POST
@@ -212,8 +211,7 @@ public class StratosAdmin extends AbstractAdmin {
             throws RestAPIException {
 
         ServiceUtils.updateDeploymentPolicy(deploymentPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.getId()).build();
-        return Response.ok(url).build();
+        return Response.ok().build();
     }
 
     @GET
