@@ -57,7 +57,6 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         this.autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
-        this.terminateDependencyKnowledgeSession = autoscalerRuleEvaluator.getTerminateDependencyStatefulSession();
         this.terminateAllKnowledgeSession = autoscalerRuleEvaluator.getTerminateAllStatefulSession();
 
         this.deploymentPolicy = deploymentPolicy;
@@ -175,25 +174,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
             }
 
-            //terminate dependency per partition
-            // rule terminates all members of a service which is a prerequisites for other services
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-
-                terminateDependencyKnowledgeSession.setGlobal("clusterId", clusterId);
-                terminateDependencyKnowledgeSession.setGlobal("lbRef", lbReferenceType);
-                terminateDependencyKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-                terminateDependencyKnowledgeSession.setGlobal("serviceId", serviceId);
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Running terminate dependency for partition %s ", partitionContext.getPartitionId()));
-                }
-
-                terminateDependencyFactHandle = AutoscalerRuleEvaluator.evaluateTerminateDependency(terminateDependencyKnowledgeSession
-                        , terminateDependencyFactHandle, partitionContext);
-
-            }
-
-            boolean rifReset = networkPartitionContext.isRifReset();
+        	boolean rifReset = networkPartitionContext.isRifReset();
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
 

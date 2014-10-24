@@ -63,9 +63,6 @@ dialect "mvel"
 	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Non terminated member count: " + $ctxt.getNonTerminatedMemberCount()))
 	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Minimum member count: " + $ctxt.getMinimumMemberCount()))
 	       eval ( (isPrimary && (primaryMemberCount < $ctxt.getMinimumMemberCount() )) || ( !isPrimary && ($ctxt.getNonTerminatedMemberCount() < $ctxt.getMinimumMemberCount() )) )
-	       eval(log.debug("Grouping ... checking startup dependencies for " + clusterId))
-           eval($ctxt.checkStartupDependencies(serviceId, clusterId))
-           eval(log.debug("startup dependencies successfully checked for" + clusterId))
        then
            if (isPrimary){
               log.debug("[min-check] true  [primary] true   [primary member count] " + primaryMemberCount);

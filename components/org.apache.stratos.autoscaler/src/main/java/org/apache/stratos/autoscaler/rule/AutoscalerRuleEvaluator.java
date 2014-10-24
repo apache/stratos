@@ -47,13 +47,11 @@ public class AutoscalerRuleEvaluator {
 	private static final String DRL_FILE_NAME = "mincheck.drl";
 	private static final String SCALING_DRL_FILE_NAME = "scaling.drl";
 	private static final String TERMINATE_ALL_DRL_FILE_NAME = "terminateall.drl";
-	private static final String TERMINATE_DEPENDENCY_DRL_FILE_NAME = "terminatedependency.drl";
 
 	private static KnowledgeBase minCheckKbase;
 	private static KnowledgeBase scaleCheckKbase;
 	@SuppressWarnings("unused")
 	private static KnowledgeBase terminateAllKbase;
-	private static KnowledgeBase terminateDependencyKbase;
 
     public AutoscalerRuleEvaluator(){
 
@@ -75,11 +73,6 @@ public class AutoscalerRuleEvaluator {
             log.debug("Terminate all rule is parsed successfully");
         }
         
-        terminateDependencyKbase = readKnowledgeBase(TERMINATE_DEPENDENCY_DRL_FILE_NAME);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Terminate dependency rule is parsed successfully");
-        }
     }
 
     
@@ -177,12 +170,7 @@ public class AutoscalerRuleEvaluator {
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
-    public StatefulKnowledgeSession getTerminateDependencyStatefulSession() {
-        StatefulKnowledgeSession ksession;
-        ksession = terminateDependencyKbase.newStatefulKnowledgeSession();
-        ksession.setGlobal("log", RuleLog.getInstance());
-        return ksession;
-    }
+    
 
     public static String getLbClusterId(PartitionContext partitionContext, String nwpartitionId) {
         Properties props = partitionContext.getProperties();

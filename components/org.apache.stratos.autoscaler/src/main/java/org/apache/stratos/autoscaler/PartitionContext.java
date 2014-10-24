@@ -395,46 +395,6 @@ public class PartitionContext implements Serializable{
     	return results;
     }
     
-    public boolean checkStartupDependencies (String serviceType, String clusterId) {
-    	if (log.isDebugEnabled()) {
-    		log.debug("checkStartupDependencies for cluster with " + " clusterId: " + clusterId);
-    	}
-       
-       
-       ComplexApplicationContext sgc = new ComplexApplicationContext();
-
-       String aServiceName = clusterId;
-       boolean flag = sgc.checkStartupDependencies(serviceType, aServiceName);
-       if (log.isDebugEnabled()) {
-    	   log.debug("checkStartupDependencies for cluster with " + 
-                       " clusterId: " + clusterId + " serviceType: " + serviceType + 
-                       " flag is :" + flag);
-       }
-
-       return flag;
-       
-    }
-    
-    public boolean checkKillDependencies (String serviceType, String clusterId) {
-    	if (log.isDebugEnabled()) {
-    		log.debug("PartitionContext:checkServiceBootDependencies for cluster with " + " clusterId: " + clusterId + 
-    				"and serviceType " + serviceType);
-    	}
-       
-       ComplexApplicationContext sgc = new ComplexApplicationContext();
-
-       String aServiceName = clusterId;
-       boolean flag = sgc.checkKillDependencies(serviceType, aServiceName);
-       if (log.isDebugEnabled()) {
-    	   log.debug("checkKillDependencies for cluster with " + 
-    			   " clusterId: " + clusterId + " serviceType: " + serviceType + 
-                   " flag is :" + flag);
-       }
-       return flag;
-       
-    }
-    
-
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
 

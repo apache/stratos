@@ -58,7 +58,6 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
-    protected StatefulKnowledgeSession terminateDependencyKnowledgeSession;
     protected StatefulKnowledgeSession terminateAllKnowledgeSession;
     protected boolean isDestroyed;
 
@@ -121,7 +120,6 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
         minCheckKnowledgeSession.dispose();
         scaleCheckKnowledgeSession.dispose();
         terminateAllKnowledgeSession.dispose();
-        terminateDependencyKnowledgeSession.dispose();
         setDestroyed(true);
         if (log.isDebugEnabled()) {
             log.debug("Cluster Monitor Drools session has been disposed. " + this.toString());
@@ -218,23 +216,6 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
         this.minCheckFactHandle = minCheckFactHandle;
     }
 
-    public StatefulKnowledgeSession getTerminateDependencyKnowledgeSession() {
-        return terminateDependencyKnowledgeSession;
-    }
-
-    public void setTerminateDependencyKnowledgeSession(
-            StatefulKnowledgeSession terminateDependencyKnowledgeSession) {
-        this.terminateDependencyKnowledgeSession = terminateDependencyKnowledgeSession;
-    }
-
-    public FactHandle getTerminateDependencyFactHandle() {
-        return terminateDependencyFactHandle;
-    }
-
-    public void setTerminateDependencyFactHandle(
-            FactHandle terminateDependencyFactHandle) {
-        this.terminateDependencyFactHandle = terminateDependencyFactHandle;
-    }
 
     public int getMonitorInterval() {
         return monitorInterval;
