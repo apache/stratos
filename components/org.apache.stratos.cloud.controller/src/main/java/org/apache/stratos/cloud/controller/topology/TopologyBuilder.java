@@ -262,7 +262,7 @@ public class TopologyBuilder {
                 // TODO: Need to properly fix with the latest Kubernetes version
                 String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
                 if(StringUtils.isEmpty(serviceHostPortStr)) {
-                    log.warn("Kubernetes service host port not found for member: " + memberId);
+                    log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
                 }
 
                 Cartridge cartridge = FasterLookUpDataHolder.getInstance().
@@ -284,7 +284,7 @@ public class TopologyBuilder {
                     }
                 }
             } catch (Exception e) {
-                log.error("Could not update member port-map with generated service proxy port", e);
+                log.error("Could not update member port-map: [member-id] " + memberId, e);
             }
 			cluster.addMember(member);
 			TopologyManager.updateTopology(topology);
