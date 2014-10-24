@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.topology.GroupInActivateEvent;
+import org.apache.stratos.messaging.event.topology.GroupInactivateEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
@@ -52,8 +52,8 @@ public class GroupInActivateProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            GroupInActivateEvent event = (GroupInActivateEvent) Util.
-                    jsonToObject(message, GroupInActivateEvent.class);
+            GroupInactivateEvent event = (GroupInactivateEvent) Util.
+                    jsonToObject(message, GroupInactivateEvent.class);
 
             TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
 
@@ -74,7 +74,7 @@ public class GroupInActivateProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(GroupInActivateEvent event, Topology topology) {
+    private boolean doProcess(GroupInactivateEvent event, Topology topology) {
 
         // Validate event against the existing topology
         Application application = topology.getApplication(event.getAppId());

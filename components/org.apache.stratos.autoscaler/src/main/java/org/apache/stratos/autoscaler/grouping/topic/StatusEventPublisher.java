@@ -15,7 +15,7 @@ import org.apache.stratos.messaging.event.application.status.ClusterInActivateEv
 import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.event.topology.GroupInActivateEvent;
+import org.apache.stratos.messaging.event.topology.GroupInactivateEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Set;
@@ -108,9 +108,9 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        GroupInActivateEvent groupInActivateEvent = new GroupInActivateEvent(appId, groupId);
+        GroupInactivateEvent groupInactivateEvent = new GroupInactivateEvent(appId, groupId);
 
-        publishEvent(groupInActivateEvent);
+        publishEvent(groupInactivateEvent);
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
@@ -121,7 +121,6 @@ public class StatusEventPublisher {
         }
 
         GroupInTerminatingEvent groupInTerminatingEvent = new GroupInTerminatingEvent(appId, groupId);
-
         publishEvent(groupInTerminatingEvent);
     }
 
@@ -133,7 +132,6 @@ public class StatusEventPublisher {
         }
 
         GroupInTerminatedEvent groupInTerminatedEvent = new GroupInTerminatedEvent(appId, groupId);
-
         publishEvent(groupInTerminatedEvent);
     }
 

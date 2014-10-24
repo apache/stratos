@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterInactivateEvent;
+import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -34,8 +34,8 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * This processor will act upon the cluster activated event
  */
-public class ClusterInActivateProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterInActivateProcessor.class);
+public class ClusterTerminatingProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(ClusterTerminatingProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -48,15 +48,15 @@ public class ClusterInActivateProcessor extends MessageProcessor {
 
         Topology topology = (Topology) object;
 
-        if (ClusterInactivateEvent.class.getName().equals(type)) {
+        if (ClusterActivatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            ClusterInactivateEvent event = (ClusterInactivateEvent) Util.
-                    jsonToObject(message, ClusterInactivateEvent.class);
+            ClusterActivatedEvent event = (ClusterActivatedEvent) Util.
+                    jsonToObject(message, ClusterActivatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
@@ -76,8 +76,9 @@ public class ClusterInActivateProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ClusterInactivateEvent event, Topology topology) {
-// Apply service filter
+    private boolean doProcess(ClusterActivatedEvent event, Topology topology) {
+
+        // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
             if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
                 // Service is excluded, do not update topology or fire event
@@ -117,10 +118,10 @@ public class ClusterInActivateProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Active)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Active);
             }
-            cluster.setStatus(ClusterStatus.Inactive);
+            cluster.setStatus(ClusterStatus.Active);
 
         }
 
@@ -128,4 +129,5 @@ public class ClusterInActivateProcessor extends MessageProcessor {
         notifyEventListeners(event);
         return true;
     }
+
 }

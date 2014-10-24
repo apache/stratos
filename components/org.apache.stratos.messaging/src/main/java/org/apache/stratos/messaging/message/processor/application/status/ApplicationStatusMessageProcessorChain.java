@@ -33,6 +33,8 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
 
     private ApplicationStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
     private ApplicationStatusClusterInActivateMessageProcessor clusterInActivateMessageProcessor;
+    private AppStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
+    private AppStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
     private ApplicationStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
     private ApplicationStatusGroupInActivatedMessageProcessor groupInActivateMessageProcessor;
     private ApplicationStatusAppActivatedMessageProcessor appActivatedMessageProcessor;
@@ -51,6 +53,11 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
 
         clusterInActivateMessageProcessor = new ApplicationStatusClusterInActivateMessageProcessor();
         add(clusterInActivateMessageProcessor);
+
+        clusterTerminatingMessageProcessor = new AppStatusClusterTerminatingMessageProcessor();
+        add(clusterTerminatingMessageProcessor);
+        clusterTerminatedMessageProcessor = new AppStatusClusterTerminatedMessageProcessor();
+        add(clusterTerminatedMessageProcessor);
 
         groupActivatedMessageProcessor = new ApplicationStatusGroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
@@ -91,7 +98,11 @@ public class ApplicationStatusMessageProcessorChain extends MessageProcessorChai
             clusterInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupInactivateEventListener) {
+        } else if(eventListener instanceof AppStatusClusterTerminatedEventListener){
+            clusterTerminatedMessageProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof AppStatusClusterTerminatingEventListener){
+            clusterTerminatingMessageProcessor.addEventListener(eventListener);
+        }else if (eventListener instanceof GroupInactivateEventListener) {
             groupInActivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
             appActivatedMessageProcessor.addEventListener(eventListener);

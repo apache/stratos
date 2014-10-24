@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.application.status.receiver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.listener.application.status.*;
@@ -72,6 +71,20 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
+        statusEventReceiver.addEventListener(new AppStatusClusterTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterTerminatedEvent((ClusterActivatedEvent) event);
+            }
+        });
+
+        statusEventReceiver.addEventListener(new AppStatusClusterTerminatingEventListener(){
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterTerminatingEvent((ClusterActivatedEvent) event);
+            }
+        });
+
         statusEventReceiver.addEventListener(new ClusterInActivateEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -83,14 +96,6 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupActivatedEvent((GroupActivatedEvent) event);
-
-            }
-        });
-
-        statusEventReceiver.addEventListener(new GroupInactivateEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupInActiveEvent((GroupInactivateEvent) event);
 
             }
         });

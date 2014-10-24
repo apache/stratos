@@ -57,6 +57,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ApplicationTerminatingMessageProcessor applicationTerminatingMessageProcessor;
     private GroupTerminatingProcessor groupTerminatingProcessor;
     private GroupTerminatedProcessor groupTerminatedProcessor;
+    private ClusterTerminatingProcessor clusterTerminatingProcessor;
+    private ClusterTerminatedProcessor clusterTerminatedProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -80,6 +82,12 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
+
+        clusterTerminatedProcessor = new ClusterTerminatedProcessor();
+        add(clusterTerminatedProcessor);
+
+        clusterTerminatingProcessor = new ClusterTerminatingProcessor();
+        add(clusterTerminatingProcessor);
 
         instanceSpawnedMessageProcessor = new InstanceSpawnedMessageProcessor();
         add(instanceSpawnedMessageProcessor);
@@ -151,7 +159,11 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterInActivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof InstanceSpawnedEventListener) {
+        } else if(eventListener instanceof ClusterTerminatedEventListener){
+            clusterTerminatedProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof  ClusterTerminatingEventListener){
+            clusterTerminatingProcessor.addEventListener(eventListener);
+        }else if (eventListener instanceof InstanceSpawnedEventListener) {
             instanceSpawnedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberActivatedEventListener) {
             memberActivatedMessageProcessor.addEventListener(eventListener);

@@ -39,12 +39,12 @@ import org.apache.stratos.messaging.event.application.status.ApplicationTerminat
 import org.apache.stratos.messaging.event.application.status.ApplicationTerminatingEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.GroupInactivateEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.event.topology.ClusterInActivateEvent;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
@@ -793,8 +793,8 @@ public class TopologyBuilder {
             return;
         }
 
-        ClusterInActivateEvent clusterActivatedEvent1 =
-                new ClusterInActivateEvent(
+        ClusterInactivateEvent clusterActivatedEvent1 =
+                new ClusterInactivateEvent(
                         clusterInActivateEvent.getAppId(),
                         clusterInActivateEvent.getServiceName(),
                         clusterInActivateEvent.getClusterId());
@@ -1059,8 +1059,8 @@ public class TopologyBuilder {
             return;
         }
 
-        GroupInActivateEvent groupInActivateEvent =
-                new GroupInActivateEvent(
+        org.apache.stratos.messaging.event.topology.GroupInactivateEvent groupInActivateEvent =
+                new org.apache.stratos.messaging.event.topology.GroupInactivateEvent(
                         event.getAppId(),
                         event.getGroupId());
         try {
@@ -1143,5 +1143,13 @@ public class TopologyBuilder {
         }
         //publishing data
         TopologyEventPublisher.sendGroupTerminatingEvent(groupTerminatingTopologyEvent);
+    }
+
+    public static void handleClusterTerminatedEvent(ClusterActivatedEvent event) {
+
+    }
+
+    public static void handleClusterTerminatingEvent(ClusterActivatedEvent event) {
+
     }
 }

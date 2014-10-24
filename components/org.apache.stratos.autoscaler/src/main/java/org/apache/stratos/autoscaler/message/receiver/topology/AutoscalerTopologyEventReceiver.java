@@ -181,15 +181,55 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 log.info("[ClusterInActivateEvent] Received: " + event.getClass());
 
-                ClusterInActivateEvent clusterInActivateEvent = (ClusterInActivateEvent) event;
-                String appId = clusterInActivateEvent.getAppId();
-                String clusterId = clusterInActivateEvent.getClusterId();
+                ClusterInactivateEvent clusterInactivateEvent = (ClusterInactivateEvent) event;
+                String appId = clusterInactivateEvent.getAppId();
+                String clusterId = clusterInactivateEvent.getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Inactive);
 
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
+
+                ClusterTerminatedEvent clusterInactivateEvent = (ClusterTerminatedEvent) event;
+                String appId = clusterInactivateEvent.getAppId();
+                String clusterId = clusterInactivateEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(ClusterStatus.Terminating);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
+
+                ClusterTerminatedEvent clusterInactivateEvent = (ClusterTerminatedEvent) event;
+                String appId = clusterInactivateEvent.getAppId();
+                String clusterId = clusterInactivateEvent.getClusterId();
+                AbstractClusterMonitor clusterMonitor =
+                        (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+
+                //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStatus(ClusterStatus.Terminated);
+
+                //starting the status checker to decide on the status of it's parent
+                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -218,9 +258,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 log.info("[GroupInActivateEvent] Received: " + event.getClass());
 
-                GroupInActivateEvent groupInActivateEvent = (GroupInActivateEvent) event;
-                String appId = groupInActivateEvent.getAppId();
-                String groupId = groupInActivateEvent.getGroupId();
+                GroupInactivateEvent groupInactivateEvent = (GroupInactivateEvent) event;
+                String appId = groupInactivateEvent.getAppId();
+                String groupId = groupInactivateEvent.getGroupId();
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
                 GroupMonitor monitor = (GroupMonitor) appMonitor.findGroupMonitorWithId(groupId);

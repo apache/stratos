@@ -6,9 +6,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by udara on 10/17/14.
- */
 @XmlRootElement(name="applications")
 public class ApplicationBean {
     private String id;

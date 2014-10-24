@@ -21,23 +21,36 @@ package org.apache.stratos.messaging.event.topology;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- * Group Activated Event which will be sent to Topology upon group activation
+ * Cluster activated event will be sent by Autoscaler
  */
-public class GroupInactivatedEvent extends Event {
-    private String appId;
-    private String groupId;
+public class ClusterInactivateEvent extends Event {
 
-    public GroupInactivatedEvent(String appId, String groupId) {
+    private final String serviceName;
+    private final String clusterId;
+    private String appId;
+
+    public ClusterInactivateEvent(String appId, String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
         this.appId = appId;
-        this.groupId = groupId;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    @Override
+    public String toString() {
+        return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
+                "]";
+    }
+
+    public String getClusterId() {
+        return clusterId;
     }
 
     public String getAppId() {
         return appId;
-    }
-
-    public String getGroupId() {
-        return groupId;
     }
 
 }

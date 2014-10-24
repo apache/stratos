@@ -16,28 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.topology;
+package org.apache.stratos.messaging.listener.application.status;
 
-import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.listener.EventListener;
 
-/**
- * Group Activated Event which will be sent to Topology upon group activation
- */
-public class GroupInActivateEvent extends Event {
-    private String appId;
-    private String groupId;
-
-    public GroupInActivateEvent(String appId, String groupId) {
-        this.appId = appId;
-        this.groupId = groupId;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public String getGroupId() {
-        return groupId;
-    }
-
+public abstract class AppStatusClusterTerminatingEventListener extends EventListener{
 }
