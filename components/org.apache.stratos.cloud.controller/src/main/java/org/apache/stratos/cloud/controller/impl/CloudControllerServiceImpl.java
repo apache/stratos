@@ -23,7 +23,6 @@ import com.google.common.net.InetAddresses;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
@@ -472,11 +471,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException 
     {
 
-        if(memberId == null) {
-            String msg = "Termination failed. Null member id.";
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(memberId, "Termination failed. Null member id.");
         
         MemberContext ctxt = dataHolder.getMemberContextOfMemberId(memberId);
         
@@ -787,11 +782,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		LOG.info("Starting to terminate all instances of cluster : "
 				+ clusterId);
 		
-		if(clusterId == null) {
-		    String msg = "Instance termination failed. Cluster id is null.";
-		    LOG.error(msg);
-		    throw new IllegalArgumentException(msg);
-		}
+		handleNullObject(clusterId, "Instance termination failed. Cluster id is null.");
 		
 		List<MemberContext> ctxts = dataHolder.getMemberContextsOfClusterId(clusterId);
 		
@@ -904,17 +895,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throws UnregisteredCartridgeException {
 
 	    String cartridgeType = registrant.getCartridgeType();
-	    String clusterId = registrant.getClusterId();
-        String payload = registrant.getPayload();
-        String hostName = registrant.getHostName();
-        
-        if(cartridgeType == null || clusterId == null || payload == null || hostName == null) {
-	        String msg = "Null Argument/s detected: Cartridge type: "+cartridgeType+", " +
-	                "Cluster Id: "+clusterId+", Payload: "+payload+", Host name: "+hostName;
-	        LOG.error(msg);
-	        throw new IllegalArgumentException(msg);
-	    }
+	    handleNullObject(cartridgeType, "Service registration failed. Cartridge Type is null.");
 	    
+	    String clusterId = registrant.getClusterId();
+	    handleNullObject(clusterId, "Service registration failed. Cluster id is null.");
+	    
+        String payload = registrant.getPayload();
+        handleNullObject(payload, "Service registration failed. Payload is null.");
+        
+        String hostName = registrant.getHostName();
+        handleNullObject(hostName, "Service registration failed. Hostname is null.");
+        
         Cartridge cartridge = null;
         if ((cartridge = dataHolder.getCartridge(cartridgeType)) == null) {
 
@@ -966,48 +957,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }else{
             ctxt.setVolumeRequired(false);
         }
-        /*
-        if(persistanceRequired) {
-        	Persistence persistenceData = cartridge.getPersistence();
-
-        	if(persistenceData != null) {
-        		Volume[] cartridge_volumes = persistenceData.getVolumes();
-
-
-                Volume[] volumestoCreate = overideVolumes(cartridge_volumes, persistence.getVolumes());
-        		property = props.getProperty(Constants.SHOULD_DELETE_VOLUME);
-        		String property_volume_zize = props.getProperty(Constants.VOLUME_SIZE);
-                String property_volume_id = props.getProperty(Constants.VOLUME_ID);
-
-                List<Volume> cluster_volume_list = new LinkedList<Volume>();
-
-        		for (Volume volume : cartridge_volumes) {
-        			int volumeSize = StringUtils.isNotEmpty(property_volume_zize) ? Integer.parseInt(property_volume_zize) : volume.getSize();
-        			boolean shouldDeleteVolume = StringUtils.isNotEmpty(property) ? Boolean.parseBoolean(property) : volume.isRemoveOntermination();
-                    String volumeID = StringUtils.isNotEmpty(property_volume_id) ? property_volume_id : volume.getVolumeId();
-
-                    Volume volume_cluster = new Volume();
-                    volume_cluster.setSize(volumeSize);
-                    volume_cluster.setRemoveOntermination(shouldDeleteVolume);
-                    volume_cluster.setDevice(volume.getDevice());
-                    volume_cluster.setIaasType(volume.getIaasType());
-                    volume_cluster.setMappingPath(volume.getMappingPath());
-                    volume_cluster.setVolumeId(volumeID);
-                    cluster_volume_list.add(volume_cluster);
-				}
-        		//ctxt.setVolumes(cluster_volume_list.toArray(new Volume[cluster_volume_list.size()]));
-                ctxt.setVolumes(persistence.getVolumes());
-                ctxt.setVolumeRequired(true);
-        	} else {
-        		// if we cannot find necessary data, we would not consider 
-        		// this as a volume required instance.
-        		//isVolumeRequired = false;
-                ctxt.setVolumeRequired(false);
-       	}
-
-        	//ctxt.setVolumeRequired(isVolumeRequired);
-        }
-        */
 	    ctxt.setTimeoutInMillis(timeout);
 		return ctxt;
 	}
@@ -1019,13 +968,20 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				.getCartridges();
 
 		if (cartridges == null) {
+		    LOG.info("No registered Cartridge found.");
 			return new String[0];
 		}
 
 		String[] cartridgeTypes = new String[cartridges.size()];
 		int i = 0;
 
+		if (LOG.isDebugEnabled()) {
+		    LOG.debug("Registered Cartridges : \n");
+		}
 		for (Cartridge cartridge : cartridges) {
+		    if (LOG.isDebugEnabled()) {
+		        LOG.debug(cartridge);
+		    }
 			cartridgeTypes[i] = cartridge.getType();
 			i++;
 		}
@@ -1057,11 +1013,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
 
-        if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(ctxt, "Service unregistration failed. Invalid cluster id: "+clusterId);
         
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -1069,7 +1021,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType +". ";
+                         "Service unregistration failed. No matching Cartridge found [type] "+cartridgeType +". ";
             LOG.error(msg);
             throw new UnregisteredClusterException(msg);
         }
@@ -1087,7 +1039,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	            public void run() {
 	                ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
 	                 if(ctxt == null) {
-	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+	                     String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
 	                     LOG.error(msg);
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
@@ -1125,7 +1077,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	             public void run() {
 	                 ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
 	                 if(ctxt == null) {
-	                     String msg = "Unregistration of service cluster failed. Cluster not found: " + clusterId_;
+	                     String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
 	                     LOG.error(msg);
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
@@ -1288,8 +1240,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
-    	//FIXME add logs
+        handleNullObject(partition, "Partition validation failed. Partition is null.");
         String provider = partition.getProvider();
+        handleNullObject(provider, "Partition ["+partition.getId()+"] validation failed. Partition provider is null.");
         IaasProvider iaasProvider = dataHolder.getIaasProvider(provider);
 
         if (iaasProvider == null) {
@@ -1325,7 +1278,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     public ClusterContext getClusterContext (String clusterId) {
-
+        
         return dataHolder.getClusterContext(clusterId);
     }
 
@@ -1336,25 +1289,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		if(LOG.isDebugEnabled()) {
     		LOG.debug("CloudControllerServiceImpl:startContainers");
     	}
-
-        if (containerClusterContext == null) {
-            String msg = "Instance start-up failed. ContainerClusterContext is null.";
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+		
+		handleNullObject(containerClusterContext, "Container start-up failed. ContainerClusterContext is null.");
 
         String clusterId = containerClusterContext.getClusterId();
+        handleNullObject(clusterId, "Container start-up failed. Cluster id is null.");
+        
         if(LOG.isDebugEnabled()) {
-        	LOG.debug("Received an instance spawn request : " + containerClusterContext.toString());
+        	LOG.debug("Received a container spawn request : " + containerClusterContext.toString());
         }
 
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
-
-        if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + containerClusterContext.toString();
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(ctxt, "Container start-up failed. Invalid cluster id. " + containerClusterContext.toString());
         
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -1489,28 +1435,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private String validateProperty(String property, ClusterContext ctxt) {
 
 	    String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-        
-        if (propVal == null) {
-            String msg = "Instance start-up failed. Cannot find '"+
-                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
-        
+        handleNullObject(propVal, "Property validation failed. Cannot find '"+property+"' in " + ctxt);
         return propVal;
     }
 	
 	private String validateProperty(String property, ContainerClusterContext ctxt) {
 
         String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-        
-        if (propVal == null) {
-            String msg = "Instance start-up failed. Cannot find '"+
-                    StratosConstants.KUBERNETES_MIN_REPLICAS+"' in " + ctxt;
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
-        
+        handleNullObject(propVal, "Property validation failed. '"+property+"' in " + ctxt);
         return propVal;
         
     }
@@ -1542,31 +1474,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throws InvalidClusterException {
 		
 		ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
-
-        if (ctxt == null) {
-            String msg = "Kubernetes units temrination failed. Invalid cluster id. "+clusterId;
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+		handleNullObject(ctxt, "Kubernetes units temrination failed. Invalid cluster id. "+clusterId);
         
         String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(), 
 				StratosConstants.KUBERNETES_CLUSTER_ID);
-		
-		if (kubernetesClusterId == null) {
-			String msg = "Kubernetes units termination failed. Cannot find '"+
-					StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt;
-			LOG.error(msg);
-			throw new IllegalArgumentException(msg);
-		}
+		handleNullObject(kubernetesClusterId, "Kubernetes units termination failed. Cannot find '"+
+                    StratosConstants.KUBERNETES_CLUSTER_ID+"'. " + ctxt);
         
         KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
-		
-		if (kubClusterContext == null) {
-			String msg = "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: " 
-							+kubernetesClusterId;
-			LOG.error(msg);
-			throw new IllegalArgumentException(msg);
-		}
+		handleNullObject(kubClusterContext, "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: " 
+                            +kubernetesClusterId);
 
 		KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 		// delete the service
@@ -1648,12 +1565,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
-
-        if (ctxt == null) {
-            String msg = "Instance start-up failed. Invalid cluster id. " + clusterId;
-            LOG.error(msg);
-            throw new IllegalArgumentException(msg);
-        }
+        handleNullObject(ctxt, "Container update failed. Invalid cluster id. " + clusterId);
         
         String cartridgeType = ctxt.getCartridgeType();
 
@@ -1661,7 +1573,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                         "Instance start-up failed. No matching Cartridge found [type] "+cartridgeType 
+                         "Container update failed. No matching Cartridge found [type] "+cartridgeType 
                              +". [cluster id] "+ clusterId;
             LOG.error(msg);
             throw new UnregisteredCartridgeException(msg);
