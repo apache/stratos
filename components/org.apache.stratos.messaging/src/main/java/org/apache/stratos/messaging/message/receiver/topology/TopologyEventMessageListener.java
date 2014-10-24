@@ -32,52 +32,45 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  * Implements functionality for receiving text based event messages from the
- * topology
- * message broker topic and add them to the event queue.
+ * topology message broker topic and add them to the event queue.
  */
 class TopologyEventMessageListener implements MqttCallback {
-	private static final Log log = LogFactory.getLog(TopologyEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(TopologyEventMessageListener.class);
 
-	private final TopologyEventMessageQueue messageQueue;
+    private final TopologyEventMessageQueue messageQueue;
 
-	public TopologyEventMessageListener(TopologyEventMessageQueue messageQueue) {
-		this.messageQueue = messageQueue;
-	}
+    public TopologyEventMessageListener(TopologyEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
-	@Override
-	public void connectionLost(Throwable arg0) {
-		// TODO Auto-generated method stub
+    @Override
+    public void connectionLost(Throwable throwable) {
+        log.warn("Connection is lost", throwable);
+    }
 
-	}
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken deliveryToken) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Message delivery is complete: %s",
+                    ((deliveryToken != null) ? deliveryToken.toString() : "")));
+        }
+    }
 
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		// TODO Auto-generated method stub
+    @Override
+    public void messageArrived(String topicName, MqttMessage message) throws Exception {
+        TextMessage textMessage = new ActiveMQTextMessage();
+        textMessage.setText(new String(message.getPayload()));
+        textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, Util.getEventNameForTopic(topicName));
 
-	}
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Topology message received: %s", textMessage.getText()));
+            }
+            // Add received message to the queue
+            messageQueue.add(textMessage);
 
-	@Override
-	public void messageArrived(String topicName, MqttMessage message) throws Exception {
-		if (message instanceof MqttMessage) {
-
-			TextMessage receivedMessage = new ActiveMQTextMessage();
-
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  Util.getEventNameForTopic(topicName));
-
-			try {
-				if (log.isDebugEnabled()) {
-					log.debug(String.format("topology message received: %s",
-					                        ((TextMessage) message).getText()));
-				}
-				// Add received message to the queue
-				messageQueue.add(receivedMessage);
-
-			} catch (JMSException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-	}
-
+        } catch (JMSException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 }
