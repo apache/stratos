@@ -30,7 +30,6 @@ import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.DomainMappingExistsException;
 import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.user.mgt.StratosUserManager;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.manager.user.mgt.exception.UserManagerException;
@@ -50,7 +49,6 @@ import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Repository;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
@@ -179,6 +177,19 @@ public class StratosAdmin extends AbstractAdmin {
         return Response.created(url).build();
     }
 
+    @PUT
+    @Path("/policy/autoscale")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
+    public Response updateAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+
+        ServiceUtils.updateAutoscalingPolicy(autoscalePolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
+        return Response.ok(url).build();
+    }
+
     @POST
     @Path("/policy/deployment")
     @Produces("application/json")
@@ -188,8 +199,21 @@ public class StratosAdmin extends AbstractAdmin {
             throws RestAPIException {
 
         ServiceUtils.deployDeploymentPolicy(deploymentPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.id).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.getId()).build();
         return Response.created(url).build();
+    }
+
+    @PUT
+    @Path("/policy/deployment")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
+    public Response updateDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
+            throws RestAPIException {
+
+        ServiceUtils.updateDeploymentPolicy(deploymentPolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.getId()).build();
+        return Response.ok(url).build();
     }
 
     @GET
