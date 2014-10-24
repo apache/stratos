@@ -169,7 +169,7 @@ public class ServiceUtils {
 
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
-        log.info(String.format("Deploying autoscaling policy: %s", autoscalePolicyBean.getDescription()));
+        log.info(String.format("Deploying autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -194,7 +194,7 @@ public class ServiceUtils {
 
     public static void updateAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
-        log.info(String.format("Updating autoscaling policy: %s", autoscalePolicyBean.getDescription()));
+        log.info(String.format("Updating autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -219,7 +219,7 @@ public class ServiceUtils {
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        log.info(String.format("Deploying deployment policy: %s", deploymentPolicyBean.getDescription()));
+        log.info(String.format("Deploying deployment policy: [id] %s", deploymentPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -245,7 +245,7 @@ public class ServiceUtils {
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        log.info(String.format("Updating deployment policy: %s", deploymentPolicyBean.getDescription()));
+        log.info(String.format("Updating deployment policy: [id] %s", deploymentPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
