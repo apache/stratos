@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -61,16 +62,16 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     private static final Log log = LogFactory.getLog(KubernetesClusterMonitor.class);
 
     private KubernetesClusterContext kubernetesClusterCtxt;
-    protected AutoscalePolicy autoscalePolicy;
+    protected String autoscalePolicyId;
 
     protected KubernetesClusterMonitor(String clusterId, String serviceId,
                                        KubernetesClusterContext kubernetesClusterContext,
                                        AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                                       AutoscalePolicy autoscalePolicy) {
+                                       String autoscalePolicyId) {
 
         super(clusterId, serviceId, autoscalerRuleEvaluator);
         this.kubernetesClusterCtxt = kubernetesClusterContext;
-        this.autoscalePolicy = autoscalePolicy;
+        this.autoscalePolicyId = autoscalePolicyId;
     }
 
     @Override
@@ -488,13 +489,9 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     }
 
     public AutoscalePolicy getAutoscalePolicy() {
-        return autoscalePolicy;
+        return PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyId);
     }
 
-    public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
-        this.autoscalePolicy = autoscalePolicy;
-    }
-    
     private Member getMemberByMemberId(String memberId) {
         try {
             TopologyManager.acquireReadLock();

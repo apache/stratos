@@ -28,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -50,12 +51,12 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     public KubernetesServiceClusterMonitor(KubernetesClusterContext kubernetesClusterCtxt,
                                            String serviceClusterID, String serviceId,
-                                           AutoscalePolicy autoscalePolicy) {
+                                           String autoscalePolicyId) {
         super(serviceClusterID, serviceId, kubernetesClusterCtxt,
               new AutoscalerRuleEvaluator(
                       StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
                       StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE),
-              autoscalePolicy);
+              autoscalePolicyId);
         readConfigurations();
     }
 
@@ -100,7 +101,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         String clusterId = getClusterId();
         if (rifReset || memoryConsumptionReset || loadAverageReset) {
             getScaleCheckKnowledgeSession().setGlobal("clusterId", clusterId);
-            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", autoscalePolicy);
+            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", getAutoscalePolicy());
             getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
             getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
             getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
