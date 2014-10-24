@@ -933,29 +933,85 @@ public class TopologyBuilder {
     }
 
     public static void handleApplicationTerminatingEvent(ApplicationTerminatingEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
 
-        org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent applicationTerminatingEvent =
-                new org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent(
-                        event.getAppId());
+        Set<ClusterDataHolder> clusterData;
+        String applicationId = event.getAppId();
+
+        // update the Application and Cluster Statuses as 'Terminating'
+        TopologyManager.acquireWriteLock();
+
         try {
-            TopologyManager.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Terminating);
-            log.info("Application terminating adding status started for Topology");
 
-            TopologyManager.updateTopology(topology);
+            Topology topology = TopologyManager.getTopology();
+
+            if (!topology.applicationExists(applicationId)) {
+                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
+                return;
+            }
+
+            Application application = topology.getApplication(applicationId);
+            // check and update application status to 'Terminating'
+            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
+                log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
+            }
+            // for now anyway update the status forcefully
+            application.setStatus(ApplicationStatus.Terminating);
+            log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
+
+            // update all the Clusters' statuses to 'Terminating'
+            clusterData = application.getClusterDataRecursively();
+            for (ClusterDataHolder clusterDataHolder : clusterData) {
+                Service service = topology.getService(clusterDataHolder.getServiceType());
+                if (service != null) {
+                    Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
+                    if (aCluster != null) {
+                        // validate state transition
+                        if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                            log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
+                                    + ClusterStatus.Terminating);
+                        }
+                        // for now anyway update the status forcefully
+                        aCluster.setStatus(ClusterStatus.Terminating);
+
+                    } else {
+                        log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
+                                " in Topology");
+                    }
+
+                } else {
+                    log.warn("Unable to update cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] not found");
+                }
+            }
+
+            // update all Group's statuses to 'Terminating'
+            if (application.getGroups() != null) {
+                updateGroupStatusesRecursively(GroupStatus.Terminating, application.getGroups());
+            }
+
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        //publishing data
-        TopologyEventPublisher.sendApplicationTerminatingEvent(applicationTerminatingEvent);
+
+        TopologyEventPublisher.sendApplicationTerminatingEvent(
+                new org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent(
+                        applicationId, clusterData));
+    }
+
+    private static void updateGroupStatusesRecursively (GroupStatus groupStatus, Collection<Group> groups) {
+
+        for (Group group : groups) {
+            if (!group.isStateTransitionValid(groupStatus)) {
+                log.error("Invalid state transfer from " + group.getStatus() + " to " + groupStatus);
+            }
+            // force update for now
+            group.setStatus(groupStatus);
+
+            // go recursively and update
+            if (group.getGroups() != null) {
+                updateGroupStatusesRecursively(groupStatus, group.getGroups());
+            }
+        }
     }
 
     public static void handleApplicationTerminatedEvent(ApplicationTerminatedEvent event) {
