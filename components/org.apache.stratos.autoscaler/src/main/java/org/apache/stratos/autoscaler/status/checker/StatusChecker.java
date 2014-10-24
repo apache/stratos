@@ -285,7 +285,21 @@ public class StatusChecker {
                 } else if (parent instanceof Group) {
                     //send activation to the parent
                     log.info("sending group terminated : " + parent.getUniqueIdentifier());
-                    //StatusEventPublisher.sendGroupInActivateEvent(appId, parent.getUniqueIdentifier());
+                    StatusEventPublisher.sendGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
+                }
+            } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminating ||
+                    clusterData.isEmpty() && groupStatus == GroupStatus.Terminating ||
+                    groupStatus == GroupStatus.Terminating && clusterStatus == ClusterStatus.Terminating) {
+                //send the terminated event
+                if (parent instanceof Application) {
+                    //send application activated event
+                    log.info("sending app terminating: " + appId);
+                    StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                    //StatusEventPublisher.sendApp(appId);
+                } else if (parent instanceof Group) {
+                    //send activation to the parent
+                    log.info("sending group terminating : " + parent.getUniqueIdentifier());
+                    StatusEventPublisher.sendGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
                 }
             } else {
                 log.warn("Clusters/groups not found in this [component] " + appId);

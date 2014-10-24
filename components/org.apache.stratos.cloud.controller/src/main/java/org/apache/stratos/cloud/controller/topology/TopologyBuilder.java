@@ -44,6 +44,7 @@ import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceMod
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.event.topology.ClusterInActivateEvent;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
@@ -774,6 +775,44 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterActivatedEvent(clusterActivatedEvent1);
     }
 
+    public static void handleClusterInActivateEvent(
+            org.apache.stratos.messaging.event.application.status.ClusterInActivateEvent clusterInActivateEvent) {
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(clusterInActivateEvent.getServiceName());
+        //update the status of the cluster
+        if (service == null) {
+            log.warn(String.format("Service %s does not exist",
+                    clusterInActivateEvent.getServiceName()));
+            return;
+        }
+
+        Cluster cluster = service.getCluster(clusterInActivateEvent.getClusterId());
+        if (cluster == null) {
+            log.warn(String.format("Cluster %s does not exist",
+                    clusterInActivateEvent.getClusterId()));
+            return;
+        }
+
+        ClusterInActivateEvent clusterActivatedEvent1 =
+                new ClusterInActivateEvent(
+                        clusterInActivateEvent.getAppId(),
+                        clusterInActivateEvent.getServiceName(),
+                        clusterInActivateEvent.getClusterId());
+        try {
+            TopologyManager.acquireWriteLock();
+            //cluster.setStatus(Status.Activated);
+            cluster.setStatus(ClusterStatus.Inactive);
+
+            log.info("Cluster in-active adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
+    }
+
     public static void handleGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(groupActivatedEvent.getAppId());
@@ -1002,6 +1041,41 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
     }
+
+    public static void handleGroupInActiveEvent(GroupInactivateEvent event) {
+        Topology topology = TopologyManager.getTopology();
+        Application application = topology.getApplication(event.getAppId());
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    event.getAppId()));
+            return;
+        }
+
+        Group group = application.getGroupRecursively(event.getGroupId());
+        if (group == null) {
+            log.warn(String.format("Group %s does not exist",
+                    event.getGroupId()));
+            return;
+        }
+
+        GroupInActivateEvent groupInActivateEvent =
+                new GroupInActivateEvent(
+                        event.getAppId(),
+                        event.getGroupId());
+        try {
+            TopologyManager.acquireWriteLock();
+            group.setStatus(GroupStatus.Inactive);
+            log.info("Group in-active adding status started");
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+        //publishing data
+        TopologyEventPublisher.sendGroupInActiveEvent(groupInActivateEvent);
+    }
+
 
     public static void handleGroupTerminatedEvent(GroupInTerminatedEvent event) {
         Topology topology = TopologyManager.getTopology();

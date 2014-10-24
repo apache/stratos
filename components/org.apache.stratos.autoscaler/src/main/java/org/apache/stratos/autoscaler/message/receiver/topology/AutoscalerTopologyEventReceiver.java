@@ -155,8 +155,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Active);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -174,8 +172,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Created);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -194,8 +190,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStatus(ClusterStatus.Inactive);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -215,8 +209,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(GroupStatus.Active);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
         });
 
@@ -236,8 +228,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(GroupStatus.Inactive);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
         });
 
@@ -257,8 +247,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(GroupStatus.Terminating);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
         });
 
@@ -278,8 +266,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(GroupStatus.Terminated);
 
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onGroupStatusChange(groupId, appId);
             }
         });
 
