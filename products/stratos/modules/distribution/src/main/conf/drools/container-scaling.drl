@@ -73,7 +73,7 @@ dialect "mvel"
         scaleUpForMc : Boolean() from (mcReset && (mcPredictedValue > mcUpperLimit))
         scaleUpForLa : Boolean() from (laReset && (laPredictedValue > laUpperLimit))
 
-	scaleDownForRif : Boolean() from (rifPredictedValue < rifUpperLimit)
+	scaleDownForRif : Boolean() from (rifReset && (rifPredictedValue < rifUpperLimit))
         scaleDownForMc : Boolean() from (mcReset && (mcPredictedValue < mcUpperLimit)) 
         scaleDownForLa : Boolean() from (laReset && (laPredictedValue < laUpperLimit))
 
@@ -86,9 +86,9 @@ dialect "mvel"
 	eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [Replicas] activeReplicas : " + activeReplicas))
 
         eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] resetted ? : " + rifReset))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] predicted value : " + rifPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] upper limit : " + rifUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] lower limit : " + rifLowerLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] predicted value : " + rifPredictedValue))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] upper limit : " + rifUpperLimit))
+        eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] lower limit : " + rifLowerLimit))
 
 	eval(log.debug("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] resetted ? : " + mcReset))
         eval(log.info("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] predicted value : " + mcPredictedValue))
