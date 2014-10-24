@@ -41,7 +41,6 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.application.status.GroupTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -96,6 +95,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             protected void onEvent(Event event) {
 
                 if (!topologyInitialized) {
+                    log.info("[CompleteTopologyEvent] Received: " + event.getClass());
+
                     TopologyManager.acquireReadLock();
                     try {
                         for (Application application : TopologyManager.getTopology().getApplications()) {
@@ -165,7 +166,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+                log.info("[ClusterCreatedEvent] Received: " + event.getClass());
 
                 ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
                 String clusterId = clusterCreatedEvent.getClusterId();
@@ -184,7 +185,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ClusterActivatedEvent] Received: " + event.getClass());
+                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
 
                 ClusterInActivateEvent clusterInActivateEvent = (ClusterInActivateEvent) event;
                 String appId = clusterInActivateEvent.getAppId();
@@ -246,7 +247,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[GroupTerminatedEven] Received: " + event.getClass());
+                log.info("[GroupTerminatingEvent] Received: " + event.getClass());
 
                 GroupTerminatingEvent groupTerminatingEvent = (GroupTerminatingEvent) event;
                 String appId = groupTerminatingEvent.getAppId();
@@ -267,7 +268,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[GroupTerminatedEven] Received: " + event.getClass());
+                log.info("[GroupTerminatedEvent] Received: " + event.getClass());
 
                 GroupTerminatedEvent groupTerminatedEvent = (GroupTerminatedEvent) event;
                 String appId = groupTerminatedEvent.getAppId();

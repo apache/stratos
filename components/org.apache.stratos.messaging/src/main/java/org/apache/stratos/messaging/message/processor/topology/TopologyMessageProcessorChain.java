@@ -22,9 +22,6 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationInActivatedEventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatedEventListener;
-import org.apache.stratos.messaging.listener.application.status.ApplicationTerminatingEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
@@ -188,7 +185,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             applicationRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationActivatedEventListener) {
             applicationActivatedMessageProcessor.addEventListener(eventListener);
-        } else  if (eventListener instanceof ApplicationInActivatedEventListener){
+        } else  if (eventListener instanceof ApplicationInActivateEventListener){
             applicationInactivatedMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ApplicationTerminatedEventListener){
             applicationTerminatedMessageProcessor.addEventListener(eventListener);
