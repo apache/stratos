@@ -35,10 +35,7 @@ import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
@@ -46,6 +43,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyEventRecei
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Autoscaler topology receiver.
@@ -306,7 +304,16 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 log.info("[ApplicationUndeployedEvent] Received: " + event.getClass());
 
                 ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
+
+                // acquire reead locks for application and relevant clusters
                 TopologyManager.acquireReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+                Set<ClusterDataHolder> clusterDataHolders = applicationUndeployedEvent.getClusterData();
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
+                                clusterData.getClusterId());
+                    }
+                }
 
                 try {
                     ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
@@ -338,6 +345,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
 
                 } finally {
+                    if (clusterDataHolders != null) {
+                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
+                                    clusterData.getClusterId());
+                        }
+                    }
                     TopologyManager.
                             releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
                 }
@@ -355,6 +368,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 //acquire read lock
                 TopologyManager.acquireReadLockForApplication(applicationRemovedEvent.getApplicationId());
+                Set<ClusterDataHolder> clusterDataHolders = applicationRemovedEvent.getClusterData();
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
+                                clusterData.getClusterId());
+                    }
+                }
 
                 try {
                     //TODO remove monitors as well as any starting or pending threads
@@ -379,6 +399,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 } finally {
                     //release read lock
+                    if (clusterDataHolders != null) {
+                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
+                                    clusterData.getClusterId());
+                        }
+                    }
                     TopologyManager.releaseReadLockForApplication(applicationRemovedEvent.getApplicationId());
                 }
 
