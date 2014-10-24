@@ -91,7 +91,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected void onChildTerminatingEvent(String idOfEvent) {
         //Check whether hasDependent true
         if (!this.aliasToInActiveMonitorsMap.containsKey(idOfEvent)) {
-            this.aliasToInActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(idOfEvent));
+            this.aliasToInActiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
         }
 
         Monitor monitor = this.aliasToInActiveMonitorsMap.get(idOfEvent);
