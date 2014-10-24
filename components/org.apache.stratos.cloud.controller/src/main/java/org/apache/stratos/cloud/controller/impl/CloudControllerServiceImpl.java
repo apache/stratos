@@ -709,6 +709,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     						}
                         }       
                     	
+                    	if (ip == null) {
+                    	    String msg = "No IP address found. IP allocation failed for "+memberContext;
+                    	    LOG.error(msg);
+                            throw new CloudControllerException(msg);
+                    	}
+                    	
                     	// build the node with the new ip
                     	node = NodeMetadataBuilder.fromNodeMetadata(node)
                 				.publicAddresses(ImmutableSet.of(ip)).build();
@@ -1041,6 +1047,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                 if(ctxt == null) {
 	                     String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
 	                     LOG.error(msg);
+	                     return;
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
 	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
@@ -1079,6 +1086,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	                 if(ctxt == null) {
 	                     String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
 	                     LOG.error(msg);
+	                     return;
 	                 }
 	                 Collection<Member> members = TopologyManager.getTopology().
 	                         getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
