@@ -64,12 +64,24 @@ public class PolicyManager {
     // Add the policy to information model and persist.
     public boolean deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
         if(StringUtils.isEmpty(policy.getId())){
-            throw new AutoScalerException("AutoScaling policy id can not be empty");
+            throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
         this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("AutoScaling policy is deployed successfully: [id] %s", policy.getId()));
+            log.info(String.format("Autoscaling policy is deployed successfully: [id] %s", policy.getId()));
+        }
+        return true;
+    }
+
+    public boolean updateAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+        if(StringUtils.isEmpty(policy.getId())){
+            throw new AutoScalerException("Autoscaling policy id cannot be empty");
+        }
+        this.updateASPolicyInInformationModel(policy);
+        RegistryManager.getInstance().persistAutoscalerPolicy(policy);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Autoscaling policy is updated successfully: [id] %s", policy.getId()));
         }
         return true;
     }
@@ -77,7 +89,7 @@ public class PolicyManager {
     // Add the deployment policy to information model and persist.
     public boolean deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
         if(StringUtils.isEmpty(policy.getId())){
-            throw new AutoScalerException("Deploying policy id can not be empty");
+            throw new AutoScalerException("Deploying policy id cannot be empty");
         }
         try {
             if(log.isInfoEnabled()) {
@@ -89,11 +101,34 @@ public class PolicyManager {
             throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
         }
 
-        this.addDeploymentPolicyToInformationModel(policy);
+        addDeploymentPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Deployment policy is deployed successfully: [id] %s", policy.getId()));
+        }
+        return true;
+    }
+
+    public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
+        if(StringUtils.isEmpty(policy.getId())){
+            throw new AutoScalerException("Deploying policy id cannot be empty");
+        }
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Updating deployment policy: [id] %s", policy.getId()));
+            }
+            fillPartitions(policy);
+        } catch (InvalidPartitionException e) {
+            log.error(e);
+            throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
+        }
+
+        updateDeploymentPolicyToInformationModel(policy);
+        RegistryManager.getInstance().persistDeploymentPolicy(policy);
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getId()));
         }
         return true;
     }
@@ -130,13 +165,22 @@ public class PolicyManager {
     public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
         if (!autoscalePolicyListMap.containsKey(asPolicy.getId())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding policy :" + asPolicy.getId());
+                log.debug("Adding autoscaling policy: " + asPolicy.getId());
             }
             autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
         } else {
-        	String errMsg = "Specified policy [" + asPolicy.getId() + "] already exists";
+        	String errMsg = "Specified autoscaling policy [" + asPolicy.getId() + "] already exists";
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
+        }
+    }
+
+    public void updateASPolicyInInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
+        if (autoscalePolicyListMap.containsKey(asPolicy.getId())) {
+            if (log.isDebugEnabled()) {
+                log.debug("Updating autoscaling policy: " + asPolicy.getId());
+            }
+            autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
         }
     }
 
@@ -181,15 +225,22 @@ public class PolicyManager {
     public void addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
         if (!deploymentPolicyListMap.containsKey(policy.getId())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding policy :" + policy.getId());
+                log.debug("Adding deployment policy: " + policy.getId());
             }
             PartitionManager.getInstance().deployNewNetworkPartitions(policy);
             deploymentPolicyListMap.put(policy.getId(), policy);
         } else {
-        	String errMsg = "Specified policy [" + policy.getId()+ "] already exists";
+        	String errMsg = "Specified deployment policy [" + policy.getId()+ "] already exists";
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
         }
+    }
+
+    public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
+        if (log.isDebugEnabled()) {
+            log.debug("Updating deployment policy: " + policy.getId());
+        }
+        deploymentPolicyListMap.put(policy.getId(), policy);
     }
 
     /**
