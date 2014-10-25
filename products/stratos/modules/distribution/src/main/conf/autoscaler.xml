@@ -38,8 +38,10 @@
                 <clientTimeout>300000</clientTimeout>
 	    </stratosManager>
 	    <member>
-		<!-->member expiry timeout (time waited till activation) in ms<-->
-		<expiryTimeout>900000</expiryTimeout>
+		<!-- this is the maximum time a member can be in pending member state -->
+		<pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
+                <!-- this is the maximum time a member can be in obsoleted member state -->
+		<obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
 	    </member>
 	    <!-- monitor task interval -->
 	    <monitorInterval>60000</monitorInterval>
