@@ -146,10 +146,10 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     protected void readConfigurations() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
+        int monitorInterval = conf.getInt(AutoScalerConstants.KubernetesService_Cluster_MONITOR_INTERVAL, 60000);
         setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("KubernetesServiceClusterMonitor task interval: " + getMonitorIntervalMilliseconds());
+            log.debug("KubernetesServiceClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());
         }
     }
 

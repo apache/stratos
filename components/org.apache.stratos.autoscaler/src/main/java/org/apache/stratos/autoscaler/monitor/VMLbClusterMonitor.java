@@ -125,10 +125,10 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     @Override
     protected void readConfigurations() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        int monitorInterval = conf.getInt(AutoScalerConstants.AUTOSCALER_MONITOR_INTERVAL, 90000);
+        int monitorInterval = conf.getInt(AutoScalerConstants.VMLb_Cluster_MONITOR_INTERVAL, 90000);
         setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("VMLbClusterMonitor task interval: " + getMonitorIntervalMilliseconds());
+            log.debug("VMLbClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());
         }
     }
 
