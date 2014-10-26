@@ -25,9 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
@@ -171,7 +169,7 @@ public class ServiceUtils {
 
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
-        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+        log.info(String.format("Deploying autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -191,7 +189,29 @@ public class ServiceUtils {
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
+        }
+    }
 
+    public static void updateAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
+
+        log.info(String.format("Updating autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
+
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+
+            org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = PojoConverter.
+                    convertToCCAutoscalerPojo(autoscalePolicyBean);
+
+            try {
+                autoscalerServiceClient.updateAutoscalingPolicy(autoscalePolicy);
+            } catch (RemoteException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
+            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
+            }
         }
     }
 
@@ -199,7 +219,7 @@ public class ServiceUtils {
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+        log.info(String.format("Deploying deployment policy: [id] %s", deploymentPolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -208,8 +228,7 @@ public class ServiceUtils {
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                autoscalerServiceClient
-                        .deployDeploymentPolicy(deploymentPolicy);
+                autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -219,6 +238,32 @@ public class ServiceUtils {
                 throw new RestAPIException(message, e);
             }
 
+        }
+    }
+
+    public static void updateDeploymentPolicy(
+            org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
+            throws RestAPIException {
+
+        log.info(String.format("Updating deployment policy: [id] %s", deploymentPolicyBean.getId()));
+
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
+                    PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
+
+
+            try {
+                autoscalerServiceClient.updateDeploymentPolicy(deploymentPolicy);
+            } catch (RemoteException e) {
+                log.error(e.getMessage(), e);
+                throw new RestAPIException(e.getMessage(), e);
+            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
+            }
         }
     }
 

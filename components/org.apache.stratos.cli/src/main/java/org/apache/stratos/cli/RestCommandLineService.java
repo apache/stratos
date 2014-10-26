@@ -117,7 +117,10 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEACTIVATE_TENANT = "/stratos/admin/tenant/deactivate";
 
     private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = "/stratos/admin/subscriptions/{alias}/properties";
-    
+    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
+    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
+
+
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
     }
@@ -1221,6 +1224,15 @@ public class RestCommandLineService {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
+    /**
+     * Update autoscaling policy
+     * @param autoScalingPolicy
+     * @throws CommandException
+     */
+    public void updateAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
+    }
+
     // This method helps to deploy multi-tenant service cluster
     public void deployService(String serviceDefinition) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE, serviceDefinition, "service");
@@ -1272,6 +1284,15 @@ public class RestCommandLineService {
     // This method helps to deploy deployment polices
     public void deployDeploymentPolicy(String deploymentPolicy) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
+
+    /**
+     * Update deployment policy
+     * @param deploymentPolicy
+     * @throws CommandException
+     */
+    public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
     }
 
     // This method list available partitons

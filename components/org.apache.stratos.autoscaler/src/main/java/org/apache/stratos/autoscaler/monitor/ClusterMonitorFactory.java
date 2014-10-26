@@ -391,7 +391,7 @@ public class ClusterMonitorFactory {
                 kubernetesClusterCtxt,
                 cluster.getClusterId(),
                 cluster.getServiceName(),
-                policy);
+                policy.getId());
 
         dockerClusterMonitor.setStatus(ClusterStatus.Created);
 

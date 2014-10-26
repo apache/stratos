@@ -88,13 +88,23 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     }
 
     @Override
-    public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException {
-        return PolicyManager.getInstance().deployDeploymentPolicy(depPolicy);
+    public boolean addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        return PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
     }
 
     @Override
-    public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException {
-        return PolicyManager.getInstance().deployAutoscalePolicy(aspolicy);
+    public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        return PolicyManager.getInstance().updateDeploymentPolicy(deploymentPolicy);
+    }
+
+    @Override
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException {
+        return PolicyManager.getInstance().deployAutoscalePolicy(autoscalePolicy);
+    }
+
+    @Override
+    public boolean updateAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException {
+        return PolicyManager.getInstance().updateAutoscalePolicy(autoscalePolicy);
     }
 
     @Override

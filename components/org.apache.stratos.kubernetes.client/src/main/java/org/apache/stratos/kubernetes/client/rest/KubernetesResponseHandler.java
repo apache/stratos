@@ -20,15 +20,15 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Handles a HttpResponse and returns a {@link KubernetesResponse}
@@ -61,6 +61,4 @@ public class KubernetesResponseHandler implements ResponseHandler<KubernetesResp
         
         return kubResponse;
     }
-
-
 }

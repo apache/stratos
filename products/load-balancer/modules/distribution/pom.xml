@@ -446,6 +446,27 @@
             <artifactId>org.wso2.carbon.relay</artifactId>
             <version>${carbon.version}</version>
         </dependency>
+        <!-- activemq client jars -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.hawtbuf</groupId>
+            <artifactId>hawtbuf</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <dependency>
+           <groupId>org.apache.activemq</groupId>
+           <artifactId>activemq-client</artifactId>
+           <version>5.9.1</version>
+        </dependency>
+        <dependency>
+	     <groupId>org.eclipse.paho</groupId>
+	     <artifactId>mqtt-client</artifactId>
+	     <version>0.4.0</version>
+	 </dependency>
     </dependencies>
 
     <build>

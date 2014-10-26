@@ -196,6 +196,15 @@
                 <include>org.wso2.carbon:org.wso2.carbon.event.client:jar</include-->
             </includes>
         </dependencySet>
+	<dependencySet>
+	    <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/lib</outputDirectory>
+            <includes>
+                <include>org.apache.activemq:activemq-client:jar</include>
+                <include>org.apache.geronimo.specs:geronimo-j2ee-management_1.1_spec:jar</include>
+                <include>org.fusesource.hawtbuf:hawtbuf:jar</include>
+	 	<include>org.eclipse.paho:mqtt-client:jar</include>
+	    </includes>
+	</dependencySet>
     </dependencySets>
 
     <files>
@@ -251,6 +260,11 @@
             <source>src/main/conf/jndi.properties</source>
             <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
             <destName>jndi.properties</destName>
+        </file>
+        <file>
+            <source>src/main/conf/mqtttopic.properties</source>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/conf</outputDirectory>
+            <destName>mqtttopic.properties</destName>
         </file>
         <file>
             <source>src/main/conf/log4j.properties</source>

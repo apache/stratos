@@ -551,7 +551,7 @@ public class MockContext {
     	int tenantId = getTenantId();
     	Map<String,DeploymentPolicy> policies;
     	
-    	if(!deploymentPolicy.isPublic){
+    	if(!deploymentPolicy.isPublic()){
     		if (deploymentPolicyMap.containsKey(tenantId)){
         		policies = deploymentPolicyMap.get(tenantId);
         	}
@@ -570,7 +570,7 @@ public class MockContext {
     		}
     	}
     	
-    	policies.put(deploymentPolicy.id,deploymentPolicy);
+    	policies.put(deploymentPolicy.getId(),deploymentPolicy);
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully deployed deployment policy definition");
         return stratosAdminResponse;
@@ -622,14 +622,14 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).partition.toArray(new Partition[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getPartition().toArray(new Partition[0]);
     		}
     	}
         	
     	if(!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)){
     		throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         }
-    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).partition.toArray(new Partition[0]);
+    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getPartition().toArray(new Partition[0]);
     }
 
     public PartitionGroup[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
@@ -642,14 +642,14 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).partitionGroup.toArray(new PartitionGroup[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getPartitionGroup().toArray(new PartitionGroup[0]);
     		}
     	}
         	
     	if(!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)){
     		throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         }
-    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).partitionGroup.toArray(new PartitionGroup[0]);
+    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getPartitionGroup().toArray(new PartitionGroup[0]);
     }
 
     public AutoscalePolicy[] getAutoscalePolicies()  throws RestAPIException{
@@ -811,7 +811,7 @@ public class MockContext {
     	}
         	  	
         Partition[] partitions = null;
-         for(PartitionGroup partitionGroup : deploymentPolicy.partitionGroup){
+         for(PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroup()){
              if(partitionGroup.id.equals(partitionGroupId)){
                  partitions =  partitionGroup.partition.toArray(new Partition[0]);
              }

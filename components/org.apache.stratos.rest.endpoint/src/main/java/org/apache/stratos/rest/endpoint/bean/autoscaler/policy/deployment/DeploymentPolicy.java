@@ -29,15 +29,55 @@ import java.util.List;
 @XmlRootElement
 public class DeploymentPolicy {
 
-    public String id;
+    private String id;
     
-    public String description;
+    private String description;
     
-    public boolean isPublic;
+    private boolean isPublic;
 
     //partition groups
-    public List<PartitionGroup> partitionGroup;
+    private List<PartitionGroup> partitionGroup;
 
     //partitions
-    public List<Partition> partition;
+    private List<Partition> partition;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public List<PartitionGroup> getPartitionGroup() {
+        return partitionGroup;
+    }
+
+    public void setPartitionGroup(List<PartitionGroup> partitionGroup) {
+        this.partitionGroup = partitionGroup;
+    }
+
+    public List<Partition> getPartition() {
+        return partition;
+    }
+
+    public void setPartition(List<Partition> partition) {
+        this.partition = partition;
+    }
 }

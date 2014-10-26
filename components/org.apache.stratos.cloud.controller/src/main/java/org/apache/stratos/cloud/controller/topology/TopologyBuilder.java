@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
@@ -256,6 +257,35 @@ public class TopologyBuilder {
 			member.setLbClusterId(lbClusterId);
 			member.setMemberPublicIp(publicIp);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
+            try {
+                // Update port mappings with generated service proxy port
+                // TODO: Need to properly fix with the latest Kubernetes version
+                String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                if(StringUtils.isEmpty(serviceHostPortStr)) {
+                    log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
+                }
+
+                Cartridge cartridge = FasterLookUpDataHolder.getInstance().
+                        getCartridge(serviceName);
+                List<PortMapping> portMappings = cartridge.getPortMappings();
+                Port port;
+                // Adding ports to the member
+                for (PortMapping portMapping : portMappings) {
+                    if (cluster.isKubernetesCluster() && (StringUtils.isNotEmpty(serviceHostPortStr))) {
+                        port = new Port(portMapping.getProtocol(),
+                                Integer.parseInt(serviceHostPortStr),
+                                Integer.parseInt(portMapping.getProxyPort()));
+                        member.addPort(port);
+                    } else {
+                        port = new Port(portMapping.getProtocol(),
+                                Integer.parseInt(portMapping.getPort()),
+                                Integer.parseInt(portMapping.getProxyPort()));
+                        member.addPort(port);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Could not update member port-map: [member-id] " + memberId, e);
+            }
 			cluster.addMember(member);
 			TopologyManager.updateTopology(topology);
 		} finally {
@@ -340,19 +370,9 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             member.setStatus(MemberStatus.Activated);
             log.info("member started event adding status activated");
-            Cartridge cartridge = FasterLookUpDataHolder.getInstance().
-                    getCartridge(instanceActivatedEvent.getServiceName());
-
-            List<PortMapping> portMappings = cartridge.getPortMappings();
-            Port port;
-            //adding ports to the event
-            for (PortMapping portMapping : portMappings) {
-                port = new Port(portMapping.getProtocol(),
-                        Integer.parseInt(portMapping.getPort()),
-                        Integer.parseInt(portMapping.getProxyPort()));
-                member.addPort(port);
-                memberActivatedEvent.addPort(port);
-            }
+            // Adding ports to the event
+            // TODO: Need to remove this since ports are now set in member spawned event
+            memberActivatedEvent.addPorts(member.getPorts());
 
             memberActivatedEvent.setMemberIp(member.getMemberIp());
             TopologyManager.updateTopology(topology);

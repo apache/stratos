@@ -189,11 +189,23 @@ public class AutoscalerServiceClient {
 
     }
 
+    public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+            AutoScalerServiceInvalidPolicyExceptionException {
+
+        return stub.updateDeploymentPolicy(deploymentPolicy);
+
+    }
+
     public boolean deployAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
             AutoScalerServiceInvalidPolicyExceptionException {
 
         return stub.addAutoScalingPolicy(autoScalePolicy);
+    }
 
+    public boolean updateAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
+            AutoScalerServiceInvalidPolicyExceptionException {
+
+        return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
     public boolean deployPartition(Partition partition) throws RemoteException,

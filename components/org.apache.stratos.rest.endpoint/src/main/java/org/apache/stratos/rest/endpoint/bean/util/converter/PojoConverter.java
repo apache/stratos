@@ -335,11 +335,11 @@ public class PojoConverter {
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = new
                 org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
-        deploymentPolicy.setId(deploymentPolicyBean.id);
-        deploymentPolicy.setDescription(deploymentPolicyBean.description);
-        deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
-        if(deploymentPolicyBean.partitionGroup != null && !deploymentPolicyBean.partitionGroup.isEmpty()) {
-            deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.partitionGroup));
+        deploymentPolicy.setId(deploymentPolicyBean.getId());
+        deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
+        deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic());
+        if(deploymentPolicyBean.getPartitionGroup() != null && !deploymentPolicyBean.getPartitionGroup().isEmpty()) {
+            deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.getPartitionGroup()));
         }
 
         return deploymentPolicy;
@@ -606,12 +606,12 @@ public class PojoConverter {
             return deploymentPolicyBean;
         }
 
-        deploymentPolicyBean.id = deploymentPolicy.getId();
-        deploymentPolicyBean.description = deploymentPolicy.getDescription();
-        deploymentPolicyBean.isPublic = deploymentPolicy.getIsPublic();
+        deploymentPolicyBean.setId(deploymentPolicy.getId());
+        deploymentPolicyBean.setDescription(deploymentPolicy.getDescription());
+        deploymentPolicyBean.setPublic(deploymentPolicy.getIsPublic());
 
         if (deploymentPolicy.getPartitionGroups() != null && deploymentPolicy.getPartitionGroups().length > 0) {
-            deploymentPolicyBean.partitionGroup = Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups()));
+            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups())));
         }
 
         /*if (deploymentPolicy.getAllPartitions() != null && deploymentPolicy.getAllPartitions().length > 0) {

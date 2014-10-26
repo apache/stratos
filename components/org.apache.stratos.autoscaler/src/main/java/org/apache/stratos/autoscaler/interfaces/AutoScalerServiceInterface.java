@@ -41,9 +41,13 @@ public interface AutoScalerServiceInterface {
 
     public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
 
+    public boolean updateDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
+
     public AutoscalePolicy[] getAllAutoScalingPolicy();
 
     public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
+
+    public boolean updateAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
 
     public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType);
 

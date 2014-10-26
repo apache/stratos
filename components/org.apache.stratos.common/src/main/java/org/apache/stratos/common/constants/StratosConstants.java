@@ -163,5 +163,9 @@ public class StratosConstants {
 
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
-
+    
+    // Autoscaler member timeout constants
+    public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
+    public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
 }
+

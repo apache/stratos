@@ -210,7 +210,13 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new UpdateSubscriptionPropertiesCommand();
         commands.put(command.getName(), command);
 
-		if (logger.isDebugEnabled()) {
+        command = new UpdateAutoscalingPolicyCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateDeploymentPolicyCommand();
+        commands.put(command.getName(), command);
+
+        if (logger.isDebugEnabled()) {
 			logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
 		}
 	}
