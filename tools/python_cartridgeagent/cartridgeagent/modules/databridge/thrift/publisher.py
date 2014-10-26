@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import time
 import sys
 
 sys.path.append("gen")

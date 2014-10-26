@@ -16,7 +16,9 @@
 # under the License.
 
 from thrift.publisher import *
+from thrift.gen.Exception.ttypes import ThriftSessionExpiredException
 from ..util.log import *
+import time
 
 
 class StreamDefinition:
@@ -161,7 +163,16 @@ class ThriftPublisher:
         ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
         ThriftPublisher.assign_attributes(event.payloadData, event_bundler)
 
-        self.__publisher.publish(event_bundler)
+        try:
+            self.__publisher.publish(event_bundler)
+        except ThriftSessionExpiredException as ex:
+            self.log.debug("ThriftSession expired. Reconnecting")
+            self.__publisher.connect(self.username, self.password)
+            self.__publisher.defineStream(str(self.stream_definition))
+            self.stream_id = self.__publisher.streamId
+            self.log.debug("connected! stream ID: %r" % self.stream_id)
+            self.__publisher.publish(event_bundler)
+
         self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
 
     def disconnect(self):
@@ -200,5 +211,3 @@ class ThriftPublisher:
                     event_bundler.addStringAttribute(attrib)
                 else:
                     ThriftPublisher.log.error("Undefined attribute type: %r" % attrib)
-        else:
-            ThriftPublisher.log.debug("Empty attribute list")

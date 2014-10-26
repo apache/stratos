@@ -70,7 +70,10 @@ def test_decrypt_password_success():
     secret_key = "tvnw63ufg9gh5111"
     encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
 
-    assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) == plain_password, "Password decryption failed"
+    decrypted_password = cartridgeagentutils.decrypt_password(encrypted_password, secret_key)
+    #print decrypted_password
+
+    assert decrypted_password == plain_password, "Password decryption failed"
 
 
 def test_decrypt_password_failure():

@@ -208,7 +208,8 @@ class AgentGitHandler:
                 cartridgeagentutils.create_dir(repo_context.local_repo_path)
 
             #TODO: remove gittle stuff
-            auth = AgentGitHandler.create_auth_configuration(repo_context)
+            #auth = AgentGitHandler.create_auth_configuration(repo_context)
+            auth = None
 
             if auth is not None:
                 # authentication is required, use Gittle
@@ -404,6 +405,7 @@ class AgentGitHandler:
 
         AgentGitHandler.log.debug("Modified: %r" % str(modified))
 
+        # TODO: check for unpushed commits and push them too
         if not modified:
             AgentGitHandler.log.debug("No changes detected in the local repository for tenant " + tenant_id)
             return
@@ -440,7 +442,8 @@ class AgentGitHandler:
             # if result != 0:
             #     raise Exception
             #TODO: handle push failure scenarios
-            push_op.interact()
+            #push_op.interact()
+            push_op.expect(pexpect.EOF)
 
             AgentGitHandler.log.debug("Pushed artifacts for tenant : " + tenant_id)
         except:
