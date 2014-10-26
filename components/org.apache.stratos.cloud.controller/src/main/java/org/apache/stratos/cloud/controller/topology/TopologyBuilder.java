@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.topology;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,8 @@ import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.util.Constants;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.util.List;
 import java.util.Map;
@@ -259,11 +262,13 @@ public class TopologyBuilder {
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
             try {
                 // Update port mappings with generated service proxy port
-                // TODO: Need to properly fix with the latest Kubernetes version
-                String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-                if(StringUtils.isEmpty(serviceHostPortStr)) {
+                PortMapping[] portToServicePorts = context.getPortToServicePortMappings(); 
+                if(ArrayUtils.isEmpty(portToServicePorts)) {
                     log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
                 }
+                
+                @SuppressWarnings("unchecked")
+                List<PortMapping> portToServicePortList = (List<PortMapping>) Arrays.asList(portToServicePorts);
 
                 Cartridge cartridge = FasterLookUpDataHolder.getInstance().
                         getCartridge(serviceName);
@@ -271,9 +276,10 @@ public class TopologyBuilder {
                 Port port;
                 // Adding ports to the member
                 for (PortMapping portMapping : portMappings) {
-                    if (cluster.isKubernetesCluster() && (StringUtils.isNotEmpty(serviceHostPortStr))) {
+                    if (cluster.isKubernetesCluster() && !portToServicePortList.isEmpty() && portToServicePortList.contains(portMapping)) {
+                        PortMapping portToServicePort = portToServicePortList.get(portToServicePortList.indexOf(portMapping));
                         port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(serviceHostPortStr),
+                                Integer.parseInt(portToServicePort.getProxyPort()),
                                 Integer.parseInt(portMapping.getProxyPort()));
                         member.addPort(port);
                     } else {

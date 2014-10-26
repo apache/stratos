@@ -122,7 +122,7 @@ public class ClusterContext implements Serializable{
 		this.properties = properties;
 	}
 	
-	public void addProperty(String key, int value) {
+	public void addProperty(String key, Object value) {
 		this.properties.put(key, value);
 	}
 	

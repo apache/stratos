@@ -43,12 +43,12 @@ import com.google.common.base.Function;
  */
 public class ContainerClusterContextToKubernetesContainer implements Function<ContainerClusterContext, Container> {
 
-    private static final Log log = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
+    private static final Log LOG = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
     private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     @Override
-    public Container apply(ContainerClusterContext memberContext) {
-        String clusterId = memberContext.getClusterId();
+    public Container apply(ContainerClusterContext context) {
+        String clusterId = context.getClusterId();
         ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
 
         Container container = new Container();
@@ -57,7 +57,7 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Co
         Cartridge cartridge = dataHolder.getCartridge(clusterContext.getCartridgeType());
 
         if (cartridge == null) {
-            log.error("Cannot find a Cartridge of type : " + clusterContext.getCartridgeType());
+            LOG.error("Container extraction failed from "+context+". Cannot find a Cartridge of type : " + clusterContext.getCartridgeType());
             return null;
         }
 
@@ -65,7 +65,7 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Co
 
         container.setPorts(getPorts(clusterContext, cartridge));
 
-        container.setEnv(getEnvironmentVars(memberContext, clusterContext));
+        container.setEnv(getEnvironmentVars(context, clusterContext));
 
         return container;
     }

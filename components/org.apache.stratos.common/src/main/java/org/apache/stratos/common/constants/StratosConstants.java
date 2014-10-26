@@ -152,6 +152,7 @@ public class StratosConstants {
     public static final String KUBERNETES_MIN_REPLICAS = "KUBERNETES_REPLICAS_MIN";
     public static final String KUBERNETES_MAX_REPLICAS = "KUBERNETES_REPLICAS_MAX";
     public static final String KUBERNETES_PORT_RANGE = "KUBERNETES_PORT_RANGE";
+    // value of following property is a List<PortMapping>
     public static final String ALLOCATED_SERVICE_HOST_PORT = "ALLOCATED_SERVICE_HOST_PORT";
     
     //drools related constants

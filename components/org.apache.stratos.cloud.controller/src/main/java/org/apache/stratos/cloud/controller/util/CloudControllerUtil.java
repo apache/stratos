@@ -306,6 +306,21 @@ public class CloudControllerUtil {
     	return null;
     }
 	
+	public static Object getPropertyObject(Properties properties, String key) {
+        if (key != null && properties != null) {
+            for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
+                Entry<Object, Object> type = (Entry<Object, Object>) iterator.next();
+                String propName = type.getKey().toString();
+                Object propValue = type.getValue();
+                if (key.equals(propName)) {
+                    return propValue;
+                }
+            }
+        }
+        
+        return null;
+    }
+	
 	public static String getProperty(org.apache.stratos.cloud.controller.pojo.Properties properties, String key) {
 		Properties props = toJavaUtilProperties(properties);
 		
@@ -397,10 +412,10 @@ public class CloudControllerUtil {
 		return "[" +partitionStr+ "]";
 	}
 	
-	public static String getCompatibleId(String clusterId) {
-		if (clusterId.indexOf('.') != -1) {
-			clusterId = clusterId.replace('.', '-');
+	public static String getCompatibleId(String id) {
+		if (id.indexOf('.') != -1) {
+			id = id.replace('.', '-');
 		}
-		return clusterId;
+		return id;
 	}
 }

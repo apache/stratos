@@ -99,8 +99,8 @@ public class KubernetesClusterContext implements Serializable {
 				ports = portBoundaries();
 			} catch (Exception ignore) {
 				// on an exception, we use the default range
-				log.warn("Unable to find a port range, hence using the default. [4000-5000]"
-						+ " Exception");
+				log.warn("Unable to find a port range, hence using the default: [4000-5000]."
+						+ " Exception: "+ignore.getMessage());
 			}
 
 			// populate the ports
@@ -115,6 +115,14 @@ public class KubernetesClusterContext implements Serializable {
 			availableHostPorts.add(port);
 		}
 	}
+	
+	public void deallocateHostPorts (List<Integer> ports) {
+	    for (Integer port : ports) {
+	        if (!availableHostPorts.contains(port)) {
+	            availableHostPorts.add(port);
+	        }
+        }
+    }
 
 	private void populatePorts(int i, int j) {
 

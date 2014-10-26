@@ -1348,25 +1348,31 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 						+ controller + " via Kubernetes layer.");
 			}
 			
-			// secondly let's create a kubernetes service proxy to load balance these containers
+			// secondly let's create a kubernetes service proxies to load balance these containers
 			ContainerClusterContextToKubernetesService serviceFunction = new ContainerClusterContextToKubernetesService();
-			Service service = serviceFunction.apply(containerClusterContext);
+			List<Service> services = serviceFunction.apply(containerClusterContext);
 			
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Cloud Controller is delegating request to start a service "+service+
-						" for "+ containerClusterContext + " to Kubernetes layer.");
+			if (services.isEmpty()) {
+			    LOG.error("No Kubernetes Service Proxy generated for "+containerClusterContext);
 			}
 			
-			kubApi.createService(service);
+			for (Service service : services) {
+			    if (LOG.isDebugEnabled()) {
+			        LOG.debug("Cloud Controller is delegating request to start a service "+service+
+			                " for "+ containerClusterContext + " to Kubernetes layer.");
+			    }
+			    
+			    kubApi.createService(service);
+			    // add service port into the context
+			    updateAllocatedServiceHostPortProperty(ctxt, service.getContainerPort(), service.getPort());
+			    
+			    if (LOG.isDebugEnabled()) {
+			        LOG.debug("Cloud Controller successfully started the service "
+			                + service + " via Kubernetes layer.");
+			    }
+            }
 			
-			// set host port and update
-			ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
-			dataHolder.addClusterContext(ctxt);
 			
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Cloud Controller successfully started the service "
-						+ controller + " via Kubernetes layer.");
-			}
 			
 			// create a label query
 			Label l = new Label();
@@ -1409,10 +1415,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 MemberContext context = podToMemberContextFunc.apply(pod);
                 context.setCartridgeType(cartridgeType);
                 context.setClusterId(clusterId);
-                
-                context.setProperties(CloudControllerUtil.addProperty(context
-                        .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                        String.valueOf(service.getPort())));
+                Object portMap = CloudControllerUtil.getPropertyObject(ctxt.getProperties(), 
+                        StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                @SuppressWarnings("unchecked")
+                List<PortMapping> map = (List<PortMapping>) portMap;
+                context.setPortToServicePortMappings(map != null ? map.toArray(new PortMapping[0]) : new PortMapping[0]);
                 
                 dataHolder.addMemberContext(context);
                 
@@ -1440,7 +1447,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 	}
 
-	private String validateProperty(String property, ClusterContext ctxt) {
+	@SuppressWarnings("unchecked")
+    private void updateAllocatedServiceHostPortProperty(ClusterContext ctxt, String containerPort, int servicePort) {
+	    List<PortMapping> ports;
+	    Object value;
+	    String key = StratosConstants.ALLOCATED_SERVICE_HOST_PORT;
+	    if ((value = CloudControllerUtil.getPropertyObject(ctxt.getProperties(), key)) != null) {
+	        ports = (List<PortMapping>) value;
+	    } else {
+	        ports = new ArrayList<PortMapping>();
+	    }
+	    PortMapping mapping = new PortMapping();
+	    mapping.setPort(containerPort);
+	    mapping.setProxyPort(String.valueOf(servicePort));
+	    ports.add(mapping);
+	    ctxt.addProperty(key, ports);
+	    
+        dataHolder.addClusterContext(ctxt);
+    }
+
+    private String validateProperty(String property, ClusterContext ctxt) {
 
 	    String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
         handleNullObject(propVal, "Property validation failed. Cannot find '"+property+"' in " + ctxt);
@@ -1492,15 +1518,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
 		handleNullObject(kubClusterContext, "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: " 
                             +kubernetesClusterId);
+		
+		Object portMap = CloudControllerUtil.getPropertyObject(ctxt.getProperties(), 
+                StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+        @SuppressWarnings("unchecked")
+        List<PortMapping> portMappings = (List<PortMapping>) portMap;
 
 		KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-		// delete the service
-		try {
-			kubApi.deleteService(CloudControllerUtil.getCompatibleId(clusterId));
-		} catch (KubernetesClientException e) {
-			// we're not going to throw this error, but proceed with other deletions
-			LOG.error("Failed to delete Kubernetes service with id: "+clusterId, e);
-		}
+		
+		for (PortMapping portMapping : portMappings) {
+		    // delete the service
+		    String id = CloudControllerUtil.getCompatibleId(clusterId+"-"+portMapping.getPort());
+		    try {
+                kubApi.deleteService(id);
+		    } catch (KubernetesClientException e) {
+		        // we're not going to throw this error, but proceed with other deletions
+		        LOG.error("Failed to delete Kubernetes service with id: "+id, e);
+		    }
+        }
 		
 		// set replicas=0 for the replication controller
 		try {
@@ -1541,15 +1576,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new InvalidClusterException(msg, e);
 		}
 		
-		String allocatedPort = CloudControllerUtil.getProperty(ctxt.getProperties(), 
-				StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+		List<Integer> allocatedPorts = new ArrayList<Integer>();
 		
-		if (allocatedPort != null) {
-			kubClusterContext.deallocateHostPort(Integer
-					.parseInt(allocatedPort));
+		for (PortMapping portMapping : portMappings) {
+		    if (portMapping.getProxyPort() != null) {
+		        allocatedPorts.add(Integer.parseInt(portMapping.getProxyPort()));
+		    }
+        }
+		
+		if (!allocatedPorts.isEmpty()) {
+			kubClusterContext.deallocateHostPorts(allocatedPorts);
 		} else {
-			LOG.warn("Host port dealloacation failed due to a missing property: "
-					+ StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+			LOG.warn("No allocated Service host ports found.");
 		}
 		
 		List<MemberContext> membersToBeRemoved = dataHolder.getMemberContextsOfClusterId(clusterId);
@@ -1640,7 +1678,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             
             if (LOG.isDebugEnabled()) {
                 
-                LOG.debug(String.format("Pods created : %s for cluster : %s",allPods.length, clusterId));
+                LOG.debug(String.format("Pods count : %s for cluster : %s",allPods.length, clusterId));
             }
             
             List<MemberContext> memberContexts = new ArrayList<MemberContext>();
@@ -1656,10 +1694,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     context.setCartridgeType(cartridgeType);
                     context.setClusterId(clusterId);
                     
-                    context.setProperties(CloudControllerUtil.addProperty(context
-                            .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                            CloudControllerUtil.getProperty(ctxt.getProperties(), 
-                                    StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
+                    Object portMap = CloudControllerUtil.getPropertyObject(ctxt.getProperties(), 
+                            StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                    @SuppressWarnings("unchecked")
+                    List<PortMapping> map = (List<PortMapping>) portMap;
+                    context.setPortToServicePortMappings(map != null ? map.toArray(new PortMapping[0]) : new PortMapping[0]);
                     
                     // wait till Pod status turns to running and send member spawned.
                     ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
@@ -1694,7 +1733,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // persist in registry
             persist();
 
-            LOG.info("Kubernetes entities are successfully starting up. "+memberContexts);
+            LOG.info("Kubernetes entities are successfully updated. "+memberContexts);
 
             return memberContexts.toArray(new MemberContext[0]);
 

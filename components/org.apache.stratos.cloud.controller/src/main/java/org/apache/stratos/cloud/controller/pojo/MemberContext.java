@@ -21,6 +21,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Holds information about a Member.
@@ -53,6 +55,8 @@ public class MemberContext implements Serializable {
     private String lbClusterId;
     //network partition id
     private String networkPartitionId;
+    // port to kubernetes proxy port mappings
+    private PortMapping[] portToServicePortMappings;
 
     private Properties properties;
     
@@ -70,6 +74,7 @@ public class MemberContext implements Serializable {
     private void init() {
         this.properties = new Properties();
         this.properties.setProperties(new Property[0]);
+        this.setPortToServicePortMappings(new PortMapping[0]);
     }
     
     public String getMemberId() {
@@ -167,28 +172,37 @@ public class MemberContext implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		MemberContext other = (MemberContext) obj;
 		if (clusterId == null) {
-			if (other.clusterId != null)
+			if (other.clusterId != null) {
 				return false;
-		} else if (!clusterId.equals(other.clusterId))
+			}
+		} else if (!clusterId.equals(other.clusterId)) {
 			return false;
+		}
 		if (memberId == null) {
-			if (other.memberId != null)
+			if (other.memberId != null) {
 				return false;
-		} else if (!memberId.equals(other.memberId))
+			}
+		} else if (!memberId.equals(other.memberId)) {
 			return false;
+		}
 		if (nodeId == null) {
-			if (other.nodeId != null)
+			if (other.nodeId != null) {
 				return false;
-		} else if (!nodeId.equals(other.nodeId))
+			}
+		} else if (!nodeId.equals(other.nodeId)) {
 			return false;
+		}
 		return true;
 	}
 
@@ -210,12 +224,20 @@ public class MemberContext implements Serializable {
 
     @Override
     public String toString() {
-        return "MemberContext [memberId=" + memberId + ", nodeId=" + nodeId + ", instanceId="
-                + instanceId + ", clusterId=" + clusterId + ", partition=" + partition
-                + ", cartridgeType=" + cartridgeType + ", privateIpAddress=" + privateIpAddress
-                + ", publicIpAddress=" + publicIpAddress + ", allocatedIpAddress="
-                + allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId
-                + ", networkPartitionId=" + networkPartitionId + ", properties=" + properties + "]";
+        return "MemberContext [memberId=" + memberId + ", nodeId=" + nodeId + ", instanceId=" + instanceId
+                + ", clusterId=" + clusterId + ", partition=" + partition + ", cartridgeType=" + cartridgeType
+                + ", privateIpAddress=" + privateIpAddress + ", publicIpAddress=" + publicIpAddress
+                + ", allocatedIpAddress=" + allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId="
+                + lbClusterId + ", networkPartitionId=" + networkPartitionId + ", properties=" + properties
+                + ", portToServicePortMappings=" + portToServicePortMappings + "]";
+    }
+
+    public PortMapping[] getPortToServicePortMappings() {
+        return portToServicePortMappings;
+    }
+
+    public void setPortToServicePortMappings(PortMapping[] portToServicePortMappings) {
+        this.portToServicePortMappings = portToServicePortMappings;
     }
     
 }
