@@ -20,31 +20,19 @@
  */
 package org.apache.stratos.kubernetes.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.SocketException;
-import java.net.URI;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.interfaces.KubernetesAPIClientInterface;
-import org.apache.stratos.kubernetes.client.model.Label;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.PodList;
-import org.apache.stratos.kubernetes.client.model.ReplicationController;
-import org.apache.stratos.kubernetes.client.model.ReplicationControllerList;
-import org.apache.stratos.kubernetes.client.model.Service;
-import org.apache.stratos.kubernetes.client.model.ServiceList;
+import org.apache.stratos.kubernetes.client.model.*;
 import org.apache.stratos.kubernetes.client.rest.KubernetesResponse;
 import org.apache.stratos.kubernetes.client.rest.RestClient;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.net.URI;
 
 public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	
@@ -75,9 +63,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
-			Pod pod = gson.fromJson(content, Pod.class);
-			
-			return pod;
+			return gson.fromJson(content, Pod.class);
 		} catch (KubernetesClientException e) {
 			throw e;
 		} catch (Exception e) {
@@ -201,8 +187,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
-			ReplicationController controller = gson.fromJson(content, ReplicationController.class);
-			return controller;
+			return gson.fromJson(content, ReplicationController.class);
 		} catch (KubernetesClientException e) {
 			throw e;
 		} catch (Exception e) {
@@ -281,13 +266,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	@Override
 	public void updateReplicationController(String controllerId, int replicas)
 			throws KubernetesClientException {
-		ReplicationController controller = null;
-		
+
 		// gets the current controller
-		controller = getReplicationController(controllerId);
+        ReplicationController controller = getReplicationController(controllerId);
 		
 		try {
-
 			// update the number of replicas
 			controller.getDesiredState().setReplicas(replicas);
 			
@@ -375,9 +358,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
-			Service service = gson.fromJson(content, Service.class);
-			return service;
-			
+			return gson.fromJson(content, Service.class);
 		} catch (Exception e) {
 			String msg = "Error while retrieving Service info with Service ID: "+serviceId;
 			log.error(msg, e);
@@ -519,7 +500,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     private void handleNullResponse(String message, KubernetesResponse res)
             throws KubernetesClientException {
         if (res == null) {
-            log.error(message+ " Null response receieved.");
+            log.error(message+ " Null response received.");
             throw new KubernetesClientException(message);
         }
     }

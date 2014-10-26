@@ -46,19 +46,10 @@ public class RestClient {
 	/**
      * Handle http post request. Return String
      *
-     * @param  httpClient
-     *              This should be httpClient which used to connect to rest endpoint
-     * @param resourcePath
-     *              This should be REST endpoint
-     * @param jsonParamString
-     *              The json string which should be executed from the post request
-     * @param username
-     *              User name for basic auth
-     * @param password
-     *              Password for basic auth
+     * @param resourcePath This should be REST endpoint
+     * @param jsonParamString The json string which should be executed from the post request
      * @return The HttpResponse
-     * @throws Exception
-     *             if any errors occur when executing the request
+     * @throws Exception if any errors occur when executing the request
      */
     public KubernetesResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
         HttpPost postRequest = null;
@@ -69,9 +60,7 @@ public class RestClient {
             input.setContentType("application/json");
             postRequest.setEntity(input);
 
-            KubernetesResponse response = httpClient.execute(postRequest, new KubernetesResponseHandler());
-
-            return response;
+            return httpClient.execute(postRequest, new KubernetesResponseHandler());
         } finally {
             releaseConnection(postRequest);
         }
@@ -80,14 +69,7 @@ public class RestClient {
     /**
      * Handle http get request. Return String
      *
-     * @param  httpClient
-     *              This should be httpClient which used to connect to rest endpoint
-     * @param resourcePath
-     *              This should be REST endpoint
-     * @param username
-     *              User name for basic auth
-     * @param password
-     *              Password for basic auth
+     * @param resourcePath This should be REST endpoint
      * @return The HttpResponse
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
@@ -98,8 +80,7 @@ public class RestClient {
             getRequest = new HttpGet(resourcePath);
             getRequest.addHeader("Content-Type", "application/json");
 
-            KubernetesResponse response = httpClient.execute(getRequest, new KubernetesResponseHandler());
-            return response;
+            return httpClient.execute(getRequest, new KubernetesResponseHandler());
         } finally {
             releaseConnection(getRequest);
         }
@@ -111,10 +92,7 @@ public class RestClient {
             httpDelete = new HttpDelete(resourcePath);
             httpDelete.addHeader("Content-Type", "application/json");
 
-            KubernetesResponse response = httpClient.execute(httpDelete, new KubernetesResponseHandler());
-
-            return  response;
-
+            return httpClient.execute(httpDelete, new KubernetesResponseHandler());
         } finally {
         	 releaseConnection(httpDelete);
         }
@@ -130,10 +108,7 @@ public class RestClient {
 			input.setContentType("application/json");
 			putRequest.setEntity(input);
 
-			KubernetesResponse response = httpClient.execute(putRequest, new KubernetesResponseHandler());
-
-			return response;
-		
+			return httpClient.execute(putRequest, new KubernetesResponseHandler());
 		} finally {
 			releaseConnection(putRequest);
 		}
@@ -144,5 +119,4 @@ public class RestClient {
             request.releaseConnection();
         }
     }
-
 }
