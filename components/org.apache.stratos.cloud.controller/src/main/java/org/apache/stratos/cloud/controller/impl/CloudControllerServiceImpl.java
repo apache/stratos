@@ -1625,7 +1625,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Pod[] allPods = new Pod[0];
             
             // wait replicas*5s time in the worst case ; best case = 0s
-            for (int i = 0; i < replicas ; i++) {
+            for (int i = 0; i < (replicas*previousStatePods.length+1) ; i++) {
                 allPods = kubApi.getSelectedPods(new Label[]{l});
                 
                 if (LOG.isDebugEnabled()) {
