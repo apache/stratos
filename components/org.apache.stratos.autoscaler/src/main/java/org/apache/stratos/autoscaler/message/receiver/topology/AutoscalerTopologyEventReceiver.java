@@ -41,7 +41,6 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterInActivateEvent;
 import org.apache.stratos.messaging.event.topology.GroupActivatedEvent;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
@@ -204,9 +203,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 log.info("[ClusterInActivateEvent] Received: " + event.getClass());
 
-                ClusterTerminatedEvent clusterInactivateEvent = (ClusterTerminatedEvent) event;
-                String appId = clusterInactivateEvent.getAppId();
-                String clusterId = clusterInactivateEvent.getClusterId();
+                ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
+                String appId = clusterTerminatingEvent.getAppId();
+                String clusterId = clusterTerminatingEvent.getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
@@ -224,9 +223,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 log.info("[ClusterInActivateEvent] Received: " + event.getClass());
 
-                ClusterTerminatedEvent clusterInactivateEvent = (ClusterTerminatedEvent) event;
-                String appId = clusterInactivateEvent.getAppId();
-                String clusterId = clusterInactivateEvent.getClusterId();
+                ClusterTerminatedEvent clusterTerminatedEvent = (ClusterTerminatedEvent) event;
+                String appId = clusterTerminatedEvent.getAppId();
+                String clusterId = clusterTerminatedEvent.getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
@@ -328,65 +327,65 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
-//        topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
-//            @Override
-//            protected void onEvent(Event event) {
-//
-//                log.info("[ApplicationUndeployedEvent] Received: " + event.getClass());
-//
-//                ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
-//
-//                // acquire reead locks for application and relevant clusters
-//                TopologyManager.acquireReadLockForApplication(applicationUndeployedEvent.getApplicationId());
-//                Set<ClusterDataHolder> clusterDataHolders = applicationUndeployedEvent.getClusterData();
-//                if (clusterDataHolders != null) {
-//                    for (ClusterDataHolder clusterData : clusterDataHolders) {
-//                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
-//                                clusterData.getClusterId());
-//                    }
-//                }
-//
-//                try {
-//                    ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
-//                            getAppMonitor(applicationUndeployedEvent.getApplicationId());
-//
-//                    if (appMonitor != null) {
-//                        // update the status as Terminating
-//                        appMonitor.setStatus(ApplicationStatus.Terminating);
-//
+        topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ApplicationUndeployedEvent] Received: " + event.getClass());
+
+                ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
+
+                // acquire reead locks for application and relevant clusters
+                TopologyManager.acquireReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+                Set<ClusterDataHolder> clusterDataHolders = applicationUndeployedEvent.getClusterData();
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
+                                clusterData.getClusterId());
+                    }
+                }
+
+                try {
+                    ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
+                            getAppMonitor(applicationUndeployedEvent.getApplicationId());
+
+                    if (appMonitor != null) {
+                        // update the status as Terminating
+                        appMonitor.setStatus(ApplicationStatus.Terminating);
+
 //                        List<String> clusters = appMonitor.
 //                                findClustersOfApplication(applicationUndeployedEvent.getApplicationId());
-//
-//                        for (String clusterId : clusters) {
-//                            //stopping the cluster monitor and remove it from the AS
-//                            ClusterMonitor clusterMonitor =
-//                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
-//                            if (clusterMonitor != null) {
-//                                clusterMonitor.setDestroyed(true);
-//                                clusterMonitor.terminateAllMembers();
-//                                clusterMonitor.setStatus(ClusterStatus.Terminating);
-//                            } else {
-//                                log.warn("No Cluster Monitor found for cluster id " + clusterId);
-//                            }
-//                        }
-//
-//                    } else {
-//                        log.warn("Application Monitor cannot be found for the undeployed [application] "
-//                                + applicationUndeployedEvent.getApplicationId());
-//                    }
-//
-//                } finally {
-//                    if (clusterDataHolders != null) {
-//                        for (ClusterDataHolder clusterData : clusterDataHolders) {
-//                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
-//                                    clusterData.getClusterId());
-//                        }
-//                    }
-//                    TopologyManager.
-//                            releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
-//                }
-//            }
-//        });
+
+                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+                            //stopping the cluster monitor and remove it from the AS
+                            ClusterMonitor clusterMonitor =
+                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId()));
+                            if (clusterMonitor != null) {
+                                clusterMonitor.setDestroyed(true);
+                                clusterMonitor.terminateAllMembers();
+                                clusterMonitor.setStatus(ClusterStatus.Terminating);
+                            } else {
+                                log.warn("No Cluster Monitor found for cluster id " + clusterData.getClusterId());
+                            }
+                        }
+
+                    } else {
+                        log.warn("Application Monitor cannot be found for the undeployed [application] "
+                                + applicationUndeployedEvent.getApplicationId());
+                    }
+
+                } finally {
+                    if (clusterDataHolders != null) {
+                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
+                                    clusterData.getClusterId());
+                        }
+                    }
+                    TopologyManager.
+                            releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
+                }
+            }
+        });
 
 
         topologyEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
@@ -399,13 +398,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 // acquire reead locks for application and relevant clusters
                 TopologyManager.acquireReadLockForApplication(appTerminatingEvent.getAppId());
-                Set<ClusterDataHolder> clusterDataHolders = appTerminatingEvent.getClusterData();
-                if (clusterDataHolders != null) {
-                    for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
-                                clusterData.getClusterId());
-                    }
-                }
 
                 try {
                     ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
@@ -415,34 +407,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         // update the status as Terminating
                         appMonitor.setStatus(ApplicationStatus.Terminating);
 
-                        List<String> clusters = appMonitor.
-                                findClustersOfApplication(appTerminatingEvent.getAppId());
-
-                        for (String clusterId : clusters) {
-                            //stopping the cluster monitor and remove it from the AS
-                            ClusterMonitor clusterMonitor =
-                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId));
-                            if (clusterMonitor != null) {
-                                clusterMonitor.setDestroyed(true);
-                                clusterMonitor.terminateAllMembers();
-                                clusterMonitor.setStatus(ClusterStatus.Terminating);
-                            } else {
-                                log.warn("No Cluster Monitor found for cluster id " + clusterId);
-                            }
-                        }
-
                     } else {
                         log.warn("Application Monitor cannot be found for the undeployed [application] "
                                 + appTerminatingEvent.getAppId());
                     }
 
                 } finally {
-                    if (clusterDataHolders != null) {
-                        for (ClusterDataHolder clusterData : clusterDataHolders) {
-                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
-                                    clusterData.getClusterId());
-                        }
-                    }
                     TopologyManager.
                             releaseReadLockForApplication(appTerminatingEvent.getAppId());
                 }
@@ -472,12 +442,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     ApplicationMonitor monitor = AutoscalerContext.getInstance().
                             getAppMonitor(applicationRemovedEvent.getApplicationId());
                     if (monitor != null) {
-                        List<String> clusters = monitor.
-                                findClustersOfApplication(applicationRemovedEvent.getApplicationId());
-                        for (String clusterId : clusters) {
+                        //List<String> clusters = monitor.
+                        //        findClustersOfApplication(applicationRemovedEvent.getApplicationId());
+                        for (ClusterDataHolder clusterData : clusterDataHolders) {
                             //stopping the cluster monitor and remove it from the AS
-                            ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId)).setDestroyed(true);
-                            AutoscalerContext.getInstance().removeMonitor(clusterId);
+                            ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId())).
+                                    setDestroyed(true);
+                            AutoscalerContext.getInstance().removeMonitor(clusterData.getClusterId());
                         }
                         //removing the application monitor
                         AutoscalerContext.getInstance().

@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterTerminatingEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -48,15 +48,15 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
 
         Topology topology = (Topology) object;
 
-        if (ClusterActivatedEvent.class.getName().equals(type)) {
+        if (ClusterTerminatingEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            ClusterActivatedEvent event = (ClusterActivatedEvent) Util.
-                    jsonToObject(message, ClusterActivatedEvent.class);
+            ClusterTerminatingEvent event = (ClusterTerminatingEvent) Util.
+                    jsonToObject(message, ClusterTerminatingEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
@@ -76,7 +76,7 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ClusterActivatedEvent event, Topology topology) {
+    private boolean doProcess(ClusterTerminatingEvent event, Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -118,10 +118,10 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Active)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Active);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Terminating);
             }
-            cluster.setStatus(ClusterStatus.Active);
+            cluster.setStatus(ClusterStatus.Terminating);
 
         }
 

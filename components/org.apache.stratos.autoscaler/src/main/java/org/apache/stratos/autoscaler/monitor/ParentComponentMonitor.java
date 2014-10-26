@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -96,16 +95,19 @@ public abstract class ParentComponentMonitor extends Monitor {
 
         Monitor monitor = this.aliasToInActiveMonitorsMap.get(idOfEvent);
         if (monitor != null) {
-            for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
-                if (monitor.hasMonitors()) {
-                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
-                } else {
-                    StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
-                            ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+            // check if aliasToActiveMonitors are null (in case of a Cluster Monitor)
+            if (monitor.getAliasToActiveMonitorsMap() != null) {
+                for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                    if (monitor.hasActiveMonitors()) {
+                        StatusEventPublisher.sendGroupTerminatingEvent(this.appId, monitor1.getId());
+                    } else {
+                        StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                                ((AbstractClusterMonitor) monitor1).getServiceId(), monitor.getId());
+                    }
                 }
             }
         } else {
-            log.warn("Active Monitor not found for the id " + idOfEvent);
+            log.warn("Inactive Monitor not found for the id " + idOfEvent);
         }
     }
 
@@ -123,7 +125,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 monitor = this.aliasToActiveMonitorsMap.
                         get(terminationContext.getId());
                 //start to kill it
-                if (monitor.hasMonitors()) {
+                if (monitor.hasActiveMonitors()) {
                     //it is a group
                     StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
                 } else {

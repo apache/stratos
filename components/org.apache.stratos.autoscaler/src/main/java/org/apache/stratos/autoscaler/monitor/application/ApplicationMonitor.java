@@ -61,26 +61,26 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param appId the application which contains the clusters
      * @return all the clusters of the application
      */
-    public List<String> findClustersOfApplication(String appId) {
-        List<String> clusters = new ArrayList<String>();
-        Set<ClusterDataHolder> clusterData;
-
-        TopologyManager.acquireReadLockForApplication(appId);
-        try {
-            clusterData = TopologyManager.getTopology().getApplication(appId).getClusterDataRecursively();
-
-        } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
-        }
-
-        if (clusterData != null) {
-            for (ClusterDataHolder clusterDataHolder : clusterData) {
-                clusters.add(clusterDataHolder.getClusterId());
-            }
-        }
-
-        return clusters;
-    }
+//    public List<String> findClustersOfApplication(String appId) {
+//        List<String> clusters = new ArrayList<String>();
+//        Set<ClusterDataHolder> clusterData;
+//
+//        TopologyManager.acquireReadLockForApplication(appId);
+//        try {
+//            clusterData = TopologyManager.getTopology().getApplication(appId).getClusterDataRecursively();
+//
+//        } finally {
+//            TopologyManager.releaseReadLockForApplication(appId);
+//        }
+//
+//        if (clusterData != null) {
+//            for (ClusterDataHolder clusterDataHolder : clusterData) {
+//                clusters.add(clusterDataHolder.getClusterId());
+//            }
+//        }
+//
+//        return clusters;
+//    }
 
     /**
      * Find the cluster monitor by traversing recursively in the hierarchical monitors.

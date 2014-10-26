@@ -678,8 +678,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static synchronized void handleApplicationUndeployed(FasterLookUpDataHolder dataHolder,
-                                                                String applicationId, int tenantId, String tenantDomain) {
+    public static synchronized void handleApplicationUndeployed(String applicationId) {
 
         Set<ClusterDataHolder> clusterData;
 
@@ -702,7 +701,6 @@ public class TopologyBuilder {
             }
             // for now anyway update the status forcefully
             application.setStatus(ApplicationStatus.Terminating);
-            log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
 
             // update all the Clusters' statuses to 'Terminating'
             clusterData = application.getClusterDataRecursively();
@@ -729,6 +727,13 @@ public class TopologyBuilder {
                             " associated Service [ " + clusterDataHolder.getServiceType() + " ] not found");
                 }
             }
+
+            // update all Group's statuses to 'Terminating'
+            if (application.getGroups() != null) {
+                updateGroupStatusesRecursively(GroupStatus.Terminating, application.getGroups());
+            }
+
+            TopologyManager.updateTopology(topology);
 
         } finally {
             TopologyManager.releaseWriteLock();
@@ -934,10 +939,9 @@ public class TopologyBuilder {
 
     public static void handleApplicationTerminatingEvent(ApplicationTerminatingEvent event) {
 
-        Set<ClusterDataHolder> clusterData;
         String applicationId = event.getAppId();
 
-        // update the Application and Cluster Statuses as 'Terminating'
+        // update the Application Status as 'Terminating'
         TopologyManager.acquireWriteLock();
 
         try {
@@ -958,44 +962,12 @@ public class TopologyBuilder {
             application.setStatus(ApplicationStatus.Terminating);
             log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
 
-            // update all the Clusters' statuses to 'Terminating'
-            clusterData = application.getClusterDataRecursively();
-            for (ClusterDataHolder clusterDataHolder : clusterData) {
-                Service service = topology.getService(clusterDataHolder.getServiceType());
-                if (service != null) {
-                    Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
-                    if (aCluster != null) {
-                        // validate state transition
-                        if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                            log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
-                                    + ClusterStatus.Terminating);
-                        }
-                        // for now anyway update the status forcefully
-                        aCluster.setStatus(ClusterStatus.Terminating);
-
-                    } else {
-                        log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
-                                " in Topology");
-                    }
-
-                } else {
-                    log.warn("Unable to update cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] not found");
-                }
-            }
-
-            // update all Group's statuses to 'Terminating'
-            if (application.getGroups() != null) {
-                updateGroupStatusesRecursively(GroupStatus.Terminating, application.getGroups());
-            }
-
         } finally {
             TopologyManager.releaseWriteLock();
         }
 
         TopologyEventPublisher.sendApplicationTerminatingEvent(
-                new org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent(
-                        applicationId, clusterData));
+                new org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent(applicationId));
     }
 
     private static void updateGroupStatusesRecursively (GroupStatus groupStatus, Collection<Group> groups) {
@@ -1015,30 +987,6 @@ public class TopologyBuilder {
     }
 
     public static void handleApplicationTerminatedEvent(ApplicationTerminatedEvent event) {
-//        Topology topology = TopologyManager.getTopology();
-//        Application application = topology.getApplication(event.getAppId());
-//        //update the status of the Group
-//        if (application == null) {
-//            log.warn(String.format("Application %s does not exist",
-//                    event.getAppId()));
-//            return;
-//        }
-//
-//        org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent applicationTerminatedEvent =
-//                new org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent(
-//                        event.getAppId());
-//        try {
-//            TopologyManager.acquireWriteLock();
-//            application.setStatus(ApplicationStatus.Terminated);
-//            log.info("Application terminated adding status started for Topology");
-//
-//            TopologyManager.updateTopology(topology);
-//        } finally {
-//            TopologyManager.releaseWriteLock();
-//        }
-//        //publishing data
-//        TopologyEventPublisher.sendApplicationTerminatedEvent(applicationTerminatedEvent);
-
 
      Topology topology = TopologyManager.getTopology();
 
@@ -1051,6 +999,13 @@ public class TopologyBuilder {
 
             } else {
                 Application application = topology.getApplication(event.getAppId());
+
+                if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
+                    log.error("Invalid status change from " + application.getStatus() + " to " + ApplicationStatus.Terminated);
+                }
+                // forcefully set status for now
+                application.setStatus(ApplicationStatus.Terminated);
+
                 int tenantId = application.getTenantId();
                 String tenantDomain = application.getTenantDomain();
                 Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
@@ -1201,11 +1156,57 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendGroupTerminatingEvent(groupTerminatingTopologyEvent);
     }
 
-    public static void handleClusterTerminatedEvent(ClusterActivatedEvent event) {
+    public static void handleClusterTerminatedEvent(AppStatusClusterTerminatedEvent event) {
 
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+            Cluster cluster = topology.getService(event.getServiceName()).
+                    getCluster(event.getClusterId());
+
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminated)) {
+                log.error("Invalid state transfer from " + cluster.getStatus() + " to " +
+                        ClusterStatus.Terminated);
+            }
+            // forcefully update status
+            cluster.setStatus(ClusterStatus.Terminated);
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        ClusterTerminatedEvent clusterTerminatedEvent = new ClusterTerminatedEvent(event.getAppId(),
+                event.getServiceName(), event.getClusterId());
+
+        TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
     }
 
-    public static void handleClusterTerminatingEvent(ClusterActivatedEvent event) {
+    public static void handleClusterTerminatingEvent(AppStatusClusterTerminatingEvent event) {
 
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+            Cluster cluster = topology.getService(event.getServiceName()).
+                    getCluster(event.getClusterId());
+
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                log.error("Invalid state transfer from " + cluster.getStatus() + " to " +
+                        ClusterStatus.Terminating);
+            }
+            // forcefully update status
+            cluster.setStatus(ClusterStatus.Terminating);
+
+            TopologyManager.updateTopology(topology);
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        ClusterTerminatingEvent clusterTerminaingEvent = new ClusterTerminatingEvent(event.getAppId(),
+                event.getServiceName(), event.getClusterId());
+
+        TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
     }
 }

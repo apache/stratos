@@ -93,8 +93,8 @@ public class GroupTerminatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!group.isStateTransitionValid(GroupStatus.Terminating)) {
-                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Active);
+            if (!group.isStateTransitionValid(GroupStatus.Terminated)) {
+                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Terminated);
             }
             group.setStatus(GroupStatus.Terminated);
 

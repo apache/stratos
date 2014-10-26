@@ -74,14 +74,14 @@ public class ApplicationStatusTopicReceiver implements Runnable {
         statusEventReceiver.addEventListener(new AppStatusClusterTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatedEvent((ClusterActivatedEvent) event);
+                TopologyBuilder.handleClusterTerminatedEvent((AppStatusClusterTerminatedEvent) event);
             }
         });
 
         statusEventReceiver.addEventListener(new AppStatusClusterTerminatingEventListener(){
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatingEvent((ClusterActivatedEvent) event);
+                TopologyBuilder.handleClusterTerminatingEvent((AppStatusClusterTerminatingEvent) event);
             }
         });
 

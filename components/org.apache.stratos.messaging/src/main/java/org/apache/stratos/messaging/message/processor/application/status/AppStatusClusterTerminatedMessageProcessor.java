@@ -39,7 +39,7 @@ public class AppStatusClusterTerminatedMessageProcessor extends MessageProcessor
     public boolean process(String type, String message, Object object) {
         if (AppStatusClusterTerminatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterTerminatedEvent event = (ClusterTerminatedEvent) Util.
+            AppStatusClusterTerminatedEvent event = (AppStatusClusterTerminatedEvent) Util.
                                                 jsonToObject(message, AppStatusClusterTerminatedEvent.class);
 
             if(log.isDebugEnabled()) {

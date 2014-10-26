@@ -73,12 +73,17 @@ public abstract class Monitor implements EventHandler {
         this.appId = parent.getAppId();
     }
 
-    public boolean hasMonitors() {
+    public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
         if(this.aliasToActiveMonitorsMap != null ) {
             hasMonitor = true;
         }
         return hasMonitor;
+    }
+
+    public boolean hasMonitors () {
+
+        return this.aliasToActiveMonitorsMap != null || this.aliasToInActiveMonitorsMap != null;
     }
 
     public boolean isHasDependent() {

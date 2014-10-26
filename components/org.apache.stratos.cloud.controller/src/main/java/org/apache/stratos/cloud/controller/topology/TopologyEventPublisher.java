@@ -297,4 +297,24 @@ public class TopologyEventPublisher {
         }
         publishEvent(groupTerminatingTopologyEvent);
     }
+
+    public static void sendClusterTerminatingEvent (ClusterTerminatingEvent clusterTerminatingEvent) {
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing Cluster terminating event: [appId] %s [cluster id] %s",
+                    clusterTerminatingEvent.getAppId(), clusterTerminatingEvent.getClusterId()));
+        }
+
+        publishEvent(clusterTerminatingEvent);
+    }
+
+    public static void sendClusterTerminatedEvent (ClusterTerminatedEvent clusterTerminatedEvent) {
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing Cluster terminated event: [appId] %s [cluster id] %s",
+                    clusterTerminatedEvent.getAppId(), clusterTerminatedEvent.getClusterId()));
+        }
+
+        publishEvent(clusterTerminatedEvent);
+    }
 }

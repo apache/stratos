@@ -82,6 +82,9 @@ public class StatusChecker {
             //TODO
             StatusEventPublisher.sendClusterCreatedEvent(monitor.getAppId(), monitor.getServiceId(),
                     monitor.getClusterId());
+        } else {
+            StatusEventPublisher.sendClusterTerminatedEvent(monitor.getAppId(), monitor.getServiceId(),
+                    monitor.getClusterId());
         }
         // TODO if cluster was in terminating, then send terminated event.
     }
@@ -264,9 +267,9 @@ public class StatusChecker {
                     clusterData.isEmpty() && groupStatus == GroupStatus.Inactive ||
                     groupStatus == GroupStatus.Inactive && clusterStatus == ClusterStatus.Inactive) {
                     //send the in activation event
-                if (parent instanceof Application) {
-                    //send application activated event
-                    log.info("sending app in-active : " + appId);
+                    if (parent instanceof Application) {
+                        //send application activated event
+                        log.info("sending app in-active : " + appId);
                     StatusEventPublisher.sendApplicationInactivatedEvent(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
@@ -294,12 +297,12 @@ public class StatusChecker {
                 if (parent instanceof Application) {
                     //send application activated event
                     log.info("sending app terminating: " + appId);
-                    StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                    StatusEventPublisher.sendApplicationTerminatingEvent(appId);
                     //StatusEventPublisher.sendApp(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
                     log.info("sending group terminating : " + parent.getUniqueIdentifier());
-                    StatusEventPublisher.sendGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
+                    StatusEventPublisher.sendGroupTerminatingEvent(appId, parent.getUniqueIdentifier());
                 }
             } else {
                 log.warn("Clusters/groups not found in this [component] " + appId);

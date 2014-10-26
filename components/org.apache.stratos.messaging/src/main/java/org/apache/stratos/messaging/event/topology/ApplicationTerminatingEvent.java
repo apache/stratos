@@ -18,28 +18,18 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
-
-import java.util.Set;
-
 /**
  * This event will be sent to Topology upon terminating of application
  */
 public class ApplicationTerminatingEvent extends TopologyEvent {
 
     private final String appId;
-    private Set<ClusterDataHolder> clusterData;
 
-    public ApplicationTerminatingEvent(String appId, Set<ClusterDataHolder> clusterData) {
+    public ApplicationTerminatingEvent(String appId) {
         this.appId = appId;
-        this.clusterData = clusterData;
     }
 
     public String getAppId() {
         return appId;
-    }
-
-    public Set<ClusterDataHolder> getClusterData() {
-        return clusterData;
     }
 }

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
@@ -48,14 +48,14 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology) object;
 
-        if (ApplicationInactivatedEvent.class.getName().equals(type)) {
+        if (ApplicationTerminatingEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            ApplicationInactivatedEvent event = (ApplicationInactivatedEvent) Util.
-                    jsonToObject(message, ApplicationInactivatedEvent.class);
+            ApplicationTerminatingEvent event = (ApplicationTerminatingEvent) Util.
+                    jsonToObject(message, ApplicationTerminatingEvent.class);
 
             TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
 
@@ -76,7 +76,7 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ApplicationInactivatedEvent event, Topology topology) {
+    private boolean doProcess (ApplicationTerminatingEvent event, Topology topology) {
 
         // Validate event against the existing topology
         Application application = topology.getApplication(event.getAppId());

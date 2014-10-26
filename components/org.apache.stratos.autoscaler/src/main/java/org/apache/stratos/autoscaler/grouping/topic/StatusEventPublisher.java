@@ -10,6 +10,7 @@ import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.application.status.ApplicationTerminatingEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterInActivateEvent;
 import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
@@ -72,9 +73,10 @@ public class StatusEventPublisher {
                     " [cluster]: " + clusterId);
         }
         //TODO
-        /*ClusterActivatedEvent clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
+        AppStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
+                new AppStatusClusterTerminatingEvent(appId, serviceName, clusterId);
 
-        publishEvent(clusterActivatedEvent);*/
+        publishEvent(appStatusClusterTerminatingEvent);
     }
 
     public static void sendClusterTerminatedEvent(String appId, String serviceName, String clusterId) {
@@ -83,10 +85,11 @@ public class StatusEventPublisher {
             log.info("Publishing Cluster in-activate event for [application]: " + appId +
                     " [cluster]: " + clusterId);
         }
-        //TODO
-       /* Cluster clusterActivatedEvent = new ClusterActivatedEvent(appId, serviceName, clusterId);
 
-        publishEvent(clusterActivatedEvent);*/
+        AppStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
+                new AppStatusClusterTerminatedEvent(appId, serviceName, clusterId);
+
+        publishEvent(appStatusClusterTerminatedEvent);
     }
 
     public static void sendGroupActivatedEvent(String appId, String groupId) {
@@ -154,6 +157,16 @@ public class StatusEventPublisher {
         ApplicationInactivatedEvent applicationInActivatedEvent = new ApplicationInactivatedEvent(appId);
 
         publishEvent(applicationInActivatedEvent);
+    }
+
+    public static void sendApplicationTerminatingEvent (String appId) {
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application terminated event for [application]: " + appId);
+        }
+
+        ApplicationTerminatingEvent applicationTerminatingEvent = new ApplicationTerminatingEvent(appId);
+
+        publishEvent(applicationTerminatingEvent);
     }
 
     public static void sendApplicationTerminatedEvent (String appId, Set<ClusterDataHolder> clusterData) {
