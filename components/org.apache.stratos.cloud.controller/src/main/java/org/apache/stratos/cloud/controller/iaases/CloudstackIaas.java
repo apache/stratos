@@ -15,8 +15,10 @@ import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
+import org.jclouds.cloudstack.domain.PublicIPAddress;
 import org.jclouds.cloudstack.domain.Volume;
 import org.jclouds.cloudstack.domain.Zone;
+import org.jclouds.cloudstack.options.ListPublicIPAddressesOptions;
 import org.jclouds.cloudstack.options.ListZonesOptions;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -31,11 +33,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-public class CloudstackIaas extends Iaas{
+public class CloudstackIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(CloudstackIaas.class);
 
-    public CloudstackIaas(IaasProvider iaasProvider) {super(iaasProvider);}
+    public CloudstackIaas(IaasProvider iaasProvider) {
+        super(iaasProvider);
+    }
 
     @Override
     public void buildComputeServiceAndTemplate() {
@@ -68,7 +72,7 @@ public class CloudstackIaas extends Iaas{
          * PROPERTY - 1
          * set image id specified
          */
-       templateBuilder.imageId(iaasInfo.getImage());
+        templateBuilder.imageId(iaasInfo.getImage());
 
         /**
          *  PROPERTY-2
@@ -76,13 +80,12 @@ public class CloudstackIaas extends Iaas{
          *  (user should provide the zone id for this)
          */
 
-        if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
-            for(Location location : locations) {
-                if(location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
-                        location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
+            for (Location location : locations) {
+                if (location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                     //if the zone is valid set the zone to templateBuilder Object
-                        templateBuilder.locationId(location.getId());
+                    templateBuilder.locationId(location.getId());
                     log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
                     break;
@@ -95,7 +98,7 @@ public class CloudstackIaas extends Iaas{
          * if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
          * object.
          *Important:Specify the Service Offering type ID. Not the name. Because the name is not unique.
-        */
+         */
         if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
             templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
         }
@@ -116,18 +119,26 @@ public class CloudstackIaas extends Iaas{
         // this is required in order to avoid creation of additional security
         // groups by Jclouds.
         template.getOptions().as(TemplateOptions.class)
-                .inboundPorts(new int[] {});
+                .inboundPorts(new int[]{});
 
 
         //*******************SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT*********************************//
 
-        //set security group
+        //set security group. If you are using basic zone
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
                     .securityGroupIds(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
-       }
+        }
+
+        //set network IDs. If you are using Advanced zone
+        if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_IDS) != null) {
+            template.getOptions()
+                    .as(CloudStackTemplateOptions.class)
+                    .networks(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.NETWORK_IDS)
+                            .split(CloudControllerConstants.ENTRY_SEPARATOR)));
+        }
 
         //set user name
         if (iaasInfo.getProperty(CloudControllerConstants.USER_NAME) != null) {
@@ -145,13 +156,12 @@ public class CloudstackIaas extends Iaas{
          * in cloudstack we cannot access a key pair without specifying user name and domain ID
          */
         if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null &&
-                iaasInfo.getProperty(CloudControllerConstants.USER_NAME)!= null &&
-                iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID) != null ) {
+                iaasInfo.getProperty(CloudControllerConstants.USER_NAME) != null &&
+                iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID) != null) {
             template.getOptions().as(CloudStackTemplateOptions.class)
                     .keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
         }
 
-         //todo this is not working
         // ability to define tags
         if (iaasInfo.getProperty(CloudControllerConstants.TAGS) != null) {
             template.getOptions()
@@ -159,7 +169,7 @@ public class CloudstackIaas extends Iaas{
                     .tags(Arrays.asList(iaasInfo.getProperty(CloudControllerConstants.TAGS)
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
         }
-        //todo check whether this is working or not
+        //set disk offering to the instance
         if (iaasInfo.getProperty(CloudControllerConstants.DISK_OFFERING) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
@@ -172,54 +182,80 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public void setDynamicPayload() {
-        System.out.println("=====================inside set setDynamicPayload method=================================");
-
         IaasProvider iaasInfo = getIaasProvider();
         if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
-        //todo check whether this is working or not
-         iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
-                 .userMetadata(convertByteArrayToHashMap(iaasInfo.getPayload()));
+            iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
+                    .userMetadata(convertByteArrayToHashMap(iaasInfo.getPayload()));
 
         }
     }
 
+    /**
+     * IMPORTANT
+     * In cloudstack we can assign public IPs, if we are using an advances zone only. If we are using a basic zone
+     * we cannot assign public ips.
+     * <p/>
+     * When we use an advanced zone, a public IP address will get automatically assigned to the vm. So we don't need
+     * to find an unallocated IP address and assign that address to the vm (not like in ec2 and openstack).
+     * <p/>
+     * So  this method will find the IP that has been assigned to the vm and return it.
+     */
     @Override
     public String associateAddress(NodeMetadata node) {
-
-        //todo implement this method
 
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         String ip = null;
+
+        // get all allocated IPs
+        ListPublicIPAddressesOptions listPublicIPAddressesOptions = new ListPublicIPAddressesOptions();
+        listPublicIPAddressesOptions.zoneId(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
+
+        Set<PublicIPAddress> publicIPAddresses = cloudStackApi.getAddressApi().listPublicIPAddresses(listPublicIPAddressesOptions);
+
+        String id = node.getProviderId(); //vm ID
+
+        for (PublicIPAddress publicIPAddress : publicIPAddresses) {
+            if (publicIPAddress.getVirtualMachineId().equals(id)) { //check whether this instance has
+                // already got an public ip or not
+                ip = publicIPAddress.getIPAddress(); //A public ip has been successfully assigned to the vm
+                log.debug("Successfully associated an IP address " + ip
+                        + " for node with id: " + node.getId());
+                break;
+            }
+
+        }
+
+        if (ip == null || ip.isEmpty()) { //IP has not been successfully assigned to VM(That means there are
+            //  no more IPs  available for the VM)
+            String msg = "No address associated for node with id: " + node.getId();
+            log.debug(msg);
+            throw new CloudControllerException(msg);
+        }
+
         return ip;
     }
 
     @Override
     public String associatePredefinedAddress(NodeMetadata node, String ip) {
-
-        System.out.println("======================This is the associatePredefinedAddress method=====================");
-        //todo implement this method
-        return null;
+        return "";
     }
 
     @Override
     public void releaseAddress(String ip) {
-        //todo test this method
 
-        System.out.println("======================this is the releaseAddress method============");
         IaasProvider iaasInfo = getIaasProvider();
-
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         cloudStackApi.getAddressApi().disassociateIPAddress(ip);
+
 
     }
 
     @Override
     public boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey) {
         //todo implement this method
-        System.out.println("===============inside the create key pair method===================");
         return false;
     }
 
@@ -227,9 +263,8 @@ public class CloudstackIaas extends Iaas{
     public boolean isValidRegion(String region) throws InvalidRegionException {
 
         IaasProvider iaasInfo = getIaasProvider();
-
         //no such method in Jclouds cloudstack api
-        String msg = "Invalid region: " + region +" in the iaas: " +iaasInfo.getType();
+        String msg = "Invalid region: " + region + " in the iaas: " + iaasInfo.getType();
         log.error(msg);
         throw new InvalidRegionException(msg);
     }
@@ -238,19 +273,18 @@ public class CloudstackIaas extends Iaas{
     public boolean isValidZone(String region, String zone) throws InvalidZoneException {
 
         IaasProvider iaasInfo = getIaasProvider();
-
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         ListZonesOptions listZonesOptions = new ListZonesOptions();
         listZonesOptions.available(true);
         Set<Zone> zoneSet = cloudStackApi.getZoneApi().listZones(listZonesOptions);
 
-        for(org.jclouds.cloudstack.domain.Zone configuredZone :zoneSet){
-            if(configuredZone.getName().equalsIgnoreCase(zone)){
+        for (org.jclouds.cloudstack.domain.Zone configuredZone : zoneSet) {
+            if (configuredZone.getName().equalsIgnoreCase(zone)) {
                 return true;
             }
         }
-        String msg = "Invalid zone: " + zone +" in the iaas: "+iaasInfo.getType();
+        String msg = "Invalid zone: " + zone + " in the iaas: " + iaasInfo.getType();
         log.error(msg);
         throw new InvalidZoneException(msg);
     }
@@ -260,7 +294,7 @@ public class CloudstackIaas extends Iaas{
 
         IaasProvider iaasInfo = getIaasProvider();
         // there's no such method in jclouds cloustack api
-        String msg = "Invalid host: " + host +" in the zone: "+zone+ " and of the iaas: "+iaasInfo.getType();
+        String msg = "Invalid host: " + host + " in the zone: " + zone + " and of the iaas: " + iaasInfo.getType();
         log.error(msg);
         throw new InvalidHostException(msg);
 
@@ -273,13 +307,12 @@ public class CloudstackIaas extends Iaas{
 
     @Override
     public String createVolume(int sizeGB, String snapshotId) {
-
         //todo implement this method
         return null;
     }
 
     @Override
-    public String attachVolume(String instanceId, String volumeId , String deviceName) {
+    public String attachVolume(String instanceId, String volumeId, String deviceName) {
 
 
         IaasProvider iaasInfo = getIaasProvider();
@@ -301,23 +334,23 @@ public class CloudstackIaas extends Iaas{
         //volume state ALLOCATED   means that volume has not been attached to any instance.
 
         //TODO there is an error with logic.
-        if(!(volumeState == Volume.State.ALLOCATED || volumeState == Volume.State.CREATING || volumeState == Volume.State.READY)){
-         log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeState));
+        if (!(volumeState == Volume.State.ALLOCATED || volumeState == Volume.State.CREATING || volumeState == Volume.State.READY)) {
+            log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeState));
         }
 
         //check whether the account of volume and instance is same
-        if(!volume.getAccount().equals(cloudStackApi.getVirtualMachineApi().getVirtualMachine(instanceId).getAccount())){
-          log.error(String.format("Volume %s can not be attached. Instance account and Volume account are not the same ", volumeId));
+        if (!volume.getAccount().equals(cloudStackApi.getVirtualMachineApi().getVirtualMachine(instanceId).getAccount())) {
+            log.error(String.format("Volume %s can not be attached. Instance account and Volume account are not the same ", volumeId));
         }
 
         boolean volumeBecameAvailable = false, volumeBecameAttached = false;
 
         try {
-            if(volumeState == Volume.State.CREATING) {
+            if (volumeState == Volume.State.CREATING) {
 
                 volumeBecameAvailable = waitForStatus(volumeId, Volume.State.ALLOCATED, 5);
 
-            }else if(volumeState == Volume.State.READY){
+            } else if (volumeState == Volume.State.READY) {
                 volumeBecameAvailable = true;
             }
 
@@ -346,7 +379,7 @@ public class CloudstackIaas extends Iaas{
         }
 
         //If volume state is not 'READY'
-        if(!volumeBecameAttached){
+        if (!volumeBecameAttached) {
             log.error(String.format("[Volume ID] %s attachment is called, but not yet became attached", volumeId));
         }
 
@@ -366,7 +399,7 @@ public class CloudstackIaas extends Iaas{
         ComputeServiceContext context = iaasInfo.getComputeService()
                 .getContext();
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Starting to detach volume %s from the instance %s", volumeId, instanceId));
         }
 
@@ -375,8 +408,8 @@ public class CloudstackIaas extends Iaas{
         cloudStackApi.getVolumeApi().detachVolume(volumeId);
 
         try {
-            //TODO this is wrong
-            if(waitForStatus(volumeId, Volume.State.ALLOCATED, 5)){
+            //TODO this is true only for newly created volumes
+            if (waitForStatus(volumeId, Volume.State.ALLOCATED, 5)) {
                 log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, iaasInfo));
             }
         } catch (TimeoutException e) {
@@ -392,13 +425,12 @@ public class CloudstackIaas extends Iaas{
                 .getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         cloudStackApi.getVolumeApi().deleteVolume(volumeId);
-        log.info("Deletion of Volume [id]: "+volumeId+" was successful. "
+        log.info("Deletion of Volume [id]: " + volumeId + " was successful. "
                 + " of Iaas : " + iaasInfo);
     }
 
     @Override
-    public String getIaasDevice(String device)
-    {//todo implement this method
+    public String getIaasDevice(String device) {//todo implement this method
         return null;
     }
 
@@ -415,42 +447,42 @@ public class CloudstackIaas extends Iaas{
 
         Volume.State volumeState = volume.getState();
 
-        while(volumeState != expectedStatus){
+        while (volumeState != expectedStatus) {
             try {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Volume %s is still NOT in %s. Current State=%s", volumeId, expectedStatus, volumeState));
                 }
-                if(volumeState == Volume.State.FAILED || volumeState == Volume.State.DESTROYED || volumeState == Volume.State.UNRECOGNIZED){
+                if (volumeState == Volume.State.FAILED || volumeState == Volume.State.DESTROYED || volumeState == Volume.State.UNRECOGNIZED) {
                     log.error("Volume " + volumeId + " is in state" + volumeState);
                     return false;
                 }
 
                 Thread.sleep(1000);
                 volumeState = volume.getState();
-                if (System.currentTimeMillis()> timout) {
+                if (System.currentTimeMillis() > timout) {
                     throw new TimeoutException();
                 }
             } catch (InterruptedException e) {
                 // Ignoring the exception
             }
         }
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Volume %s status became %s", volumeId, expectedStatus));
         }
 
         return true;
     }
 
-    private Map<String,String> convertByteArrayToHashMap(byte[] byteArray){
+    private Map<String, String> convertByteArrayToHashMap(byte[] byteArray) {
 
         Map<String, String> map = new HashMap<String, String>();
 
-        String stringFromByteArray =  new String(byteArray);
+        String stringFromByteArray = new String(byteArray);
         String[] keyValuePairs = stringFromByteArray.split(",");
 
-        for(String keyValuePair : keyValuePairs){
+        for (String keyValuePair : keyValuePairs) {
             String[] keyValue = keyValuePair.split("=");
-            if(keyValue.length>1) {
+            if (keyValue.length > 1) {
                 map.put(keyValue[0], keyValue[1]);
             }
         }
