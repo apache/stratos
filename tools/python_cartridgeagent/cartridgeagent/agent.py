@@ -17,6 +17,7 @@
 # under the License.
 
 import threading
+import sys
 
 from modules.exception.parameternotfoundexception import ParameterNotFoundException
 from modules.subscriber import eventsubscriber
@@ -327,7 +328,12 @@ class CartridgeAgent(threading.Thread):
             self.log.exception("Error processing tenant unSubscribed event")
 
 
+def uncaught_exception_mg(exctype, value, tb):
+    log = LogFactory().get_log(__name__)
+    log.exception("UNCAUGHT EXCEPTION:", value)
+
 def main():
+    sys.excepthook = uncaught_exception_mg
     cartridge_agent = CartridgeAgent()
     log = LogFactory().get_log(__name__)
 

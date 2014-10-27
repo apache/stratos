@@ -156,24 +156,36 @@ class ThriftPublisher:
         :param ThriftEvent event: The log event to be published
         :return: void
         """
-        event_bundler = EventBundle()
-        event_bundler.addStringAttribute(self.stream_id)
-        event_bundler.addLongAttribute(time.time() * 1000)
-        ThriftPublisher.assign_attributes(event.metaData, event_bundler)
-        ThriftPublisher.assign_attributes(event.correlationData, event_bundler)
-        ThriftPublisher.assign_attributes(event.payloadData, event_bundler)
+
+        event_bundle = self.create_event_bundle(event)
 
         try:
-            self.__publisher.publish(event_bundler)
+            self.__publisher.publish(event_bundle)
         except ThriftSessionExpiredException as ex:
             self.log.debug("ThriftSession expired. Reconnecting")
             self.__publisher.connect(self.username, self.password)
-            self.__publisher.defineStream(str(self.stream_definition))
-            self.stream_id = self.__publisher.streamId
             self.log.debug("connected! stream ID: %r" % self.stream_id)
-            self.__publisher.publish(event_bundler)
+
+            self.publish(event)
 
         self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
+
+    def create_event_bundle(self, event):
+        """
+        Creates an EventBundle object to be published to the Thrift stream
+
+        :param ThriftEvent event:
+        :return: EventBundle event bundle object
+        """
+
+        event_bundle = EventBundle()
+        event_bundle.addStringAttribute(self.stream_id)
+        event_bundle.addLongAttribute(time.time() * 1000)
+        ThriftPublisher.assign_attributes(event.metaData, event_bundle)
+        ThriftPublisher.assign_attributes(event.correlationData, event_bundle)
+        ThriftPublisher.assign_attributes(event.payloadData, event_bundle)
+
+        return event_bundle
 
     def disconnect(self):
         """
