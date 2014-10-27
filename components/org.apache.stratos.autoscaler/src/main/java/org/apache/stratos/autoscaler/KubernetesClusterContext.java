@@ -35,6 +35,7 @@ import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.common.constants.StratosConstants;
 
 /*
  * It holds the runtime data of a kubernetes service cluster
@@ -59,7 +60,7 @@ public class KubernetesClusterContext implements Serializable {
     private Properties properties;
 
     // 15 mints as the default
-    private long expiryTime;
+    private long pendingMemberExpiryTime;
     // pending members
     private List<MemberContext> pendingMembers;
 
@@ -110,9 +111,11 @@ public class KubernetesClusterContext implements Serializable {
 
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        expiryTime = conf.getLong("autoscaler.member.expiryTimeout", 300000);
+        pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_CONTAINER_MEMBER_EXPIRY_TIMEOUT, 300000);
+        obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_CONTAINER_MEMBER_EXPIRY_TIMEOUT, 3600000);
         if (log.isDebugEnabled()) {
-            log.debug("Member expiry time is set to: " + expiryTime);
+        	log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
+        	log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);
         }
 
         Thread th = new Thread(new PendingMemberWatcher(this));
@@ -225,12 +228,12 @@ public class KubernetesClusterContext implements Serializable {
         this.activeMembers.remove(ctxt);
     }
 
-    public long getExpiryTime() {
-        return expiryTime;
+    public long getPendingMemberExpiryTime() {
+        return pendingMemberExpiryTime;
     }
 
-    public void setExpiryTime(long expiryTime) {
-        this.expiryTime = expiryTime;
+    public void setPendingMemberExpiryTime(long pendingMemberExpiryTime) {
+        this.pendingMemberExpiryTime = pendingMemberExpiryTime;
     }
 
     public Map<String, MemberStatsContext> getMemberStatsContexts() {
@@ -307,7 +310,7 @@ public class KubernetesClusterContext implements Serializable {
         public void run() {
 
             while (true) {
-                long expiryTime = ctxt.getExpiryTime();
+                long expiryTime = ctxt.getPendingMemberExpiryTime();
                 List<MemberContext> pendingMembers = ctxt.getPendingMembers();
 
                 synchronized (pendingMembers) {

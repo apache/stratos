@@ -98,8 +98,8 @@ public class PartitionContext implements Serializable{
 
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
-        obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
+        obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
         if (log.isDebugEnabled()) {
         	log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
         	log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);

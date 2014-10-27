@@ -19,24 +19,50 @@
 -->
 <configuration>
 	<autoscaler>
-		<rulesEvaluator>
-			<schedule>
-				<initialDelay>30</initialDelay>
-				<period>15</period>
-			</schedule>
-		</rulesEvaluator>
-		<cloudController>
-			<hostname>CC_HOSTNAME</hostname>
-			<port>CC_LISTEN_PORT</port>
-            		<clientTimeout>300000</clientTimeout>
-		</cloudController>
-        	<stratosManager>
-			<hostname>SM_HOSTNAME</hostname>
-			<port>SM_LISTEN_PORT</port>
-            		<clientTimeout>300000</clientTimeout>
-		</stratosManager>
-		<member>
-			<expiryTimeout>900000</expiryTimeout>
-		</member>
+            <rulesEvaluator>
+	        <schedule>
+		    <initialDelay>30</initialDelay>
+	            <period>15</period>
+	        </schedule>
+	    </rulesEvaluator>
+	    <cloudController>
+	        <hostname>CC_HOSTNAME</hostname>
+		    <port>CC_LISTEN_PORT</port>
+		    <!-->CC client timout in ms<-->
+            <clientTimeout>300000</clientTimeout>
+	    </cloudController>
+            <stratosManager>
+	        <hostname>SM_HOSTNAME</hostname>
+		<port>SM_LISTEN_PORT</port>
+		<!--SM client timeout in ms-->
+                <clientTimeout>300000</clientTimeout>
+	    </stratosManager>
+	    <member>
+                <vm>
+                    <!-- this is the maximum time(ms) a vm member can be in pending member state -->
+                    <pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
+                    <!-- this is the maximum time(ms) a vm member can be in obsoleted member state -->
+                    <obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
+                </vm>
+                <container>
+                    <!-- this is the maximum time(ms) a container member can be in pending member state -->
+                    <pendingMemberExpiryTimeout>300000</pendingMemberExpiryTimeout>
+                    <!-- this is the maximum time(ms) a container member can be in obsoleted member state -->
+                    <obsoletedMemberExpiryTimeout>3600000</obsoletedMemberExpiryTimeout>
+                </container>
+	    </member>
+	    <!-- cluster monitoring interval -->
+            <monitorInterval>
+	    	<vm>
+		     <!-- VM Service cluster monitoring interval(ms) -->
+		     <service>90000</service>
+		     <!-- VM LB cluster monitoring interval(ms) -->
+                     <lb>90000</lb>
+		</vm>
+		<kubernetes>
+		     <!-- Kubernetes Service cluster monitoring interval(ms) -->
+		     <service>60000</service>
+		</kubernetes>
+ 	    </monitorInterval>
 	</autoscaler>
 </configuration>
