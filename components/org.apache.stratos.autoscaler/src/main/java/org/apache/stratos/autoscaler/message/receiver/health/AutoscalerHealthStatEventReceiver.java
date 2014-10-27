@@ -494,7 +494,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
             return null;
         }
-        return null;
+        return monitor;
     }
 
 

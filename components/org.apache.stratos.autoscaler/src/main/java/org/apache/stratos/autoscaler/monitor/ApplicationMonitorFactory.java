@@ -108,8 +108,11 @@ public class ApplicationMonitorFactory {
             groupMonitor.setAppId(appId);
             if(parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
-                if(!parentMonitor.isHasDependent() && !context.hasChild()) {
+                //Setting the dependent behaviour of the monitor
+                if(parentMonitor.hasMonitors() && (parentMonitor.isDependent() || context.hasChild())) {
                     groupMonitor.setHasDependent(true);
+                } else {
+                    groupMonitor.setHasDependent(false);
                 }
                 //TODO make sure when it is async
 
@@ -146,6 +149,8 @@ public class ApplicationMonitorFactory {
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
+                applicationMonitor.setHasDependent(false);
+
             } else {
                 String msg = "[Application] " + appId + " cannot be found in the Topology";
                 throw new TopologyInConsistentException(msg);
@@ -286,8 +291,10 @@ public class ApplicationMonitorFactory {
 
                 clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
                 clusterMonitor.setParent(parentMonitor);
-                if(!parentMonitor.isHasDependent() && !context.hasChild()) {
+                if(parentMonitor.hasActiveMonitors() && (parentMonitor.isDependent() || context.hasChild())) {
                     clusterMonitor.setHasDependent(true);
+                } else {
+                    clusterMonitor.setHasDependent(false);
                 }
                 AutoscalerContext.getInstance().addMonitor(clusterMonitor);
                 if (log.isInfoEnabled()) {

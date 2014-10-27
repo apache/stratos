@@ -75,7 +75,7 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
-        if(this.aliasToActiveMonitorsMap != null ) {
+        if(this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) {
             hasMonitor = true;
         }
         return hasMonitor;
@@ -86,7 +86,7 @@ public abstract class Monitor implements EventHandler {
         return this.aliasToActiveMonitorsMap != null || this.aliasToInActiveMonitorsMap != null;
     }
 
-    public boolean isHasDependent() {
+    public boolean isDependent() {
         return hasDependent;
     }
 
