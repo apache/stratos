@@ -70,15 +70,22 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     }
 
     /**
-     * Changes the current state to nextState
+     * Changes the current state to nextState, if nextState is not as same as the current state
      *
      * @param nextState the next state to change
      */
-    public void changeState (T nextState)  {
+    public synchronized void changeState (T nextState)  {
 
-        stateStack.push(nextState);
-        log.info("Topology element [ " + identifier + " ]'s life Cycle State changed from [ " +
-                getPreviousState() + " ] to [ " + getCurrentState() + " ]");
+        if (getCurrentState() != nextState) {
+            stateStack.push(nextState);
+            log.info("Topology element [ " + identifier + " ]'s life Cycle State changed from [ " +
+                    getPreviousState() + " ] to [ " + getCurrentState() + " ]");
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Topology element [ " + identifier +" ]'s life Cycle State has been " +
+                        "already updated to [ " + nextState + " ]");
+            }
+        }
         if (log.isDebugEnabled()) {
             printStateTransitions(stateStack);
         }
