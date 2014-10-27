@@ -38,12 +38,12 @@ public abstract class ApplicationContext {
 
     private Stack<ClusterStatus> statusLifeCycle;
 
-    protected boolean killDependent;
+    protected boolean isDependent;
 
     public ApplicationContext(String id, boolean killDependent) {
         applicationContextList = new ArrayList<ApplicationContext>();
         statusLifeCycle = new Stack<ClusterStatus>();
-        this.killDependent = killDependent;
+        this.setDependent(killDependent);
         this.id = id;
     }
 
@@ -101,5 +101,13 @@ public abstract class ApplicationContext {
 
     public void setTerminated(boolean terminated) {
         this.terminated = terminated;
+    }
+
+    public boolean isDependent() {
+        return isDependent;
+    }
+
+    public void setDependent(boolean isDependent) {
+        this.isDependent = isDependent;
     }
 }

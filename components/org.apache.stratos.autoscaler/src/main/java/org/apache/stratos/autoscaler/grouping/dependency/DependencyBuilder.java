@@ -91,7 +91,7 @@ public class DependencyBuilder {
 
                         if (start != null) {
                             ApplicationContext applicationContext = ApplicationContextFactory.
-                                    getApplicationContext(start, component, dependencyTree.isKillDependent());
+                                    getApplicationContext(start, component, dependencyTree);
                             String id = applicationContext.getId();
 
                             ApplicationContext existingApplicationContext =

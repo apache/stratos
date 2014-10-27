@@ -174,7 +174,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
             }
 
-        	boolean rifReset = networkPartitionContext.isRifReset();
+        	/*boolean rifReset = networkPartitionContext.isRifReset();
             boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
             boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
 
@@ -208,7 +208,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
             } else if (log.isDebugEnabled()) {
                 log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
                         "cycle for network partition %s", networkPartitionContext.getId()));
-            }
+            }*/
         }
     }
 

@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.grouping.dependency.context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
@@ -36,24 +37,25 @@ public class ApplicationContextFactory {
      *
      * @param startOrder      reference of group/cluster in the start order
      * @param component       The component which used to build the dependency
-     * @param isKillDependent kill dependent behaviour of this component
+     * @param tree kill dependent behaviour of this component
      * @return Context
      */
     public static ApplicationContext getApplicationContext(String startOrder,
                                                            ParentComponent component,
-                                                           boolean isKillDependent) {
+                                                           DependencyTree tree) {
         String id;
         ApplicationContext applicationContext = null;
+        boolean isDependent = tree.isKillDependent() || tree.isKillAll();
         if (startOrder.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(startOrder);
-            applicationContext = getGroupContext(id, isKillDependent);
+            applicationContext = getGroupContext(id, isDependent);
         } else if (startOrder.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
             id = getClusterFromStartupOrder(startOrder);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
-            applicationContext = getClusterContext(clusterDataHolder, isKillDependent);
+            applicationContext = getClusterContext(clusterDataHolder, isDependent);
 
         } else {
             log.warn("[Startup Order]: " + startOrder + " contains unknown reference");
@@ -91,10 +93,10 @@ public class ApplicationContextFactory {
         return  applicationContext;
     }
 
-    public static ApplicationContext getGroupContext(String id, boolean isKillDependent) {
+    public static ApplicationContext getGroupContext(String id, boolean isDependent) {
         ApplicationContext applicationContext;
         applicationContext = new GroupContext(id,
-                isKillDependent);
+                isDependent);
         return applicationContext;
     }
 }
