@@ -7,14 +7,13 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationTerminatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationTerminatingEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterInActivateEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatingEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusClusterInactivateEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusGroupActivatedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.event.topology.GroupInactivateEvent;
 import org.apache.stratos.messaging.util.Constants;
@@ -47,8 +46,8 @@ public class StatusEventPublisher {
                     " [cluster]: " + clusterId);
         }
 
-        ClusterActivatedEvent clusterActivatedEvent =
-                                            new ClusterActivatedEvent(appId, serviceName, clusterId);
+        AppStatusClusterActivatedEvent clusterActivatedEvent =
+                                            new AppStatusClusterActivatedEvent(appId, serviceName, clusterId);
 
         publishEvent(clusterActivatedEvent);
     }
@@ -60,8 +59,8 @@ public class StatusEventPublisher {
                     " [cluster]: " + clusterId);
         }
 
-        ClusterInActivateEvent clusterInActivateEvent =
-                                        new ClusterInActivateEvent(appId, serviceName, clusterId);
+        AppStatusClusterInactivateEvent clusterInActivateEvent =
+                                        new AppStatusClusterInactivateEvent(appId, serviceName, clusterId);
 
         publishEvent(clusterInActivateEvent);
     }
@@ -99,7 +98,7 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        GroupActivatedEvent groupActivatedEvent = new GroupActivatedEvent(appId, groupId);
+        AppStatusGroupActivatedEvent groupActivatedEvent = new AppStatusGroupActivatedEvent(appId, groupId);
 
         publishEvent(groupActivatedEvent);
     }
@@ -123,7 +122,7 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        GroupInTerminatingEvent groupInTerminatingEvent = new GroupInTerminatingEvent(appId, groupId);
+        AppStatusGroupTerminatingEvent groupInTerminatingEvent = new AppStatusGroupTerminatingEvent(appId, groupId);
         publishEvent(groupInTerminatingEvent);
     }
 
@@ -134,7 +133,7 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        GroupInTerminatedEvent groupInTerminatedEvent = new GroupInTerminatedEvent(appId, groupId);
+        AppStatusGroupTerminatedEvent groupInTerminatedEvent = new AppStatusGroupTerminatedEvent(appId, groupId);
         publishEvent(groupInTerminatedEvent);
     }
 
@@ -144,7 +143,7 @@ public class StatusEventPublisher {
             log.info("Publishing Application activated event for [application]: " + appId);
         }
 
-        ApplicationActivatedEvent applicationActivatedEvent = new ApplicationActivatedEvent(appId);
+        AppStatusApplicationActivatedEvent applicationActivatedEvent = new AppStatusApplicationActivatedEvent(appId);
 
         publishEvent(applicationActivatedEvent);
     }
@@ -154,7 +153,7 @@ public class StatusEventPublisher {
             log.info("Publishing Application Inactivated event for [application]: " + appId);
         }
 
-        ApplicationInactivatedEvent applicationInActivatedEvent = new ApplicationInactivatedEvent(appId);
+        AppStatusApplicationInactivatedEvent applicationInActivatedEvent = new AppStatusApplicationInactivatedEvent(appId);
 
         publishEvent(applicationInActivatedEvent);
     }
@@ -164,7 +163,7 @@ public class StatusEventPublisher {
             log.info("Publishing Application terminated event for [application]: " + appId);
         }
 
-        ApplicationTerminatingEvent applicationTerminatingEvent = new ApplicationTerminatingEvent(appId);
+        AppStatusApplicationTerminatingEvent applicationTerminatingEvent = new AppStatusApplicationTerminatingEvent(appId);
 
         publishEvent(applicationTerminatingEvent);
     }
@@ -174,8 +173,8 @@ public class StatusEventPublisher {
             log.info("Publishing Application terminated event for [application]: " + appId);
         }
 
-        ApplicationTerminatedEvent applicationTerminatedEvent =
-                new ApplicationTerminatedEvent(appId, clusterData);
+        AppStatusApplicationTerminatedEvent applicationTerminatedEvent =
+                new AppStatusApplicationTerminatedEvent(appId, clusterData);
 
         publishEvent(applicationTerminatedEvent);
     }

@@ -32,14 +32,14 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.application.status.ApplicationActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationCreatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationInactivatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationTerminatedEvent;
-import org.apache.stratos.messaging.event.application.status.ApplicationTerminatingEvent;
-import org.apache.stratos.messaging.event.application.status.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.GroupInactivateEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationCreatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatingEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusClusterActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusGroupActivatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusGroupInactivateEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -743,7 +743,7 @@ public class TopologyBuilder {
     }
 
 
-    public static void handleClusterActivatedEvent(ClusterActivatedEvent clusterActivatedEvent) {
+    public static void handleClusterActivatedEvent(AppStatusClusterActivatedEvent clusterActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterActivatedEvent.getServiceName());
         //update the status of the cluster
@@ -781,7 +781,7 @@ public class TopologyBuilder {
     }
 
     public static void handleClusterInActivateEvent(
-            org.apache.stratos.messaging.event.application.status.ClusterInActivateEvent clusterInActivateEvent) {
+            AppStatusClusterInactivateEvent clusterInActivateEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterInActivateEvent.getServiceName());
         //update the status of the cluster
@@ -818,7 +818,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
     }
 
-    public static void handleGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {
+    public static void handleGroupActivatedEvent(AppStatusGroupActivatedEvent groupActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(groupActivatedEvent.getAppId());
         //update the status of the Group
@@ -852,7 +852,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendGroupActivatedEvent(groupActivatedEvent1);
     }
 
-    public static void handleApplicationActivatedEvent(ApplicationActivatedEvent applicationActivatedEvent) {
+    public static void handleApplicationActivatedEvent(AppStatusApplicationActivatedEvent applicationActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(applicationActivatedEvent.getAppId());
         //update the status of the Group
@@ -878,7 +878,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
     }
 
-    public static void handleApplicationInActivatedEvent(ApplicationInactivatedEvent event) {
+    public static void handleApplicationInActivatedEvent(AppStatusApplicationInactivatedEvent event) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(event.getAppId());
         //update the status of the Group
@@ -904,7 +904,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationInactivatedEvent(applicationActivatedEvent);
     }
 
-    public static void handleApplicationCreatedEvent(ApplicationCreatedEvent event) {
+    public static void handleApplicationCreatedEvent(AppStatusApplicationCreatedEvent event) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(event.getAppId());
         //update the status of the Group
@@ -937,7 +937,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationCreatedEvent(applicationActivatedEvent);
     }
 
-    public static void handleApplicationTerminatingEvent(ApplicationTerminatingEvent event) {
+    public static void handleApplicationTerminatingEvent(AppStatusApplicationTerminatingEvent event) {
 
         String applicationId = event.getAppId();
 
@@ -986,7 +986,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleApplicationTerminatedEvent(ApplicationTerminatedEvent event) {
+    public static void handleApplicationTerminatedEvent(AppStatusApplicationTerminatedEvent event) {
 
      Topology topology = TopologyManager.getTopology();
 
@@ -1053,7 +1053,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleGroupInActiveEvent(GroupInactivateEvent event) {
+    public static void handleGroupInActiveEvent(AppStatusGroupInactivateEvent event) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(event.getAppId());
         //update the status of the Group
@@ -1088,7 +1088,7 @@ public class TopologyBuilder {
     }
 
 
-    public static void handleGroupTerminatedEvent(GroupInTerminatedEvent event) {
+    public static void handleGroupTerminatedEvent(AppStatusGroupTerminatedEvent event) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(event.getAppId());
         //update the status of the Group
@@ -1122,7 +1122,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendGroupTerminatedEvent(groupTerminatedTopologyEvent);
     }
 
-    public static void handleGroupTerminatingEvent(GroupInTerminatingEvent event) {
+    public static void handleGroupTerminatingEvent(AppStatusGroupTerminatingEvent event) {
         Topology topology = TopologyManager.getTopology();
         Application application = topology.getApplication(event.getAppId());
         //update the status of the Group

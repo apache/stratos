@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.application.status.ApplicationStatusMessageProcessorChain;
+import org.apache.stratos.messaging.message.processor.application.status.AppStatusMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
@@ -36,7 +36,7 @@ public class ApplicationStatusEventMessageDelegator implements Runnable {
 
     public ApplicationStatusEventMessageDelegator(ApplicationStatusEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
-        this.processorChain = new ApplicationStatusMessageProcessorChain();
+        this.processorChain = new AppStatusMessageProcessorChain();
     }
 
     public void addEventListener(EventListener eventListener) {
