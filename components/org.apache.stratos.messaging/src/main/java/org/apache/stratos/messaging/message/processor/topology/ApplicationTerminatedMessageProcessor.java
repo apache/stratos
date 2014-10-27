@@ -58,7 +58,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             ApplicationTerminatedEvent event = (ApplicationTerminatedEvent) Util.
                     jsonToObject(message, ApplicationTerminatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
+            TopologyUpdater.acquireWriteLockForApplications();
                         Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
@@ -70,7 +70,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForApplication(event.getAppId());
+                TopologyUpdater.releaseWriteLockForApplications();
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterData : clusterDataHolders) {
                         TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
