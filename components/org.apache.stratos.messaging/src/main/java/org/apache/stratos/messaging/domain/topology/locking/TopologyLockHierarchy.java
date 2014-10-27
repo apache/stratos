@@ -82,7 +82,9 @@ public class TopologyLockHierarchy {
                 }
             }
         } else {
-            log.warn("Topology Lock for Application " + appId + " already exists");
+            if (log.isDebugEnabled()) {
+                log.debug("Topology Lock for Application " + appId + " already exists");
+            }
         }
     }
 
@@ -100,7 +102,9 @@ public class TopologyLockHierarchy {
                 }
             }
         } else {
-            log.warn("Topology Lock for Service " + serviceName + " already exists");
+            if (log.isDebugEnabled()) {
+                log.debug("Topology Lock for Service " + serviceName + " already exists");
+            }
         }
     }
 
@@ -118,7 +122,9 @@ public class TopologyLockHierarchy {
                 }
             }
         } else {
-            log.warn("Topology Lock for Cluster " + clusterId + " already exists");
+            if (log.isDebugEnabled()) {
+                log.debug("Topology Lock for Cluster " + clusterId + " already exists");
+            }
         }
     }
 
@@ -130,7 +136,9 @@ public class TopologyLockHierarchy {
         if (applicationIdToTopologyLockMap.remove(appId) != null) {
             log.info("Removed lock for Application " + appId);
         } else {
-            log.info("Lock already removed for Application " + appId);
+            if (log.isDebugEnabled()) {
+                log.debug("Lock already removed for Application " + appId);
+            }
         }
     }
 
@@ -138,7 +146,9 @@ public class TopologyLockHierarchy {
         if (serviceNameToTopologyLockMap.remove(serviceName) != null) {
             log.info("Removed lock for Service " + serviceName);
         } else {
-            log.info("Lock already removed for Service " + serviceName);
+            if (log.isDebugEnabled()) {
+                log.debug("Lock already removed for Service " + serviceName);
+            }
         }
     }
 
@@ -146,7 +156,9 @@ public class TopologyLockHierarchy {
         if (clusterIdToTopologyLockMap.remove(clusterId) != null) {
             log.info("Removed lock for Cluster " + clusterId);
         } else {
-            log.info("Lock already removed for Cluster " + clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("Lock already removed for Cluster " + clusterId);
+            }
         }
     }
 
