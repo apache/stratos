@@ -46,7 +46,7 @@ public class GroupInActivateProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology) object;
 
-        if (GroupActivatedEvent.class.getName().equals(type)) {
+        if (GroupInactivateEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized())
                 return false;

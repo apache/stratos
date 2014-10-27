@@ -14,8 +14,6 @@ import org.apache.stratos.messaging.event.application.status.AppStatusApplicatio
 import org.apache.stratos.messaging.event.application.status.AppStatusClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.AppStatusClusterInactivateEvent;
 import org.apache.stratos.messaging.event.application.status.AppStatusGroupActivatedEvent;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.event.topology.GroupInactivateEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Set;
@@ -25,19 +23,6 @@ import java.util.Set;
  */
 public class StatusEventPublisher {
     private static final Log log = LogFactory.getLog(StatusEventPublisher.class);
-
-    public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Cluster activated event for [application]: " + appId +
-                    " [cluster]: " + clusterId);
-        }
-
-
-        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(appId, serviceName, clusterId);
-
-        publishEvent(clusterCreatedEvent);
-    }
 
     public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
 
@@ -110,9 +95,10 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        GroupInactivateEvent groupInactivateEvent = new GroupInactivateEvent(appId, groupId);
+        AppStatusGroupInactivateEvent appStatusGroupInactivateEvent= new
+                AppStatusGroupInactivateEvent(appId, groupId);
 
-        publishEvent(groupInactivateEvent);
+        publishEvent(appStatusGroupInactivateEvent);
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
