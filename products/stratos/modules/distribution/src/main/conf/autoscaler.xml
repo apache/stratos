@@ -38,10 +38,18 @@
                 <clientTimeout>300000</clientTimeout>
 	    </stratosManager>
 	    <member>
-		<!-- this is the maximum time(ms) a member can be in pending member state -->
-		<pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
-                <!-- this is the maximum time(ms) a member can be in obsoleted member state -->
-		<obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
+		<vm>
+	            <!-- this is the maximum time(ms) a vm member can be in pending member state -->
+        	    <pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
+                    <!-- this is the maximum time(ms) a vm member can be in obsoleted member state -->
+                    <obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
+		</vm>
+		<container>
+                    <!-- this is the maximum time(ms) a container member can be in pending member state -->
+                    <pendingMemberExpiryTimeout>300000</pendingMemberExpiryTimeout>
+                    <!-- this is the maximum time(ms) a container member can be in obsoleted member state -->
+                    <obsoletedMemberExpiryTimeout>3600000</obsoletedMemberExpiryTimeout>
+		</container>
 	    </member>
 	    <!-- cluster monitoring interval -->
             <monitorInterval>
