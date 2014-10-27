@@ -73,20 +73,40 @@ public class StatusChecker {
 
     public void onMemberTermination(String clusterId) {
         ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
-        //TODO get Topology status
-        boolean clusterMonitorHasMembers;
-        clusterMonitorHasMembers = clusterMonitorHasMembers(monitor);
-        if(clusterMonitorHasMembers) {
-            //monitor.pause();
-            // if cluster not having any members and if the cluster was in_active then send created Events
-            //TODO
-            StatusEventPublisher.sendClusterCreatedEvent(monitor.getAppId(), monitor.getServiceId(),
-                    monitor.getClusterId());
-        } else {
-            StatusEventPublisher.sendClusterTerminatedEvent(monitor.getAppId(), monitor.getServiceId(),
-                    monitor.getClusterId());
+        boolean clusterMonitorHasMembers = clusterMonitorHasMembers(monitor);
+        boolean clusterActive = clusterActive(monitor);
+
+        try {
+            TopologyManager.acquireReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
+            Service service = TopologyManager.getTopology().getService(monitor.getServiceId());
+            Cluster cluster;
+            if(service != null) {
+                cluster = service.getCluster(monitor.getClusterId());
+                if(cluster != null) {
+                    if(!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
+                        StatusEventPublisher.sendClusterTerminatedEvent(monitor.getAppId(), monitor.getServiceId(),
+                                monitor.getClusterId());
+                    } else {
+                        log.info("Cluster has non terminated [members] and in the [status] "
+                                        + cluster.getStatus().toString());
+
+                        /*if(!clusterActive && !(cluster.getStatus() == ClusterStatus.Inactive ||
+                                cluster.getStatus() == ClusterStatus.Terminating)) {
+                            cluster.getStatus()
+                            StatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
+                                    monitor.getServiceId(), clusterId);
+
+                        }*/
+                    }
+                }
+            }
+
+
+        } finally {
+            TopologyManager.releaseReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
+
         }
-        // TODO if cluster was in terminating, then send terminated event.
+
     }
 
     private boolean clusterActive(AbstractClusterMonitor monitor) {
