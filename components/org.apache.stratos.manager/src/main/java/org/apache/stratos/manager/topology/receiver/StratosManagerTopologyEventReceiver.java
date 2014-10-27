@@ -355,21 +355,22 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
         });
         
         //add listener 
-        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
+        topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
-            	ApplicationRemovedEvent appRemovedEvent = (ApplicationRemovedEvent) event;
+                ApplicationTerminatedEvent appRemovedEvent = (ApplicationTerminatedEvent) event;
 
-                log.info("[ApplicationRemovedEventListener] Received: " + event.getClass());
+                log.info("[ApplicationTerminatedEvent] Received: " + event.getClass());
 
                 try {
+                    // no need to lock since Topology is not accessed
                     //TopologyManager.acquireReadLock();
-                    TopologyManager.acquireReadLockForApplication(appRemovedEvent.getApplicationId());
+                    //TopologyManager.acquireReadLockForApplication(appRemovedEvent.getAppId());
                     
                     // create and persist Application subscritpion
                     CartridgeSubscriptionManager cartridgeSubscriptionManager = new CartridgeSubscriptionManager();
-                    String appId = appRemovedEvent.getApplicationId();
+                    String appId = appRemovedEvent.getAppId();
                     
                     int tenantId = appRemovedEvent.getTenantId();
                     String domain = appRemovedEvent.getTenantDomain();
@@ -393,7 +394,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     }
                 } finally {
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForApplication(appRemovedEvent.getApplicationId());
+                    //TopologyManager.releaseReadLockForApplication(appRemovedEvent.getAppId());
                 }
             }
         });

@@ -20,13 +20,14 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationInactivatedEvent;
+import org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
+
+import java.util.Set;
 
 /**
  * This processor responsible to process the application Inactivation even and update the Topology.
@@ -48,22 +49,33 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology) object;
 
-        if (ApplicationInactivatedEvent.class.getName().equals(type)) {
+        if (ApplicationTerminatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            ApplicationInactivatedEvent event = (ApplicationInactivatedEvent) Util.
-                    jsonToObject(message, ApplicationInactivatedEvent.class);
+            ApplicationTerminatedEvent event = (ApplicationTerminatedEvent) Util.
+                    jsonToObject(message, ApplicationTerminatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
+                        Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
+            if (clusterDataHolders != null) {
+                for (ClusterDataHolder clusterData : clusterDataHolders) {
+                    TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
+                }
+            }
 
             try {
                 return doProcess(event, topology);
 
             } finally {
                 TopologyUpdater.releaseWriteLockForApplication(event.getAppId());
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+                        TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
+                    }
+                }
             }
 
         } else {
@@ -76,27 +88,47 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ApplicationInactivatedEvent event, Topology topology) {
+    private boolean doProcess (ApplicationTerminatedEvent event, Topology topology) {
 
-        // Validate event against the existing topology
-        Application application = topology.getApplication(event.getAppId());
-        if (application == null) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Application does not exist: [service] %s",
-                        event.getAppId()));
-            }
-            return false;
-        } else {
-            // Apply changes to the topology
-            if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
-                log.error("Invalid State transfer from [ " + application.getStatus() +
-                        " ] to [ " + ApplicationStatus.Terminated + " ]");
-            }
-            application.setStatus(ApplicationStatus.Terminated);
-
+        // check if required properties are available
+        if (event.getAppId() == null) {
+            String errorMsg = "Application Id of application removed event is invalid";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
         }
 
-        // Notify event listeners
+        if (event.getTenantDomain()== null) {
+            String errorMsg = "Application tenant domain of application removed event is invalid";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+
+        // check if an Application with same name exists in topology
+        String appId = event.getAppId();
+        if (topology.applicationExists(appId)) {
+            log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
+            topology.removeApplication(appId);
+        }
+
+        if (event.getClusterData() != null) {
+            // remove the Clusters from the Topology
+            for (ClusterDataHolder clusterData : event.getClusterData()) {
+                Service service = topology.getService(clusterData.getServiceType());
+                if (service != null) {
+                    service.removeCluster(clusterData.getClusterId());
+                    if (log.isDebugEnabled()) {
+                        log.debug("Removed the Cluster " + clusterData.getClusterId() + " from Topology");
+                    }
+                }  else {
+                    log.warn("Service " + clusterData.getServiceType() + " not found in Topology!");
+                }
+            }
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("ApplicationRemovedMessageProcessor notifying listener ");
+        }
+
         notifyEventListeners(event);
         return true;
 

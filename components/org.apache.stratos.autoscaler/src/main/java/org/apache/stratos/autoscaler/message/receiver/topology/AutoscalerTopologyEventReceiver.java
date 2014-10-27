@@ -419,28 +419,83 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
+//        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
+//            @Override
+//            protected void onEvent(Event event) {
+//
+//                log.info("[ApplicationRemovedEvent] Received: " + event.getClass());
+//
+//                ApplicationRemovedEvent applicationRemovedEvent = (ApplicationRemovedEvent) event;
+//
+//                //acquire read lock
+//                TopologyManager.acquireReadLockForApplication(applicationRemovedEvent.getApplicationId());
+//                Set<ClusterDataHolder> clusterDataHolders = applicationRemovedEvent.getClusterData();
+//                if (clusterDataHolders != null) {
+//                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+//                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
+//                                clusterData.getClusterId());
+//                    }
+//                }
+//
+//                try {
+//                    //TODO remove monitors as well as any starting or pending threads
+//                    ApplicationMonitor monitor = AutoscalerContext.getInstance().
+//                            getAppMonitor(applicationRemovedEvent.getApplicationId());
+//                    if (monitor != null) {
+//                        //List<String> clusters = monitor.
+//                        //        findClustersOfApplication(applicationRemovedEvent.getApplicationId());
+//                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+//                            //stopping the cluster monitor and remove it from the AS
+//                            ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId())).
+//                                    setDestroyed(true);
+//                            AutoscalerContext.getInstance().removeMonitor(clusterData.getClusterId());
+//                        }
+//                        //removing the application monitor
+//                        AutoscalerContext.getInstance().
+//                                removeAppMonitor(applicationRemovedEvent.getApplicationId());
+//                    } else {
+//                        log.warn("Application Monitor cannot be found for the removed [application] "
+//                                + applicationRemovedEvent.getApplicationId());
+//                    }
+//
+//
+//                } finally {
+//                    //release read lock
+//                    if (clusterDataHolders != null) {
+//                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+//                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
+//                                    clusterData.getClusterId());
+//                        }
+//                    }
+//                    TopologyManager.releaseReadLockForApplication(applicationRemovedEvent.getApplicationId());
+//                }
+//
+//            }
+//        });
+
+        topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ApplicationRemovedEvent] Received: " + event.getClass());
+                log.info("[ApplicationTerminatedEvent] Received: " + event.getClass());
 
-                ApplicationRemovedEvent applicationRemovedEvent = (ApplicationRemovedEvent) event;
+                ApplicationTerminatedEvent applicationRemovedEvent = (ApplicationTerminatedEvent) event;
 
+                // no need to access the locks since the Topology is not accessed
                 //acquire read lock
-                TopologyManager.acquireReadLockForApplication(applicationRemovedEvent.getApplicationId());
+                //TopologyManager.acquireReadLockForApplication(applicationRemovedEvent.getAppId());
                 Set<ClusterDataHolder> clusterDataHolders = applicationRemovedEvent.getClusterData();
-                if (clusterDataHolders != null) {
-                    for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
-                                clusterData.getClusterId());
-                    }
-                }
+//                if (clusterDataHolders != null) {
+//                    for (ClusterDataHolder clusterData : clusterDataHolders) {
+//                        TopologyManager.acquireReadLockForCluster(clusterData.getServiceType(),
+//                                clusterData.getClusterId());
+//                    }
+//                }
 
                 try {
                     //TODO remove monitors as well as any starting or pending threads
                     ApplicationMonitor monitor = AutoscalerContext.getInstance().
-                            getAppMonitor(applicationRemovedEvent.getApplicationId());
+                            getAppMonitor(applicationRemovedEvent.getAppId());
                     if (monitor != null) {
                         //List<String> clusters = monitor.
                         //        findClustersOfApplication(applicationRemovedEvent.getApplicationId());
@@ -452,22 +507,22 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         }
                         //removing the application monitor
                         AutoscalerContext.getInstance().
-                                removeAppMonitor(applicationRemovedEvent.getApplicationId());
+                                removeAppMonitor(applicationRemovedEvent.getAppId());
                     } else {
-                        log.warn("Application Monitor cannot be found for the removed [application] "
-                                + applicationRemovedEvent.getApplicationId());
+                        log.warn("Application Monitor cannot be found for the terminated [application] "
+                                + applicationRemovedEvent.getAppId());
                     }
 
 
                 } finally {
                     //release read lock
-                    if (clusterDataHolders != null) {
-                        for (ClusterDataHolder clusterData : clusterDataHolders) {
-                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
-                                    clusterData.getClusterId());
-                        }
-                    }
-                    TopologyManager.releaseReadLockForApplication(applicationRemovedEvent.getApplicationId());
+//                    if (clusterDataHolders != null) {
+//                        for (ClusterDataHolder clusterData : clusterDataHolders) {
+//                            TopologyManager.releaseReadLockForCluster(clusterData.getServiceType(),
+//                                    clusterData.getClusterId());
+//                        }
+//                    }
+//                    TopologyManager.releaseReadLockForApplication(applicationRemovedEvent.getAppId());
                 }
 
             }

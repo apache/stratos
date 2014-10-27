@@ -28,10 +28,15 @@ import java.util.Set;
 public class ApplicationTerminatedEvent extends TopologyEvent {
     private final String appId;
     private final Set<ClusterDataHolder> clusterData;
+    private String tenantDomain;
+    private int tenantId;
 
-    public ApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+    public ApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData,
+                                      int tenantId, String tenantDomain) {
         this.appId = appId;
         this.clusterData = clusterData;
+        this.tenantId = tenantId;
+        this.tenantDomain = tenantDomain;
     }
 
     public String getAppId() {
@@ -40,5 +45,13 @@ public class ApplicationTerminatedEvent extends TopologyEvent {
 
     public Set<ClusterDataHolder> getClusterData() {
         return clusterData;
+    }
+
+    public String getTenantDomain() {
+        return tenantDomain;
+    }
+
+    public int getTenantId() {
+        return tenantId;
     }
 }

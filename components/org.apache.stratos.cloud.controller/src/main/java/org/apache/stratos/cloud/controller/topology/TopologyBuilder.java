@@ -1044,8 +1044,8 @@ public class TopologyBuilder {
 
                 log.info("Removed application [ " + event.getAppId() + " ] from Topology");
 
-                TopologyEventPublisher.sendApplicationRemovedEvent(event.getAppId(),
-                        clusterData, tenantId, tenantDomain);
+                TopologyEventPublisher.sendApplicationTerminatedEvent(new ApplicationTerminatedEvent(event.getAppId(),
+                        clusterData, tenantId, tenantDomain));
             }
 
         } finally {

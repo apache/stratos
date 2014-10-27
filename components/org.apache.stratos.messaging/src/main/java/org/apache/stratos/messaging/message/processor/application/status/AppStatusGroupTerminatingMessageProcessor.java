@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.processor.application.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.topology.GroupTerminatingEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusGroupTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
@@ -37,10 +37,10 @@ public class AppStatusGroupTerminatingMessageProcessor extends MessageProcessor 
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (GroupTerminatingEvent.class.getName().equals(type)) {
+        if (AppStatusGroupTerminatingEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            GroupTerminatingEvent event =
-                    (GroupTerminatingEvent) Util.jsonToObject(message, GroupTerminatingEvent.class);
+            AppStatusGroupTerminatingEvent event =
+                    (AppStatusGroupTerminatingEvent) Util.jsonToObject(message, AppStatusGroupTerminatingEvent.class);
 
             if (log.isDebugEnabled()) {
                 log.debug("Received GroupTerminatingEvent: " + event.toString());

@@ -103,15 +103,15 @@ public class TopologyEventPublisher {
         publishEvent(new ApplicationUndeployedEvent(applicationId, clusterData));
     }
 
-    public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
-                                                   int tenantId, String tenantDomain) {
-
-        if(log.isInfoEnabled() || log.isDebugEnabled()) {
-            log.info("Publishing Application removed event: " + applicationId + " tenantId: " + tenantId);
-        }
-        
-        publishEvent(new ApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain));
-    }
+//    public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
+//                                                   int tenantId, String tenantDomain) {
+//
+//        if(log.isInfoEnabled() || log.isDebugEnabled()) {
+//            log.info("Publishing Application removed event: " + applicationId + " tenantId: " + tenantId);
+//        }
+//
+//        publishEvent(new ApplicationRemovedEvent(applicationId, clusterData, tenantId, tenantDomain));
+//    }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {
 
