@@ -663,7 +663,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             // remove from active member list
             partitionCtxt.removeActiveMemberById(memberId);
             //Check the clusterStatus as part of the member fault event
-            StatusChecker.getInstance().onMemberFaultEvent(clusterId, "appId", partitionCtxt);
+            StatusChecker.getInstance().onMemberFaultEvent(clusterId, partitionCtxt);
 
 
             if (log.isInfoEnabled()) {

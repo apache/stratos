@@ -124,12 +124,12 @@ public class StatusChecker {
 
     /**
      * @param clusterId
-     * @param appId
      * @param partitionContext is to decide in which partition has less members while others have active members
      */
-    public void onMemberFaultEvent(final String clusterId, final String appId, final PartitionContext partitionContext) {
+    public void onMemberFaultEvent(final String clusterId, final PartitionContext partitionContext) {
         ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
         boolean clusterInActive = getClusterInActive(monitor, partitionContext);
+        String appId = monitor.getAppId();
         if (clusterInActive) {
             //TODO evaluate life cycle
             //send cluster In-Active event to cluster status topic
