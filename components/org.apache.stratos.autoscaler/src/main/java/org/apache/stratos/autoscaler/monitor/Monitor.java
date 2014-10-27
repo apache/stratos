@@ -93,4 +93,15 @@ public abstract class Monitor implements EventHandler {
     public void setHasDependent(boolean hasDependent) {
         this.hasDependent = hasDependent;
     }
+
+    public boolean hasInDependentChild() {
+        boolean hasInDepChild = false;
+        for(Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+            if(!monitor.isDependent()) {
+                hasInDepChild = true;
+                break;
+            }
+        }
+        return hasInDepChild;
+    }
 }

@@ -195,6 +195,7 @@ public class DependencyTree {
         if (this.killDependent) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
+            allChildrenOfAppContext.add(applicationContext);
             findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
                     allChildrenOfAppContext);
             return allChildrenOfAppContext;

@@ -95,7 +95,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             //Check whether all dependent goes Terminated and then start them in parallel.
             this.aliasToInActiveMonitorsMap.remove(id);
             if (this.status != GroupStatus.Terminating && !this.aliasToInActiveMonitorsMap.isEmpty() &&
-                                !this.aliasToActiveMonitorsMap.isEmpty()) {
+                    !this.aliasToActiveMonitorsMap.isEmpty()) {
                 onChildTerminatedEvent(id);
             } else {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
@@ -143,6 +143,11 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 "on its state change from %s to %s", id, this.status, status));
         this.status = status;
         //notifying the parent
-        MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+        if (status == GroupStatus.Inactive && !this.hasDependent) {
+            log.info("[Group] " + this.id + "is not notifying the parent, " +
+                    "since it is identified as the independent unit");
+        } else {
+            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+        }
     }
 }

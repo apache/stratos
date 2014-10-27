@@ -20,7 +20,7 @@ package org.apache.stratos.messaging.message.processor.application.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
+import org.apache.stratos.messaging.event.application.status.AppStatusApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
@@ -39,10 +39,10 @@ public class AppStatusApplicationCreatedMessageProcessor extends MessageProcesso
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ApplicationCreatedEvent.class.getName().equals(type)) {
+        if (AppStatusApplicationCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ApplicationCreatedEvent event =
-                    (ApplicationCreatedEvent) Util.jsonToObject(message, ApplicationCreatedEvent.class);
+            AppStatusApplicationCreatedEvent event =
+                    (AppStatusApplicationCreatedEvent) Util.jsonToObject(message, AppStatusApplicationCreatedEvent.class);
 
             if (log.isDebugEnabled()) {
                 log.debug("Received ApplicationCreated Event in application status topic: " + event.toString());

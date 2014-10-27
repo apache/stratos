@@ -116,6 +116,14 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
+        statusEventReceiver.addEventListener(new AppStatusGroupInactivateEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleGroupInActiveEvent((AppStatusGroupInactivateEvent) event);
+
+            }
+        });
+
         statusEventReceiver.addEventListener(new AppStatusApplicationActivatedEventListener() {
 
             @Override

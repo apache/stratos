@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.processor.application.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.application.status.AppStatusClusterTerminatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
@@ -40,9 +39,9 @@ public class AppStatusClusterTerminatedMessageProcessor extends MessageProcessor
         if (AppStatusClusterTerminatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             AppStatusClusterTerminatedEvent event = (AppStatusClusterTerminatedEvent) Util.
-                                                jsonToObject(message, AppStatusClusterTerminatedEvent.class);
+                    jsonToObject(message, AppStatusClusterTerminatedEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received AppStatusClusterTerminatedEvent: " + event.toString());
             }
             // Notify event listeners
