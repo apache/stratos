@@ -142,7 +142,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void setStatus(ApplicationStatus status) {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
-        this.status = status;
+        if(this.status != status) {
+            this.status = status;
+        }
     }
 
     @Override
