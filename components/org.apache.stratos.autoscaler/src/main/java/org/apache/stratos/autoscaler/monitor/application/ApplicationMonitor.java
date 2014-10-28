@@ -179,8 +179,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
             this.aliasToInActiveMonitorsMap.remove(id);
-            if (this.status != ApplicationStatus.Terminating && !this.aliasToInActiveMonitorsMap.isEmpty() &&
-                    !this.aliasToActiveMonitorsMap.isEmpty()) {
+            if (this.status != ApplicationStatus.Terminating) {
                 onChildTerminatedEvent(id);
             } else {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);

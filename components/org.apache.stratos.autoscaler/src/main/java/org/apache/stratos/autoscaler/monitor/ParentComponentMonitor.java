@@ -116,7 +116,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationContext> terminationList;
         Monitor monitor;
         //Temporarily move the group/cluster to inactive list
-        this.aliasToInActiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
+        //this.aliasToInActiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
 
         if(this.hasDependent) {
             //need to notify the parent
@@ -171,18 +171,20 @@ public abstract class ParentComponentMonitor extends Monitor {
         context.setTerminated(true);
 
         terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
+
+
         /**
          * Make sure that all the dependents have been terminated properly to start the recovery
          */
         if (terminationList != null) {
             for (ApplicationContext context1 : terminationList) {
-                if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                if (!this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
                     allDependentTerminated = false;
                 } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
                     log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
                     allDependentTerminated = false;
                 } else {
-                    allDependentTerminated = true;
+                    log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
                 }
             }
         }
@@ -213,11 +215,12 @@ public abstract class ParentComponentMonitor extends Monitor {
             //Find the non existent monitor by traversing dependency tree
 
             try {
-                this.startDependency();
+                this.startDependencyOnTermination();
             } catch (TopologyInConsistentException e) {
                 e.printStackTrace();
             }
         } else {
+            StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
             log.info("Waiting for the dependent of [monitor] " + idOfEvent
                     + " to be terminated");
         }

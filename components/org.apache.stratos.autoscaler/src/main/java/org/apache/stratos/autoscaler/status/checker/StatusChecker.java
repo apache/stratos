@@ -289,8 +289,8 @@ public class StatusChecker {
                     //send the in activation event
                     if (parent instanceof Application) {
                         //send application activated event
-                        log.info("sending app in-active : " + appId);
-                    StatusEventPublisher.sendApplicationInactivatedEvent(appId);
+                        log.warn("Application can't be in in-active : " + appId);
+                    //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
                     log.info("sending group in-active: " + parent.getUniqueIdentifier());
@@ -301,9 +301,22 @@ public class StatusChecker {
                     groupStatus == GroupStatus.Terminated && clusterStatus == ClusterStatus.Terminated) {
                     //send the terminated event
                 if (parent instanceof Application) {
-                    //send application activated event
-                    log.info("sending app terminated: " + appId);
-                    StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                    //validating the life cycle
+                    try {
+                        TopologyManager.acquireReadLockForApplication(appId);
+                        Application application = TopologyManager.getTopology().getApplication(appId);
+                        if(application.getStatus().equals(ApplicationStatus.Terminating)) {
+                            log.info("sending app terminated: " + appId);
+                            StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                        } else {
+                            log.info("[Application] " + appId + " is in the [status] " +
+                                    application.getStatus().toString() + ". Hence not sending terminated event");
+                        }
+
+                    } finally {
+                        TopologyManager.releaseReadLockForApplication(appId);
+                    }
+
                     //StatusEventPublisher.sendApp(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
@@ -316,8 +329,8 @@ public class StatusChecker {
                 //send the terminated event
                 if (parent instanceof Application) {
                     //send application activated event
-                    log.info("sending app terminating: " + appId);
-                    StatusEventPublisher.sendApplicationTerminatingEvent(appId);
+                    log.warn("Application can't be in terminating: " + appId);
+                    //StatusEventPublisher.sendApplicationTerminatingEvent(appId);
                     //StatusEventPublisher.sendApp(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent

@@ -75,13 +75,14 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
-        if(this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) {
+        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) ||
+                (this.aliasToInActiveMonitorsMap != null && !this.aliasToInActiveMonitorsMap.isEmpty())) {
             hasMonitor = true;
         }
         return hasMonitor;
     }
 
-    public boolean hasMonitors () {
+    public boolean hasMonitors() {
 
         return this.aliasToActiveMonitorsMap != null || this.aliasToInActiveMonitorsMap != null;
     }
@@ -96,8 +97,8 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasInDependentChild() {
         boolean hasInDepChild = false;
-        for(Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
-            if(!monitor.isDependent()) {
+        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+            if (!monitor.isDependent()) {
                 hasInDepChild = true;
                 break;
             }

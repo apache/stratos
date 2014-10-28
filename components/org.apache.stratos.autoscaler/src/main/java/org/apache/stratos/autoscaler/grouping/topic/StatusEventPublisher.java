@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.event.application.status.AppStatusApplicationActivatedEvent;
@@ -14,6 +14,7 @@ import org.apache.stratos.messaging.event.application.status.AppStatusApplicatio
 import org.apache.stratos.messaging.event.application.status.AppStatusClusterActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.AppStatusClusterInactivateEvent;
 import org.apache.stratos.messaging.event.application.status.AppStatusGroupActivatedEvent;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Set;
@@ -83,9 +84,25 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        AppStatusGroupActivatedEvent groupActivatedEvent = new AppStatusGroupActivatedEvent(appId, groupId);
+        try {
+            TopologyManager.acquireReadLockForApplication(appId);
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if(application != null) {
+                Group group = application.getGroupRecursively(groupId);
+                if(group.getStatus().getNextStates().contains(GroupStatus.Active)) {
+                    AppStatusGroupActivatedEvent groupActivatedEvent =
+                            new AppStatusGroupActivatedEvent(appId, groupId);
 
-        publishEvent(groupActivatedEvent);
+                    publishEvent(groupActivatedEvent);
+                } else {
+                    log.warn("Active is not in the possible state list of [group] " + groupId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
+
+
     }
 
     public static void sendGroupInActivateEvent(String appId, String groupId) {
@@ -94,11 +111,25 @@ public class StatusEventPublisher {
             log.info("Publishing Group in-activate event for [application]: " + appId +
                     " [group]: " + groupId);
         }
+        try {
+            TopologyManager.acquireReadLockForApplication(appId);
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if(application != null) {
+                Group group = application.getGroupRecursively(groupId);
+                if(group.getStatus().getNextStates().contains(GroupStatus.Inactive)) {
+                    AppStatusGroupInactivateEvent appStatusGroupInactivateEvent= new
+                            AppStatusGroupInactivateEvent(appId, groupId);
 
-        AppStatusGroupInactivateEvent appStatusGroupInactivateEvent= new
-                AppStatusGroupInactivateEvent(appId, groupId);
+                    publishEvent(appStatusGroupInactivateEvent);
+                } else {
+                    log.warn("InActive is not in the possible state list of [group] " + groupId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
 
-        publishEvent(appStatusGroupInactivateEvent);
+
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
@@ -107,9 +138,22 @@ public class StatusEventPublisher {
             log.info("Publishing Group terminating event for [application]: " + appId +
                     " [group]: " + groupId);
         }
-
-        AppStatusGroupTerminatingEvent groupInTerminatingEvent = new AppStatusGroupTerminatingEvent(appId, groupId);
-        publishEvent(groupInTerminatingEvent);
+        try {
+            TopologyManager.acquireReadLockForApplication(appId);
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if(application != null) {
+                Group group = application.getGroupRecursively(groupId);
+                if(group.getStatus().getNextStates().contains(GroupStatus.Terminating)) {
+                    AppStatusGroupTerminatingEvent groupInTerminatingEvent =
+                            new AppStatusGroupTerminatingEvent(appId, groupId);
+                    publishEvent(groupInTerminatingEvent);
+                } else {
+                    log.warn("Terminating is not in the possible state list of [group] " + groupId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
     }
 
     public static void sendGroupTerminatedEvent(String appId, String groupId) {
@@ -119,8 +163,24 @@ public class StatusEventPublisher {
                     " [group]: " + groupId);
         }
 
-        AppStatusGroupTerminatedEvent groupInTerminatedEvent = new AppStatusGroupTerminatedEvent(appId, groupId);
-        publishEvent(groupInTerminatedEvent);
+        try {
+            TopologyManager.acquireReadLockForApplication(appId);
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if(application != null) {
+                Group group = application.getGroupRecursively(groupId);
+                if(group.getStatus().getNextStates().contains(GroupStatus.Terminated)) {
+                    AppStatusGroupTerminatedEvent groupInTerminatedEvent =
+                            new AppStatusGroupTerminatedEvent(appId, groupId);
+                    publishEvent(groupInTerminatedEvent);
+                } else {
+                    log.warn("Terminated is not in the possible state list of [group] " + groupId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
+        }
+
+
     }
 
     public static void sendApplicationActivatedEvent(String appId) {

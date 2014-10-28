@@ -72,12 +72,12 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void run() {
         while (!isDestroyed()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cluster monitor is running.. " + this.toString());
-            }
             try {
                 if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
                         (this.status == ClusterStatus.Inactive && !hasDependent)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster monitor is running.. " + this.toString());
+                    }
                     monitor();
                 } else {
                     if (log.isDebugEnabled()) {
