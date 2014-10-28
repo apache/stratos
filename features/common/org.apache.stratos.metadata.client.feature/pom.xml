@@ -50,6 +50,17 @@
             <artifactId>httpclient-osgi</artifactId>
             <version>4.3.5</version>
         </dependency>
+	<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.5</version>
+        </dependency>
+
+	<dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.3.2</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore-osgi</artifactId>
@@ -88,10 +99,8 @@
                                 <bundleDef>org.apache.stratos:org.apache.stratos.metadata.client:${project.version}</bundleDef>
                                 <bundleDef>com.google.code.gson:gson:${gson2.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-lang3:3.1</bundleDef>
-<!--
                                 <bundleDef>org.apache.httpcomponents:httpclient-osgi:4.3.5</bundleDef>
                                 <bundleDef>org.apache.httpcomponents:httpcore-osgi:4.3.2</bundleDef>
--->
                             </bundles>
                         </configuration>
                     </execution>
