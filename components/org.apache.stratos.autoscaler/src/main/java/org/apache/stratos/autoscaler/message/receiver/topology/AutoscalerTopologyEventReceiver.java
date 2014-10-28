@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
@@ -364,11 +365,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //                        List<String> clusters = appMonitor.
 //                                findClustersOfApplication(applicationUndeployedEvent.getApplicationId());
 
+                        boolean clusterMonitorsFound = false;
                         for (ClusterDataHolder clusterData : clusterDataHolders) {
                             //stopping the cluster monitor and remove it from the AS
                             ClusterMonitor clusterMonitor =
                                     ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId()));
                             if (clusterMonitor != null) {
+                                clusterMonitorsFound = true;
                                 clusterMonitor.setDestroyed(true);
                                 clusterMonitor.terminateAllMembers();
                                 clusterMonitor.setStatus(ClusterStatus.Terminating);
@@ -377,9 +380,19 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             }
                         }
 
+                        // if by any chance, the cluster monitors have failed, we still need to undeploy this application
+                        // hence, check if the Cluster Monitors are not found and send the Application Terminated event
+                        if (!clusterMonitorsFound) {
+                            StatusEventPublisher.sendApplicationTerminatedEvent(
+                                    applicationUndeployedEvent.getApplicationId(), clusterDataHolders);
+                        }
+
                     } else {
                         log.warn("Application Monitor cannot be found for the undeployed [application] "
                                 + applicationUndeployedEvent.getApplicationId());
+                        // send the App Terminated event to cleanup
+                        StatusEventPublisher.sendApplicationTerminatedEvent(
+                                applicationUndeployedEvent.getApplicationId(), clusterDataHolders);
                     }
 
                 } finally {
