@@ -20,8 +20,5 @@ package org.apache.stratos.messaging.listener.topology;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-/**
- * Created by reka on 9/17/14.
- */
 public abstract class ClusterActivatedEventListener extends EventListener {
 }

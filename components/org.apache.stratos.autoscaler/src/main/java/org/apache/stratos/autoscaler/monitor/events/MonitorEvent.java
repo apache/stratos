@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-/**
- * Created by reka on 10/20/14.
- */
 public abstract class MonitorEvent {
     protected String id;
 

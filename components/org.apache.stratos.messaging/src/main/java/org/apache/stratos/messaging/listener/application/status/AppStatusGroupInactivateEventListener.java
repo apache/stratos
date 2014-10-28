@@ -20,8 +20,5 @@ package org.apache.stratos.messaging.listener.application.status;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-/**
- * Created by reka on 9/22/14.
- */
 public abstract class AppStatusGroupInactivateEventListener extends EventListener {
 }

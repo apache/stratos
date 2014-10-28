@@ -24,9 +24,6 @@ import org.apache.stratos.messaging.event.application.status.AppStatusApplicatio
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
-/**
- * Created by reka on 9/25/14.
- */
 public class AppStatusApplicationActivatedMessageProcessor extends MessageProcessor {
     private static final Log log =
             LogFactory.getLog(AppStatusApplicationActivatedMessageProcessor.class);
