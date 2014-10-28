@@ -18,6 +18,7 @@
        under the License.
 -->
 <configuration>
+	<!--
 	<metadataservice>
 	    <govenanceregistrytype>carbon</govenanceregistrytype>
 	    <serverurl>https://localhost:9445/services/</serverurl>
@@ -30,8 +31,13 @@
 		<trustStore>repository/resources/security/wso2carbon.jks</trustStore>
 		<trustStorePassword>wso2carbon</trustStorePassword>
 		<trustStoreType>JKS</trustStoreType>
-	 
-	 
-	 
 	</metadataservice>
+	-->
+     <metadataService>
+         <baseUrl>https://localhost:9443/stratosmetadataservice/</baseUrl>
+         <username>admin</username>
+         <password>admin</password>
+     </metadataService>
+     <metadataClient>
+     </metadataClient>
 </configuration>
