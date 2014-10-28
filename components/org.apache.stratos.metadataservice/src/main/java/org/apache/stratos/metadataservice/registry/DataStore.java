@@ -36,4 +36,5 @@ public interface DataStore {
 
     public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException;
 
+    public boolean deleteApplication(String applicationId) throws RegistryException;
 }

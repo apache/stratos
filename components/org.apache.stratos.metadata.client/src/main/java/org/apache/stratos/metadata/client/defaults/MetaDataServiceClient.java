@@ -60,6 +60,8 @@ public interface MetaDataServiceClient {
      */
     public org.apache.stratos.metadata.client.beans.PropertyBean getProperty(String appId, String clusterID, String propertyKey) throws MetaDataServiceClientException;
 
+    public void deleteApplicationProperties(String applicationId) throws MetaDataServiceClientException;
+
     /**
      * Shutdown the MetaDataServiceClient. Should be called once after using the client.
      */

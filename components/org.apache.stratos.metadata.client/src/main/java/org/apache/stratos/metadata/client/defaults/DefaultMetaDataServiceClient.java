@@ -96,6 +96,17 @@ public class DefaultMetaDataServiceClient implements MetaDataServiceClient {
         return gson.fromJson(responseContent, PropertyBean.class);
     }
 
+    public void deleteApplicationProperties(String appId) throws MetaDataServiceClientException{
+        StringBuilder applicationPath = new StringBuilder(baseUrl).append("application/").append(appId);
+        HttpResponse response;
+        try {
+            response = restClient.doDelete(String.valueOf(applicationPath));
+        } catch (RestClientException e) {
+            String msg= "Error occured while deleting application";
+            throw new MetaDataServiceClientException(msg, e);
+        }
+    }
+
     private String readResponseContent(HttpResponse response) throws IOException {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));

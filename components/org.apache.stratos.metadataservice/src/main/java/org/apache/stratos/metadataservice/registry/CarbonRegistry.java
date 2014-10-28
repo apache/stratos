@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.metadataservice.registry;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadataservice.definition.NewProperty;
@@ -102,7 +103,29 @@ public class CarbonRegistry extends AbstractAdmin implements DataStore {
     }
 
     /**
-     * Add properties to clustor
+     * Delete the resource identified by the applicationId, if exist.
+     * @param applicationId ID of the application.
+     * @return True if resource exist and able to delete, else false.
+     * @throws RegistryException
+     */
+    public boolean deleteApplication(String applicationId) throws RegistryException {
+        if(StringUtils.isEmpty(applicationId)){
+            throw new IllegalArgumentException("Application ID can not be null");
+        }
+        Registry tempRegistry = getGovernanceUserRegistry();
+        String resourcePath = mainResource + applicationId;
+
+        if(tempRegistry.resourceExists(resourcePath)){
+            tempRegistry.delete(resourcePath);
+            log.info(String.format("Application removed from registry %s", applicationId));
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Add properties to cluster
      * @param applicationName
      * @param clusterId
      * @param properties

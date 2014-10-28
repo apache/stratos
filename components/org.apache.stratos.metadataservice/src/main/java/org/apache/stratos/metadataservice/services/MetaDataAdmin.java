@@ -162,5 +162,27 @@ public class MetaDataAdmin {
         return Response.created(url).build();
     }
 
+    @DELETE
+    @Path("application/{application_id}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response deleteApplicationProperties(@PathParam("application_id") String applicationId)
+            throws RestAPIException {
+
+        try {
+            boolean deleted = registry.deleteApplication(applicationId);
+            if(!deleted){
+                log.warn(String.format("Either no metadata is associated with given appId %s Or resources could not be deleted", applicationId));
+            }
+        } catch (RegistryException e) {
+            String msg= "Resource attached with appId could not be deleted";
+            log.error(msg, e);
+            throw  new RestAPIException(" ", e);
+        }
+
+        return Response.ok().build();
+    }
+
 
 }

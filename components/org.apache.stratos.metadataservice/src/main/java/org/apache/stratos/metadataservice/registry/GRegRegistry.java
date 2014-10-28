@@ -102,4 +102,8 @@ public class GRegRegistry implements DataStore {
 
     }
 
+    public boolean deleteApplication(String applicationId) {
+        return false;
+    }
+
 }

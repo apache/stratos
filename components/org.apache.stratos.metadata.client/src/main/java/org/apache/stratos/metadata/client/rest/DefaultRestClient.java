@@ -122,6 +122,7 @@ public class DefaultRestClient implements RestClient {
     public HttpResponse doGet(String resourcePath) throws RestClientException {
 
         HttpGet get = new HttpGet(resourcePath);
+        setAuthHeader(get);
 
         try {
             return httpClient.execute(get);
@@ -138,6 +139,7 @@ public class DefaultRestClient implements RestClient {
     public HttpResponse doDelete(String resourcePath) throws RestClientException {
 
         HttpDelete delete = new HttpDelete(resourcePath);
+        setAuthHeader(delete);
 
         try {
             return httpClient.execute(delete);
