@@ -95,7 +95,7 @@ public class CloudstackIaas extends Iaas {
         /**
          * PROPERTY-3
          * if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
-         * object.
+         * object.(service offering)
          *Important:Specify the Service Offering type ID. Not the name. Because the name is not unique in cloudstack.
          */
         if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
@@ -105,11 +105,11 @@ public class CloudstackIaas extends Iaas {
         //build the template
         Template template = templateBuilder.build();
 
-
-        // if you wish to auto assign IPs, instance spawning call should be
-        // blocking, but if you
-        // wish to assign IPs manually, it can be non-blocking.
-        // is auto-assign-ip mode or manual-assign-ip mode?
+        /**if you wish to auto assign IPs, instance spawning call should be
+         * blocking, but if you
+         * wish to assign IPs manually, it can be non-blocking.
+         * is auto-assign-ip mode or manual-assign-ip mode?
+         */
         boolean blockUntilRunning = Boolean.parseBoolean(iaasInfo
                 .getProperty(CloudControllerConstants.AUTO_ASSIGN_IP));
         template.getOptions().as(TemplateOptions.class)
@@ -123,7 +123,7 @@ public class CloudstackIaas extends Iaas {
 
         //**SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT**//
 
-        //set security group- If you are using basic zone
+        //set security group - If you are using basic zone
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
@@ -189,7 +189,6 @@ public class CloudstackIaas extends Iaas {
         if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
             iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
                     .userMetadata(convertByteArrayToHashMap(iaasInfo.getPayload()));
-
         }
     }
 
@@ -215,7 +214,8 @@ public class CloudstackIaas extends Iaas {
         ListPublicIPAddressesOptions listPublicIPAddressesOptions = new ListPublicIPAddressesOptions();
         listPublicIPAddressesOptions.zoneId(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 
-        Set<PublicIPAddress> publicIPAddresses = cloudStackApi.getAddressApi().listPublicIPAddresses(listPublicIPAddressesOptions);
+        Set<PublicIPAddress> publicIPAddresses = cloudStackApi.getAddressApi()
+                .listPublicIPAddresses(listPublicIPAddressesOptions);
 
         String id = node.getProviderId(); //vm ID
 
@@ -247,13 +247,10 @@ public class CloudstackIaas extends Iaas {
 
     @Override
     public void releaseAddress(String ip) {
-
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
         cloudStackApi.getAddressApi().disassociateIPAddress(ip);
-
-
     }
 
     @Override
@@ -331,7 +328,8 @@ public class CloudstackIaas extends Iaas {
                 .getContext();
 
         String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
-        String diskOfferingID = iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class).getDiskOfferingId();
+        String diskOfferingID = iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
+                .getDiskOfferingId();
         if (zone == null && diskOfferingID == null) {
             log.fatal("Cannot create a new volume in the , [zone] : " + zone + " of Iaas : " + iaasInfo);
             return null;
@@ -351,7 +349,7 @@ public class CloudstackIaas extends Iaas {
             //  volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
         } else {
             if (log.isDebugEnabled()) {
-                log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
+                log.info("Creating a volume in the zone " + zone + " from the snapshot " + snapshotId);
             }
             volumeApi.createVolumeFromSnapshotInZone(null, diskOfferingID, zone);
         }
@@ -380,13 +378,16 @@ public class CloudstackIaas extends Iaas {
         //volume state ALLOCATED   means that volume has not been attached to any instance.
 
         //TODO there is an error with logic.
-        if (!(volumeState == Volume.State.ALLOCATED || volumeState == Volume.State.CREATING || volumeState == Volume.State.READY)) {
+        if (!(volumeState == Volume.State.ALLOCATED || volumeState == Volume.State.CREATING
+                || volumeState == Volume.State.READY)) {
             log.error(String.format("Volume %s can not be attached. Volume status is %s", volumeId, volumeState));
         }
 
         //check whether the account of volume and instance is same
-        if (!volume.getAccount().equals(cloudStackApi.getVirtualMachineApi().getVirtualMachine(instanceId).getAccount())) {
-            log.error(String.format("Volume %s can not be attached. Instance account and Volume account are not the same ", volumeId));
+        if (!volume.getAccount().equals(cloudStackApi.getVirtualMachineApi()
+                .getVirtualMachine(instanceId).getAccount())) {
+            log.error(String.format("Volume %s can not be attached. Instance account and Volume account " +
+                    "are not the same ", volumeId));
         }
 
         boolean volumeBecameAvailable = false, volumeBecameAttached = false;
@@ -429,8 +430,8 @@ public class CloudstackIaas extends Iaas {
             log.error(String.format("[Volume ID] %s attachment is called, but not yet became attached", volumeId));
         }
 
-        log.info(String.format("Volume [id]: %s attachment for instance [id]: %s was successful [status]: Attaching. of Iaas : %s", volumeId, instanceId, iaasInfo));
-
+        log.info(String.format("Volume [id]: %s attachment for instance [id]: %s was successful [status]: Attaching." +
+                " of Iaas : %s", volumeId, instanceId, iaasInfo));
 
         return "Attaching";
 
@@ -456,7 +457,7 @@ public class CloudstackIaas extends Iaas {
         try {
             //TODO this is true only for newly created volumes
             if (waitForStatus(volumeId, Volume.State.ALLOCATED, 5)) {
-                log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, iaasInfo));
+                log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful of Iaas : %s", volumeId, instanceId, iaasInfo));
             }
         } catch (TimeoutException e) {
             log.error(String.format("Detachment of Volume [id]: %s from instance [id]: %s was unsuccessful. [volume Status] : %s", volumeId, instanceId, iaasInfo));
