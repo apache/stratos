@@ -49,6 +49,24 @@
 		is not necessary [0..1]. But you can use this section to avoid specifying 
 		same property over and over again. -->
 	<iaasProviders>
+
+		<!--<iaasProvider type="cloudstack" name="cloudstack specific details">
+                	<className>org.apache.stratos.cloud.controller.iaases.CloudstackIaas</className>
+                        <provider>cloudstack</provider>
+                        <identity svns:secretAlias="cloud.controller.cloudstack.identity">api-key</identity>
+                        <credential svns:secretAlias="cloud.controller.cloudstack.credential">secret-key</credential>
+			<property name="jclouds.endpoint" value="ip:port" />		
+			<property name="availabilityZone" value="zone_Id"/>
+			<property name="instanceType" value="instance_type_Id"/>
+			<property name="securityGroupIds" value="security_group_Id1,security_group_id2"/>
+			<property name="networkIds" value="network_Id1,network_Id2"/>
+			<property name="diskOffering" value="disk_offering_Id"/>
+			<property name="userName" value="username"/>
+			<property name="domainId" value="domainId"/>
+			<property name="keyPair" value="asanka-key"/>
+			<property name="tags" value="tag1,tag2,tag3" />
+			<property name="autoAssignIp" value="false" />
+          	 </iaasProvider>-->
         	<!--iaasProvider type="ec2" name="ec2 specific details">
             		<className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
 			<provider>aws-ec2</provider>
