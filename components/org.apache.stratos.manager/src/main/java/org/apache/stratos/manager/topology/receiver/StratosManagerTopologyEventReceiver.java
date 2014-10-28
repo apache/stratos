@@ -36,6 +36,8 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyEventRecei
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
+import java.util.List;
+
 public class StratosManagerTopologyEventReceiver implements Runnable {
 
     private static final Log log = LogFactory.getLog(StratosManagerTopologyEventReceiver.class);
@@ -347,6 +349,18 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                     } finally {
                     	PrivilegedCarbonContext.endTenantFlow();
                     }
+
+                    // add the clusters to the topology information model
+                    List<Cluster> appClusters = appCreateEvent.getClusterList();
+                    if (appClusters != null && !appClusters.isEmpty()) {
+                        for (Cluster appCluster :  appClusters) {
+                            TopologyClusterInformationModel.getInstance().addCluster(appCluster);
+                        }
+                    } else {
+                        log.warn("No clusters were found in the Application Created event for app id [ " +
+                                appId + " ] to add to Cluster Information model");
+                    }
+
                 } finally {
                     //TopologyManager.releaseReadLock();
                     TopologyManager.releaseReadLockForApplication(appCreateEvent.getApplication().getUniqueIdentifier());
