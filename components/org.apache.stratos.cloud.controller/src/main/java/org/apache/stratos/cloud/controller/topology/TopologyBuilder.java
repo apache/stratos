@@ -31,19 +31,13 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.event.application.status.AppStatusApplicationActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusApplicationCreatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusApplicationInactivatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusApplicationTerminatingEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusClusterActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusGroupActivatedEvent;
-import org.apache.stratos.messaging.event.application.status.AppStatusGroupInactivateEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
+import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
@@ -939,9 +933,13 @@ public class TopologyBuilder {
                     }
                 }
 
+
+
                 // remove application
                 topology.removeApplication(event.getAppId());
                 TopologyManager.updateTopology(topology);
+
+                deleteAppResourcesFromMetadataService(event);
 
                 log.info("Removed application [ " + event.getAppId() + " ] from Topology");
 
@@ -951,6 +949,15 @@ public class TopologyBuilder {
 
         } finally {
             TopologyManager.releaseWriteLock();
+        }
+    }
+
+    private static void deleteAppResourcesFromMetadataService(AppStatusApplicationTerminatedEvent event) {
+        try {
+            MetaDataServiceClient metadataClient = new DefaultMetaDataServiceClient();
+            metadataClient.deleteApplicationProperties(event.getAppId());
+        } catch (Exception e) {
+            log.error("Error occurred while deleting the application resources frm metadata service " , e);
         }
     }
 
