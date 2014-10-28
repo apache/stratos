@@ -395,6 +395,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 }
                             } else {
                                 log.warn("No Cluster Monitor found for cluster id " + clusterData.getClusterId());
+                                // if Cluster Monitor is not found, still the Cluster Terminated
+                                // should be sent to update the parent Monitor
+                                StatusEventPublisher.sendClusterTerminatedEvent(
+                                        applicationUndeployedEvent.getApplicationId(),
+                                        clusterData.getServiceType(), clusterData.getClusterId());
                             }
                         }
 
