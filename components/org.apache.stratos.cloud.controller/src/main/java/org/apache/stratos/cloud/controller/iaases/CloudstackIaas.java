@@ -1,6 +1,7 @@
 package org.apache.stratos.cloud.controller.iaases;
 
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -15,9 +16,8 @@ import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
-import org.jclouds.cloudstack.domain.PublicIPAddress;
-import org.jclouds.cloudstack.domain.Volume;
-import org.jclouds.cloudstack.domain.Zone;
+import org.jclouds.cloudstack.domain.*;
+import org.jclouds.cloudstack.features.VolumeApi;
 import org.jclouds.cloudstack.options.ListPublicIPAddressesOptions;
 import org.jclouds.cloudstack.options.ListZonesOptions;
 import org.jclouds.compute.ComputeServiceContext;
@@ -66,7 +66,7 @@ public class CloudstackIaas extends Iaas {
         TemplateBuilder templateBuilder = iaasInfo.getComputeService()
                 .templateBuilder();
 
-        //*************************SET PROPERTIES TO templateBuilder OBJECT*******************************************//
+        //**SET PROPERTIES TO templateBuilder OBJECT**//
 
         /**
          * PROPERTY - 1
@@ -77,9 +77,8 @@ public class CloudstackIaas extends Iaas {
         /**
          *  PROPERTY-2
          *  if user has specified a zone in cloud-controller.xml, set the zone into templateBuilder object
-         *  (user should provide the zone id for this)
+         *  (user should provide the zone id for this, because zone name is not unique in cloudstack)
          */
-
         if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for (Location location : locations) {
@@ -97,7 +96,7 @@ public class CloudstackIaas extends Iaas {
          * PROPERTY-3
          * if user has specified an instance type in cloud-controller.xml, set the instance type into templateBuilder
          * object.
-         *Important:Specify the Service Offering type ID. Not the name. Because the name is not unique.
+         *Important:Specify the Service Offering type ID. Not the name. Because the name is not unique in cloudstack.
          */
         if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
             templateBuilder.hardwareId(iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE));
@@ -122,9 +121,9 @@ public class CloudstackIaas extends Iaas {
                 .inboundPorts(new int[]{});
 
 
-        //*******************SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT*********************************//
+        //**SET CLOUDSTACK SPECIFIC PROPERTIES TO TEMPLATE OBJECT**//
 
-        //set security group. If you are using basic zone
+        //set security group- If you are using basic zone
         if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUP_IDS) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
@@ -132,7 +131,12 @@ public class CloudstackIaas extends Iaas {
                             .split(CloudControllerConstants.ENTRY_SEPARATOR)));
         }
 
-        //set network IDs. If you are using Advanced zone
+
+        /**
+         * set network ID - If you are using advanced zone
+         * in cloudstack sometimes we get unautorized exception if we didn't specify the
+         * domain ID and user name
+         */
         if (iaasInfo.getProperty(CloudControllerConstants.NETWORK_IDS) != null) {
             template.getOptions()
                     .as(CloudStackTemplateOptions.class)
@@ -152,12 +156,11 @@ public class CloudstackIaas extends Iaas {
         }
 
         /**
-         * set key-pair (here we use already created key pair for the corresponding account)
-         * in cloudstack we cannot access a key pair without specifying user name and domain ID
+         *Set key pair
+         * in cloudstack sometimes we get unauthorized exception if we didn't specify the
+         * domain ID and user name
          */
-        if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null &&
-                iaasInfo.getProperty(CloudControllerConstants.USER_NAME) != null &&
-                iaasInfo.getProperty(CloudControllerConstants.DOMAIN_ID) != null) {
+        if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
             template.getOptions().as(CloudStackTemplateOptions.class)
                     .keyPair(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
         }
@@ -192,11 +195,11 @@ public class CloudstackIaas extends Iaas {
 
     /**
      * IMPORTANT
-     * In cloudstack we can assign public IPs, if we are using an advances zone only. If we are using a basic zone
+     * In cloudstack we can assign public IPs, if we are using an advanced zone only. If we are using a basic zone
      * we cannot assign public ips.
      * <p/>
      * When we use an advanced zone, a public IP address will get automatically assigned to the vm. So we don't need
-     * to find an unallocated IP address and assign that address to the vm (not like in ec2 and openstack).
+     * to find an unallocated IP address and assign that address to the vm (Not like in ec2 and openstack).
      * <p/>
      * So  this method will find the IP that has been assigned to the vm and return it.
      */
@@ -255,7 +258,21 @@ public class CloudstackIaas extends Iaas {
 
     @Override
     public boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey) {
-        //todo implement this method
+
+        IaasProvider iaasInfo = getIaasProvider();
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+        CloudStackApi cloudStackApi = context.unwrapApi(CloudStackApi.class);
+        SshKeyPair sshKeyPair = cloudStackApi.getSSHKeyPairApi().createSSHKeyPair(keyPairName);
+
+        if (sshKeyPair != null) {
+
+            iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
+                    .keyPair(sshKeyPair.getName());
+
+            log.info("A key-pair is created successfully - Key Pair Name: " + sshKeyPair.getName());
+            return true;
+        }
+        log.error("Key-pair is unable to create");
         return false;
     }
 
@@ -307,14 +324,43 @@ public class CloudstackIaas extends Iaas {
 
     @Override
     public String createVolume(int sizeGB, String snapshotId) {
-        //todo implement this method
+
+        //todo return volume ID if volume is created
+        IaasProvider iaasInfo = getIaasProvider();
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+
+        String zone = ComputeServiceBuilderUtil.extractZone(iaasInfo);
+        String diskOfferingID = iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class).getDiskOfferingId();
+        if (zone == null && diskOfferingID == null) {
+            log.fatal("Cannot create a new volume in the , [zone] : " + zone + " of Iaas : " + iaasInfo);
+            return null;
+        }
+
+        VolumeApi volumeApi = context.unwrapApi(CloudStackApi.class).getVolumeApi();
+
+        Volume volume;
+        if (StringUtils.isEmpty(snapshotId)) {
+            if (log.isDebugEnabled()) {
+                log.info("Creating a volume in the zone " + zone);
+            }
+
+            //cloudstack jcloud api does not return a volume object
+            volumeApi.createVolumeFromCustomDiskOfferingInZone(null, diskOfferingID, zone, sizeGB);
+
+            //  volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.info("Creating a volume in the zone " + zone + " from the shanpshot " + snapshotId);
+            }
+            volumeApi.createVolumeFromSnapshotInZone(null, diskOfferingID, zone);
+        }
+
         return null;
     }
 
     @Override
     public String attachVolume(String instanceId, String volumeId, String deviceName) {
-
-
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService()
                 .getContext();
@@ -430,7 +476,7 @@ public class CloudstackIaas extends Iaas {
     }
 
     @Override
-    public String getIaasDevice(String device) {//todo implement this method
+    public String getIaasDevice(String device) {//todo implement this method(auto generated method)
         return null;
     }
 
