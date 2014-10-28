@@ -38,7 +38,7 @@ public class Topology implements Serializable {
     private Map<String, Service> serviceMap;
     //Grouping
     private Map<String, CompositeApplication> compositeApplicationMap;
-    private Map<String, ConfigCompositeApplication> configCompositeApplicationMap;
+    // grouping_poc private Map<String, ConfigCompositeApplication> configCompositeApplicationMap;
     // Key: Application.id
     private Map<String, Application> applicationMap;
 
@@ -48,7 +48,7 @@ public class Topology implements Serializable {
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
         this.compositeApplicationMap = new HashMap<String, CompositeApplication>();
-        this.configCompositeApplicationMap = new HashMap<String, ConfigCompositeApplication>();
+        // grouping_poc this.configCompositeApplicationMap = new HashMap<String, ConfigCompositeApplication>();
         this.applicationMap = new HashMap<String, Application>();
     }
 
@@ -124,6 +124,7 @@ public class Topology implements Serializable {
         this.compositeApplicationMap.remove(alias);
     }
     
+ /* grouping_poc 
     public Collection<ConfigCompositeApplication> getConfigCompositeApplication() {
         
         if (this.configCompositeApplicationMap == null) {
@@ -188,6 +189,8 @@ public class Topology implements Serializable {
     public void setConfigCompositeApplicationMap(Map<String, ConfigCompositeApplication> configCompositeApplicationMap) {
 		this.configCompositeApplicationMap = configCompositeApplicationMap;
 	}
+	
+	*/
 
 	public void setInitialized(boolean initialized) {
         this.initialized = initialized;

@@ -30,7 +30,6 @@ import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.util.CompositeApplicationBuilder;
 import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.event.application.status.AppStatusApplicationActivatedEvent;
 import org.apache.stratos.messaging.event.application.status.AppStatusApplicationCreatedEvent;
@@ -65,6 +64,7 @@ public class TopologyBuilder {
             log.warn(String.format("Cartridge list is empty"));
             return;
         }
+        
         try {
 
             TopologyManager.acquireWriteLock();
@@ -99,7 +99,7 @@ public class TopologyBuilder {
     public static void handleServiceRemoved(List<Cartridge> cartridgeList) {
         Topology topology = TopologyManager.getTopology();
 
-        for (Cartridge cartridge : cartridgeList) {
+        for (Cartridge cartridge : cartridgeList) { 
             if (topology.getService(cartridge.getType()).getClusters().size() == 0) {
                 if (topology.serviceExists(cartridge.getType())) {
                     try {
@@ -286,27 +286,6 @@ public class TopologyBuilder {
             return;
         }
 
-        //grouping
-
-        if (log.isDebugEnabled()) {
-            log.debug("checking group id in ToplogyBuilder for member started event");
-        }
-
-        CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-        String appAlias = "compositeApplicationAlias";
-        CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
-        if (app != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder found composite app for " + appAlias);
-            }
-            String clusterId = instanceStartedEvent.getClusterId();
-            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
-            instanceStartedEvent.setGroupId(groupAlias);
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance started event for cluster " + clusterId);
-            }
-        }
-
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
@@ -346,23 +325,6 @@ public class TopologyBuilder {
             log.warn(String.format("Cluster %s does not exist",
                     instanceActivatedEvent.getClusterId()));
             return;
-        }
-
-        // grouping
-
-        CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-        String appAlias = "compositeApplicationAlias";
-        CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
-        if (app != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder found composite app for member activated " + appAlias);
-            }
-            String clusterId = instanceActivatedEvent.getClusterId();
-            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
-            instanceActivatedEvent.setGroupId(groupAlias);
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance activated event for cluster " + clusterId);
-            }
         }
 
 
@@ -437,27 +399,7 @@ public class TopologyBuilder {
             return;
         }
 
-        //grouping
-
-        if (log.isDebugEnabled()) {
-            log.debug("checking group id in ToplogyBuilder for member started event");
-        }
-
-        CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-        String appAlias = "compositeApplicationAlias";
-        CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
-        if (app != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder found composite app for " + appAlias);
-            }
-            String clusterId = instanceReadyToShutdownEvent.getClusterId();
-            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
-            instanceReadyToShutdownEvent.setGroupId(groupAlias);
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance ready shutdown event for cluster " + clusterId);
-            }
-        }
-
+        
         Member member = cluster.getMember(instanceReadyToShutdownEvent.getMemberId());
         if (member == null) {
             log.warn(String.format("Member %s does not exist",
@@ -521,28 +463,6 @@ public class TopologyBuilder {
         }
 
 
-        //grouping
-
-        if (log.isDebugEnabled()) {
-            log.debug("checking group id in ToplogyBuilder for member started event");
-        }
-
-        CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-        String appAlias = "compositeApplicationAlias";
-        CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
-        if (app != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder found composite app for " + appAlias);
-            }
-            String clusterId = instanceMaintenanceModeEvent.getClusterId();
-
-            String groupAlias = app.extractClusterGroupFromClusterId(clusterId);
-            instanceMaintenanceModeEvent.setGroupId(groupAlias);
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for instance ready shutdown event for cluster " + clusterId);
-            }
-        }
-
         MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
                 instanceMaintenanceModeEvent.getServiceName(),
                 instanceMaintenanceModeEvent.getClusterId(),
@@ -591,27 +511,6 @@ public class TopologyBuilder {
             return;
         }
 
-        //grouping
-
-        if (log.isDebugEnabled()) {
-            log.debug("checking group id in ToplogyBuilder for member started event");
-        }
-
-        CompositeApplicationBuilder builder = new CompositeApplicationBuilder();
-        String appAlias = "compositeApplicationAlias";
-        CompositeApplication app = builder.buildCompositeApplication(topology, appAlias);
-
-        String groupAlias = null;
-        if (app != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder found composite app for " + appAlias);
-            }
-            groupAlias = app.extractClusterGroupFromClusterId(clusterId);
-            if (log.isDebugEnabled()) {
-                log.debug("TopologyBuilder  setting groupAlias " + groupAlias + " for member terminated event for cluster " + clusterId);
-            }
-        }
-
         try {
             TopologyManager.acquireWriteLock();
             properties = member.getProperties();
@@ -620,6 +519,8 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
+        /* @TODO leftover from grouping_poc*/
+        String groupAlias = null;
         TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId, properties, groupAlias);
     }
 

@@ -8,8 +8,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.exception.InvalidCartridgeAliasException;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.event.topology.CompositeApplicationCreatedEvent;
-import org.apache.stratos.messaging.event.topology.CompositeApplicationRemovedEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 
