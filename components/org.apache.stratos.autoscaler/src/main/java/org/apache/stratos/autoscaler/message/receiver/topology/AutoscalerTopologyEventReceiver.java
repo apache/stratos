@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.grouping.topic.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
@@ -377,8 +378,21 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             if (clusterMonitor != null) {
                                 clusterMonitorsFound = true;
                                 clusterMonitor.setDestroyed(true);
-                                clusterMonitor.terminateAllMembers();
-                                clusterMonitor.setStatus(ClusterStatus.Terminating);
+                                //clusterMonitor.terminateAllMembers();
+                                if (clusterMonitor.getStatus() == ClusterStatus.Active) {
+                                    // terminated gracefully
+                                    clusterMonitor.setStatus(ClusterStatus.Terminating);
+                                    InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterData.getClusterId());
+                                } else {
+                                    // if not active, forcefully terminate
+                                    clusterMonitor.setStatus(ClusterStatus.Terminating);
+                                    try {
+                                        CloudControllerClient.getInstance().terminateAllInstances(clusterData.getClusterId());
+                                    } catch (TerminationException e) {
+                                        log.error("Unable to terminate instances for [ cluster id ] " +
+                                                clusterData.getClusterId(), e);
+                                    }
+                                }
                             } else {
                                 log.warn("No Cluster Monitor found for cluster id " + clusterData.getClusterId());
                             }
@@ -526,16 +540,22 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         //        findClustersOfApplication(applicationRemovedEvent.getApplicationId());
                         for (ClusterDataHolder clusterData : clusterDataHolders) {
                             //stopping the cluster monitor and remove it from the AS
-                            ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId())).
-                                    setDestroyed(true);
-                            AutoscalerContext.getInstance().removeMonitor(clusterData.getClusterId());
+                            ClusterMonitor clusterMonitor = ((ClusterMonitor)
+                                    AutoscalerContext.getInstance().getMonitor(clusterData.getClusterId()));
+                            if (clusterMonitor != null) {
+                                clusterMonitor.setDestroyed(true);
+                                AutoscalerContext.getInstance().removeMonitor(clusterData.getClusterId());
+                            } else {
+                                log.warn("Cluster Monitor not found for [ cluster id ] " +
+                                        clusterData.getClusterId() + ", unable to remove");
+                            }
                         }
                         //removing the application monitor
                         AutoscalerContext.getInstance().
                                 removeAppMonitor(applicationRemovedEvent.getAppId());
                     } else {
                         log.warn("Application Monitor cannot be found for the terminated [application] "
-                                + applicationRemovedEvent.getAppId());
+                                + applicationRemovedEvent.getAppId() + ", unable to remove");
                     }
 
 

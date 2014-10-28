@@ -916,7 +916,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         List<MemberContext> ctxts = dataHolder.getMemberContextsOfClusterId(clusterId);
 
-        if(ctxts == null) {
+        if(ctxts == null || ctxts.isEmpty()) {
             String msg = "Instance termination failed. No members found for cluster id: "+clusterId;
             log.warn(msg);
             return;
