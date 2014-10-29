@@ -106,30 +106,6 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }*/
 
-    @Override
-    public void onParentEvent(MonitorStatusEvent statusEvent) {
-
-        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-                ApplicationStatus.Terminating) {
-
-            // parent monitor is in Terminating state. send Terminating event for all monitors
-            for (Monitor childMonitor : this.getAliasToActiveMonitorsMap().values()) {
-                if (childMonitor.hasActiveMonitors()) {
-                    // this is a Group Monitor, send Group Terminating
-                    StatusEventPublisher.sendGroupTerminatingEvent(appId, childMonitor.getId());
-                    markMonitorAsInactive(childMonitor.getId());
-                } else {
-                    // this is a Cluster Monitor, send Cluster Terminating
-                    StatusEventPublisher.sendClusterTerminatingEvent(appId,
-                            ((AbstractClusterMonitor) childMonitor).getServiceId(),
-                            ((AbstractClusterMonitor) childMonitor).getClusterId());
-                    markMonitorAsInactive(((AbstractClusterMonitor) childMonitor).getClusterId());
-                }
-
-            }
-        }
-    }
-
     // move to inactive monitors list to use in the Terminated event
     private synchronized void markMonitorAsInactive (String monitorKey) {
 

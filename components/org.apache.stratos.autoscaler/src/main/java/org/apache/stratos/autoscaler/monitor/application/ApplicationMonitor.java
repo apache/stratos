@@ -180,6 +180,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+        // nothing to do
+    }
+
+    @Override
     public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
 
     }

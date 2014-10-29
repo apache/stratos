@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
@@ -30,6 +31,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
 import org.apache.stratos.messaging.domain.topology.GroupStatus;
@@ -85,6 +87,15 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
             }
+        }
+    }
+
+    @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+        // send the ClusterTerminating event
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+            StatusEventPublisher.sendGroupTerminatingEvent(appId, id);
         }
     }
 
