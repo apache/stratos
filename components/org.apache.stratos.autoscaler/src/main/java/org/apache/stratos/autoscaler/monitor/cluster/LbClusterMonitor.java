@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -121,4 +122,8 @@ public class LbClusterMonitor extends AbstractClusterMonitor {
     }
 
 
+    @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+
+    }
 }
