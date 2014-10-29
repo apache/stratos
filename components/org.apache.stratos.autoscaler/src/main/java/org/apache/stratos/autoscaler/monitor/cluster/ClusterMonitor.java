@@ -77,7 +77,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
             try {
                 if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
                         (this.status == ClusterStatus.Inactive && !hasDependent) ||
-                        this.hasFaultyMember) {
+                        !this.hasFaultyMember) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is running.. " + this.toString());
                     }

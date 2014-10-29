@@ -665,7 +665,7 @@ public class TopologyBuilder {
             //cluster.setStatus(Status.Activated);
             cluster.setStatus(ClusterStatus.Active);
 
-            log.info("Cluster activated adding status started");
+            log.info("Cluster activated adding status started for" + cluster.getClusterId());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -703,7 +703,7 @@ public class TopologyBuilder {
             //cluster.setStatus(Status.Activated);
             cluster.setStatus(ClusterStatus.Inactive);
 
-            log.info("Cluster in-active adding status started");
+            log.info("Cluster in-active adding status started for " + cluster.getClusterId());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -737,7 +737,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Active);
-            log.info("Group activated adding status started");
+            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -985,7 +985,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Inactive);
-            log.info("Group in-active adding status started");
+            log.info("Group in-active adding status started for" + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -1020,7 +1020,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Terminated);
-            log.info("Group activated adding status started");
+            log.info("Group activated adding status started for" + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -1054,7 +1054,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Terminating);
-            log.info("Group activated adding status started");
+            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {

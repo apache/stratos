@@ -203,7 +203,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
+                log.info("[ClusterTerminatingEvent] Received: " + event.getClass());
 
                 ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
                 String appId = clusterTerminatingEvent.getAppId();
@@ -229,7 +229,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
+                log.info("[ClusterTerminatedEvent] Received: " + event.getClass());
 
                 ClusterTerminatedEvent clusterTerminatedEvent = (ClusterTerminatedEvent) event;
                 String appId = clusterTerminatedEvent.getAppId();

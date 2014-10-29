@@ -99,7 +99,7 @@ public class AWSEC2Iaas extends Iaas {
            templateBuilder.locationId(iaasInfo.getType());
         }
 
-        if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+        /*if(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
             Set<? extends Location> locations = iaasInfo.getComputeService().listAssignableLocations();
             for(Location location : locations) {
                 if(location.getScope().toString().equalsIgnoreCase(CloudControllerConstants.ZONE_ELEMENT) &&
@@ -110,7 +110,7 @@ public class AWSEC2Iaas extends Iaas {
                     break;
                 }
             }
-        }
+        }*/
 
 		if (iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE) != null) {
 			// set instance type eg: m1.large
