@@ -88,9 +88,9 @@ public class PartitionContext implements Serializable{
         this.setPartition(partition);
         this.minimumMemberCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
-        this.pendingMembers = new ArrayList<MemberContext>();
-        this.activeMembers = new ArrayList<MemberContext>();
-        this.terminationPendingMembers = new ArrayList<MemberContext>();
+        this.pendingMembers = new CopyOnWriteArrayList<MemberContext>();
+        this.activeMembers = new CopyOnWriteArrayList<MemberContext>();
+        this.terminationPendingMembers = new CopyOnWriteArrayList<MemberContext>();
         this.obsoletedMembers = new CopyOnWriteArrayList<String>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
 

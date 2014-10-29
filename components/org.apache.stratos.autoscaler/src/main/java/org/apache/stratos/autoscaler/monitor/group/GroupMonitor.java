@@ -144,8 +144,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      * @param status
      */
     public void setStatus(GroupStatus status) {
-        log.info(String.format("[Monitor] %s is notifying the parent" +
-                "on its state change from %s to %s", id, this.status, status));
+
         //if(this.status != status) {
         this.status = status;
         //notifying the parent

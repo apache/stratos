@@ -228,8 +228,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public void setStatus(ClusterStatus status) {
-        log.info(String.format("[Monitor] %s is notifying the parent" +
-                "on its state change from %s to %s", clusterId, this.status, status));
+
         //if(this.status != status) {
             this.status = status;
             /**
