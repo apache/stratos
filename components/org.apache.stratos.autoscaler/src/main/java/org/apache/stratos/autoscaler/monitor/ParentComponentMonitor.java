@@ -107,7 +107,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     }*/
 
     // move to inactive monitors list to use in the Terminated event
-    private synchronized void markMonitorAsInactive (String monitorKey) {
+    protected synchronized void markMonitorAsInactive (String monitorKey) {
 
         if (!this.aliasToInActiveMonitorsMap.containsKey(monitorKey)) {
             this.aliasToInActiveMonitorsMap.put(monitorKey,

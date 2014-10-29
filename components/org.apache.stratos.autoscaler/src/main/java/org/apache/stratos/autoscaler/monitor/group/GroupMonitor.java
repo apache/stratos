@@ -74,9 +74,9 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             //To update the status of the Group
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+        /*} else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //onChildTerminatingEvent(id);
-            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);*/
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
@@ -96,6 +96,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
             StatusEventPublisher.sendGroupTerminatingEvent(appId, id);
+            this.markMonitorAsInactive(id);
         }
     }
 
