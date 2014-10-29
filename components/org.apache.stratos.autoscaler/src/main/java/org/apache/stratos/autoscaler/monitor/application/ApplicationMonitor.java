@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
@@ -32,11 +31,13 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -107,7 +108,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public Monitor findGroupMonitorWithId(String groupId) {
         Monitor monitor;
         monitor = findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
-        if(monitor == null) {
+        if (monitor == null) {
             monitor = findGroupMonitor(groupId, aliasToInActiveMonitorsMap.values());
         }
         return monitor;
@@ -145,28 +146,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
 
-       this.status = status;
-       //notify the children about the state change
-       MonitorStatusEventBuilder.notifyChildren(this.parent, new ApplicationStatusEvent(status, appId));
+        this.status = status;
+        //notify the children about the state change
+        MonitorStatusEventBuilder.notifyChildren(this.parent, new ApplicationStatusEvent(status, appId));
     }
 
     @Override
     public void onChildEvent(MonitorStatusEvent statusEvent) {
-        monitor(statusEvent);
-    }
-
-    @Override
-    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
-
-    }
-
-    @Override
-    public void onEvent(MonitorScalingEvent scalingEvent) {
-
-    }
-
-    @Override
-    protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
@@ -191,6 +177,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 log.info("Executing the un-subscription request for the [monitor] " + id);
             }
         }
+    }
+
+    @Override
+    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+
+    }
+
+    @Override
+    public void onEvent(MonitorScalingEvent scalingEvent) {
 
     }
 }

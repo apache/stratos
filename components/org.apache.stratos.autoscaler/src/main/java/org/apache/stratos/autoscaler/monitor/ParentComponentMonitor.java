@@ -55,15 +55,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         //Building the dependency for this monitor within the immediate children
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
-
-    /**
-     * Will monitor the immediate children upon any event triggers from parent/children
-     *
-     * @param statusEvent will be sent by parent/children with the current status
-     */
-    protected abstract void monitor(MonitorStatusEvent statusEvent);
-
-
+    
     /**
      * This will start the child monitors based on the active of siblings according to start up order
      *

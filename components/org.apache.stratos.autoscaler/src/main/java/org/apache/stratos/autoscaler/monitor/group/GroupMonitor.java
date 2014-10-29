@@ -25,7 +25,10 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
-import org.apache.stratos.autoscaler.monitor.events.*;
+import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
@@ -58,22 +61,6 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     @Override
     public void onChildEvent(MonitorStatusEvent statusEvent) {
-        monitor(statusEvent);
-    }
-
-    @Override
-    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
-        this.terminateChildren = true;
-
-    }
-
-    @Override
-    public void onEvent(MonitorScalingEvent scalingEvent) {
-
-    }
-
-    @Override
-    protected void monitor(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
@@ -99,6 +86,16 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 log.info("Executing the un-subscription request for the [monitor] " + id);
             }
         }
+    }
+
+    @Override
+    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+        this.terminateChildren = true;
+
+    }
+
+    @Override
+    public void onEvent(MonitorScalingEvent scalingEvent) {
 
     }
 
@@ -139,14 +136,14 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", id, this.status, status));
         //if(this.status != status) {
-            this.status = status;
-            //notifying the parent
-            if (status == GroupStatus.Inactive && !this.hasDependent) {
-                log.info("[Group] " + this.id + "is not notifying the parent, " +
-                        "since it is identified as the independent unit");
-            } else {
-                MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
-            }
+        this.status = status;
+        //notifying the parent
+        if (status == GroupStatus.Inactive && !this.hasDependent) {
+            log.info("[Group] " + this.id + "is not notifying the parent, " +
+                    "since it is identified as the independent unit");
+        } else {
+            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+        }
         //}
         //notify the children about the state change
         MonitorStatusEventBuilder.notifyChildren(this.parent, new GroupStatusEvent(status, getId()));
