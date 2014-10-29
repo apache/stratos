@@ -389,12 +389,14 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 } else {
                                     // if not active, forcefully terminate
                                     clusterMonitor.setStatus(ClusterStatus.Terminating);
-                                    try {
-                                        CloudControllerClient.getInstance().terminateAllInstances(clusterData.getClusterId());
-                                    } catch (TerminationException e) {
-                                        log.error("Unable to terminate instances for [ cluster id ] " +
-                                                clusterData.getClusterId(), e);
-                                    }
+                                    clusterMonitor.terminateAllMembers();
+//                                    try {
+//                                        // TODO: introduce a task to do this cleanup
+//                                        CloudControllerClient.getInstance().terminateAllInstances(clusterData.getClusterId());
+//                                    } catch (TerminationException e) {
+//                                        log.error("Unable to terminate instances for [ cluster id ] " +
+//                                                clusterData.getClusterId(), e);
+//                                    }
                                 }
                             } else {
                                 log.warn("No Cluster Monitor found for cluster id " + clusterData.getClusterId());
