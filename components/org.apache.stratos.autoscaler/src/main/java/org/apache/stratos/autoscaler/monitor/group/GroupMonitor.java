@@ -162,6 +162,6 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         }
         //}
         //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this.parent, new GroupStatusEvent(status, getId()));
+        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId()));
     }
 }
