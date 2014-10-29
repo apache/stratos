@@ -656,8 +656,9 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                 }
                 return;
             }
+
             //Check the clusterStatus as part of the member fault event
-            StatusChecker.getInstance().onMemberFaultEvent(clusterId, partitionCtxt);
+            StatusChecker.getInstance().onMemberFaultEvent(clusterId, partitionId);
 
             // terminate the faulty member
             CloudControllerClient ccClient = CloudControllerClient.getInstance();

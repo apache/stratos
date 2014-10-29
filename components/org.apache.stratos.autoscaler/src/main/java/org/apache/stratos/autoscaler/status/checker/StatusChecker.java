@@ -156,13 +156,13 @@ public class StatusChecker {
 
     /**
      * @param clusterId
-     * @param partitionContext is to decide in which partition has less members while others have active members
+     * @param partitionId is to decide in which partition has less members while others have active members
      */
-    public void onMemberFaultEvent(final String clusterId, final PartitionContext partitionContext) {
+    public void onMemberFaultEvent(final String clusterId, final String partitionId) {
         Runnable group = new Runnable() {
             public void run() {
                 ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
-                boolean clusterInActive = getClusterInActive(monitor, partitionContext);
+                boolean clusterInActive = getClusterInActive(monitor, partitionId);
                 String appId = monitor.getAppId();
                 if (clusterInActive) {
                     //if the monitor is dependent, temporarily pausing it
@@ -185,12 +185,12 @@ public class StatusChecker {
         groupThread.start();
     }
 
-    private boolean getClusterInActive(AbstractClusterMonitor monitor, PartitionContext partitionContext) {
+    private boolean getClusterInActive(AbstractClusterMonitor monitor, String  partitionId) {
         boolean clusterInActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
-                if (partitionContext.getPartitionId().equals(partition.getPartitionId()) &&
-                        partition.getActiveMemberCount() < partition.getMinimumMemberCount()) {
+                if (partitionId.equals(partition.getPartitionId()) &&
+                        partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
                     clusterInActive = true;
                     return clusterInActive;
                 }
