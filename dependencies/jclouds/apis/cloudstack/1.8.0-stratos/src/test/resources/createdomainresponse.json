@@ -1,2 +1,0 @@
-{ "createdomainresponse" :  { "domain" :
-    {"id":10,"name":"test","level":1,"parentdomainid":1,"parentdomainname":"ROOT","haschild":false} }  }
