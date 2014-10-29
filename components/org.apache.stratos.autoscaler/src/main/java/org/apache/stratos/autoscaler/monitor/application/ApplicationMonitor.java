@@ -148,7 +148,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         this.status = status;
         //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this.parent, new ApplicationStatusEvent(status, appId));
+        MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId));
     }
 
     @Override
