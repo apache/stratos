@@ -19,18 +19,16 @@ public class StatusEventPublisher {
     private static final Log log = LogFactory.getLog(StatusEventPublisher.class);
 
     public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Cluster activated event for [application]: " + appId +
-                    " [cluster]: " + clusterId);
-        }
-
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 if (cluster.isStateTransitionValid(ClusterStatus.Active)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster activated event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
                     AppStatusClusterActivatedEvent clusterActivatedEvent =
                             new AppStatusClusterActivatedEvent(appId, serviceName, clusterId);
 
@@ -45,18 +43,16 @@ public class StatusEventPublisher {
     }
 
     public static void sendClusterInActivateEvent(String appId, String serviceName, String clusterId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Cluster in-activate event for [application]: " + appId +
-                    " [cluster]: " + clusterId);
-        }
-
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 if (cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster in-activate event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
                     AppStatusClusterInactivateEvent clusterInActivateEvent =
                             new AppStatusClusterInactivateEvent(appId, serviceName, clusterId);
 
@@ -73,16 +69,16 @@ public class StatusEventPublisher {
 
     public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId) {
 
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Cluster Terminating event for [application]: " + appId +
-                    " [cluster]: " + clusterId);
-        }
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 if (cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster Terminating event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
                     AppStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
                             new AppStatusClusterTerminatingEvent(appId, serviceName, clusterId);
 
@@ -99,17 +95,16 @@ public class StatusEventPublisher {
     }
 
     public static void sendClusterTerminatedEvent(String appId, String serviceName, String clusterId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Cluster terminated event for [application]: " + appId +
-                    " [cluster]: " + clusterId);
-        }
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 if (cluster.isStateTransitionValid(ClusterStatus.Terminated)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster terminated event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
                     AppStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
                             new AppStatusClusterTerminatedEvent(appId, serviceName, clusterId);
 
@@ -125,18 +120,16 @@ public class StatusEventPublisher {
     }
 
     public static void sendGroupActivatedEvent(String appId, String groupId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Group activated event for [application]: " + appId +
-                    " [group]: " + groupId);
-        }
-
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Active)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Group activated event for [application]: " + appId +
+                                " [group]: " + groupId);
+                    }
                     AppStatusGroupActivatedEvent groupActivatedEvent =
                             new AppStatusGroupActivatedEvent(appId, groupId);
 
@@ -151,17 +144,16 @@ public class StatusEventPublisher {
     }
 
     public static void sendGroupInActivateEvent(String appId, String groupId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Group in-activate event for [application]: " + appId +
-                    " [group]: " + groupId);
-        }
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Inactive)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Group in-activate event for [application]: " + appId +
+                                " [group]: " + groupId);
+                    }
                     AppStatusGroupInactivateEvent appStatusGroupInactivateEvent = new
                             AppStatusGroupInactivateEvent(appId, groupId);
 
@@ -176,17 +168,16 @@ public class StatusEventPublisher {
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Group terminating event for [application]: " + appId +
-                    " [group]: " + groupId);
-        }
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Terminating)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Group terminating event for [application]: " + appId +
+                                " [group]: " + groupId);
+                    }
                     AppStatusGroupTerminatingEvent groupInTerminatingEvent =
                             new AppStatusGroupTerminatingEvent(appId, groupId);
                     publishEvent(groupInTerminatingEvent);
@@ -227,16 +218,14 @@ public class StatusEventPublisher {
     }
 
     public static void sendApplicationActivatedEvent(String appId) {
-
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Application activated event for [application]: " + appId);
-        }
-
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Active)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Application activated event for [application]: " + appId);
+                    }
                     AppStatusApplicationActivatedEvent applicationActivatedEvent =
                             new AppStatusApplicationActivatedEvent(appId);
 
@@ -273,15 +262,14 @@ public class StatusEventPublisher {
     }
 
     public static void sendApplicationTerminatingEvent(String appId) {
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Application terminated event for [application]: " + appId);
-        }
-
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Terminating)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Application terminated event for [application]: " + appId);
+                    }
                     AppStatusApplicationTerminatingEvent applicationTerminatingEvent =
                             new AppStatusApplicationTerminatingEvent(appId);
                     publishEvent(applicationTerminatingEvent);
@@ -295,14 +283,14 @@ public class StatusEventPublisher {
     }
 
     public static void sendApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
-        if (log.isInfoEnabled()) {
-            log.info("Publishing Application terminated event for [application]: " + appId);
-        }
         try {
             TopologyManager.acquireReadLockForApplication(appId);
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Terminated)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Application terminated event for [application]: " + appId);
+                    }
                     AppStatusApplicationTerminatedEvent applicationTerminatedEvent =
                             new AppStatusApplicationTerminatedEvent(appId, clusterData);
                     publishEvent(applicationTerminatedEvent);

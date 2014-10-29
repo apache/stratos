@@ -155,7 +155,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
-                clusterMonitor.setStatus(ClusterStatus.Active);
+                if(clusterMonitor!= null) {
+                    clusterMonitor.setStatus(ClusterStatus.Active);
+                }
 
             }
         });
@@ -190,7 +192,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
-                clusterMonitor.setStatus(ClusterStatus.Inactive);
+                if(clusterMonitor!= null) {
+                    clusterMonitor.setStatus(ClusterStatus.Inactive);
+                }
 
             }
         });
@@ -237,9 +241,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 if (clusterMonitor != null) {
                     clusterMonitor.setStatus(ClusterStatus.Terminated);
                 }
-
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 
@@ -337,7 +338,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 String appId = applicationActivatedEvent.getAppId();
 
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
-                appMonitor.setStatus(ApplicationStatus.Active);
+                if(appMonitor != null) {
+                    appMonitor.setStatus(ApplicationStatus.Active);
+                }
             }
         });
 

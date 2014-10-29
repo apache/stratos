@@ -656,15 +656,15 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                 }
                 return;
             }
+            //Check the clusterStatus as part of the member fault event
+            StatusChecker.getInstance().onMemberFaultEvent(clusterId, partitionCtxt);
+
             // terminate the faulty member
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminate(memberId);
 
             // remove from active member list
             partitionCtxt.removeActiveMemberById(memberId);
-            //Check the clusterStatus as part of the member fault event
-            StatusChecker.getInstance().onMemberFaultEvent(clusterId, partitionCtxt);
-
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Faulty member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",

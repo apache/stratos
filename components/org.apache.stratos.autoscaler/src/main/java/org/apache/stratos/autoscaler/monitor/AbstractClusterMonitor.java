@@ -65,6 +65,8 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     protected String serviceId;
     protected String appId;
 
+    protected boolean hasFaultyMember = false;
+
     protected ClusterStatus status;
 
     //protected ParentComponentMonitor parent;
@@ -228,7 +230,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     public void setStatus(ClusterStatus status) {
         log.info(String.format("[Monitor] %s is notifying the parent" +
                 "on its state change from %s to %s", clusterId, this.status, status));
-        if(this.status != status) {
+        //if(this.status != status) {
             this.status = status;
             /**
              * notifying the parent monitor about the state change
@@ -241,7 +243,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
             } else {
                 MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
             }
-        }
+        //}
 
     }
 
@@ -260,4 +262,11 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     }
 
+    public boolean isHasFaultyMember() {
+        return hasFaultyMember;
+    }
+
+    public void setHasFaultyMember(boolean hasFaultyMember) {
+        this.hasFaultyMember = hasFaultyMember;
+    }
 }
