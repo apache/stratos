@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -32,7 +33,9 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -281,6 +284,10 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     @Override
     public void onParentEvent(MonitorStatusEvent statusEvent) {
-        // doesn't have to do anything since this is not a Parent Monitor
+        // send the ClusterTerminating event
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
+        }
     }
 }
