@@ -27,11 +27,18 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
  */
 public interface EventHandler {
     /**
-     * Triggered when an event is received.
+     * Triggered when an event is received from a child.
      *
      * @param statusEvent
      */
-    public abstract void onEvent(MonitorStatusEvent statusEvent);
+    public abstract void onChildEvent(MonitorStatusEvent statusEvent);
+
+    /**
+     * Triggered when an event is received from the parent.
+     *
+     * @param statusEvent
+     */
+    public abstract void onParentEvent(MonitorStatusEvent statusEvent);
 
     /**
      * Triggered when termination decision is made.

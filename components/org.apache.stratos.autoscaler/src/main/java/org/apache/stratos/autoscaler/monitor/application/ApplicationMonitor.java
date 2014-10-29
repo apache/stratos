@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
+import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
@@ -143,14 +144,14 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void setStatus(ApplicationStatus status) {
         log.info(String.format("[ApplicationMonitor] %s " +
                 "state changes from %s to %s", id, this.status, status));
-        //if(this.status != status) {
-            this.status = status;
 
-        //}
+       this.status = status;
+       //notify the children about the state change
+       MonitorStatusEventBuilder.notifyChildren(this.parent, new ApplicationStatusEvent(status, appId));
     }
 
     @Override
-    public void onEvent(MonitorStatusEvent statusEvent) {
+    public void onChildEvent(MonitorStatusEvent statusEvent) {
         monitor(statusEvent);
     }
 

@@ -248,7 +248,7 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onEvent(MonitorStatusEvent statusEvent) {
+    public void onChildEvent(MonitorStatusEvent statusEvent) {
 
     }
 

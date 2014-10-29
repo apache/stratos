@@ -470,7 +470,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
 //        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
 //            @Override
-//            protected void onEvent(Event event) {
+//            protected void onChildEvent(Event event) {
 //
 //                log.info("[ApplicationRemovedEvent] Received: " + event.getClass());
 //

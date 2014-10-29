@@ -50,8 +50,12 @@ public class MonitorStatusEventBuilder {
     }
 
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
-        parent.onEvent(statusEvent);
+        parent.onChildEvent(statusEvent);
     }
 
-
+    public static void notifyChildren (ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
+        for (Monitor activeChildMonitor : parent.getAliasToActiveMonitorsMap().values()) {
+            activeChildMonitor.onParentEvent(statusEvent);
+        }
+    }
 }

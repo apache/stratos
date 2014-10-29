@@ -25,9 +25,7 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
+import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Group;
@@ -59,7 +57,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
-    public void onEvent(MonitorStatusEvent statusEvent) {
+    public void onChildEvent(MonitorStatusEvent statusEvent) {
         monitor(statusEvent);
     }
 
@@ -150,6 +148,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
             }
         //}
-
+        //notify the children about the state change
+        MonitorStatusEventBuilder.notifyChildren(this.parent, new GroupStatusEvent(status, getId()));
     }
 }

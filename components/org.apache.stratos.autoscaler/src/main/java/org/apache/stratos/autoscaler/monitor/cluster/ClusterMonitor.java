@@ -275,7 +275,12 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void onEvent(MonitorStatusEvent statusEvent) {
+    public void onChildEvent(MonitorStatusEvent statusEvent) {
 
+    }
+
+    @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+        // doesn't have to do anything since this is not a Parent Monitor
     }
 }

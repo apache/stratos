@@ -30,6 +30,8 @@ import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationCont
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 import java.util.HashMap;
@@ -108,6 +110,39 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         } else {
             log.warn("Inactive Monitor not found for the id " + idOfEvent);
+        }
+    }
+
+    @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+
+            // parent monitor is in Terminating state. send Terminating event for all monitors
+            for (Monitor childMonitor : this.getAliasToActiveMonitorsMap().values()) {
+                if (childMonitor.hasActiveMonitors()) {
+                    // this is a Group Monitor, send Group Terminating
+                    StatusEventPublisher.sendGroupTerminatingEvent(appId, childMonitor.getId());
+                    markMonitorAsInactive(childMonitor.getId());
+                } else {
+                    // this is a Cluster Monitor, send Cluster Terminating
+                    StatusEventPublisher.sendClusterTerminatingEvent(appId,
+                            ((AbstractClusterMonitor) childMonitor).getServiceId(),
+                            ((AbstractClusterMonitor) childMonitor).getClusterId());
+                    markMonitorAsInactive(((AbstractClusterMonitor) childMonitor).getClusterId());
+                }
+
+            }
+        }
+    }
+
+    // move to inactive monitors list to use in the Terminated event
+    private synchronized void markMonitorAsInactive (String monitorKey) {
+
+        if (!this.aliasToInActiveMonitorsMap.containsKey(monitorKey)) {
+            this.aliasToInActiveMonitorsMap.put(monitorKey,
+                    this.aliasToActiveMonitorsMap.remove(monitorKey));
         }
     }
 
