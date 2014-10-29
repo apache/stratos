@@ -240,6 +240,12 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
             if (status == ClusterStatus.Inactive && !this.hasDependent) {
                 log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
                         "since it is identified as the independent unit");
+
+            } else if (status == ClusterStatus.Terminating) {
+                // notify parent
+                log.info("[Cluster] " + clusterId + " is not notifying the parent, " +
+                        "since it is in Terminating State");
+
             } else {
                 MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
             }
