@@ -88,7 +88,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            onChildTerminatingEvent(id);
+            //onChildTerminatingEvent(id);
             StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {

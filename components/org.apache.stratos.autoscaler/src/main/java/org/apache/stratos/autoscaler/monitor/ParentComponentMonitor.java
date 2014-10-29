@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationCont
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
 
 import java.util.HashMap;
@@ -115,50 +114,54 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected void onChildInActiveEvent(String idOfEvent) {
         List<ApplicationContext> terminationList;
         Monitor monitor;
-        //Temporarily move the group/cluster to inactive list
-        //this.aliasToInActiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
 
-        if(this.hasDependent) {
+        if (this.hasDependent) {
             //need to notify the parent
             StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
         } else {
             terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
-            if(this.hasInDependentChild()) {
-                if(this.parent != null) {
-                    StatusEventPublisher.sendGroupInActivateEvent(this.appId, this.id);
-                } /*else {
-                    StatusEventPublisher.sendApplicationInactivatedEvent(this.appId, terminationContext.getId());
-
-                }*/
-
-            }
-
-            if (terminationList != null) {
-                //Checking the termination dependents status
-                for (ApplicationContext terminationContext : terminationList) {
-                    //Check whether dependent is in_active, then start to kill it
-                    monitor = this.aliasToActiveMonitorsMap.
-                            get(terminationContext.getId());
-                    //start to kill it
-                    if(monitor != null) {
-                        if (monitor.hasActiveMonitors()) {
-                            //it is a group
-                            StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
-                        } else {
-                            StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
-                                    ((AbstractClusterMonitor) monitor).getServiceId(), terminationContext.getId());
-
-                        }
-                    } else {
-                        log.warn("The relevant [monitor] " + terminationContext.getId() +
-                                                                    "is not in the active map....");
-                    }
-
+            //Checking whether all children are to be terminated.
+            if (terminationList.size() ==
+                    (this.aliasToActiveMonitorsMap.size() + this.aliasToInActiveMonitorsMap.size())) {
+                if (this.parent != null) {
+                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, this.id);
                 }
             } else {
-                log.warn("Wrong inActive event received from [Child] " + idOfEvent + "  to the [parent]"
-                        + " where child is identified as a independent");
+                //TODO application InActive
+                if (this.parent != null) {
+                    StatusEventPublisher.sendGroupInActivateEvent(this.appId, this.id);
+                }
+                //Since it is reached the most independent unit and has few independent monitors,
+                // has to put the children down to terminating
+
+                if (terminationList != null) {
+                    //Checking the termination dependents status
+                    for (ApplicationContext terminationContext : terminationList) {
+                        //Check whether dependent is in_active, then start to kill it
+                        monitor = this.aliasToActiveMonitorsMap.
+                                get(terminationContext.getId());
+                        //start to kill it
+                        if (monitor != null) {
+                            if (monitor.hasActiveMonitors()) {
+                                //it is a group
+                                StatusEventPublisher.sendGroupTerminatingEvent(this.appId, terminationContext.getId());
+                            } else {
+                                StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                                        ((AbstractClusterMonitor) monitor).getServiceId(), terminationContext.getId());
+                            }
+                        } else {
+                            log.warn("The relevant [monitor] " + terminationContext.getId() +
+                                    "is not in the active map....");
+                        }
+
+                    }
+                } else {
+                    log.warn("Wrong inActive event received from [Child] " + idOfEvent + "  to the [parent]"
+                            + " where child is identified as a independent");
+                }
             }
+
+
         }
 
     }
@@ -210,7 +213,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
 
-        if((terminationList != null && allDependentTerminated || terminationList == null) &&
+        if ((terminationList != null && allDependentTerminated || terminationList == null) &&
                 (parentContexts != null && canStart || parentContexts == null)) {
             //Find the non existent monitor by traversing dependency tree
 
@@ -249,7 +252,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     public void startDependencyOnTermination() throws TopologyInConsistentException {
         //start the first dependency which went to terminated
         List<ApplicationContext> applicationContexts = this.dependencyTree.
-                                                            getStarAbleDependenciesByTermination();
+                getStarAbleDependenciesByTermination();
         startDependency(applicationContexts);
 
     }

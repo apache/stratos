@@ -176,9 +176,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             onChildInActiveEvent(id);
             //TODO update the status of the Application as in_active when child becomes in_active
 
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+        /*} else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             onChildTerminatingEvent(id);
-            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);*/
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
