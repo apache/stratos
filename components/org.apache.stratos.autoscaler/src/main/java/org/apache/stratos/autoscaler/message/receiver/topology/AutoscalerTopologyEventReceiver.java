@@ -362,12 +362,18 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 Set<ClusterDataHolder> clusterDataHolders = applicationUndeployedEvent.getClusterData();
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
-                        if (AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()) == null) {
+                        ClusterMonitor clusterMonitor =
+                                   ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()));
+                        if (clusterMonitor == null) {
                             // Cluster Monitor not found; send Cluster Terminated event to cleanup
                             StatusEventPublisher.sendClusterTerminatedEvent(
                                     applicationUndeployedEvent.getApplicationId(),
                                     clusterDataHolder.getServiceType(),
                                     clusterDataHolder.getClusterId());
+                        } else {
+                            // if the Cluster Monitor exists, mark it as destroyed to stop it from spawning
+                            // more instances
+                            clusterMonitor.setDestroyed(true);
                         }
                     }
                 }
