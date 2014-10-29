@@ -357,6 +357,21 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
                         getAppMonitor(applicationUndeployedEvent.getApplicationId());
 
+                // if any of Cluster Monitors are not added yet, should send the
+                // Cluster Terminated event for those clusters
+                Set<ClusterDataHolder> clusterDataHolders = applicationUndeployedEvent.getClusterData();
+                if (clusterDataHolders != null) {
+                    for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+                        if (AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()) == null) {
+                            // Cluster Monitor not found; send Cluster Terminated event to cleanup
+                            StatusEventPublisher.sendClusterTerminatedEvent(
+                                    applicationUndeployedEvent.getApplicationId(),
+                                    clusterDataHolder.getServiceType(),
+                                    clusterDataHolder.getClusterId());
+                        }
+                    }
+                }
+
                 if (appMonitor != null) {
                     // set Application Monitor state to 'Terminating'
                     appMonitor.setStatus(ApplicationStatus.Terminating);
