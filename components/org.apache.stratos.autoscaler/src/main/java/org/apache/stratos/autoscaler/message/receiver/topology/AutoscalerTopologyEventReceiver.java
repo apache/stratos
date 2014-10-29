@@ -206,22 +206,24 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 log.info("[ClusterTerminatingEvent] Received: " + event.getClass());
 
                 ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
-                String appId = clusterTerminatingEvent.getAppId();
                 String clusterId = clusterTerminatingEvent.getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
                 if (clusterMonitor != null) {
-                    clusterMonitor.setDestroyed(true);
-                    clusterMonitor.terminateAllMembers();
-                    clusterMonitor.setStatus(ClusterStatus.Terminating);
+                    if (clusterMonitor.getStatus() == ClusterStatus.Active) {
+                        // terminated gracefully
+                        clusterMonitor.setStatus(ClusterStatus.Terminating);
+                        InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId);
+                    } else {
+                        clusterMonitor.setStatus(ClusterStatus.Terminating);
+                        clusterMonitor.terminateAllMembers();
+                    }
+
                 } else {
                     log.warn("No Cluster Monitor found for cluster id " + clusterId);
                 }
-
-                //starting the status checker to decide on the status of it's parent
-                //StatusChecker.getInstance().onClusterStatusChange(clusterId, appId);
             }
         });
 

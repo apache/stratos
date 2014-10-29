@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.util.Constants;
 
 public class InstanceNotificationPublisher {
@@ -38,5 +39,15 @@ public class InstanceNotificationPublisher {
     public static void sendInstanceCleanupEventForCluster(String clusterId) {
         log.info(String.format("Publishing Instance Cleanup Event: [cluster] %s", clusterId));
         publish(new InstanceCleanupClusterEvent(clusterId));
+    }
+
+    /**
+     * Publishing the instance termination notification to the instances
+     *
+     * @param memberId
+     */
+    public void sendInstanceCleanupEventForMember(String memberId) {
+        log.info(String.format("Publishing Instance Cleanup Event: [member] %s", memberId));
+        publish(new InstanceCleanupMemberEvent(memberId));
     }
 }
