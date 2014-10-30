@@ -1,4 +1,3 @@
-package org.apache.stratos.cloud.controller.topology;
  /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,8 +16,8 @@ package org.apache.stratos.cloud.controller.topology;
  * specific language governing permissions and limitations
  * under the License.
  */
-import java.util.List;
-import java.util.Properties;
+
+package org.apache.stratos.cloud.controller.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,25 +28,10 @@ import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.ServiceType;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
-import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
-import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
-import org.apache.stratos.messaging.event.topology.ServiceCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
+import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.List;
@@ -58,8 +42,7 @@ import java.util.Set;
  * this is to send the relevant events from cloud controller to topology topic
  */
 public class TopologyEventPublisher {
-	private static final Log log = LogFactory
-			.getLog(TopologyEventPublisher.class);
+    private static final Log log = LogFactory.getLog(TopologyEventPublisher.class);
 
 	public static void sendServiceCreateEvent(List<Cartridge> cartridgeList) {
 		ServiceCreatedEvent serviceCreatedEvent;
@@ -100,13 +83,11 @@ public class TopologyEventPublisher {
 		}
 	}
 
-	public static void sendClusterCreatedEvent(String serviceName,
-			String clusterId, Cluster cluster) {
-		ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(
-				serviceName, clusterId, cluster);
+	public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
+		ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(appId, serviceName, clusterId);
 
 		if (log.isInfoEnabled()) {
-			log.info("Publishing cluster created event: " + cluster.toString());
+			log.info("Publishing cluster created event: " + clusterId);
 		}
 		publishEvent(clusterCreatedEvent);
 	}
@@ -140,28 +121,14 @@ public class TopologyEventPublisher {
 //    }
 
     public static void sendClusterRemovedEvent(ClusterContext ctxt, String deploymentPolicy) {
-
+        ClusterRemovedEvent clusterRemovedEvent = new ClusterRemovedEvent(
+        		ctxt.getCartridgeType(), ctxt.getClusterId(), deploymentPolicy, ctxt.isLbCluster());
 		if (log.isInfoEnabled()) {
 			log.info(String
 					.format("Publishing cluster removed event: [service] %s [cluster] %s",
 							ctxt.getCartridgeType(), ctxt.getClusterId()));
 		}
 		publishEvent(clusterRemovedEvent);
-
-	}
-
-	public static void sendClusterMaintenanceModeEvent(ClusterContext ctxt) {
-
-		ClusterMaintenanceModeEvent clusterMaintenanceModeEvent = new ClusterMaintenanceModeEvent(
-				ctxt.getCartridgeType(), ctxt.getClusterId());
-		clusterMaintenanceModeEvent.setStatus(ClusterStatus.In_Maintenance);
-		if (log.isInfoEnabled()) {
-			log.info(String
-					.format("Publishing cluster maintenance mode event: [service] %s [cluster] %s",
-							clusterMaintenanceModeEvent.getServiceName(),
-							clusterMaintenanceModeEvent.getClusterId()));
-		}
-		publishEvent(clusterMaintenanceModeEvent);
 
 	}
 
@@ -187,20 +154,6 @@ public class TopologyEventPublisher {
 		}
 		publishEvent(instanceSpawnedEvent);
 	}
-
-    public static void sendInstanceSpawnedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId,
-                                                String lbClusterId, String publicIp, String privateIp, MemberContext context) {
-        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
-        instanceSpawnedEvent.setLbClusterId(lbClusterId);
-        instanceSpawnedEvent.setMemberIp(privateIp);
-        instanceSpawnedEvent.setMemberPublicIp(publicIp);
-        instanceSpawnedEvent.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s [lb-cluster-id] %s",
-                    serviceName, clusterId, networkPartitionId, partitionId, memberId, lbClusterId));
-        }
-        publishEvent(instanceSpawnedEvent);
-    }
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
         MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
@@ -306,11 +259,6 @@ public class TopologyEventPublisher {
                     applicationActivatedEvent.getAppId()));
         }
         publishEvent(applicationActivatedEvent);
-    }
-
-    public static void publishEvent(Event event) {
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Constants.TOPOLOGY_TOPIC);
-        eventPublisher.publish(event);
     }
 
     public static void sendApplicationInactivatedEvent(ApplicationInactivatedEvent applicationActivatedEvent1) {
