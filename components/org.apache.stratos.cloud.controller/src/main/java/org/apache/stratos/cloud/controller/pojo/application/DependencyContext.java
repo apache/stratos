@@ -24,14 +24,14 @@ public class DependencyContext {
     
     private String [] startupOrdersContexts;
 
-    private String killBehaviour;
+    private String terminationBehaviour;
 
-    public String getKillBehaviour() {
-        return killBehaviour;
+    public String getTerminationBehaviour() {
+        return terminationBehaviour;
     }
 
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+    public void setTerminationBehaviour(String terminationBehaviour) {
+        this.terminationBehaviour = terminationBehaviour;
     }
 
 	public String [] getStartupOrdersContexts() {

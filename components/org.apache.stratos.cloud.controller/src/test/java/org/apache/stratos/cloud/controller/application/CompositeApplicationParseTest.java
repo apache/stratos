@@ -53,7 +53,7 @@ public class CompositeApplicationParseTest {
         group1.setName("group1");
         group1.setCartridges(new String[]{"mysql"});
         Dependencies group1Dependencies = new Dependencies();
-        group1Dependencies.setKillBehaviour("kill-none");
+        group1Dependencies.setKillBehaviour("terminate-none");
         group1.setDependencies(group1Dependencies);
         dataHolder.addServiceGroup(group1);
         // add group2
@@ -63,7 +63,7 @@ public class CompositeApplicationParseTest {
         group2.setSubGroups(new String[]{"group1"});
         Dependencies group2Dependencies = new Dependencies();
         group2Dependencies.setStartupOrders(new String[]{"group.group1,cartridge.php"});
-        group2Dependencies.setKillBehaviour("kill-dependents");
+        group2Dependencies.setKillBehaviour("terminate-dependents");
         group2.setDependencies(group2Dependencies);
         dataHolder.addServiceGroup(group2);
     }
@@ -206,7 +206,7 @@ public class CompositeApplicationParseTest {
                 simpleAppMySqlSubscribableContext});
 
         DependencyContext simpleAppDependecyCtxt = new DependencyContext();
-        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        simpleAppDependecyCtxt.setTerminationBehaviour("terminate-dependents");
         simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"cartridge.mysql1,cartridge.myphp"});
         simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);
 
@@ -256,7 +256,7 @@ public class CompositeApplicationParseTest {
                 simpleAppMySqlSubscribableContext});
 
         DependencyContext simpleAppDependecyCtxt = new DependencyContext();
-        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        simpleAppDependecyCtxt.setTerminationBehaviour("terminate-dependents");
         // startup order is invalid, without prefix 'cartridge.' for mysql1
         simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"mysql1,cartridge.myphp"});
         simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);
@@ -419,7 +419,7 @@ public class CompositeApplicationParseTest {
         simpleAppCtxt.setComponents(simpleAppComponentCtxt);
         // dependencies
         DependencyContext simpleAppDependecyCtxt = new DependencyContext();
-        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        simpleAppDependecyCtxt.setTerminationBehaviour("terminate-dependents");
         simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"group.group1,cartridge.myphp"});
         simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);
         // subscribable information
@@ -475,7 +475,7 @@ public class CompositeApplicationParseTest {
         simpleAppCtxt.setComponents(simpleAppComponentCtxt);
         // dependencies
         DependencyContext simpleAppDependecyCtxt = new DependencyContext();
-        simpleAppDependecyCtxt.setKillBehaviour("kill-dependents");
+        simpleAppDependecyCtxt.setTerminationBehaviour("terminate-dependents");
         // invalid startup order, starting with 'group1'
         simpleAppDependecyCtxt.setStartupOrdersContexts(new String[]{"group1.group1,cartridge.myphp"});
         simpleAppComponentCtxt.setDependencyContext(simpleAppDependecyCtxt);

@@ -279,7 +279,9 @@ public class DefaultApplicationParser implements ApplicationParser {
                     	log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
                     }
                 }
-                appDependencyOrder.setKillbehavior(appCtxt.getComponents().getDependencyContext().getKillBehaviour());
+                String terminationBehavior = appCtxt.getComponents().getDependencyContext().getTerminationBehaviour();
+                validateTerminationBehavior(terminationBehavior);
+                appDependencyOrder.setTerminationBehaviour(terminationBehavior);
 
                 application.setDependencyOrder(appDependencyOrder);
             }
@@ -288,6 +290,25 @@ public class DefaultApplicationParser implements ApplicationParser {
         log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
 
         return application;
+    }
+
+    /**
+     * Validates terminationBehavior. The terminationBehavior should be one of the following:
+     *      1. terminate-none
+     *      2. terminate-dependents
+     *      3. terminate-all
+     *
+     * @throws ApplicationDefinitionException if terminationBehavior is different to what is
+     * listed above
+     */
+    private static void validateTerminationBehavior (String terminationBehavior) throws ApplicationDefinitionException {
+
+        if (terminationBehavior != null && terminationBehavior != "terminate-none" &&
+                terminationBehavior != "terminate-dependents" && terminationBehavior != "terminate-all") {
+            throw new ApplicationDefinitionException("Invalid Termination Behaviour specified: [ " +
+                    terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
+                    " 'terminate-all' ");
+        }
     }
 
     /**
@@ -402,7 +423,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (startupOrders != null) {
             dependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders, groupCtxt));
         }
-        dependencyOrder.setKillbehavior(getKillbehaviour(groupCtxt.getName()));
+        dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName()));
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, ClusterDataHolder> clusterDataMap;

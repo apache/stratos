@@ -736,7 +736,7 @@ public class PojoConverter {
     private static DependencyContext getDependencyContextFromDependencyDefinition (DependencyDefinitions dependencyDefinitions) {
 
         DependencyContext dependencyContext = new DependencyContext();
-        dependencyContext.setKillBehaviour(dependencyDefinitions.getKillBehaviour());
+        dependencyContext.setKillBehaviour(dependencyDefinitions.getTerminationBehaviour());
         
         if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
         	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];

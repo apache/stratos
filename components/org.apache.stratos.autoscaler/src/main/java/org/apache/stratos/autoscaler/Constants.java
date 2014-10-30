@@ -73,9 +73,9 @@ public class Constants {
     public static final String MEMBER_EXPIRY_INTERVAL = "member.expiry.interval";
 
     //Grouping
-    public static final String KILL_NONE = "kill-none";
-    public static final String KILL_ALL = "kill-all";
-    public static final String KILL_DEPENDENTS = "kill-dependents";
+    public static final String TERMINATE_NONE = "terminate-none";
+    public static final String TERMINATE_ALL = "terminate-all";
+    public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
     public static final String GROUP = "group";
     public static final String CARTRIDGE = "cartridge";
 

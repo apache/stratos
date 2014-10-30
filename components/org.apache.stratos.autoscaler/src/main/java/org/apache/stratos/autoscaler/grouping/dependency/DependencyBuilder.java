@@ -24,8 +24,6 @@ import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContextFactory;
-import org.apache.stratos.autoscaler.grouping.dependency.context.ClusterContext;
-import org.apache.stratos.autoscaler.grouping.dependency.context.GroupContext;
 import org.apache.stratos.messaging.domain.topology.*;
 
 import java.util.Set;
@@ -64,17 +62,17 @@ public class DependencyBuilder {
             log.info("Building dependency for the Application/Group " + identifier);
 
             //Parsing the kill behaviour
-            String killBehavior = dependencyOrder.getKillbehavior();
+            String terminationBehaviour = dependencyOrder.getTerminationBehaviour();
 
-            if (Constants.KILL_NONE.equals(killBehavior)) {
+            if (Constants.TERMINATE_NONE.equals(terminationBehaviour)) {
                 dependencyTree.setKillNone(true);
-            } else if (Constants.KILL_ALL.equals(killBehavior)) {
+            } else if (Constants.TERMINATE_ALL.equals(terminationBehaviour)) {
                 dependencyTree.setKillAll(true);
-            } else if (Constants.KILL_DEPENDENTS.equals(killBehavior)) {
+            } else if (Constants.TERMINATE_DEPENDENTS.equals(terminationBehaviour)) {
                 dependencyTree.setKillDependent(true);
             }
 
-            log.info("Setting the [killBehavior] " + killBehavior + " to the " +
+            log.info("Setting the [terminationBehaviour] " + terminationBehaviour + " to the " +
                         "[dependency-tree] " + dependencyTree.getId());
 
 

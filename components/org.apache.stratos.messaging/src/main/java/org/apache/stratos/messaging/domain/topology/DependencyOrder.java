@@ -20,8 +20,6 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class DependencyOrder implements Serializable {
@@ -30,18 +28,18 @@ public class DependencyOrder implements Serializable {
 
 	private Set<StartupOrder> startupOrders;
 
-    private String killbehavior;
+    private String terminationBehaviour;
 
     public DependencyOrder () {
 
     }
 
-    public String getKillbehavior() {
-        return killbehavior;
+    public String getTerminationBehaviour() {
+        return terminationBehaviour;
     }
 
-    public void setKillbehavior(String killbehavior) {
-        this.killbehavior = killbehavior;
+    public void setTerminationBehaviour(String terminationBehaviour) {
+        this.terminationBehaviour = terminationBehaviour;
     }
 
 	public Set<StartupOrder> getStartupOrders() {

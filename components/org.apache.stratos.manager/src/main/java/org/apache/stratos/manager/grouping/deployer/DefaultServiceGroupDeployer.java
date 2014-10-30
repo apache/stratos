@@ -73,7 +73,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             log.error("trying to deploy invalid service group ");
             throw new InvalidServiceGroupException("Invalid Service Group definition");
         }
-        
 
         // if any cartridges are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getCartridges() != null) {
@@ -232,7 +231,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     }
     
     
-    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) throws ServiceGroupDefinitioException {
     	ServiceGroup servicegroup = new ServiceGroup();
     	
     	// implement conversion (mostly List -> Array)
@@ -268,7 +267,9 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             	startupOrders = startupOrdersDef.toArray(startupOrders);
                 deps.setStartupOrders(startupOrders);
             }
-            deps.setKillBehaviour(depDefs.getKillBehaviour());
+            // validate termination behavior
+            validateTerminationBehavior(depDefs.getTerminationBehaviour());
+            deps.setKillBehaviour(depDefs.getTerminationBehaviour());
             servicegroup.setDependencies(deps);
         }
     	
@@ -290,7 +291,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 depsDef.setStartupOrders(startupOrdersDef);
             }
 
-            depsDef.setKillBehaviour(deps.getKillBehaviour());
+            depsDef.setTerminationBehaviour(deps.getKillBehaviour());
             servicegroupDef.setDependencies(depsDef);
         }
 
@@ -302,8 +303,26 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
    
     	return servicegroupDef;
     }
-    
-    
+
+    /**
+     * Validates terminationBehavior. The terminationBehavior should be one of the following:
+     *      1. terminate-none
+     *      2. terminate-dependents
+     *      3. terminate-all
+     *
+     * @throws ServiceGroupDefinitioException if terminationBehavior is different to what is
+     * listed above
+     */
+    private static void validateTerminationBehavior (String terminationBehavior) throws ServiceGroupDefinitioException {
+
+        if (terminationBehavior != null && terminationBehavior != "terminate-none" &&
+                terminationBehavior != "terminate-dependents" && terminationBehavior != "terminate-all") {
+            throw new ServiceGroupDefinitioException("Invalid Termination Behaviour specified: [ " +
+                    terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
+                    " 'terminate-all' ");
+        }
+    }
+
     /**
      * returns any duplicates in a List
      * @param checkedList
