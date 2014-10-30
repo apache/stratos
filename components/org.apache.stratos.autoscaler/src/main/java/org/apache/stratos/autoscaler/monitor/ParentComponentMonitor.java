@@ -179,7 +179,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     protected void onChildTerminatedEvent(String idOfEvent) {
         List<ApplicationContext> terminationList;
-        boolean allDependentTerminated = true;
+        boolean allDependentTerminated = false;
 
         ApplicationContext context = this.dependencyTree.findApplicationContextWithId(idOfEvent);
         context.setTerminated(true);
@@ -200,8 +200,8 @@ public abstract class ParentComponentMonitor extends Monitor {
             parentsTerminated = allParentTerminated(parentContexts);
         }
 
-        if ((terminationList != null && allDependentTerminated || terminationList == null) &&
-                (parentContexts != null && parentsTerminated || parentContexts == null)) {
+        if ((terminationList != null && allDependentTerminated || terminationList.isEmpty()) &&
+                (parentContexts != null && parentsTerminated || parentContexts.isEmpty())) {
             //Find the non existent monitor by traversing dependency tree
             try {
                 this.startDependencyOnTermination();
