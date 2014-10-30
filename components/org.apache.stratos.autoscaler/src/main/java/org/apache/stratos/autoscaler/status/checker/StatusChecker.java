@@ -24,8 +24,7 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
-import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -57,7 +56,7 @@ public class StatusChecker {
     public void onMemberStatusChange(final String clusterId) {
         Runnable group = new Runnable() {
             public void run() {
-                ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+                VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
                 boolean clusterActive = false;
                 if (monitor != null) {
                     clusterActive = clusterActive(monitor);
@@ -80,7 +79,7 @@ public class StatusChecker {
     public void onMemberTermination(final String clusterId) {
         Runnable group = new Runnable() {
             public void run() {
-                ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+                VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
                 boolean clusterMonitorHasMembers = clusterMonitorHasMembers(monitor);
                 boolean clusterActive = clusterActive(monitor);
 
@@ -121,7 +120,7 @@ public class StatusChecker {
 
     }
 
-    private boolean clusterActive(AbstractClusterMonitor monitor) {
+    private boolean clusterActive(VMClusterMonitor monitor) {
         boolean clusterActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             //minimum check per partition
@@ -140,7 +139,7 @@ public class StatusChecker {
         return clusterActive;
     }
 
-    private boolean clusterMonitorHasMembers(AbstractClusterMonitor monitor) {
+    private boolean clusterMonitorHasMembers(VMClusterMonitor monitor) {
         boolean hasMember = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             //minimum check per partition
@@ -161,7 +160,7 @@ public class StatusChecker {
     public void onMemberFaultEvent(final String clusterId, final String partitionId) {
         Runnable group = new Runnable() {
             public void run() {
-                ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
+                VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
                 boolean clusterInActive = getClusterInActive(monitor, partitionId);
                 String appId = monitor.getAppId();
                 if (clusterInActive) {
@@ -185,7 +184,7 @@ public class StatusChecker {
         groupThread.start();
     }
 
-    private boolean getClusterInActive(AbstractClusterMonitor monitor, String  partitionId) {
+    private boolean getClusterInActive(VMClusterMonitor monitor, String  partitionId) {
         boolean clusterInActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {

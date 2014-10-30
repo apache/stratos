@@ -34,7 +34,7 @@ import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationCont
 import org.apache.stratos.autoscaler.grouping.dependency.context.ClusterContext;
 import org.apache.stratos.autoscaler.grouping.dependency.context.GroupContext;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -172,7 +172,7 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PolicyValidationException
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
-    public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
+    public static VMClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
                                                    ClusterContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
@@ -182,7 +182,7 @@ public class ApplicationMonitorFactory {
         String serviceName = context.getServiceName();
 
         Cluster cluster;
-        ClusterMonitor clusterMonitor;
+        AbstractClusterMonitor clusterMonitor;
         //acquire read lock for the service and cluster
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
@@ -207,126 +207,17 @@ public class ApplicationMonitorFactory {
 
             }
 
-            String autoscalePolicyName = cluster.getAutoscalePolicyName();
-            String deploymentPolicyName = cluster.getDeploymentPolicyName();
 
-            if (log.isDebugEnabled()) {
-                log.debug("Deployment policy name: " + deploymentPolicyName);
-                log.debug("Autoscaler policy name: " + autoscalePolicyName);
+            clusterMonitor = ClusterMonitorFactory.getMonitor(cluster);
+            if (clusterMonitor instanceof VMClusterMonitor) {
+                return (VMClusterMonitor) clusterMonitor;
+            } else if (clusterMonitor != null) {
+                log.warn("Unknown cluster monitor found: " + clusterMonitor.getClass().toString());
             }
-
-            AutoscalePolicy policy =
-                    PolicyManager.getInstance()
-                            .getAutoscalePolicy(autoscalePolicyName);
-            DeploymentPolicy deploymentPolicy =
-                    PolicyManager.getInstance()
-                            .getDeploymentPolicy(deploymentPolicyName);
-
-            if (deploymentPolicy == null) {
-                String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-                log.error(msg);
-                throw new PolicyValidationException(msg);
-            }
-
-            Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-            if (allPartitions == null) {
-                String msg =
-                        "Deployment Policy's Partitions are null. Policy name: " +
-                                deploymentPolicyName;
-                log.error(msg);
-                throw new PolicyValidationException(msg);
-            }
-
-            CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
-
-            clusterMonitor = new ClusterMonitor(cluster.getClusterId(), cluster.getServiceName(),
-                    deploymentPolicy, policy);
-
-            for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-
-                NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
-                        partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions());
-
-                for (Partition partition : partitionGroup.getPartitions()) {
-                    PartitionContext partitionContext = new PartitionContext(partition);
-                    partitionContext.setServiceName(cluster.getServiceName());
-                    partitionContext.setProperties(cluster.getProperties());
-                    partitionContext.setNetworkPartitionId(partitionGroup.getId());
-
-                    for (Member member : cluster.getMembers()) {
-                        String memberId = member.getMemberId();
-                        if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
-                            MemberContext memberContext = new MemberContext();
-                            memberContext.setClusterId(member.getClusterId());
-                            memberContext.setMemberId(memberId);
-                            memberContext.setPartition(partition);
-                            memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
-
-                            if (MemberStatus.Activated.equals(member.getStatus())) {
-                                partitionContext.addActiveMember(memberContext);
-                                //triggering the status checker
-//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
-//                            partitionContext.incrementCurrentActiveMemberCount(1);
-
-                            } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
-                                partitionContext.addPendingMember(memberContext);
-
-//                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
-                            } else if (MemberStatus.Suspended.equals(member.getStatus())) {
-//                            partitionContext.addFaultyMember(memberId);
-                            }
-                            partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                            if (log.isInfoEnabled()) {
-                                log.info(String.format("Member stat context has been added: [member] %s", memberId));
-                            }
-                        }
-
-                    }
-                    networkPartitionContext.addPartitionContext(partitionContext);
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Partition context has been added: [partition] %s",
-                                partitionContext.getPartitionId()));
-                    }
-                }
-
-                clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-                clusterMonitor.setParent(parentMonitor);
-                if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
-                    clusterMonitor.setHasDependent(true);
-                } else {
-                    clusterMonitor.setHasDependent(false);
-                }
-                AutoscalerContext.getInstance().addMonitor(clusterMonitor);
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Network partition context has been added: [network partition] %s",
-                            networkPartitionContext.getId()));
-                }
-            }
-            //TODO to make sure when group monitor is async
-            //if cluster is not in created state then notify the parent monitor
-            if (cluster.getStatus() != clusterMonitor.getStatus()) {
-                //updating the status, so that it will notify the parent
-                clusterMonitor.setStatus(cluster.getStatus());
-            }
-
-            if (!cluster.hasMembers()) {
-                //triggering the status checker if cluster has members to decide
-                // on the current status of the cluster
-                StatusChecker.getInstance().onMemberStatusChange(clusterId);
-            }
+            return null;
         } finally {
-            //release read lock for the service and cluster
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
-
-        // set hasPrimary property
-        // hasPrimary is true if there are primary members available in that cluster
-        if (cluster.getProperties() != null) {
-            clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
-        }
-
-        log.info("Cluster monitor created: " + clusterMonitor.toString());
-        return clusterMonitor;
     }
 
 

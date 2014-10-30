@@ -53,9 +53,9 @@ import java.util.List;
 public class AutoscalerServerComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
-    AutoscalerTopologyEventReceiver asTopologyReceiver;
-//    TopicSubscriber healthStatTopicSubscriber;
-    AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+
+    private AutoscalerTopologyEventReceiver asTopologyReceiver;
+    private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
         try {
@@ -66,21 +66,13 @@ public class AutoscalerServerComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Topology receiver thread started");
             }
-//            healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
-//            healthStatTopicSubscriber.setMessageListener(new HealthEventMessageReceiver());
-//            Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
-//            healthStatTopicSubscriberThread.start();
-//            if (log.isDebugEnabled()) {
-//                log.debug("Health event message receiver thread started");
-//            }
-
 
             // Start health stat receiver
             autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
             Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
             healthDelegatorThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Health message processor thread started");
+                log.debug("Health statistics receiver thread started");
             }
 
             // Adding the registry stored partitions to the information model
@@ -122,10 +114,10 @@ public class AutoscalerServerComponent {
             }
 
             if (log.isInfoEnabled()) {
-                log.info("Autoscaler Server Component activated");
+                log.info("Autoscaler server Component activated");
             }
         } catch (Throwable e) {
-            log.error("Error in activating the autoscaler component ", e);
+            log.error("Error in activating autoscaler component", e);
         }
     }
 
@@ -149,7 +141,7 @@ public class AutoscalerServerComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting the Registry Service");
+            log.debug("Un-setting the Registry Service");
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
     }
