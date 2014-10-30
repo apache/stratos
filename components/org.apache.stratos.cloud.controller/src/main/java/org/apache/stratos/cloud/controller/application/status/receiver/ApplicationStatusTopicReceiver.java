@@ -67,7 +67,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
         statusEventReceiver.addEventListener(new AppStatusClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterReset((AppStatusClusterCreatedEvent) event);
+                TopologyBuilder.handleClusterCreated((AppStatusClusterCreatedEvent) event);
             }
         });
 
@@ -103,7 +103,7 @@ public class ApplicationStatusTopicReceiver implements Runnable {
         statusEventReceiver.addEventListener(new AppStatusGroupCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupReset((AppStatusGroupCreatedEvent) event);
+                TopologyBuilder.handleGroupCreated((AppStatusGroupCreatedEvent) event);
             }
         });
 

@@ -114,7 +114,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterReset (AppStatusClusterCreatedEvent event) {
+    public static void handleClusterCreated (AppStatusClusterCreatedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
@@ -151,7 +151,7 @@ public class TopologyBuilder {
                 event.getClusterId());
     }
 
-    public static void handleGroupReset (AppStatusGroupCreatedEvent event) {
+    public static void handleGroupCreated (AppStatusGroupCreatedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
