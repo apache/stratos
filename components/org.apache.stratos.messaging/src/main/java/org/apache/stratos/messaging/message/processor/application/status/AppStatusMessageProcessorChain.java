@@ -31,10 +31,12 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class AppStatusMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(AppStatusMessageProcessorChain.class);
 
+    private AppStatusClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private AppStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
     private AppStatusClusterInactivateMessageProcessor clusterInActivateMessageProcessor;
     private AppStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
     private AppStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
+    private AppStatusGroupCreatedMessageProcessor groupCreatedMessageProcessor;
     private AppStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
     private AppStatusGroupInactivatedMessageProcessor groupInActivateMessageProcessor;
     private AppStatusApplicationActivatedMessageProcessor appActivatedMessageProcessor;
@@ -48,6 +50,9 @@ public class AppStatusMessageProcessorChain extends MessageProcessorChain {
 
     public void initialize() {
         // Add instance notifier event processors
+        clusterCreatedMessageProcessor= new AppStatusClusterCreatedMessageProcessor();
+        add(clusterCreatedMessageProcessor);
+
         clusterActivatedMessageProcessor = new AppStatusClusterActivatedMessageProcessor();
         add(clusterActivatedMessageProcessor);
 
@@ -56,8 +61,12 @@ public class AppStatusMessageProcessorChain extends MessageProcessorChain {
 
         clusterTerminatingMessageProcessor = new AppStatusClusterTerminatingMessageProcessor();
         add(clusterTerminatingMessageProcessor);
+
         clusterTerminatedMessageProcessor = new AppStatusClusterTerminatedMessageProcessor();
         add(clusterTerminatedMessageProcessor);
+
+        groupCreatedMessageProcessor = new AppStatusGroupCreatedMessageProcessor();
+        add(groupCreatedMessageProcessor);
 
         groupActivatedMessageProcessor = new AppStatusGroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
@@ -92,10 +101,14 @@ public class AppStatusMessageProcessorChain extends MessageProcessorChain {
     }
 
     public void addEventListener(EventListener eventListener) {
-        if (eventListener instanceof AppStatusClusterActivatedEventListener) {
+        if(eventListener instanceof AppStatusClusterCreatedEventListener) {
+            clusterCreatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof AppStatusClusterActivatedEventListener) {
             clusterActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof AppStatusClusterInactivateEventListener) {
             clusterInActivateMessageProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof AppStatusGroupCreatedEventListener) {
+            groupCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof AppStatusGroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof AppStatusClusterTerminatedEventListener){
