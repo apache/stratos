@@ -96,7 +96,8 @@ public class GroupCreatedProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             if (!group.isStateTransitionValid(GroupStatus.Created)) {
-                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Active);
+                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Created  + " " +
+                        "for Group " + group.getAlias());
             }
             group.setStatus(GroupStatus.Created);
 

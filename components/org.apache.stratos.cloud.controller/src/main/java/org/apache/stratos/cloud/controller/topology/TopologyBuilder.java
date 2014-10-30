@@ -114,6 +114,80 @@ public class TopologyBuilder {
         }
     }
 
+    public static void handleClusterReset (AppStatusClusterCreatedEvent event) {
+
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                log.error("Service " + event.getServiceName() +
+                        " not found in Topology, unable to update the cluster status to Created");
+                return;
+            }
+
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                log.error("Cluster " + event.getClusterId() + " not found in Topology, unable to update " +
+                        "status to Created");
+                return;
+            }
+
+            // update the cluster status to Created
+            if (!cluster.isStateTransitionValid(ClusterStatus.Created))  {
+                 log.error("Invalid state transition from " + cluster.getStatus() + " to " +
+                         ClusterStatus.Created + " for cluster id " + event.getClusterId());
+            }
+            // forcefully update the status
+            cluster.setStatus(ClusterStatus.Created);
+            TopologyManager.updateTopology(topology);
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendClusterCreatedEvent(event.getAppId(), event.getServiceName(),
+                event.getClusterId());
+    }
+
+    public static void handleGroupReset (AppStatusGroupCreatedEvent event) {
+
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+
+            Application application = topology.getApplication(event.getAppId());
+            if (application == null) {
+                log.error("Application " + event.getAppId() +
+                        " not found in Topology, unable to update the Group status to Created");
+                return;
+            }
+
+            Group group = application.getGroupRecursively(event.getGroupId());
+            if (group == null) {
+                log.error("Group " + event.getGroupId() +
+                        " not found in Topology, unable to update the Group status to Created");
+                return;
+            }
+
+            // update the cluster status to Created
+            if (!group.isStateTransitionValid(GroupStatus.Created))  {
+                log.error("Invalid state transition from " + group.getStatus() + " to " +
+                        GroupStatus.Created + " for group " + event.getGroupId());
+            }
+            // forcefully update the status
+            group.setStatus(GroupStatus.Created);
+            TopologyManager.updateTopology(topology);
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendGroupCreatedEvent(new GroupCreatedEvent(event.getAppId(), event.getGroupId()));
+    }
+
     public static void handleClusterCreated(Registrant registrant, boolean isLb) {
         /*Topology topology = TopologyManager.getTopology();
         Service service;

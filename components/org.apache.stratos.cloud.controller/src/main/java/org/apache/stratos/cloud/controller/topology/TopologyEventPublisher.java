@@ -188,6 +188,15 @@ public class TopologyEventPublisher {
         publishEvent(memberMaintenanceModeEvent);
     }
 
+    public static void sendGroupCreatedEvent (GroupCreatedEvent groupCreatedEvent) {
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing group created event: [appId] %s [group] %s",
+                    groupCreatedEvent.getAppId(), groupCreatedEvent.getGroupId()));
+        }
+        publishEvent(groupCreatedEvent);
+    }
+
     public static void sendGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Publishing group activated event: [appId] %s [group] %s",

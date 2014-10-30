@@ -20,10 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -125,6 +122,10 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
             // Apply changes to the topology
             Cluster cluster = service.getCluster(event.getClusterId());
+            if (!cluster.isStateTransitionValid(ClusterStatus.Created)) {
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Created + " " +
+                        "for cluster " + cluster.getClusterId());
+            }
             cluster.setStatus(ClusterStatus.Created);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster created: %s",

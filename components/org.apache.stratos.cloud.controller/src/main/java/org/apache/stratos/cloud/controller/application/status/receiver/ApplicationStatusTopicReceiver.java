@@ -64,6 +64,13 @@ public class ApplicationStatusTopicReceiver implements Runnable {
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
+        statusEventReceiver.addEventListener(new AppStatusClusterCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleClusterReset((AppStatusClusterCreatedEvent) event);
+            }
+        });
+
         statusEventReceiver.addEventListener(new AppStatusClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -89,6 +96,14 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleClusterInActivateEvent((AppStatusClusterInactivateEvent) event);
+            }
+        });
+
+
+        statusEventReceiver.addEventListener(new AppStatusGroupCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleGroupReset((AppStatusGroupCreatedEvent) event);
             }
         });
 
