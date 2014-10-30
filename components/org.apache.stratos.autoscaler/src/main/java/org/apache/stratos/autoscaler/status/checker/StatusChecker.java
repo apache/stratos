@@ -331,7 +331,7 @@ public class StatusChecker {
                         log.info("sending group created : " + parent.getUniqueIdentifier());
                         StatusEventPublisher.sendGroupCreatedEvent(appId, parent.getUniqueIdentifier());
                     }
-                } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminating ||
+                /*} else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminating ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Terminating ||
                         groupStatus == GroupStatus.Terminating && clusterStatus == ClusterStatus.Terminating) {
                     if (parent instanceof Application) {
@@ -340,7 +340,7 @@ public class StatusChecker {
                         //send activation to the parent
                         log.info("sending group terminating : " + parent.getUniqueIdentifier());
                         StatusEventPublisher.sendGroupTerminatingEvent(appId, parent.getUniqueIdentifier());
-                    }
+                    }*/
                 } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Created ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Created ||
                         groupStatus == GroupStatus.Created && clusterStatus == ClusterStatus.Created) {
@@ -393,13 +393,13 @@ public class StatusChecker {
                 groupActive = false;
                 groupTerminated = false;
                 groupCreated = groupCreated && true;
-            } else if (group.getStatus() == GroupStatus.Terminating) {
-                groupActive = false;
-                groupTerminated = false;
-                groupCreated = false;
-                status = GroupStatus.Terminating;
-
             }
+        }
+
+        if(groups == null || groups != null && groups.isEmpty()) {
+            groupActive = false;
+            groupTerminated = false;
+            groupCreated = false;
         }
 
         if (groupActive) {
@@ -435,16 +435,17 @@ public class StatusChecker {
                 clusterActive = false;
                 clusterCreated = false;
                 clusterTerminated = clusterTerminated && true;
-            } else if (cluster.getStatus() == ClusterStatus.Terminating) {
-                status = ClusterStatus.Terminating;
-                clusterActive = false;
-                clusterTerminated = false;
-                clusterCreated = false;
             } else if (cluster.getStatus() == ClusterStatus.Created) {
                 clusterActive = false;
                 clusterTerminated = false;
                 clusterCreated = clusterCreated && true;
             }
+        }
+
+        if(clusterData == null || clusterData != null && clusterData.isEmpty()) {
+            clusterActive = false;
+            clusterTerminated = false;
+            clusterCreated = false;
         }
 
         if (clusterActive) {

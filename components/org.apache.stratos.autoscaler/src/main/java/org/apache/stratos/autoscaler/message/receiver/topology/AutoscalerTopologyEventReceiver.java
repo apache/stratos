@@ -174,6 +174,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
+                clusterMonitor.setStop(true);
                 clusterMonitor.setStatus(ClusterStatus.Created);
 
             }

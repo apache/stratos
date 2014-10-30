@@ -66,6 +66,8 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     protected boolean hasFaultyMember = false;
 
+    protected boolean stop = false;
+
     protected ClusterStatus status;
 
     //protected ParentComponentMonitor parent;
@@ -273,5 +275,13 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setHasFaultyMember(boolean hasFaultyMember) {
         this.hasFaultyMember = hasFaultyMember;
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
     }
 }
