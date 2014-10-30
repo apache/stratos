@@ -18,15 +18,21 @@
  */
 package org.apache.stratos.messaging.message.receiver.application.status;
 
+import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-public class ApplicationStatusEventMessageListener implements MessageListener {
+public class ApplicationStatusEventMessageListener implements MqttCallback {
     private static final Log log = LogFactory.getLog(ApplicationStatusEventMessageListener.class);
 
     private ApplicationStatusEventMessageQueue messageQueue;
@@ -36,19 +42,33 @@ public class ApplicationStatusEventMessageListener implements MessageListener {
     }
 
     @Override
-    public void onMessage(Message message) {
-        if (message instanceof TextMessage) {
-            TextMessage receivedMessage = (TextMessage) message;
-            try {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant message received: %s", ((TextMessage) message).getText()));
-                }
-                // Add received message to the queue
-                messageQueue.add(receivedMessage);
+    public void connectionLost(Throwable throwable) {
+        log.warn("Connection is lost", throwable);
+    }
 
-            } catch (JMSException e) {
-                log.error(e.getMessage(), e);
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken deliveryToken) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Message delivery is complete: %s",
+                    ((deliveryToken != null) ? deliveryToken.toString() : "")));
+        }
+    }
+
+    @Override
+    public void messageArrived(String topicName, MqttMessage message) throws Exception {
+        TextMessage textMessage = new ActiveMQTextMessage();
+        textMessage.setText(new String(message.getPayload()));
+        textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, Util.getEventNameForTopic(topicName));
+
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Tenant message received: %s", textMessage.getText()));
             }
+            // Add received message to the queue
+            messageQueue.add(textMessage);
+
+        } catch (JMSException e) {
+            log.error(e.getMessage(), e);
         }
     }
 }

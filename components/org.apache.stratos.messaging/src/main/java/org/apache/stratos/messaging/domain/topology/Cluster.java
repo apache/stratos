@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
@@ -171,7 +171,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
      * @return
      */
     public boolean tenantIdInRange(int tenantId) {
-        if (StringUtils.isBlank(getTenantRange())) {
+        if (StringUtils.isEmpty(getTenantRange())) {
             return false;
         }
 
@@ -203,7 +203,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     public Collection<String> findPartitionIds() {
         Map<String, Boolean> partitionIds = new HashMap<String, Boolean>();
         for (Member member : getMembers()) {
-            if ((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
+            if ((StringUtils.isNotEmpty(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
                 partitionIds.put(member.getPartitionId(), true);
             }
         }
@@ -225,13 +225,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         return clusterStateManager.getCurrentState();
     }
 
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
-    }
-
     public void setStatus(ClusterStatus newStatus) {
         clusterStateManager.changeState(newStatus);
-        //this.status = newStatus;
     }
 
     public boolean equals(Object other) {

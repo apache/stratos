@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -176,7 +177,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     public String toString() {
         return "Member [serviceName=" + serviceName + ", clusterId=" + clusterId + ", networkPartitionId="
                 + networkPartitionId + ", partitionId=" + partitionId + ", memberId=" + memberId + ", initTime=" + initTime + ", portMap="
-                + portMap + ", memberPublicIp=" + memberPublicIp + ", status=" + status + ", memberIp=" + memberIp
+                + portMap + ", memberPublicIp=" + memberPublicIp + ", status=" + getStatus() + ", memberIp=" + memberIp
                 + ", properties=" + properties + ", lbClusterId=" + lbClusterId + "]";
     }
 
