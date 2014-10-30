@@ -303,8 +303,8 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private static void validateTerminationBehavior (String terminationBehavior) throws ApplicationDefinitionException {
 
-        if (terminationBehavior != null && terminationBehavior != "terminate-none" &&
-                terminationBehavior != "terminate-dependents" && terminationBehavior != "terminate-all") {
+        if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
+                "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
             throw new ApplicationDefinitionException("Invalid Termination Behaviour specified: [ " +
                     terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
                     " 'terminate-all' ");
