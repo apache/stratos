@@ -73,7 +73,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             onChildInActiveEvent(id);
 
-        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminated) {
+        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
             this.markMonitorAsInactive(id);
 
@@ -85,11 +85,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
 
-            if (this.status != GroupStatus.Terminating || this.status != GroupStatus.Terminated) {
-                onChildTerminatedEvent(id);
-            } else {
+            if (this.status == GroupStatus.Terminating || this.status == GroupStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
+            } else {
+                onChildTerminatedEvent(id);
+
             }
 
         }
