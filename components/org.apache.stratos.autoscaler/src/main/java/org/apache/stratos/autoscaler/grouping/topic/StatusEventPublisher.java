@@ -18,6 +18,30 @@ import java.util.Set;
 public class StatusEventPublisher {
     private static final Log log = LogFactory.getLog(StatusEventPublisher.class);
 
+    public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
+        try {
+            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            if (service != null) {
+                Cluster cluster = service.getCluster(clusterId);
+                if (cluster.isStateTransitionValid(ClusterStatus.Active)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster activated event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
+                    AppStatusClusterActivatedEvent clusterActivatedEvent =
+                            new AppStatusClusterActivatedEvent(appId, serviceName, clusterId);
+
+                    publishEvent(clusterActivatedEvent);
+                } else {
+                    log.warn("Active is not in the possible state list of [cluster] " + clusterId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
+        }
+    }
+
     public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);

@@ -89,12 +89,24 @@ public class StatusChecker {
                     TopologyManager.acquireReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
                     Service service = TopologyManager.getTopology().getService(monitor.getServiceId());
                     Cluster cluster;
+                    String appId = monitor.getAppId();
                     if (service != null) {
                         cluster = service.getCluster(monitor.getClusterId());
                         if (cluster != null) {
+                            try {
+
+                                TopologyManager.acquireReadLockForApplication(appId);
+                                Application application = TopologyManager.getTopology().getApplication(appId);
+
                             if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
-                                StatusEventPublisher.sendClusterTerminatedEvent(monitor.getAppId(), monitor.getServiceId(),
-                                        monitor.getClusterId());
+                                if(application.getStatus() == ApplicationStatus.Terminating) {
+                                    StatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
+                                            monitor.getClusterId());
+                                } else {
+                                    StatusEventPublisher.sendClusterCreatedEvent(appId, monitor.getServiceId(),
+                                            monitor.getClusterId());
+                                }
+
                             } else {
                                 log.info("Cluster has non terminated [members] and in the [status] "
                                         + cluster.getStatus().toString());
@@ -106,6 +118,9 @@ public class StatusChecker {
                                     monitor.getServiceId(), clusterId);
 
                         }*/
+                            }
+                            } finally {
+                                TopologyManager.releaseReadLockForApplication(appId);
                             }
                         }
                     }
