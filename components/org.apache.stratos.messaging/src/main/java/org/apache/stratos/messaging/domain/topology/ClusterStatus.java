@@ -58,7 +58,7 @@ public enum ClusterStatus implements LifeCycleState {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ClusterStatus.Terminating,
-                    ClusterStatus.Terminated));
+                    ClusterStatus.Terminated, ClusterStatus.Created));
         }
     },
     Terminated(5) {
