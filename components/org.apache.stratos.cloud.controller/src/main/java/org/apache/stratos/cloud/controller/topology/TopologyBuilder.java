@@ -1020,7 +1020,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Terminated);
-            log.info("Group activated adding status started for" + group.getUniqueIdentifier());
+            log.info("Group Terminated adding status started for" + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -1054,7 +1054,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             group.setStatus(GroupStatus.Terminating);
-            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
+            log.info("Group Terminating adding status started for " + group.getUniqueIdentifier());
 
             TopologyManager.updateTopology(topology);
         } finally {
