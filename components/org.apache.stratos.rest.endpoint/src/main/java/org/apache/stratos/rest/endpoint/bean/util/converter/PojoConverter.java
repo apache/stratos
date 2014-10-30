@@ -24,8 +24,13 @@ import org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE;
 import org.apache.stratos.autoscaler.stub.kubernetes.PropertyE;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.ApplicationContext;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.ComponentContext;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.DependencyContext;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.GroupContext;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.SubscribableContext;
+import org.apache.stratos.cloud.controller.pojo.application.xsd.SubscribableInfoContext;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.cloud.controller.stub.pojo.application.*;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -197,16 +202,12 @@ public class PojoConverter {
     }
 
     public static Persistence getPersistence(PersistenceBean persistenceBean) {
-     public static Persistence getPersistence(PersistenceBean persistenceBean) {
-
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
         persistenceBean.volume.toArray(volumeBean);
         Volume[] volumes = new Volume[persistenceBean.volume.size()];
         for (int i = 0; i < volumes.length; i++) {
-         Volume[] volumes = new Volume[persistenceBean.volume.size()];
-         for (int i = 0 ; i < volumes.length ; i++) {
             Volume volume = new Volume();
             volume.setId(volumeBean[i].id);
             volume.setVolumeId(volumeBean[i].volumeId);
@@ -892,8 +893,6 @@ public class PojoConverter {
         return portRangeBean;
     }
     
-	private static Log log = LogFactory.getLog(PojoConverter.class);
-
     public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
         ApplicationContext applicationContext = new ApplicationContext();
@@ -985,7 +984,7 @@ public class PojoConverter {
         return groupContexts;
     }
 
-    private static SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+    private static SubscribableContext[] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
         SubscribableContext[] subscribableContexts = new SubscribableContext[subscribableDefinitions.size()];
         int i = 0;

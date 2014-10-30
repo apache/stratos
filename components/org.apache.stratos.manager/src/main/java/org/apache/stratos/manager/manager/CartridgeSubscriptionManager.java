@@ -616,7 +616,7 @@ public class CartridgeSubscriptionManager {
         eventPublisher.publish(event);
     }
 
-    public List<SubscriptionDomain> getSubscriptionDomains(int tenantId, String subscriptionAlias)
+    public static List<SubscriptionDomain> getSubscriptionDomains(int tenantId, String subscriptionAlias)
             throws ADCException {
 
         try {
@@ -634,7 +634,7 @@ public class CartridgeSubscriptionManager {
         }
     }
     
-    public SubscriptionDomain getSubscriptionDomain(int tenantId, String subscriptionAlias, String domain)
+    public static SubscriptionDomain getSubscriptionDomain(int tenantId, String subscriptionAlias, String domain)
             throws ADCException {
 
         try {
@@ -692,7 +692,7 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String type) throws ADCException {
+    public static Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId, String type) throws ADCException {
 
         if (type == null || type.isEmpty()) {
             return new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(tenantId);
@@ -715,7 +715,7 @@ public class CartridgeSubscriptionManager {
      * @throws ADCException
      * @throws NotSubscribedException
      */
-    public void unsubscribeFromCartridge (String tenantDomain, String alias)
+    public static void unsubscribeFromCartridge (String tenantDomain, String alias)
             throws ADCException, NotSubscribedException {
 
         DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
@@ -791,7 +791,7 @@ public class CartridgeSubscriptionManager {
      * @param cartridgeType
      * @return
      */
-    public Collection<CartridgeSubscription> isCartridgeSubscribed(int tenantId, String cartridgeType) {
+    public static Collection<CartridgeSubscription> isCartridgeSubscribed(int tenantId, String cartridgeType) {
     	
     	DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
         return dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType);
