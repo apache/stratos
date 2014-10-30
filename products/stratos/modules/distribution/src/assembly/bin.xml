@@ -669,20 +669,20 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
-		<file>
-            <source>src/main/conf/mincheck.drl</source>
+	<file>
+            <source>src/main/conf/drools/mincheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/scaling.drl</source>
+            <source>src/main/conf/drools/scaling.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/conf/terminateall.drl</source>
+            <source>src/main/conf/drools/terminateall.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
