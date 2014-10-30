@@ -24,17 +24,17 @@ public class StatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Active)) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Created)) {
                     if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster activated event for [application]: " + appId +
+                        log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterActivatedEvent clusterActivatedEvent =
-                            new AppStatusClusterActivatedEvent(appId, serviceName, clusterId);
+                    AppStatusClusterCreatedEvent clusterCreatedEvent =
+                            new AppStatusClusterCreatedEvent(appId, serviceName, clusterId);
 
-                    publishEvent(clusterActivatedEvent);
+                    publishEvent(clusterCreatedEvent);
                 } else {
-                    log.warn("Active is not in the possible state list of [cluster] " + clusterId);
+                    log.warn("Created is not in the possible state list of [cluster] " + clusterId);
                 }
             }
         } finally {
@@ -140,6 +140,30 @@ public class StatusEventPublisher {
         } finally {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
 
+        }
+    }
+
+    public static void sendGroupCreatedEvent(String appId, String groupId) {
+        try {
+            TopologyManager.acquireReadLockForApplication(appId);
+            Application application = TopologyManager.getTopology().getApplication(appId);
+            if (application != null) {
+                Group group = application.getGroupRecursively(groupId);
+                if (group.isStateTransitionValid(GroupStatus.Created)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Group created event for [application]: " + appId +
+                                " [group]: " + groupId);
+                    }
+                    AppStatusGroupCreatedEvent groupCreatedEvent =
+                            new AppStatusGroupCreatedEvent(appId, groupId);
+
+                    publishEvent(groupCreatedEvent);
+                } else {
+                    log.warn("Created is not in the possible state list of [group] " + groupId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForApplication(appId);
         }
     }
 
