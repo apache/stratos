@@ -20,13 +20,20 @@ package org.apache.stratos.cloud.controller.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
+
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.application.parser.DefaultApplicationParser;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
+import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
+import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
+import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
@@ -49,7 +56,6 @@ import org.apache.stratos.kubernetes.client.model.Label;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
-import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
@@ -59,6 +65,7 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.apache.stratos.messaging.domain.topology.Application;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -74,7 +81,7 @@ import java.util.concurrent.Future;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-	private static final Log log = LogFactory
+	private static final Log LOG = LogFactory
 			.getLog(CloudControllerServiceImpl.class);
 	private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
 			.getInstance();
@@ -102,22 +109,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
 					currentData.setCartridges(serializedObj.getCartridges());
 					currentData.setKubClusterIdToKubClusterContext(serializedObj.getKubClusterIdToKubClusterContext());
-                    currentData.setServiceGroups(serializedObj.getServiceGroups());
+					currentData.setServiceGroups(serializedObj.getServiceGroups());
 
-                    if(log.isDebugEnabled()) {
+					if(LOG.isDebugEnabled()) {
 					    
-					    log.debug("Cloud Controller Data is retrieved from registry.");
+					    LOG.debug("Cloud Controller Data is retrieved from registry.");
 					}
 				} else {
-				    if(log.isDebugEnabled()) {
+				    if(LOG.isDebugEnabled()) {
 				        
-				        log.debug("Cloud Controller Data cannot be found in registry.");
+				        LOG.debug("Cloud Controller Data cannot be found in registry.");
 				    }
 				}
 			} catch (Exception e) {
 
 				String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
-				log.warn(msg, e);
+				LOG.warn(msg, e);
 			}
 
 		}
@@ -128,8 +135,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         handleNullObject(cartridgeConfig, "Invalid Cartridge Definition: Definition is null.");
 
-        if(log.isDebugEnabled()){
-            log.debug("Cartridge definition: " + cartridgeConfig.toString());
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Cartridge definition: " + cartridgeConfig.toString());
         }
 
         Cartridge cartridge = null;
@@ -141,7 +148,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                          "Invalid Cartridge Definition: Cartridge Type: " +
                                  cartridgeConfig.getType()+
                                  ". Cause: Cannot instantiate a Cartridge Instance with the given Config. "+e.getMessage();
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
@@ -156,11 +163,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				throw new InvalidCartridgeDefinitionException(msg);
 			}
 
-			for (IaasProvider iaasProvider : iaases) {
-				CloudControllerUtil.getIaas(iaasProvider);
-			}
-		}
-        
+        if (iaases == null || iaases.isEmpty()) {
+            String msg =
+                    "Invalid Cartridge Definition: Cartridge Type: " +
+                            cartridgeConfig.getType()+
+                            ". Cause: Iaases of this Cartridge is null or empty.";
+            LOG.error(msg);
+            throw new InvalidCartridgeDefinitionException(msg);
+        }
+
+        for (IaasProvider iaasProvider : iaases) {
+            CloudControllerUtil.getIaas(iaasProvider);
+        }
+
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
         if(dataHolder.getCartridge(cartridgeType) != null) {
@@ -184,8 +199,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         TopologyBuilder.handleServiceCreated(cartridgeList);
         // transaction ends
-
-        log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
+        
+        LOG.info("Successfully deployed the Cartridge definition: " + cartridgeType);
+        
+		}
     }
 
     private void populateNewCartridge(Cartridge cartridge,
@@ -201,8 +218,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     	    String partitionId = entry.getKey();
 			IaasProvider oldIaasProvider = entry.getValue();
 			if (newIaasProviders.contains(oldIaasProvider)) {
-				if (log.isDebugEnabled()) {
-                    log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
 							+ "[partition id] : "+partitionId+" [cartridge type] "+cartridge.getType() );
 				}
 				cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
@@ -219,8 +236,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             	// invalidate partition validation cache
             	dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
             	
-            	if (log.isDebugEnabled()) {
-            		log.debug("Partition cache invalidated for cartridge "+cartridgeType);
+            	if (LOG.isDebugEnabled()) {
+            		LOG.debug("Partition cache invalidated for cartridge "+cartridgeType);
             	}
             	
                 persist();
@@ -230,150 +247,150 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 cartridgeList.add(cartridge);
                 TopologyBuilder.handleServiceRemoved(cartridgeList);
                 
-                if(log.isInfoEnabled()) {
-                    log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+                if(LOG.isInfoEnabled()) {
+                    LOG.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
                 }
                 return;
             }
         }
         String msg = "Cartridge [type] "+cartridgeType+" is not a deployed Cartridge type.";
-        log.error(msg);
+        LOG.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
-
+    
     public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
-
-        if (servicegroup == null) {
+    	
+    	if (servicegroup == null) {
             String msg = "Invalid ServiceGroup Definition: Definition is null.";
-            log.error(msg);
+            LOG.error(msg);
             throw new IllegalArgumentException(msg);
 
         }
-
-        if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:" + servicegroup.getName());
+    	
+    	if(LOG.isDebugEnabled()) {
+            LOG.debug("CloudControllerServiceImpl:deployServiceGroup:" + servicegroup.getName());
         }
+    	
+    	String [] subGroups = servicegroup.getCartridges();
+    	
 
-        String [] subGroups = servicegroup.getCartridges();
-
-
-        if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups);
+    	if(LOG.isDebugEnabled()) {
+            LOG.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups);
             if (subGroups != null) {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups:size" + subGroups.length);
+            	LOG.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups:size" + subGroups.length);
             } else {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups: is null");
+            	LOG.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups: is null");
             }
         }
-
-
-        Dependencies dependencies = servicegroup.getDependencies();
-
-        if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
+    	
+    	
+    	Dependencies dependencies = servicegroup.getDependencies();
+    	
+    	if(LOG.isDebugEnabled()) {
+            LOG.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
         }
-
-        if (dependencies != null) {
-            String [] startupOrders = dependencies.getStartupOrders();
-
-            if(log.isDebugEnabled()) {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
-
-                if (startupOrders != null) {
-                    log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
-                } else {
-                    log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
-                }
-            }
-        }
-
-        dataHolder.addServiceGroup(servicegroup);
-
-        this.persist();
-
+    	
+    	if (dependencies != null) {
+	    	String [] startupOrders = dependencies.getStartupOrders();
+	    	
+	    	if(LOG.isDebugEnabled()) {
+	            LOG.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
+	            
+	            if (startupOrders != null) {
+	            	LOG.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
+	            } else {
+	            	LOG.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
+	            }
+	        }
+    	}
+    	
+    	dataHolder.addServiceGroup(servicegroup);
+    	
+    	this.persist();
+    	
     }
-
+    
     public void undeployServiceGroup(String name) throws InvalidServiceGroupException {
-        if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:undeployServiceGroup: " + name);
+    	if(LOG.isDebugEnabled()) {
+            LOG.debug("CloudControllerServiceImpl:undeployServiceGroup: " + name);
         }
-
+    	
         ServiceGroup serviceGroup = null;
-
+        
         serviceGroup = dataHolder.getServiceGroup(name);
-
+        
         if (serviceGroup  != null) {
             if (dataHolder.getServiceGroups().remove(serviceGroup)) {
                 persist();
-                if(log.isInfoEnabled()) {
-                    log.info("Successfully undeployed the Service Group definition: " + serviceGroup);
+                if(LOG.isInfoEnabled()) {
+                    LOG.info("Successfully undeployed the Service Group definition: " + serviceGroup);
                 }
                 return;
             }
-        }
-
+        } 
+        
         String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
-        log.error(msg);
+        LOG.error(msg);
         throw new InvalidServiceGroupException(msg);
-
-    }
-
-    @Override
-    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException {
-
-        if(log.isDebugEnabled()) {
-            log.debug("getServiceGroupDefinition:" + name);
-        }
-
-        ServiceGroup serviceGroup = this.dataHolder.getServiceGroup(name);
-
-        if (serviceGroup == null) {
-            if(log.isDebugEnabled()) {
-                log.debug("getServiceGroupDefinition: no entry found for service group " + name);
-            }
-            String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
-            throw new InvalidServiceGroupException(msg);
-        }
-
-        return serviceGroup;
-    }
-
-    public String [] getServiceGroupSubGroups (String name) throws InvalidServiceGroupException {
-        ServiceGroup serviceGroup = this.getServiceGroup(name);
-        if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
-        }
-
-        return serviceGroup.getSubGroups();
-    }
-
-    /**
-     *
-     */
-    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException {
-        ServiceGroup serviceGroup = this.getServiceGroup(name);
-        if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
-        }
-        String [] cs = serviceGroup.getCartridges();
-        return cs;
-
-    }
-
-    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException {
-        ServiceGroup serviceGroup = this.getServiceGroup(name);
-        if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
-        }
-        return serviceGroup.getDependencies();
+    	
     }
     
+    @Override
+    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException {
+    	
+    	if(LOG.isDebugEnabled()) {
+            LOG.debug("getServiceGroupDefinition:" + name);
+        }
+    	
+    	ServiceGroup serviceGroup = this.dataHolder.getServiceGroup(name);
+    	
+    	if (serviceGroup == null) {
+    		if(LOG.isDebugEnabled()) {
+                LOG.debug("getServiceGroupDefinition: no entry found for service group " + name);
+            }
+    		String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
+    		throw new InvalidServiceGroupException(msg);
+    	}
+    	
+    	return serviceGroup;
+    }
+    
+    public String [] getServiceGroupSubGroups (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	
+    	return serviceGroup.getSubGroups();
+    }
+    
+    /**
+     * 
+     */
+    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	String [] cs = serviceGroup.getCartridges();
+    	return cs;
+    	
+    }
+    
+    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException {
+    	ServiceGroup serviceGroup = this.getServiceGroup(name);
+    	if (serviceGroup == null) {
+    		throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+    	}
+    	return serviceGroup.getDependencies();
+    }
+
     @Override
     public MemberContext startInstance(MemberContext memberContext) throws
         UnregisteredCartridgeException, InvalidIaasProviderException {
 
-    	if(log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:startInstance");
+    	if(LOG.isDebugEnabled()) {
+    		LOG.debug("CloudControllerServiceImpl:startInstance");
     	}
 
     	handleNullObject(memberContext, "Instance start-up failed. Member is null.");
@@ -385,7 +402,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         	LOG.debug("Received an instance spawn request : " + memberContext);
         }
 
-        ComputeService computeService = null;
         Template template = null;
 
         handleNullObject(partition, "Instance start-up failed. Specified Partition is null. " +
@@ -413,8 +429,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
-        	if (log.isDebugEnabled()) {
-                log.debug("IaasToPartitionMap "+cartridge.hashCode()
+        	if (LOG.isDebugEnabled()) {
+        		LOG.debug("IaasToPartitionMap "+cartridge.hashCode()
         				+ " for cartridge "+cartridgeType+ " and for partition: "+partitionId);
         	}
 			String msg = "Instance start-up failed. "
@@ -427,7 +443,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					+ cartridge.getPartitionToIaasProvider().keySet()
 							.toString() + ". " + memberContext.toString()
 					+ ". ";
-            log.fatal(msg);
+            LOG.fatal(msg);
             throw new InvalidIaasProviderException(msg);
         }
         String type = iaasProvider.getType();
@@ -513,7 +529,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         } catch (Exception e) {
             String msg = "Failed to start an instance. " + memberContext.toString()+" Cause: "+e.getMessage();
-            log.error(msg, e);
+            LOG.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
 
@@ -527,8 +543,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		String snapshotId =  volume.getSnapshotId();
         if(StringUtils.isNotEmpty(volume.getVolumeId())){
             // volumeID is specified, so not creating additional volumes
-            if(log.isDebugEnabled()){
-                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
+            if(LOG.isDebugEnabled()){
+                LOG.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
             }
             volume.setId(volume.getVolumeId());
         }else{
@@ -544,8 +560,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		StringBuilder persistencePayload = new StringBuilder();
 		if(isPersistenceMappingAvailable(ctx)){
 			for(Volume volume : ctx.getVolumes()){
-				if(log.isDebugEnabled()){
-                    log.debug("Adding persistence mapping " + volume.toString());
+				if(LOG.isDebugEnabled()){
+					LOG.debug("Adding persistence mapping " + volume.toString());
 				}
                 if(persistencePayload.length() != 0) {
                    persistencePayload.append("|");
@@ -558,8 +574,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 persistencePayload.append(volume.getMappingPath());
 			}
 		}
-        if(log.isDebugEnabled()){
-            log.debug("Persistence payload is" + persistencePayload.toString());
+        if(LOG.isDebugEnabled()){
+            LOG.debug("Persistence payload is" + persistencePayload.toString());
         }
 		return persistencePayload;
 	}
@@ -583,7 +599,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		} catch (RegistryException e) {
 
 			String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-			log.fatal(msg);
+			LOG.fatal(msg);
 			throw new CloudControllerException(msg, e);
 		}
 	}
@@ -603,7 +619,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         
         if(ctxt == null) {
             String msg = "Termination failed. Invalid Member Id: "+memberId;
-            log.error(msg);
+            LOG.error(msg);
             throw new InvalidMemberException(msg);
         }
         
@@ -633,7 +649,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // these will never be null, since we do not add null values for these.
                 Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
 
-                log.info("Starting to terminate an instance with member id : " + memberId +
+                LOG.info("Starting to terminate an instance with member id : " + memberId +
                          " in partition id: " + partitionId + " of cluster id: " + clusterId +
                          " and of cartridge type: " + cartridgeType);
 
@@ -642,7 +658,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                  "Termination of Member Id: " + memberId + " failed. " +
                                          "Cannot find a matching Cartridge for type: " +
                                          cartridgeType;
-                    log.error(msg);
+                    LOG.error(msg);
                     throw new InvalidCartridgeTypeException(msg);
                 }
 
@@ -655,7 +671,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                     // log information
                     logTermination(ctxt);
-                    log.error(msg);
+                    LOG.error(msg);
                     throw new InvalidMemberException(msg);
                 }
 
@@ -670,26 +686,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             } catch (Exception e) {
                 String msg =
                              "Instance termination failed. "+ctxt.toString();
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new CloudControllerException(msg, e);
             }
 
         }
     }
 
-    private class IpAllocator implements Runnable {
+    private class JcloudsInstanceCreator implements Runnable {
 
         private MemberContext memberContext;
         private IaasProvider iaasProvider;
         private String cartridgeType;
-        NodeMetadata node;
 
-        public IpAllocator(MemberContext memberContext, IaasProvider iaasProvider, 
-        		String cartridgeType, NodeMetadata node) {
+        public JcloudsInstanceCreator(MemberContext memberContext, IaasProvider iaasProvider, 
+        		String cartridgeType) {
             this.memberContext = memberContext;
             this.iaasProvider = iaasProvider;
             this.cartridgeType = cartridgeType;
-            this.node = node;
         }
 
         @Override
@@ -897,7 +911,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             } catch (Exception e) {
                 String msg = "Error occurred while allocating an ip address. " + memberContext.toString();
-                log.error(msg, e);
+                LOG.error(msg, e);
                 throw new CloudControllerException(msg, e);
             } 
 
@@ -952,7 +966,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	            String msg =
 	                    "Instance termination failed. " +ctxt.toString()  +
 	                    ". Cause: Unable to build Iaas of this " + iaasProvider.toString();
-	            log.error(msg, e);
+	            LOG.error(msg, e);
 	            throw new CloudControllerException(msg, e);
 	        }
 	        
@@ -969,7 +983,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaas.releaseAddress(ctxt.getAllocatedIpAddress());
 		}
 		
-		log.info("Member is terminated: "+ctxt.toString());
+		LOG.info("Member is terminated: "+ctxt.toString());
 		return iaasProvider;
 	}
 
@@ -986,8 +1000,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					Iaas iaas = iaasProvider.getIaas();
 					iaas.detachVolume(ctxt.getInstanceId(), volumeId);
 				} catch (ResourceNotFoundException ignore) {
-					if(log.isDebugEnabled()) {
-						log.debug(ignore);
+					if(LOG.isDebugEnabled()) {
+						LOG.debug(ignore);
 					}
 				}
 			}
@@ -1166,7 +1180,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         	
         } else {
         
-	        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
+//	        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
 	
 	        Runnable terminateInTimeout = new Runnable() {
 	            @Override
@@ -1416,6 +1430,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public ClusterContext getClusterContext (String clusterId) {
         
         return dataHolder.getClusterContext(clusterId);
+    }
+
+    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        Application application = applicationParser.parse(applicationContext);
+
+        // Create a Cluster Context obj. for each of the Clusters in the Application
+        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
+            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
+                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster(), null));
+        }
+
+        TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
+                applicationParser.getPayloadData());
+
+        persist();
     }
 
 	@Override
@@ -1834,6 +1866,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
     @Override
+    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
+
+        TopologyBuilder.handleApplicationUndeployed(applicationId);
+    }
+
+    @Override
     public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
 
         handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [Member id] " + memberId);
@@ -1885,30 +1923,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
-    }
-
-    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
-
-        ApplicationParser applicationParser = new DefaultApplicationParser();
-        Application application = applicationParser.parse(applicationContext);
-
-        // Create a Cluster Context obj. for each of the Clusters in the Application
-        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
-            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
-                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
-                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
-        }
-
-        TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
-                applicationParser.getPayloadData());
-
-        persist();
-    }
-
-    @Override
-    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
-
-        TopologyBuilder.handleApplicationUndeployed(applicationId);
     }
 
 }
