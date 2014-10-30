@@ -130,6 +130,28 @@ public class AutoscalerRuleEvaluator {
         }
         return handle;
     }
+    
+    
+    public static FactHandle evaluateTerminateDependency(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+    	if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check executing for : %s ", obj));
+        }
+        if (handle == null) {
+
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check firing rules for : %s ", ksession));
+        }
+        ksession.fireAllRules();
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Terminate dependency check executed for : %s ", obj));
+        }
+        return handle;
+    }
 
 
 

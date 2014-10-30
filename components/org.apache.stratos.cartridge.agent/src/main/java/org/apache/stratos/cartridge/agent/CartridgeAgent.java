@@ -68,6 +68,11 @@ public class CartridgeAgent implements Runnable {
     private static final ExtensionHandler extensionHandler = new DefaultExtensionHandler();
     private boolean terminated;
 
+    // We have an asynchronous activity running to respond to ADC updates. We want to ensure
+    // that no publishInstanceActivatedEvent() call is made *before* the port activation test
+    // has succeeded. This flag controls that.
+    private boolean portsActivated;
+
     @Override
     public void run() {
         if (log.isInfoEnabled()) {
@@ -77,6 +82,7 @@ public class CartridgeAgent implements Runnable {
         validateRequiredSystemProperties();
 
         // Start instance notifier listener thread
+        portsActivated = false;
         subscribeToTopicsAndRegisterListeners();
 
         // Start topology event receiver thread
@@ -114,6 +120,10 @@ public class CartridgeAgent implements Runnable {
         // Wait for all ports to be active
         CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
                 CartridgeAgentConfiguration.getInstance().getPorts());
+        portsActivated = true;
+
+        // Publish instance activated event
+        CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
@@ -591,6 +601,7 @@ public class CartridgeAgent implements Runnable {
     public static ExtensionHandler getExtensionHandler() {
         return extensionHandler;
     }
+
 
     public void terminate() {
         terminated = true;

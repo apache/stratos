@@ -31,7 +31,7 @@ import java.util.*;
  * Key: serviceName, clusterId, memberId
  */
 @XmlRootElement
-public class Member implements Serializable {
+public class Member implements Serializable, LifeCycleStateTransitionBehavior<MemberStatus> {
     private static final long serialVersionUID = 4179661867903664661L;
 
     private final String serviceName;
@@ -45,11 +45,12 @@ public class Member implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<Integer, Port> portMap;
     private String memberPublicIp;
-    private MemberStatus status;
+    //private MemberStatus status;
     private String memberIp;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String lbClusterId;
+    private LifeCycleStateManager<MemberStatus> memberStateManager;
 
     public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, long initTime) {
         this.serviceName = serviceName;
@@ -59,6 +60,7 @@ public class Member implements Serializable {
         this.memberId = memberId;
         this.portMap = new HashMap<Integer, Port>();
         this.initTime = initTime;
+        this.memberStateManager = new LifeCycleStateManager<MemberStatus>(MemberStatus.Created, memberId);
     }
 
     public String getServiceName() {
@@ -77,16 +79,28 @@ public class Member implements Serializable {
         return initTime;
     }
     
+
+    @Override
+    public boolean isStateTransitionValid(MemberStatus newState) {
+        return memberStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
     public MemberStatus getStatus() {
-        return status;
+        return memberStateManager.getCurrentState();
     }
 
-    public void setStatus(MemberStatus status) {
-        this.status = status;
+    public Stack<MemberStatus> getTransitionedStates () {
+        return memberStateManager.getStateStack();
     }
 
-    public boolean isActive() {
-        return (this.status == MemberStatus.Activated);
+    @Override
+    public void setStatus(MemberStatus newState) {
+        this.memberStateManager.changeState(newState);
+    }
+
+    public boolean isActive () {
+        return memberStateManager.getCurrentState().equals(MemberStatus.Activated);
     }
 
     public Collection<Port> getPorts() {

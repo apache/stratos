@@ -28,35 +28,31 @@ import java.io.Serializable;
 public class ClusterCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2080623816272047762L;
 
-	private final String serviceName;
+    private final String appId;
+    private final String serviceName;
 	private final String clusterId;
-    private Cluster cluster;
 
 
-    public ClusterCreatedEvent(String serviceName, String clusterId, Cluster cluster) {
+    public ClusterCreatedEvent(String appId, String serviceName, String clusterId) {
+        this.appId = appId;
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.cluster = cluster;
     }
 
-    public Cluster getCluster() {
-        return cluster;
-    }
-    
-    public void setCluster(Cluster cluster) {
-        this.cluster = cluster;
-    }
-    
     public String getServiceName() {
         return serviceName;
     }
     
     @Override
     public String toString() {
-        return "ClusterCreatedEvent [serviceName=" + serviceName + ", cluster=" + cluster + "]";
+        return "ClusterCreatedEvent [serviceName=" + serviceName + ", application=" + appId + "]";
     }
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getAppId() {
+        return appId;
     }
 }

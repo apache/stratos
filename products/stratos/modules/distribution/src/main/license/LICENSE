@@ -704,9 +704,6 @@ tcpmon-1.0.jar,
 xstream-1.4.1.jar,
 dhtmlHistory.js
 
-Copyright (c) 2010 Terence Parr
-All rights reserved.
-
 [The BSD License]
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -1048,6 +1045,7 @@ jquery.blockUI-1.33.js,
 Scriptaculous-1.7.0
 
 The MIT License (MIT)
+
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

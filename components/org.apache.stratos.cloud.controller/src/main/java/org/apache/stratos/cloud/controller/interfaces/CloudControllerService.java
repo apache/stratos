@@ -28,7 +28,9 @@ import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.MemberTerminationFailedException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
 import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
+import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 
 /**
  * This API provides a way to communicate with underline
@@ -52,7 +54,19 @@ public interface CloudControllerService {
      * @param cartridgeType type of the cartridge to be undeployed.
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
-    void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    
+    public void undeployServiceGroup(String name) throws InvalidServiceGroupException;
+    
+    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException;
+    
+    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
+    
+    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
+    
+    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
@@ -194,6 +208,22 @@ public interface CloudControllerService {
      * @param clusterId cluster id
      * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
      */
-    ClusterContext getClusterContext (String clusterId);
+    public ClusterContext getClusterContext (String clusterId);
+
+    /**
+     * deploys an Application Definition
+     *
+     * @param applicationContext {@link org.apache.stratos.cloud.controller.pojo.application.ApplicationContext} object
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
+
+    /**
+     * undeploys an Application Definition
+     *
+     * @param applicationId Id of the Application to be undeployed
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException;
 
 }

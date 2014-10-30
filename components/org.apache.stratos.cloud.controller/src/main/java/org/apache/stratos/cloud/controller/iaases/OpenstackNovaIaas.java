@@ -103,6 +103,9 @@ public class OpenstackNovaIaas extends Iaas {
 		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
 		templateBuilder.imageId(iaasInfo.getImage());
+        if(!(iaasInfo instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasInfo.getType());
+        }
         
         // to avoid creation of template objects in each and every time, we
         // create all at once!

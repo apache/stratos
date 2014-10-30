@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
@@ -33,11 +34,11 @@ import java.util.*;
  * Key: serviceName, clusterId
  */
 @XmlRootElement
-public class Cluster implements Serializable {
+public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<ClusterStatus> {
 
-	private static final long serialVersionUID = -361960242360176077L;
-	
-	private final String serviceName;
+    private static final long serialVersionUID = -361960242360176077L;
+
+    private final String serviceName;
     private final String clusterId;
     private final String autoscalePolicyName;
     private final String deploymentPolicyName;
@@ -50,19 +51,27 @@ public class Cluster implements Serializable {
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
 
-    private ClusterStatus status;
+    //private ClusterStatus status;
+
+    private String appId;
 
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
+    private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
-    public Cluster(String serviceName, String clusterId, String deploymentPolicyName, String autoscalePolicyName) {
+    public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
+                   String autoscalePolicyName, String appId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.deploymentPolicyName = deploymentPolicyName;
         this.autoscalePolicyName = autoscalePolicyName;
         this.hostNames = new ArrayList<String>();
         this.memberMap = new HashMap<String, Member>();
+        this.appId = appId;
+        this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
+        // temporary; should be removed
+        //this.status = ClusterStatus.Created;
     }
 
     public String getServiceName() {
@@ -95,9 +104,8 @@ public class Cluster implements Serializable {
     }
 
     public boolean hasMembers() {
-        return  memberMap.isEmpty();
+        return memberMap.isEmpty();
     }
-
 
 
     public void addMember(Member member) {
@@ -128,9 +136,9 @@ public class Cluster implements Serializable {
         return autoscalePolicyName;
     }
 
-	public String getDeploymentPolicyName() {
-		return deploymentPolicyName;
-	}
+    public String getDeploymentPolicyName() {
+        return deploymentPolicyName;
+    }
 
     public String getLoadBalanceAlgorithmName() {
         return loadBalanceAlgorithmName;
@@ -163,24 +171,22 @@ public class Cluster implements Serializable {
      * @return
      */
     public boolean tenantIdInRange(int tenantId) {
-        if(StringUtils.isBlank(getTenantRange())) {
+        if (StringUtils.isBlank(getTenantRange())) {
             return false;
         }
 
-        if("*".equals(getTenantRange())) {
+        if ("*".equals(getTenantRange())) {
             return true;
-        }
-        else {
+        } else {
             String[] array = getTenantRange().split("-");
             int tenantStart = Integer.parseInt(array[0]);
-            if(tenantStart <= tenantId) {
+            if (tenantStart <= tenantId) {
                 String tenantEndStr = array[1];
-                if("*".equals(tenantEndStr)) {
+                if ("*".equals(tenantEndStr)) {
                     return true;
-                }
-                else {
+                } else {
                     int tenantEnd = Integer.parseInt(tenantEndStr);
-                    if(tenantId <= tenantEnd) {
+                    if (tenantId <= tenantEnd) {
                         return true;
                     }
                 }
@@ -196,29 +202,65 @@ public class Cluster implements Serializable {
      */
     public Collection<String> findPartitionIds() {
         Map<String, Boolean> partitionIds = new HashMap<String, Boolean>();
-        for(Member member : getMembers()) {
-            if((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
+        for (Member member : getMembers()) {
+            if ((StringUtils.isNotBlank(member.getPartitionId())) && (!partitionIds.containsKey(member.getPartitionId()))) {
                 partitionIds.put(member.getPartitionId(), true);
             }
         }
         return partitionIds.keySet();
     }
 
+    @Override
+    public boolean isStateTransitionValid(ClusterStatus newState) {
+        return clusterStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
+    public Stack<ClusterStatus> getTransitionedStates() {
+        return clusterStateManager.getStateStack();
+    }
+
     public ClusterStatus getStatus() {
-        return status;
+        //return status;
+        return clusterStateManager.getCurrentState();
     }
 
     public void setStatus(ClusterStatus status) {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId + ", autoscalePolicyName="
-                + autoscalePolicyName + ", deploymentPolicyName=" + deploymentPolicyName + ", hostNames=" + hostNames
-                + ", tenantRange=" + tenantRange + ", isLbCluster=" + isLbCluster + ", isKubernetesCluster="
-                + isKubernetesCluster + ", memberMap=" + memberMap + ", status=" + status
-                + ", loadBalanceAlgorithmName=" + loadBalanceAlgorithmName + ", properties=" + properties + "]";
+    public void setStatus(ClusterStatus newStatus) {
+        clusterStateManager.changeState(newStatus);
+        //this.status = newStatus;
     }
+
+    public boolean equals(Object other) {
+        if (other == null || !(other instanceof Cluster)) {
+            return false;
+        }
+
+        if (this == other) {
+            return true;
+        }
+
+        Cluster that = (Cluster) other;
+        return this.clusterId.equals(that.clusterId);
+    }
+
+    public int hashCode() {
+        return clusterId.hashCode();
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+//    public ClusterStatus getTempStatus() {
+//        return status;
+//    }
+//
+//    public void setTempStatus(ClusterStatus status) {
+//        this.status = status;
+//    }
 }
 

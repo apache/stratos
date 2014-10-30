@@ -21,12 +21,16 @@ package org.apache.stratos.manager.retriever;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.lookup.LookupDataHolder;
 import org.apache.stratos.manager.persistence.PersistenceManager;
 import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 
 import java.util.Collection;
 import java.util.Set;
@@ -358,5 +362,50 @@ public class DataInsertionAndRetrievalManager {
             // release read lock
             LookupDataHolder.getInstance().releaseReadLock();
         }
+    }
+
+    public void peristServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws PersistenceManagerException {
+
+        persistenceManager.persistServiceGroupDefinition(serviceGroupDefinition);
+    }
+
+    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        return persistenceManager.getServiceGroupDefinition(serviceGroupDefinitionName);
+    }
+
+    public void removeServiceGroupDefinition (String serviceGroupName) throws PersistenceManagerException {
+
+        persistenceManager.removeServiceGroupDefinition(serviceGroupName);
+    }
+
+    public void persistGroupSubscription (GroupSubscription groupSubscription) throws PersistenceManagerException {
+
+        persistenceManager.persistGroupSubscription(groupSubscription);
+    }
+
+    public GroupSubscription getGroupSubscription (int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        return persistenceManager.getGroupSubscription(tenantId, groupName, groupAlias);
+    }
+
+    public void removeGroupSubscription (int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        persistenceManager.removeGroupSubscription(tenantId, groupName, groupAlias);
+    }
+
+    public void persistApplicationSubscription (ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
+
+        persistenceManager.persistCompositeAppSubscription(compositeAppSubscription);
+    }
+
+    public ApplicationSubscription getApplicationSubscription (int tenantId, String appId) throws PersistenceManagerException {
+
+        return persistenceManager.getCompositeAppSubscription(tenantId, appId);
+    }
+
+    public void removeApplicationSubscription (int tenantId, String appId) throws PersistenceManagerException {
+
+        persistenceManager.removeCompositeAppSubscription(tenantId, appId);
     }
 }

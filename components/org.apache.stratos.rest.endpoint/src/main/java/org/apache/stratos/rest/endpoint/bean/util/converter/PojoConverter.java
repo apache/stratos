@@ -22,10 +22,23 @@ package org.apache.stratos.rest.endpoint.bean.util.converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE;
 import org.apache.stratos.autoscaler.stub.kubernetes.PropertyE;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.application.*;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
+import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Group;
+import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
+import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
@@ -95,11 +108,24 @@ public class PojoConverter {
             cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
         }
 
+        if(cartridgeDefinitionBean.getExportingProperties() != null)
+        {
+            cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
+        }
+        
         if (cartridgeDefinitionBean.container != null) {
             cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
         }
 
         return cartridgeConfig;
+    }
+    
+    public static ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    	ServiceGroup servicegroup = new ServiceGroup();
+    	
+    	// implement conversion (mostly List -> Array)
+    	
+    	return servicegroup;
     }
 
 
@@ -171,12 +197,16 @@ public class PojoConverter {
     }
 
     public static Persistence getPersistence(PersistenceBean persistenceBean) {
+     public static Persistence getPersistence(PersistenceBean persistenceBean) {
+
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
         persistenceBean.volume.toArray(volumeBean);
         Volume[] volumes = new Volume[persistenceBean.volume.size()];
         for (int i = 0; i < volumes.length; i++) {
+         Volume[] volumes = new Volume[persistenceBean.volume.size()];
+         for (int i = 0 ; i < volumes.length ; i++) {
             Volume volume = new Volume();
             volume.setId(volumeBean[i].id);
             volume.setVolumeId(volumeBean[i].volumeId);
@@ -861,4 +891,138 @@ public class PojoConverter {
         portRangeBean.setLower(portRange.getLower());
         return portRangeBean;
     }
+    
+	private static Log log = LogFactory.getLog(PojoConverter.class);
+
+    public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
+
+        ApplicationContext applicationContext = new ApplicationContext();
+        applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
+        applicationContext.setAlias(compositeAppDefinition.getAlias());
+
+        // convert and set components
+        if (compositeAppDefinition.getComponents() != null) {
+            ComponentContext componentContext = new ComponentContext();
+            // top level subscribables
+            if (compositeAppDefinition.getComponents().getSubscribables() != null) {
+                componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
+                        compositeAppDefinition.getComponents().getSubscribables()));
+            }
+            // top level Groups
+            if (compositeAppDefinition.getComponents().getGroups() != null) {
+                componentContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(compositeAppDefinition.getComponents().getGroups()));
+            }
+            // top level dependency information
+            if (compositeAppDefinition.getComponents().getDependencies() != null) {
+                componentContext.setDependencyContext(getDependencyContextFromDependencyDefinition(compositeAppDefinition.getComponents().getDependencies()));
+            }
+
+            applicationContext.setComponents(componentContext);
+        }
+
+        // subscribable information
+        applicationContext.setSubscribableInfoContext(getSubscribableInfoContextArrFromSubscribableInfoDefinition(compositeAppDefinition.getSubscribableInfo()));
+
+        return applicationContext;
+    }
+
+    private static SubscribableInfoContext[] getSubscribableInfoContextArrFromSubscribableInfoDefinition (List<SubscribableInfo> subscribableInfos) {
+
+        SubscribableInfoContext[] subscribableInfoContexts = new SubscribableInfoContext[subscribableInfos.size()];
+        int i = 0;
+        for (SubscribableInfo subscribableInfo : subscribableInfos) {
+            SubscribableInfoContext subscribableInfoContext = new SubscribableInfoContext();
+            subscribableInfoContext.setAlias(subscribableInfo.getAlias());
+            subscribableInfoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+            subscribableInfoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
+            subscribableInfoContext.setRepoUrl(subscribableInfo.getRepoUrl());
+            subscribableInfoContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
+            subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
+            subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
+            subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
+            subscribableInfoContexts[i++] =  subscribableInfoContext;
+
+        }
+
+        return subscribableInfoContexts;
+    }
+
+    private static DependencyContext getDependencyContextFromDependencyDefinition (DependencyDefinitions dependencyDefinitions) {
+
+        DependencyContext dependencyContext = new DependencyContext();
+        dependencyContext.setKillBehaviour(dependencyDefinitions.getKillBehaviour());
+        
+        if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
+        	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
+        	startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
+        	dependencyContext.setStartupOrdersContexts(startupOrders);
+        }
+
+        return dependencyContext;
+    }
+
+    private static GroupContext[] getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
+
+        GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
+        int i = 0;
+        for (GroupDefinition groupDefinition : groupDefinitions) {
+            GroupContext groupContext = new GroupContext();
+            groupContext.setName(groupDefinition.getName());
+            groupContext.setAlias(groupDefinition.getAlias());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
+            groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
+            // nested Subscribables
+            if (groupDefinition.getSubscribables() != null) {
+                groupContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
+            }
+            // nested Groups
+            if (groupDefinition.getSubGroups() != null) {
+                groupContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(groupDefinition.getSubGroups()));
+            }
+            groupContexts[i++] = groupContext;
+        }
+
+        return groupContexts;
+    }
+
+    private static SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+
+        SubscribableContext[] subscribableContexts = new SubscribableContext[subscribableDefinitions.size()];
+        int i = 0;
+        for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
+            SubscribableContext subscribableContext = new SubscribableContext();
+            subscribableContext.setType(subscribableDefinition.getType());
+            subscribableContext.setAlias(subscribableDefinition.getAlias());
+            subscribableContexts[i++] = subscribableContext;
+        }
+
+        return subscribableContexts;
+    }
+
+
+    public static ApplicationBean applicationToBean(Application application) {
+
+        if(application == null){
+            return null;
+        }
+
+        ApplicationBean applicationBean = new ApplicationBean();
+        applicationBean.setId(application.getUniqueIdentifier());
+        applicationBean.setTenantDomain(application.getTenantDomain());
+        applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        return applicationBean;
+    }
+
+    public static GroupBean toGroupBean(Group group) {
+        if(group == null){
+            return null;
+        }
+
+        GroupBean groupBean = new GroupBean();
+        groupBean.setAlias(group.getUniqueIdentifier());
+        groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
+        groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
+        return groupBean;
+    }
+	
 }

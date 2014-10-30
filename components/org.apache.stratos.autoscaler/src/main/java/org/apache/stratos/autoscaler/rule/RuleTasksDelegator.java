@@ -175,10 +175,29 @@ public class RuleTasksDelegator {
     }
 
     public void delegateTerminate(PartitionContext partitionContext, String memberId) {
+
+        log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
+                partitionContext.getPartitionId() + " ], NW Partition [ " +
+                partitionContext.getNetworkPartitionId() + " ]");
+
         try {
             //calling SM to send the instance notification event.
             InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
             partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+            //CloudControllerClient.getInstance().terminate(memberId);
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
+
+    public void delegateTerminateDependency(PartitionContext partitionContext, String memberId) {
+        try {
+            //calling SM to send the instance notification event.
+        	if (log.isDebugEnabled()) {
+        		log.debug("delegateTerminateDependency:memberId:" + memberId);
+        	}
+            //InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
+            //partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
             //CloudControllerClient.getInstance().terminate(memberId);
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
@@ -193,10 +212,16 @@ public class RuleTasksDelegator {
         }
     }
 
+    //Grouping
    	public void delegateTerminateAll(String clusterId) {
            try {
-
+        	   if (log.isDebugEnabled()) {
+           		log.debug("delegateTerminateAll - begin");
+        	   }
                CloudControllerClient.getInstance().terminateAllInstances(clusterId);
+               if (log.isDebugEnabled()) {
+              		log.debug("delegateTerminateAll - done");
+           	   }
            } catch (Throwable e) {
                log.error("Cannot terminate instance", e);
            }

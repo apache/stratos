@@ -23,8 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.manager.subscription.ApplicationSubscription;
+import org.apache.stratos.manager.subscription.GroupSubscription;
 import org.apache.stratos.manager.utils.Deserializer;
 import org.apache.stratos.manager.utils.Serializer;
 import org.wso2.carbon.context.CarbonContext;
@@ -45,6 +48,11 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final String ACTIVE_SUBSCRIPTIONS = "/subscriptions/active";
     private static final String INACTIVE_SUBSCRIPTIONS = "/subscriptions/inactive";
     private static final String SERVICES = "/services";
+    private static final String CARTRIDGES = "/cartridges";
+    private static final String GROUPS = "/groups";
+    private static final String COMPOSITE_APPLICATIONS = "/composite_applications";
+    private static final String SERVICE_GROUPING = "/service.grouping";
+    private static final String SERVICE_GROUPING_DEFINITIONS = SERVICE_GROUPING + "/definitions";
 
     @Override
     public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws PersistenceManagerException {
@@ -73,7 +81,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
 
         // persist
         try {
-            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" +
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + CARTRIDGES + "/" +
                     Integer.toString(cartridgeSubscription.getSubscriber().getTenantId()) + "/" +
                     cartridgeSubscription.getType() + "/" +
                     cartridgeSubscription.getAlias(), Serializer.serializeSubscriptionSontextToByteArray(cartridgeSubscription), cartridgeSubscription.getClusterDomain());
@@ -116,8 +124,8 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private void removeSubscription (int tenantId, String type, String alias) throws PersistenceManagerException {
 
         // move the subscription from active set to inactive set
-        String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
-        String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+        String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + CARTRIDGES + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
+        String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + CARTRIDGES + "/" + Integer.toString(tenantId) + "/" + type + "/" + alias;
 
         try {
             RegistryManager.getInstance().move(sourcePath, targetPath);
@@ -131,9 +139,148 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     }
 
     @Override
+    public void persistGroupSubscription(GroupSubscription groupSubscription) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistSubscription(tenantId, groupSubscription);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistSubscription(tenantId, groupSubscription);
+        }
+    }
+
+    private void persistSubscription (int tenantId, GroupSubscription groupSubscription) throws PersistenceManagerException {
+
+        // persist
+        try {
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + GROUPS + "/" +
+                    Integer.toString(tenantId) + "/" + groupSubscription.getName() + "/" +
+                    groupSubscription.getGroupAlias(),
+                    Serializer.serializeGroupSubscriptionToByteArray(groupSubscription), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Group Subscription successfully: [ " + groupSubscription.getName() + ", " + groupSubscription.getGroupAlias() + " ] ");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    public GroupSubscription getGroupSubscription (int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                return getSubscription(tenantId, groupName, groupAlias);
+
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return getSubscription(tenantId, groupName, groupAlias);
+        }
+    }
+
+    public GroupSubscription getSubscription (int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + GROUPS + "/" +
+                    Integer.toString(tenantId) + "/" + groupName + "/" + groupAlias);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object groupSubscriptionObj;
+
+        try {
+            groupSubscriptionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (groupSubscriptionObj instanceof GroupSubscription) {
+            return (GroupSubscription) groupSubscriptionObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeGroupSubscription(int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                remove(tenantId, groupName, groupAlias);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            remove(tenantId, groupName, groupAlias);
+        }
+    }
+
+    private void remove (int tenantId, String groupName, String groupAlias) throws PersistenceManagerException {
+
+        // move the subscription from active set to inactive set
+        String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + GROUPS + "/" + Integer.toString(tenantId) +
+                "/" + groupName + "/" + groupAlias;
+        String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + GROUPS + "/" + Integer.toString(tenantId) +
+                "/" + groupName + "/" + groupAlias;
+
+        try {
+            RegistryManager.getInstance().move(sourcePath, targetPath);
+            if (log.isDebugEnabled()) {
+                log.debug("Moved Group Subscription on " + sourcePath + " to " + targetPath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions () throws PersistenceManagerException {
 
-        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS);
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE  + ACTIVE_SUBSCRIPTIONS + CARTRIDGES);
     }
 
     private Collection<CartridgeSubscription> traverseAndGetCartridgeSubscriptions (String resourcePath) throws PersistenceManagerException  {
@@ -214,7 +361,146 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     @Override
     public Collection<CartridgeSubscription> getCartridgeSubscriptions (int tenantId) throws PersistenceManagerException {
 
-        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + "/" + Integer.toString(tenantId));
+        return traverseAndGetCartridgeSubscriptions(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + CARTRIDGES + "/" + Integer.toString(tenantId));
+    }
+
+    @Override
+    public void persistCompositeAppSubscription(ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistSubscription(tenantId, compositeAppSubscription);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistSubscription(tenantId, compositeAppSubscription);
+        }
+    }
+
+    private void persistSubscription (int tenantId, ApplicationSubscription compositeAppSubscription) throws PersistenceManagerException {
+
+        // persist
+        try {
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + COMPOSITE_APPLICATIONS + "/" +
+                    Integer.toString(tenantId) + "/" + compositeAppSubscription.getAppId(),
+                    Serializer.serializeCompositeAppSubscriptionToByteArray(compositeAppSubscription), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Group Subscription successfully: [ " + compositeAppSubscription.getAppId() + " ] ");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public ApplicationSubscription getCompositeAppSubscription(int tenantId, String compositeAppId) throws PersistenceManagerException {
+
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                return getSubscription(tenantId, compositeAppId);
+
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return getSubscription(tenantId, compositeAppId);
+        }
+    }
+
+    public ApplicationSubscription getSubscription (int tenantId, String appId) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + COMPOSITE_APPLICATIONS + "/" +
+                    Integer.toString(tenantId) + "/" + appId);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object compositeAppSubscriptionObj;
+
+        try {
+            compositeAppSubscriptionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (compositeAppSubscriptionObj instanceof ApplicationSubscription) {
+            return (ApplicationSubscription) compositeAppSubscriptionObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeCompositeAppSubscription(int tenantId, String compositeAppId) throws PersistenceManagerException {
+
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            // TODO: This is only a workaround. Proper fix is to write to tenant registry
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                remove(tenantId, compositeAppId);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            remove(tenantId, compositeAppId);
+        }
+    }
+
+    private void remove (int tenantId, String compositeAppId) throws PersistenceManagerException {
+
+        // move the subscription from active set to inactive set
+        String sourcePath = STRATOS_MANAGER_REOSURCE + ACTIVE_SUBSCRIPTIONS + COMPOSITE_APPLICATIONS + "/" + Integer.toString(tenantId) +
+                "/" + compositeAppId;
+        String targetPath = STRATOS_MANAGER_REOSURCE + INACTIVE_SUBSCRIPTIONS + COMPOSITE_APPLICATIONS + "/" + Integer.toString(tenantId) +
+                "/" + compositeAppId;
+
+        try {
+            RegistryManager.getInstance().move(sourcePath, targetPath);
+            if (log.isDebugEnabled()) {
+                log.debug("Moved Composite App Subscription on " + sourcePath + " to " + targetPath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
     }
 
     @Override
@@ -439,6 +725,106 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             RegistryManager.getInstance().delete(resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug("Deleted Service on path " + resourcePath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+//    private void removeCompApplication(String alias) throws PersistenceManagerException {
+//
+//        String resourcePath = STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATION + "/" + alias;
+//
+//        try {
+//        	Object obj = RegistryManager.getInstance().retrieve(resourcePath);
+//        	if (obj != null) {
+//        		if (log.isDebugEnabled()) {
+//        			log.debug(" found composite application to remve " + obj + " at resource path " + resourcePath);
+//        		}
+//        	}
+//            RegistryManager.getInstance().delete(resourcePath);
+//            if (log.isDebugEnabled()) {
+//                log.debug("Deleted composite application on path " + resourcePath + " successfully");
+//            }
+//
+//    		if (log.isDebugEnabled()) {
+//    			obj = RegistryManager.getInstance().retrieve(resourcePath);
+//     			if (obj == null) {
+//     	   			log.debug(" veriying that composite application is remvoved, obj is null "  + resourcePath);
+//    			} else {
+//    				log.debug(" unsuccessful removing  composite application  " +  obj + " at resource path " +  resourcePath);
+//    			}
+//    		}
+//
+//        } catch (RegistryException e) {
+//            throw new PersistenceManagerException(e);
+//        }
+//    }
+
+    @Override
+    public void persistServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws PersistenceManagerException {
+
+        // persist Service Group Definition
+        try {
+            RegistryManager.getInstance().persist(STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" +
+                    serviceGroupDefinition.getName(),
+                    Serializer.serializeServiceGroupDefinitionToByteArray(serviceGroupDefinition), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Service Group Definition successfully: [ " + serviceGroupDefinition.getName() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public ServiceGroupDefinition getServiceGroupDefinition(String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" +
+                    serviceGroupDefinitionName);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object serviceGroupDefinitionObj;
+
+        try {
+            serviceGroupDefinitionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (serviceGroupDefinitionObj instanceof ServiceGroupDefinition) {
+            return (ServiceGroupDefinition) serviceGroupDefinitionObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeServiceGroupDefinition(String serviceGroupDefinitionName) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + SERVICE_GROUPING_DEFINITIONS + "/" + serviceGroupDefinitionName;
+
+        try {
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted Service Group Definition on path " + resourcePath + " successfully");
             }
 
         } catch (RegistryException e) {

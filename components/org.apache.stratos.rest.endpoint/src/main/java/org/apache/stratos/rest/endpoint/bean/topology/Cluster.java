@@ -23,7 +23,7 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
 
 import java.util.List;
 
-@XmlRootElement
+@XmlRootElement(name="clusters")
 public class Cluster {
 
 	public String serviceName;

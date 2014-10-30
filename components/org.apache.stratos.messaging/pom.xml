@@ -92,15 +92,18 @@
 
     <build>
         <plugins>
-            <!--plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
                 <configuration>
-                  <suiteXmlFiles>
-                    <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                  </suiteXmlFiles>
+                    <!--includes>
+                        <include>**/TopologyLockingTest.java</include>
+                    </includes-->
+                    <parallel>methods</parallel>
+                    <threadCount>15</threadCount>
                 </configuration>
-              </plugin-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
@@ -115,11 +118,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+                            !org.apache.stratos.messaging.message.processor.topology.updater,
                             org.apache.stratos.messaging.*,
                         </Export-Package>
-                        <!--Private-Package>
-                        	org.apache.stratos.messaging.internal;
-                        </Private-Package-->
+                        <Private-Package>
+                            org.apache.stratos.messaging.message.processor.topology.updater;
+                        </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
                             org.apache.commons.logging; version=0.0.0,

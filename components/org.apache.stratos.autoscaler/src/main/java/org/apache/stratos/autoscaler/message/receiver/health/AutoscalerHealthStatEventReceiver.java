@@ -71,7 +71,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
     private HealthStatEventReceiver healthStatEventReceiver;
 
     public AutoscalerHealthStatEventReceiver() {
-        this.healthStatEventReceiver = new HealthStatEventReceiver();
+		this.healthStatEventReceiver = new HealthStatEventReceiver();
         addEventListeners();
     }
 
@@ -84,18 +84,18 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         }
         Thread thread = new Thread(healthStatEventReceiver);
         thread.start();
-        if (log.isInfoEnabled()) {
+        if(log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread started");
         }
 
         // Keep the thread live until terminated
-        while (!terminated) {
-            try {
+        while (!terminated){
+        	try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignore) {
             }
         }
-        if (log.isInfoEnabled()) {
+        if(log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread terminated");
         }
     }
@@ -119,8 +119,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                 }
                 monitor.handleAverageLoadAverageEvent(averageLoadAverageEvent);
             }
-        });
 
+        });
         healthStatEventReceiver.addEventListener(new AverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {

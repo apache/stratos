@@ -18,14 +18,24 @@
  */
 package org.apache.stratos.autoscaler;
 
+import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.util.ConfUtil;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
@@ -376,7 +386,42 @@ public class PartitionContext implements Serializable{
         }
         return false;
     }
+    
+    public  int getAllMemberForTerminationCount () {
+    	int count = activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+		if (log.isDebugEnabled()) {
+    		log.debug("PartitionContext:getAllMemberForTerminationCount:size:" + count);
+    	}
+    	return count;
+    }
+    
+    // Map<String, MemberStatsContext> getMemberStatsContexts().keySet()
+    public  Set<String> getAllMemberForTermination () {
 
+    	List<MemberContext> merged =  new ArrayList<MemberContext>();
+    	
+    	
+    	merged.addAll(activeMembers);
+    	merged.addAll(pendingMembers);
+    	merged.addAll(terminationPendingMembers);
+    	
+    	Set<String> results = new HashSet<String>(merged.size());
+    	
+    	for (MemberContext ctx: merged) {
+    		results.add(ctx.getMemberId());
+    	}
+    	
+
+    	if (log.isDebugEnabled()) {
+    		log.debug("PartitionContext:getAllMemberForTermination:size:" + results.size());
+    	}
+    	
+    	//MemberContext x = new MemberContext();
+    	//x.getMemberId()
+    	
+    	return results;
+    }
+    
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
 

@@ -438,54 +438,7 @@ public class GitBasedArtifactRepository {
         }
     }
 
-   /* public boolean checkout(RepositoryInformation repositoryInformation) {
 
-
-        if (log.isDebugEnabled()) {
-<<<<<<< HEAD
-            log.debug("Artifact checkout will be done by thread " + Thread.currentThread().getName() + " - " +
-                Thread.currentThread().getId());
-        }
-
-    	int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
-    	
-    	// if context for tenant is not initialized
-    	if(tenantToRepoContextMap.get(tenantId) == null) {
-	    	initGitContext(repositoryInformation);
-    	}
-    	
-		RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
-		
-		if (gitRepoCtx == null) { // to handle super tenant scenario
-			log.info("No git repository context information found for deployment synchronizer");
-=======
-            log.debug("Artifact checkout done by thread " + Thread.currentThread().getName() + " - " +
-                    Thread.currentThread().getId());
-        }
-
-        int tenantId = Integer.parseInt(repositoryInformation.getTenantId());
-
-        // if context for tenant is not initialized
-        if (tenantToRepoContextMap.get(tenantId) == null)
-            initGitContext(repositoryInformation);
-
-
-        RepositoryContext gitRepoCtx = retrieveCachedGitContext(tenantId);
-        if (gitRepoCtx == null) { //to handle super tenant scenario
-            // if(log.isDebugEnabled())
-            log.info("No git repository context information found for deployment synchronizer");
->>>>>>> 400
-
-			return true;
-		}
-
-        synchronized (gitRepoCtx) {
-            if (!gitRepoCtx.cloneExists())
-                cloneRepository(gitRepoCtx);
-
-            return pullArtifacts(gitRepoCtx);
-        }
-    } */
    public boolean checkout (RepositoryInformation repositoryInformation) throws Exception {
 
        int tenantId = Integer.parseInt(repositoryInformation.getTenantId());

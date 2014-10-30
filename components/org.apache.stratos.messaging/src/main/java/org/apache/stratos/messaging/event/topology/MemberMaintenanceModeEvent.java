@@ -31,6 +31,7 @@ public class MemberMaintenanceModeEvent extends TopologyEvent implements Seriali
     private final String memberId;
     private MemberStatus status;
     private Properties properties;
+    private String groupId;
 
     public MemberMaintenanceModeEvent(String serviceName, String clusterId,
                                       String networkPartitionId, String partitionId, String memberId) {
@@ -76,4 +77,12 @@ public class MemberMaintenanceModeEvent extends TopologyEvent implements Seriali
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 }
