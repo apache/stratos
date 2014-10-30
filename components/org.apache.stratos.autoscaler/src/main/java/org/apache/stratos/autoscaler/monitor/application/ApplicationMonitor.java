@@ -162,9 +162,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             onChildInActiveEvent(id);
 
+        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminated) {
+            //mark the child monitor as inActive in the map
+            this.markMonitorAsInactive(id);
+
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            this.aliasToInActiveMonitorsMap.remove(id);
+            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                this.aliasToInActiveMonitorsMap.remove(id);
+            } else {
+                log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
+            }
+
             if (this.status != ApplicationStatus.Terminating || this.status != ApplicationStatus.Terminated) {
                 onChildTerminatedEvent(id);
             } else {

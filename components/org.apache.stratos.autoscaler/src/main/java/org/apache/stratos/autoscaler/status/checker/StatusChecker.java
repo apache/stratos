@@ -68,6 +68,7 @@ public class StatusChecker {
                 // if active then notify upper layer
                 if (clusterActive) {
                     //send event to cluster status topic
+                    monitor.setHasFaultyMember(false);
                     StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                             monitor.getServiceId(), monitor.getClusterId());
                 }
@@ -251,7 +252,10 @@ public class StatusChecker {
      */
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
-        boolean groupActive = false;
+        boolean groupsActive = false;
+        boolean groupsTerminated = false;
+        boolean groupsInActive = false;
+        boolean groupsTerminating = false;
         ClusterStatus clusterStatus;
         GroupStatus groupStatus;
         boolean childFound = false;
@@ -350,19 +354,19 @@ public class StatusChecker {
 
     private GroupStatus getGroupStatus(Map<String, Group> groups) {
         GroupStatus status = null;
-        boolean groupActive = false;
-        boolean groupTerminated = false;
+        boolean groupActive = true;
+        boolean groupTerminated = true;
 
         for (Group group : groups.values()) {
             if (group.getStatus() == GroupStatus.Active) {
-                groupActive = true;
-                groupTerminated = false;
+                groupActive = groupActive && true;
+                groupTerminated =  false;
             } else if (group.getStatus() == GroupStatus.Inactive) {
                 status = GroupStatus.Inactive;
                 break;
             } else if (group.getStatus() == GroupStatus.Terminated) {
                 groupActive = false;
-                groupTerminated = true;
+                groupTerminated = groupTerminated && true;
             } else if (group.getStatus() == GroupStatus.Created) {
                 groupActive = false;
                 groupTerminated = false;
@@ -386,13 +390,13 @@ public class StatusChecker {
 
     private ClusterStatus getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
         ClusterStatus status = null;
-        boolean clusterActive = false;
-        boolean clusterTerminated = false;
+        boolean clusterActive = true;
+        boolean clusterTerminated = true;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
             if (cluster.getStatus() == ClusterStatus.Active) {
-                clusterActive = true;
+                clusterActive = clusterActive && true;
                 clusterTerminated = false;
             } else if (cluster.getStatus() == ClusterStatus.Inactive) {
                 status = ClusterStatus.Inactive;
@@ -401,7 +405,7 @@ public class StatusChecker {
                 break;
             } else if (cluster.getStatus() == ClusterStatus.Terminated) {
                 clusterActive = false;
-                clusterTerminated = true;
+                clusterTerminated = clusterTerminated && true;
             } else if (cluster.getStatus() == ClusterStatus.Terminating) {
                 status = ClusterStatus.Terminating;
                 clusterActive = false;

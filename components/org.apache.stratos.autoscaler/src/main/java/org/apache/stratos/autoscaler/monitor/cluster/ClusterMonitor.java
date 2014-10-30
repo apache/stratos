@@ -73,18 +73,26 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         //status = ClusterStatus.Created;
     }
 
+    private static void terminateMember(String memberId) {
+        try {
+            CloudControllerClient.getInstance().terminate(memberId);
+
+        } catch (TerminationException e) {
+            log.error("Unable to terminate member [member id ] " + memberId, e);
+        }
+    }
 
     @Override
     public void run() {
         while (!isDestroyed()) {
             try {
-                if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
-                        (this.status == ClusterStatus.Inactive && !hasDependent) ||
-                        !this.hasFaultyMember) {
+                if (((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
+                        (this.status == ClusterStatus.Inactive && !hasDependent)) && !this.hasFaultyMember) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is running.. " + this.toString());
                     }
                     monitor();
+
                 } else {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is suspended as the cluster is in " +
@@ -106,8 +114,8 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void terminateAllMembers() {
 
-        Thread memberTerminator = new Thread(new Runnable(){
-            public void run(){
+        Thread memberTerminator = new Thread(new Runnable() {
+            public void run() {
 
                 for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
                     for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
@@ -125,7 +133,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                         }
 
                         // pending members
-                        for  (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
+                        for (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
                             log.info("Terminating pending member [member id] " + pendingMemberCtxt.getMemberId());
                             terminateMember(pendingMemberCtxt.getMemberId());
                         }
@@ -144,15 +152,6 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         }, "Member Terminator - [cluster id] " + this.clusterId);
 
         memberTerminator.start();
-    }
-
-    private static void terminateMember (String memberId) {
-        try {
-            CloudControllerClient.getInstance().terminate(memberId);
-
-        } catch (TerminationException e) {
-            log.error("Unable to terminate member [member id ] " + memberId, e);
-        }
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {

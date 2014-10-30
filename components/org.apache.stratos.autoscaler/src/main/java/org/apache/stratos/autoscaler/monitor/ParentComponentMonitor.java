@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationCont
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.topology.Application;
 import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ParentComponent;
@@ -190,42 +191,17 @@ public abstract class ParentComponentMonitor extends Monitor {
          * Make sure that all the dependents have been terminated properly to start the recovery
          */
         if (terminationList != null) {
-            for (ApplicationContext context1 : terminationList) {
-                if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
-                    log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
-                    allDependentTerminated = false;
-                } else if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
-                    log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
-                    allDependentTerminated = false;
-                } else {
-                    allDependentTerminated = true;
-                }
-            }
+            allDependentTerminated = allDependentTerminated(terminationList);
         }
 
         List<ApplicationContext> parentContexts = this.dependencyTree.findAllParentContextWithId(idOfEvent);
-        boolean canStart = false;
+        boolean parentsTerminated = false;
         if (parentContexts != null) {
-            for (ApplicationContext context1 : parentContexts) {
-                if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
-                    log.info("Waiting for the [Parent Monitor] " + context1.getId()
-                            + " to be terminated");
-                    canStart = false;
-                } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
-                    if (canStart) {
-                        log.warn("Found the Dependent [monitor] " + context1.getId()
-                                + " in the active list wrong state");
-                    }
-                } else {
-                    log.info("[Parent Monitor] " + context1.getId()
-                            + " has already been terminated");
-                    canStart = true;
-                }
-            }
+            parentsTerminated = allParentTerminated(parentContexts);
         }
 
         if ((terminationList != null && allDependentTerminated || terminationList == null) &&
-                (parentContexts != null && canStart || parentContexts == null)) {
+                (parentContexts != null && parentsTerminated || parentContexts == null)) {
             //Find the non existent monitor by traversing dependency tree
             try {
                 this.startDependencyOnTermination();
@@ -235,13 +211,53 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         } else {
             StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
-            log.info("Waiting for the dependent of [monitor] " + idOfEvent
-                    + " to be terminated");
+            log.info("" +
+                    "Checking the status of group/application as no dependent found...");
         }
 
 
     }
 
+    private boolean allDependentTerminated(List<ApplicationContext> terminationList) {
+        boolean allDependentTerminated = false;
+        for (ApplicationContext context1 : terminationList) {
+            if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
+                allDependentTerminated = false;
+                return allDependentTerminated;
+            } else if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
+                allDependentTerminated = false;
+                return allDependentTerminated;
+            } else {
+                allDependentTerminated = true;
+            }
+        }
+        return allDependentTerminated;
+    }
+
+
+    private boolean allParentTerminated(List<ApplicationContext> parentContexts) {
+        boolean parentsTerminated = false;
+        for (ApplicationContext context1 : parentContexts) {
+            if (this.aliasToInActiveMonitorsMap.containsKey(context1.getId())) {
+                log.info("Waiting for the [Parent Monitor] " + context1.getId()
+                        + " to be terminated");
+                parentsTerminated = false;
+                return parentsTerminated;
+            } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
+                if (parentsTerminated) {
+                    log.warn("Found the Dependent [monitor] " + context1.getId()
+                            + " in the active list wrong state");
+                }
+            } else {
+                log.info("[Parent Monitor] " + context1.getId()
+                        + " has already been terminated");
+                parentsTerminated = true;
+            }
+        }
+        return parentsTerminated;
+    }
 
     /**
      * This will start the parallel dependencies at once from the top level.
