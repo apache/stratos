@@ -381,6 +381,9 @@ public class StatusChecker {
                 groupCreated = false;
             } else if (group.getStatus() == GroupStatus.Inactive) {
                 status = GroupStatus.Inactive;
+                groupActive = false;
+                groupTerminated = false;
+                groupCreated = false;
                 break;
             } else if (group.getStatus() == GroupStatus.Terminated) {
                 groupActive = false;
@@ -424,6 +427,9 @@ public class StatusChecker {
                 clusterCreated = false;
             } else if (cluster.getStatus() == ClusterStatus.Inactive) {
                 status = ClusterStatus.Inactive;
+                clusterActive = false;
+                clusterTerminated = false;
+                clusterCreated = false;
                 break;
             } else if (cluster.getStatus() == ClusterStatus.Terminated) {
                 clusterActive = false;

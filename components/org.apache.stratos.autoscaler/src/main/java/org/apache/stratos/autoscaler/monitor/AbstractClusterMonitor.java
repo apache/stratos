@@ -63,7 +63,6 @@ abstract public class AbstractClusterMonitor extends Monitor implements Runnable
 
     protected String clusterId;
     protected String serviceId;
-    protected String appId;
 
     protected boolean hasFaultyMember = false;
 
