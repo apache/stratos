@@ -27,8 +27,6 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.stratos.cli.utils.CommandLineUtils.mergeOptionArrays;
-
 public class ListMemberCommand implements Command<StratosCommandContext> {
     private static final Logger logger = LoggerFactory.getLogger(ListMemberCommand.class);
 
@@ -80,7 +78,7 @@ public class ListMemberCommand implements Command<StratosCommandContext> {
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
@@ -92,23 +90,21 @@ public class ListMemberCommand implements Command<StratosCommandContext> {
 			CommandLine commandLine;
 			try {
 				commandLine = parser.parse(options, args);
-				//merge newly discovered options with previously discovered ones.
-				Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 				if (logger.isDebugEnabled()) {
 					logger.debug("Subscribing to {} cartridge with alias {}", type, alias);
 				}
 
-                if (opts.hasOption(CliConstants.CARTRIDGE_TYPE_OPTION)) {
+                if (commandLine.hasOption(CliConstants.CARTRIDGE_TYPE_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Autoscaling policy option is passed");
                     }
-                    type = opts.getOption(CliConstants.CARTRIDGE_TYPE_OPTION).getValue();
+                    type = commandLine.getOptionValue(CliConstants.CARTRIDGE_TYPE_OPTION);
                 }
-                if (opts.hasOption(CliConstants.ALIAS_OPTION)) {
+                if (commandLine.hasOption(CliConstants.ALIAS_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Deployment policy option is passed");
                     }
-                    alias = opts.getOption(CliConstants.ALIAS_OPTION).getValue();
+                    alias = commandLine.getOptionValue(CliConstants.ALIAS_OPTION);
                 }
 
                 if (type == null) {

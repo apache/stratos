@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ public class HelpCommand implements Command<StratosCommandContext> {
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}

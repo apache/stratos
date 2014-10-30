@@ -249,8 +249,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
 		// Command action
 		String action = null;
-		// Command action options
-		Option[] actionOptions = null;
 
 		String usernameInput = null;
 		String passwordInput = null;
@@ -268,7 +266,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			CommandLine commandLine;
 			try {
 				// Must add all options. Otherwise actions cannot be performed directly by command line.
-				// This is because the parser trips over unrecognised options.
 				Options allCommandOptions = new Options();
 				for (Command<StratosCommandContext> command : commands.values()) {
 					Options commandOptions = command.getOptions();
@@ -287,7 +284,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 				
 				commandLine = parser.parse(options, args, true);
 				remainingArgs = commandLine.getArgs();
-				actionOptions = commandLine.getOptions();
 				if (remainingArgs != null && remainingArgs.length > 0) {
 					// Get command action
 					action = remainingArgs[0];
@@ -353,7 +349,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 				if (logger.isDebugEnabled()) {
 					logger.debug("Executing Action: {} {}", action, Arrays.asList(actionArgs));
 				}
-				int returnCode = command.execute(context, actionArgs, actionOptions);
+				int returnCode = command.execute(context, actionArgs);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Exiting with error code {} after executing action {}", returnCode, action);
 				}
@@ -449,7 +445,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			return CliConstants.COMMAND_FAILED;
 		}
 		try {
-			return command.execute(context, actionArgs, new Option[0]);
+			return command.execute(context, actionArgs);
 		} catch (CommandException e) {
 			if (logger.isErrorEnabled()) {
 				logger.error("Error executing command: " + action, e);

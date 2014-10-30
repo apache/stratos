@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.cli;
 
-import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.stratos.cli.exception.CommandException;
 
@@ -59,12 +58,10 @@ public interface Command<T extends CommandContext> {
 	 *            The context assoicated with the Command Line Application
 	 * @param args
 	 *            The arguments for the command
-	 * @param already_parsed_opts
-	 *            Options parsed by any parent parsers.
 	 * @return The status code
 	 * @throws org.apache.stratos.cli.exception.CommandException
 	 *             if any errors occur when executing the command
 	 */
-	int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException;
+	int execute(T context, String[] args) throws CommandException;
 
 }

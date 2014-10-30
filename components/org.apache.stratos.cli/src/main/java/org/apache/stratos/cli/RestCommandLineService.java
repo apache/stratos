@@ -785,7 +785,6 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
 
         CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
 

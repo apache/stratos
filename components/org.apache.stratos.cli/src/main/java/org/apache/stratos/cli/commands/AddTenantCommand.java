@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
 
-import static org.apache.stratos.cli.utils.CommandLineUtils.mergeOptionArrays;
-
 public class AddTenantCommand implements Command<StratosCommandContext> {
 
     private static final Logger logger = LoggerFactory.getLogger(AddTenantCommand.class);
@@ -89,7 +87,7 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -107,48 +105,46 @@ public class AddTenantCommand implements Command<StratosCommandContext> {
 
             try {
                 commandLine = parser.parse(options, args);
-                //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Add tenant");
                 }
 
-                if (opts.hasOption(CliConstants.USERNAME_OPTION)) {
+                if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Username option is passed");
                     }
-                    admin = opts.getOption(CliConstants.USERNAME_OPTION).getValue();
+                    admin = commandLine.getOptionValue(CliConstants.USERNAME_OPTION);
                 }
-                if (opts.hasOption(CliConstants.FIRST_NAME_OPTION)) {
+                if (commandLine.hasOption(CliConstants.FIRST_NAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("First name option is passed");
                     }
-                    firstName = opts.getOption(CliConstants.FIRST_NAME_OPTION).getValue();
+                    firstName = commandLine.getOptionValue(CliConstants.FIRST_NAME_OPTION);
                 }
-                if (opts.hasOption(CliConstants.LAST_NAME_OPTION)) {
+                if (commandLine.hasOption(CliConstants.LAST_NAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Last name option is passed");
                     }
-                    lastaName = opts.getOption(CliConstants.LAST_NAME_OPTION).getValue();
+                    lastaName = commandLine.getOptionValue(CliConstants.LAST_NAME_OPTION);
                 }
-                if (opts.hasOption(CliConstants.PASSWORD_OPTION)) {
+                if (commandLine.hasOption(CliConstants.PASSWORD_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Password option is passed");
                     }
-                    password = opts.getOption(CliConstants.PASSWORD_OPTION).getValue();
+                    password = commandLine.getOptionValue(CliConstants.PASSWORD_OPTION);
                 }
-                if (opts.hasOption(CliConstants.DOMAIN_NAME_OPTION)) {
+                if (commandLine.hasOption(CliConstants.DOMAIN_NAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Domain name option is passed");
                     }
-                    domain = opts.getOption(CliConstants.DOMAIN_NAME_OPTION).getValue();
+                    domain = commandLine.getOptionValue(CliConstants.DOMAIN_NAME_OPTION);
                 }
-                if (opts.hasOption(CliConstants.EMAIL_OPTION)) {
+                if (commandLine.hasOption(CliConstants.EMAIL_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Email option is passed");
                     }
-                    email = opts.getOption(CliConstants.EMAIL_OPTION).getValue();
+                    email = commandLine.getOptionValue(CliConstants.EMAIL_OPTION);
 
                 }
 

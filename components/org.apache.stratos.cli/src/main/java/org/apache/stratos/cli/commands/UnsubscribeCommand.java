@@ -32,8 +32,6 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 
-import static org.apache.stratos.cli.utils.CommandLineUtils.mergeOptionArrays;
-
 public class UnsubscribeCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnsubscribeCommand.class);
@@ -73,7 +71,7 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 	}
 
 	@Override
-	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
@@ -86,9 +84,6 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 			try {
 				commandLine = parser.parse(options, args);
 				remainingArgs = commandLine.getArgs();
-				//merge newly discovered options with previously discovered ones.
-				Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
-
 				if (remainingArgs != null && remainingArgs.length == 1) {
 					// Get alias
 					alias = remainingArgs[0];
@@ -100,7 +95,7 @@ public class UnsubscribeCommand implements Command<StratosCommandContext> {
 					return CliConstants.COMMAND_FAILED;
 				}
 
-				if (opts.hasOption(CliConstants.FORCE_OPTION)) {
+				if (commandLine.hasOption(CliConstants.FORCE_OPTION)) {
 					if (logger.isTraceEnabled()) {
 						logger.trace("Force option is passed");
 					}
