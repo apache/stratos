@@ -33,14 +33,12 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterMaintenanceModeEventListener;
 import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListener;
 import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
 import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
@@ -149,31 +147,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     Service service = TopologyManager.getTopology().getService(clusterCreatedEvent.getServiceName());
                     Cluster cluster = service.getCluster(clusterCreatedEvent.getClusterId());
                     startClusterMonitor(cluster);
-                } catch (Exception e) {
-                    String msg = "Error processing event " + e.getLocalizedMessage();
-                    log.error(msg, e);
-                } finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-        });
-
-        topologyEventReceiver.addEventListener(new ClusterMaintenanceModeEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    log.info("Event received: " + event);
-                    ClusterMaintenanceModeEvent clusterMaintenanceModeEvent = (ClusterMaintenanceModeEvent) event;
-                    TopologyManager.acquireReadLock();
-                    Service service = TopologyManager.getTopology().getService(clusterMaintenanceModeEvent.getServiceName());
-                    Cluster cluster = service.getCluster(clusterMaintenanceModeEvent.getClusterId());
-                    AbstractClusterMonitor monitor;
-                    monitor = AutoscalerContext.getInstance().getClusterMonitor(cluster.getClusterId());
-                    if (null == monitor) {
-                        log.error("cluster monitor not exists for the cluster: " + cluster.toString());
-                        return;
-                    }
-                    monitor.setStatus(clusterMaintenanceModeEvent.getStatus());
                 } catch (Exception e) {
                     String msg = "Error processing event " + e.getLocalizedMessage();
                     log.error(msg, e);
