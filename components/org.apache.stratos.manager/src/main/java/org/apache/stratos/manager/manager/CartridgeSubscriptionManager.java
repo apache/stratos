@@ -254,17 +254,7 @@ public class CartridgeSubscriptionManager {
             throw new ADCException(e);
         }
     }
-    
-    public SubscriptionInfo subscribeToCartridgeWithProperties(SubscriptionData subscriptionData)  throws ADCException,
-                                                                                            InvalidCartridgeAliasException,
-                                                                                            DuplicateCartridgeAliasException,
-                                                                                            PolicyException,
-                                                                                            UnregisteredCartridgeException,
-                                                                                            RepositoryRequiredException,
-                                                                                            RepositoryCredentialsRequiredException,
-                                                                                            RepositoryTransportException,
-                                                                                            AlreadySubscribedException,
-                                                                                            InvalidRepositoryException {
+
     /**
      * 
      * @param subscriptionData
@@ -662,7 +652,7 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    public boolean isSubscriptionDomainValid(String domainName) throws ADCException {
+    public static boolean isSubscriptionDomainValid(String domainName) throws ADCException {
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Validating domain: %s", domainName));
@@ -712,7 +702,7 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    public CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias) {
+    public static CartridgeSubscription getCartridgeSubscription (int tenantId, String subscriptionAlias) {
 
         return new DataInsertionAndRetrievalManager().getCartridgeSubscription(tenantId, subscriptionAlias);
     }
@@ -777,7 +767,7 @@ public class CartridgeSubscriptionManager {
         }
     }
 
-    private Properties getPersistenceMappingProperties (PersistenceContext persistenceCtxt, CartridgeInfo cartridgeInfo) throws ADCException {
+    private static Properties getPersistenceMappingProperties (PersistenceContext persistenceCtxt, CartridgeInfo cartridgeInfo) throws ADCException {
 
         if (!cartridgeInfo.isPersistenceSpecified()) {
             // Persistence Mapping not supported in the cartridge definition - error
