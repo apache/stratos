@@ -63,20 +63,26 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     @Override
     public void run() {
 
-        if (log.isDebugEnabled()) {
-            log.debug("VMLbClusterMonitor is running.. " + this.toString());
-        }
-        try {
-            if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
-                monitor();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("VMLbClusterMonitor is suspended as the cluster is in " +
-                              ClusterStatus.In_Maintenance + " mode......");
-                }
+        while (!isDestroyed()) {
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster monitor is running.. " + this.toString());
             }
-        } catch (Exception e) {
-            log.error("VMLbClusterMonitor : Monitor failed. " + this.toString(), e);
+            try {
+                if (!ClusterStatus.Inactive.equals(status)) {
+                    monitor();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("LB Cluster monitor is suspended as the cluster is in " +
+                                ClusterStatus.Inactive + " mode......");
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Cluster monitor: Monitor failed. " + this.toString(), e);
+            }
+            try {
+                Thread.sleep(getMonitorIntervalMilliseconds());
+            } catch (InterruptedException ignore) {
+            }
         }
     }
 

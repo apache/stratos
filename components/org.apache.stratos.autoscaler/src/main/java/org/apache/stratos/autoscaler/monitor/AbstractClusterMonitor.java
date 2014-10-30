@@ -23,9 +23,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
+import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
@@ -54,11 +60,11 @@ import org.drools.runtime.rule.FactHandle;
 /*
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
  */
-public abstract class AbstractClusterMonitor implements Runnable {
+public abstract class AbstractClusterMonitor extends Monitor implements Runnable {
 
     private String clusterId;
     private String serviceId;
-    private ClusterStatus status;
+    protected ClusterStatus status;
     private int monitoringIntervalMilliseconds;
 
     protected FactHandle minCheckFactHandle;
@@ -68,6 +74,7 @@ public abstract class AbstractClusterMonitor implements Runnable {
     private boolean isDestroyed;
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected boolean hasFaultyMember = false;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -159,7 +166,7 @@ public abstract class AbstractClusterMonitor implements Runnable {
     public abstract void handleMemberTerminatedEvent(MemberTerminatedEvent memberTerminatedEvent);
 
     public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
-    
+
     public abstract void handleDynamicUpdates(Properties properties) throws InvalidArgumentException;
 
     public String getClusterId() {
@@ -243,5 +250,38 @@ public abstract class AbstractClusterMonitor implements Runnable {
     public void setAutoscalerRuleEvaluator(
             AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+    }
+
+
+    @Override
+    public void onParentEvent(MonitorStatusEvent statusEvent) {
+        // send the ClusterTerminating event
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
+        }
+    }
+
+    @Override
+    public void onChildEvent(MonitorStatusEvent statusEvent) {
+
+    }
+
+    @Override
+    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
+
+    }
+
+    @Override
+    public void onEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
+    public void setHasFaultyMember(boolean hasFaultyMember) {
+        this.hasFaultyMember = hasFaultyMember;
+    }
+
+    public boolean isHasFaultyMember() {
+        return hasFaultyMember;
     }
 }

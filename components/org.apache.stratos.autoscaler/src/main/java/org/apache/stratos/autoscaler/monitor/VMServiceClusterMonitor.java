@@ -63,28 +63,28 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     @Override
     public void run() {
-
-        try {
-            // TODO make this configurable,
-            // this is the delay the min check of normal cluster monitor to wait until LB monitor is added
-            Thread.sleep(60000);
-        } catch (InterruptedException ignore) {
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("VMServiceClusterMonitor is running.. " + this.toString());
-        }
-        try {
-            if (!ClusterStatus.In_Maintenance.equals(getStatus())) {
-                monitor();
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("VMServiceClusterMonitor is suspended as the cluster is in " +
-                              ClusterStatus.In_Maintenance + " mode......");
+        while (!isDestroyed()) {
+            try {
+                if ((this.status.getCode() <= ClusterStatus.Active.getCode()) ||
+                        (this.status == ClusterStatus.Inactive && !hasDependent) ||
+                        !this.hasFaultyMember) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster monitor is running.. " + this.toString());
+                    }
+                    monitor();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster monitor is suspended as the cluster is in " +
+                                ClusterStatus.Inactive + " mode......");
+                    }
                 }
+            } catch (Exception e) {
+                log.error("Cluster monitor: Monitor failed." + this.toString(), e);
             }
-        } catch (Exception e) {
-            log.error("VMServiceClusterMonitor : Monitor failed." + this.toString(), e);
+            try {
+                Thread.sleep(getMonitorIntervalMilliseconds());
+            } catch (InterruptedException ignore) {
+            }
         }
     }
 
