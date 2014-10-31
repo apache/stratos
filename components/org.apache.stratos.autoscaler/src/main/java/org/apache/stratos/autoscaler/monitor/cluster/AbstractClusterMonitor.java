@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
@@ -284,4 +285,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public boolean isHasFaultyMember() {
         return hasFaultyMember;
     }
+
+    public abstract void terminateAllMembers();
 }

@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
-import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;

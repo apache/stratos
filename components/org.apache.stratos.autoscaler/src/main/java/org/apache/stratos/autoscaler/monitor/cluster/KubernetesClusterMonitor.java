@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -505,6 +505,16 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
             return null;
         } finally {
             TopologyManager.releaseReadLock();
+        }
+    }
+
+    @Override
+    public void terminateAllMembers() {
+        try {
+            CloudControllerClient.getInstance().terminateAllContainers(getKubernetesClusterCtxt().getClusterId());
+        } catch (TerminationException e) {
+            log.error(String.format("Could not terminate containers: [cluster-id] %s",
+                    getKubernetesClusterCtxt().getClusterId()), e);
         }
     }
 }

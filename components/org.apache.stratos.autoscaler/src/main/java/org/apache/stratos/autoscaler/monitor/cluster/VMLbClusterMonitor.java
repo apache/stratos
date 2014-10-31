@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;

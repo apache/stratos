@@ -16,20 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;

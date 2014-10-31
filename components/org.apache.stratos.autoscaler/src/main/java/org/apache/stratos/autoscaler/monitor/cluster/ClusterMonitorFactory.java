@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.Map;
 import java.util.Random;
@@ -46,8 +46,6 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
 /*

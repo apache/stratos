@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.Map;
 
@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -635,5 +636,57 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
     public NetworkPartitionContext getPartitionCtxt(String id) {
         return this.networkPartitionCtxts.get(id);
+    }
+
+    @Override
+    public void terminateAllMembers() {
+
+        Thread memberTerminator = new Thread(new Runnable(){
+            public void run(){
+
+                for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+                    for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                        //if (log.isDebugEnabled()) {
+                        log.info("Starting to terminate all members in Network Partition [ " +
+                                networkPartitionContext.getId() + " ], Partition [ " +
+                                partitionContext.getPartitionId() + " ]");
+                        // }
+                        // need to terminate active, pending and obsolete members
+
+                        // active members
+                        for (MemberContext activeMemberCtxt : partitionContext.getActiveMembers()) {
+                            log.info("Terminating active member [member id] " + activeMemberCtxt.getMemberId());
+                            terminateMember(activeMemberCtxt.getMemberId());
+                        }
+
+                        // pending members
+                        for  (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
+                            log.info("Terminating pending member [member id] " + pendingMemberCtxt.getMemberId());
+                            terminateMember(pendingMemberCtxt.getMemberId());
+                        }
+
+                        // obsolete members
+                        for (String obsoleteMemberId : partitionContext.getObsoletedMembers().keySet()) {
+                            log.info("Terminating obsolete member [member id] " + obsoleteMemberId);
+                            terminateMember(obsoleteMemberId);
+                        }
+
+//                terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
+//                        (terminateAllKnowledgeSession, terminateAllFactHandle, partitionContext);
+                    }
+                }
+            }
+        }, "Member Terminator - [cluster id] " + getClusterId());
+
+        memberTerminator.start();
+    }
+
+    private static void terminateMember (String memberId) {
+        try {
+            CloudControllerClient.getInstance().terminate(memberId);
+
+        } catch (TerminationException e) {
+            log.error("Unable to terminate member [member id ] " + memberId, e);
+        }
     }
 }
