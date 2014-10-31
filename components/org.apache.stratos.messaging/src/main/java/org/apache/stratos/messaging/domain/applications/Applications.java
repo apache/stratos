@@ -21,6 +21,8 @@ package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.applications.locking.ApplicationLock;
+import org.apache.stratos.messaging.domain.applications.locking.ApplicationLockHierarchy;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -38,8 +40,10 @@ public class Applications implements Serializable {
         this.applicationMap = new HashMap<String, Application>();
     }
 
-    public void addApplication (Application application) {
-        this.getApplications().put(application.getUniqueIdentifier(), application);
+    public synchronized void addApplication (Application application) {
+        this.applicationMap.put(application.getUniqueIdentifier(), application);
+        ApplicationLockHierarchy.getInstance().addApplicationLock(application.getUniqueIdentifier(),
+                new ApplicationLock());
     }
 
     public Application getApplication (String appId) {
@@ -60,5 +64,10 @@ public class Applications implements Serializable {
 
     public Map<String, Application> getApplications() {
         return applicationMap;
+    }
+
+    public synchronized void removeApplication (String appId) {
+        this.applicationMap.remove(appId);
+        ApplicationLockHierarchy.getInstance().removeLock(appId);
     }
 }
