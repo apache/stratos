@@ -18,22 +18,25 @@
  */
 package org.apache.stratos.autoscaler.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
-import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
-import org.apache.stratos.autoscaler.exception.NonExistingLBException;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.autoscaler.pojo.Dependencies;
+import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.wso2.carbon.registry.api.RegistryException;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 /**
@@ -266,6 +269,73 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
         
         return true;
         
+    }
+
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
+
+        if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
+            String msg = "Service group can not be null service name can not be empty.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+
+        }
+        String name = servicegroup.getName();
+
+        if(RegistryManager.getInstance().serviceGroupExist(name)){
+            throw new InvalidServiceGroupException("Service group with the name " + name + " already exist.");
+        }
+
+        if(log.isDebugEnabled()) {
+            log.debug(MessageFormat.format("Deploying service group {0}", servicegroup.getName()));
+        }
+
+        String [] subGroups = servicegroup.getCartridges();
+
+        if(log.isDebugEnabled()) {
+            log.debug("SubGroups" + subGroups);
+            if (subGroups != null) {
+                log.debug("subGroups:size" + subGroups.length);
+            } else {
+                log.debug("subGroups: are null");
+            }
+        }
+
+
+        Dependencies dependencies = servicegroup.getDependencies();
+
+        if(log.isDebugEnabled()) {
+            log.debug("Dependencies" + dependencies);
+        }
+
+        if (dependencies != null) {
+            String [] startupOrders = dependencies.getStartupOrders();
+
+            if(log.isDebugEnabled()) {
+                log.debug("StartupOrders" + startupOrders);
+
+                if (startupOrders != null) {
+                    log.debug("StartupOrder:size" + startupOrders.length);
+                } else {
+                    log.debug("StartupOrder: is null");
+                }
+            }
+        }
+
+        RegistryManager.getInstance().persistServiceGroup(servicegroup);
+    }
+
+    public ServiceGroup getServiceGroup(String name){
+        if(StringUtils.isEmpty(name)){
+            return null;
+        }
+        try {
+            return RegistryManager.getInstance().getServiceGroup(name);
+        } catch (Exception e) {
+            throw new AutoScalerException("Error occurred while retrieving service groups", e);
+        }
+    }
+    public boolean serviceGroupExist(String serviceName){
+        return false;
     }
 
 

@@ -21,11 +21,13 @@ package org.apache.stratos.autoscaler.registry;
 */
 
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
@@ -142,6 +144,7 @@ public class RegistryManager {
         }
     }
 
+
     public void persistApplication (Application application) {
 
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
@@ -181,13 +184,27 @@ public class RegistryManager {
         }
         return null;
     }
+
+    public void persistServiceGroup(ServiceGroup servicegroup) {
+        if(servicegroup == null || StringUtils.isEmpty(servicegroup.getName())){
+            throw new  IllegalArgumentException("Service group or group name can not be null");
+        }
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
+        persist(servicegroup, resourcePath);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Persisted service group %s at path %s", servicegroup.getName(), resourcePath));
+        }
+    }
+
+    public boolean serviceGroupExist(String serviceGroupName){
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + serviceGroupName;
+        return this.resourceExist(resourcePath);
+    }
     
     private Object retrieve(String resourcePath) {
         try {
             Resource resource = registryService.get(resourcePath);
-           
             return resource.getContent();
-
         } catch (ResourceNotFoundException ignore) {
             // this means, we've never persisted info in registry
             return null;
@@ -196,6 +213,10 @@ public class RegistryManager {
             log.error(msg, e);
             throw new AutoScalerException(msg, e);
         }
+    }
+
+    private boolean resourceExist(String resourcePath){
+        return  this.retrieve(resourcePath) != null;
     }
 
     public List<Partition> retrievePartitions() {
@@ -327,6 +348,26 @@ public class RegistryManager {
         return depPolicyList;
     }
 
+    public ServiceGroup getServiceGroup(String name) throws Exception{
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        Object serializedObj = registryManager.retrieve(resourcePath);
+        ServiceGroup group = null;
+        if (serializedObj != null) {
+
+                Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                if (dataObj instanceof ServiceGroup) {
+                    group = (ServiceGroup) dataObj;
+                    if(log.isDebugEnabled()) {
+                        log.debug(group.toString());
+                    }
+                } else {
+                    return null;
+                }
+        }
+
+        return group;
+    }
+
 	public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
 		 String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
          this.delete(resourcePath);
@@ -372,6 +413,6 @@ public class RegistryManager {
 	            log.error("Could not delete resource at "+ resourcePath);
 	            throw new AutoScalerException("Could not delete data in registry at " + resourcePath, e);
 	        }
-		
+
 	}
 }

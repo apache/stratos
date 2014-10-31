@@ -22,23 +22,21 @@ package org.apache.stratos.manager.grouping.deployer;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidServiceGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
-import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
-import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
@@ -155,23 +153,23 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             }
         }
         
-        CloudControllerServiceClient ccServiceClient = null;
+        AutoscalerServiceClient asServiceClient = null;
 
         try {
-            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            asServiceClient = AutoscalerServiceClient.getServiceClient();
             
             if (log.isDebugEnabled()) {
             	log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
             }
-            
-            ccServiceClient.deployServiceGroup(serviceGroup);
+
+            asServiceClient.deployServiceGroup(serviceGroup);
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
         }catch (RemoteException e) {
             throw new ADCException(e);
-        } catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
-        	throw new ADCException(e);
+        } catch (AutoScalerServiceInvalidServiceGroupExceptionException e) {
+            e.printStackTrace();
         }
     }
 
@@ -181,16 +179,16 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         	log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
         }
     	
-    	CloudControllerServiceClient ccServiceClient = null;
+    	AutoscalerServiceClient asServiceClient = null;
 
         try {
-            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            asServiceClient = AutoscalerServiceClient.getServiceClient();
             
             if (log.isDebugEnabled()) {
             	log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
             }
             
-            ServiceGroup serviceGroup = ccServiceClient.getServiceGroup(serviceGroupDefinitionName);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroup(serviceGroupDefinitionName);
             ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
             
             return serviceGroupDef;
@@ -199,10 +197,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
         	throw new ADCException(e);
-		} catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
-			throw new ADCException(e);
 		}
-    	
     }
 
 

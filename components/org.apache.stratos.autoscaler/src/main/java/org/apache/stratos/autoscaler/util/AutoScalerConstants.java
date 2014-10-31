@@ -44,5 +44,6 @@ public final class AutoScalerConstants {
      * Configs
      */
     public static final String AUTOSCALER_MONITOR_INTERVAL = "autoscaler.monitorInterval";
-       
+
+    public static final String SERVICE_GROUP = "/groups";
 }

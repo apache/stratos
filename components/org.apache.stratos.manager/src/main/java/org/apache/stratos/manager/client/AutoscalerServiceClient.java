@@ -24,15 +24,13 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.stub.*;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceNonExistingLBExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceStub;
 
 import java.rmi.RemoteException;
 
@@ -211,5 +209,13 @@ public class AutoscalerServiceClient {
     public String getServiceLBClusterId (String serviceType, String deploymentPolicy) throws RemoteException {
     	return stub.getServiceLBClusterId(serviceType, deploymentPolicy);
     }
-    
+
+
+    public ServiceGroup getServiceGroup(String serviceGroupDefinitionName) throws RemoteException {
+        return stub.getServiceGroup(serviceGroupDefinitionName);
+    }
+
+    public void deployServiceGroup(ServiceGroup serviceGroup) throws AutoScalerServiceInvalidServiceGroupExceptionException, RemoteException {
+        stub.deployServiceGroup(serviceGroup);
+    }
 }
