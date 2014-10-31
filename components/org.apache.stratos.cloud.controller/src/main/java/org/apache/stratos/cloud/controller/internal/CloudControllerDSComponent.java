@@ -79,7 +79,17 @@ public class CloudControllerDSComponent {
             InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
             Thread tdelegator = new Thread(delegator);
             tdelegator.start();
-        	
+            if(log.isInfoEnabled()) {
+                log.info("Instance status message receiver thread started");
+            }
+
+            ApplicationStatusTopicReceiver applicationStatusTopicReceiver = new ApplicationStatusTopicReceiver();
+            Thread appThread = new Thread(applicationStatusTopicReceiver);
+            appThread.start();
+            if(log.isInfoEnabled()) {
+                log.info("Application status message receiver thread started");
+            }
+
         	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
             bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
