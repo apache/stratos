@@ -42,7 +42,7 @@ public class ClusterStatusClusterTerminatingMessageProcessor extends MessageProc
                                                 jsonToObject(message, ClusterStatusClusterTerminatingEvent.class);
 
             if(log.isDebugEnabled()) {
-                log.debug("Received AppStatusClusterTerminatingEvent: " + event.toString());
+                log.debug("Received ClusterStatusClusterTerminatingEvent: " + event.toString());
             }
             // Notify event listeners
             notifyEventListeners(event);

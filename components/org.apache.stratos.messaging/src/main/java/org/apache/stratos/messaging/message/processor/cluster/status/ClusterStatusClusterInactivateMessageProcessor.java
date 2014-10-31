@@ -42,7 +42,7 @@ public class ClusterStatusClusterInactivateMessageProcessor extends MessageProce
                                                 jsonToObject(message, ClusterStatusClusterInactivateEvent.class);
 
             if(log.isDebugEnabled()) {
-                log.debug("Received ClusterInActivateEvent: " + event.toString());
+                log.debug("Received ClusterStatusClusterInactivateEvent: " + event.toString());
             }
             // Notify event listeners
             notifyEventListeners(event);

@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterCreatedEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
@@ -30,16 +31,19 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(ClusterStatusMessageProcessorChain.class);
 
-
+    private ClusterStatusClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
-    private ClusterStatusClusterResetMessageProcessor clusterCreatedMessageProcessor;
+    private ClusterStatusClusterResetMessageProcessor clusterResetMessageProcessor;
     private ClusterStatusClusterInactivateMessageProcessor clusterInactivateMessageProcessor;
     private ClusterStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
     private ClusterStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
     @Override
     protected void initialize() {
-        clusterCreatedMessageProcessor = new ClusterStatusClusterResetMessageProcessor();
+        clusterCreatedMessageProcessor = new ClusterStatusClusterCreatedMessageProcessor();
         add(clusterCreatedMessageProcessor);
+
+        clusterResetMessageProcessor = new ClusterStatusClusterResetMessageProcessor();
+        add(clusterResetMessageProcessor);
 
         clusterActivatedMessageProcessor = new ClusterStatusClusterActivatedMessageProcessor();
         add(clusterActivatedMessageProcessor);
@@ -60,8 +64,10 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if(eventListener instanceof ClusterStatusClusterResetEventListener) {
-            clusterCreatedMessageProcessor.addEventListener(eventListener);
+        if(eventListener instanceof ClusterStatusClusterCreatedEventListener) {
+            clusterResetMessageProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof ClusterStatusClusterResetEventListener) {
+            clusterResetMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterInactivateEventListener) {
             clusterInactivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterActivatedEventListener) {

@@ -42,7 +42,7 @@ public class ClusterStatusClusterResetMessageProcessor extends MessageProcessor 
                     jsonToObject(message, ClusterStatusClusterResettedEvent.class);
 
             if(log.isDebugEnabled()) {
-                log.debug("Received AppStatusClusterCreatedEvent: " + event.toString());
+                log.debug("Received ClusterStatusClusterResettedEvent: " + event.toString());
             }
             // Notify event listeners
             notifyEventListeners(event);

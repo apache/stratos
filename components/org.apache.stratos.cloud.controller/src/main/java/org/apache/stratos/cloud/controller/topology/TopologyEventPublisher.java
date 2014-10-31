@@ -77,13 +77,22 @@ public class TopologyEventPublisher {
         }
     }
 
-    public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
-//        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(new Cluster());
-//
-//        if(log.isInfoEnabled()) {
-//            log.info("Publishing cluster created event: " +clusterId);
-//        }
-//        publishEvent(clusterCreatedEvent);
+    public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
+        ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId,serviceName, clusterId);
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing cluster reset event: " + clusterId);
+        }
+        publishEvent(clusterResetEvent);
+    }
+
+    public static void sendClusterCreatedEvent(Cluster cluster) {
+        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(cluster);
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing cluster created event: " + cluster.getClusterId());
+        }
+        publishEvent(clusterCreatedEvent);
     }
 
     public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {

@@ -20,13 +20,14 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterTerminatedEvent;
+import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterCreatedEvent;
+import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResettedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
 
-public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterStatusClusterTerminatedMessageProcessor.class);
+public class ClusterStatusClusterCreatedMessageProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(ClusterStatusClusterCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -36,13 +37,13 @@ public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProce
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ClusterStatusClusterTerminatedEvent.class.getName().equals(type)) {
+        if (ClusterStatusClusterCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterStatusClusterTerminatedEvent event = (ClusterStatusClusterTerminatedEvent) Util.
-                    jsonToObject(message, ClusterStatusClusterTerminatedEvent.class);
+            ClusterStatusClusterCreatedEvent event = (ClusterStatusClusterCreatedEvent) Util.
+                    jsonToObject(message, ClusterStatusClusterCreatedEvent.class);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Received ClusterStatusClusterTerminatedEvent: " + event.toString());
+            if(log.isDebugEnabled()) {
+                log.debug("Received ClusterStatusClusterCreatedEvent: " + event.toString());
             }
             // Notify event listeners
             notifyEventListeners(event);
@@ -51,7 +52,7 @@ public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProce
             if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
             } else {
-                throw new RuntimeException(String.format("Failed to process cluster activated message using available message processors: [type] %s [body] %s", type, message));
+                throw new RuntimeException(String.format("Failed to process cluster created message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
