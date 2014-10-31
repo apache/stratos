@@ -24,7 +24,7 @@ import java.util.*;
 
 /**
  * Abstraction for a an entity that can have child entities
- * in an Application withing the Topology
+ * in an Application within the Topology
  */
 
 public abstract class ParentComponent implements Serializable {

@@ -155,25 +155,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         List<IaasProvider> iaases = cartridge.getIaases();
         
 		if (!StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
-			if (iaases == null || iaases.isEmpty()) {
-				String msg = "Invalid Cartridge Definition: Cartridge Type: "
-						+ cartridgeConfig.getType()
-						+ ". Cause: Iaases of this Cartridge is null or empty.";
-				LOG.error(msg);
-				throw new InvalidCartridgeDefinitionException(msg);
-			}
+            if (iaases == null || iaases.isEmpty()) {
+                String msg = "Invalid Cartridge Definition: Cartridge Type: "
+                        + cartridgeConfig.getType()
+                        + ". Cause: Iaases of this Cartridge is null or empty.";
+                LOG.error(msg);
+                throw new InvalidCartridgeDefinitionException(msg);
+            }
 
-        if (iaases == null || iaases.isEmpty()) {
-            String msg =
-                    "Invalid Cartridge Definition: Cartridge Type: " +
-                            cartridgeConfig.getType()+
-                            ". Cause: Iaases of this Cartridge is null or empty.";
-            LOG.error(msg);
-            throw new InvalidCartridgeDefinitionException(msg);
-        }
+            if (iaases == null || iaases.isEmpty()) {
+                String msg = "Invalid Cartridge Definition: Cartridge Type: " +
+                        cartridgeConfig.getType() +
+                        ". Cause: Iaases of this Cartridge is null or empty.";
+                LOG.error(msg);
+                throw new InvalidCartridgeDefinitionException(msg);
+            }
 
-        for (IaasProvider iaasProvider : iaases) {
-            CloudControllerUtil.getIaas(iaasProvider);
+            for (IaasProvider iaasProvider : iaases) {
+                CloudControllerUtil.getIaas(iaasProvider);
+            }
         }
 
         // TODO transaction begins
@@ -201,8 +201,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
         
         LOG.info("Successfully deployed the Cartridge definition: " + cartridgeType);
-        
-		}
     }
 
     private void populateNewCartridge(Cartridge cartridge,
