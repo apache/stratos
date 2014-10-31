@@ -78,12 +78,12 @@ public class TopologyEventPublisher {
     }
 
     public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
-        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(new Cluster());
-
-        if(log.isInfoEnabled()) {
-            log.info("Publishing cluster created event: " +clusterId);
-        }
-        publishEvent(clusterCreatedEvent);
+//        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(new Cluster());
+//
+//        if(log.isInfoEnabled()) {
+//            log.info("Publishing cluster created event: " +clusterId);
+//        }
+//        publishEvent(clusterCreatedEvent);
     }
 
     public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {

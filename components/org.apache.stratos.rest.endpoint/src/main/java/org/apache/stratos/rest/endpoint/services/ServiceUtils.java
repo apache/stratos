@@ -54,6 +54,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
@@ -1449,8 +1450,8 @@ public class ServiceUtils {
     public static ApplicationBean getApplicationInfo(String applicationId, ConfigurationContext configContext) {
         ApplicationBean applicationBean = null;
         try{
-            TopologyManager.acquireReadLockForApplication(applicationId);
-            Application application = TopologyManager.getTopology().getApplication(applicationId);
+            ApplicationManager.acquireReadLockForApplication(applicationId);
+            Application application = ApplicationManager.getApplications().getApplication(applicationId);
             if(application == null){
                 return null;
             }
@@ -1480,7 +1481,7 @@ public class ServiceUtils {
                 applicationBean.addGroup(groupBean);
             }
         }finally {
-            TopologyManager.releaseReadLockForApplication(applicationId);
+            ApplicationManager.releaseReadLockForApplication(applicationId);
         }
 
 

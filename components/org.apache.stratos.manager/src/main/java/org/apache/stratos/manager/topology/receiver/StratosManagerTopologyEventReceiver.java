@@ -92,21 +92,22 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 ClusterCreatedEvent clustercreatedEvent = (ClusterCreatedEvent) event;
 
-                String serviceType = clustercreatedEvent.getServiceName();
+                String serviceType = clustercreatedEvent.getCluster().getServiceName();
                 //acquire read lock
                 //TopologyManager.acquireReadLock();
-                TopologyManager.acquireReadLockForCluster(clustercreatedEvent.getServiceName(),
-                        clustercreatedEvent.getClusterId());
+                TopologyManager.acquireReadLockForCluster(clustercreatedEvent.getCluster().getServiceName(),
+                        clustercreatedEvent.getCluster().getClusterId());
 
                 try {
-                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clustercreatedEvent.getClusterId());
+                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).
+                            getCluster(clustercreatedEvent.getCluster().getClusterId());
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
 
                 } finally {
                     //release read lock
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForCluster(clustercreatedEvent.getServiceName(),
-                            clustercreatedEvent.getClusterId());
+                    TopologyManager.releaseReadLockForCluster(clustercreatedEvent.getCluster().getServiceName(),
+                            clustercreatedEvent.getCluster().getClusterId());
                 }
 
             }
