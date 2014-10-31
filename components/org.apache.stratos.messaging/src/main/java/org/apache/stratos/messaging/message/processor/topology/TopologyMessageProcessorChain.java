@@ -36,6 +36,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ServiceCreatedMessageProcessor serviceCreatedMessageProcessor;
     private ServiceRemovedMessageProcessor serviceRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
+    private ClusterResetMessageProcessor clusterResetMessageProcessor;
     private ClusterActivatedProcessor clusterActivatedProcessor;
     private ClusterInActivateProcessor clusterInActivateProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
@@ -74,6 +75,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterTerminatedProcessor = new ClusterTerminatedProcessor();
         add(clusterTerminatedProcessor);
+
+        clusterResetMessageProcessor = new ClusterResetMessageProcessor();
+        add(clusterResetMessageProcessor);
 
         clusterTerminatingProcessor = new ClusterTerminatingProcessor();
         add(clusterTerminatingProcessor);
@@ -117,6 +121,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ClusterTerminatedEventListener){
             clusterTerminatedProcessor.addEventListener(eventListener);
+        } else if(eventListener instanceof ClusterResetEventListener){
+            clusterResetMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof  ClusterTerminatingEventListener){
             clusterTerminatingProcessor.addEventListener(eventListener);
         }else if (eventListener instanceof InstanceSpawnedEventListener) {

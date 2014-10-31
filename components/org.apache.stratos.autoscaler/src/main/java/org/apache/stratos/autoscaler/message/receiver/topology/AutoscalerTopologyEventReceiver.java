@@ -168,13 +168,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
 
                 log.info("[ClusterCreatedEvent] Received: " + event.getClass());
 
-                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
+                ClusterResetEvent clusterCreatedEvent = (ClusterResetEvent) event;
                 String clusterId = clusterCreatedEvent.getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
@@ -182,6 +182,18 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 clusterMonitor.setStop(true);
                 clusterMonitor.setStatus(ClusterStatus.Created);
+
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                log.info("[ClusterCreatedEvent] Received: " + event.getClass());
+
+                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
+                //TODO notify the monitor about cluster creation
 
             }
         });
