@@ -170,6 +170,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
 
 	</dependencies>
 

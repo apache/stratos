@@ -39,11 +39,14 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     private String deploymentPolicy;
     // Group level autoscaling policy
     private String autoscalingPolicy;
+    // application id
+    private String applicationId;
     // Life cycle state manager
     protected LifeCycleStateManager<GroupStatus> groupStateManager;
 
-    public Group (String name, String alias) {
+    public Group (String applicationId, String name, String alias) {
         super();
+        this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
         this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
@@ -108,5 +111,9 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
 
     public int hashCode () {
         return name.hashCode() + alias.hashCode();
+    }
+
+    public String getApplicationId() {
+        return applicationId;
     }
 }

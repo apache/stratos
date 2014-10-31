@@ -416,7 +416,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     groupCtxt.getAlias() + " is not found in the all Group Definitions collection");
         }
 
-        Group group = new Group(groupCtxt.getName(), groupCtxt.getAlias());
+        Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
 
         group.setAutoscalingPolicy(groupCtxt.getAutoscalingPolicy());
         group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
