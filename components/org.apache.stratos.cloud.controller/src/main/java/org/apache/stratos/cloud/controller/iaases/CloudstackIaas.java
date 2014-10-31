@@ -58,7 +58,7 @@ public class CloudstackIaas extends Iaas {
         if (iaasInfo.getComputeService() == null) {
             String msg = "Compute service is null for IaaS provider: "
                     + iaasInfo.getName();
-            log.fatal(msg);
+            log.error(msg);
             throw new CloudControllerException(msg);
         }
 
@@ -85,7 +85,7 @@ public class CloudstackIaas extends Iaas {
                 if (location.getId().equals(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE))) {
                     //if the zone is valid set the zone to templateBuilder Object
                     templateBuilder.locationId(location.getId());
-                    log.info("ZONE has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
+                    log.info("Zone has been set as " + iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE)
                             + " with id: " + location.getId());
                     break;
                 }
