@@ -19,32 +19,33 @@
 
 package org.apache.stratos.autoscaler.applications;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.wso2.carbon.ntask.core.Task;
 
 import java.util.Map;
 
-public class ApplicationSynchronizerTask implements Task {
+public class ApplicationSynchronizeTask implements Task {
+    private static final Log log = LogFactory.getLog(ApplicationSynchronizeTask.class);
 
     @Override
-    public void setProperties(Map<String, String> stringStringMap) {
-
+    public void execute() {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing topology synchronization task");
+        }
+        // publish to the topic
+        if (ApplicationHolder.getApplications() != null) {
+            ApplicationsEventPublisher.sendCompleteTopologyEvent(ApplicationHolder.getApplications());
+        }
     }
 
     @Override
     public void init() {
+        log.info("Applications Complete Event publisher task has been started...");
 
     }
 
     @Override
-    public void execute() {
-
-        Applications applications = ApplicationManager.getApplications();
-        if (applications != null) {
-            // publish complete Applications event
-            ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
-        }
-    }
+    public void setProperties(Map<String, String> arg0) {}
 }

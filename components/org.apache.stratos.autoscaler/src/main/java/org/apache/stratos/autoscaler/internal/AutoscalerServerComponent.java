@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.message.receiver.health.AutoscalerHealthStatEventReceiver;
@@ -32,6 +33,7 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
@@ -41,6 +43,9 @@ import java.util.List;
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
  * immediate="true"
+ * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService"
+ * unbind="unsetTaskService"
  * @scr.reference name="registry.service"
  * interface=
  * "org.wso2.carbon.registry.core.service.RegistryService"
@@ -52,13 +57,13 @@ public class AutoscalerServerComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
     AutoscalerTopologyEventReceiver asTopologyReceiver;
-//    TopicSubscriber healthStatTopicSubscriber;
+    //    TopicSubscriber healthStatTopicSubscriber;
     AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
         try {
             // Start topology receiver
-        	asTopologyReceiver = new AutoscalerTopologyEventReceiver();
+            asTopologyReceiver = new AutoscalerTopologyEventReceiver();
             Thread topologyTopicSubscriberThread = new Thread(asTopologyReceiver);
             topologyTopicSubscriberThread.start();
             if (log.isDebugEnabled()) {
@@ -88,7 +93,7 @@ public class AutoscalerServerComponent {
                 Partition partition = partitionIterator.next();
                 PartitionManager.getInstance().addPartitionToInformationModel(partition);
             }
-            
+
             // Adding the network partitions stored in registry to the information model
             List<NetworkPartitionLbHolder> nwPartitionHolders = RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
             Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
@@ -96,7 +101,7 @@ public class AutoscalerServerComponent {
                 NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
                 PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
             }
-            
+
             List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
             Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
             while (asPolicyIterator.hasNext()) {
@@ -112,6 +117,14 @@ public class AutoscalerServerComponent {
             }
 
             if (log.isInfoEnabled()) {
+                log.info("Scheduling tasks to publish applications");
+            }
+
+            ApplicationSynchronizerTaskScheduler
+                    .schedule(ServiceReferenceHolder.getInstance()
+                            .getTaskService());
+
+            if (log.isInfoEnabled()) {
                 log.info("Autoscaler Server Component activated");
             }
         } catch (Throwable e) {
@@ -120,10 +133,10 @@ public class AutoscalerServerComponent {
     }
 
     protected void deactivate(ComponentContext context) {
-    	asTopologyReceiver.terminate();
-    	autoscalerHealthStatEventReceiver.terminate();
+        asTopologyReceiver.terminate();
+        autoscalerHealthStatEventReceiver.terminate();
     }
-    
+
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting the Registry Service");
@@ -142,5 +155,19 @@ public class AutoscalerServerComponent {
             log.debug("Unsetting the Registry Service");
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
+    }
+
+    protected void setTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting the Task Service");
+        }
+        ServiceReferenceHolder.getInstance().setTaskService(taskService);
+    }
+
+    protected void unsetTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Unsetting the Task Service");
+        }
+        ServiceReferenceHolder.getInstance().setTaskService(null);
     }
 }

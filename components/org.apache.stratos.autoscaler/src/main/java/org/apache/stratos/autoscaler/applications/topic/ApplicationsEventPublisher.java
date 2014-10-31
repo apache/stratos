@@ -23,6 +23,15 @@ public class ApplicationsEventPublisher {
         publishEvent(new CompleteApplicationsEvent(completeApplications));
     }
 
+    public static void sendCompleteTopologyEvent(Applications applications) {
+        CompleteApplicationsEvent applicationsEvent = new CompleteApplicationsEvent(applications);
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Publishing complete Applications event"));
+        }
+        publishEvent(applicationsEvent);
+    }
+
     public static void sendGroupCreatedEvent(String appId, String groupId) {
         try {
             ApplicationManager.acquireReadLockForApplication(appId);
