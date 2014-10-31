@@ -48,8 +48,8 @@ public class ClusterStatusEventPublisher {
                         log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    ClusterStatusClusterCreatedEvent clusterCreatedEvent =
-                            new ClusterStatusClusterCreatedEvent(appId, serviceName, clusterId);
+                    ClusterStatusClusterResettedEvent clusterCreatedEvent =
+                            new ClusterStatusClusterResettedEvent(appId, serviceName, clusterId);
 
                     publishEvent(clusterCreatedEvent);
                 } else {

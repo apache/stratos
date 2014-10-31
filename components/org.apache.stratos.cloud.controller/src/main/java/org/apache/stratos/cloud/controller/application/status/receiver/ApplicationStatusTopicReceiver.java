@@ -22,9 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.applications.*;
 import org.apache.stratos.messaging.event.cluster.status.*;
-import org.apache.stratos.messaging.listener.applications.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
@@ -66,10 +64,10 @@ public class ApplicationStatusTopicReceiver implements Runnable {
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
-        statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
+        statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
+                TopologyBuilder.handleClusterCreated((ClusterStatusClusterResettedEvent) event);
             }
         });
 

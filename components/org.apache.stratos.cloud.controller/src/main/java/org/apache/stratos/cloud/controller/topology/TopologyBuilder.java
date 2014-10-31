@@ -125,7 +125,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated (ClusterStatusClusterCreatedEvent event) {
+    public static void handleClusterCreated (ClusterStatusClusterResettedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
