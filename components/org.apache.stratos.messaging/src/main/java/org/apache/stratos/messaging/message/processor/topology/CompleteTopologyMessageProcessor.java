@@ -149,21 +149,6 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
             }
         }
 
-        // add existing Applications to Topology
-        Collection<Application> applications = event.getTopology().getApplications();
-        if (applications != null && !applications.isEmpty()) {
-            for (Application application : applications) {
-                topology.addApplication(application);
-                if (log.isDebugEnabled()) {
-                    log.debug("Application with id [ " +  application.getUniqueIdentifier() + " ] added to Topology");
-                }
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("No Application information found in Complete Topology event");
-            }
-        }
-
         if (log.isInfoEnabled()) {
             log.info("Topology initialized");
         }

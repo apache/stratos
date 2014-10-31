@@ -21,11 +21,13 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.GroupActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
@@ -43,40 +45,40 @@ public class GroupActivatedProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology) object;
+        Applications applications = (Applications) object;
 
         if (GroupActivatedEvent.class.getName().equals(type)) {
-            // Return if topology has not been initialized
-            if (!topology.isInitialized())
+            // Return if applications has not been initialized
+            if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
             GroupActivatedEvent event = (GroupActivatedEvent) Util.
                     jsonToObject(message, GroupActivatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForApplication(event.getAppId());
+            ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
 
             try {
-                return doProcess(event, topology);
+                return doProcess(event, applications);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForApplication(event.getAppId());
+                ApplicationsUpdater.releaseWriteLockForApplication(event.getAppId());
             }
 
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, applications);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
 
-    private boolean doProcess (GroupActivatedEvent event,Topology topology) {
+    private boolean doProcess (GroupActivatedEvent event, Applications applications) {
 
         // Validate event against the existing topology
-        Application application = topology.getApplication(event.getAppId());
+        Application application = applications.getApplication(event.getAppId());
         if (application == null) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("Application does not exist: [service] %s",

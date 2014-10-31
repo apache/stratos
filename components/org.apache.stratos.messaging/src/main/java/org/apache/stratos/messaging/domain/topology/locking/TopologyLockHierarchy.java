@@ -35,14 +35,8 @@ public class TopologyLockHierarchy {
     // lock for Services
     private final TopologyLock serviceLock;
 
-    // lock for Applications
-    private final TopologyLock applicatioLock;
-
     // key = Service.name
     private final Map<String, TopologyLock> serviceNameToTopologyLockMap;
-
-    // key = Application.id
-    private final Map<String, TopologyLock> applicationIdToTopologyLockMap;
 
     // key = Cluster.id
     private final Map<String, TopologyLock> clusterIdToTopologyLockMap;
@@ -53,9 +47,7 @@ public class TopologyLockHierarchy {
 
         this.completeTopologyLock = new TopologyLock();
         this.serviceLock = new TopologyLock();
-        this.applicatioLock = new TopologyLock();
         this.serviceNameToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
-        this.applicationIdToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
         this.clusterIdToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
     }
 
@@ -70,26 +62,6 @@ public class TopologyLockHierarchy {
         }
 
         return topologyLockHierarchy;
-    }
-
-    public void addApplicationLock (String appId, final TopologyLock topologyLock) {
-
-        if (!applicationIdToTopologyLockMap.containsKey(appId)) {
-            synchronized (applicationIdToTopologyLockMap) {
-                if (!applicationIdToTopologyLockMap.containsKey(appId)) {
-                    applicationIdToTopologyLockMap.put(appId, topologyLock);
-                    log.info("Added lock for Application " + appId);
-                }
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Topology Lock for Application " + appId + " already exists");
-            }
-        }
-    }
-
-    public TopologyLock getTopologyLockForApplication (String appId) {
-        return applicationIdToTopologyLockMap.get(appId);
     }
 
     public void addServiceLock (String serviceName, final TopologyLock topologyLock) {
@@ -132,16 +104,6 @@ public class TopologyLockHierarchy {
         return clusterIdToTopologyLockMap.get(clusterId);
     }
 
-    public void removeTopologyLockForApplication (String appId) {
-        if (applicationIdToTopologyLockMap.remove(appId) != null) {
-            log.info("Removed lock for Application " + appId);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Lock already removed for Application " + appId);
-            }
-        }
-    }
-
     public void removeTopologyLockForService (String serviceName) {
         if (serviceNameToTopologyLockMap.remove(serviceName) != null) {
             log.info("Removed lock for Service " + serviceName);
@@ -164,10 +126,6 @@ public class TopologyLockHierarchy {
 
     public TopologyLock getServiceLock() {
         return serviceLock;
-    }
-
-    public TopologyLock getApplicatioLock() {
-        return applicatioLock;
     }
 
     public TopologyLock getCompleteTopologyLock() {

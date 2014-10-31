@@ -68,6 +68,6 @@ public class Applications implements Serializable {
 
     public synchronized void removeApplication (String appId) {
         this.applicationMap.remove(appId);
-        ApplicationLockHierarchy.getInstance().removeLock(appId);
+        ApplicationLockHierarchy.getInstance().removeLockForApplication(appId);
     }
 }

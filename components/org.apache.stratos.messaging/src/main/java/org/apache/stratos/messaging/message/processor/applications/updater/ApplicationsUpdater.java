@@ -23,8 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.locking.ApplicationLock;
 import org.apache.stratos.messaging.domain.applications.locking.ApplicationLockHierarchy;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
@@ -67,21 +66,21 @@ public class ApplicationsUpdater {
     // Top level locks - should be used to lock the entire Topology
 
     /**
-     * Acquires write lock for the Complete Topology
+     * Acquires write lock for all Applications
      */
-    public static void acquireWriteLock() {
+    public static void acquireWriteLockForApplications() {
         if(log.isDebugEnabled()) {
-            log.debug("Write lock acquired for Topology");
+            log.debug("Write lock acquired for Applications");
         }
         applicationLockHierarchy.getApplicationLock().acquireWriteLock();
     }
 
     /**
-     * Releases write lock for the Complete Topology
+     * Releases write lock for all Applications
      */
-    public static void releaseWriteLock() {
+    public static void releaseWriteLockForApplications() {
         if(log.isDebugEnabled()) {
-            log.debug("Write lock released for Topology");
+            log.debug("Write lock released for Applications");
         }
         applicationLockHierarchy.getApplicationLock().releaseWritelock();
     }
@@ -94,9 +93,9 @@ public class ApplicationsUpdater {
     public static void acquireWriteLockForApplication (String appId) {
 
         // acquire read lock for all Applications
-        TopologyManager.acquireReadLockForApplications();
+        ApplicationManager.acquireReadLockForApplications();
 
-        ApplicationLock applicationLock = applicationLockHierarchy.getLock(appId);
+        ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
         if (applicationLock == null)  {
             handleLockNotFound("Topology lock not found for Application " + appId);
 
@@ -116,7 +115,7 @@ public class ApplicationsUpdater {
      */
     public static void releaseWriteLockForApplication (String appId) {
 
-        ApplicationLock applicationLock = applicationLockHierarchy.getLock(appId);
+        ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
         if (applicationLock == null)  {
             handleLockNotFound("Topology lock not found for Application " + appId);
 
@@ -129,7 +128,7 @@ public class ApplicationsUpdater {
         }
 
         // release read lock for all Applications
-        TopologyManager.releaseReadLockForApplications();
+        ApplicationManager.releaseReadLockForApplications();
     }
 
     private static void handleLockNotFound (String errorMsg) {

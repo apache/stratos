@@ -22,14 +22,10 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
+import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.util.Util;
-
-import java.util.Set;
 
 public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
@@ -57,12 +53,12 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
                 return false;
             }
 
-            TopologyUpdater.acquireWriteLockForApplications();
+            ApplicationsUpdater.acquireWriteLockForApplications();
             try {
                 return doProcess(event, applications);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForApplications();
+                ApplicationsUpdater.releaseWriteLockForApplications();
             }
 
         } else {
@@ -75,7 +71,7 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationCreatedEvent event, Applications topology) {
+    private boolean doProcess(ApplicationCreatedEvent event, Applications applications) {
 
         // check if required properties are available
         if (event.getApplication() == null) {
@@ -90,13 +86,13 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException(errorMsg);
         }
 
-        // check if an Application with same name exists in topology
-        if (topology.applicationExists(event.getApplication().getUniqueIdentifier())) {
+        // check if an Application with same name exists in applications
+        if (applications.applicationExists(event.getApplication().getUniqueIdentifier())) {
             log.warn("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists in Topology");
 
         } else {
             // add application and the clusters to Topology
-            topology.addApplication(event.getApplication());
+            applications.addApplication(event.getApplication());
         }
 
         notifyEventListeners(event);

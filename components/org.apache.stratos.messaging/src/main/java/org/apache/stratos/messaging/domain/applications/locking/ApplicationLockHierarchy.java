@@ -71,11 +71,11 @@ public class ApplicationLockHierarchy {
         }
     }
 
-    public ApplicationLock getLock (String appId) {
+    public ApplicationLock getLockForApplication(String appId) {
         return appIdToApplicationLockMap.get(appId);
     }
 
-    public void removeLock (String appId) {
+    public void removeLockForApplication (String appId) {
         if (appIdToApplicationLockMap.remove(appId) != null) {
             log.info("Removed lock for Application " + appId);
         } else {

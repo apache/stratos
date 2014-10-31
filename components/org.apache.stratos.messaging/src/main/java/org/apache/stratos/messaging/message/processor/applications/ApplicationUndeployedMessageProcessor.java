@@ -23,10 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationUndeployedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
@@ -46,10 +48,10 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
 
-        Topology topology = (Topology) object;
+        Applications applications = (Applications) object;
 
         if (ApplicationUndeployedEvent.class.getName().equals(type)) {
-            if (!topology.isInitialized()) {
+            if (!applications.isInitialized()) {
                 return false;
             }
 
@@ -61,7 +63,7 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
             }
 
             // get write lock for the application and relevant Clusters
-            TopologyUpdater.acquireWriteLockForApplication(event.getApplicationId());
+            ApplicationsUpdater.acquireWriteLockForApplication(event.getApplicationId());
             Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
@@ -71,7 +73,7 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
             }
 
             try {
-                return doProcess(event, topology);
+                return doProcess(event, applications);
 
             } finally {
                 // remove locks
@@ -81,13 +83,13 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
                                 clusterData.getClusterId());
                     }
                 }
-                TopologyUpdater.releaseWriteLockForApplication(event.getApplicationId());
+                ApplicationsUpdater.releaseWriteLockForApplication(event.getApplicationId());
             }
 
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, applications);
             } else {
                 throw new RuntimeException(String.format
                     ("Failed to process message using available message processors: [type] %s [body] %s", type, message));
@@ -95,10 +97,10 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ApplicationUndeployedEvent event, Topology topology) {
+    private boolean doProcess (ApplicationUndeployedEvent event, Applications applications) {
 
         // update the application status to Terminating
-        Application application = topology.getApplication(event.getApplicationId());
+        Application application = applications.getApplication(event.getApplicationId());
         // check and update application status to 'Terminating'
         if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
             log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
@@ -110,27 +112,28 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
         Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
         // update the Cluster statuses to Terminating
         for (ClusterDataHolder clusterDataHolder : clusterData) {
-            Service service = topology.getService(clusterDataHolder.getServiceType());
-            if (service != null) {
-                Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
-                if (aCluster != null) {
-                    // validate state transition
-                    if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                        log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
-                                + ClusterStatus.Terminating);
-                    }
-                    // for now anyway update the status forcefully
-                    aCluster.setStatus(ClusterStatus.Terminating);
-
-                } else {
-                    log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
-                            " in Topology");
-                }
-
-            } else {
-                log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-                        " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
-            }
+            log.info("############################### TODO ###############################");
+//            Service service = applications.getService(clusterDataHolder.getServiceType());
+//            if (service != null) {
+//                Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
+//                if (aCluster != null) {
+//                    // validate state transition
+//                    if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
+//                        log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
+//                                + ClusterStatus.Terminating);
+//                    }
+//                    // for now anyway update the status forcefully
+//                    aCluster.setStatus(ClusterStatus.Terminating);
+//
+//                } else {
+//                    log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
+//                            " in Topology");
+//                }
+//
+//            } else {
+//                log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
+//                        " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
+//            }
         }
 
         notifyEventListeners(event);

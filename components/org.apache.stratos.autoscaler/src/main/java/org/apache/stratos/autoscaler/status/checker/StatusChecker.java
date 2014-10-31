@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
@@ -98,8 +99,8 @@ public class StatusChecker {
                         if (cluster != null) {
                             try {
 
-                                TopologyManager.acquireReadLockForApplication(appId);
-                                Application application = TopologyManager.getTopology().getApplication(appId);
+                                ApplicationManager.acquireReadLockForApplication(appId);
+                                Application application = ApplicationManager.getApplications().getApplication(appId);
 
                                 if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
                                     if (application.getStatus() == ApplicationStatus.Terminating) {
@@ -123,7 +124,7 @@ public class StatusChecker {
                         }*/
                                 }
                             } finally {
-                                TopologyManager.releaseReadLockForApplication(appId);
+                                ApplicationManager.releaseReadLockForApplication(appId);
                             }
                         }
                     }
@@ -233,22 +234,22 @@ public class StatusChecker {
         Runnable group = new Runnable() {
             public void run() {
                 try {
-                    TopologyManager.acquireReadLockForApplication(appId);
+                    ApplicationManager.acquireReadLockForApplication(appId);
                     ParentComponent component;
                     if (groupId.equals(appId)) {
                         //it is an application
-                        component = TopologyManager.getTopology().
+                        component = ApplicationManager.getApplications().
                                 getApplication(appId);
                     } else {
                         //it is a group
-                        component = TopologyManager.getTopology().
+                        component = ApplicationManager.getApplications().
                                 getApplication(appId).getGroupRecursively(groupId);
                     }
                     Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
                     Map<String, Group> groups = component.getAliasToGroupMap();
                     updateChildStatus(appId, idOfChild, groups, clusterIds, component);
                 } finally {
-                    TopologyManager.releaseReadLockForApplication(appId);
+                    ApplicationManager.releaseReadLockForApplication(appId);
 
                 }
 
@@ -286,8 +287,8 @@ public class StatusChecker {
             clusterStatus = getClusterStatus(clusterData);
             groupStatus = getGroupStatus(groups);
             try {
-                TopologyManager.acquireReadLockForApplication(appId);
-                Application application = TopologyManager.getTopology().getApplication(appId);
+                ApplicationManager.acquireReadLockForApplication(appId);
+                Application application = ApplicationManager.getApplications().getApplication(appId);
 
                 if (groups.isEmpty() && getAllClusterInSameState(clusterData,ClusterStatus.Active) ||
                         clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active) ||
@@ -352,7 +353,7 @@ public class StatusChecker {
                     log.warn("Clusters/groups not found in this [component] " + appId);
                 }
             } finally {
-                TopologyManager.releaseReadLockForApplication(appId);
+                ApplicationManager.releaseReadLockForApplication(appId);
             }
 
 

@@ -47,6 +47,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -102,10 +103,10 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
-        TopologyManager.acquireReadLockForApplication(appId);
+        ApplicationManager.acquireReadLockForApplication(appId);
 
         try {
-            Group group = TopologyManager.getTopology().getApplication(appId).getGroupRecursively(context.getId());
+            Group group = ApplicationManager.getApplications().getApplication(appId).getGroupRecursively(context.getId());
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
             if(parentMonitor != null) {
@@ -126,7 +127,7 @@ public class ApplicationMonitorFactory {
             }
 
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
 
         }
         return groupMonitor;
@@ -146,9 +147,9 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         ApplicationMonitor applicationMonitor;
-        TopologyManager.acquireReadLockForApplication(appId);
+        ApplicationManager.acquireReadLockForApplication(appId);
         try {
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasDependent(false);
@@ -158,7 +159,7 @@ public class ApplicationMonitorFactory {
                 throw new TopologyInConsistentException(msg);
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
 
         return applicationMonitor;

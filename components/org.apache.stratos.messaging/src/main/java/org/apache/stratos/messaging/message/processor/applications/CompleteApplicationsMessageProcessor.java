@@ -22,25 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 import org.apache.stratos.messaging.event.applications.CompleteApplicationsEvent;
-import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
-import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
-import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
-import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class CompleteApplicationsMessageProcessor extends MessageProcessor {
 
@@ -62,13 +49,13 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
                     jsonToObject(message, CompleteApplicationsEvent.class);
 
             if (!applications.isInitialized()) {
-                ApplicationsUpdater.acquireWriteLock();
+                ApplicationsUpdater.acquireWriteLockForApplications();
 
                 try {
                     doProcess(event, applications);
 
                 } finally {
-                    ApplicationsUpdater.releaseWriteLock();
+                    ApplicationsUpdater.releaseWriteLockForApplications();
                 }
             }
 

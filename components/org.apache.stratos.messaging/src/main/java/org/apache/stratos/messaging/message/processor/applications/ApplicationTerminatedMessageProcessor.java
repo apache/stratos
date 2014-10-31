@@ -20,10 +20,12 @@ package org.apache.stratos.messaging.message.processor.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
@@ -47,18 +49,18 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
-        Topology topology = (Topology) object;
+        Applications applications = (Applications) object;
 
         if (ApplicationTerminatedEvent.class.getName().equals(type)) {
-            // Return if topology has not been initialized
-            if (!topology.isInitialized())
+            // Return if applications has not been initialized
+            if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
             ApplicationTerminatedEvent event = (ApplicationTerminatedEvent) Util.
                     jsonToObject(message, ApplicationTerminatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForApplications();
+            ApplicationsUpdater.acquireWriteLockForApplications();
                         Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
@@ -67,10 +69,10 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             }
 
             try {
-                return doProcess(event, topology);
+                return doProcess(event, applications);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForApplications();
+                ApplicationsUpdater.releaseWriteLockForApplications();
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterData : clusterDataHolders) {
                         TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
@@ -81,14 +83,14 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, applications);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
 
-    private boolean doProcess (ApplicationTerminatedEvent event, Topology topology) {
+    private boolean doProcess (ApplicationTerminatedEvent event, Applications applications) {
 
         // check if required properties are available
         if (event.getAppId() == null) {
@@ -103,25 +105,26 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException(errorMsg);
         }
 
-        // check if an Application with same name exists in topology
+        // check if an Application with same name exists in applications
         String appId = event.getAppId();
-        if (topology.applicationExists(appId)) {
+        if (applications.applicationExists(appId)) {
             log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
-            topology.removeApplication(appId);
+            applications.removeApplication(appId);
         }
 
         if (event.getClusterData() != null) {
             // remove the Clusters from the Topology
             for (ClusterDataHolder clusterData : event.getClusterData()) {
-                Service service = topology.getService(clusterData.getServiceType());
-                if (service != null) {
-                    service.removeCluster(clusterData.getClusterId());
-                    if (log.isDebugEnabled()) {
-                        log.debug("Removed the Cluster " + clusterData.getClusterId() + " from Topology");
-                    }
-                }  else {
-                    log.warn("Service " + clusterData.getServiceType() + " not found in Topology!");
-                }
+                log.info("################################ TODO ################################");
+//                Service service = applications.getService(clusterData.getServiceType());
+//                if (service != null) {
+//                    service.removeCluster(clusterData.getClusterId());
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("Removed the Cluster " + clusterData.getClusterId() + " from Topology");
+//                    }
+//                }  else {
+//                    log.warn("Service " + clusterData.getServiceType() + " not found in Topology!");
+//                }
             }
         }
 

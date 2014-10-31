@@ -45,6 +45,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -103,7 +104,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                     TopologyManager.acquireReadLock();
                     try {
-                        for (Application application : TopologyManager.getTopology().getApplications()) {
+                        for (Application application : ApplicationManager.getApplications().getApplications().values()) {
                             startApplicationMonitor(application.getUniqueIdentifier());
                         }
 
@@ -172,8 +173,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 log.info("[ClusterCreatedEvent] Received: " + event.getClass());
 
-                ClusterResetEvent clusterCreatedEvent = (ClusterResetEvent) event;
-                String clusterId = clusterCreatedEvent.getClusterId();
+                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
+                String clusterId = clusterCreatedEvent.getCluster().getClusterId();
                 AbstractClusterMonitor clusterMonitor =
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 

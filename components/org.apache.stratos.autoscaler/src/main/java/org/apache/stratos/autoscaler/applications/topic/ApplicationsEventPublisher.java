@@ -7,7 +7,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.*;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Set;
@@ -21,8 +21,8 @@ public class ApplicationsEventPublisher {
 
     public static void sendGroupCreatedEvent(String appId, String groupId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Created)) {
@@ -39,14 +39,14 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
     public static void sendGroupActivatedEvent(String appId, String groupId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Active)) {
@@ -63,14 +63,14 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
     public static void sendGroupInActivateEvent(String appId, String groupId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Inactive)) {
@@ -87,14 +87,14 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Terminating)) {
@@ -110,7 +110,7 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
@@ -122,8 +122,8 @@ public class ApplicationsEventPublisher {
         }
 
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Terminated)) {
@@ -135,7 +135,7 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
 
 
@@ -143,8 +143,8 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationActivatedEvent(String appId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Active)) {
                     if (log.isInfoEnabled()) {
@@ -159,7 +159,7 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
@@ -169,8 +169,8 @@ public class ApplicationsEventPublisher {
         }
 
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Inactive)) {
                     ApplicationInactivatedEvent applicationInActivatedEvent =
@@ -181,14 +181,14 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
     public static void sendApplicationTerminatingEvent(String appId) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Terminating)) {
                     if (log.isInfoEnabled()) {
@@ -202,14 +202,14 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
     public static void sendApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
         try {
-            TopologyManager.acquireReadLockForApplication(appId);
-            Application application = TopologyManager.getTopology().getApplication(appId);
+            ApplicationManager.acquireReadLockForApplication(appId);
+            Application application = ApplicationManager.getApplications().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Terminated)) {
                     if (log.isInfoEnabled()) {
@@ -223,7 +223,7 @@ public class ApplicationsEventPublisher {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForApplication(appId);
+            ApplicationManager.releaseReadLockForApplication(appId);
         }
     }
 
