@@ -22,24 +22,12 @@ package org.apache.stratos.autoscaler.util;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
-import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.cluster.LbClusterMonitor;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.Applications;
+
 
 import javax.xml.namespace.QName;
 import java.util.*;
@@ -53,6 +41,35 @@ public class AutoscalerUtil {
 
     private AutoscalerUtil() {
 
+    }
+
+    public static Applications  getApplications () {
+
+        Applications applications;
+        String [] appResourcePaths = RegistryManager.getInstance().getApplicationResourcePaths();
+        if (appResourcePaths != null) {
+            applications = new Applications();
+            for (String appResourcePath : appResourcePaths) {
+                applications.addApplication(getApplicationFromPath(appResourcePath));
+            }
+
+            return applications;
+        }
+
+        return null;
+    }
+
+    public static Application getApplication (String appId) {
+        return getApplicationFromPath(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+                "/" + appId);
+    }
+
+    public static void persistApplication (Application application) {
+        RegistryManager.getInstance().persistApplication(application);
+    }
+
+    private static Application getApplicationFromPath (String appResourcePath) {
+        return RegistryManager.getInstance().getApplication(appResourcePath);
     }
 
     /*public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {

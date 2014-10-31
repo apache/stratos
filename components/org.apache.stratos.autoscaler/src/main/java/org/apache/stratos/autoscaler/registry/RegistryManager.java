@@ -32,6 +32,8 @@ import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -138,6 +140,46 @@ public class RegistryManager {
         if(log.isDebugEnabled()) {
             log.debug(deploymentPolicy.toString());
         }
+    }
+
+    public void persistApplication (Application application) {
+
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+                "/" + application.getUniqueIdentifier();
+        persist(application, resourcePath);
+        if(log.isDebugEnabled()) {
+            log.debug("Application [ " + application.getUniqueIdentifier() +
+                    " ] persisted successfully in the Autoscaler Registry");
+        }
+    }
+
+    public String [] getApplicationResourcePaths () {
+        Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
+                AutoScalerConstants.APPLICATIONS_RESOURCE);
+
+        if (obj != null) {
+            if (obj instanceof String []) {
+                return (String []) obj;
+            } else {
+                log.warn("Expected object type not found for Applications in Registry");
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public Application getApplication (String applicationResourcePath) {
+        Object obj = retrieve(applicationResourcePath);
+
+        if (obj != null) {
+            if (obj instanceof Application) {
+                return (Application) obj;
+            } else {
+                log.warn("Expected object type not found for Application " + applicationResourcePath + " in Registry");
+                return null;
+            }
+        }
+        return null;
     }
     
     private Object retrieve(String resourcePath) {
