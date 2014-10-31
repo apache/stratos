@@ -30,6 +30,7 @@ import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import javax.net.ssl.SSLEngineResult;
 import java.util.Map;
 
 /**
@@ -287,7 +288,7 @@ public class StatusChecker {
                 TopologyManager.acquireReadLockForApplication(appId);
                 Application application = TopologyManager.getTopology().getApplication(appId);
 
-                if (groups.isEmpty() && clusterStatus == ClusterStatus.Active ||
+                if (groups.isEmpty() && getClusterAllInSameState(clusterData,ClusterStatus.Active) ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Active ||
                         groupStatus == GroupStatus.Active && clusterStatus == ClusterStatus.Active) {
                     //send activation event
@@ -367,6 +368,65 @@ public class StatusChecker {
                     "[component]" + parent.getUniqueIdentifier());
         }
         return childFound;
+    }
+
+    private boolean getGroupInActive(Map<String, Group> groups) {
+        boolean groupStat = false;
+        for (Group group : groups.values()) {
+            if (group.getStatus() == GroupStatus.Inactive) {
+                groupStat = true;
+                return groupStat;
+            } else {
+                groupStat = false;
+            }
+        }
+        return groupStat;
+    }
+
+    private boolean allGroupInSameState(Map<String, Group> groups, GroupStatus status) {
+        boolean groupStat = false;
+        for (Group group : groups.values()) {
+            if (group.getStatus() == status) {
+                groupStat = true;
+            } else {
+                groupStat = false;
+                return groupStat;
+            }
+        }
+        return groupStat;
+    }
+
+
+    private boolean getClusterInActive(Map<String, ClusterDataHolder> clusterData) {
+        boolean clusterStat = false;
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            if (cluster.getStatus() == ClusterStatus.Inactive) {
+                clusterStat = true;
+                return clusterStat;
+            } else {
+                clusterStat = false;
+
+            }
+        }
+        return clusterStat;
+    }
+
+    private boolean getClusterAllInSameState(Map<String, ClusterDataHolder> clusterData,
+                                             ClusterStatus status) {
+        boolean clusterStat = false;
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            if (cluster.getStatus() == status) {
+                clusterStat = true;
+            } else {
+                clusterStat = false;
+                return clusterStat;
+            }
+        }
+        return clusterStat;
     }
 
     private GroupStatus getGroupStatus(Map<String, Group> groups) {

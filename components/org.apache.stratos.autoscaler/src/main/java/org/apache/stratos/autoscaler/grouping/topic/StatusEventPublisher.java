@@ -7,7 +7,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.status.*;
+import org.apache.stratos.messaging.event.applications.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -30,8 +30,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterCreatedEvent clusterCreatedEvent =
-                            new AppStatusClusterCreatedEvent(appId, serviceName, clusterId);
+                    AppClusterCreatedEvent clusterCreatedEvent =
+                            new AppClusterCreatedEvent(appId, serviceName, clusterId);
 
                     publishEvent(clusterCreatedEvent);
                 } else {
@@ -54,8 +54,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Cluster activated event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterActivatedEvent clusterActivatedEvent =
-                            new AppStatusClusterActivatedEvent(appId, serviceName, clusterId);
+                    AppClusterActivatedEvent clusterActivatedEvent =
+                            new AppClusterActivatedEvent(appId, serviceName, clusterId);
 
                     publishEvent(clusterActivatedEvent);
                 } else {
@@ -78,8 +78,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Cluster in-activate event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterInactivateEvent clusterInActivateEvent =
-                            new AppStatusClusterInactivateEvent(appId, serviceName, clusterId);
+                    AppClusterInactivateEvent clusterInActivateEvent =
+                            new AppClusterInactivateEvent(appId, serviceName, clusterId);
 
                     publishEvent(clusterInActivateEvent);
                 } else {
@@ -104,8 +104,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Cluster Terminating event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
-                            new AppStatusClusterTerminatingEvent(appId, serviceName, clusterId);
+                    AppClusterTerminatingEvent appStatusClusterTerminatingEvent =
+                            new AppClusterTerminatingEvent(appId, serviceName, clusterId);
 
                     publishEvent(appStatusClusterTerminatingEvent);
                 } else {
@@ -130,8 +130,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Cluster terminated event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    AppStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
-                            new AppStatusClusterTerminatedEvent(appId, serviceName, clusterId);
+                    AppClusterTerminatedEvent appStatusClusterTerminatedEvent =
+                            new AppClusterTerminatedEvent(appId, serviceName, clusterId);
 
                     publishEvent(appStatusClusterTerminatedEvent);
                 } else {
@@ -155,8 +155,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Group created event for [application]: " + appId +
                                 " [group]: " + groupId);
                     }
-                    AppStatusGroupCreatedEvent groupCreatedEvent =
-                            new AppStatusGroupCreatedEvent(appId, groupId);
+                    GroupCreatedEvent groupCreatedEvent =
+                            new GroupCreatedEvent(appId, groupId);
 
                     publishEvent(groupCreatedEvent);
                 } else {
@@ -179,8 +179,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Group activated event for [application]: " + appId +
                                 " [group]: " + groupId);
                     }
-                    AppStatusGroupActivatedEvent groupActivatedEvent =
-                            new AppStatusGroupActivatedEvent(appId, groupId);
+                    GroupActivatedEvent groupActivatedEvent =
+                            new GroupActivatedEvent(appId, groupId);
 
                     publishEvent(groupActivatedEvent);
                 } else {
@@ -227,8 +227,8 @@ public class StatusEventPublisher {
                         log.info("Publishing Group terminating event for [application]: " + appId +
                                 " [group]: " + groupId);
                     }
-                    AppStatusGroupTerminatingEvent groupInTerminatingEvent =
-                            new AppStatusGroupTerminatingEvent(appId, groupId);
+                    GroupTerminatingEvent groupInTerminatingEvent =
+                            new GroupTerminatingEvent(appId, groupId);
                     publishEvent(groupInTerminatingEvent);
                 } else {
                     log.warn("Terminating is not in the possible state list of [group] " + groupId);
@@ -252,8 +252,8 @@ public class StatusEventPublisher {
             if (application != null) {
                 Group group = application.getGroupRecursively(groupId);
                 if (group.isStateTransitionValid(GroupStatus.Terminated)) {
-                    AppStatusGroupTerminatedEvent groupInTerminatedEvent =
-                            new AppStatusGroupTerminatedEvent(appId, groupId);
+                    GroupTerminatedEvent groupInTerminatedEvent =
+                            new GroupTerminatedEvent(appId, groupId);
                     publishEvent(groupInTerminatedEvent);
                 } else {
                     log.warn("Terminated is not in the possible state list of [group] " + groupId);
@@ -275,8 +275,8 @@ public class StatusEventPublisher {
                     if (log.isInfoEnabled()) {
                         log.info("Publishing Application activated event for [application]: " + appId);
                     }
-                    AppStatusApplicationActivatedEvent applicationActivatedEvent =
-                            new AppStatusApplicationActivatedEvent(appId);
+                    ApplicationActivatedEvent applicationActivatedEvent =
+                            new ApplicationActivatedEvent(appId);
 
                     publishEvent(applicationActivatedEvent);
                 } else {
@@ -298,8 +298,8 @@ public class StatusEventPublisher {
             Application application = TopologyManager.getTopology().getApplication(appId);
             if (application != null) {
                 if (application.isStateTransitionValid(ApplicationStatus.Inactive)) {
-                    AppStatusApplicationInactivatedEvent applicationInActivatedEvent =
-                            new AppStatusApplicationInactivatedEvent(appId);
+                    ApplicationInactivatedEvent applicationInActivatedEvent =
+                            new ApplicationInactivatedEvent(appId);
                     publishEvent(applicationInActivatedEvent);
                 } else {
                     log.warn("Inactive is not in the possible state list of [application] " + appId);
@@ -319,8 +319,8 @@ public class StatusEventPublisher {
                     if (log.isInfoEnabled()) {
                         log.info("Publishing Application terminated event for [application]: " + appId);
                     }
-                    AppStatusApplicationTerminatingEvent applicationTerminatingEvent =
-                            new AppStatusApplicationTerminatingEvent(appId);
+                    ApplicationTerminatingEvent applicationTerminatingEvent =
+                            new ApplicationTerminatingEvent(appId);
                     publishEvent(applicationTerminatingEvent);
                 } else {
                     log.warn("Terminating is not in the possible state list of [application] " + appId);
@@ -340,8 +340,8 @@ public class StatusEventPublisher {
                     if (log.isInfoEnabled()) {
                         log.info("Publishing Application terminated event for [application]: " + appId);
                     }
-                    AppStatusApplicationTerminatedEvent applicationTerminatedEvent =
-                            new AppStatusApplicationTerminatedEvent(appId, clusterData);
+                    ApplicationTerminatedEvent applicationTerminatedEvent =
+                            new ApplicationTerminatedEvent(appId, clusterData);
                     publishEvent(applicationTerminatedEvent);
                 } else {
                     log.warn("Terminated is not in the possible state list of [application] " + appId);
