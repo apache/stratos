@@ -25,7 +25,8 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -287,7 +288,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
-            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
+            ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
         }
     }
 }

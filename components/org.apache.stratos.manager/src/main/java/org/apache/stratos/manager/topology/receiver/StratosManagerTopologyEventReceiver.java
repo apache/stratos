@@ -310,6 +310,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
         });
         
       //add listner to Complete Topology Event
+/*
         topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -367,8 +368,10 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 }
             }
         });
-        
+*/
+
         //add listener 
+/*
         topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -412,6 +415,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 }
             }
         });
+*/
     }
 
 

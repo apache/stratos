@@ -18,10 +18,14 @@
  */
 package org.apache.stratos.messaging.event.applications;
 
+import org.apache.stratos.messaging.event.Event;
+
+import java.io.Serializable;
+
 /**
  * This event is fired by autoscaler before actually terminate a group.
  */
-public class GroupReadyToShutdownEvent extends StatusEvent {
+public class GroupReadyToShutdownEvent extends Event implements Serializable {
     private String groupId;
     private String appId;
 

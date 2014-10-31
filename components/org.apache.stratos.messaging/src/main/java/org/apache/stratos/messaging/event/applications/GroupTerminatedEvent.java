@@ -19,11 +19,15 @@
 
 package org.apache.stratos.messaging.event.applications;
 
+import org.apache.stratos.messaging.event.Event;
+
+import java.io.Serializable;
+
 /**
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class GroupTerminatedEvent extends StatusEvent {
+public class GroupTerminatedEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String groupId;

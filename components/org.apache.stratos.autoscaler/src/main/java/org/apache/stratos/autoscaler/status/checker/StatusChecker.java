@@ -23,14 +23,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import javax.net.ssl.SSLEngineResult;
 import java.util.Map;
 
 /**
@@ -71,7 +71,7 @@ public class StatusChecker {
                 if (clusterActive) {
                     //send event to cluster status topic
                     monitor.setHasFaultyMember(false);
-                    StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
+                    ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                             monitor.getServiceId(), monitor.getClusterId());
                 }
             }
@@ -102,10 +102,10 @@ public class StatusChecker {
 
                                 if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
                                     if (application.getStatus() == ApplicationStatus.Terminating) {
-                                        StatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
+                                        ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
                                                 monitor.getClusterId());
                                     } else {
-                                        StatusEventPublisher.sendClusterCreatedEvent(appId, monitor.getServiceId(),
+                                        ClusterStatusEventPublisher.sendClusterCreatedEvent(appId, monitor.getServiceId(),
                                                 monitor.getClusterId());
                                     }
 
@@ -188,12 +188,12 @@ public class StatusChecker {
                         monitor.setHasFaultyMember(true);
                     }
                     //send cluster In-Active event to cluster status topic
-                    StatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
+                    ClusterStatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
 
                 } else {
                     boolean clusterActive = clusterActive(monitor);
                     if (clusterActive) {
-                        StatusEventPublisher.sendClusterActivatedEvent(appId, monitor.getServiceId(), clusterId);
+                        ClusterStatusEventPublisher.sendClusterActivatedEvent(appId, monitor.getServiceId(), clusterId);
                     }
                 }
 
@@ -295,11 +295,11 @@ public class StatusChecker {
                     if (parent instanceof Application) {
                         //send application activated event
                         log.info("sending app activate: " + appId);
-                        StatusEventPublisher.sendApplicationActivatedEvent(appId);
+                        ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
                     } else if (parent instanceof Group) {
                         //send activation to the parent
                         log.info("sending group activate: " + parent.getUniqueIdentifier());
-                        StatusEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
+                        ApplicationsEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
                     }
                 } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Inactive ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Inactive ||
@@ -312,7 +312,7 @@ public class StatusChecker {
                     } else if (parent instanceof Group) {
                         //send activation to the parent
                         log.info("sending group in-active: " + parent.getUniqueIdentifier());
-                        StatusEventPublisher.sendGroupInActivateEvent(appId, parent.getUniqueIdentifier());
+                        ApplicationsEventPublisher.sendGroupInActivateEvent(appId, parent.getUniqueIdentifier());
                     }
                 } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminated ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Terminated ||
@@ -322,7 +322,7 @@ public class StatusChecker {
                         //validating the life cycle
                         if (application.getStatus().equals(ApplicationStatus.Terminating)) {
                             log.info("sending app terminated: " + appId);
-                            StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                            ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
                         } else {
                             log.info("[Application] " + appId + " is in the [status] " +
                                     application.getStatus().toString() + ". Hence not sending terminated event");
@@ -331,7 +331,7 @@ public class StatusChecker {
                     } else if (parent instanceof Group) {
                         //send activation to the parent
                         log.info("sending group created : " + parent.getUniqueIdentifier());
-                        StatusEventPublisher.sendGroupCreatedEvent(appId, parent.getUniqueIdentifier());
+                        ApplicationsEventPublisher.sendGroupCreatedEvent(appId, parent.getUniqueIdentifier());
                     }
                 /*} else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminating ||
                         clusterData.isEmpty() && groupStatus == GroupStatus.Terminating ||
@@ -352,7 +352,7 @@ public class StatusChecker {
                     } else if (parent instanceof Group) {
                         //send activation to the parent
                         log.info("sending group created : " + parent.getUniqueIdentifier());
-                        StatusEventPublisher.sendGroupCreatedEvent(appId, parent.getUniqueIdentifier());
+                        ApplicationsEventPublisher.sendGroupCreatedEvent(appId, parent.getUniqueIdentifier());
                     }
                 } else {
                     log.warn("Clusters/groups not found in this [component] " + appId);

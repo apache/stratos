@@ -22,7 +22,6 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
@@ -47,17 +46,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberMaintenanceModeProcessor memberMaintenanceModeProcessor;
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
-    private GroupCreatedProcessor groupCreatedProcessor;
-    private GroupActivatedProcessor groupActivatedProcessor;
-    private GroupInActivateProcessor groupInActivateProcessor;
-    private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
-    private ApplicationUndeployedMessageProcessor applicationUndeployedMessageProcessor;
-    private ApplicationActivatedMessageProcessor applicationActivatedMessageProcessor;
-    private ApplicationInactivatedMessageProcessor applicationInactivatedMessageProcessor;
-    private ApplicationTerminatedMessageProcessor applicationTerminatedMessageProcessor;
-    private ApplicationTerminatingMessageProcessor applicationTerminatingMessageProcessor;
-    private GroupTerminatingProcessor groupTerminatingProcessor;
-    private GroupTerminatedProcessor groupTerminatedProcessor;
     private ClusterTerminatingProcessor clusterTerminatingProcessor;
     private ClusterTerminatedProcessor clusterTerminatedProcessor;
 
@@ -111,39 +99,6 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         memberTerminatedMessageProcessor = new MemberTerminatedMessageProcessor();
         add(memberTerminatedMessageProcessor);
 
-        groupCreatedProcessor = new GroupCreatedProcessor();
-        add(groupCreatedProcessor);
-
-        groupActivatedProcessor = new GroupActivatedProcessor();
-        add(groupActivatedProcessor);
-
-        groupInActivateProcessor = new GroupInActivateProcessor();
-        add(groupInActivateProcessor);
-
-        groupTerminatingProcessor = new GroupTerminatingProcessor();
-        add(groupTerminatingProcessor);
-
-        groupTerminatedProcessor = new GroupTerminatedProcessor();
-        add(groupTerminatedProcessor);
-
-        applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
-        add(applicationCreatedMessageProcessor);
-
-        applicationUndeployedMessageProcessor = new ApplicationUndeployedMessageProcessor();
-        add(applicationUndeployedMessageProcessor);
-
-        applicationActivatedMessageProcessor = new ApplicationActivatedMessageProcessor();
-        add(applicationActivatedMessageProcessor);
-
-        applicationInactivatedMessageProcessor = new ApplicationInactivatedMessageProcessor();
-        add(applicationInactivatedMessageProcessor);
-
-        applicationTerminatedMessageProcessor = new ApplicationTerminatedMessageProcessor();
-        add(applicationTerminatedMessageProcessor);
-
-        applicationTerminatingMessageProcessor = new ApplicationTerminatingMessageProcessor();
-        add(applicationTerminatingMessageProcessor);
-
         if (log.isDebugEnabled()) {
             log.debug("Topology message processor chain initialized X1");
         }
@@ -182,30 +137,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             serviceRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof  MemberMaintenanceListener) {
             memberMaintenanceModeProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupActivatedEventListener) {
-            groupActivatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupCreatedEventListener) {
-            groupCreatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupInActivateEventListener) {
-            groupInActivateProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupTerminatedEventListener){
-            groupTerminatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof GroupTerminatingEventListener){
-            groupTerminatingProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ApplicationCreatedEventListener) {
-            applicationCreatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ApplicationUndeployedEventListener) {
-            applicationUndeployedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ApplicationActivatedEventListener) {
-            applicationActivatedMessageProcessor.addEventListener(eventListener);
-        } else  if (eventListener instanceof ApplicationInActivateEventListener){
-            applicationInactivatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ApplicationTerminatedEventListener){
-            applicationTerminatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ApplicationTerminatingEventListener){
-            applicationTerminatingMessageProcessor.addEventListener(eventListener);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown event listener");
         }
     }

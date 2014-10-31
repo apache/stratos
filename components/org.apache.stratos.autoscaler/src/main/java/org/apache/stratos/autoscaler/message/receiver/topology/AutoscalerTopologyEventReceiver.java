@@ -27,8 +27,9 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.grouping.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.grouping.topic.InstanceNotificationPublisher;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
@@ -119,7 +120,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
 
 
-        topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
+        /*topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -146,7 +147,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
 
             }
-        });
+        });*/
 
         topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
             @Override
@@ -252,7 +253,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });
 
-        topologyEventReceiver.addEventListener(new GroupActivatedEventListener() {
+        /*topologyEventReceiver.addEventListener(new GroupActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -350,7 +351,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     appMonitor.setStatus(ApplicationStatus.Active);
                 }
             }
-        });
+        });*/
 
         topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
             @Override
@@ -372,7 +373,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                    ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()));
                         if (clusterMonitor == null) {
                             // Cluster Monitor not found; send Cluster Terminated event to cleanup
-                            StatusEventPublisher.sendClusterTerminatedEvent(
+                            ClusterStatusEventPublisher.sendClusterTerminatedEvent(
                                     applicationUndeployedEvent.getApplicationId(),
                                     clusterDataHolder.getServiceType(),
                                     clusterDataHolder.getClusterId());
@@ -390,8 +391,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 } else {
                     // ApplicationMonitor is not found, send Terminating event to clean up
-                    StatusEventPublisher.sendApplicationTerminatedEvent(
-                                applicationUndeployedEvent.getApplicationId(), applicationUndeployedEvent.getClusterData());
+                    ApplicationsEventPublisher.sendApplicationTerminatedEvent(
+                            applicationUndeployedEvent.getApplicationId(), applicationUndeployedEvent.getClusterData());
                 }
 
 //                ApplicationUndeployedEvent applicationUndeployedEvent = (ApplicationUndeployedEvent) event;
@@ -481,7 +482,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
 
 
-        topologyEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
+        /*topologyEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -510,7 +511,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             releaseReadLockForApplication(appTerminatingEvent.getAppId());
                 }
             }
-        });
+        });*/
 
 //        topologyEventReceiver.addEventListener(new ApplicationRemovedEventListener() {
 //            @Override
@@ -566,7 +567,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //            }
 //        });
 
-        topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
+        /*topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -626,7 +627,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
             }
         });
-
+*/
         topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
             @Override
             protected void onEvent(Event event) {

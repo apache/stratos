@@ -27,7 +27,8 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 
@@ -129,12 +130,12 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (terminationList.size() ==
                     (this.aliasToActiveMonitorsMap.size() + this.aliasToInActiveMonitorsMap.size())) {
                 if (this.parent != null) {
-                    StatusEventPublisher.sendGroupTerminatingEvent(this.appId, this.id);
+                    ApplicationsEventPublisher.sendGroupTerminatingEvent(this.appId, this.id);
                 }
             } else {
                 //TODO application InActive
                 if (this.parent != null) {
-                    StatusEventPublisher.sendGroupInActivateEvent(this.appId, this.id);
+                    ApplicationsEventPublisher.sendGroupInActivateEvent(this.appId, this.id);
                 }
                 //Since it is reached the most independent unit and has few independent monitors,
                 // has to put the children down to terminating
@@ -149,10 +150,10 @@ public abstract class ParentComponentMonitor extends Monitor {
                         if (monitor != null) {
                             if (monitor.hasActiveMonitors()) {
                                 //it is a group
-                                StatusEventPublisher.sendGroupTerminatingEvent(this.appId,
+                                ApplicationsEventPublisher.sendGroupTerminatingEvent(this.appId,
                                         terminationContext.getId());
                             } else {
-                                StatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(this.appId,
                                         ((AbstractClusterMonitor) monitor).getServiceId(),
                                         terminationContext.getId());
                             }

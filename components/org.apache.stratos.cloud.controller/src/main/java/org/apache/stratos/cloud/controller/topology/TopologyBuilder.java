@@ -41,6 +41,7 @@ import org.apache.stratos.messaging.event.applications.GroupActivatedEvent;
 import org.apache.stratos.messaging.event.applications.GroupCreatedEvent;
 import org.apache.stratos.messaging.event.applications.GroupTerminatedEvent;
 import org.apache.stratos.messaging.event.applications.GroupTerminatingEvent;
+import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -124,7 +125,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterCreated (AppClusterCreatedEvent event) {
+    public static void handleClusterCreated (ClusterStatusClusterCreatedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
@@ -722,7 +723,7 @@ public class TopologyBuilder {
     }
 
 
-    public static void handleClusterActivatedEvent(AppClusterActivatedEvent clusterActivatedEvent) {
+    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent clusterActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterActivatedEvent.getServiceName());
         //update the status of the cluster
@@ -760,7 +761,7 @@ public class TopologyBuilder {
     }
 
     public static void handleClusterInActivateEvent(
-            AppClusterInactivateEvent clusterInActivateEvent) {
+            ClusterStatusClusterInactivateEvent clusterInActivateEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterInActivateEvent.getServiceName());
         //update the status of the cluster
@@ -1148,7 +1149,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendGroupTerminatingEvent(groupTerminatingTopologyEvent);
     }
 
-    public static void handleClusterTerminatedEvent(AppClusterTerminatedEvent event) {
+    public static void handleClusterTerminatedEvent(ClusterStatusClusterTerminatedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
@@ -1175,7 +1176,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
     }
 
-    public static void handleClusterTerminatingEvent(AppClusterTerminatingEvent event) {
+    public static void handleClusterTerminatingEvent(ClusterStatusClusterTerminatingEvent event) {
 
         TopologyManager.acquireWriteLock();
 
