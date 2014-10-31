@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.applications.topic;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.messaging.domain.applications.*;
 
 import java.util.Collection;
@@ -142,6 +143,49 @@ public class ApplicationBuilder {
 
         ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
     }*/
+    public static void handleApplicationCreated (Application application,
+                                                 Set<ApplicationClusterContext> appClusterCtxts) {
+
+        Applications applications = ApplicationHolder.getApplications();
+
+        ApplicationHolder.acquireWriteLock();
+
+        try {
+            if (applications.getApplication(application.getUniqueIdentifier()) != null) {
+                ApplicationHolder.persistApplication(application);
+            } else {
+                log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
+            }
+
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
+        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+    }
+
+    public static void handleApplicationUndeployed (String applicationId) {
+
+        Applications applications = ApplicationHolder.getApplications();
+
+        ApplicationHolder.acquireWriteLock();
+        Application applicationToRemove = applications.getApplication(applicationId);
+        Set<ClusterDataHolder> clusterData = null;
+
+        try {
+            if (applicationToRemove != null) {
+                clusterData = applicationToRemove.getClusterDataRecursively();
+                ApplicationHolder.removeApplication(applicationId);
+            } else {
+                log.warn("Application [ " + applicationId + " ] not found among existing Applications");
+            }
+
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
+        ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
+    }
 
     public static void handleGroupTerminatedEvent(String appId, String groupId) {
         Applications applications = ApplicationHolder.getApplications();

@@ -7,6 +7,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.*;
+import org.apache.stratos.messaging.event.topology.ApplicationUndeployedEvent;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -23,13 +24,14 @@ public class ApplicationsEventPublisher {
         publishEvent(new CompleteApplicationsEvent(completeApplications));
     }
 
-    public static void sendCompleteTopologyEvent(Applications applications) {
-        CompleteApplicationsEvent applicationsEvent = new CompleteApplicationsEvent(applications);
+    public static void sendApplicationCreatedEvent (Application application) {
 
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Publishing complete Applications event"));
-        }
-        publishEvent(applicationsEvent);
+        publishEvent(new ApplicationCreatedEvent(application));
+    }
+
+    public static void sendApplicationUndeployedEvent (String appId, Set<ClusterDataHolder> clusterData) {
+
+        publishEvent(new ApplicationUndeployedEvent(appId, clusterData));
     }
 
     public static void sendGroupCreatedEvent(String appId, String groupId) {

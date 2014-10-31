@@ -94,13 +94,22 @@ public class ApplicationHolder {
     public static void persistApplication (Application application) {
 
         synchronized (ApplicationHolder.class) {
-            if (log.isDebugEnabled()) {
-                log.debug("Updating topology");
-            }
             applications.addApplication(application);
             AutoscalerUtil.persistApplication(application);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Topology updated: %s", toJson(applications)));
+            }
+        }
+
+    }
+
+    public static void removeApplication (String applicationId) {
+
+        synchronized (ApplicationHolder.class) {
+            applications.removeApplication(applicationId);
+            AutoscalerUtil.removeApplication(applicationId);
+            if (log.isDebugEnabled()) {
+                log.debug("Application [ " + applicationId + " ] removed from Applications");
             }
         }
 

@@ -22,6 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
+import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
@@ -34,7 +38,7 @@ import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.wso2.carbon.registry.api.RegistryException;
+import org.apache.stratos.messaging.domain.applications.Application;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -248,8 +252,25 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
 
         return null;
     }
-	
-	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
+
+    @Override
+    public void deployApplicationDefinition(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException {
+
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        Application application = applicationParser.parse(applicationContext);
+        ApplicationBuilder.handleApplicationCreated(application,
+                applicationParser.getApplicationClusterContexts());
+    }
+
+    @Override
+    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain)
+            throws ApplicationDefinitionException {
+
+        ApplicationBuilder.handleApplicationUndeployed(applicationId);
+    }
+
+    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 

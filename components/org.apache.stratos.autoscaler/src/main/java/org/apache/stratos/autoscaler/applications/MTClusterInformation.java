@@ -19,33 +19,29 @@
 
 package org.apache.stratos.autoscaler.applications;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-import org.wso2.carbon.ntask.core.Task;
+import org.apache.stratos.cloud.controller.application.ClusterInformation;
 
-import java.util.Map;
-
-public class ApplicationSynchronizeTask implements Task {
-    private static final Log log = LogFactory.getLog(ApplicationSynchronizeTask.class);
+public class MTClusterInformation implements ClusterInformation {
 
     @Override
-    public void execute() {
-        if (log.isDebugEnabled()) {
-            log.debug("Executing topology synchronization task");
+    public String getClusterId(String alias, String cartridgeType) {
+
+        if (!ApplicationUtils.isValid(cartridgeType))  {
+            // cannot happen
+            throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
         }
-        // publish to the topic
-        if (ApplicationHolder.getApplications() != null) {
-            ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
-        }
+
+        return cartridgeType + ".domain";
     }
 
     @Override
-    public void init() {
-        log.info("Applications Complete Event publisher task has been started...");
+    public String getHostName(String alias, String cartridgeDefinitionHostName) {
 
+        if (!ApplicationUtils.isValid(cartridgeDefinitionHostName)) {
+            // cannot happen
+            throw new IllegalArgumentException("Invalid host name value provided: [ " + cartridgeDefinitionHostName + " ]");
+        }
+
+        return cartridgeDefinitionHostName;
     }
-
-    @Override
-    public void setProperties(Map<String, String> arg0) {}
 }

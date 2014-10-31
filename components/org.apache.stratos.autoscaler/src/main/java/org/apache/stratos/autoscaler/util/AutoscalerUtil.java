@@ -72,6 +72,10 @@ public class AutoscalerUtil {
         return RegistryManager.getInstance().getApplication(appResourcePath);
     }
 
+    public static void removeApplication (String applicationId) {
+        RegistryManager.getInstance().removeApplication(applicationId);
+    }
+
     /*public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
         // FIXME fix the following code to correctly update
         // AutoscalerContext context = AutoscalerContext.getInstance();

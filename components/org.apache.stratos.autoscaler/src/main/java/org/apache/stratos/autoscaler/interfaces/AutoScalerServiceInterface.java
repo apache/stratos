@@ -21,7 +21,9 @@ package org.apache.stratos.autoscaler.interfaces;
 */
 
 
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
@@ -86,4 +88,20 @@ public interface AutoScalerServiceInterface {
     public String getDefaultLBClusterId (String deploymentPolicyName);
 
     public String getServiceLBClusterId (String serviceType, String deploymentPolicyName);
+
+    /**
+     * deploys an Application Definition
+     *
+     * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext} object
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
+
+    /**
+     * undeploys an Application Definition
+     *
+     * @param applicationId Id of the Application to be undeployed
+     * @throws ApplicationDefinitionException if an error is encountered
+     */
+    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException;
 }

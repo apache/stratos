@@ -25,12 +25,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
@@ -226,6 +228,20 @@ public class CloudControllerClient {
         }
     }
 
+    public CartridgeInfo getCartrdgeInformation (String cartridgeType) throws CartridgeInformationException {
 
+        try {
+            return stub.getCartridgeInfo(cartridgeType);
+
+        } catch (RemoteException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new CartridgeInformationException(msg, e);
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new CartridgeInformationException(msg, e);
+        }
+    }
 
 }

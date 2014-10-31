@@ -185,6 +185,11 @@ public class RegistryManager {
         return null;
     }
 
+    public void removeApplication (String applicationId) {
+        delete(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+                "/" + applicationId);
+    }
+
     public void persistServiceGroup(ServiceGroup servicegroup) {
         if(servicegroup == null || StringUtils.isEmpty(servicegroup.getName())){
             throw new  IllegalArgumentException("Service group or group name can not be null");
