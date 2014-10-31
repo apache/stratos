@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.application.status.*;
+import org.apache.stratos.messaging.listener.applications.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
@@ -31,68 +31,68 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class AppStatusMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(AppStatusMessageProcessorChain.class);
 
-    private AppStatusClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
-    private AppStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
-    private AppStatusClusterInactivateMessageProcessor clusterInActivateMessageProcessor;
-    private AppStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
-    private AppStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
-    private AppStatusGroupCreatedMessageProcessor groupCreatedMessageProcessor;
-    private AppStatusGroupActivatedMessageProcessor groupActivatedMessageProcessor;
-    private AppStatusGroupInactivatedMessageProcessor groupInActivateMessageProcessor;
-    private AppStatusApplicationActivatedMessageProcessor appActivatedMessageProcessor;
-    private AppStatusApplicationCreatedMessageProcessor applicationStatusAppCreatedMessageProcessor;
-    private AppStatusApplicationInactivatedMessageProcessor applicationStatusAppInActivatedMessageProcessor;
-    private AppStatusApplicationTerminatedMessageProcessor applicationStatusAppTerminatedMessageProcessor;
-    private AppStatusApplicationTerminatingMessageProcessor applicationStatusAppTerminatingMessageProcessor;
+    private AppClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
+    private AppClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
+    private AppClusterInactivateMessageProcessor clusterInActivateMessageProcessor;
+    private AppClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
+    private AppClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
+    private GroupCreatedMessageProcessor groupCreatedMessageProcessor;
+    private GroupActivatedMessageProcessor groupActivatedMessageProcessor;
+    private GroupInactivatedMessageProcessor groupInActivateMessageProcessor;
+    private ApplicationActivatedMessageProcessor appActivatedMessageProcessor;
+    private ApplicationCreatedMessageProcessor applicationStatusAppCreatedMessageProcessor;
+    private ApplicationInactivatedMessageProcessor applicationStatusAppInActivatedMessageProcessor;
+    private ApplicationTerminatedMessageProcessor applicationStatusAppTerminatedMessageProcessor;
+    private ApplicationTerminatingMessageProcessor applicationStatusAppTerminatingMessageProcessor;
 
-    private AppStatusGroupTerminatedMessageProcessor groupTerminatedMessageProcessor;
-    private AppStatusGroupTerminatingMessageProcessor groupTerminatingMessageProcessor;
+    private GroupTerminatedMessageProcessor groupTerminatedMessageProcessor;
+    private GroupTerminatingMessageProcessor groupTerminatingMessageProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
-        clusterCreatedMessageProcessor= new AppStatusClusterCreatedMessageProcessor();
+        clusterCreatedMessageProcessor= new AppClusterCreatedMessageProcessor();
         add(clusterCreatedMessageProcessor);
 
-        clusterActivatedMessageProcessor = new AppStatusClusterActivatedMessageProcessor();
+        clusterActivatedMessageProcessor = new AppClusterActivatedMessageProcessor();
         add(clusterActivatedMessageProcessor);
 
-        clusterInActivateMessageProcessor = new AppStatusClusterInactivateMessageProcessor();
+        clusterInActivateMessageProcessor = new AppClusterInactivateMessageProcessor();
         add(clusterInActivateMessageProcessor);
 
-        clusterTerminatingMessageProcessor = new AppStatusClusterTerminatingMessageProcessor();
+        clusterTerminatingMessageProcessor = new AppClusterTerminatingMessageProcessor();
         add(clusterTerminatingMessageProcessor);
 
-        clusterTerminatedMessageProcessor = new AppStatusClusterTerminatedMessageProcessor();
+        clusterTerminatedMessageProcessor = new AppClusterTerminatedMessageProcessor();
         add(clusterTerminatedMessageProcessor);
 
-        groupCreatedMessageProcessor = new AppStatusGroupCreatedMessageProcessor();
+        groupCreatedMessageProcessor = new GroupCreatedMessageProcessor();
         add(groupCreatedMessageProcessor);
 
-        groupActivatedMessageProcessor = new AppStatusGroupActivatedMessageProcessor();
+        groupActivatedMessageProcessor = new GroupActivatedMessageProcessor();
         add(groupActivatedMessageProcessor);
 
-        groupInActivateMessageProcessor = new AppStatusGroupInactivatedMessageProcessor();
+        groupInActivateMessageProcessor = new GroupInactivatedMessageProcessor();
         add(groupInActivateMessageProcessor);
 
-        appActivatedMessageProcessor = new AppStatusApplicationActivatedMessageProcessor();
+        appActivatedMessageProcessor = new ApplicationActivatedMessageProcessor();
         add(appActivatedMessageProcessor);
 
-        applicationStatusAppCreatedMessageProcessor = new AppStatusApplicationCreatedMessageProcessor();
+        applicationStatusAppCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         this.add(applicationStatusAppCreatedMessageProcessor);
 
-        applicationStatusAppInActivatedMessageProcessor = new AppStatusApplicationInactivatedMessageProcessor();
+        applicationStatusAppInActivatedMessageProcessor = new ApplicationInactivatedMessageProcessor();
         this.add(applicationStatusAppInActivatedMessageProcessor);
 
-        applicationStatusAppTerminatedMessageProcessor = new AppStatusApplicationTerminatedMessageProcessor();
+        applicationStatusAppTerminatedMessageProcessor = new ApplicationTerminatedMessageProcessor();
         this.add(applicationStatusAppTerminatedMessageProcessor);
 
-        applicationStatusAppTerminatingMessageProcessor = new AppStatusApplicationTerminatingMessageProcessor();
+        applicationStatusAppTerminatingMessageProcessor = new ApplicationTerminatingMessageProcessor();
         this.add(applicationStatusAppTerminatingMessageProcessor);
 
-        groupTerminatedMessageProcessor = new AppStatusGroupTerminatedMessageProcessor();
+        groupTerminatedMessageProcessor = new GroupTerminatedMessageProcessor();
         this.add(groupTerminatedMessageProcessor);
 
-        groupTerminatingMessageProcessor = new AppStatusGroupTerminatingMessageProcessor();
+        groupTerminatingMessageProcessor = new GroupTerminatingMessageProcessor();
         this.add(groupTerminatingMessageProcessor);
 
         if (log.isDebugEnabled()) {
@@ -101,35 +101,35 @@ public class AppStatusMessageProcessorChain extends MessageProcessorChain {
     }
 
     public void addEventListener(EventListener eventListener) {
-        if(eventListener instanceof AppStatusClusterCreatedEventListener) {
+        if(eventListener instanceof AppClusterCreatedEventListener) {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusClusterActivatedEventListener) {
+        } else if (eventListener instanceof AppClusterActivatedEventListener) {
             clusterActivatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusClusterInactivateEventListener) {
+        } else if (eventListener instanceof AppClusterInactivateEventListener) {
             clusterInActivateMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusGroupCreatedEventListener) {
+        } else if(eventListener instanceof GroupCreatedEventListener) {
             groupCreatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusGroupActivatedEventListener) {
+        } else if (eventListener instanceof GroupActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusClusterTerminatedEventListener){
+        } else if(eventListener instanceof AppClusterTerminatedEventListener){
             clusterTerminatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusClusterTerminatingEventListener){
+        } else if(eventListener instanceof AppClusterTerminatingEventListener){
             clusterTerminatingMessageProcessor.addEventListener(eventListener);
-        }else if (eventListener instanceof AppStatusGroupInactivateEventListener) {
+        }else if (eventListener instanceof GroupInactivateEventListener) {
             groupInActivateMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusApplicationActivatedEventListener) {
+        } else if (eventListener instanceof ApplicationActivatedEventListener) {
             appActivatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusApplicationInactivatedEventListener){
+        } else if(eventListener instanceof ApplicationInactivatedEventListener){
             applicationStatusAppInActivatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusApplicationCreatedEventListener){
+        } else if(eventListener instanceof ApplicationCreatedEventListener){
             applicationStatusAppCreatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusApplicationTerminatingEventListener){
+        } else if(eventListener instanceof ApplicationTerminatingEventListener){
             applicationStatusAppTerminatingMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof AppStatusApplicationTerminatedEventListener){
+        } else if(eventListener instanceof ApplicationTerminatedEventListener){
             applicationStatusAppTerminatedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusGroupTerminatingEventListener){
+        } else if (eventListener instanceof GroupTerminatingEventListener){
             groupTerminatingMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof AppStatusGroupTerminatedEventListener){
+        } else if (eventListener instanceof GroupTerminatedEventListener){
             groupTerminatedMessageProcessor.addEventListener(eventListener);
         } else
         {

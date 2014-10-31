@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 

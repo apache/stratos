@@ -22,8 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.application.status.*;
-import org.apache.stratos.messaging.listener.application.status.*;
+import org.apache.stratos.messaging.event.applications.*;
+import org.apache.stratos.messaging.listener.applications.*;
 import org.apache.stratos.messaging.message.receiver.application.status.ApplicationStatusEventReceiver;
 
 public class ApplicationStatusTopicReceiver implements Runnable {
@@ -64,74 +64,74 @@ public class ApplicationStatusTopicReceiver implements Runnable {
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
-        statusEventReceiver.addEventListener(new AppStatusClusterCreatedEventListener() {
+        statusEventReceiver.addEventListener(new AppClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((AppStatusClusterCreatedEvent) event);
+                TopologyBuilder.handleClusterCreated((AppClusterCreatedEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusClusterActivatedEventListener() {
+        statusEventReceiver.addEventListener(new AppClusterActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterActivatedEvent((AppStatusClusterActivatedEvent) event);
+                TopologyBuilder.handleClusterActivatedEvent((AppClusterActivatedEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusClusterTerminatedEventListener() {
+        statusEventReceiver.addEventListener(new AppClusterTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatedEvent((AppStatusClusterTerminatedEvent) event);
+                TopologyBuilder.handleClusterTerminatedEvent((AppClusterTerminatedEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusClusterTerminatingEventListener(){
+        statusEventReceiver.addEventListener(new AppClusterTerminatingEventListener(){
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatingEvent((AppStatusClusterTerminatingEvent) event);
+                TopologyBuilder.handleClusterTerminatingEvent((AppClusterTerminatingEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusClusterInactivateEventListener() {
+        statusEventReceiver.addEventListener(new AppClusterInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterInActivateEvent((AppStatusClusterInactivateEvent) event);
+                TopologyBuilder.handleClusterInActivateEvent((AppClusterInactivateEvent) event);
             }
         });
 
 
-        statusEventReceiver.addEventListener(new AppStatusGroupCreatedEventListener() {
+        statusEventReceiver.addEventListener(new GroupCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupCreated((AppStatusGroupCreatedEvent) event);
+                TopologyBuilder.handleGroupCreated((GroupCreatedEvent) event);
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusGroupActivatedEventListener() {
+        statusEventReceiver.addEventListener(new GroupActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupActivatedEvent((AppStatusGroupActivatedEvent) event);
-
-            }
-        });
-
-        statusEventReceiver.addEventListener(new AppStatusGroupTerminatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupTerminatedEvent((AppStatusGroupTerminatedEvent) event);
+                TopologyBuilder.handleGroupActivatedEvent((GroupActivatedEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusGroupTerminatingEventListener() {
+        statusEventReceiver.addEventListener(new GroupTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleGroupTerminatingEvent((AppStatusGroupTerminatingEvent) event);
+                TopologyBuilder.handleGroupTerminatedEvent((GroupTerminatedEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusGroupInactivateEventListener() {
+        statusEventReceiver.addEventListener(new GroupTerminatingEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                TopologyBuilder.handleGroupTerminatingEvent((GroupTerminatingEvent) event);
+
+            }
+        });
+
+        statusEventReceiver.addEventListener(new GroupInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
                 TopologyBuilder.handleGroupInActiveEvent((AppStatusGroupInactivateEvent) event);
@@ -139,44 +139,44 @@ public class ApplicationStatusTopicReceiver implements Runnable {
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusApplicationActivatedEventListener() {
+        statusEventReceiver.addEventListener(new ApplicationActivatedEventListener() {
 
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleApplicationActivatedEvent((AppStatusApplicationActivatedEvent) event);
+                TopologyBuilder.handleApplicationActivatedEvent((ApplicationActivatedEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusApplicationInactivatedEventListener() {
+        statusEventReceiver.addEventListener(new ApplicationInactivatedEventListener() {
 
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleApplicationInActivatedEvent((AppStatusApplicationInactivatedEvent) event);
+                TopologyBuilder.handleApplicationInActivatedEvent((ApplicationInactivatedEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusApplicationCreatedEventListener() {
+        statusEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleApplicationCreatedEvent((AppStatusApplicationCreatedEvent) event);
+                TopologyBuilder.handleApplicationCreatedEvent((ApplicationCreatedEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusApplicationTerminatingEventListener() {
+        statusEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleApplicationTerminatingEvent((AppStatusApplicationTerminatingEvent) event);
+                TopologyBuilder.handleApplicationTerminatingEvent((ApplicationTerminatingEvent) event);
 
             }
         });
 
-        statusEventReceiver.addEventListener(new AppStatusApplicationTerminatedEventListener() {
+        statusEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleApplicationTerminatedEvent((AppStatusApplicationTerminatedEvent) event);
+                TopologyBuilder.handleApplicationTerminatedEvent((ApplicationTerminatedEvent) event);
 
             }
         });
