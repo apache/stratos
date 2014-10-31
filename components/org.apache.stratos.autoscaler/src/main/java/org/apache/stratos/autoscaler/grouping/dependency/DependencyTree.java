@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.grouping.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
-import org.apache.stratos.messaging.domain.topology.Application;
 
 import java.util.ArrayList;
 import java.util.List;

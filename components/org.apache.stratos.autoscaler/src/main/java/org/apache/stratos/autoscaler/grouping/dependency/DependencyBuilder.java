@@ -24,7 +24,7 @@ import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContextFactory;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.applications.*;
 
 import java.util.Set;
 

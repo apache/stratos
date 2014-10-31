@@ -17,24 +17,35 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
+package org.apache.stratos.messaging.domain.applications;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class StartupOrder implements Serializable {
+/**
+ * Data Holder for a Cluster.
+ * Will hold the Service Type and Cluster Id.
+ */
 
-    private List<String> startList;
+public class ClusterDataHolder implements Serializable {
 
-    public StartupOrder (List<String> startList) {
-        this.startList = startList;
+    // Service/Cartridge type
+    private String serviceType;
+
+    // Cluster id
+    private String clusterId;
+
+    public ClusterDataHolder (String serviceType, String clusterId) {
+
+        this.serviceType = serviceType;
+        this.clusterId = clusterId;
     }
 
-    public List<String> getStartList() {
-        return startList;
+
+    public String getServiceType() {
+        return serviceType;
     }
 
-    public void setStartList(List<String> startList) {
-        this.startList = startList;
+    public String getClusterId() {
+        return clusterId;
     }
 }

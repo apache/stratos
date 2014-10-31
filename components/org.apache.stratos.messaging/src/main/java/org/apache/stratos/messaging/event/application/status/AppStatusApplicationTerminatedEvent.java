@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.messaging.event.application.status;
 
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 
 import java.io.Serializable;
 import java.util.Set;

@@ -26,7 +26,7 @@ import org.apache.stratos.manager.exception.ApplicationSubscriptionException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
-import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;

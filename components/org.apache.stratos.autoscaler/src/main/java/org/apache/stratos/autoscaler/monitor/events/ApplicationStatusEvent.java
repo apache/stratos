@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 
 /**
  * This will use to notify observers upon a application activation events received in Topology.

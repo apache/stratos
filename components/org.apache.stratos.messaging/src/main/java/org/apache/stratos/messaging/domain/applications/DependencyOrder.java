@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
+package org.apache.stratos.messaging.domain.applications;
 
 import java.io.Serializable;
 import java.util.Set;

@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.domain.topology;
+
+package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -24,50 +25,50 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public enum GroupStatus implements LifeCycleState {
+public enum ApplicationStatus implements LifeCycleState {
 
-    Created(0) {
+    Created (0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Created,
-                    GroupStatus.Active, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Created,
+                    ApplicationStatus.Active, ApplicationStatus.Terminating));
         }
     },
-    Active(1) {
+    Active (1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Active,
-                    GroupStatus.Inactive, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Active,
+                    ApplicationStatus.Terminating, ApplicationStatus.Inactive));
         }
     },
-    Inactive(2) {
+    Inactive (2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Inactive, ApplicationStatus.Active,
+                    ApplicationStatus.Terminating));
         }
     },
-    Terminating(3) {
+    Terminating (3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminating,
-                    GroupStatus.Terminated, GroupStatus.Created));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminating,
+                    ApplicationStatus.Terminated));
         }
     },
-    Terminated(4) {
+    Terminated (4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Terminated));
+            return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminated));
         }
     };
 
     private int code;
 
-    private GroupStatus(int code) {
+    private ApplicationStatus (int code) {
         this.code = code;
     }
 
     public int getCode() {
         return code;
     }
-
 }

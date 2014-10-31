@@ -22,7 +22,7 @@ package org.apache.stratos.cloud.controller.interfaces;
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.pojo.ApplicationClusterContext;
 import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
-import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.applications.Application;
 
 import java.util.Set;
 

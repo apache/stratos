@@ -22,9 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.grouping.dependency.DependencyTree;
-import org.apache.stratos.messaging.domain.topology.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.applications.ParentComponent;
 
 /**
  * Factory to create new GroupContext or ClusterContext

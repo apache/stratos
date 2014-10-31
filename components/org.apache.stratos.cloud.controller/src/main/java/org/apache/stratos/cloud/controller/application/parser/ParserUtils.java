@@ -22,7 +22,7 @@ package org.apache.stratos.cloud.controller.application.parser;
 import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.pojo.application.GroupContext;
 import org.apache.stratos.cloud.controller.pojo.application.SubscribableContext;
-import org.apache.stratos.messaging.domain.topology.StartupOrder;
+import org.apache.stratos.messaging.domain.applications.StartupOrder;
 
 import java.util.*;
 

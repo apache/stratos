@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
+package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 
 import java.util.*;

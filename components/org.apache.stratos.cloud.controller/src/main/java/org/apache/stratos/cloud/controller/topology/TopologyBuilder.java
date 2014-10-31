@@ -29,6 +29,7 @@ import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublis
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.application.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
