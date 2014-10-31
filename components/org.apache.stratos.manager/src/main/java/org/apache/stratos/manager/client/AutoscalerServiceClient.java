@@ -24,6 +24,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.*;
@@ -217,5 +218,15 @@ public class AutoscalerServiceClient {
 
     public void deployServiceGroup(ServiceGroup serviceGroup) throws AutoScalerServiceInvalidServiceGroupExceptionException, RemoteException {
         stub.deployServiceGroup(serviceGroup);
+    }
+
+    public void deployApplication (ApplicationContext applicationContext) throws
+            AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
+        stub.deployApplicationDefinition(applicationContext);
+    }
+
+    public void undeployApplication (String applicationId, int tenantId, String tenantDomain) throws
+            AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
+        stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
     }
 }

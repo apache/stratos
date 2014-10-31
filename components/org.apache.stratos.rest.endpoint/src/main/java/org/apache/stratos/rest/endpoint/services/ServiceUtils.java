@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -148,19 +149,28 @@ public class ServiceUtils {
             throw new RestAPIException(e1);
         }
     	
-        ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
+        org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext applicationContext =
+                PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);
 
-        try {
-            CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
+//        try {
+//            CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
+//
+//        } catch (RemoteException e) {
+//            throw new RestAPIException(e);
+//        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
+//            throw new RestAPIException(e);
+//        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
+//            throw new RestAPIException(e);
+//        }
 
+        try {
+            AutoscalerServiceClient.getServiceClient().deployApplication(applicationContext);
+        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
+            throw new RestAPIException(e);
         } catch (RemoteException e) {
-            throw new RestAPIException(e);
-        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-            throw new RestAPIException(e);
-        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         }
     }
@@ -179,11 +189,12 @@ public class ServiceUtils {
 
         try {
         	int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
-            CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId, tenantId, tenantDomain);
+            //CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId, tenantId, tenantDomain);
+            AutoscalerServiceClient.getServiceClient().undeployApplication(appId, tenantId, tenantDomain);
 
-        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
         } catch (RemoteException e) {
+            throw new RestAPIException(e);
+        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         }
 

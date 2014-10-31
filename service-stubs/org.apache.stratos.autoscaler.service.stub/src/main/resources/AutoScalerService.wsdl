@@ -1,58 +1,157 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax27="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax25="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax214="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax27="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax25="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax214="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax210="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:documentation>AutoScalerService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
-            <xs:complexType name="AutoScalerException">
-                <xs:complexContent>
-                    <xs:extension base="xs:RuntimeException">
-                        <xs:sequence></xs:sequence>
-                    </xs:extension>
-                </xs:complexContent>
-            </xs:complexType>
-            <xs:complexType name="InvalidServiceGroupException">
+        <xs:schema xmlns:ax29="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax212="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NonExistingLBException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidPartitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidPolicyException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax29:Partition"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax212:PartitionGroup"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="Properties">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="ApplicationContext">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"></xs:element>
-                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="components" nillable="true" type="ax220:ComponentContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax220:SubscribableInfoContext"></xs:element>
+                    <xs:element minOccurs="0" name="teantAdminUsername" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="Property">
+            <xs:complexType name="ComponentContext">
                 <xs:sequence>
+                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax220:DependencyContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax220:GroupContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableContexts" nillable="true" type="ax220:SubscribableContext"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DependencyContext">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrdersContexts" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="terminationBehaviour" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GroupContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax220:GroupContext"></xs:element>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableContexts" nillable="true" type="ax220:SubscribableContext"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SubscribableContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SubscribableInfoContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyAliases" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax217="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax219="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="ServiceGroup">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax214:Dependencies"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.policy.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="AutoscalePolicy">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax218:LoadThresholds"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LoadThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax218:LoadAverageThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax218:MemoryConsumptionThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax218:RequestsInFlightThresholds"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LoadAverageThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="MemoryConsumptionThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RequestsInFlightThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax211="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:complexType name="PartitionGroup">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax211:Partition"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax28="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:complexType name="Partition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax215="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax219="http://model.policy.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
             <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:element name="AutoScalerServiceAutoScalerException">
                 <xs:complexType>
                     <xs:sequence>
@@ -64,6 +163,22 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoScalerServiceApplicationDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax23:ApplicationDefinitionException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unDeployApplicationDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
+                        <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -273,6 +388,13 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="deployApplicationDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax220:ApplicationContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="checkServiceLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
@@ -389,92 +511,53 @@
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.autoscaler.stratos.apache.org/xsd">
-            <xs:complexType name="ServiceGroup">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax214:Dependencies"></xs:element>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Dependencies">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax211="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:complexType name="PartitionGroup">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax211:Partition"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.policy.autoscaler.stratos.apache.org/xsd">
-            <xs:complexType name="AutoscalePolicy">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax218:LoadThresholds"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="LoadThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax218:LoadAverageThresholds"></xs:element>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax218:MemoryConsumptionThresholds"></xs:element>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax218:RequestsInFlightThresholds"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="LoadAverageThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="MemoryConsumptionThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="RequestsInFlightThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"></xs:element>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax29="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax212="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:complexType name="DeploymentPolicy">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax29:Partition"></xs:element>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax212:PartitionGroup"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax28="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:complexType name="Partition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax27:Property"></xs:element>
                     <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="AutoScalerException">
+                <xs:complexContent>
+                    <xs:extension base="xs:RuntimeException">
+                        <xs:sequence></xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="ApplicationDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidServiceGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingLBException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidPartitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidPolicyException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -524,6 +607,12 @@
     <wsdl:message name="AutoScalerServiceInvalidPolicyException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPolicyException"></wsdl:part>
     </wsdl:message>
+    <wsdl:message name="unDeployApplicationDefinitionRequest">
+        <wsdl:part name="parameters" element="ns:unDeployApplicationDefinition"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AutoScalerServiceApplicationDefinitionException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceApplicationDefinitionException"></wsdl:part>
+    </wsdl:message>
     <wsdl:message name="getServiceGroupRequest">
         <wsdl:part name="parameters" element="ns:getServiceGroup"></wsdl:part>
     </wsdl:message>
@@ -553,6 +642,9 @@
     </wsdl:message>
     <wsdl:message name="getAllAvailablePartitionsResponse">
         <wsdl:part name="parameters" element="ns:getAllAvailablePartitionsResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="deployApplicationDefinitionRequest">
+        <wsdl:part name="parameters" element="ns:deployApplicationDefinition"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getAutoscalingPolicyRequest">
         <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"></wsdl:part>
@@ -653,6 +745,10 @@
             <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"></wsdl:output>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addAutoScalingPolicyAutoScalerServiceInvalidPolicyException"></wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <wsdl:input message="ns:unDeployApplicationDefinitionRequest" wsaw:Action="urn:unDeployApplicationDefinition"></wsdl:input>
+            <wsdl:fault message="ns:AutoScalerServiceApplicationDefinitionException" name="AutoScalerServiceApplicationDefinitionException" wsaw:Action="urn:unDeployApplicationDefinitionAutoScalerServiceApplicationDefinitionException"></wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getServiceGroup">
             <wsdl:input message="ns:getServiceGroupRequest" wsaw:Action="urn:getServiceGroup"></wsdl:input>
             <wsdl:output message="ns:getServiceGroupResponse" wsaw:Action="urn:getServiceGroupResponse"></wsdl:output>
@@ -672,6 +768,10 @@
         <wsdl:operation name="getAllAvailablePartitions">
             <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"></wsdl:input>
             <wsdl:output message="ns:getAllAvailablePartitionsResponse" wsaw:Action="urn:getAllAvailablePartitionsResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <wsdl:input message="ns:deployApplicationDefinitionRequest" wsaw:Action="urn:deployApplicationDefinition"></wsdl:input>
+            <wsdl:fault message="ns:AutoScalerServiceApplicationDefinitionException" name="AutoScalerServiceApplicationDefinitionException" wsaw:Action="urn:deployApplicationDefinitionAutoScalerServiceApplicationDefinitionException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"></wsdl:input>
@@ -788,6 +888,15 @@
                 <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap:operation soapAction="urn:unDeployApplicationDefinition" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"></soap:fault>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getServiceGroup">
             <soap:operation soapAction="urn:getServiceGroup" style="document"></soap:operation>
             <wsdl:input>
@@ -832,6 +941,15 @@
             <wsdl:output>
                 <soap:body use="literal"></soap:body>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <soap:operation soapAction="urn:deployApplicationDefinition" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"></soap:fault>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"></soap:operation>
@@ -1007,6 +1125,15 @@
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap12:operation soapAction="urn:unDeployApplicationDefinition" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap12:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"></soap12:fault>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getServiceGroup">
             <soap12:operation soapAction="urn:getServiceGroup" style="document"></soap12:operation>
             <wsdl:input>
@@ -1051,6 +1178,15 @@
             <wsdl:output>
                 <soap12:body use="literal"></soap12:body>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <soap12:operation soapAction="urn:deployApplicationDefinition" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap12:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"></soap12:fault>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"></soap12:operation>
@@ -1223,6 +1359,12 @@
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <http:operation location="unDeployApplicationDefinition"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="getServiceGroup">
             <http:operation location="getServiceGroup"></http:operation>
             <wsdl:input>
@@ -1264,6 +1406,12 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <http:operation location="deployApplicationDefinition"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <http:operation location="getAutoscalingPolicy"></http:operation>
@@ -1361,22 +1509,22 @@
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://10.100.1.142:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"></soap:address>
+            <soap:address location="http://192.168.56.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://10.100.1.142:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"></soap:address>
+            <soap:address location="https://192.168.56.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"></soap:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://10.100.1.142:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"></soap12:address>
+            <soap12:address location="https://192.168.56.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://10.100.1.142:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"></soap12:address>
+            <soap12:address location="http://192.168.56.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://10.100.1.142:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"></http:address>
+            <http:address location="http://192.168.56.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"></http:address>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://10.100.1.142:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"></http:address>
+            <http:address location="https://192.168.56.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"></http:address>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>

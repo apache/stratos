@@ -22,8 +22,11 @@ package org.apache.stratos.rest.endpoint.bean.util.converter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.pojo.stub.DependencyContext;
+import org.apache.stratos.autoscaler.applications.pojo.stub.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableContext;
+import org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableInfoContext;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.cloud.controller.stub.pojo.application.*;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -680,15 +683,16 @@ public class PojoConverter {
     
 	private static Log log = LogFactory.getLog(PojoConverter.class);
 
-    public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
+    public static org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext
+    convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
-        ApplicationContext applicationContext = new ApplicationContext();
+        org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext applicationContext = new org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
         applicationContext.setAlias(compositeAppDefinition.getAlias());
 
         // convert and set components
         if (compositeAppDefinition.getComponents() != null) {
-            ComponentContext componentContext = new ComponentContext();
+            org.apache.stratos.autoscaler.applications.pojo.stub.ComponentContext componentContext = new org.apache.stratos.autoscaler.applications.pojo.stub.ComponentContext();
             // top level subscribables
             if (compositeAppDefinition.getComponents().getSubscribables() != null) {
                 componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
@@ -736,7 +740,7 @@ public class PojoConverter {
     private static DependencyContext getDependencyContextFromDependencyDefinition (DependencyDefinitions dependencyDefinitions) {
 
         DependencyContext dependencyContext = new DependencyContext();
-        dependencyContext.setKillBehaviour(dependencyDefinitions.getTerminationBehaviour());
+        dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
         
         if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
         	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
@@ -771,7 +775,7 @@ public class PojoConverter {
         return groupContexts;
     }
 
-    private static SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+    private static org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
         SubscribableContext[] subscribableContexts = new SubscribableContext[subscribableDefinitions.size()];
         int i = 0;
