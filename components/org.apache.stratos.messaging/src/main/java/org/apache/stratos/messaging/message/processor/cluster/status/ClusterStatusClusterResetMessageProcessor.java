@@ -20,7 +20,7 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResettedEvent;
+import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResetEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
@@ -36,10 +36,10 @@ public class ClusterStatusClusterResetMessageProcessor extends MessageProcessor 
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ClusterStatusClusterResettedEvent.class.getName().equals(type)) {
+        if (ClusterStatusClusterResetEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterStatusClusterResettedEvent event = (ClusterStatusClusterResettedEvent) Util.
-                    jsonToObject(message, ClusterStatusClusterResettedEvent.class);
+            ClusterStatusClusterResetEvent event = (ClusterStatusClusterResetEvent) Util.
+                    jsonToObject(message, ClusterStatusClusterResetEvent.class);
 
             if(log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterResettedEvent: " + event.toString());

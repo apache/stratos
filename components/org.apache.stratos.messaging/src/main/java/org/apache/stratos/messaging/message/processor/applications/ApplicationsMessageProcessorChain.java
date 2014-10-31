@@ -31,7 +31,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private static final Log log = LogFactory.getLog(ApplicationsMessageProcessorChain.class);
 
-    private GroupCreatedProcessor groupCreatedMessageProcessor;
+    private GroupResetProcessor groupCreatedMessageProcessor;
     private GroupActivatedProcessor groupActivatedMessageProcessor;
     private GroupInActivateProcessor groupInActivateMessageProcessor;
     private GroupTerminatedProcessor groupTerminatedProcessor;
@@ -46,7 +46,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     public void initialize() {
         // Add instance notifier event processors
 
-        groupCreatedMessageProcessor = new GroupCreatedProcessor();
+        groupCreatedMessageProcessor = new GroupResetProcessor();
         add(groupCreatedMessageProcessor);
 
         groupActivatedMessageProcessor = new GroupActivatedProcessor();
@@ -86,7 +86,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
     public void addEventListener(EventListener eventListener) {
 
-        if(eventListener instanceof GroupCreatedEventListener) {
+        if (eventListener instanceof GroupResetEventListener) {
             groupCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInactivateEventListener) {
             groupInActivateMessageProcessor.addEventListener(eventListener);

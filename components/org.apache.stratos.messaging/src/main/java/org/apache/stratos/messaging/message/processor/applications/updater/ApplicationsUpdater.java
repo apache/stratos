@@ -24,36 +24,35 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.locking.ApplicationLock;
 import org.apache.stratos.messaging.domain.applications.locking.ApplicationLockHierarchy;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
  * Used to lock the Topology for writes by messaging component
- *
- *  Acquire a write lock:
- *
- *  From root level, acquire read lock, and acquire a write lock only for the
- *  relevant sub tree.
- *
- *  Example 1: Acquiring write lock for a Cluster to modify the Cluster object -
- *           acquiring:
- *           public static void acquireWriteLockForCluster (String serviceName, String clusterId)
- *
- *           releasing:
- *           public static void releaseWriteLockForCluster (String serviceName, String clusterId)
- *
- *  Example 2: Acquiring write lock to add a new Cluster object -
- *           acquiring:
- *           public static void acquireWriteLockForService (String serviceName)
- *
- *           releasing:
- *           public static void releaseWriteLockForService (String serviceName)
- *
- *  Example 3: Acquiring the write lock to add a deploy a Cartridge (add a new Service)
- *           acquire:
- *           public static void acquireWriteLockForServices()
- *
- *           release:
- *           public static void releaseWriteLockForServices()
+ * <p/>
+ * Acquire a write lock:
+ * <p/>
+ * From root level, acquire read lock, and acquire a write lock only for the
+ * relevant sub tree.
+ * <p/>
+ * Example 1: Acquiring write lock for a Cluster to modify the Cluster object -
+ * acquiring:
+ * public static void acquireWriteLockForCluster (String serviceName, String clusterId)
+ * <p/>
+ * releasing:
+ * public static void releaseWriteLockForCluster (String serviceName, String clusterId)
+ * <p/>
+ * Example 2: Acquiring write lock to add a new Cluster object -
+ * acquiring:
+ * public static void acquireWriteLockForService (String serviceName)
+ * <p/>
+ * releasing:
+ * public static void releaseWriteLockForService (String serviceName)
+ * <p/>
+ * Example 3: Acquiring the write lock to add a deploy a Cartridge (add a new Service)
+ * acquire:
+ * public static void acquireWriteLockForServices()
+ * <p/>
+ * release:
+ * public static void releaseWriteLockForServices()
  */
 
 public class ApplicationsUpdater {
@@ -69,7 +68,7 @@ public class ApplicationsUpdater {
      * Acquires write lock for all Applications
      */
     public static void acquireWriteLockForApplications() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired for Applications");
         }
         applicationLockHierarchy.getApplicationLock().acquireWriteLock();
@@ -79,7 +78,7 @@ public class ApplicationsUpdater {
      * Releases write lock for all Applications
      */
     public static void releaseWriteLockForApplications() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released for Applications");
         }
         applicationLockHierarchy.getApplicationLock().releaseWritelock();
@@ -90,19 +89,19 @@ public class ApplicationsUpdater {
      *
      * @param appId Application id
      */
-    public static void acquireWriteLockForApplication (String appId) {
+    public static void acquireWriteLockForApplication(String appId) {
 
         // acquire read lock for all Applications
         ApplicationManager.acquireReadLockForApplications();
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
-        if (applicationLock == null)  {
+        if (applicationLock == null) {
             handleLockNotFound("Topology lock not found for Application " + appId);
 
         } else {
             // now, lock Application
             applicationLock.acquireWriteLock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock acquired for Application " + appId);
             }
         }
@@ -113,16 +112,16 @@ public class ApplicationsUpdater {
      *
      * @param appId Application id
      */
-    public static void releaseWriteLockForApplication (String appId) {
+    public static void releaseWriteLockForApplication(String appId) {
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
-        if (applicationLock == null)  {
+        if (applicationLock == null) {
             handleLockNotFound("Topology lock not found for Application " + appId);
 
         } else {
             // release App lock
             applicationLock.releaseWritelock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock released for Application " + appId);
             }
         }
@@ -131,7 +130,7 @@ public class ApplicationsUpdater {
         ApplicationManager.releaseReadLockForApplications();
     }
 
-    private static void handleLockNotFound (String errorMsg) {
+    private static void handleLockNotFound(String errorMsg) {
         log.warn(errorMsg);
         //throw new RuntimeException(errorMsg);
     }

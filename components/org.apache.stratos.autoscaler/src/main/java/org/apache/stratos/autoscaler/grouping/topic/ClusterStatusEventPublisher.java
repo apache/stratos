@@ -48,8 +48,32 @@ public class ClusterStatusEventPublisher {
                         log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
                     }
-                    ClusterStatusClusterResettedEvent clusterCreatedEvent =
-                            new ClusterStatusClusterResettedEvent(appId, serviceName, clusterId);
+                    /*ClusterStatusClusterCreatedEvent clusterCreatedEvent =
+                            new ClusterStatusClusterCreatedEvent(appId, serviceName, clusterId);
+
+                    publishEvent(clusterCreatedEvent);*/
+                } else {
+                    log.warn("Created is not in the possible state list of [cluster] " + clusterId);
+                }
+            }
+        } finally {
+            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
+        }
+    }
+
+    public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
+        try {
+            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            if (service != null) {
+                Cluster cluster = service.getCluster(clusterId);
+                if (cluster.isStateTransitionValid(ClusterStatus.Created)) {
+                    if (log.isInfoEnabled()) {
+                        log.info("Publishing Cluster created event for [application]: " + appId +
+                                " [cluster]: " + clusterId);
+                    }
+                    ClusterStatusClusterResetEvent clusterCreatedEvent =
+                            new ClusterStatusClusterResetEvent(appId, serviceName, clusterId);
 
                     publishEvent(clusterCreatedEvent);
                 } else {

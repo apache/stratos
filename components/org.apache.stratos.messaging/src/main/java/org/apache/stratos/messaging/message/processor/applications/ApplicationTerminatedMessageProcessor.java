@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -61,7 +60,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
                     jsonToObject(message, ApplicationTerminatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplications();
-                        Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
+            Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
             if (clusterDataHolders != null) {
                 for (ClusterDataHolder clusterData : clusterDataHolders) {
                     TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
@@ -90,7 +89,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ApplicationTerminatedEvent event, Applications applications) {
+    private boolean doProcess(ApplicationTerminatedEvent event, Applications applications) {
 
         // check if required properties are available
         if (event.getAppId() == null) {
@@ -99,7 +98,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException(errorMsg);
         }
 
-        if (event.getTenantDomain()== null) {
+        if (event.getTenantDomain() == null) {
             String errorMsg = "Application tenant domain of application removed event is invalid";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);

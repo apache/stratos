@@ -17,33 +17,29 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.cluster.status;
+package org.apache.stratos.messaging.event.applications;
 
 import org.apache.stratos.messaging.event.Event;
+
+import java.io.Serializable;
 
 /**
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class ClusterStatusClusterResettedEvent extends Event {
+public class GroupResetEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
-    private final String serviceName;
-    private final String clusterId;
+    private String groupId;
     private String appId;
 
-    public ClusterStatusClusterResettedEvent(String appId, String serviceName, String clusterId) {
-        this.serviceName = serviceName;
-        this.clusterId = clusterId;
+    public GroupResetEvent(String appId, String groupId) {
         this.appId = appId;
+        this.groupId = groupId;
     }
 
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public String getClusterId() {
-        return clusterId;
+    public String getGroupId() {
+        return this.groupId;
     }
 
     public String getAppId() {

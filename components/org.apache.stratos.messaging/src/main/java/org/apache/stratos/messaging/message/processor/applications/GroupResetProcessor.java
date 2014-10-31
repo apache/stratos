@@ -24,18 +24,16 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.GroupCreatedEvent;
+import org.apache.stratos.messaging.event.applications.GroupResetEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 /**
  * This processor will act upon the Group activation events
  */
-public class GroupCreatedProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(GroupCreatedProcessor.class);
+public class GroupResetProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(GroupResetProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -47,14 +45,14 @@ public class GroupCreatedProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
-        if (GroupCreatedEvent.class.getName().equals(type)) {
+        if (GroupResetEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
             if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            GroupCreatedEvent event = (GroupCreatedEvent) Util.
-                    jsonToObject(message, GroupCreatedEvent.class);
+            GroupResetEvent event = (GroupResetEvent) Util.
+                    jsonToObject(message, GroupResetEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
 
@@ -75,7 +73,7 @@ public class GroupCreatedProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (GroupCreatedEvent event,Applications applications) {
+    private boolean doProcess(GroupResetEvent event, Applications applications) {
 
         // Validate event against the existing applications
         Application application = applications.getApplication(event.getAppId());
@@ -96,7 +94,7 @@ public class GroupCreatedProcessor extends MessageProcessor {
         } else {
             // Apply changes to the applications
             if (!group.isStateTransitionValid(GroupStatus.Created)) {
-                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Created  + " " +
+                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Created + " " +
                         "for Group " + group.getAlias());
             }
             group.setStatus(GroupStatus.Created);

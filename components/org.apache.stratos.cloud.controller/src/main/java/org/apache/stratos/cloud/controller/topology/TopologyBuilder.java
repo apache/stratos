@@ -27,14 +27,8 @@ import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.applications.AppStatusGroupInactivateEvent;
 import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
-import org.apache.stratos.messaging.event.applications.GroupTerminatedEvent;
-import org.apache.stratos.messaging.event.applications.GroupTerminatingEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
@@ -154,7 +148,7 @@ public class TopologyBuilder {
     }
 
 
-    public static void handleClusterReset(ClusterStatusClusterResettedEvent event) {
+    public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
 
         TopologyManager.acquireWriteLock();
 

@@ -44,7 +44,7 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
         Applications applications = (Applications) object;
 
         if (CompleteApplicationsEvent.class.getName().equals(type)) {
-        	// Parse complete message and build event
+            // Parse complete message and build event
             CompleteApplicationsEvent event = (CompleteApplicationsEvent) Util.
                     jsonToObject(message, CompleteApplicationsEvent.class);
 
@@ -72,14 +72,14 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
         }
     }
 
-    private void doProcess (CompleteApplicationsEvent event, Applications applications) {
-    // add existing Applications to Topology
+    private void doProcess(CompleteApplicationsEvent event, Applications applications) {
+        // add existing Applications to Topology
         Collection<Application> applicationsList = event.getApplications().getApplications().values();
         if (applicationsList != null && !applicationsList.isEmpty()) {
             for (Application application : applicationsList) {
                 applications.addApplication(application);
                 if (log.isDebugEnabled()) {
-                    log.debug("Application with id [ " +  application.getUniqueIdentifier() + " ] added to Topology");
+                    log.debug("Application with id [ " + application.getUniqueIdentifier() + " ] added to Topology");
                 }
             }
         } else {

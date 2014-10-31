@@ -24,11 +24,9 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.GroupTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -75,7 +73,7 @@ public class GroupTerminatingProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (GroupTerminatingEvent event,Applications applications) {
+    private boolean doProcess(GroupTerminatingEvent event, Applications applications) {
 
         // Validate event against the existing applications
         Application application = applications.getApplication(event.getAppId());

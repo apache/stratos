@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterCreatedEvent;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResettedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 

@@ -107,7 +107,7 @@ public class StatusChecker {
                                         ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
                                                 monitor.getClusterId());
                                     } else {
-                                        ClusterStatusEventPublisher.sendClusterCreatedEvent(appId, monitor.getServiceId(),
+                                        ClusterStatusEventPublisher.sendClusterResetEvent(appId, monitor.getServiceId(),
                                                 monitor.getClusterId());
                                     }
 

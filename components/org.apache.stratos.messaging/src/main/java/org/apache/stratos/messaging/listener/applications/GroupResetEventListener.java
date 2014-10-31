@@ -20,5 +20,5 @@ package org.apache.stratos.messaging.listener.applications;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-public abstract class GroupCreatedEventListener extends EventListener {
+public abstract class GroupResetEventListener extends EventListener {
 }

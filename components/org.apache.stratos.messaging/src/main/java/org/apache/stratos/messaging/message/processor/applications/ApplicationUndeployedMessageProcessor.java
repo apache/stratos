@@ -25,7 +25,6 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ApplicationUndeployedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -92,12 +91,12 @@ public class ApplicationUndeployedMessageProcessor extends MessageProcessor {
                 return nextProcessor.process(type, message, applications);
             } else {
                 throw new RuntimeException(String.format
-                    ("Failed to process message using available message processors: [type] %s [body] %s", type, message));
+                        ("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
 
-    private boolean doProcess (ApplicationUndeployedEvent event, Applications applications) {
+    private boolean doProcess(ApplicationUndeployedEvent event, Applications applications) {
 
         // update the application status to Terminating
         Application application = applications.getApplication(event.getApplicationId());

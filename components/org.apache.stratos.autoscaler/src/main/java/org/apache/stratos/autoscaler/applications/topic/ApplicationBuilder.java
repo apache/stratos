@@ -22,13 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.event.applications.*;
-import org.apache.stratos.messaging.event.applications.ApplicationActivatedEvent;
-import org.apache.stratos.messaging.event.applications.ApplicationInactivatedEvent;
-import org.apache.stratos.messaging.event.applications.GroupActivatedEvent;
-import org.apache.stratos.messaging.event.applications.GroupCreatedEvent;
-import org.apache.stratos.messaging.event.applications.GroupTerminatingEvent;
-import org.apache.stratos.messaging.event.topology.*;
 
 import java.util.Collection;
 import java.util.Set;

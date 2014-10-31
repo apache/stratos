@@ -34,8 +34,8 @@ public class ApplicationsEventPublisher {
                         log.info("Publishing Group created event for [application]: " + appId +
                                 " [group]: " + groupId);
                     }
-                    GroupCreatedEvent groupCreatedEvent =
-                            new GroupCreatedEvent(appId, groupId);
+                    GroupResetEvent groupCreatedEvent =
+                            new GroupResetEvent(appId, groupId);
 
                     publishEvent(groupCreatedEvent);
                 } else {

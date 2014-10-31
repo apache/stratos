@@ -24,16 +24,16 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
 
-public class ApplicationStatusTopicReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(ApplicationStatusTopicReceiver.class);
+public class ClusterStatusTopicReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
-    private ApplicationsEventReceiver statusEventReceiver;
+    private ClusterStatusEventReceiver statusEventReceiver;
     private boolean terminated;
 
-    public ApplicationStatusTopicReceiver() {
-        this.statusEventReceiver = new ApplicationsEventReceiver();
+    public ClusterStatusTopicReceiver() {
+        this.statusEventReceiver = new ClusterStatusEventReceiver();
         addEventListeners();
     }
 
@@ -67,14 +67,14 @@ public class ApplicationStatusTopicReceiver implements Runnable {
         statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((ClusterStatusClusterResettedEvent) event);
+                TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
             }
         });
 
         statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((ClusterStatusClusterResettedEvent) event);
+                TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
             }
         });
 

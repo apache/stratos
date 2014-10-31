@@ -23,7 +23,7 @@ package org.apache.stratos.cloud.controller.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.application.status.receiver.ApplicationStatusTopicReceiver;
+import org.apache.stratos.cloud.controller.application.status.receiver.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
@@ -64,7 +64,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
-    private ApplicationStatusTopicReceiver applicationStatusTopicReceiver;
+    private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
     protected void activate(ComponentContext context) {
         try {
                	
@@ -79,17 +79,18 @@ public class CloudControllerDSComponent {
             Thread tdelegator = new Thread(delegator);
             tdelegator.start();
 
-            applicationStatusTopicReceiver = new ApplicationStatusTopicReceiver();
-            Thread appThread = new Thread(applicationStatusTopicReceiver);
+            clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
+            Thread appThread = new Thread(clusterStatusTopicReceiver);
             appThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Application status Receiver thread started");
+                log.debug("Cluster status Receiver thread started");
             }
 
         	
         	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
+            bundleContext.registerService(CloudControllerService.class.getName(),
+                    new CloudControllerServiceImpl(), null);
 
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");
