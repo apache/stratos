@@ -19,7 +19,11 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-public class SubscribableInfoContext {
+import java.io.Serializable;
+
+public class SubscribableInfoContext implements Serializable {
+
+    private static final long serialVersionUID = -6874644941002783034L;
 
     private String alias;
 

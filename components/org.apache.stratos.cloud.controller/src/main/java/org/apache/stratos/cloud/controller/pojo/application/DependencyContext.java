@@ -20,8 +20,12 @@
 package org.apache.stratos.cloud.controller.pojo.application;
 
 
-public class DependencyContext {
-    
+import java.io.Serializable;
+
+public class DependencyContext implements Serializable {
+
+    private static final long serialVersionUID = 6211713487242343226L;
+
     private String [] startupOrdersContexts;
 
     private String killBehaviour;

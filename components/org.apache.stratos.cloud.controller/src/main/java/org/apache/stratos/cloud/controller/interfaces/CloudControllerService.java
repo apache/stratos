@@ -19,15 +19,6 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
-import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.exception.MemberTerminationFailedException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
@@ -46,7 +37,7 @@ public interface CloudControllerService {
 	 * @throws InvalidIaasProviderException if the iaas providers configured are not valid.
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
-    void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
+    void deployCartridgeDefinition(CartridgeConfig cartridgeConfig)
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
@@ -77,9 +68,9 @@ public interface CloudControllerService {
     boolean validatePartition(Partition partition) throws InvalidPartitionException;
     
     /**
-     * Validate a given {@link DeploymentPolicy} against a Cartridge.
-     * @param cartridgeType type of the cartridge that this policy is going to be attached to.
-     * @param deploymentPolicy policy to be validated.
+     * Validate a given deployment policy.
+     * @param cartridgeType type of the cartridge
+     * @param partitions partitions
      * @return whether the policy is a valid one against the given Cartridge.
      * @throws InvalidPartitionException if the policy contains at least one invalid partition.
      * @throws InvalidCartridgeTypeException if the given Cartridge type is not a valid one.
@@ -93,7 +84,7 @@ public interface CloudControllerService {
      * present service cluster, if there is any. A service cluster is uniquely identified by its
      * domain and sub domain combination.
      * </p>
-     * @param clusterContext information about the new subscription.
+     * @param registrant information about the new subscription.
      * @return whether the registration is successful or not.
      * 
      * @throws UnregisteredCartridgeException
@@ -107,7 +98,7 @@ public interface CloudControllerService {
      * to the provided Cluster ID. Also note that the instance that is starting up
      * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
      * by a hyphen (<i>-</i>).
-     * @param Member Context with cluster id, partition etc.
+     * @param member Context with cluster id, partition etc.
      * @return updated {@link MemberContext}
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
@@ -127,9 +118,6 @@ public interface CloudControllerService {
      * 
      * @param memberId
      *            member ID of the instance to be terminated.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
     void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;

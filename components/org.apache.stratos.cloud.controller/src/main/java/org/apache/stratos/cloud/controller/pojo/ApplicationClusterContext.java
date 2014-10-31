@@ -19,7 +19,11 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
-public class ApplicationClusterContext {
+import java.io.Serializable;
+
+public class ApplicationClusterContext implements Serializable {
+
+    private static final long serialVersionUID = 9040883765827407542L;
 
     // cluster id
     private String clusterId;

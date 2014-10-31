@@ -19,7 +19,11 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-public class ApplicationContext {
+import java.io.Serializable;
+
+public class ApplicationContext implements Serializable {
+
+    private static final long serialVersionUID = 6704036501869668646L;
 
     private int tenantId;
 

@@ -19,7 +19,11 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
-public class ComponentContext {
+import java.io.Serializable;
+
+public class ComponentContext implements Serializable {
+
+    private static final long serialVersionUID = -3841830873207967496L;
 
     private GroupContext[] groupContexts;
 

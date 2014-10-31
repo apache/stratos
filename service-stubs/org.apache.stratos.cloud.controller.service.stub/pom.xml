@@ -92,7 +92,8 @@
                             org.apache.stratos.cloud.controller.stub.deployment.partition.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.pojo.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.impl.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.stub.*; version=${project.version}
+                            org.apache.stratos.cloud.controller.stub.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.pojo.application.xsd.*; version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
