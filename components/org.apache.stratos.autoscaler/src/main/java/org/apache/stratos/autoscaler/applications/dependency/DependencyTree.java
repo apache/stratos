@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.grouping.dependency;
+package org.apache.stratos.autoscaler.applications.dependency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.grouping.dependency.context.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;

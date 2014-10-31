@@ -1403,16 +1403,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
         }
 
-        TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
+        /*TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
                 applicationParser.getPayloadData());
-
+*/
         persist();
     }
 
     @Override
     public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
 
-        TopologyBuilder.handleApplicationUndeployed(applicationId);
+        //TopologyBuilder.handleApplicationUndeployed(applicationId);
     }
 
 }

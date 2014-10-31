@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.grouping.dependency.context;
+package org.apache.stratos.autoscaler.applications.dependency.context;
 
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
