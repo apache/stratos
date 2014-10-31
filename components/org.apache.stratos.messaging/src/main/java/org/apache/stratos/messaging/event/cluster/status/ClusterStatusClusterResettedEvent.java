@@ -25,14 +25,14 @@ import org.apache.stratos.messaging.event.Event;
  * This event is fired by cartridge agent when it has started the server and
  * applications are ready to serve the incoming requests.
  */
-public class ClusterStatusClusterCreatedEvent extends Event {
+public class ClusterStatusClusterResettedEvent extends Event {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private final String serviceName;
     private final String clusterId;
     private String appId;
 
-    public ClusterStatusClusterCreatedEvent(String appId, String serviceName, String clusterId) {
+    public ClusterStatusClusterResettedEvent(String appId, String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;

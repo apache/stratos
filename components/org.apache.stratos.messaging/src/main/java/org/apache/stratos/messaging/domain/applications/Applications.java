@@ -32,15 +32,33 @@ public class Applications implements Serializable {
 
     private Map<String, Application> applicationMap;
 
+    private boolean initialized;
+
     public Applications () {
         this.applicationMap = new HashMap<String, Application>();
     }
 
     public void addApplication (Application application) {
-        this.applicationMap.put(application.getUniqueIdentifier(), application);
+        this.getApplications().put(application.getUniqueIdentifier(), application);
     }
 
     public Application getApplication (String appId) {
-        return this.applicationMap.get(appId);
+        return this.getApplications().get(appId);
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
+
+    public boolean applicationExists(String appId) {
+        return this.getApplications().containsKey(appId);
+    }
+
+    public Map<String, Application> getApplications() {
+        return applicationMap;
     }
 }

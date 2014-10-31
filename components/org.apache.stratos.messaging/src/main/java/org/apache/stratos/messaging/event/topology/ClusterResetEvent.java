@@ -16,26 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.applications;
+package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.event.Event;
 
-import java.io.Serializable;
-
 /**
- * This event will be fired upon the application created is detected.
+ * Cluster activated event will be sent by Autoscaler
  */
-public class ApplicationCreatedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
+public class ClusterResetEvent extends Event {
 
-    private Application application;
+    private final String serviceName;
+    private final String clusterId;
+    private String appId;
 
-    public ApplicationCreatedEvent(Application application) {
-        this.application = application;
+    public ClusterResetEvent(String appId, String serviceName, String clusterId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.appId = appId;
     }
 
-    public Application getApplication() {
-        return application;
+    public String getServiceName() {
+        return serviceName;
     }
+
+    @Override
+    public String toString() {
+        return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
+                "]";
+    }
+
+    public String getClusterId() {
+        return clusterId;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
 }

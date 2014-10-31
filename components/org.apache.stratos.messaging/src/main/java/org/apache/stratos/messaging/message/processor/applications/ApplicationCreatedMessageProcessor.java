@@ -21,10 +21,10 @@ package org.apache.stratos.messaging.message.processor.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
@@ -44,10 +44,10 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
 
-        Topology topology = (Topology) object;
+        Applications applications = (Applications) object;
 
         if (ApplicationCreatedEvent.class.getName().equals(type)) {
-            if (!topology.isInitialized()) {
+            if (!applications.isInitialized()) {
                 return false;
             }
 
@@ -58,37 +58,24 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
             }
 
             TopologyUpdater.acquireWriteLockForApplications();
-            // since the Clusters will also get modified, acquire write locks for each Service Type
-            Set<ClusterDataHolder> clusterDataHolders = event.getApplication().getClusterDataRecursively();
-            if (clusterDataHolders != null) {
-                for (ClusterDataHolder clusterData : clusterDataHolders) {
-                    TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
-                }
-            }
-
             try {
-                return doProcess(event, topology);
+                return doProcess(event, applications);
 
             } finally {
-                if (clusterDataHolders != null) {
-                    for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
-                    }
-                }
                 TopologyUpdater.releaseWriteLockForApplications();
             }
 
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextProcessor.process(type, message, topology);
+                return nextProcessor.process(type, message, applications);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
 
-    private boolean doProcess (ApplicationCreatedEvent event,Topology topology) {
+    private boolean doProcess(ApplicationCreatedEvent event, Applications topology) {
 
         // check if required properties are available
         if (event.getApplication() == null) {
@@ -109,9 +96,6 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
         } else {
             // add application and the clusters to Topology
-            for(Cluster cluster: event.getClusterList()) {
-                topology.getService(cluster.getServiceName()).addCluster(cluster);
-            }
             topology.addApplication(event.getApplication());
         }
 

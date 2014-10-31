@@ -85,4 +85,7 @@ public class ApplicationLockHierarchy {
         }
     }
 
+    public ApplicationLock getApplicationLock() {
+        return applicationLock;
+    }
 }

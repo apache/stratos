@@ -32,13 +32,13 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
 
     private ClusterStatusClusterActivatedMessageProcessor clusterActivatedMessageProcessor;
-    private ClusterStatusClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
+    private ClusterStatusClusterResetMessageProcessor clusterCreatedMessageProcessor;
     private ClusterStatusClusterInactivateMessageProcessor clusterInactivateMessageProcessor;
     private ClusterStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
     private ClusterStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
     @Override
     protected void initialize() {
-        clusterCreatedMessageProcessor = new ClusterStatusClusterCreatedMessageProcessor();
+        clusterCreatedMessageProcessor = new ClusterStatusClusterResetMessageProcessor();
         add(clusterCreatedMessageProcessor);
 
         clusterActivatedMessageProcessor = new ClusterStatusClusterActivatedMessageProcessor();
@@ -60,7 +60,7 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if(eventListener instanceof ClusterStatusClusterCreatedEventListener) {
+        if(eventListener instanceof ClusterStatusClusterResetEventListener) {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterInactivateEventListener) {
             clusterInactivateMessageProcessor.addEventListener(eventListener);

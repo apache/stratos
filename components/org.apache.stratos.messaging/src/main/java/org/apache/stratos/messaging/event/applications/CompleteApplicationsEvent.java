@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,26 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.messaging.event.applications;
 
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.event.topology.TopologyEvent;
 
 import java.io.Serializable;
 
 /**
- * This event will be fired upon the application created is detected.
+ *  This event is fired periodically with the complete topology. It would be a
+ *  starting point for subscribers to initialize the current state of the topology
+ *  before receiving other topology events.
  */
-public class ApplicationCreatedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
+public class CompleteApplicationsEvent extends TopologyEvent implements Serializable {
+    private static final long serialVersionUID = 8580862188444892004L;
 
-    private Application application;
+    private final Applications applications;
 
-    public ApplicationCreatedEvent(Application application) {
-        this.application = application;
+    public CompleteApplicationsEvent(Applications applications) {
+        this.applications = applications;
     }
 
-    public Application getApplication() {
-        return application;
+    public Applications getApplications() {
+        return applications;
     }
 }

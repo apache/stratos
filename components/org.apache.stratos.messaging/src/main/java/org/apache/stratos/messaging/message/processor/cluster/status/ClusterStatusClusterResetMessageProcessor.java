@@ -20,13 +20,13 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterCreatedEvent;
+import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResettedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.Util;
 
 
-public class ClusterStatusClusterCreatedMessageProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterStatusClusterCreatedMessageProcessor.class);
+public class ClusterStatusClusterResetMessageProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(ClusterStatusClusterResetMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -36,10 +36,10 @@ public class ClusterStatusClusterCreatedMessageProcessor extends MessageProcesso
 
     @Override
     public boolean process(String type, String message, Object object) {
-        if (ClusterStatusClusterCreatedEvent.class.getName().equals(type)) {
+        if (ClusterStatusClusterResettedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterStatusClusterCreatedEvent event = (ClusterStatusClusterCreatedEvent) Util.
-                    jsonToObject(message, ClusterStatusClusterCreatedEvent.class);
+            ClusterStatusClusterResettedEvent event = (ClusterStatusClusterResettedEvent) Util.
+                    jsonToObject(message, ClusterStatusClusterResettedEvent.class);
 
             if(log.isDebugEnabled()) {
                 log.debug("Received AppStatusClusterCreatedEvent: " + event.toString());
