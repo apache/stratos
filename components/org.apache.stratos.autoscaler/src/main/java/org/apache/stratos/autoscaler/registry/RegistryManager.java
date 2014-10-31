@@ -368,6 +368,26 @@ public class RegistryManager {
         return group;
     }
 
+    public ServiceGroup removeServiceGroup(String name) throws Exception{
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
+                                                    AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        Object serializedObj = registryManager.retrieve(resourcePath);
+        ServiceGroup group = null;
+        if (serializedObj != null) {
+            Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+            if (dataObj instanceof ServiceGroup) {
+                group = (ServiceGroup) dataObj;
+                if(log.isDebugEnabled()) {
+                    log.debug(group.toString());
+                }
+            } else {
+                return null;
+            }
+        }
+
+        return group;
+    }
+
 	public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
 		 String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
          this.delete(resourcePath);

@@ -324,7 +324,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
         RegistryManager.getInstance().persistServiceGroup(servicegroup);
     }
 
-    public ServiceGroup getServiceGroup(String name){
+    public ServiceGroup getServiceGroup(String name) {
         if(StringUtils.isEmpty(name)){
             return null;
         }
@@ -336,6 +336,15 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface{
     }
     public boolean serviceGroupExist(String serviceName){
         return false;
+    }
+
+    public void undeployServiceGroup(String name) throws AutoScalerException {
+        try {
+            RegistryManager.getInstance().removeServiceGroup(name);
+        } catch (Exception e) {
+            throw new AutoScalerException("Error occurred while removing the service groups", e);
+        }
+
     }
 
 
