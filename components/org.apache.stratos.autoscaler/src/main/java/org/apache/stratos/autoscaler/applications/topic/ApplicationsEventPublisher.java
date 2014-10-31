@@ -18,6 +18,10 @@ import java.util.Set;
 public class ApplicationsEventPublisher {
     private static final Log log = LogFactory.getLog(ApplicationsEventPublisher.class);
 
+    public static void sendCompleteApplicationsEvent (Applications completeApplications) {
+
+        publishEvent(new CompleteApplicationsEvent(completeApplications));
+    }
 
     public static void sendGroupCreatedEvent(String appId, String groupId) {
         try {

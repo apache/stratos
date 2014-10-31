@@ -19,6 +19,9 @@
 
 package org.apache.stratos.autoscaler.applications;
 
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
+import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.wso2.carbon.ntask.core.Task;
 
 import java.util.Map;
@@ -38,6 +41,10 @@ public class ApplicationSynchronizerTask implements Task {
     @Override
     public void execute() {
 
-
+        Applications applications = ApplicationManager.getApplications();
+        if (applications != null) {
+            // publish complete Applications event
+            ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
+        }
     }
 }
