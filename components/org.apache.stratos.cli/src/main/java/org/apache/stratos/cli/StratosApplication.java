@@ -96,9 +96,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new ExitCommand();
 		commands.put(command.getName(), command);
 
-		command = new SubscribeCartridgeCommand();
-		commands.put(command.getName(), command);
-
 		command = new UnsubscribeCommand();
 		commands.put(command.getName(), command);
 		
