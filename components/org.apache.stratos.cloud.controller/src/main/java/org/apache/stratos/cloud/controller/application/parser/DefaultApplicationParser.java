@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.application.*;
 import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.*;
 
 import java.util.*;
@@ -549,12 +550,14 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridge.getHostName());
             String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
+            boolean isKubernetesCluster = StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType());
 
             // create and collect this cluster's information
             assert subscribableInfoCtxt != null;
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
-                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
+                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(),
+                    false, isKubernetesCluster, subscribableInfoCtxt.getDependencyAliases());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
             this.applicationClusterContexts.add(appClusterCtxt);
@@ -579,7 +582,8 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param clusterId Cluster id
      * @param hostname Hostname
      * @param deploymentPolicy Deployment policy used
-     * @param isLB if this cluster is an LB
+     * @param isLBCluster if this cluster is an LB
+     * @param isKubernetesCluster if this cluster is a Kubernetes cluster
      * @return ApplicationClusterContext object with relevant information
      *
      * @throws ApplicationDefinitionException If any error occurs
@@ -587,14 +591,16 @@ public class DefaultApplicationParser implements ApplicationParser {
     private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, Cartridge cartridge,
                                                                        String subscriptionKey, int tenantId, String repoUrl,
                                                                        String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases)
+                                                                       String deploymentPolicy, boolean isLBCluster,
+                                                                       boolean isKubernetesCluster, String[] dependencyAliases)
             throws ApplicationDefinitionException {
 
         // Create text payload
         String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases).toString();
 
-        return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
+        return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy,
+                isLBCluster, isKubernetesCluster);
     }
 
     private Cartridge getCartridge (String cartridgeType)  {

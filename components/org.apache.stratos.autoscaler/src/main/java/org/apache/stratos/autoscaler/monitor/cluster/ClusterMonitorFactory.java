@@ -100,7 +100,7 @@ public class ClusterMonitorFactory {
                         .getDeploymentPolicy(deploymentPolicyName);
 
         if (deploymentPolicy == null) {
-            String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
+            String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -108,7 +108,7 @@ public class ClusterMonitorFactory {
         Partition[] allPartitions = deploymentPolicy.getAllPartitions();
         if (allPartitions == null) {
             String msg =
-                    "Deployment Policy's Partitions are null. Policy name: " +
+                    "Partitions are null in deployment policy: [policy-name]: " +
                     deploymentPolicyName;
             log.error(msg);
             throw new PolicyValidationException(msg);

@@ -28,22 +28,25 @@ public class ApplicationClusterContext implements Serializable {
     // cluster id
     private String clusterId;
     // cartridge type
-    private String cartridgeType;
+    private final String cartridgeType;
     // payload as a String
-    private String textPayload;
+    private final String textPayload;
     // host name
     private String hostName;
     // flag to indicate LB cluster
-    private boolean isLbCluster;
+    private final boolean isLbCluster;
+    // flag to indicate Kubernetes cluster
+    private final boolean isKubernetesCluster;
     // autoscaling policy
     private String autoscalePolicyName;
     // deployment policy
-    private String deploymentPolicyName;
+    private final String deploymentPolicyName;
     // tenant rance
-    private String tenantRange;
+    private final String tenantRange;
 
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
-                                      String textPayload, String deploymentPolicyName, boolean isLbCluster) {
+                                      String textPayload, String deploymentPolicyName, boolean isLbCluster,
+                                      boolean isKubernetesCluster) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -51,6 +54,7 @@ public class ApplicationClusterContext implements Serializable {
         this.textPayload = textPayload;
         this.deploymentPolicyName = deploymentPolicyName;
         this.isLbCluster = isLbCluster;
+        this.isKubernetesCluster = isKubernetesCluster;
         this.tenantRange = "*";
     }
 
@@ -66,16 +70,8 @@ public class ApplicationClusterContext implements Serializable {
         return cartridgeType;
     }
 
-    public void setCartridgeType(String cartridgeType) {
-        this.cartridgeType = cartridgeType;
-    }
-
     public String getTextPayload() {
         return textPayload;
-    }
-
-    public void setTextPayload(String textPayload) {
-        this.textPayload = textPayload;
     }
 
     public String getHostName() {
@@ -90,10 +86,6 @@ public class ApplicationClusterContext implements Serializable {
         return isLbCluster;
     }
 
-    public void setLbCluster(boolean lbCluster) {
-        isLbCluster = lbCluster;
-    }
-
     public String getAutoscalePolicyName() {
         return autoscalePolicyName;
     }
@@ -106,16 +98,8 @@ public class ApplicationClusterContext implements Serializable {
         return deploymentPolicyName;
     }
 
-    public void setDeploymentPolicyName(String deploymentPolicyName) {
-        this.deploymentPolicyName = deploymentPolicyName;
-    }
-
     public String getTenantRange() {
         return tenantRange;
-    }
-
-    public void setTenantRange(String tenantRange) {
-        this.tenantRange = tenantRange;
     }
 
     public boolean equals(Object other) {
@@ -138,4 +122,7 @@ public class ApplicationClusterContext implements Serializable {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 
+    public boolean isKubernetesCluster() {
+        return isKubernetesCluster;
+    }
 }
