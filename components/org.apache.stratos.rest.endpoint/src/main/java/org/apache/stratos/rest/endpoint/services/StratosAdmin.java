@@ -94,24 +94,21 @@ public class StratosAdmin extends AbstractAdmin {
     @Context
     UriInfo uriInfo;
 
-
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/admin/restlogin")
     public StratosAdminResponse initialize()
             throws RestAPIException {
-
-
         StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
         stratosAdminResponse.setMessage("Successfully logged in");
         return stratosAdminResponse;
     }
 
-    /*
-    This method gets called by the client who are interested in using session mechanism to authenticate themselves in
-    subsequent calls. This method call get authenticated by the basic authenticator.
-    Once the authenticated call received, the method creates a session.
-
+    /**
+     * This method gets called by the client who are interested in using session mechanism to authenticate themselves in
+     * subsequent calls. This method call get authenticated by the basic authenticator.
+     * Once the authenticated call received, the method creates a session.
+     * @return
      */
     @GET
     @Path("/cookie")
@@ -130,22 +127,6 @@ public class StratosAdmin extends AbstractAdmin {
                 entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
     }
 
-    /*
-    @POST
-    @Path("/application/definition/")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    @SuperTenantService(true)
-    // Grouping
-    public StratosAdminResponse deployApplicationDefinition(CompositeApplicationDefinitionBean applicationDefinitionBean)
-            throws RestAPIException {
-
-    	return ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(), getUsername(),
-                                     getTenantDomain());
-
-    }
-*/
     @POST
     @Path("/application/definition/")
     @Produces("application/json")
@@ -157,23 +138,9 @@ public class StratosAdmin extends AbstractAdmin {
             throws RestAPIException {
          ServiceUtils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(),
                 getUsername(), getTenantDomain());
-
          URI url =  uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
          return Response.created(url).build();
     }
-
- /*   @POST
-    @Path("/application/definition/")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    @SuperTenantService(true)
-    // Grouping
-    public StratosAdminResponse deployApplicationDefinition(CompositeAppDefinition compositeAppDefinition)
-            throws RestAPIException {
-
-       return ServiceUtils.deployCompositeApplicationDefintion(compositeAppDefinition);
-    }  */
 
     
     @DELETE
@@ -185,7 +152,6 @@ public class StratosAdmin extends AbstractAdmin {
     // Grouping
     public Response unDeployApplicationDefinition(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-
         ServiceUtils.unDeployApplication(applicationId, getConfigContext(), getUsername(),
                 getTenantDomain());
         return Response.noContent().build();
@@ -199,7 +165,6 @@ public class StratosAdmin extends AbstractAdmin {
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
     public Response deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
-
         ServiceUtils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
                 getTenantDomain());
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.type).build();
@@ -213,7 +178,6 @@ public class StratosAdmin extends AbstractAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
     public Response unDeployCartridgeDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-
         ServiceUtils.undeployCartridge(cartridgeType);
         return Response.noContent().build();
     }
@@ -226,7 +190,6 @@ public class StratosAdmin extends AbstractAdmin {
     @SuperTenantService(true)
     public Response deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
             throws RestAPIException {
-
         ServiceUtils.deployServiceGroupDefinition(serviceGroupDefinition);
         URI url =  uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
         return Response.created(url).build();
@@ -443,10 +406,8 @@ public class StratosAdmin extends AbstractAdmin {
     }
 
     /**
-     * This API provides information about the application denoted by the given appId. Details includes,
-     *  Application details,
-     *  Top level cluster details
-     *  details of the group and sub groups.
+     * This API resource provides information about the application denoted by the given appId. Details includes,
+     * Application details, top level cluster details, details of the group and sub groups.
      * @param applicationId Id of the application.
      * @return Json representing the application details with 200 as HTTP status. HTTP 404 is returned when there is
      * no application with given Id.
@@ -561,19 +522,19 @@ public class StratosAdmin extends AbstractAdmin {
         return rb.build();
     }
 
-    @POST
-    @Path("/cartridge/subscribe")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/subscription")
-    public Response subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException {
-
-        SubscriptionInfo subscriptionInfo = ServiceUtils.subscribe(cartridgeInfoBean,
-                getConfigContext(),
-                getUsername(),
-                getTenantDomain());
-        return Response.ok(subscriptionInfo).build();
-    }
+//    @POST
+//    @Path("/cartridge/subscribe")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/add/subscription")
+//    public Response subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException {
+//
+//        SubscriptionInfo subscriptionInfo = ServiceUtils.subscribe(cartridgeInfoBean,
+//                getConfigContext(),
+//                getUsername(),
+//                getTenantDomain());
+//        return Response.ok(subscriptionInfo).build();
+//    }
 
     @GET
     @Path("/cluster/")
@@ -676,10 +637,11 @@ public class StratosAdmin extends AbstractAdmin {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
-            String msg = "Invalid email is provided.";
+            String msg = "Invalid email is provided";
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
+
         String tenantDomain = tenantInfoBean.getTenantDomain();
         try {
             TenantMgtUtil.validateDomain(tenantDomain);
@@ -688,18 +650,20 @@ public class StratosAdmin extends AbstractAdmin {
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
+
         UserRegistry userRegistry = (UserRegistry) PrivilegedCarbonContext.getThreadLocalCarbonContext().
                 getRegistry(RegistryType.USER_GOVERNANCE);
         if (userRegistry == null) {
-            log.error("Security Alert! User registry is null. A user is trying create a tenant "
+            log.error("Security alert! User registry is null. A user is trying create a tenant "
                     + " without an authenticated session.");
-            throw new RestAPIException("Invalid data."); // obscure error message.
+            throw new RestAPIException("Invalid data"); // obscure error message.
         }
 
         if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
-            log.error("Security Alert! Non super tenant trying to create a tenant.");
-            throw new RestAPIException("Invalid data."); // obscure error message.
+            log.error("Security alert! None super tenant trying to create a tenant.");
+            throw new RestAPIException("Invalid data"); // obscure error message.
         }
+
         Tenant tenant = TenantMgtUtil.initializeTenant(tenantInfoBean);
         TenantPersistor persistor = ServiceHolder.getTenantPersistor();
         // not validating the domain ownership, since created by super tenant

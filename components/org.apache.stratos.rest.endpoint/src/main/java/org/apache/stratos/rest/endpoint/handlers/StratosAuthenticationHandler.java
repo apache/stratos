@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.configuration.security.AuthorizationPolicy;
@@ -67,22 +68,26 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
      * @return
      */
     public Response handle(Message message, ClassResourceInfo classResourceInfo) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Authenticating request: [message-id] %s", message.getId()));
+        }
+
     	// If Mutual SSL is enabled
         HttpServletRequest request = (HttpServletRequest) message.get("HTTP.REQUEST");
         Object certObject = request.getAttribute("javax.servlet.request.X509Certificate");
         
-        AuthorizationPolicy policy = (AuthorizationPolicy) message.get(AuthorizationPolicy.class);
+        AuthorizationPolicy policy = message.get(AuthorizationPolicy.class);
         String username = policy.getUserName().trim();
         String password = policy.getPassword().trim();
 
         //sanity check
-        if ((username == null) || username.equals("")) {
-            log.error("username is seen as null/empty values.");
+        if (StringUtils.isEmpty(username)) {
+            log.error("username is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
                            .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
                            .entity(Utils.buildMessage("Username cannot be null")).build();
-        } else if (certObject == null && ((password == null) || password.equals(""))) {
-            log.error("password is seen as null/empty values.");
+        } else if (certObject == null && (StringUtils.isEmpty(password))) {
+            log.error("password is seen as null/empty values");
             return Response.status(Response.Status.UNAUTHORIZED)
                            .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
                            .entity(Utils.buildMessage("password cannot be null")).build();
@@ -119,23 +124,22 @@ public class StratosAuthenticationHandler extends AbstractAuthenticationAuthoriz
                 // set the authenticated flag and let the request to continue
                 AuthenticationContext.setAuthenticated(true);
                 if (log.isDebugEnabled()) {
-                    log.debug("authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
+                    log.debug("Authenticated using the " + CookieBasedAuthenticationHandler.class.getName() + "for username  :" +
                             username + "tenantDomain : " + tenantDomain + " tenantId : " + tenantId);
                 }
                 return null;
             } else {
-                log.warn("unable to authenticate the request");
+                log.warn(String.format("Unable to authenticate the request: [message-id] %s", message.getId()));
                 // authentication failed, request the authetication, add the realm name if needed to the value of WWW-Authenticate
                 return Response.status(Response.Status.UNAUTHORIZED).header("WWW-Authenticate", "Basic").
                         type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("Authentication failed. Please " +
                         "check your username/password")).build();
             }
         } catch (Exception exception) {
-            log.error("Authentication failed",exception);
+            log.error(String.format("Authentication failed: [message-id] %s", message.getId()),exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
                     entity(Utils.buildMessage("Unexpected error. Please contact the system admin")).build();
         }
-
     }
 }
