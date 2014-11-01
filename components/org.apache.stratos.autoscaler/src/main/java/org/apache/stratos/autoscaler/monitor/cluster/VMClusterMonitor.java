@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -511,6 +512,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
         String networkPartitionId = memberTerminatedEvent.getNetworkPartitionId();
         String memberId = memberTerminatedEvent.getMemberId();
+        String clusterId = memberTerminatedEvent.getClusterId();
         String partitionId = memberTerminatedEvent.getPartitionId();
         NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(networkPartitionId);
         PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
@@ -541,6 +543,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.info(String.format("Member stat context has been removed successfully: "
                                    + "[member] %s", memberId));
         }
+        //Checking whether the cluster state can be changed either from in_active to created/terminating to terminated
+		StatusChecker.getInstance().onMemberTermination(clusterId);
     }
 
     @Override
