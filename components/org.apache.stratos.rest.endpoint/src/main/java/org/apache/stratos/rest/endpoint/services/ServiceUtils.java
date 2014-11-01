@@ -136,13 +136,15 @@ public class ServiceUtils {
         applicationContext.setTeantAdminUsername(userName);
 
         Properties properties = new Properties();
-        for(org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
-            Property property = new Property();
-            property.setName(propertyBean.getName());
-            property.setValue(propertyBean.getValue());
-            properties.addProperties(property);
+        if(appDefinition.getProperty() != null) {
+            for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
+                Property property = new Property();
+                property.setName(propertyBean.getName());
+                property.setValue(propertyBean.getValue());
+                properties.addProperties(property);
+            }
+            applicationContext.setProperties(properties);
         }
-        applicationContext.setProperties(properties);
 
         try {
             CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
