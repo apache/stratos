@@ -33,6 +33,9 @@ public class ApplicationDefinition {
 
     private List<SubscribableInfo> subscribableInfo;
 
+    private List<PropertyBean> property;
+
+
     public String getApplicationId() {
         return applicationId;
     }
@@ -63,5 +66,13 @@ public class ApplicationDefinition {
 
     public void setSubscribableInfo(List<SubscribableInfo> subscribableInfo) {
         this.subscribableInfo = subscribableInfo;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
     }
 }

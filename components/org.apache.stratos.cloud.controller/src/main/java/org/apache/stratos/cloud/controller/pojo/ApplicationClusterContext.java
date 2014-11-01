@@ -43,10 +43,12 @@ public class ApplicationClusterContext implements Serializable {
     private final String deploymentPolicyName;
     // tenant rance
     private final String tenantRange;
+    // properties
+    private Properties properties;
 
-    public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
-                                      String textPayload, String deploymentPolicyName, boolean isLbCluster,
-                                      boolean isKubernetesCluster) {
+    public ApplicationClusterContext(String cartridgeType, String clusterId, String hostName,
+                                     String textPayload, String deploymentPolicyName, boolean isLbCluster,
+                                     boolean isKubernetesCluster, Properties properties) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -56,6 +58,7 @@ public class ApplicationClusterContext implements Serializable {
         this.isLbCluster = isLbCluster;
         this.isKubernetesCluster = isKubernetesCluster;
         this.tenantRange = "*";
+        this.properties = properties;
     }
 
     public String getClusterId() {
@@ -124,5 +127,13 @@ public class ApplicationClusterContext implements Serializable {
 
     public boolean isKubernetesCluster() {
         return isKubernetesCluster;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

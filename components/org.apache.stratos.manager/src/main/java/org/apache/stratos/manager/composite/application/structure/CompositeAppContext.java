@@ -19,6 +19,7 @@
 
 package org.apache.stratos.manager.composite.application.structure;
 
+import java.util.Properties;
 import java.util.Set;
 
 public class CompositeAppContext {
@@ -34,6 +35,8 @@ public class CompositeAppContext {
     private String [] startupOrders;
 
     private String killBehaviour;
+
+    private Properties properties;
 
     public CompositeAppContext (String appId) {
         this.appId = appId;
@@ -103,5 +106,13 @@ public class CompositeAppContext {
     public int hashCode () {
 
         return appId.hashCode();
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

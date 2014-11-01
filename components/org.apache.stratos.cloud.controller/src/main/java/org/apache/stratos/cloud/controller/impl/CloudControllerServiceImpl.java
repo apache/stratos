@@ -1439,7 +1439,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
             dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
                     applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
-                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster(), null));
+                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster(),
+                    CloudControllerUtil.toJavaUtilProperties(applicationClusterContext.getProperties())));
         }
 
         TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
@@ -1448,7 +1449,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         persist();
     }
 
-	@Override
+    @Override
 	public MemberContext[] startContainers(ContainerClusterContext containerClusterContext)
 			throws UnregisteredCartridgeException {
 		

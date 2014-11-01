@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cloud.controller.pojo.application;
 
+import org.apache.stratos.cloud.controller.pojo.Properties;
+
 import java.io.Serializable;
 
 public class ApplicationContext implements Serializable {
@@ -38,6 +40,11 @@ public class ApplicationContext implements Serializable {
     private ComponentContext componentContext;
 
     private SubscribableInfoContext[] subscribableInfoContexts;
+
+    private Properties properties;
+
+    public ApplicationContext() {
+    }
 
     public String getApplicationId() {
         return applicationId;
@@ -93,5 +100,13 @@ public class ApplicationContext implements Serializable {
 
     public void setTeantAdminUsername(String teantAdminUsername) {
         this.teantAdminUsername = teantAdminUsername;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

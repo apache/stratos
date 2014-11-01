@@ -568,6 +568,7 @@ public class TopologyBuilder {
                 cluster.setTenantRange(applicationClusterContext.getTenantRange());
                 cluster.setLbCluster(applicationClusterContext.isLbCluster());
                 cluster.setKubernetesCluster(applicationClusterContext.isKubernetesCluster());
+                cluster.setProperties(CloudControllerUtil.toJavaUtilProperties(applicationClusterContext.getProperties()));
                 clusters.add(cluster);
 
                 Service service = topology.getService(applicationClusterContext.getCartridgeType());

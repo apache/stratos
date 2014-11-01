@@ -24,10 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
-import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
-import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
-import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
+import org.apache.stratos.manager.composite.application.beans.*;
 import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
 import org.apache.stratos.manager.composite.application.structure.GroupContext;
 import org.apache.stratos.manager.composite.application.structure.StartupOrder;
@@ -210,7 +207,6 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             }
 
             // get top level Dependency definitions
-            
             if (compositeAppDefinition.getComponents().getDependencies() != null) {
             	List<String> startupOrderList = compositeAppDefinition.getComponents().getDependencies().getStartupOrders();
             	String [] startupOrders = new String [startupOrderList.size()];
@@ -218,6 +214,15 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
                 compositeAppContext.setStartupOrders(startupOrders);
 
                 compositeAppContext.setKillBehaviour(compositeAppDefinition.getComponents().getDependencies().getKillBehaviour());
+            }
+
+            // Set application properties
+            if(compositeAppDefinition.getProperty() != null) {
+                Properties properties = new Properties();
+                for(PropertyBean propertyBean : compositeAppDefinition.getProperty()) {
+                     properties.put(propertyBean.getName(), propertyBean.getValue());
+                }
+                compositeAppContext.setProperties(properties);
             }
         }
 
