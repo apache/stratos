@@ -26,7 +26,9 @@ import org.apache.stratos.messaging.domain.applications.Application;
 
 import java.util.Set;
 
-
+/**
+ * Parses the Application Definition
+ */
 public interface ApplicationParser {
 
     /**

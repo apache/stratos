@@ -24,7 +24,6 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
@@ -129,22 +128,6 @@ public class CloudControllerServiceClient {
 		return stub.registerService(registrant);
 
 	}
-
-
-	public void deployApplicationDefinition(ApplicationContext applicationContext)
-            throws RemoteException, 
-            CloudControllerServiceInvalidIaasProviderExceptionException, CloudControllerServiceApplicationDefinitionExceptionException {
-
-		stub.deployApplicationDefinition(applicationContext);
-
-	}
-
-    public void undeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws CloudControllerServiceApplicationDefinitionExceptionException,
-            RemoteException {
-
-        stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
-    }
-	
 
     @SuppressWarnings("unused")
     private Properties

@@ -24,17 +24,14 @@ import com.google.common.net.InetAddresses;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.application.parser.DefaultApplicationParser;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -42,7 +39,6 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
@@ -1391,29 +1387,29 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return dataHolder.getClusterContext(clusterId);
     }
 
-    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
-
-        ApplicationParser applicationParser = new DefaultApplicationParser();
-        Application application = applicationParser.parse(applicationContext);
-
-        // Create a Cluster Context obj. for each of the Clusters in the Application
-        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
-            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
-                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
-                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
-        }
-
-        /*TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
-                applicationParser.getPayloadData());
-*/
-        persist();
-    }
-
-    @Override
-    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
-
-        //TopologyBuilder.handleApplicationUndeployed(applicationId);
-    }
+//    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
+//
+//        ApplicationParser applicationParser = new DefaultApplicationParser();
+//        Application application = applicationParser.parse(applicationContext);
+//
+//        // Create a Cluster Context obj. for each of the Clusters in the Application
+//        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
+//            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+//                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
+//                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
+//        }
+//
+//        /*TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
+//                applicationParser.getPayloadData());
+//*/
+//        persist();
+//    }
+//
+//    @Override
+//    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
+//
+//        //TopologyBuilder.handleApplicationUndeployed(applicationId);
+//    }
 
 }
 

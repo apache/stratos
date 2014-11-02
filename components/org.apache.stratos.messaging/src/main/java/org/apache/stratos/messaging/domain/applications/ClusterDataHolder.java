@@ -30,7 +30,6 @@ public class ClusterDataHolder implements Serializable {
 
     // Service/Cartridge type
     private String serviceType;
-
     // Cluster id
     private String clusterId;
 

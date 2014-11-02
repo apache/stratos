@@ -46,7 +46,7 @@
                         <configuration>
                             <tasks>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,,http://application.pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo.application,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl" />
+                                    <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.cloud.controller.stub -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl" />
                                     <classpath refid="maven.dependency.classpath" />
                                     <classpath refid="maven.compile.classpath" />
                                     <classpath refid="maven.runtime.classpath" />
@@ -89,7 +89,6 @@
                             org.apache.stratos.cloud.controller.stub.exception.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.deployment.partition.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.pojo.*; version=${project.version},
-			    org.apache.stratos.cloud.controller.stub.pojo.application.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.impl.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.*; version=${project.version}
                         </Export-Package>

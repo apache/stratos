@@ -40,11 +40,13 @@ import org.apache.stratos.messaging.domain.applications.Group;
 
 import java.util.*;
 
+/**
+ * Default implementation of the Application Parser. One Application should be processed by one
+ * instance of the DefaultApplicationParser.
+ */
 public class DefaultApplicationParser implements ApplicationParser {
 
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
-
-//    private static FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
 
     private Set<ApplicationClusterContext> applicationClusterContexts;
 
@@ -466,7 +468,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private String [] getStartupOrderForGroup(GroupContext groupContext) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = null;
+        ServiceGroup serviceGroup;
         try {
             serviceGroup = RegistryManager.getInstance().getServiceGroup(groupContext.getName());
         } catch (Exception e) {
@@ -512,7 +514,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private String getKillbehaviour (String serviceGroupName) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = null;
+        ServiceGroup serviceGroup;
         try {
             serviceGroup = RegistryManager.getInstance().getServiceGroup(serviceGroupName);
         } catch (Exception e) {

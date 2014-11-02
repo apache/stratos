@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.interfaces;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 
 /**
  * This API provides a way to communicate with underline
@@ -167,21 +166,5 @@ public interface CloudControllerService {
      * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
      */
     public ClusterContext getClusterContext (String clusterId);
-
-    /**
-     * deploys an Application Definition
-     *
-     * @param applicationContext {@link org.apache.stratos.cloud.controller.pojo.application.ApplicationContext} object
-     * @throws ApplicationDefinitionException if an error is encountered
-     */
-    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
-
-    /**
-     * undeploys an Application Definition
-     *
-     * @param applicationId Id of the Application to be undeployed
-     * @throws ApplicationDefinitionException if an error is encountered
-     */
-    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException;
 
 }

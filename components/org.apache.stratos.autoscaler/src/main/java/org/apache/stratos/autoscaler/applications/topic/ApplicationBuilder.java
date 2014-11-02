@@ -143,8 +143,8 @@ public class ApplicationBuilder {
 
         ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
     }*/
-    public static void handleApplicationCreated (Application application,
-                                                 Set<ApplicationClusterContext> appClusterCtxts) {
+    public static synchronized void handleApplicationCreated (Application application,
+                                                              Set<ApplicationClusterContext> appClusterContexts) {
 
         Applications applications = ApplicationHolder.getApplications();
 
