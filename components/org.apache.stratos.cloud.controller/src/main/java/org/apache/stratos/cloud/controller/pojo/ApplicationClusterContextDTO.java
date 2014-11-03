@@ -19,7 +19,8 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
-import java.util.Properties;
+
+import org.apache.stratos.common.Properties;
 
 public class ApplicationClusterContextDTO {
 
@@ -33,6 +34,8 @@ public class ApplicationClusterContextDTO {
     private String hostName;
     // flag to indicate LB cluster
     private boolean isLbCluster;
+    // flag to indicate Kubernetes cluster
+    private boolean isKubernetesCluster;
     // autoscaling policy
     private String autoscalePolicyName;
     // deployment policy
@@ -45,6 +48,7 @@ public class ApplicationClusterContextDTO {
 
     public ApplicationClusterContextDTO () {
     }
+
 
     public String getClusterId() {
         return clusterId;
@@ -116,7 +120,7 @@ public class ApplicationClusterContextDTO {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
@@ -126,7 +130,7 @@ public class ApplicationClusterContextDTO {
                 this.clusterId.equals(that.clusterId);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 

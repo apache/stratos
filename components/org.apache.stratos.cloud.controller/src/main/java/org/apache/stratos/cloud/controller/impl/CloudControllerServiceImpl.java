@@ -1064,8 +1064,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
-        ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
-				payload, hostName, props, isLb, registrant.getPersistence());
+        ClusterContext ctxt = null;//TODO buildClusterContext(cartridge, clusterId,
+				//payload, hostName, props, isLb, registrant.getPersistence());
 
 
 		dataHolder.addClusterContext(ctxt);
@@ -1080,15 +1080,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private ClusterContext buildClusterContext(Cartridge cartridge,
                                                String clusterId, String payload, String hostName,
-                                               Properties props, boolean isLb, Persistence persistence) {
+                                               org.apache.stratos.common.Properties props, boolean isLb, Persistence persistence) {
 
-
-		// initialize ClusterContext
+        //TODO
+		/*// initialize ClusterContext
 		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
 				hostName, isLb, props);
 		
 		String property;
-		property = props.getProperty(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
+		property = props.get(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
 		long timeout = property != null ? Long.parseLong(property) : 30000;
 
         boolean persistanceRequired = false;
@@ -1103,7 +1103,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             ctxt.setVolumeRequired(false);
         }
 	    ctxt.setTimeoutInMillis(timeout);
-		return ctxt;
+		return ctxt;*/
+        return null;
 	}
 
     @Override
@@ -1897,6 +1898,50 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new IllegalArgumentException(errorMsg);
         }
     }
+    public void registerApplicationClusters(ApplicationClusterContextDTO[] appClustersContexts)  throws
+            ApplicationClusterRegistrationException {
+
+        // Create a Cluster Context obj. for each of the Clusters in the Application
+        if (appClustersContexts == null || appClustersContexts.length == 0) {
+            String errorMsg = "No application cluster information found, unable to create clusters" ;
+            LOG.error(errorMsg);
+            throw new ApplicationClusterRegistrationException(errorMsg);
+        }
+
+        //TODO
+
+        /*for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
+            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
+                    appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
+                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
+        }
+*/
+        persist();
+    }
+
+//    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
+//
+//        ApplicationParser applicationParser = new DefaultApplicationParser();
+//        Application application = applicationParser.parse(applicationContext);
+//
+//        // Create a Cluster Context obj. for each of the Clusters in the Application
+//        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
+//            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+//                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
+//                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
+//        }
+//
+//        /*TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
+//                applicationParser.getPayloadData());
+//*/
+//        persist();
+//    }
+//
+//    @Override
+//    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
+//
+//        //TopologyBuilder.handleApplicationUndeployed(applicationId);
+//    }
 
     public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts)  throws
             ApplicationClusterRegistrationException {
@@ -1904,7 +1949,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // Create a Cluster Context obj. for each of the Clusters in the Application
         if (appClustersContexts == null || appClustersContexts.length == 0) {
             String errorMsg = "No application cluster information found, unable to create clusters" ;
-            log.error(errorMsg);
+            LOG.error(errorMsg);
             throw new ApplicationClusterRegistrationException(errorMsg);
         }
 
@@ -1912,9 +1957,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
             // add the context data
-            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
+            //TODO
+            /*dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
                     appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
-                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
+                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));*/
             // create Cluster objects
             Cluster newCluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                     appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
@@ -1922,7 +1968,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             newCluster.setTenantRange("*");
             newCluster.setStatus(ClusterStatus.Created);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-            newCluster.setProperties(appClusterCtxt.getProperties());
+            //newCluster.setProperties(appClusterCtxt.getProperties());
             clusters.add(newCluster);
         }
 
@@ -1954,7 +2000,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //
 //        //TopologyBuilder.handleApplicationUndeployed(applicationId);
 //    }
->>>>>>> 4.0.0-grouping
 
 }
 

@@ -174,6 +174,7 @@ public class TopologyBuilder {
         }
 
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
+
     }
 
 
@@ -441,7 +442,8 @@ public class TopologyBuilder {
                         instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getNetworkPartitionId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
 
         // grouping - set grouid
-        memberActivatedEvent.setGroupId(instanceActivatedEvent.getGroupId());
+        //TODO
+        memberActivatedEvent.setApplicationId(null);
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
