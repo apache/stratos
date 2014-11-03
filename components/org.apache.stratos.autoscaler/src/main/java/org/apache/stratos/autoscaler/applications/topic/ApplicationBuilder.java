@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
@@ -171,6 +172,7 @@ public class ApplicationBuilder {
         try {
             if (applications.getApplication(application.getUniqueIdentifier()) != null) {
                 ApplicationHolder.persistApplication(application);
+                //TODO cloud controller client and register clusters
                // startApplicationMonitor(application.getUniqueIdentifier());
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");

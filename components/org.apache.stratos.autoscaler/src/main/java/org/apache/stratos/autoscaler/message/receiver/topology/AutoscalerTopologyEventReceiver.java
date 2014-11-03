@@ -167,26 +167,26 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
 
 
-        /*topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
+        topologyEventReceiver.addEventListener(new ApplicationClustersCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
-                    log.info("[ApplicationCreatedEvent] Received: " + event.getClass());
-                    ApplicationCreatedEvent applicationCreatedEvent = (ApplicationCreatedEvent) event;
+                    log.info("[ApplicationClustersCreatedEvent] Received: " + event.getClass());
+                    ApplicationClustersCreatedEvent applicationClustersCreatedEvent =
+                                                            (ApplicationClustersCreatedEvent) event;
+                    String appId = applicationClustersCreatedEvent.getAppId();
                     try {
-
                         //acquire read lock
-                        TopologyManager.acquireReadLockForApplication(
-                                applicationCreatedEvent.getApplication().getUniqueIdentifier());
+                        ApplicationHolder.acquireReadLock();
                         //start the application monitor
-                        startApplicationMonitor(applicationCreatedEvent.getApplication().getUniqueIdentifier());
+                        startApplicationMonitor(appId);
                     } catch (Exception e) {
                         String msg = "Error processing event " + e.getLocalizedMessage();
                         log.error(msg, e);
                     } finally {
                         //release read lock
-                        TopologyManager.releaseReadLockForApplication(
-                                applicationCreatedEvent.getApplication().getUniqueIdentifier());
+                        ApplicationHolder.releaseReadLock();
+
                     }
                 } catch (ClassCastException e) {
                     String msg = "Error while casting the event " + e.getLocalizedMessage();
@@ -194,7 +194,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
 
             }
-        });*/
+        });
 
         topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
             @Override
