@@ -23,12 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.grouping.topic.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
@@ -42,12 +42,13 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -97,19 +98,19 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     private boolean allClustersInitialized(Application application) {
         boolean allClustersInitialized = false;
-        for(ClusterDataHolder holder : application.getClusterDataMap().values()) {
+        for (ClusterDataHolder holder : application.getClusterDataMap().values()) {
             TopologyManager.acquireReadLockForCluster(holder.getServiceType(),
                     holder.getClusterId());
 
             try {
                 Topology topology = TopologyManager.getTopology();
-                if(topology != null) {
+                if (topology != null) {
                     Service service = topology.getService(holder.getServiceType());
-                    if(service != null) {
-                        if(service.clusterExists(holder.getClusterId())) {
+                    if (service != null) {
+                        if (service.clusterExists(holder.getClusterId())) {
                             allClustersInitialized = true;
                         } else {
-                            if(log.isDebugEnabled()) {
+                            if (log.isDebugEnabled()) {
                                 log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
                                         "the Topology");
                             }
@@ -117,12 +118,12 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                             return allClustersInitialized;
                         }
                     } else {
-                        if(log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
                             log.debug("Service is null in the CompleteTopologyEvent");
                         }
                     }
                 } else {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Topology is null in the CompleteTopologyEvent");
                     }
                 }
@@ -146,9 +147,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     ApplicationHolder.acquireReadLock();
                     try {
                         Applications applications = ApplicationHolder.getApplications();
-                        if(applications != null) {
+                        if (applications != null) {
                             for (Application application : applications.getApplications().values()) {
-                                if(allClustersInitialized(application)) {
+                                if (allClustersInitialized(application)) {
                                     startApplicationMonitor(application.getUniqueIdentifier());
                                 } else {
                                     log.error("Complete Topology is not consistent with the applications " +
@@ -156,6 +157,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 }
                             }
                             topologyInitialized = true;
+                        } else {
+                            log.info("No applications found in the complete topology");
                         }
                     } catch (Exception e) {
                         log.error("Error processing event", e);
@@ -173,7 +176,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 try {
                     log.info("[ApplicationClustersCreatedEvent] Received: " + event.getClass());
                     ApplicationClustersCreatedEvent applicationClustersCreatedEvent =
-                                                            (ApplicationClustersCreatedEvent) event;
+                            (ApplicationClustersCreatedEvent) event;
                     String appId = applicationClustersCreatedEvent.getAppId();
                     try {
                         //acquire read lock
@@ -208,7 +211,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
-                if(clusterMonitor!= null) {
+                if (clusterMonitor != null) {
                     clusterMonitor.setStatus(ClusterStatus.Active);
                 }
 
@@ -258,7 +261,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         (AbstractClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterId);
 
                 //changing the status in the monitor, will notify its parent monitor
-                if(clusterMonitor!= null) {
+                if (clusterMonitor != null) {
                     clusterMonitor.setStatus(ClusterStatus.Inactive);
                 }
 
@@ -429,7 +432,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 if (clusterDataHolders != null) {
                     for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
                         ClusterMonitor clusterMonitor =
-                                   ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()));
+                                ((ClusterMonitor) AutoscalerContext.getInstance().getMonitor(clusterDataHolder.getClusterId()));
                         if (clusterMonitor == null) {
                             // Cluster Monitor not found; send Cluster Terminated event to cleanup
                             ClusterStatusEventPublisher.sendClusterTerminatedEvent(
