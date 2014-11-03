@@ -45,6 +45,8 @@ public class ApplicationClusterContextDTO {
     // propertis
     private Properties properties;
 
+    public ApplicationClusterContextDTO () {
+    }
 
     public ApplicationClusterContextDTO () {
     }
