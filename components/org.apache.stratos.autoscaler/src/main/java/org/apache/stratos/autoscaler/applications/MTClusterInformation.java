@@ -19,8 +19,6 @@
 
 package org.apache.stratos.autoscaler.applications;
 
-import org.apache.stratos.cloud.controller.application.ClusterInformation;
-
 public class MTClusterInformation implements ClusterInformation {
 
     @Override
