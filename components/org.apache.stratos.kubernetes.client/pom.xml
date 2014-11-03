@@ -32,6 +32,11 @@
 	<name>Apache Stratos - Kubernetes API Java Client</name>
 	<description>A Java client library written for Kubernetes API</description>
 	<url>http://apache.org</url>
+	
+	<properties>
+	    <kubernetes.api.endpoint>http://localhost:8080/api/v1beta1/</kubernetes.api.endpoint>
+	    <docker.image>gurpartap/redis</docker.image>
+  	</properties>
 
 	<dependencies>
 		<dependency>
@@ -58,7 +63,11 @@
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
 		</dependency>
-		
+		<dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <scope>test</scope>
+      	</dependency>
 	</dependencies>
 
 	<build>
@@ -77,4 +86,42 @@
             </plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+	<profile>
+        <id>unit</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <groups>org.apache.stratos.kubernetes.client.UnitTests</groups>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    <profile>
+        <id>live</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <groups>org.apache.stratos.kubernetes.client.LiveTests</groups>
+                        <systemPropertyVariables>
+                    		<kubernetes.api.endpoint>${kubernetes.api.endpoint}</kubernetes.api.endpoint>
+                    		<docker.image>${docker.image}</docker.image>
+                  		</systemPropertyVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+  </profiles>
 </project>
