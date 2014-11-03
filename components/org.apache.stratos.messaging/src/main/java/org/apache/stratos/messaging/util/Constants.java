@@ -25,6 +25,8 @@ public class Constants {
 	public static final String INSTANCE_STATUS_TOPIC = "instance/status/#";
 	public static final String INSTANCE_NOTIFIER_TOPIC = "instance/notifier/#";
     public static final String APPLICATION_STATUS_TOPIC = "application-status";
+    public static final String APPLICATIONS_TOPIC = "applications";
+    public static final String CLUSTER_STATUS_TOPIC = "applications";
     public static final String PING_TOPIC = "ping";
 	public static final String TENANT_TOPIC = "tenant/#";
 	public static final String TENANT_RANGE_ALL = "*";

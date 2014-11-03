@@ -16,7 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.receiver.application.status;
+package org.apache.stratos.messaging.message.receiver.applications;
+
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
@@ -27,17 +30,12 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+public class ApplicationsEventMessageListener implements MqttCallback {
+    private static final Log log = LogFactory.getLog(ApplicationsEventMessageListener.class);
 
-public class ApplicationStatusEventMessageListener implements MqttCallback {
-    private static final Log log = LogFactory.getLog(ApplicationStatusEventMessageListener.class);
+    private ApplicationsEventMessageQueue messageQueue;
 
-    private ApplicationStatusEventMessageQueue messageQueue;
-
-    public ApplicationStatusEventMessageListener(ApplicationStatusEventMessageQueue messageQueue) {
+    public ApplicationsEventMessageListener(ApplicationsEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
     }
 
