@@ -82,13 +82,13 @@ public class CloudControllerDSComponent {
                 log.info("Instance status message receiver thread started");
             }
 
-            ApplicationStatusTopicReceiver applicationStatusTopicReceiver = new ApplicationStatusTopicReceiver();
-            Thread appThread = new Thread(applicationStatusTopicReceiver);
             clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-            Thread appThread = new Thread(clusterStatusTopicReceiver);
-            appThread.start();
+            Thread tClusterStatusTopicReceiver = new Thread(clusterStatusTopicReceiver);
+            tClusterStatusTopicReceiver.start();
+
             if(log.isInfoEnabled()) {
                 log.info("Application status message receiver thread started");
+            }
             if (log.isDebugEnabled()) {
                 log.debug("Cluster status Receiver thread started");
             }

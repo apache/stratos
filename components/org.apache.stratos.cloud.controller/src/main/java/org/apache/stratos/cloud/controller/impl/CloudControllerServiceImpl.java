@@ -25,7 +25,6 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.application.parser.DefaultApplicationParser;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
@@ -34,12 +33,10 @@ import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
 import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
-import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.cloud.controller.pojo.application.ApplicationContext;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
@@ -65,7 +62,6 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.rest.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.apache.stratos.messaging.domain.topology.Application;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -1430,25 +1426,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return dataHolder.getClusterContext(clusterId);
     }
 
-    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
-
-        ApplicationParser applicationParser = new DefaultApplicationParser();
-        Application application = applicationParser.parse(applicationContext);
-
-        // Create a Cluster Context obj. for each of the Clusters in the Application
-        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
-            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
-                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
-                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster(),
-                    CloudControllerUtil.toJavaUtilProperties(applicationClusterContext.getProperties())));
-        }
-
-        TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
-                applicationParser.getPayloadData());
-
-        persist();
-    }
-
     @Override
 	public MemberContext[] startContainers(ContainerClusterContext containerClusterContext)
 			throws UnregisteredCartridgeException {
@@ -1863,12 +1840,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new IllegalStateException(msg, e);
         }
 	}
-
-    @Override
-    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException {
-
-        TopologyBuilder.handleApplicationUndeployed(applicationId);
-    }
 
     @Override
     public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {

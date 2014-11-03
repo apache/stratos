@@ -1,4 +1,3 @@
-package org.apache.stratos.cloud.controller.topology;
  /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -85,14 +84,6 @@ public class TopologyEventPublisher {
 		}
 	}
 
-	public static void sendClusterCreatedEvent(String appId, String serviceName, String clusterId) {
-		ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(appId, serviceName, clusterId);
-
-		if (log.isInfoEnabled()) {
-			log.info("Publishing cluster created event: " + clusterId);
-		}
-		publishEvent(clusterCreatedEvent);
-	}
     public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
         ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId,serviceName, clusterId);
 
