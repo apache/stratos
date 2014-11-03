@@ -155,7 +155,10 @@ public class ApplicationBuilder {
     }*/
 
     public static synchronized void handleCompleteApplication (Applications applications) {
-        log.info("Handling complete application");
+        if(log.isDebugEnabled()) {
+            log.debug("Handling complete application");
+        }
+
         ApplicationHolder.acquireReadLock();
         try {
             ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);

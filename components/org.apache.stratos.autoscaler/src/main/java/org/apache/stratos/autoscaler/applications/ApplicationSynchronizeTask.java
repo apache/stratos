@@ -44,7 +44,9 @@ public class ApplicationSynchronizeTask implements Task {
 
     @Override
     public void init() {
-        log.info("Applications Complete Event publisher task has been started...");
+        if(log.isDebugEnabled()) {
+            log.debug("Applications Complete Event publisher task has been started...");
+        }
 
     }
 
