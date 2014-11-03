@@ -36,10 +36,12 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +90,11 @@ public class RegistryManager {
      * @param resourcePath resource path to be persisted.
      */
     private void persist(Object dataObj, String resourcePath) throws AutoScalerException {
-    	
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext
+                .getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
         try {
             registryService.beginTransaction();
 
@@ -146,6 +152,10 @@ public class RegistryManager {
 
 
     public void persistApplication (Application application) {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext
+                .getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
                 "/" + application.getUniqueIdentifier();
@@ -157,6 +167,11 @@ public class RegistryManager {
     }
 
     public String [] getApplicationResourcePaths () {
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext
+                .getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
         Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
                 AutoScalerConstants.APPLICATIONS_RESOURCE);
 

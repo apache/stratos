@@ -415,7 +415,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
         });*/
 
-        topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
+        /*topologyEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -541,7 +541,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 //                            releaseReadLockForApplication(applicationUndeployedEvent.getApplicationId());
 //                }
             }
-        });
+        });*/
 
 
         /*topologyEventReceiver.addEventListener(new ApplicationTerminatingEventListener() {
