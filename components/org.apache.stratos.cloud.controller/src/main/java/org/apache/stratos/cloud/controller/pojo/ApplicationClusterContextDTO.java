@@ -38,16 +38,7 @@ public class ApplicationClusterContextDTO {
     // tenant rance
     private String tenantRange;
 
-    public ApplicationClusterContextDTO (String cartridgeType, String clusterId, String hostName,
-                                        String textPayload, String deploymentPolicyName, boolean isLbCluster) {
-
-        this.cartridgeType = cartridgeType;
-        this.clusterId = clusterId;
-        this.hostName = hostName;
-        this.textPayload = textPayload;
-        this.deploymentPolicyName = deploymentPolicyName;
-        this.isLbCluster = isLbCluster;
-        this.tenantRange = "*";
+    public ApplicationClusterContextDTO () {
     }
 
     public String getClusterId() {
