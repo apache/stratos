@@ -152,57 +152,94 @@ public class RegistryManager {
 
 
     public void persistApplication (Application application) {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext
-                .getThreadLocalCarbonContext();
-        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
-                "/" + application.getUniqueIdentifier();
-        persist(application, resourcePath);
-        if(log.isDebugEnabled()) {
-            log.debug("Application [ " + application.getUniqueIdentifier() +
-                    " ] persisted successfully in the Autoscaler Registry");
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+            String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+                    "/" + application.getUniqueIdentifier();
+            persist(application, resourcePath);
+            if(log.isDebugEnabled()) {
+                log.debug("Application [ " + application.getUniqueIdentifier() +
+                        " ] persisted successfully in the Autoscaler Registry");
+            }
+
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
     }
 
     public String [] getApplicationResourcePaths () {
-        PrivilegedCarbonContext ctx = PrivilegedCarbonContext
-                .getThreadLocalCarbonContext();
-        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
-        Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.APPLICATIONS_RESOURCE);
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-        if (obj != null) {
-            if (obj instanceof String []) {
-                return (String []) obj;
-            } else {
-                log.warn("Expected object type not found for Applications in Registry");
-                return null;
+            Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
+                    AutoScalerConstants.APPLICATIONS_RESOURCE);
+
+            if (obj != null) {
+                if (obj instanceof String []) {
+                    return (String []) obj;
+                } else {
+                    log.warn("Expected object type not found for Applications in Registry");
+                    return null;
+                }
             }
+
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
+
         return null;
     }
 
     public Application getApplication (String applicationResourcePath) {
-        Object obj = retrieve(applicationResourcePath);
 
-        if (obj != null) {
-            if (obj instanceof Application) {
-                return (Application) obj;
-            } else {
-                log.warn("Expected object type not found for Application " + applicationResourcePath + " in Registry");
-                return null;
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+            Object obj = retrieve(applicationResourcePath);
+
+            if (obj != null) {
+                if (obj instanceof Application) {
+                    return (Application) obj;
+                } else {
+                    log.warn("Expected object type not found for Application " + applicationResourcePath + " in Registry");
+                    return null;
+                }
             }
+
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
         }
+
         return null;
     }
 
     public void removeApplication (String applicationId) {
-        delete(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
-                "/" + applicationId);
+
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+            delete(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+                    "/" + applicationId);
+
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+
     }
 
     public void persistServiceGroup(ServiceGroup servicegroup) {
