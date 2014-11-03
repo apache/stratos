@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.configuration.XMLConfiguration;
@@ -32,8 +33,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /*
  * It is monitoring a kubernetes service cluster periodically.

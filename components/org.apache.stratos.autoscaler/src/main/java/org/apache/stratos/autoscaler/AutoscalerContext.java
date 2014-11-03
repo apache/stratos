@@ -23,17 +23,14 @@ package org.apache.stratos.autoscaler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 
 /**
  * It holds all cluster monitors which are active in stratos.
  */
 public class AutoscalerContext {
 
-    private static final Log log = LogFactory.getLog(AutoscalerContext.class);
     private static final AutoscalerContext INSTANCE = new AutoscalerContext();
 
     // Map<ClusterId, AbstractClusterMonitor>

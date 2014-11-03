@@ -19,7 +19,7 @@
 
 package org.apache.stratos.autoscaler.applications;
 
-import org.apache.stratos.cloud.controller.application.ClusterInformation;
+import org.apache.stratos.autoscaler.applications.ClusterInformation;
 
 public class STClusterInformation implements ClusterInformation {
 

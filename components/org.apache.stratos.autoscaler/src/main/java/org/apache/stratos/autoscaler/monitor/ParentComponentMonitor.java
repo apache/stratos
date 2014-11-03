@@ -31,6 +31,8 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublish
 import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 
 import java.util.HashMap;
 import java.util.List;

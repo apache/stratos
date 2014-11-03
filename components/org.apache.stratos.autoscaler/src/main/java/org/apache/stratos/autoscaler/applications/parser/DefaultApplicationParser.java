@@ -17,40 +17,39 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.application.parser;
+package org.apache.stratos.autoscaler.applications.parser;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationUtils;
+import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
-import org.apache.stratos.autoscaler.applications.pojo.*;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
+import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.application.ClusterInformation;
-import org.apache.stratos.cloud.controller.application.MTClusterInformation;
-import org.apache.stratos.cloud.controller.application.STClusterInformation;
-import org.apache.stratos.cloud.controller.exception.ApplicationDefinitionException;
-import org.apache.stratos.cloud.controller.interfaces.ApplicationParser;
-import org.apache.stratos.cloud.controller.pojo.*;
-import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.Properties;
-import org.apache.stratos.cloud.controller.pojo.application.*;
-import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
-import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
-
-import java.util.*;
 
 /**
  * Default implementation of the Application Parser. One Application should be processed by one
@@ -121,11 +120,6 @@ public class DefaultApplicationParser implements ApplicationParser {
     @Override
     public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException {
         return applicationClusterContexts;
-    }
-
-    @Override
-    public Set<MetaDataHolder> getPayloadData() throws ApplicationDefinitionException {
-        return metaDataHolders;
     }
 
     /**
@@ -273,7 +267,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             if (appCtxt.getComponents().getSubscribableContexts() != null) {
                 clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
                         application.getKey(), null, Arrays.asList(appCtxt.getComponents().getSubscribableContexts()),
-                        subscribableInfoCtxts, appCtxt.getProperties());
+                        subscribableInfoCtxts);
                 application.setClusterData(clusterDataMap);
                 //clusters.addAll(clusterDataHolder.getApplicationClusterContexts());
             }
@@ -282,7 +276,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             if (appCtxt.getComponents().getGroupContexts() != null) {
                 application.setGroups(parseGroups(appCtxt.getApplicationId(), appCtxt.getTenantId(),
                         application.getKey(), Arrays.asList(appCtxt.getComponents().getGroupContexts()),
-                        subscribableInfoCtxts, definedGroupCtxts, appCtxt.getProperties()));
+                        subscribableInfoCtxts, definedGroupCtxts));
             }
 
             // get top level Dependency definitions
@@ -347,13 +341,13 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, Group> parseGroups (String appId, int tenantId, String key, List<GroupContext> groupCtxts,
                                            Map<String, SubscribableInfoContext> subscribableInformation,
-                                           Map<String, GroupContext> definedGroupCtxts, Properties properties)
+                                           Map<String, GroupContext> definedGroupCtxts)
             throws ApplicationDefinitionException {
 
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
 
         for (GroupContext groupCtxt : groupCtxts) {
-            Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, definedGroupCtxts, properties);
+            Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, definedGroupCtxts);
             groupAliasToGroup.put(group.getAlias(), group);
         }
 
@@ -424,7 +418,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Group parseGroup (String appId, int tenantId, String key, GroupContext groupCtxt,
                              Map<String, SubscribableInfoContext> subscribableInfoCtxts,
-                             Map<String, GroupContext> definedGroupCtxts, Properties properties)
+                             Map<String, GroupContext> definedGroupCtxts)
             throws ApplicationDefinitionException {
 
         // check if are in the defined Group set
@@ -452,7 +446,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // get group level Subscribables
         if (groupCtxt.getSubscribableContexts() != null) {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
-                    Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts, properties);
+                    Arrays.asList(groupCtxt.getSubscribableContexts()), subscribableInfoCtxts);
             group.setClusterData(clusterDataMap);
         }
 
@@ -465,7 +459,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 subGroupCtxt = definedGroupCtxts.get(subGroupCtxt.getAlias());
                 Group nestedGroup = parseGroup(appId, tenantId, key, subGroupCtxt,
                         subscribableInfoCtxts,
-                        definedGroupCtxts, properties);
+                        definedGroupCtxts);
                 nestedGroups.put(nestedGroup.getAlias(), nestedGroup);
             }
 
@@ -569,8 +563,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions (String appId, int tenantId, String key, String groupName,
                                                                  List<SubscribableContext> subscribableCtxts,
-                                                                 Map<String, SubscribableInfoContext> subscribableInfoCtxts,
-                                                                 Properties properties)
+                                                                 Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
 
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
@@ -608,14 +601,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             String hostname = clusterInfo.getHostName(subscribableCtxt.getAlias(), cartridgeInfo.getHostName());
             String clusterId = clusterInfo.getClusterId(subscribableCtxt.getAlias(), subscribableCtxt.getType());
-            boolean isKubernetesCluster = StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType());
 
             // create and collect this cluster's information
             assert subscribableInfoCtxt != null;
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
-                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(),
-                    false, isKubernetesCluster, subscribableInfoCtxt.getDependencyAliases(), properties);
+                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
             this.applicationClusterContexts.add(appClusterCtxt);
@@ -640,8 +631,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param clusterId Cluster id
      * @param hostname Hostname
      * @param deploymentPolicy Deployment policy used
-     * @param isLBCluster if this cluster is an LB
-     * @param isKubernetesCluster if this cluster is a Kubernetes cluster
+     * @param isLB if this cluster is an LB
      * @return ApplicationClusterContext object with relevant information
      *
      * @throws ApplicationDefinitionException If any error occurs
@@ -649,17 +639,14 @@ public class DefaultApplicationParser implements ApplicationParser {
     private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, CartridgeInfo cartridgeInfo,
                                                                        String subscriptionKey, int tenantId, String repoUrl,
                                                                        String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLBCluster,
-                                                                       boolean isKubernetesCluster, String[] dependencyAliases,
-                                                                       Properties properties)
+                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases)
             throws ApplicationDefinitionException {
 
         // Create text payload
         String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases).toString();
 
-        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, 
-                isLB, isKubernetesCluster, properties);
+        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
     private CartridgeInfo getCartridge (String cartridgeType) throws ApplicationDefinitionException {

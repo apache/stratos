@@ -22,17 +22,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
@@ -62,10 +62,13 @@ import org.drools.runtime.rule.FactHandle;
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
  */
 public abstract class AbstractClusterMonitor extends Monitor implements Runnable {
+	
+	private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
 
     private String clusterId;
     private String serviceId;
-    protected ClusterStatus status;
+    private String appId;
+    private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
 
     protected FactHandle minCheckFactHandle;
@@ -76,6 +79,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected boolean hasFaultyMember = false;
+    protected boolean stop = false;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -88,6 +92,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+        this.status = ClusterStatus.Created;
     }
 
     protected abstract void readConfigurations();
@@ -178,14 +183,35 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.clusterId = clusterId;
     }
 
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
-    }
-
     public ClusterStatus getStatus() {
         return status;
     }
 
+    public void setStatus(ClusterStatus status) {
+
+        //if(this.status != status) {
+            this.status = status;
+            /**
+             * notifying the parent monitor about the state change
+             * If the cluster in_active and if it is a in_dependent cluster,
+             * then won't send the notification to parent.
+             */
+            if (status == ClusterStatus.Inactive && !this.hasDependent) {
+                log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
+                        "since it is identified as the independent unit");
+
+            } else if (status == ClusterStatus.Terminating) {
+                // notify parent
+                log.info("[Cluster] " + clusterId + " is not notifying the parent, " +
+                        "since it is in Terminating State");
+
+            } else {
+                MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
+            }
+        //}
+
+    }
+    
     public String getServiceId() {
         return serviceId;
     }
@@ -252,15 +278,19 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
             AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
     }
+    
+    public String getAppId() {
+    	return this.appId;
+    }
 
 
     @Override
     public void onParentEvent(MonitorStatusEvent statusEvent) {
         // send the ClusterTerminating event
-        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-                ApplicationStatus.Terminating) {
-            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
-        }
+//        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+//                ApplicationStatus.Terminating) {
+//            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
+//        }
     }
 
     @Override
@@ -287,4 +317,12 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public abstract void terminateAllMembers();
+    
+    public boolean isStop() {
+        return stop;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
 }

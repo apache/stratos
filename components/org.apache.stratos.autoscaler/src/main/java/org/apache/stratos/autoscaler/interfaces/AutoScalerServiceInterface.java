@@ -1,4 +1,3 @@
-package org.apache.stratos.autoscaler.interfaces;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one

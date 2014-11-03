@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.application;
+package org.apache.stratos.autoscaler.applications;
 
 public interface ClusterInformation {
 

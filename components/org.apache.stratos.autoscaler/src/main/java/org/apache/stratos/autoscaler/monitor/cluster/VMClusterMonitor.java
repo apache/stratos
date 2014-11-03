@@ -27,11 +27,13 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -551,6 +553,11 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
     public void handleClusterRemovedEvent(
             ClusterRemovedEvent clusterRemovedEvent) {
 
+    }
+    
+    @Override
+    public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
+        
     }
 
     private String getNetworkPartitionIdByMemberId(String memberId) {
