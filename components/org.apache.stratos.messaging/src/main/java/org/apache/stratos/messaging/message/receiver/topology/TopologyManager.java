@@ -85,26 +85,7 @@ public class TopologyManager {
         topologyLockHierarchy.getCompleteTopologyLock().releaseReadLock();
     }
 
-    // Application and Service read locks
-    /**
-     * Acquires read lock for the all Applications
-     */
-    public static void acquireReadLockForApplications() {
-        if(log.isDebugEnabled()) {
-            log.debug("Read lock acquired for Applications");
-        }
-        topologyLockHierarchy.getApplicatioLock().acquireReadLock();
-    }
-
-    /**
-     * Releases read lock for the all Applications
-     */
-    public static void releaseReadLockForApplications() {
-        if(log.isDebugEnabled()) {
-            log.debug("Read lock released for Applications");
-        }
-        topologyLockHierarchy.getApplicatioLock().releaseReadLock();
-    }
+    // Service read locks
 
     /**
      * Acquires read lock for the all Services
@@ -220,52 +201,6 @@ public class TopologyManager {
 
         // release read lock for relevant Service
         releaseReadLockForService(serviceName);
-    }
-
-    /**
-     * Acquires read lock for the Application
-     *
-     * @param appId Application id
-     */
-    public static void acquireReadLockForApplication (String appId) {
-
-        // acquire read lock for all Applications
-        acquireReadLockForApplications();
-
-        TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
-        if (topologyAppLock == null)  {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // now, lock Application
-            topologyAppLock.acquireReadLock();
-            if(log.isDebugEnabled()) {
-                log.debug("Read lock acquired for Application " + appId);
-            }
-        }
-    }
-
-    /**
-     * Releases read lock for the Application
-     *
-     * @param appId Application id
-     */
-    public static void releaseReadLockForApplication (String appId) {
-
-        TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
-        if (topologyAppLock == null)  {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // release App lock
-            topologyAppLock.releaseReadLock();
-            if(log.isDebugEnabled()) {
-                log.debug("Read lock released for Application " + appId);
-            }
-        }
-
-        // release read lock for all Applications
-        releaseReadLockForApplications();
     }
 
     private static void handleLockNotFound (String errorMsg) {

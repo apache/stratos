@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 
 import java.util.List;

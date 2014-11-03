@@ -19,16 +19,13 @@
 
 package org.apache.stratos.cloud.controller.pojo.payload;
 
-import java.io.Serializable;
 import java.util.Properties;
 
 /**
  * Holds payload/meta data related to a cluster
  */
 
-public class MetaDataHolder implements Serializable {
-
-    private static final long serialVersionUID = -3015788285718847360L;
+public class MetaDataHolder {
 
     private String appId;
 

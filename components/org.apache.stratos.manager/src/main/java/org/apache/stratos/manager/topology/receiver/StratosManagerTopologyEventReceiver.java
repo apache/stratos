@@ -26,7 +26,7 @@ import org.apache.stratos.manager.exception.ApplicationSubscriptionException;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
-import org.apache.stratos.messaging.domain.topology.Application;
+import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
@@ -92,21 +92,22 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
                 ClusterCreatedEvent clustercreatedEvent = (ClusterCreatedEvent) event;
 
-                String serviceType = clustercreatedEvent.getServiceName();
+                String serviceType = clustercreatedEvent.getCluster().getServiceName();
                 //acquire read lock
                 //TopologyManager.acquireReadLock();
-                TopologyManager.acquireReadLockForCluster(clustercreatedEvent.getServiceName(),
-                        clustercreatedEvent.getClusterId());
+                TopologyManager.acquireReadLockForCluster(clustercreatedEvent.getCluster().getServiceName(),
+                        clustercreatedEvent.getCluster().getClusterId());
 
                 try {
-                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clustercreatedEvent.getClusterId());
+                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).
+                            getCluster(clustercreatedEvent.getCluster().getClusterId());
                     TopologyClusterInformationModel.getInstance().addCluster(cluster);
 
                 } finally {
                     //release read lock
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForCluster(clustercreatedEvent.getServiceName(),
-                            clustercreatedEvent.getClusterId());
+                    TopologyManager.releaseReadLockForCluster(clustercreatedEvent.getCluster().getServiceName(),
+                            clustercreatedEvent.getCluster().getClusterId());
                 }
 
             }
@@ -310,6 +311,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
         });
         
       //add listner to Complete Topology Event
+/*
         topologyEventReceiver.addEventListener(new ApplicationCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -367,8 +369,10 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 }
             }
         });
-        
+*/
+
         //add listener 
+/*
         topologyEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -412,6 +416,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 }
             }
         });
+*/
     }
 
 

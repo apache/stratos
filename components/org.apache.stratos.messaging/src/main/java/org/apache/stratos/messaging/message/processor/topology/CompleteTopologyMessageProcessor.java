@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
@@ -145,21 +146,6 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
                         }
                     }
                 }
-            }
-        }
-
-        // add existing Applications to Topology
-        Collection<Application> applications = event.getTopology().getApplications();
-        if (applications != null && !applications.isEmpty()) {
-            for (Application application : applications) {
-                topology.addApplication(application);
-                if (log.isDebugEnabled()) {
-                    log.debug("Application with id [ " +  application.getUniqueIdentifier() + " ] added to Topology");
-                }
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("No Application information found in Complete Topology event");
             }
         }
 

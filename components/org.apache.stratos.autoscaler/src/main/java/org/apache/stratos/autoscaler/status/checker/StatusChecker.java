@@ -23,9 +23,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
@@ -67,7 +73,8 @@ public class StatusChecker {
                 // if active then notify upper layer
                 if (clusterActive) {
                     //send event to cluster status topic
-                    StatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
+                    monitor.setHasFaultyMember(false);
+                    ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                             monitor.getServiceId(), monitor.getClusterId());
                 }
             }
@@ -87,15 +94,27 @@ public class StatusChecker {
                     TopologyManager.acquireReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
                     Service service = TopologyManager.getTopology().getService(monitor.getServiceId());
                     Cluster cluster;
+                    String appId = monitor.getAppId();
                     if (service != null) {
                         cluster = service.getCluster(monitor.getClusterId());
                         if (cluster != null) {
-                            if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
-                                StatusEventPublisher.sendClusterTerminatedEvent(monitor.getAppId(), monitor.getServiceId(),
-                                        monitor.getClusterId());
-                            } else {
-                                log.info("Cluster has non terminated [members] and in the [status] "
-                                        + cluster.getStatus().toString());
+                            try {
+
+                                ApplicationManager.acquireReadLockForApplication(appId);
+                                Application application = ApplicationManager.getApplications().getApplication(appId);
+
+                                if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
+                                    if (application.getStatus() == ApplicationStatus.Terminating) {
+                                        ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
+                                                monitor.getClusterId());
+                                    } else {
+                                        ClusterStatusEventPublisher.sendClusterResetEvent(appId, monitor.getServiceId(),
+                                                monitor.getClusterId());
+                                    }
+
+                                } else {
+                                    log.info("Cluster has non terminated [members] and in the [status] "
+                                            + cluster.getStatus().toString());
 
                         /*if(!clusterActive && !(cluster.getStatus() == ClusterStatus.Inactive ||
                                 cluster.getStatus() == ClusterStatus.Terminating)) {
@@ -104,6 +123,9 @@ public class StatusChecker {
                                     monitor.getServiceId(), clusterId);
 
                         }*/
+                                }
+                            } finally {
+                                ApplicationManager.releaseReadLockForApplication(appId);
                             }
                         }
                     }
@@ -165,16 +187,16 @@ public class StatusChecker {
                 String appId = monitor.getAppId();
                 if (clusterInActive) {
                     //if the monitor is dependent, temporarily pausing it
-                    if(monitor.isDependent()) {
+                    if (monitor.isDependent()) {
                         monitor.setHasFaultyMember(true);
                     }
                     //send cluster In-Active event to cluster status topic
-                    StatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
+                    ClusterStatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
 
                 } else {
                     boolean clusterActive = clusterActive(monitor);
                     if (clusterActive) {
-                        StatusEventPublisher.sendClusterActivatedEvent(appId, monitor.getServiceId(), clusterId);
+                        ClusterStatusEventPublisher.sendClusterActivatedEvent(appId, monitor.getServiceId(), clusterId);
                     }
                 }
 
@@ -213,22 +235,22 @@ public class StatusChecker {
         Runnable group = new Runnable() {
             public void run() {
                 try {
-                    TopologyManager.acquireReadLockForApplication(appId);
+                    ApplicationManager.acquireReadLockForApplication(appId);
                     ParentComponent component;
                     if (groupId.equals(appId)) {
                         //it is an application
-                        component = TopologyManager.getTopology().
+                        component = ApplicationManager.getApplications().
                                 getApplication(appId);
                     } else {
                         //it is a group
-                        component = TopologyManager.getTopology().
+                        component = ApplicationManager.getApplications().
                                 getApplication(appId).getGroupRecursively(groupId);
                     }
                     Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
                     Map<String, Group> groups = component.getAliasToGroupMap();
                     updateChildStatus(appId, idOfChild, groups, clusterIds, component);
                 } finally {
-                    TopologyManager.releaseReadLockForApplication(appId);
+                    ApplicationManager.releaseReadLockForApplication(appId);
 
                 }
 
@@ -250,7 +272,6 @@ public class StatusChecker {
      */
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
-        boolean groupActive = false;
         ClusterStatus clusterStatus;
         GroupStatus groupStatus;
         boolean childFound = false;
@@ -266,76 +287,74 @@ public class StatusChecker {
             childFound = true;
             clusterStatus = getClusterStatus(clusterData);
             groupStatus = getGroupStatus(groups);
+            try {
+                ApplicationManager.acquireReadLockForApplication(appId);
+                Application application = ApplicationManager.getApplications().getApplication(appId);
 
-            if (groups.isEmpty() && clusterStatus == ClusterStatus.Active ||
-                    clusterData.isEmpty() && groupStatus == GroupStatus.Active ||
-                    groupStatus == GroupStatus.Active && clusterStatus == ClusterStatus.Active) {
-                //send activation event
-                if (parent instanceof Application) {
-                    //send application activated event
-                    log.info("sending app activate: " + appId);
-                    StatusEventPublisher.sendApplicationActivatedEvent(appId);
-                } else if (parent instanceof Group) {
-                    //send activation to the parent
-                    log.info("sending group activate: " + parent.getUniqueIdentifier());
-                    StatusEventPublisher.sendGroupActivatedEvent(appId, parent.getUniqueIdentifier());
-                }
-            } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Inactive ||
-                    clusterData.isEmpty() && groupStatus == GroupStatus.Inactive ||
-                    groupStatus == GroupStatus.Inactive && clusterStatus == ClusterStatus.Inactive) {
-                //send the in activation event
-                if (parent instanceof Application) {
-                    //send application activated event
-                    log.warn("Application can't be in in-active : " + appId);
-                    //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
-                } else if (parent instanceof Group) {
-                    //send activation to the parent
-                    log.info("sending group in-active: " + parent.getUniqueIdentifier());
-                    StatusEventPublisher.sendGroupInActivateEvent(appId, parent.getUniqueIdentifier());
-                }
-            } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminated ||
-                    clusterData.isEmpty() && groupStatus == GroupStatus.Terminated ||
-                    groupStatus == GroupStatus.Terminated && clusterStatus == ClusterStatus.Terminated) {
-                //send the terminated event
-                if (parent instanceof Application) {
-                    //validating the life cycle
-                    try {
-                        TopologyManager.acquireReadLockForApplication(appId);
-                        Application application = TopologyManager.getTopology().getApplication(appId);
+                if (groups.isEmpty() && getAllClusterInSameState(clusterData,ClusterStatus.Active) ||
+                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active) ||
+                        getAllClusterInSameState(clusterData,ClusterStatus.Active) &&
+                                getAllGroupInSameState(groups, GroupStatus.Active)) {
+                    //send activation event
+                    if (parent instanceof Application) {
+                        //send application activated event
+                        log.info("sending app activate: " + appId);
+                        ApplicationBuilder.handleApplicationActivatedEvent(appId);
+                    } else if (parent instanceof Group) {
+                        //send activation to the parent
+                        log.info("sending group activate: " + parent.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupActivatedEvent(appId, parent.getUniqueIdentifier());
+                    }
+                } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated) ||
+                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminated) ||
+                        getAllClusterInSameState(clusterData, ClusterStatus.Terminated) &&
+                                getAllGroupInSameState(groups, GroupStatus.Terminated)) {
+                    //send the terminated event
+                    if (parent instanceof Application) {
+                        //validating the life cycle
                         if (application.getStatus().equals(ApplicationStatus.Terminating)) {
                             log.info("sending app terminated: " + appId);
-                            StatusEventPublisher.sendApplicationTerminatedEvent(appId, parent.getClusterDataRecursively());
+                            ApplicationBuilder.handleApplicationTerminatedEvent(appId);
                         } else {
                             log.info("[Application] " + appId + " is in the [status] " +
                                     application.getStatus().toString() + ". Hence not sending terminated event");
                         }
-
-                    } finally {
-                        TopologyManager.releaseReadLockForApplication(appId);
+                        //StatusEventPublisher.sendApp(appId);
+                    } else if (parent instanceof Group) {
+                        //send activation to the parent
+                        log.info("sending group created : " + parent.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
                     }
-
-                    //StatusEventPublisher.sendApp(appId);
-                } else if (parent instanceof Group) {
-                    //send activation to the parent
-                    log.info("sending group terminated : " + parent.getUniqueIdentifier());
-                    StatusEventPublisher.sendGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
+                } else if (groups.isEmpty() && getAllClusterInSameState(clusterData,ClusterStatus.Created) ||
+                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Created) ||
+                        getAllClusterInSameState(clusterData,ClusterStatus.Created) &&
+                                getAllGroupInSameState(groups, GroupStatus.Created)) {
+                    if (parent instanceof Application) {
+                        log.info("[Application] " + appId + "couldn't change to Created, since it is" +
+                                "already in " + application.getStatus().toString());
+                    } else if (parent instanceof Group) {
+                        //send activation to the parent
+                        log.info("sending group created : " + parent.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupCreatedEvent(appId, parent.getUniqueIdentifier());
+                    }
+                } else if (groups.isEmpty() && getAllClusterInActive(clusterData) ||
+                        clusterData.isEmpty() && getAllGroupInActive(groups) ||
+                        getAllClusterInActive(clusterData) && getAllGroupInActive(groups)) {
+                    //send the in activation event
+                    if (parent instanceof Application) {
+                        //send application activated event
+                        log.warn("Application can't be in in-active : " + appId);
+                        //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
+                    } else if (parent instanceof Group) {
+                        //send activation to the parent
+                        log.info("sending group in-active: " + parent.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupInActivateEvent(appId, parent.getUniqueIdentifier());
+                    }
+                } else {
+                    log.warn("Clusters/groups not found in this [component] " + appId);
                 }
-            } else if (groups.isEmpty() && clusterStatus == ClusterStatus.Terminating ||
-                    clusterData.isEmpty() && groupStatus == GroupStatus.Terminating ||
-                    groupStatus == GroupStatus.Terminating && clusterStatus == ClusterStatus.Terminating) {
-                //send the terminated event
-                if (parent instanceof Application) {
-                    //send application activated event
-                    log.warn("Application can't be in terminating: " + appId);
-                    //StatusEventPublisher.sendApplicationTerminatingEvent(appId);
-                    //StatusEventPublisher.sendApp(appId);
-                } else if (parent instanceof Group) {
-                    //send activation to the parent
-                    log.info("sending group terminating : " + parent.getUniqueIdentifier());
-                    StatusEventPublisher.sendGroupTerminatingEvent(appId, parent.getUniqueIdentifier());
-                }
-            } else {
-                log.warn("Clusters/groups not found in this [component] " + appId);
+            } finally {
+                ApplicationManager.releaseReadLockForApplication(appId);
             }
 
 
@@ -347,37 +366,105 @@ public class StatusChecker {
         return childFound;
     }
 
+    private boolean getAllGroupInActive(Map<String, Group> groups) {
+        boolean groupStat = false;
+        for (Group group : groups.values()) {
+            if (group.getStatus() == GroupStatus.Inactive) {
+                groupStat = true;
+                return groupStat;
+            } else {
+                groupStat = false;
+            }
+        }
+        return groupStat;
+    }
+
+    private boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status) {
+        boolean groupStat = false;
+        for (Group group : groups.values()) {
+            if (group.getStatus() == status) {
+                groupStat = true;
+            } else {
+                groupStat = false;
+                return groupStat;
+            }
+        }
+        return groupStat;
+    }
+
+
+    private boolean getAllClusterInActive(Map<String, ClusterDataHolder> clusterData) {
+        boolean clusterStat = false;
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            if (cluster.getStatus() == ClusterStatus.Inactive) {
+                clusterStat = true;
+                return clusterStat;
+            } else {
+                clusterStat = false;
+
+            }
+        }
+        return clusterStat;
+    }
+
+    private boolean getAllClusterInSameState(Map<String, ClusterDataHolder> clusterData,
+                                             ClusterStatus status) {
+        boolean clusterStat = false;
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            if (cluster.getStatus() == status) {
+                clusterStat = true;
+            } else {
+                clusterStat = false;
+                return clusterStat;
+            }
+        }
+        return clusterStat;
+    }
+
     private GroupStatus getGroupStatus(Map<String, Group> groups) {
         GroupStatus status = null;
-        boolean groupActive = false;
-        boolean groupTerminated = false;
+        boolean groupActive = true;
+        boolean groupTerminated = true;
+        boolean groupCreated = true;
 
         for (Group group : groups.values()) {
             if (group.getStatus() == GroupStatus.Active) {
-                groupActive = true;
+                groupActive = groupActive && true;
                 groupTerminated = false;
+                groupCreated = false;
             } else if (group.getStatus() == GroupStatus.Inactive) {
                 status = GroupStatus.Inactive;
+                groupActive = false;
+                groupTerminated = false;
+                groupCreated = false;
                 break;
             } else if (group.getStatus() == GroupStatus.Terminated) {
                 groupActive = false;
-                groupTerminated = true;
+                groupCreated = false;
+                groupTerminated = groupTerminated && true;
             } else if (group.getStatus() == GroupStatus.Created) {
                 groupActive = false;
                 groupTerminated = false;
-                status = GroupStatus.Created;
-            } else if (group.getStatus() == GroupStatus.Terminating) {
-                groupActive = false;
-                groupTerminated = false;
-                status = GroupStatus.Terminating;
-
+                groupCreated = groupCreated && true;
             }
+        }
+
+        if(groups == null || groups != null && groups.isEmpty()) {
+            groupActive = false;
+            groupTerminated = false;
+            groupCreated = false;
         }
 
         if (groupActive) {
             status = GroupStatus.Active;
         } else if (groupTerminated) {
             status = GroupStatus.Terminated;
+        } else if(groupCreated) {
+            status = GroupStatus.Created;
         }
         return status;
 
@@ -385,37 +472,45 @@ public class StatusChecker {
 
     private ClusterStatus getClusterStatus(Map<String, ClusterDataHolder> clusterData) {
         ClusterStatus status = null;
-        boolean clusterActive = false;
-        boolean clusterTerminated = false;
+        boolean clusterActive = true;
+        boolean clusterTerminated = true;
+        boolean clusterCreated = true;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
             if (cluster.getStatus() == ClusterStatus.Active) {
-                clusterActive = true;
+                clusterActive = clusterActive && true;
                 clusterTerminated = false;
+                clusterCreated = false;
             } else if (cluster.getStatus() == ClusterStatus.Inactive) {
                 status = ClusterStatus.Inactive;
                 clusterActive = false;
                 clusterTerminated = false;
+                clusterCreated = false;
                 break;
             } else if (cluster.getStatus() == ClusterStatus.Terminated) {
                 clusterActive = false;
-                clusterTerminated = true;
-            } else if (cluster.getStatus() == ClusterStatus.Terminating) {
-                status = ClusterStatus.Terminating;
-                clusterActive = false;
-                clusterTerminated = false;
+                clusterCreated = false;
+                clusterTerminated = clusterTerminated && true;
             } else if (cluster.getStatus() == ClusterStatus.Created) {
-                status = ClusterStatus.Created;
                 clusterActive = false;
                 clusterTerminated = false;
+                clusterCreated = clusterCreated && true;
             }
+        }
+
+        if(clusterData == null || clusterData != null && clusterData.isEmpty()) {
+            clusterActive = false;
+            clusterTerminated = false;
+            clusterCreated = false;
         }
 
         if (clusterActive) {
             status = ClusterStatus.Active;
         } else if (clusterTerminated) {
             status = ClusterStatus.Terminated;
+        } else if(clusterCreated) {
+            status = ClusterStatus.Created;
         }
         return status;
     }

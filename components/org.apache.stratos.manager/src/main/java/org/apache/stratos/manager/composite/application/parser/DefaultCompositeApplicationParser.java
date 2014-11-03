@@ -27,13 +27,11 @@ import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.*;
 import org.apache.stratos.manager.composite.application.structure.CompositeAppContext;
 import org.apache.stratos.manager.composite.application.structure.GroupContext;
-import org.apache.stratos.manager.composite.application.structure.StartupOrder;
 import org.apache.stratos.manager.composite.application.structure.SubscribableContext;
 import org.apache.stratos.manager.composite.application.utils.ApplicationUtils;
 import org.apache.stratos.manager.exception.CompositeApplicationDefinitionException;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 
 import java.rmi.RemoteException;
@@ -213,7 +211,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
             	startupOrders = startupOrderList.toArray(startupOrders);
                 compositeAppContext.setStartupOrders(startupOrders);
 
-                compositeAppContext.setKillBehaviour(compositeAppDefinition.getComponents().getDependencies().getKillBehaviour());
+                compositeAppContext.setKillBehaviour(compositeAppDefinition.getComponents().getDependencies().getTerminationBehaviour());
             }
 
             // Set application properties
@@ -372,7 +370,7 @@ public class DefaultCompositeApplicationParser implements CompositeApplicationPa
         }
 
         if (groupDefinition.getDependencies() != null) {
-            return groupDefinition.getDependencies().getKillBehaviour();
+            return groupDefinition.getDependencies().getTerminationBehaviour();
         }
 
         return null;

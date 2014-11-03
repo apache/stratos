@@ -31,10 +31,10 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.Application;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.Collection;
@@ -161,20 +161,24 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             onChildInActiveEvent(id);
-            //TODO update the status of the Application as in_active when child becomes in_active
 
-        /*} else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            onChildTerminatingEvent(id);
-            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);*/
+        } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
+            //mark the child monitor as inActive in the map
+            this.markMonitorAsInactive(id);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            this.aliasToInActiveMonitorsMap.remove(id);
-            if (this.status != ApplicationStatus.Terminating || this.status != ApplicationStatus.Terminated) {
-                onChildTerminatedEvent(id);
+            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                this.aliasToInActiveMonitorsMap.remove(id);
             } else {
+                log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
+            }
+
+            if (this.status == ApplicationStatus.Terminating || this.status == ApplicationStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
+            } else {
+                onChildTerminatedEvent(id);
             }
         }
     }

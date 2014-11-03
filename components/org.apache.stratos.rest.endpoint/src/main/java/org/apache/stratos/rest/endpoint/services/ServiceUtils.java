@@ -27,11 +27,15 @@ import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.pojo.application.xsd.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
@@ -52,7 +56,11 @@ import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
@@ -130,7 +138,8 @@ public class ServiceUtils {
             throw new RestAPIException(e1);
         }
     	
-        ApplicationContext applicationContext = PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
+        org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext applicationContext =
+                PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);
@@ -147,8 +156,9 @@ public class ServiceUtils {
         }
 
         try {
-            CloudControllerServiceClient.getServiceClient().deployApplicationDefinition(applicationContext);
-
+            AutoscalerServiceClient.getServiceClient().deployApplication(applicationContext);
+        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
+            throw new RestAPIException(e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
         } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
@@ -172,11 +182,12 @@ public class ServiceUtils {
 
         try {
         	int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
-            CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId, tenantId, tenantDomain);
+            //CloudControllerServiceClient.getServiceClient().undeployApplicationDefinition(appId, tenantId, tenantDomain);
+            AutoscalerServiceClient.getServiceClient().undeployApplication(appId, tenantId, tenantDomain);
 
-        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
-            throw new RestAPIException(e);
         } catch (RemoteException e) {
+            throw new RestAPIException(e);
+        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         }
 
@@ -1283,7 +1294,7 @@ public class ServiceUtils {
     static void unsubscribe(String alias, String tenantDomain) throws RestAPIException {
 
         try {
-            CartridgeSubscriptionManager.unsubscribeFromCartridge(tenantDomain, alias);
+            cartridgeSubsciptionManager.unsubscribeFromCartridge(tenantDomain, alias);
 
         } catch (ADCException e) {
             String msg = "Failed to unsubscribe from [alias] " + alias + ". Cause: " + e.getMessage();
@@ -1492,8 +1503,8 @@ public class ServiceUtils {
     public static ApplicationBean getApplicationInfo(String applicationId, ConfigurationContext configContext) {
         ApplicationBean applicationBean = null;
         try{
-            TopologyManager.acquireReadLockForApplication(applicationId);
-            Application application = TopologyManager.getTopology().getApplication(applicationId);
+            ApplicationManager.acquireReadLockForApplication(applicationId);
+            Application application = ApplicationManager.getApplications().getApplication(applicationId);
             if(application == null){
                 return null;
             }
@@ -1523,7 +1534,7 @@ public class ServiceUtils {
                 applicationBean.addGroup(groupBean);
             }
         }finally {
-            TopologyManager.releaseReadLockForApplication(applicationId);
+            ApplicationManager.releaseReadLockForApplication(applicationId);
         }
 
 

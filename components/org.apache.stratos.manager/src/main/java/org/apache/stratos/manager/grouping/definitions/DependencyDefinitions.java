@@ -33,14 +33,14 @@ public class DependencyDefinitions implements Serializable {
 	
 	private List<String> startupOrders;
 
-    private String killBehaviour;
+    private String terminationBehaviour;
 
-    public String getKillBehaviour() {
-        return killBehaviour;
+    public String getTerminationBehaviour() {
+        return terminationBehaviour;
     }
 
-    public void setKillBehaviour(String killBehaviour) {
-        this.killBehaviour = killBehaviour;
+    public void setTerminationBehaviour(String terminationBehaviour) {
+        this.terminationBehaviour = terminationBehaviour;
     }
 
 	public List<String> getStartupOrders() {

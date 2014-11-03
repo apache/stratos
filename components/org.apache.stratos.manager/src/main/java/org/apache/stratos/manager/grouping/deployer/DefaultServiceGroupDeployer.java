@@ -22,23 +22,21 @@ package org.apache.stratos.manager.grouping.deployer;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidServiceGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
-import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
-import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.pojo.Dependencies;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
@@ -73,7 +71,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             log.error("trying to deploy invalid service group ");
             throw new InvalidServiceGroupException("Invalid Service Group definition");
         }
-        
 
         // if any cartridges are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getCartridges() != null) {
@@ -156,23 +153,23 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             }
         }
         
-        CloudControllerServiceClient ccServiceClient = null;
+        AutoscalerServiceClient asServiceClient = null;
 
         try {
-            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            asServiceClient = AutoscalerServiceClient.getServiceClient();
             
             if (log.isDebugEnabled()) {
             	log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
             }
-            
-            ccServiceClient.deployServiceGroup(serviceGroup);
+
+            asServiceClient.deployServiceGroup(serviceGroup);
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
         }catch (RemoteException e) {
             throw new ADCException(e);
-        } catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
-        	throw new ADCException(e);
+        } catch (AutoScalerServiceInvalidServiceGroupExceptionException e) {
+            e.printStackTrace();
         }
     }
 
@@ -182,16 +179,16 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         	log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
         }
     	
-    	CloudControllerServiceClient ccServiceClient = null;
+    	AutoscalerServiceClient asServiceClient = null;
 
         try {
-            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            asServiceClient = AutoscalerServiceClient.getServiceClient();
             
             if (log.isDebugEnabled()) {
             	log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
             }
             
-            ServiceGroup serviceGroup = ccServiceClient.getServiceGroup(serviceGroupDefinitionName);
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroup(serviceGroupDefinitionName);
             ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
             
             return serviceGroupDef;
@@ -200,10 +197,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
         	throw new ADCException(e);
-		} catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
-			throw new ADCException(e);
 		}
-    	
     }
 
 
@@ -232,7 +226,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     }
     
     
-    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) throws ServiceGroupDefinitioException {
     	ServiceGroup servicegroup = new ServiceGroup();
     	
     	// implement conversion (mostly List -> Array)
@@ -268,7 +262,9 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             	startupOrders = startupOrdersDef.toArray(startupOrders);
                 deps.setStartupOrders(startupOrders);
             }
-            deps.setKillBehaviour(depDefs.getKillBehaviour());
+            // validate termination behavior
+            validateTerminationBehavior(depDefs.getTerminationBehaviour());
+            deps.setKillBehaviour(depDefs.getTerminationBehaviour());
             servicegroup.setDependencies(deps);
         }
     	
@@ -290,7 +286,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 depsDef.setStartupOrders(startupOrdersDef);
             }
 
-            depsDef.setKillBehaviour(deps.getKillBehaviour());
+            depsDef.setTerminationBehaviour(deps.getKillBehaviour());
             servicegroupDef.setDependencies(depsDef);
         }
 
@@ -302,8 +298,26 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
    
     	return servicegroupDef;
     }
-    
-    
+
+    /**
+     * Validates terminationBehavior. The terminationBehavior should be one of the following:
+     *      1. terminate-none
+     *      2. terminate-dependents
+     *      3. terminate-all
+     *
+     * @throws ServiceGroupDefinitioException if terminationBehavior is different to what is
+     * listed above
+     */
+    private static void validateTerminationBehavior (String terminationBehavior) throws ServiceGroupDefinitioException {
+
+        if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
+                "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
+            throw new ServiceGroupDefinitioException("Invalid Termination Behaviour specified: [ " +
+                    terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
+                    " 'terminate-all' ");
+        }
+    }
+
     /**
      * returns any duplicates in a List
      * @param checkedList

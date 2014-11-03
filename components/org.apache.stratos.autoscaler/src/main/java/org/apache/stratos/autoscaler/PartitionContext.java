@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -44,7 +45,6 @@ import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
-
 
 /**
  * This is an object that inserted to the rules engine.
@@ -168,14 +168,16 @@ public class PartitionContext implements Serializable{
     	if (id == null) {
             return false;
         }
-        for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
-    		MemberContext pendingMember = (MemberContext) iterator.next();
-    		if(id.equals(pendingMember.getMemberId())){
-    			iterator.remove();
-    			return true;
-    		}
-			
-		}
+        synchronized (pendingMembers) {
+            for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext(); ) {
+                MemberContext pendingMember = (MemberContext) iterator.next();
+                if (id.equals(pendingMember.getMemberId())) {
+                    iterator.remove();
+                    return true;
+                }
+
+            }
+        }
     	
     	return false;
     }
@@ -184,25 +186,27 @@ public class PartitionContext implements Serializable{
         if (memberId == null) {
             return;
         }
-        Iterator<MemberContext> iterator = pendingMembers.listIterator();
-        while (iterator.hasNext()) {
-            MemberContext pendingMember = iterator.next();
-            if(pendingMember == null) {
-                iterator.remove();
-                continue;
-            }
-            if(memberId.equals(pendingMember.getMemberId())){
-                // member is activated
-                // remove from pending list
-                iterator.remove();
-                // add to the activated list
-                this.activeMembers.add(pendingMember);
-                pendingMembersFailureCount = 0;
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Pending member is removed and added to the " +
-                            "activated member list. [Member Id] %s",memberId));
+        synchronized (pendingMembers) {
+            Iterator<MemberContext> iterator = pendingMembers.listIterator();
+            while (iterator.hasNext()) {
+                MemberContext pendingMember = iterator.next();
+                if (pendingMember == null) {
+                    iterator.remove();
+                    continue;
                 }
-                break;
+                if (memberId.equals(pendingMember.getMemberId())) {
+                    // member is activated
+                    // remove from pending list
+                    iterator.remove();
+                    // add to the activated list
+                    this.activeMembers.add(pendingMember);
+                    pendingMembersFailureCount = 0;
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Pending member is removed and added to the " +
+                                "activated member list. [Member Id] %s", memberId));
+                    }
+                    break;
+                }
             }
         }
     }
@@ -212,24 +216,26 @@ public class PartitionContext implements Serializable{
         if (memberId == null) {
             return;
         }
-        Iterator<MemberContext> iterator = activeMembers.listIterator();
-        while ( iterator.hasNext()) {
-            MemberContext activeMember = iterator.next();
-            if(activeMember == null) {
-                iterator.remove();
-                continue;
-            }
-            if(memberId.equals(activeMember.getMemberId())){
-                // member is activated
-                // remove from pending list
-                iterator.remove();
-                // add to the activated list
-                this.terminationPendingMembers.add(activeMember);
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Active member is removed and added to the " +
-                            "termination pending member list. [Member Id] %s", memberId));
+        synchronized (activeMembers) {
+            Iterator<MemberContext> iterator = activeMembers.listIterator();
+            while (iterator.hasNext()) {
+                MemberContext activeMember = iterator.next();
+                if (activeMember == null) {
+                    iterator.remove();
+                    continue;
                 }
-                break;
+                if (memberId.equals(activeMember.getMemberId())) {
+                    // member is activated
+                    // remove from pending list
+                    iterator.remove();
+                    // add to the activated list
+                    this.terminationPendingMembers.add(activeMember);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Active member is removed and added to the " +
+                                "termination pending member list. [Member Id] %s", memberId));
+                    }
+                    break;
+                }
             }
         }
     }
@@ -244,11 +250,13 @@ public class PartitionContext implements Serializable{
 
     public boolean removeTerminationPendingMember(String memberId) {
         boolean terminationPendingMemberAvailable = false;
-        for (MemberContext memberContext: terminationPendingMembers){
-            if(memberContext.getMemberId().equals(memberId)){
-                terminationPendingMemberAvailable = true;
-                terminationPendingMembers.remove(memberContext);
-                break;
+        synchronized (terminationPendingMembers) {
+            for (MemberContext memberContext : terminationPendingMembers) {
+                if (memberContext.getMemberId().equals(memberId)) {
+                    terminationPendingMemberAvailable = true;
+                    terminationPendingMembers.remove(memberContext);
+                    break;
+                }
             }
         }
         return terminationPendingMemberAvailable;

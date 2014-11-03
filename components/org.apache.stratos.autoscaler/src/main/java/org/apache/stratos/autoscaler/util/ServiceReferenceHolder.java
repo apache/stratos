@@ -21,13 +21,15 @@ package org.apache.stratos.autoscaler.util;
 */
 
 
+import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 public class ServiceReferenceHolder {
 	
 	private static ServiceReferenceHolder instance;
-	private Registry registry;	
+	private Registry registry;
+    private TaskService taskService;
 
 	private ServiceReferenceHolder() {
 	}
@@ -46,4 +48,12 @@ public class ServiceReferenceHolder {
     public Registry getRegistry() {
 		return registry;
 	}
+
+    public TaskService getTaskService() {
+        return taskService;
+    }
+
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
 }

@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.NonExistingKubernetesGroupException;
+import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
@@ -43,12 +44,15 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.ContainerClusterContext;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
+
+import java.rmi.RemoteException;
 
 
 /**
@@ -239,6 +243,22 @@ public class CloudControllerClient {
         }
     }
 
+    public CartridgeInfo getCartrdgeInformation (String cartridgeType) throws CartridgeInformationException {
+
+        try {
+            return stub.getCartridgeInfo(cartridgeType);
+
+        } catch (RemoteException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new CartridgeInformationException(msg, e);
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new CartridgeInformationException(msg, e);
+        }
+    }
+
     /**
      * @param kubernetesClusterId
      * @param clusterId
@@ -247,15 +267,15 @@ public class CloudControllerClient {
      */
     public synchronized MemberContext[] startContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
-        	
-        	KubernetesManager kubernetesManager = KubernetesManager.getInstance();
-        	KubernetesMaster kubernetesMaster = kubernetesManager.getKubernetesMasterInGroup(kubernetesClusterId);
-        	String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
-        	KubernetesGroup kubernetesGroup = kubernetesManager.getKubernetesGroup(kubernetesClusterId);
-    		int lower = kubernetesGroup.getPortRange().getLower();
-    		int upper = kubernetesGroup.getPortRange().getUpper();
-    		String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
-    		
+
+            KubernetesManager kubernetesManager = KubernetesManager.getInstance();
+            KubernetesMaster kubernetesMaster = kubernetesManager.getKubernetesMasterInGroup(kubernetesClusterId);
+            String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
+            KubernetesGroup kubernetesGroup = kubernetesManager.getKubernetesGroup(kubernetesClusterId);
+            int lower = kubernetesGroup.getPortRange().getLower();
+            int upper = kubernetesGroup.getPortRange().getUpper();
+            String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
+
             ContainerClusterContext context = new ContainerClusterContext();
             context.setClusterId(clusterId);
             Properties memberContextProps = new Properties();
@@ -270,25 +290,25 @@ public class CloudControllerClient {
             context.setProperties(memberContextProps);
             long startTime = System.currentTimeMillis();
             MemberContext[] memberContexts = stub.startContainers(context);
-            
+
             if(log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call startContainer() returned in %dms", (endTime - startTime)));
             }
             return memberContexts;
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-        	String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
-        	log.error(message, e);
-			throw new SpawningException(message, e);
+            String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
+            log.error(message, e);
+            throw new SpawningException(message, e);
         } catch (RemoteException e) {
-        	log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw new SpawningException(e.getMessage(), e);
-		} catch (NonExistingKubernetesGroupException e){
+        } catch (NonExistingKubernetesGroupException e){
             log.error(e.getMessage(), e);
             throw new SpawningException(e.getMessage(), e);
         }
     }
-    
+
     public synchronized void terminateAllContainers(String clusterId) throws TerminationException {
         try {
             if(log.isInfoEnabled()) {
@@ -301,21 +321,21 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateContainer() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-        	String msg = e.getMessage();
+            String msg = e.getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
         } catch (CloudControllerServiceInvalidClusterExceptionException e) {
-        	String msg = e.getFaultMessage().getInvalidClusterException().getMessage();
+            String msg = e.getFaultMessage().getInvalidClusterException().getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
-		} 
+        }
     }
 
     public synchronized MemberContext[] updateContainers(String clusterId, int replicas)
-    		throws SpawningException {
+            throws SpawningException {
         try {
             log.info(String.format("Updating kubernetes replication controller via cloud controller: " +
-                                   "[cluster] %s [replicas] %s", clusterId, replicas));
+                    "[cluster] %s [replicas] %s", clusterId, replicas));
             MemberContext[] memberContexts = stub.updateContainers(clusterId, replicas);
             return memberContexts;
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
@@ -324,24 +344,24 @@ public class CloudControllerClient {
             throw new SpawningException(msg, e);
         } catch (RemoteException e) {
             String msg = "Error while updating kubernetes controller, cannot communicate with " +
-                         "cloud controller service";
+                    "cloud controller service";
             log.error(msg, e);
             throw new SpawningException(msg, e);
-        } 
+        }
     }
-    
+
     public synchronized void terminateContainer(String memberId) throws TerminationException{
-    	try {
-			stub.terminateContainer(memberId);
-		} catch (RemoteException e) {
+        try {
+            stub.terminateContainer(memberId);
+        } catch (RemoteException e) {
             String msg = "Error while updating kubernetes controller, cannot communicate with " +
                     "cloud controller service";
             log.error(msg, e);
             throw new TerminationException(msg, e);
-		} catch (CloudControllerServiceMemberTerminationFailedExceptionException e) {
+        } catch (CloudControllerServiceMemberTerminationFailedExceptionException e) {
             String msg = "Error while terminating container, member not valid for member id : " + memberId;
             log.error(msg, e);
             throw new TerminationException(msg, e);
-		}
+        }
     }
 }

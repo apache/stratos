@@ -23,7 +23,7 @@ package org.apache.stratos.cloud.controller.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.application.status.receiver.ApplicationStatusTopicReceiver;
+import org.apache.stratos.cloud.controller.application.status.receiver.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
@@ -34,7 +34,6 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
-import org.apache.stratos.messaging.message.receiver.application.status.ApplicationStatusEventReceiver;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
@@ -65,7 +64,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
-
+    private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
     protected void activate(ComponentContext context) {
         try {
                	
@@ -85,14 +84,19 @@ public class CloudControllerDSComponent {
 
             ApplicationStatusTopicReceiver applicationStatusTopicReceiver = new ApplicationStatusTopicReceiver();
             Thread appThread = new Thread(applicationStatusTopicReceiver);
+            clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
+            Thread appThread = new Thread(clusterStatusTopicReceiver);
             appThread.start();
             if(log.isInfoEnabled()) {
                 log.info("Application status message receiver thread started");
+            if (log.isDebugEnabled()) {
+                log.debug("Cluster status Receiver thread started");
             }
 
         	// Register cloud controller service
             BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(), new CloudControllerServiceImpl(), null);
+            bundleContext.registerService(CloudControllerService.class.getName(),
+                    new CloudControllerServiceImpl(), null);
 
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");

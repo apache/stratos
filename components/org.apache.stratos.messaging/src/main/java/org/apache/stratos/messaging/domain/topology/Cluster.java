@@ -66,7 +66,7 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         this.clusterId = clusterId;
         this.deploymentPolicyName = deploymentPolicyName;
         this.autoscalePolicyName = autoscalePolicyName;
-        this.hostNames = new ArrayList<String>();
+        this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
         this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
@@ -248,6 +248,10 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
 
     public String getAppId() {
         return appId;
+    }
+
+    public void setHostNames(List<String> hostNames) {
+        this.hostNames = hostNames;
     }
 
 //    public ClusterStatus getTempStatus() {

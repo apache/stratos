@@ -286,7 +286,7 @@
     
     <xs:complexType name="tdependencies">
     	<xs:sequence>
-			<xs:element name="killBehaviour" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+			<xs:element name="terminationBehaviour" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
 			<xs:element name="startupOrders" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="false"/>            
     	</xs:sequence>
     </xs:complexType>

@@ -20,10 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -53,13 +50,13 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
             // Parse complete message and build event
             ClusterCreatedEvent event = (ClusterCreatedEvent) Util.jsonToObject(message, ClusterCreatedEvent.class);
-
-            TopologyUpdater.acquireWriteLockForService(event.getServiceName());
+            String serviceName = event.getCluster().getServiceName();
+            TopologyUpdater.acquireWriteLockForService(serviceName);
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForService(event.getServiceName());
+                TopologyUpdater.releaseWriteLockForService(serviceName);
             }
 
         } else {
@@ -73,13 +70,15 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
     }
 
     private boolean doProcess (ClusterCreatedEvent event,Topology topology) {
-
+        Cluster cluster = event.getCluster();
+        String serviceName = cluster.getServiceName();
+        String clusterId = cluster.getClusterId();
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
+            if (TopologyServiceFilter.getInstance().serviceNameExcluded(serviceName)) {
                 // Service is excluded, do not update topology or fire event
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                    log.debug(String.format("Service is excluded: [service] %s", serviceName));
                 }
                 return false;
             }
@@ -87,10 +86,10 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
 
         // Apply cluster filter
         if (TopologyClusterFilter.getInstance().isActive()) {
-            if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
+            if (TopologyClusterFilter.getInstance().clusterIdExcluded(clusterId)) {
                 // Cluster is excluded, do not update topology or fire event
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
+                    log.debug(String.format("Cluster is excluded: [cluster] %s", clusterId));
                 }
                 return false;
             }
@@ -108,23 +107,24 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
             throw new RuntimeException("Host name/s not found in cluster created event");
         }*/
         // Validate event against the existing topology
-        Service service = topology.getService(event.getServiceName());
+        Service service = topology.getService(serviceName);
         if (service == null) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("Service does not exist: [service] %s",
-                        event.getServiceName()));
+                        serviceName));
             }
             return false;
         }
-        if (service.clusterExists(event.getClusterId())) {
+        if (service.clusterExists(clusterId)) {
             if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster already exists in service: [service] %s [cluster] %s", event.getServiceName(),
-                        event.getClusterId()));
+                log.warn(String.format("Cluster already exists in service: [service] %s " +
+                                "[cluster] %s",serviceName ,
+                        clusterId));
             }
         } else {
 
             // Apply changes to the topology
-            Cluster cluster = service.getCluster(event.getClusterId());
+            service.addCluster(cluster);
             cluster.setStatus(ClusterStatus.Created);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Cluster created: %s",

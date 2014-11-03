@@ -83,27 +83,7 @@ public class TopologyUpdater {
         topologyLockHierarchy.getCompleteTopologyLock().releaseWritelock();
     }
 
-    // Application and Service write locks
-    /**
-     * Acquires write lock for the all Applications
-     */
-    public static void acquireWriteLockForApplications() {
-        if(log.isDebugEnabled()) {
-            log.debug("Write lock acquired for Applications");
-        }
-        topologyLockHierarchy.getApplicatioLock().acquireWriteLock();
-    }
-
-    /**
-     * Releases write lock for the all Applications
-     */
-    public static void releaseWriteLockForApplications() {
-        if(log.isDebugEnabled()) {
-            log.debug("Write lock released for Applications");
-        }
-        topologyLockHierarchy.getApplicatioLock().releaseWritelock();
-    }
-
+    // Service write locks
     /**
      * Acquires write lock for the all Services
      */
@@ -216,52 +196,6 @@ public class TopologyUpdater {
 
         // release read lock for relevant Service
         TopologyManager.releaseReadLockForService(serviceName);
-    }
-
-    /**
-     * Acquires write lock for the Application
-     *
-     * @param appId Application id
-     */
-    public static void acquireWriteLockForApplication (String appId) {
-
-        // acquire read lock for all Applications
-        TopologyManager.acquireReadLockForApplications();
-
-        TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
-        if (topologyAppLock == null)  {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // now, lock Application
-            topologyAppLock.acquireWriteLock();
-            if(log.isDebugEnabled()) {
-                log.debug("Write lock acquired for Application " + appId);
-            }
-        }
-    }
-
-    /**
-     * Releases write lock for the Application
-     *
-     * @param appId Application id
-     */
-    public static void releaseWriteLockForApplication (String appId) {
-
-        TopologyLock topologyAppLock = topologyLockHierarchy.getTopologyLockForApplication(appId);
-        if (topologyAppLock == null)  {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // release App lock
-            topologyAppLock.releaseWritelock();
-            if(log.isDebugEnabled()) {
-                log.debug("Write lock released for Application " + appId);
-            }
-        }
-
-        // release read lock for all Applications
-        TopologyManager.releaseReadLockForApplications();
     }
 
     private static void handleLockNotFound (String errorMsg) {

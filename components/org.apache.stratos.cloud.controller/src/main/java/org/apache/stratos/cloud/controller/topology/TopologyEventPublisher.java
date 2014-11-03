@@ -1,3 +1,4 @@
+package org.apache.stratos.cloud.controller.topology;
  /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -28,6 +29,7 @@ import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
@@ -91,6 +93,23 @@ public class TopologyEventPublisher {
 		}
 		publishEvent(clusterCreatedEvent);
 	}
+    public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
+        ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId,serviceName, clusterId);
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing cluster reset event: " + clusterId);
+        }
+        publishEvent(clusterResetEvent);
+    }
+
+    public static void sendClusterCreatedEvent(Cluster cluster) {
+        ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(cluster);
+
+        if(log.isInfoEnabled()) {
+            log.info("Publishing cluster created event: " + cluster.getClusterId());
+        }
+        publishEvent(clusterCreatedEvent);
+    }
 
     public static void sendApplicationCreatedEvent (ApplicationCreatedEvent applicationCreatedEvent) {
 
@@ -203,6 +222,15 @@ public class TopologyEventPublisher {
         }
 
         publishEvent(memberMaintenanceModeEvent);
+    }
+
+    public static void sendGroupCreatedEvent (GroupCreatedEvent groupCreatedEvent) {
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Publishing group created event: [appId] %s [group] %s",
+                    groupCreatedEvent.getAppId(), groupCreatedEvent.getGroupId()));
+        }
+        publishEvent(groupCreatedEvent);
     }
 
     public static void sendGroupActivatedEvent(GroupActivatedEvent groupActivatedEvent) {

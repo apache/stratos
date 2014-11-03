@@ -23,16 +23,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
-import org.apache.stratos.cloud.controller.pojo.payload.MetaDataHolder;
+import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.application.status.*;
+import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
@@ -40,9 +39,9 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -60,7 +59,7 @@ public class TopologyBuilder {
         	log.warn(String.format("Cartridge list is empty"));
         	return;
         }
-        
+
         try {
 
             TopologyManager.acquireWriteLock();
@@ -107,7 +106,7 @@ public class TopologyBuilder {
                     }
                     TopologyEventPublisher.sendServiceRemovedEvent(cartridgeList);
                 } else {
-                	log.warn(String.format("Service %s does not exist..", cartridge.getType()));
+                    log.warn(String.format("Service %s does not exist..", cartridge.getType()));
                 }
             } else {
                 log.warn("Subscription already exists. Hence not removing the service:" + cartridge.getType()
@@ -116,51 +115,115 @@ public class TopologyBuilder {
         }
     }
 
-   
+    public static void handleClusterCreated(ClusterStatusClusterCreatedEvent event) {
+        TopologyManager.acquireWriteLock();
+        Cluster cluster;
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                log.error("Service " + event.getServiceName() +
+                        " not found in Topology, unable to update the cluster status to Created");
+                return;
+            }
+
+            if (service.clusterExists(event.getClusterId())) {
+                log.warn("Cluster " + event.getClusterId() + " is already in the Topology ");
+                return;
+            } else {
+                cluster = new Cluster(event.getServiceName(),
+                        event.getClusterId(), event.getDeploymentPolicyName(),
+                        event.getAutosScalePolicyName(), event.getAppId());
+                //cluster.setStatus(Status.Created);
+                cluster.setHostNames(event.getHostNames());
+                cluster.setTenantRange(event.getTenantRange());
+                cluster.setStatus(ClusterStatus.Created);
+                service.addCluster(cluster);
+                TopologyManager.updateTopology(topology);
+            }
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendClusterCreatedEvent(cluster);
+    }
+
+
+    public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
+
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+            Service service = topology.getService(event.getServiceName());
+            if (service == null) {
+                log.error("Service " + event.getServiceName() +
+                        " not found in Topology, unable to update the cluster status to Created");
+                return;
+            }
+
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                log.error("Cluster " + event.getClusterId() + " not found in Topology, unable to update " +
+                        "status to Created");
+                return;
+            }
+
+            // update the cluster status to Created
+            if (!cluster.isStateTransitionValid(ClusterStatus.Created)) {
+                log.error("Invalid state transition from " + cluster.getStatus() + " to " +
+                        ClusterStatus.Created + " for cluster id " + event.getClusterId());
+            }
+            // forcefully update the status
+            cluster.setStatus(ClusterStatus.Created);
+            TopologyManager.updateTopology(topology);
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendClusterResetEvent(event.getAppId(), event.getServiceName(),
+                event.getClusterId());
+    }
+
+
     public static void handleClusterCreated(Registrant registrant, boolean isLb) {
-    	/**
-        Topology topology = TopologyManager.getTopology();
+        /*Topology topology = TopologyManager.getTopology();
         Service service;
         try {
             TopologyManager.acquireWriteLock();
             String cartridgeType = registrant.getCartridgeType();
             service = topology.getService(cartridgeType);
-            
-            if(log.isDebugEnabled()) {
-            	log.debug(" Service is retrieved from Topology [" + service + "] ");
-            }
-            
             Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-            
+
             Cluster cluster;
             String clusterId = registrant.getClusterId();
             if (service.clusterExists(clusterId)) {
                 // update the cluster
                 cluster = service.getCluster(clusterId);
                 cluster.addHostName(registrant.getHostName());
-                if(service.getServiceType() == ServiceType.MultiTenant) {
+                if (service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
                 }
-                if(service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
+                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
                     props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                setKubernetesCluster(cluster);
             } else {
                 cluster = new Cluster(cartridgeType, clusterId,
-                                      registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName());
+                        registrant.getDeploymentPolicyName(), registrant.getAutoScalerPolicyName(), null);
                 cluster.addHostName(registrant.getHostName());
-                if(service.getServiceType() == ServiceType.MultiTenant) {
+                if (service.getServiceType() == ServiceType.MultiTenant) {
                     cluster.setTenantRange(registrant.getTenantRange());
                 }
-                if(service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
+                if (service.getProperties().getProperty(Constants.IS_PRIMARY) != null) {
                     props.setProperty(Constants.IS_PRIMARY, service.getProperties().getProperty(Constants.IS_PRIMARY));
                 }
                 cluster.setProperties(props);
                 cluster.setLbCluster(isLb);
-                setKubernetesCluster(cluster);
-                cluster.setStatus(ClusterStatus.Created);
+                //cluster.setStatus(Status.Created);
                 service.addCluster(cluster);
             }
             TopologyManager.updateTopology(topology);
@@ -168,8 +231,7 @@ public class TopologyBuilder {
 
         } finally {
             TopologyManager.releaseWriteLock();
-        }
-        **/
+        }*/
     }
 
 
@@ -186,16 +248,16 @@ public class TopologyBuilder {
         Service service = topology.getService(ctxt.getCartridgeType());
         String deploymentPolicy;
         if (service == null) {
-        	log.warn(String.format("Service %s does not exist",
+            log.warn(String.format("Service %s does not exist",
                     ctxt.getCartridgeType()));
-        	return;
+            return;
         }
 
         if (!service.clusterExists(ctxt.getClusterId())) {
-        	log.warn(String.format("Cluster %s does not exist for service %s",
+            log.warn(String.format("Cluster %s does not exist for service %s",
                     ctxt.getClusterId(),
                     ctxt.getCartridgeType()));
-        	return;
+            return;
         }
 
         try {
@@ -411,7 +473,7 @@ public class TopologyBuilder {
             return;
         }
 
-        
+
         Member member = cluster.getMember(instanceReadyToShutdownEvent.getMemberId());
         if (member == null) {
             log.warn(String.format("Member %s does not exist",
@@ -545,11 +607,7 @@ public class TopologyBuilder {
         }
     }
 
-    public static synchronized void handleApplicationDeployed(Application application,
-                                                 Set<ApplicationClusterContext> applicationClusterContexts,
-                                                 Set<MetaDataHolder> metaDataHolders) {
-
-
+    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent clusterActivatedEvent) {
         Topology topology = TopologyManager.getTopology();
         try {
             TopologyManager.acquireWriteLock();
@@ -697,7 +755,7 @@ public class TopologyBuilder {
     }
 
     public static void handleClusterInActivateEvent(
-            AppStatusClusterInactivateEvent clusterInActivateEvent) {
+            ClusterStatusClusterInactivateEvent clusterInActivateEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(clusterInActivateEvent.getServiceName());
         //update the status of the cluster
@@ -734,358 +792,17 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
     }
 
-    public static void handleGroupActivatedEvent(AppStatusGroupActivatedEvent groupActivatedEvent) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(groupActivatedEvent.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    groupActivatedEvent.getAppId()));
-            return;
-        }
 
-        Group group = application.getGroupRecursively(groupActivatedEvent.getGroupId());
-        if (group == null) {
-            log.warn(String.format("Group %s does not exist",
-                    groupActivatedEvent.getGroupId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.GroupActivatedEvent groupActivatedEvent1 =
-                new org.apache.stratos.messaging.event.topology.GroupActivatedEvent(
-                        groupActivatedEvent.getAppId(),
-                        groupActivatedEvent.getGroupId());
-        try {
-            TopologyManager.acquireWriteLock();
-            group.setStatus(GroupStatus.Active);
-            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendGroupActivatedEvent(groupActivatedEvent1);
-    }
-
-    public static void handleApplicationActivatedEvent(AppStatusApplicationActivatedEvent applicationActivatedEvent) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(applicationActivatedEvent.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    applicationActivatedEvent.getAppId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent applicationActivatedEvent1 =
-                new org.apache.stratos.messaging.event.topology.ApplicationActivatedEvent(
-                        applicationActivatedEvent.getAppId());
-        try {
-            TopologyManager.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Active);
-            log.info("Application activated adding status started for Topology");
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendApplicationActivatedEvent(applicationActivatedEvent1);
-    }
-
-    public static void handleApplicationInActivatedEvent(AppStatusApplicationInactivatedEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.ApplicationInactivatedEvent applicationActivatedEvent =
-                new org.apache.stratos.messaging.event.topology.ApplicationInactivatedEvent(
-                        event.getAppId());
-        try {
-            TopologyManager.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Inactive);
-            log.info("Application inactivated adding status started for Topology");
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendApplicationInactivatedEvent(applicationActivatedEvent);
-    }
-
-    public static void handleApplicationCreatedEvent(AppStatusApplicationCreatedEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-        List<Cluster> clusters = new ArrayList<Cluster>();
-        Set<ClusterDataHolder> allClusters  = application.getClusterDataRecursively();
-
-        for(ClusterDataHolder clusterDataHolder : allClusters){
-            String clusterId = clusterDataHolder.getClusterId();
-            String serviceName = clusterDataHolder.getServiceType();
-            clusters.add(TopologyManager.getTopology().getService(serviceName).getCluster(clusterId));
-        }
-        org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent applicationActivatedEvent =
-                new org.apache.stratos.messaging.event.topology.ApplicationCreatedEvent(
-                        application, clusters);
-        try {
-            TopologyManager.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Created);
-            log.info("Application created adding status started for Topology");
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendApplicationCreatedEvent(applicationActivatedEvent);
-    }
-
-    public static void handleApplicationTerminatingEvent(AppStatusApplicationTerminatingEvent event) {
-
-        String applicationId = event.getAppId();
-
-        // update the Application Status as 'Terminating'
-        TopologyManager.acquireWriteLock();
-
-        try {
-
-            Topology topology = TopologyManager.getTopology();
-
-            if (!topology.applicationExists(applicationId)) {
-                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Topology");
-                return;
-            }
-
-            Application application = topology.getApplication(applicationId);
-            // check and update application status to 'Terminating'
-            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
-                log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
-            }
-            // for now anyway update the status forcefully
-            application.setStatus(ApplicationStatus.Terminating);
-            log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
-
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-
-        TopologyEventPublisher.sendApplicationTerminatingEvent(
-                new org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent(applicationId));
-    }
-
-    private static void updateGroupStatusesRecursively (GroupStatus groupStatus, Collection<Group> groups) {
-
-        for (Group group : groups) {
-            if (!group.isStateTransitionValid(groupStatus)) {
-                log.error("Invalid state transfer from " + group.getStatus() + " to " + groupStatus);
-            }
-            // force update for now
-            group.setStatus(groupStatus);
-
-            // go recursively and update
-            if (group.getGroups() != null) {
-                updateGroupStatusesRecursively(groupStatus, group.getGroups());
-            }
-        }
-    }
-
-    public static void handleApplicationTerminatedEvent(AppStatusApplicationTerminatedEvent event) {
-
-     Topology topology = TopologyManager.getTopology();
-
-        try {
-            TopologyManager.acquireWriteLock();
-
-            if (!topology.applicationExists(event.getAppId())) {
-                log.warn("Application with id [ " + event.getAppId() + " ] doesn't exist in Topology");
-                //TopologyEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
-
-            } else {
-                Application application = topology.getApplication(event.getAppId());
-
-                if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
-                    log.error("Invalid status change from " + application.getStatus() + " to " + ApplicationStatus.Terminated);
-                }
-                // forcefully set status for now
-                application.setStatus(ApplicationStatus.Terminated);
-
-                int tenantId = application.getTenantId();
-                String tenantDomain = application.getTenantDomain();
-                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-                // remove clusters
-                for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    Service service = topology.getService(clusterDataHolder.getServiceType());
-                    if (service != null) {
-                        // remove Cluster
-                        service.removeCluster(clusterDataHolder.getClusterId());
-
-                        if (log.isDebugEnabled()) {
-                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
-                        }
-                    } else {
-                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Topology, " +
-                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
-                    }
-
-                    // remove runtime data
-                    FasterLookUpDataHolder dataHolder =  FasterLookUpDataHolder.getInstance();
-                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
-                    if(log.isDebugEnabled()) {
-                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
-                    }
-
-                    try {
-                        RegistryManager.getInstance().persist(dataHolder);
-                    } catch (RegistryException e) {
-                        log.error("Unable to persist data in Registry", e);
-                    }
-                }
-
-
-
-                // remove application
-                topology.removeApplication(event.getAppId());
-                TopologyManager.updateTopology(topology);
-
-                deleteAppResourcesFromMetadataService(event);
-
-                log.info("Removed application [ " + event.getAppId() + " ] from Topology");
-
-                TopologyEventPublisher.sendApplicationTerminatedEvent(new ApplicationTerminatedEvent(event.getAppId(),
-                        clusterData, tenantId, tenantDomain));
-            }
-
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-    }
-
-    private static void deleteAppResourcesFromMetadataService(AppStatusApplicationTerminatedEvent event) {
+    private static void deleteAppResourcesFromMetadataService(ApplicationTerminatedEvent event) {
         try {
             MetaDataServiceClient metadataClient = new DefaultMetaDataServiceClient();
             metadataClient.deleteApplicationProperties(event.getAppId());
         } catch (Exception e) {
-            log.error("Error occurred while deleting the application resources frm metadata service " , e);
+            log.error("Error occurred while deleting the application resources frm metadata service ", e);
         }
     }
 
-    public static void handleGroupInActiveEvent(AppStatusGroupInactivateEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-
-        Group group = application.getGroupRecursively(event.getGroupId());
-        if (group == null) {
-            log.warn(String.format("Group %s does not exist",
-                    event.getGroupId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.GroupInactivateEvent groupInActivateEvent =
-                new org.apache.stratos.messaging.event.topology.GroupInactivateEvent(
-                        event.getAppId(),
-                        event.getGroupId());
-        try {
-            TopologyManager.acquireWriteLock();
-            group.setStatus(GroupStatus.Inactive);
-            log.info("Group in-active adding status started for" + group.getUniqueIdentifier());
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendGroupInActiveEvent(groupInActivateEvent);
-    }
-
-
-    public static void handleGroupTerminatedEvent(AppStatusGroupTerminatedEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-
-        Group group = application.getGroupRecursively(event.getGroupId());
-        if (group == null) {
-            log.warn(String.format("Group %s does not exist",
-                    event.getGroupId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.GroupTerminatedEvent groupTerminatedTopologyEvent =
-                new org.apache.stratos.messaging.event.topology.GroupTerminatedEvent(
-                        event.getAppId(),
-                        event.getGroupId());
-        try {
-            TopologyManager.acquireWriteLock();
-            group.setStatus(GroupStatus.Terminated);
-            log.info("Group activated adding status started for" + group.getUniqueIdentifier());
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendGroupTerminatedEvent(groupTerminatedTopologyEvent);
-    }
-
-    public static void handleGroupTerminatingEvent(AppStatusGroupTerminatingEvent event) {
-        Topology topology = TopologyManager.getTopology();
-        Application application = topology.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-
-        Group group = application.getGroupRecursively(event.getGroupId());
-        if (group == null) {
-            log.warn(String.format("Group %s does not exist",
-                    event.getGroupId()));
-            return;
-        }
-
-        org.apache.stratos.messaging.event.topology.GroupTerminatingEvent groupTerminatingTopologyEvent =
-                new org.apache.stratos.messaging.event.topology.GroupTerminatingEvent(
-                        event.getAppId(),
-                        event.getGroupId());
-        try {
-            TopologyManager.acquireWriteLock();
-            group.setStatus(GroupStatus.Terminating);
-            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
-
-            TopologyManager.updateTopology(topology);
-        } finally {
-            TopologyManager.releaseWriteLock();
-        }
-        //publishing data
-        TopologyEventPublisher.sendGroupTerminatingEvent(groupTerminatingTopologyEvent);
-    }
-
-    public static void handleClusterTerminatedEvent(AppStatusClusterTerminatedEvent event) {
+    public static void handleClusterTerminatedEvent(ClusterStatusClusterTerminatedEvent event) {
 
         TopologyManager.acquireWriteLock();
 
@@ -1112,7 +829,7 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
     }
 
-    public static void handleClusterTerminatingEvent(AppStatusClusterTerminatingEvent event) {
+    public static void handleClusterTerminatingEvent(ClusterStatusClusterTerminatingEvent event) {
 
         TopologyManager.acquireWriteLock();
 

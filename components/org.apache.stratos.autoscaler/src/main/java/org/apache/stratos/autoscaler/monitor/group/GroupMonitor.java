@@ -20,9 +20,10 @@ package org.apache.stratos.autoscaler.monitor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.grouping.topic.StatusEventPublisher;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
@@ -31,10 +32,10 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.topology.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Group;
-import org.apache.stratos.messaging.domain.topology.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 /**
@@ -71,19 +72,28 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             onChildInActiveEvent(id);
-            //To update the status of the Group
-            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
 
+        } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
+            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                this.aliasToInActiveMonitorsMap.remove(id);
+            }
+            if (this.status == GroupStatus.Terminating) {
+                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            } else {
+                onChildTerminatedEvent(id);
+            }
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //onChildTerminatingEvent(id);
-            StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            //mark the child monitor as inActive in the map
+            this.markMonitorAsInactive(id);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            this.aliasToInActiveMonitorsMap.remove(id);
-            if (this.status != GroupStatus.Terminating || this.status != GroupStatus.Terminated) {
-                onChildTerminatedEvent(id);
+            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+                this.aliasToInActiveMonitorsMap.remove(id);
             } else {
+                log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
+            }
+            if (this.status == GroupStatus.Terminating || this.status == GroupStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
             }
@@ -95,7 +105,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
-            StatusEventPublisher.sendGroupTerminatingEvent(appId, id);
+            ApplicationBuilder.handleGroupTerminatingEvent(appId, id);
         }
     }
 
@@ -152,12 +162,13 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");
 
-        } else if (status == GroupStatus.Terminating) {
+        /*} else if (status == GroupStatus.Terminating) {
             log.info("[Group] " + this.id + " is not notifying the parent, " +
                     "since it is in Terminating State");
-
+*/
         } else {
             // notify parent
+            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
         }
         //}
