@@ -172,7 +172,7 @@ public class ApplicationBuilder {
         Applications applications = ApplicationHolder.getApplications();
 
         try {
-            if (applications.getApplication(application.getUniqueIdentifier()) != null) {
+            if (applications.getApplication(application.getUniqueIdentifier()) == null) {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
