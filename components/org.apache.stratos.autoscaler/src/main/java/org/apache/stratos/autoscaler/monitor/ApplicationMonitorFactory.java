@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -147,9 +148,9 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         ApplicationMonitor applicationMonitor;
-        ApplicationManager.acquireReadLockForApplication(appId);
+        ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationManager.getApplications().getApplication(appId);
+            Application application = ApplicationHolder.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasDependent(false);
@@ -159,7 +160,8 @@ public class ApplicationMonitorFactory {
                 throw new TopologyInConsistentException(msg);
             }
         } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+            ApplicationHolder.releaseReadLock();
+
         }
 
         return applicationMonitor;
