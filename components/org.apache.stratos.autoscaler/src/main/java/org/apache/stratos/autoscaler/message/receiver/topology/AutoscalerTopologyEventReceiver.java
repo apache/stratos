@@ -22,6 +22,7 @@ package org.apache.stratos.autoscaler.message.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -39,6 +40,7 @@ import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
@@ -93,6 +95,46 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         }
     }
 
+    private boolean allClustersInitialized(Application application) {
+        boolean allClustersInitialized = false;
+        for(ClusterDataHolder holder : application.getClusterDataMap().values()) {
+            TopologyManager.acquireReadLockForCluster(holder.getServiceType(),
+                    holder.getClusterId());
+
+            try {
+                Topology topology = TopologyManager.getTopology();
+                if(topology != null) {
+                    Service service = topology.getService(holder.getServiceType());
+                    if(service != null) {
+                        if(service.clusterExists(holder.getClusterId())) {
+                            allClustersInitialized = true;
+                        } else {
+                            if(log.isDebugEnabled()) {
+                                log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
+                                        "the Topology");
+                            }
+                            allClustersInitialized = false;
+                            return allClustersInitialized;
+                        }
+                    } else {
+                        if(log.isDebugEnabled()) {
+                            log.debug("Service is null in the CompleteTopologyEvent");
+                        }
+                    }
+                } else {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Topology is null in the CompleteTopologyEvent");
+                    }
+                }
+            } finally {
+                TopologyManager.releaseReadLockForCluster(holder.getServiceType(),
+                        holder.getClusterId());
+            }
+        }
+        return allClustersInitialized;
+    }
+
+
     private void addEventListeners() {
         // Listen to topology events that affect clusters
         topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
@@ -101,18 +143,24 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 if (!topologyInitialized) {
                     log.info("[CompleteTopologyEvent] Received: " + event.getClass());
-
-                    TopologyManager.acquireReadLock();
+                    ApplicationHolder.acquireReadLock();
                     try {
-                        for (Application application : ApplicationManager.getApplications().getApplications().values()) {
-                            startApplicationMonitor(application.getUniqueIdentifier());
+                        Applications applications = ApplicationHolder.getApplications();
+                        if(applications != null) {
+                            for (Application application : applications.getApplications().values()) {
+                                if(allClustersInitialized(application)) {
+                                    startApplicationMonitor(application.getUniqueIdentifier());
+                                } else {
+                                    log.error("Complete Topology is not consistent with the applications " +
+                                            "which got persisted");
+                                }
+                            }
+                            topologyInitialized = true;
                         }
-
-                        topologyInitialized = true;
                     } catch (Exception e) {
                         log.error("Error processing event", e);
                     } finally {
-                        TopologyManager.releaseReadLock();
+                        ApplicationHolder.releaseReadLock();
                     }
                 }
             }

@@ -20,9 +20,16 @@ package org.apache.stratos.autoscaler.applications.topic;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.monitor.ApplicationMonitorFactory;
+import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Collection;
 import java.util.Set;
@@ -143,6 +150,17 @@ public class ApplicationBuilder {
 
         ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
     }*/
+
+    public static synchronized void handleCompleteApplication (Applications applications) {
+        log.info("Handling complete application");
+        ApplicationHolder.acquireReadLock();
+        try {
+            ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
+        } finally {
+            ApplicationHolder.releaseReadLock();
+        }
+    }
+
     public static synchronized void handleApplicationCreated (Application application,
                                                               Set<ApplicationClusterContext> appClusterContexts) {
 
@@ -153,6 +171,7 @@ public class ApplicationBuilder {
         try {
             if (applications.getApplication(application.getUniqueIdentifier()) != null) {
                 ApplicationHolder.persistApplication(application);
+               // startApplicationMonitor(application.getUniqueIdentifier());
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
@@ -510,6 +529,136 @@ public class ApplicationBuilder {
 
         } finally {
             ApplicationHolder.releaseWriteLock();
+        }
+    }
+
+
+    protected static synchronized void startApplicationMonitor(String appId) {
+
+        ApplicationMonitor applicationMonitor = null;
+        int retries = 5;
+        boolean success = false;
+        do {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e1) {
+            }
+            try {
+                long start = System.currentTimeMillis();
+                if (log.isDebugEnabled()) {
+                    log.debug("application monitor is going to be started for [application] " +
+                            appId);
+                }
+                applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
+
+                long end = System.currentTimeMillis();
+                log.info("Time taken to start app monitor: " + (end - start) / 1000);
+                success = true;
+            } catch (DependencyBuilderException e) {
+                String msg = "Application monitor creation failed for Application: ";
+                log.warn(msg, e);
+                retries--;
+            } catch (TopologyInConsistentException e) {
+                String msg = "Application monitor creation failed for Application: ";
+                log.warn(msg, e);
+                retries--;
+            }
+        } while (!success && retries != 0);
+
+        if (applicationMonitor == null) {
+            String msg = "Application monitor creation failed, even after retrying for 5 times, "
+                    + "for Application: " + appId;
+            log.error(msg);
+            throw new RuntimeException(msg);
+        }
+
+        AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Application monitor has been added successfully: " +
+                    "[application] %s", applicationMonitor.getId()));
+        }
+    }
+
+
+        /*Thread th = null;
+        if (!AutoscalerContext.getInstance()
+                .appMonitorExist(applicationId)) {
+            th = new Thread(
+                    new ApplicationMonitorAdder(applicationId));
+        }
+
+        if (th != null) {
+            th.start();
+            //    try {
+            //        th.join();
+            //    } catch (InterruptedException ignore) {
+
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Application monitor thread has been started successfully: " +
+                                "[application] %s ", applicationId));
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Application monitor thread already exists: " +
+                                "[application] %s ", applicationId));
+            }
+        }*/
+
+
+    private class ApplicationMonitorAdder implements Runnable {
+        private String appId;
+
+        public ApplicationMonitorAdder(String appId) {
+            this.appId = appId;
+        }
+
+        public void run() {
+            ApplicationMonitor applicationMonitor = null;
+            int retries = 5;
+            boolean success = false;
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
+                try {
+                    long start = System.currentTimeMillis();
+                    if (log.isDebugEnabled()) {
+                        log.debug("application monitor is going to be started for [application] " +
+                                appId);
+                    }
+                    applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
+
+                    long end = System.currentTimeMillis();
+                    log.info("Time taken to start app monitor: " + (end - start) / 1000);
+                    success = true;
+                } catch (DependencyBuilderException e) {
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
+                    retries--;
+                }
+            } while (!success && retries != 0);
+
+            if (applicationMonitor == null) {
+                String msg = "Application monitor creation failed, even after retrying for 5 times, "
+                        + "for Application: " + appId;
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Application monitor has been added successfully: " +
+                        "[application] %s", applicationMonitor.getId()));
+            }
         }
     }
 }

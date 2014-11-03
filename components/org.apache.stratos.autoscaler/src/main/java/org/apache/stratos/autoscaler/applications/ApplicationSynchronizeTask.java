@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.wso2.carbon.ntask.core.Task;
 
@@ -36,7 +37,8 @@ public class ApplicationSynchronizeTask implements Task {
         }
         // publish to the topic
         if (ApplicationHolder.getApplications() != null) {
-            ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
+            //ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
+            ApplicationBuilder.handleCompleteApplication(ApplicationHolder.getApplications());
         }
     }
 

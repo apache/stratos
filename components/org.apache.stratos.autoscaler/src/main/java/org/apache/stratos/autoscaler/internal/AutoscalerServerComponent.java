@@ -43,14 +43,14 @@ import java.util.List;
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
  * immediate="true"
- * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
- * cardinality="1..1" policy="dynamic" bind="setTaskService"
- * unbind="unsetTaskService"
  * @scr.reference name="registry.service"
  * interface=
  * "org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic" bind="setRegistryService"
  * unbind="unsetRegistryService"
+ * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService"
+ * unbind="unsetTaskService"
  */
 
 public class AutoscalerServerComponent {
