@@ -30,11 +30,8 @@ import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
+import org.apache.stratos.autoscaler.pojo.xsd.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
@@ -304,4 +301,6 @@ public class AutoscalerServiceClient {
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
         stub.updateClusterMonitor(clusterId, properties);
     }
+
+
 }

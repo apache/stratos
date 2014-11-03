@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.NonExistingLBException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
@@ -209,5 +210,14 @@ public interface AutoScalerServiceInterface {
      * @param applicationId Id of the Application to be undeployed
      * @throws ApplicationDefinitionException if an error is encountered
      */
-    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain) throws ApplicationDefinitionException;
+    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain)
+            throws ApplicationDefinitionException;
+
+
+    /**
+     * Get service group by name
+     * @param name
+     * @return
+     */
+    public ServiceGroup getServiceGroup(String name);
 }
