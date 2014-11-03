@@ -167,6 +167,7 @@ public class ApplicationBuilder {
     public static synchronized void handleApplicationCreated(Application application,
                                                              Set<ApplicationClusterContext> appClusterContexts) {
 
+
         ApplicationHolder.acquireWriteLock();
 
         Applications applications = ApplicationHolder.getApplications();
@@ -176,7 +177,6 @@ public class ApplicationBuilder {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
-                // startApplicationMonitor(application.getUniqueIdentifier());
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
