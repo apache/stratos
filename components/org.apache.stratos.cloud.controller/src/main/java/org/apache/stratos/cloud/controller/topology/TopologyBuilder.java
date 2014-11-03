@@ -147,6 +147,11 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterCreatedEvent(cluster);
     }
 
+    public static void handleApplicationClustersRegisterd () {
+
+
+    }
+
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
 

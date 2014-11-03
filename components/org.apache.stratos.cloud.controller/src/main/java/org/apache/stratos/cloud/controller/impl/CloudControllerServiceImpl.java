@@ -1387,6 +1387,26 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return dataHolder.getClusterContext(clusterId);
     }
 
+    @Override
+    public void registerApplicationClusters(ApplicationClusterContextDTO[] appClustersContexts)  throws
+            ApplicationClusterRegistrationException {
+
+        // Create a Cluster Context obj. for each of the Clusters in the Application
+        if (appClustersContexts == null || appClustersContexts.length == 0) {
+            String errorMsg = "No application cluster information found, unable to create clusters" ;
+            log.error(errorMsg);
+            throw new ApplicationClusterRegistrationException(errorMsg);
+        }
+
+        for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
+            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
+                    appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
+                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster()));
+        }
+
+        persist();
+    }
+
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 //
 //        ApplicationParser applicationParser = new DefaultApplicationParser();

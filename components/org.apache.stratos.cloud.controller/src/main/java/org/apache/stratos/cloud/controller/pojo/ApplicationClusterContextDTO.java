@@ -19,7 +19,7 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
-public class ApplicationClusterContext {
+public class ApplicationClusterContextDTO {
 
     // cluster id
     private String clusterId;
@@ -38,8 +38,8 @@ public class ApplicationClusterContext {
     // tenant rance
     private String tenantRange;
 
-    public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
-                                      String textPayload, String deploymentPolicyName, boolean isLbCluster) {
+    public ApplicationClusterContextDTO (String cartridgeType, String clusterId, String hostName,
+                                        String textPayload, String deploymentPolicyName, boolean isLbCluster) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -116,7 +116,7 @@ public class ApplicationClusterContext {
 
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof ApplicationClusterContext)) {
+        if(other == null || !(other instanceof ApplicationClusterContextDTO)) {
             return false;
         }
 
@@ -124,7 +124,7 @@ public class ApplicationClusterContext {
             return true;
         }
 
-        ApplicationClusterContext that = (ApplicationClusterContext)other;
+        ApplicationClusterContextDTO that = (ApplicationClusterContextDTO)other;
 
         return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);

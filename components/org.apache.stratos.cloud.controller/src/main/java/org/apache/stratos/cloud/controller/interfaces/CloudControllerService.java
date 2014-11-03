@@ -167,4 +167,6 @@ public interface CloudControllerService {
      */
     public ClusterContext getClusterContext (String clusterId);
 
+    public void registerApplicationClusters (ApplicationClusterContextDTO [] appClustersContexts) throws
+            ApplicationClusterRegistrationException;
 }
