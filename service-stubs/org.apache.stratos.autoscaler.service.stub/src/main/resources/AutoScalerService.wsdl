@@ -1,128 +1,240 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax27="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax28="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax25="http://kubernetes.common.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax25="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax26="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax23="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax216="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax214="http://kubernetes.common.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax223="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax211="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:documentation>AutoScalerService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
-            <xs:complexType name="InvalidKubernetesMasterException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesMasterException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidKubernetesHostException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesHostException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidPolicyException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidArgumentException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesGroupException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NonExistingLBException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidPartitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidKubernetesGroupException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="Properties">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax29:Property"/>
-                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Property">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.common.stratos.apache.org/xsd">
-            <xs:complexType name="KubernetesHost">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostIpAddress" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Properties">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Property">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="KubernetesMaster">
-                <xs:complexContent>
-                    <xs:extension base="ax25:KubernetesHost">
-                        <xs:sequence>
-                            <xs:element minOccurs="0" name="endpoint" nillable="true" type="xs:string"/>
-                        </xs:sequence>
-                    </xs:extension>
-                </xs:complexContent>
-            </xs:complexType>
-            <xs:complexType name="KubernetesGroup">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax25:KubernetesHost"/>
-                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax25:KubernetesMaster"/>
-                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax25:PortRange"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="PortRange">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lower" type="xs:int"/>
-                    <xs:element minOccurs="0" name="upper" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax215="http://policy.deployment.autoscaler.stratos.apache.org/xsd" xmlns:ax220="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://kubernetes.common.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax219="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax218="http://model.policy.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://kubernetes.common.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"/>
+        <xs:schema xmlns:ax217="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax218="http://partition.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
+            <xs:complexType name="DeploymentPolicy">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax25:Partition"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax211:PartitionGroup"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="ApplicationContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="components" nillable="true" type="ax29:ComponentContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax29:SubscribableInfoContext"/>
+                    <xs:element minOccurs="0" name="teantAdminUsername" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ComponentContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax29:DependencyContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax29:GroupContext"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableContexts" nillable="true" type="ax29:SubscribableContext"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="DependencyContext">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrdersContexts" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="terminationBehaviour" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="GroupContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax29:GroupContext"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subscribableContexts" nillable="true" type="ax29:SubscribableContext"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SubscribableContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="SubscribableInfoContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyAliases" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="ServiceGroup">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax223:Dependencies"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.policy.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="AutoscalePolicy">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax220:LoadThresholds"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LoadThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax220:LoadAverageThresholds"/>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax220:MemoryConsumptionThresholds"/>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax220:RequestsInFlightThresholds"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="LoadAverageThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="MemoryConsumptionThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="RequestsInFlightThresholds">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax212="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:complexType name="PartitionGroup">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax25:Partition"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax27="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:complexType name="Partition">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="descriptionSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="isPublicSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
+                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax27:Properties"/>
+                    <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax215="http://kubernetes.common.stratos.apache.org/xsd" xmlns:ax221="http://model.policy.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax28="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" xmlns:ax213="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax224="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://policy.deployment.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
+            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://kubernetes.common.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://model.policy.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"/>
+            <xs:element name="AutoScalerServiceInvalidPartitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax23:InvalidPartitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax28:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addPartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoScalerServiceApplicationDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax23:ApplicationDefinitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployApplicationDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax29:ApplicationContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unDeployApplicationDefinition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax28:Partition"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getPartitionGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax213:PartitionGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="AutoScalerServiceInvalidKubernetesMasterException">
                 <xs:complexType>
                     <xs:sequence>
@@ -140,7 +252,7 @@
             <xs:element name="updateKubernetesMaster">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax25:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax214:KubernetesMaster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -168,75 +280,11 @@
             <xs:element name="updateKubernetesHost">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax25:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax214:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="updateKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoScalerServiceInvalidPolicyException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax27:DeploymentPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoScalerServiceInvalidArgumentException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax23:InvalidArgumentException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateClusterMonitor">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax217:AutoscalePolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesHostResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
@@ -250,46 +298,38 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeKubernetesGroup">
+            <xs:element name="getKubernetesGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeKubernetesGroupResponse">
+            <xs:element name="getKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:KubernetesGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="AutoScalerServiceInvalidPolicyException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax216:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getValidDeploymentPoliciesforCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getValidDeploymentPoliciesforCartridgeResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:DeploymentPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceLBClusterId">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceLBClusterIdResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -322,101 +362,95 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getPartitionGroups">
+            <xs:element name="getAllAvailablePartitions">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllAvailablePartitionsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getPartitionGroupsResponse">
+            <xs:element name="getAllDeploymentPolicies">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllDeploymentPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:PartitionGroup"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax216:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getPartition">
+            <xs:element name="getAllAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAllAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getPartitionResponse">
+            <xs:element name="getValidDeploymentPoliciesforCartridge">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax28:Partition"/>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getMasterForKubernetesGroup">
+            <xs:element name="getValidDeploymentPoliciesforCartridgeResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax216:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getMasterForKubernetesGroupResponse">
+            <xs:element name="addDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax216:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getKubernetesGroup">
+            <xs:element name="addDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getKubernetesGroupResponse">
+            <xs:element name="addAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:KubernetesGroup"/>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax220:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getHostsForKubernetesGroup">
+            <xs:element name="addAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getHostsForKubernetesGroupResponse">
+            <xs:element name="updateAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax25:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax220:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDeploymentPolicy">
+            <xs:element name="updateAutoScalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:DeploymentPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDefaultLBClusterId">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDefaultLBClusterIdResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -430,7 +464,7 @@
             <xs:element name="getAutoscalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax220:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -442,55 +476,96 @@
             <xs:element name="getAllKubernetesGroupsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax25:KubernetesGroup"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax214:KubernetesGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAllDeploymentPolicies">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllDeploymentPoliciesResponse">
+            <xs:element name="getMasterForKubernetesGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:DeploymentPolicy"/>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAllAvailablePartitions">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllAvailablePartitionsResponse">
+            <xs:element name="getMasterForKubernetesGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:Partition"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:KubernetesMaster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAllAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllAutoScalingPolicyResponse">
+            <xs:element name="getHostsForKubernetesGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax217:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="kubernetesGroupId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="checkServiceLBExistenceAgainstPolicy">
+            <xs:element name="getHostsForKubernetesGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax214:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="checkServiceLBExistenceAgainstPolicyResponse">
+            <xs:element name="AutoScalerServiceInvalidKubernetesGroupException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidKubernetesGroupException" nillable="true" type="ax23:InvalidKubernetesGroupException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesGroup" nillable="true" type="ax214:KubernetesGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesHost">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax214:KubernetesHost"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesHostResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeKubernetesGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeKubernetesGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeKubernetesHost">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeKubernetesHostResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
@@ -526,6 +601,50 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getDefaultLBClusterId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getDefaultLBClusterIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="checkServiceLBExistenceAgainstPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="checkServiceLBExistenceAgainstPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceLBClusterId">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceLBClusterIdResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="checkClusterLBExistenceAgainstPolicy">
                 <xs:complexType>
                     <xs:sequence>
@@ -541,172 +660,221 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="AutoScalerServiceInvalidPartitionException">
+            <xs:element name="AutoScalerServiceInvalidArgumentException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax23:InvalidPartitionException"/>
+                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax23:InvalidArgumentException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addPartition">
+            <xs:element name="updateClusterMonitor">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax28:Partition"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax26:Properties"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addPartitionResponse">
+            <xs:element name="AutoScalerServiceInvalidServiceGroupException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax23:InvalidServiceGroupException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax223:ServiceGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="serviceGroupExist">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="serviceGroupExistResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addKubernetesHost">
+            <xs:element name="AutoScalerServiceAutoScalerException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax25:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax23:AutoScalerException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addKubernetesHostResponse">
+            <xs:element name="undeployServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="AutoScalerServiceInvalidKubernetesGroupException">
+            <xs:element name="getServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesGroupException" nillable="true" type="ax23:InvalidKubernetesGroupException"/>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addKubernetesGroup">
+            <xs:element name="getServiceGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesGroup" nillable="true" type="ax25:KubernetesGroup"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax223:ServiceGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addKubernetesGroupResponse">
+            <xs:element name="getDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addDeploymentPolicy">
+            <xs:element name="getDeploymentPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax27:DeploymentPolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax217:AutoscalePolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax216:DeploymentPolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-        <xs:schema xmlns:ax213="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:complexType name="PartitionGroup">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.common.stratos.apache.org/xsd">
+            <xs:complexType name="KubernetesHost">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax213:Partition"/>
+                    <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostIpAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax214:Properties"/>
                 </xs:sequence>
             </xs:complexType>
-        </xs:schema>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://model.policy.autoscaler.stratos.apache.org/xsd">
-            <xs:complexType name="AutoscalePolicy">
+            <xs:complexType name="Properties">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax214:Property"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="KubernetesMaster">
+                <xs:complexContent>
+                    <xs:extension base="ax214:KubernetesHost">
+                        <xs:sequence>
+                            <xs:element minOccurs="0" name="endpoint" nillable="true" type="xs:string"/>
+                        </xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
+            <xs:complexType name="KubernetesGroup">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax217:LoadThresholds"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="groupId" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax214:KubernetesHost"/>
+                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax214:KubernetesMaster"/>
+                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax214:PortRange"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax214:Properties"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="LoadThresholds">
+            <xs:complexType name="PortRange">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax217:LoadAverageThresholds"/>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax217:MemoryConsumptionThresholds"/>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax217:RequestsInFlightThresholds"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="LoadAverageThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="MemoryConsumptionThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="RequestsInFlightThresholds">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
-                    <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
+                    <xs:element minOccurs="0" name="lower" type="xs:int"/>
+                    <xs:element minOccurs="0" name="upper" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax214="http://partition.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://policy.deployment.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://partition.autoscaler.stratos.apache.org/xsd"/>
-            <xs:complexType name="DeploymentPolicy">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd">
+            <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax28:Partition"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitionGroups" nillable="true" type="ax214:PartitionGroup"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax210="http://pojo.stub.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd">
-            <xs:import namespace="http://pojo.stub.controller.cloud.stratos.apache.org/xsd"/>
-            <xs:complexType name="Partition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="descriptionSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="idSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="isPublicSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="partitionMax" type="xs:int"/>
-                    <xs:element minOccurs="0" name="partitionMaxSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="partitionMin" type="xs:int"/>
-                    <xs:element minOccurs="0" name="partitionMinSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax26:Property"/>
                     <xs:element minOccurs="0" name="propertiesSpecified" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="providerSpecified" type="xs:boolean"/>
                 </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Property">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="nameSpecified" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="valueSpecified" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.autoscaler.stratos.apache.org/xsd">
+            <xs:complexType name="InvalidPartitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ApplicationDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidKubernetesMasterException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingKubernetesMasterException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidKubernetesHostException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingKubernetesHostException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingKubernetesGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidPolicyException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidKubernetesGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="NonExistingLBException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidArgumentException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidServiceGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="AutoScalerException">
+                <xs:complexContent>
+                    <xs:extension base="xs:RuntimeException">
+                        <xs:sequence/>
+                    </xs:extension>
+                </xs:complexContent>
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
@@ -761,6 +929,12 @@
     <wsdl:message name="getDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:getDeploymentPolicyResponse"/>
     </wsdl:message>
+    <wsdl:message name="serviceGroupExistRequest">
+        <wsdl:part name="parameters" element="ns:serviceGroupExist"/>
+    </wsdl:message>
+    <wsdl:message name="serviceGroupExistResponse">
+        <wsdl:part name="parameters" element="ns:serviceGroupExistResponse"/>
+    </wsdl:message>
     <wsdl:message name="getMasterForKubernetesGroupRequest">
         <wsdl:part name="parameters" element="ns:getMasterForKubernetesGroup"/>
     </wsdl:message>
@@ -778,6 +952,18 @@
     </wsdl:message>
     <wsdl:message name="AutoScalerServiceInvalidPolicyException">
         <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidPolicyException"/>
+    </wsdl:message>
+    <wsdl:message name="unDeployApplicationDefinitionRequest">
+        <wsdl:part name="parameters" element="ns:unDeployApplicationDefinition"/>
+    </wsdl:message>
+    <wsdl:message name="AutoScalerServiceApplicationDefinitionException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceApplicationDefinitionException"/>
+    </wsdl:message>
+    <wsdl:message name="getServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:getServiceGroup"/>
+    </wsdl:message>
+    <wsdl:message name="getServiceGroupResponse">
+        <wsdl:part name="parameters" element="ns:getServiceGroupResponse"/>
     </wsdl:message>
     <wsdl:message name="removeKubernetesGroupRequest">
         <wsdl:part name="parameters" element="ns:removeKubernetesGroup"/>
@@ -797,6 +983,12 @@
     <wsdl:message name="getValidDeploymentPoliciesforCartridgeResponse">
         <wsdl:part name="parameters" element="ns:getValidDeploymentPoliciesforCartridgeResponse"/>
     </wsdl:message>
+    <wsdl:message name="undeployServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:undeployServiceGroup"/>
+    </wsdl:message>
+    <wsdl:message name="AutoScalerServiceAutoScalerException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceAutoScalerException"/>
+    </wsdl:message>
     <wsdl:message name="addKubernetesHostRequest">
         <wsdl:part name="parameters" element="ns:addKubernetesHost"/>
     </wsdl:message>
@@ -811,6 +1003,9 @@
     </wsdl:message>
     <wsdl:message name="getAllAvailablePartitionsResponse">
         <wsdl:part name="parameters" element="ns:getAllAvailablePartitionsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="deployApplicationDefinitionRequest">
+        <wsdl:part name="parameters" element="ns:deployApplicationDefinition"/>
     </wsdl:message>
     <wsdl:message name="getAutoscalingPolicyRequest">
         <wsdl:part name="parameters" element="ns:getAutoscalingPolicy"/>
@@ -902,6 +1097,12 @@
     <wsdl:message name="updateDeploymentPolicyResponse">
         <wsdl:part name="parameters" element="ns:updateDeploymentPolicyResponse"/>
     </wsdl:message>
+    <wsdl:message name="deployServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:deployServiceGroup"/>
+    </wsdl:message>
+    <wsdl:message name="AutoScalerServiceInvalidServiceGroupException">
+        <wsdl:part name="parameters" element="ns:AutoScalerServiceInvalidServiceGroupException"/>
+    </wsdl:message>
     <wsdl:message name="updateKubernetesHostRequest">
         <wsdl:part name="parameters" element="ns:updateKubernetesHost"/>
     </wsdl:message>
@@ -958,6 +1159,10 @@
             <wsdl:input message="ns:getDeploymentPolicyRequest" wsaw:Action="urn:getDeploymentPolicy"/>
             <wsdl:output message="ns:getDeploymentPolicyResponse" wsaw:Action="urn:getDeploymentPolicyResponse"/>
         </wsdl:operation>
+        <wsdl:operation name="serviceGroupExist">
+            <wsdl:input message="ns:serviceGroupExistRequest" wsaw:Action="urn:serviceGroupExist"/>
+            <wsdl:output message="ns:serviceGroupExistResponse" wsaw:Action="urn:serviceGroupExistResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="getMasterForKubernetesGroup">
             <wsdl:input message="ns:getMasterForKubernetesGroupRequest" wsaw:Action="urn:getMasterForKubernetesGroup"/>
             <wsdl:output message="ns:getMasterForKubernetesGroupResponse" wsaw:Action="urn:getMasterForKubernetesGroupResponse"/>
@@ -967,6 +1172,14 @@
             <wsdl:input message="ns:addAutoScalingPolicyRequest" wsaw:Action="urn:addAutoScalingPolicy"/>
             <wsdl:output message="ns:addAutoScalingPolicyResponse" wsaw:Action="urn:addAutoScalingPolicyResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:addAutoScalingPolicyAutoScalerServiceInvalidPolicyException"/>
+        </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <wsdl:input message="ns:unDeployApplicationDefinitionRequest" wsaw:Action="urn:unDeployApplicationDefinition"/>
+            <wsdl:fault message="ns:AutoScalerServiceApplicationDefinitionException" name="AutoScalerServiceApplicationDefinitionException" wsaw:Action="urn:unDeployApplicationDefinitionAutoScalerServiceApplicationDefinitionException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <wsdl:input message="ns:getServiceGroupRequest" wsaw:Action="urn:getServiceGroup"/>
+            <wsdl:output message="ns:getServiceGroupResponse" wsaw:Action="urn:getServiceGroupResponse"/>
         </wsdl:operation>
         <wsdl:operation name="removeKubernetesGroup">
             <wsdl:input message="ns:removeKubernetesGroupRequest" wsaw:Action="urn:removeKubernetesGroup"/>
@@ -981,6 +1194,10 @@
             <wsdl:input message="ns:getValidDeploymentPoliciesforCartridgeRequest" wsaw:Action="urn:getValidDeploymentPoliciesforCartridge"/>
             <wsdl:output message="ns:getValidDeploymentPoliciesforCartridgeResponse" wsaw:Action="urn:getValidDeploymentPoliciesforCartridgeResponse"/>
         </wsdl:operation>
+        <wsdl:operation name="undeployServiceGroup">
+            <wsdl:input message="ns:undeployServiceGroupRequest" wsaw:Action="urn:undeployServiceGroup"/>
+            <wsdl:fault message="ns:AutoScalerServiceAutoScalerException" name="AutoScalerServiceAutoScalerException" wsaw:Action="urn:undeployServiceGroupAutoScalerServiceAutoScalerException"/>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesHost">
             <wsdl:input message="ns:addKubernetesHostRequest" wsaw:Action="urn:addKubernetesHost"/>
             <wsdl:output message="ns:addKubernetesHostResponse" wsaw:Action="urn:addKubernetesHostResponse"/>
@@ -990,6 +1207,10 @@
         <wsdl:operation name="getAllAvailablePartitions">
             <wsdl:input message="ns:getAllAvailablePartitionsRequest" wsaw:Action="urn:getAllAvailablePartitions"/>
             <wsdl:output message="ns:getAllAvailablePartitionsResponse" wsaw:Action="urn:getAllAvailablePartitionsResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <wsdl:input message="ns:deployApplicationDefinitionRequest" wsaw:Action="urn:deployApplicationDefinition"/>
+            <wsdl:fault message="ns:AutoScalerServiceApplicationDefinitionException" name="AutoScalerServiceApplicationDefinitionException" wsaw:Action="urn:deployApplicationDefinitionAutoScalerServiceApplicationDefinitionException"/>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"/>
@@ -1052,6 +1273,10 @@
             <wsdl:input message="ns:updateDeploymentPolicyRequest" wsaw:Action="urn:updateDeploymentPolicy"/>
             <wsdl:output message="ns:updateDeploymentPolicyResponse" wsaw:Action="urn:updateDeploymentPolicyResponse"/>
             <wsdl:fault message="ns:AutoScalerServiceInvalidPolicyException" name="AutoScalerServiceInvalidPolicyException" wsaw:Action="urn:updateDeploymentPolicyAutoScalerServiceInvalidPolicyException"/>
+        </wsdl:operation>
+        <wsdl:operation name="deployServiceGroup">
+            <wsdl:input message="ns:deployServiceGroupRequest" wsaw:Action="urn:deployServiceGroup"/>
+            <wsdl:fault message="ns:AutoScalerServiceInvalidServiceGroupException" name="AutoScalerServiceInvalidServiceGroupException" wsaw:Action="urn:deployServiceGroupAutoScalerServiceInvalidServiceGroupException"/>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <wsdl:input message="ns:updateKubernetesHostRequest" wsaw:Action="urn:updateKubernetesHost"/>
@@ -1147,6 +1372,15 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="serviceGroupExist">
+            <soap:operation soapAction="urn:serviceGroupExist" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
             <soap:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
@@ -1170,6 +1404,24 @@
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap:operation soapAction="urn:unDeployApplicationDefinition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <soap:operation soapAction="urn:getServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
             <soap:operation soapAction="urn:getAllDeploymentPolicies" style="document"/>
@@ -1201,6 +1453,15 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="undeployServiceGroup">
+            <soap:operation soapAction="urn:undeployServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceAutoScalerException">
+                <soap:fault use="literal" name="AutoScalerServiceAutoScalerException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesHost">
             <soap:operation soapAction="urn:addKubernetesHost" style="document"/>
             <wsdl:input>
@@ -1224,6 +1485,15 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <soap:operation soapAction="urn:deployApplicationDefinition" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
@@ -1264,6 +1534,18 @@
                 <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="removeKubernetesHost">
+            <soap:operation soapAction="urn:removeKubernetesHost" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getPartition">
             <soap:operation soapAction="urn:getPartition" style="document"/>
             <wsdl:input>
@@ -1283,18 +1565,6 @@
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="removeKubernetesHost">
-            <soap:operation soapAction="urn:removeKubernetesHost" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
-                <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
@@ -1369,14 +1639,14 @@
                 <soap:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getPartitionGroups">
-            <soap:operation soapAction="urn:getPartitionGroups" style="document"/>
+        <wsdl:operation name="deployServiceGroup">
+            <soap:operation soapAction="urn:deployServiceGroup" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceInvalidServiceGroupException">
+                <soap:fault use="literal" name="AutoScalerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <soap:operation soapAction="urn:updateKubernetesHost" style="document"/>
@@ -1393,6 +1663,24 @@
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <soap:operation soapAction="urn:getPartitionGroups" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="checkLBExistenceAgainstPolicy">
+            <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
+                <soap:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getHostsForKubernetesGroup">
             <soap:operation soapAction="urn:getHostsForKubernetesGroup" style="document"/>
             <wsdl:input>
@@ -1403,15 +1691,6 @@
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <soap:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
-                <soap:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
@@ -1489,6 +1768,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="serviceGroupExist">
+            <soap12:operation soapAction="urn:serviceGroupExist" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
             <soap12:operation soapAction="urn:addAutoScalingPolicy" style="document"/>
             <wsdl:input>
@@ -1512,6 +1800,24 @@
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <soap12:operation soapAction="urn:unDeployApplicationDefinition" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap12:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <soap12:operation soapAction="urn:getServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getAllDeploymentPolicies">
             <soap12:operation soapAction="urn:getAllDeploymentPolicies" style="document"/>
@@ -1543,6 +1849,15 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="undeployServiceGroup">
+            <soap12:operation soapAction="urn:undeployServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceAutoScalerException">
+                <soap12:fault use="literal" name="AutoScalerServiceAutoScalerException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesHost">
             <soap12:operation soapAction="urn:addKubernetesHost" style="document"/>
             <wsdl:input>
@@ -1566,6 +1881,15 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <soap12:operation soapAction="urn:deployApplicationDefinition" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceApplicationDefinitionException">
+                <soap12:fault use="literal" name="AutoScalerServiceApplicationDefinitionException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <soap12:operation soapAction="urn:getAutoscalingPolicy" style="document"/>
@@ -1606,6 +1930,18 @@
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="removeKubernetesHost">
+            <soap12:operation soapAction="urn:removeKubernetesHost" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getPartition">
             <soap12:operation soapAction="urn:getPartition" style="document"/>
             <wsdl:input>
@@ -1625,18 +1961,6 @@
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="removeKubernetesHost">
-            <soap12:operation soapAction="urn:removeKubernetesHost" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
-            <wsdl:fault name="AutoScalerServiceNonExistingKubernetesHostException">
-                <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addPartition">
@@ -1711,14 +2035,14 @@
                 <soap12:body use="literal"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getPartitionGroups">
-            <soap12:operation soapAction="urn:getPartitionGroups" style="document"/>
+        <wsdl:operation name="deployServiceGroup">
+            <soap12:operation soapAction="urn:deployServiceGroup" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="AutoScalerServiceInvalidServiceGroupException">
+                <soap12:fault use="literal" name="AutoScalerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <soap12:operation soapAction="urn:updateKubernetesHost" style="document"/>
@@ -1735,6 +2059,24 @@
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getPartitionGroups">
+            <soap12:operation soapAction="urn:getPartitionGroups" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="checkLBExistenceAgainstPolicy">
+            <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
+                <soap12:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getHostsForKubernetesGroup">
             <soap12:operation soapAction="urn:getHostsForKubernetesGroup" style="document"/>
             <wsdl:input>
@@ -1745,15 +2087,6 @@
             </wsdl:output>
             <wsdl:fault name="AutoScalerServiceNonExistingKubernetesGroupException">
                 <soap12:fault use="literal" name="AutoScalerServiceNonExistingKubernetesGroupException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="checkLBExistenceAgainstPolicy">
-            <soap12:operation soapAction="urn:checkLBExistenceAgainstPolicy" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="AutoScalerServiceNonExistingLBException">
-                <soap12:fault use="literal" name="AutoScalerServiceNonExistingLBException"/>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
@@ -1822,6 +2155,15 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="serviceGroupExist">
+            <http:operation location="serviceGroupExist"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addAutoScalingPolicy">
             <http:operation location="addAutoScalingPolicy"/>
             <wsdl:input>
@@ -1833,6 +2175,21 @@
         </wsdl:operation>
         <wsdl:operation name="getMasterForKubernetesGroup">
             <http:operation location="getMasterForKubernetesGroup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="unDeployApplicationDefinition">
+            <http:operation location="unDeployApplicationDefinition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="getServiceGroup">
+            <http:operation location="getServiceGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -1867,6 +2224,12 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="undeployServiceGroup">
+            <http:operation location="undeployServiceGroup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesHost">
             <http:operation location="addKubernetesHost"/>
             <wsdl:input>
@@ -1884,6 +2247,12 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployApplicationDefinition">
+            <http:operation location="deployApplicationDefinition"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getAutoscalingPolicy">
             <http:operation location="getAutoscalingPolicy"/>
@@ -1921,6 +2290,15 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="removeKubernetesHost">
+            <http:operation location="removeKubernetesHost"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getPartition">
             <http:operation location="getPartition"/>
             <wsdl:input>
@@ -1932,15 +2310,6 @@
         </wsdl:operation>
         <wsdl:operation name="getKubernetesGroup">
             <http:operation location="getKubernetesGroup"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="removeKubernetesHost">
-            <http:operation location="removeKubernetesHost"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -2008,14 +2377,11 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getPartitionGroups">
-            <http:operation location="getPartitionGroups"/>
+        <wsdl:operation name="deployServiceGroup">
+            <http:operation location="deployServiceGroup"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <http:operation location="updateKubernetesHost"/>
@@ -2026,8 +2392,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getHostsForKubernetesGroup">
-            <http:operation location="getHostsForKubernetesGroup"/>
+        <wsdl:operation name="getPartitionGroups">
+            <http:operation location="getPartitionGroups"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -2041,25 +2407,34 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
         </wsdl:operation>
+        <wsdl:operation name="getHostsForKubernetesGroup">
+            <http:operation location="getHostsForKubernetesGroup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="AutoScalerService">
         <wsdl:port name="AutoScalerServiceHttpSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
+            <soap:address location="http://10.100.5.84:9763/services/AutoScalerService.AutoScalerServiceHttpSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap11Endpoint" binding="ns:AutoScalerServiceSoap11Binding">
-            <soap:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
+            <soap:address location="https://10.100.5.84:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap11Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
+            <soap12:address location="https://10.100.5.84:9443/services/AutoScalerService.AutoScalerServiceHttpsSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpSoap12Endpoint" binding="ns:AutoScalerServiceSoap12Binding">
-            <soap12:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
+            <soap12:address location="http://10.100.5.84:9763/services/AutoScalerService.AutoScalerServiceHttpSoap12Endpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="http://192.168.122.1:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
+            <http:address location="http://10.100.5.84:9763/services/AutoScalerService.AutoScalerServiceHttpEndpoint/"/>
         </wsdl:port>
         <wsdl:port name="AutoScalerServiceHttpsEndpoint" binding="ns:AutoScalerServiceHttpBinding">
-            <http:address location="https://192.168.122.1:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
+            <http:address location="https://10.100.5.84:9443/services/AutoScalerService.AutoScalerServiceHttpsEndpoint/"/>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
