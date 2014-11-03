@@ -215,9 +215,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
-			ReplicationControllerList podList = gson.fromJson(content, ReplicationControllerList.class);
+			ReplicationControllerList controllerList = gson.fromJson(content, ReplicationControllerList.class);
 			
-			return podList.getItems();
+			return controllerList.getItems();
 		} catch (Exception e) {
 			String msg = "Error while retrieving Replication Controllers.";
 			log.error(msg, e);
@@ -242,6 +242,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			KubernetesResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Replication Controller "+controller+" creation failed.", res);
+			
+			if (res.getStatusCode() == HttpStatus.SC_CONFLICT) {
+                log.warn("Replication Controller already created. "+controller);
+                return;
+            }
             
 			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
 					res.getStatusCode() != HttpStatus.SC_OK) {
@@ -359,7 +364,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
 			return gson.fromJson(content, Service.class);
-		} catch (Exception e) {
+		} catch (KubernetesClientException e) {
+            throw e;
+        } catch (Exception e) {
 			String msg = "Error while retrieving Service info with Service ID: "+serviceId;
 			log.error(msg, e);
 			throw new KubernetesClientException(msg, e);
@@ -407,6 +414,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			KubernetesResponse res = restClient.doPost(uri, content);
 			
 			handleNullResponse("Service "+service+" creation failed.", res);
+			
+			if (res.getStatusCode() == HttpStatus.SC_CONFLICT) {
+                log.warn("Service already created. "+service);
+                return;
+            }
 			
 			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
 					res.getStatusCode() != HttpStatus.SC_OK) {
@@ -505,12 +517,4 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 	
-    public String getBaseURL() {
-        return baseURL;
-    }
-
-    public void setBaseURL(String baseURL) {
-        this.baseURL = baseURL;
-    }
-
 }

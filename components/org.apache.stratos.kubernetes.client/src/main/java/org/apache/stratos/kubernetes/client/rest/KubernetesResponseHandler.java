@@ -20,6 +20,8 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -34,6 +36,7 @@ import java.io.InputStreamReader;
  * Handles a HttpResponse and returns a {@link KubernetesResponse}
  */
 public class KubernetesResponseHandler implements ResponseHandler<KubernetesResponse>{
+    private static final Log log = LogFactory.getLog(KubernetesResponseHandler.class);
 
     @Override
     public KubernetesResponse handleResponse(HttpResponse response) throws ClientProtocolException,
@@ -58,6 +61,10 @@ public class KubernetesResponseHandler implements ResponseHandler<KubernetesResp
         kubResponse.setStatusCode(statusLine.getStatusCode());
         kubResponse.setContent(result);
         kubResponse.setReason(statusLine.getReasonPhrase());
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Extracted Kubernetes Response: "+kubResponse.toString());
+        }
         
         return kubResponse;
     }
