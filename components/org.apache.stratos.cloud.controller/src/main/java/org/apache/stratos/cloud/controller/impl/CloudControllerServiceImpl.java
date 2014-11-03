@@ -40,6 +40,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
@@ -1411,6 +1412,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
             newCluster.setLbCluster(false);
             newCluster.setTenantRange("*");
+            newCluster.setStatus(ClusterStatus.Created);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
             clusters.add(newCluster);
         }
