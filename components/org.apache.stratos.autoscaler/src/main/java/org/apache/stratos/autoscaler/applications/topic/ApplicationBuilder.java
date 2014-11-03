@@ -167,13 +167,12 @@ public class ApplicationBuilder {
     public static synchronized void handleApplicationCreated(Application application,
                                                              Set<ApplicationClusterContext> appClusterContexts) {
 
-
         ApplicationHolder.acquireWriteLock();
 
         Applications applications = ApplicationHolder.getApplications();
 
         try {
-            if (applications.getApplication(application.getUniqueIdentifier()) == null) {
+            if (applications.getApplication(application.getUniqueIdentifier()) != null) {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
