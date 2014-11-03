@@ -35,98 +35,46 @@ public class ApplicationsEventPublisher {
     }
 
     public static void sendGroupCreatedEvent(String appId, String groupId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                Group group = application.getGroupRecursively(groupId);
-                if (group.isStateTransitionValid(GroupStatus.Created)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Group created event for [application]: " + appId +
-                                " [group]: " + groupId);
-                    }
-                    GroupResetEvent groupCreatedEvent =
-                            new GroupResetEvent(appId, groupId);
-
-                    publishEvent(groupCreatedEvent);
-                } else {
-                    log.warn("Created is not in the possible state list of [group] " + groupId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group created event for [application]: " + appId +
+                    " [group]: " + groupId);
         }
+        GroupResetEvent groupCreatedEvent =
+                new GroupResetEvent(appId, groupId);
+
+        publishEvent(groupCreatedEvent);
     }
 
     public static void sendGroupActivatedEvent(String appId, String groupId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                Group group = application.getGroupRecursively(groupId);
-                if (group.isStateTransitionValid(GroupStatus.Active)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Group activated event for [application]: " + appId +
-                                " [group]: " + groupId);
-                    }
-                    GroupActivatedEvent groupActivatedEvent =
-                            new GroupActivatedEvent(appId, groupId);
-
-                    publishEvent(groupActivatedEvent);
-                } else {
-                    log.warn("Active is not in the possible state list of [group] " + groupId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group activated event for [application]: " + appId +
+                    " [group]: " + groupId);
         }
+        GroupActivatedEvent groupActivatedEvent =
+                new GroupActivatedEvent(appId, groupId);
+
+        publishEvent(groupActivatedEvent);
     }
 
     public static void sendGroupInActivateEvent(String appId, String groupId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                Group group = application.getGroupRecursively(groupId);
-                if (group.isStateTransitionValid(GroupStatus.Inactive)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Group in-activate event for [application]: " + appId +
-                                " [group]: " + groupId);
-                    }
-                    AppStatusGroupInactivateEvent appStatusGroupInactivateEvent = new
-                            AppStatusGroupInactivateEvent(appId, groupId);
-
-                    publishEvent(appStatusGroupInactivateEvent);
-                } else {
-                    log.warn("InActive is not in the possible state list of [group] " + groupId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group in-activate event for [application]: " + appId +
+                    " [group]: " + groupId);
         }
+        AppStatusGroupInactivateEvent appStatusGroupInactivateEvent = new
+                AppStatusGroupInactivateEvent(appId, groupId);
+
+        publishEvent(appStatusGroupInactivateEvent);
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                Group group = application.getGroupRecursively(groupId);
-                if (group.isStateTransitionValid(GroupStatus.Terminating)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Group terminating event for [application]: " + appId +
-                                " [group]: " + groupId);
-                    }
-                    GroupTerminatingEvent groupInTerminatingEvent =
-                            new GroupTerminatingEvent(appId, groupId);
-                    publishEvent(groupInTerminatingEvent);
-                } else {
-                    log.warn("Terminating is not in the possible state list of [group] " + groupId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Group terminating event for [application]: " + appId +
+                    " [group]: " + groupId);
         }
+        GroupTerminatingEvent groupInTerminatingEvent =
+                new GroupTerminatingEvent(appId, groupId);
+        publishEvent(groupInTerminatingEvent);
     }
 
     public static void sendGroupTerminatedEvent(String appId, String groupId) {
@@ -135,111 +83,47 @@ public class ApplicationsEventPublisher {
             log.info("Publishing Group terminated event for [application]: " + appId +
                     " [group]: " + groupId);
         }
-
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                Group group = application.getGroupRecursively(groupId);
-                if (group.isStateTransitionValid(GroupStatus.Terminated)) {
-                    GroupTerminatedEvent groupInTerminatedEvent =
-                            new GroupTerminatedEvent(appId, groupId);
-                    publishEvent(groupInTerminatedEvent);
-                } else {
-                    log.warn("Terminated is not in the possible state list of [group] " + groupId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
-        }
-
-
+        GroupTerminatedEvent groupInTerminatedEvent =
+                new GroupTerminatedEvent(appId, groupId);
+        publishEvent(groupInTerminatedEvent);
     }
 
     public static void sendApplicationActivatedEvent(String appId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                if (application.isStateTransitionValid(ApplicationStatus.Active)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Application activated event for [application]: " + appId);
-                    }
-                    ApplicationActivatedEvent applicationActivatedEvent =
-                            new ApplicationActivatedEvent(appId);
-
-                    publishEvent(applicationActivatedEvent);
-                } else {
-                    log.warn("Active is not in the possible state list of [application] " + appId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application activated event for [application]: " + appId);
         }
+        ApplicationActivatedEvent applicationActivatedEvent =
+                new ApplicationActivatedEvent(appId);
+
+        publishEvent(applicationActivatedEvent);
     }
 
     public static void sendApplicationInactivatedEvent(String appId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application In-activated event for [application]: " + appId);
         }
+        ApplicationInactivatedEvent applicationInActivatedEvent =
+                new ApplicationInactivatedEvent(appId);
+        publishEvent(applicationInActivatedEvent);
 
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                if (application.isStateTransitionValid(ApplicationStatus.Inactive)) {
-                    ApplicationInactivatedEvent applicationInActivatedEvent =
-                            new ApplicationInactivatedEvent(appId);
-                    publishEvent(applicationInActivatedEvent);
-                } else {
-                    log.warn("Inactive is not in the possible state list of [application] " + appId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
-        }
     }
 
     public static void sendApplicationTerminatingEvent(String appId) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                if (application.isStateTransitionValid(ApplicationStatus.Terminating)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Application terminated event for [application]: " + appId);
-                    }
-                    ApplicationTerminatingEvent applicationTerminatingEvent =
-                            new ApplicationTerminatingEvent(appId);
-                    publishEvent(applicationTerminatingEvent);
-                } else {
-                    log.warn("Terminating is not in the possible state list of [application] " + appId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application terminated event for [application]: " + appId);
         }
+        ApplicationTerminatingEvent applicationTerminatingEvent =
+                new ApplicationTerminatingEvent(appId);
+        publishEvent(applicationTerminatingEvent);
     }
 
     public static void sendApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
-        try {
-            ApplicationManager.acquireReadLockForApplication(appId);
-            Application application = ApplicationManager.getApplications().getApplication(appId);
-            if (application != null) {
-                if (application.isStateTransitionValid(ApplicationStatus.Terminated)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Application terminated event for [application]: " + appId);
-                    }
-                    ApplicationTerminatedEvent applicationTerminatedEvent =
-                            new ApplicationTerminatedEvent(appId, clusterData);
-                    publishEvent(applicationTerminatedEvent);
-                } else {
-                    log.warn("Terminated is not in the possible state list of [application] " + appId);
-                }
-            }
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application terminated event for [application]: " + appId);
         }
+        ApplicationTerminatedEvent applicationTerminatedEvent =
+                new ApplicationTerminatedEvent(appId, clusterData);
+        publishEvent(applicationTerminatedEvent);
     }
 
     public static void publishEvent(Event event) {

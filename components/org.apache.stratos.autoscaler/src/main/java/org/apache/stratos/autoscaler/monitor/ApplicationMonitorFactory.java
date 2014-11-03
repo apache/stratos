@@ -104,10 +104,11 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
-        ApplicationManager.acquireReadLockForApplication(appId);
+        ApplicationHolder.acquireReadLock();
 
         try {
-            Group group = ApplicationManager.getApplications().getApplication(appId).getGroupRecursively(context.getId());
+            Group group = ApplicationHolder.getApplications().
+                    getApplication(appId).getGroupRecursively(context.getId());
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
             if(parentMonitor != null) {
@@ -128,7 +129,7 @@ public class ApplicationMonitorFactory {
             }
 
         } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+            ApplicationHolder.releaseReadLock();
 
         }
         return groupMonitor;
