@@ -113,6 +113,15 @@ public class TopologyEventPublisher {
         publishEvent(new ApplicationUndeployedEvent(applicationId, clusterData));
     }
 
+    public static void sendApplicationClustersCreated(String appId, List<Cluster> clusters) {
+
+        if (log.isInfoEnabled()) {
+            log.info("Publishing Application Clusters registered event for Application: " + appId);
+        }
+
+        publishEvent(new ApplicationClustersCreatedEvent(clusters, appId));
+    }
+
 //    public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
 //                                                   int tenantId, String tenantDomain) {
 //

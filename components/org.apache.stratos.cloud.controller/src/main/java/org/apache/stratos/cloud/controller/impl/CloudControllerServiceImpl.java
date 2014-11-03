@@ -39,6 +39,7 @@ import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
@@ -1388,7 +1389,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void registerApplicationClusters(ApplicationClusterContextDTO[] appClustersContexts)  throws
+    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts)  throws
             ApplicationClusterRegistrationException {
 
         // Create a Cluster Context obj. for each of the Clusters in the Application
@@ -1398,11 +1399,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new ApplicationClusterRegistrationException(errorMsg);
         }
 
+        List<Cluster> clusters = new ArrayList<Cluster>();
+
         for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
+            // add the context data
             dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
                     appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
                     appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster()));
+            // create Cluster objects
+            Cluster newCluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                    appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
+            newCluster.setLbCluster(false);
+            newCluster.setTenantRange("*");
+            newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
+            clusters.add(newCluster);
         }
+
+        TopologyBuilder.handleApplicationClustersCreated(appId, clusters);
 
         persist();
     }

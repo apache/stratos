@@ -167,6 +167,13 @@ public interface CloudControllerService {
      */
     public ClusterContext getClusterContext (String clusterId);
 
-    public void registerApplicationClusters (ApplicationClusterContextDTO [] appClustersContexts) throws
+    /**
+     * Creates the clusters relevant to an application in the topology model
+     *
+     * @param appId application id
+     * @param appClustersContexts  cluster information holder object
+     * @throws ApplicationClusterRegistrationException if the cluster information are null/empty
+     */
+    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts) throws
             ApplicationClusterRegistrationException;
 }

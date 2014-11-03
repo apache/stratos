@@ -77,7 +77,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         for(Cluster cluster : clusters) {
             String serviceName = cluster.getServiceName();
             String clusterId = cluster.getClusterId();
-            TopologyUpdater.acquireWriteLockForCluster(clusterId, serviceName);
+            TopologyUpdater.acquireWriteLockForService(serviceName);
             try {
 
                 // Apply service filter
@@ -128,7 +128,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                     }
                 }
             } finally {
-                TopologyUpdater.releaseWriteLockForCluster(clusterId, serviceName);
+                TopologyUpdater.releaseWriteLockForService(serviceName);
             }
         }
 
