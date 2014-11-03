@@ -177,6 +177,9 @@ public class ApplicationBuilder {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
+                // startApplicationMonitor(application.getUniqueIdentifier());
+                CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+                        appClusterContexts);
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
