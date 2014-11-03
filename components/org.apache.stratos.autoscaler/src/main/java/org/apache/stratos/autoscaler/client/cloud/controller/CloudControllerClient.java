@@ -24,6 +24,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -32,12 +33,13 @@ import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -200,6 +202,41 @@ public class CloudControllerClient {
             log.error(message, e);
             throw new TerminationException(message, e);
         }
+    }
+
+    public synchronized void createApplicationClusters( String appId,
+                                                        Set<ApplicationClusterContext> appClusterContexts) {
+        List<ApplicationClusterContextDTO> contextDTOs =
+                                        new ArrayList<ApplicationClusterContextDTO>();
+        for(ApplicationClusterContext context : appClusterContexts) {
+           ApplicationClusterContextDTO dto = new ApplicationClusterContextDTO();
+            dto.setClusterId(context.getClusterId());
+            dto.setAutoscalePolicyName(context.getAutoscalePolicyName());
+            dto.setDeploymentPolicyName(context.getDeploymentPolicyName());
+            dto.setCartridgeType(context.getCartridgeType());
+            dto.setHostName(context.getHostName());
+            dto.setTenantRange(context.getTenantRange());
+            dto.setTextPayload(context.getTextPayload());
+            dto.setLbCluster(context.isLbCluster());
+            contextDTOs.add(dto);
+        }
+
+        ApplicationClusterContextDTO[] applicationClusterContextDTOs =
+                new ApplicationClusterContextDTO[contextDTOs.size()];
+        contextDTOs.toArray(applicationClusterContextDTOs);
+        try {
+            stub.createApplicationClusters(appId, applicationClusterContextDTOs);
+        } catch (RemoteException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            //throw new TerminationException(msg, e);
+        } catch (CloudControllerServiceApplicationClusterRegistrationExceptionException e) {
+            //e.printStackTrace();
+            String msg = e.getMessage();
+            log.error(msg, e);
+        }
+
+
     }
 
     public synchronized void terminate(String memberId) throws TerminationException {
