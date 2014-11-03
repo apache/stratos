@@ -290,6 +290,7 @@ public class RestClient implements GenericRestClient {
     private int executeDelete(String serviceEndpoint, String identifier) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
+            System.out.println(getBaseURL() + serviceEndpoint.replace("{id}", identifier));
             HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint.replace("{id}", identifier));
 
             int responseCode = response.getStatusLine().getStatusCode();

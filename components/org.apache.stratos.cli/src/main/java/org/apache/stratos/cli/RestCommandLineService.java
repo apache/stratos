@@ -86,9 +86,13 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEPLOY_SERVICE = "/stratos/admin/service/definition";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/deploy/group";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/deploy/host";
+    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = "/stratos/admin/group/definition";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = "/stratos/admin/application/definition";
 
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/host/{id}";
+    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = "/stratos/admin/group/definition/{id}";
+    private static final String ENDPOINT_UNDEPLOY_APPLICATION = "/stratos/admin/application/definition/{id}";
 
     private static final String ENDPOINT_LIST_PARTITIONS = "/stratos/admin/partition";
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = "/stratos/admin/policy/autoscale";
@@ -1806,5 +1810,25 @@ public class RestCommandLineService {
     public void updateSubscritptionProperties(String alias, String subscriptionJson) {
         String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{alias}", alias);
         restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
+    }
+
+    // This method helps to deploy service groups
+    public void deployServiceGroup (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
+    }
+
+    // This method helps to undeploy service groups
+    public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
+    }
+
+    // This method helps to deploy applications
+    public void deployApplication (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
+    }
+
+    // This method helps to undeploy applications
+    public void undeployApplication(String id) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "application", id);
     }
 }

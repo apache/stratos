@@ -28,34 +28,33 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
 /**
- * Deploy kubernetes host command.
+ * Deploy application command.
  */
-public class DeployKubernetesHostCommand implements Command<StratosCommandContext> {
+public class DeployApplicationCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeployKubernetesHostCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(DeployApplicationCommand.class);
 
     private Options options;
 
-    public DeployKubernetesHostCommand() {
+    public DeployApplicationCommand() {
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Kubernetes host resource path");
+                "Application resource path");
         option.setArgName("resource path");
         options.addOption(option);
     }
 
     @Override
     public String getName() {
-        return "deploy-kubernetes-host";
+        return "deploy-application";
     }
 
     @Override
     public String getDescription() {
-        return "Deploy kubernetes host";
+        return "Deploy application";
     }
 
     @Override
@@ -89,7 +88,7 @@ public class DeployKubernetesHostCommand implements Command<StratosCommandContex
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployKubernetesHost(resourceFileContent);
+                RestCommandLineService.getInstance().deployApplication(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
