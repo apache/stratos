@@ -149,6 +149,33 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterCreatedEvent(cluster);
     }
 
+    public static void handleApplicationClustersCreated(String appId, List<Cluster> appClusters) {
+
+        TopologyManager.acquireWriteLock();
+
+        try {
+            Topology topology = TopologyManager.getTopology();
+
+            for (Cluster cluster : appClusters) {
+                Service service = topology.getService(cluster.getServiceName());
+                if (service == null) {
+                    log.error("Service " + cluster.getServiceName()
+                            + " not found in Topology, unable to create Application cluster");
+                } else {
+                    service.addCluster(cluster);
+                    log.info("Application Cluster " + cluster.getClusterId() + " created in CC topology");
+                }
+            }
+
+            TopologyManager.updateTopology(topology);
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
+    }
+
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
 

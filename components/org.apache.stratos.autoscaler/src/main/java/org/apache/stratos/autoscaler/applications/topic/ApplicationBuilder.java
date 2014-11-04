@@ -23,13 +23,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Collection;
 import java.util.Set;
@@ -151,8 +151,11 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
     }*/
 
-    public static synchronized void handleCompleteApplication (Applications applications) {
-        log.info("Handling complete application");
+    public static synchronized void handleCompleteApplication(Applications applications) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling complete application");
+        }
+
         ApplicationHolder.acquireReadLock();
         try {
             ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
@@ -161,17 +164,19 @@ public class ApplicationBuilder {
         }
     }
 
-    public static synchronized void handleApplicationCreated (Application application,
-                                                              Set<ApplicationClusterContext> appClusterContexts) {
-
-        Applications applications = ApplicationHolder.getApplications();
+    public static synchronized void handleApplicationCreated(Application application,
+                                                             Set<ApplicationClusterContext> appClusterContexts) {
 
         ApplicationHolder.acquireWriteLock();
 
+        Applications applications = ApplicationHolder.getApplications();
+
         try {
-            if (applications.getApplication(application.getUniqueIdentifier()) != null) {
+            if (applications.getApplication(application.getUniqueIdentifier()) == null) {
+                CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+                        appClusterContexts);
                 ApplicationHolder.persistApplication(application);
-               // startApplicationMonitor(application.getUniqueIdentifier());
+                // startApplicationMonitor(application.getUniqueIdentifier());
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
@@ -183,7 +188,7 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
-    public static void handleApplicationUndeployed (String applicationId) {
+    public static void handleApplicationUndeployed(String applicationId) {
 
         Applications applications = ApplicationHolder.getApplications();
 
@@ -225,15 +230,21 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            group.setStatus(GroupStatus.Terminated);
-            log.info("Group terminated adding status started for " + group.getUniqueIdentifier());
-
+            GroupStatus status = GroupStatus.Terminated;
+            if (group.isStateTransitionValid(status)) {
+                log.info("Group Terminated adding status started for " + group.getUniqueIdentifier());
+                group.setStatus(status);
+                //updating the groupMonitor
+                updateGroupMonitor(appId, groupId, status);
+                //publishing data
+                ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId);
+            } else {
+                log.warn("Terminated is not in the possible state list of [group] " + groupId);
+            }
             ApplicationHolder.persistApplication(application);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId);
     }
 
     public static void handleGroupActivatedEvent(String appId, String groupId) {
@@ -255,16 +266,21 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            group.setStatus(GroupStatus.Active);
-            log.info("Group activated adding status started for " + group.getUniqueIdentifier());
-
+            GroupStatus status = GroupStatus.Active;
+            if (group.isStateTransitionValid(status)) {
+                log.info("Group Active adding status started for " + group.getUniqueIdentifier());
+                group.setStatus(status);
+                //updating the groupMonitor
+                updateGroupMonitor(appId, groupId, status);
+                //publishing data
+                ApplicationsEventPublisher.sendGroupActivatedEvent(appId, groupId);
+            } else {
+                log.warn("Active is not in the possible state list of [group] " + groupId);
+            }
             ApplicationHolder.persistApplication(application);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendGroupActivatedEvent(application.getUniqueIdentifier(),
-                group.getUniqueIdentifier());
     }
 
     public static void handleGroupCreatedEvent(String appId, String groupId) {
@@ -286,15 +302,22 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            group.setStatus(GroupStatus.Created);
-            log.info("Group created adding status started for " + group.getUniqueIdentifier());
-
+            GroupStatus status = GroupStatus.Created;
+            if (group.isStateTransitionValid(status)) {
+                log.info("Group created adding status started for " + group.getUniqueIdentifier());
+                group.setStatus(status);
+                //updating the groupMonitor
+                updateGroupMonitor(appId, groupId, status);
+                //publishing data
+                ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+            } else {
+                log.warn("Created is not in the possible state list of [group] " + groupId);
+            }
             ApplicationHolder.persistApplication(application);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+
     }
 
     public static void handleGroupInActivateEvent(String appId, String groupId) {
@@ -316,15 +339,21 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            group.setStatus(GroupStatus.Inactive);
-            log.info("Group in-active adding status started for " + group.getUniqueIdentifier());
-
+            GroupStatus status = GroupStatus.Inactive;
+            if (group.isStateTransitionValid(status)) {
+                log.info("Group Inactive adding status started for " + group.getUniqueIdentifier());
+                group.setStatus(status);
+                //updating the groupMonitor
+                updateGroupMonitor(appId, groupId, status);
+                //publishing data
+                ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId);
+            } else {
+                log.warn("Inactive is not in the possible state list of [group] " + groupId);
+            }
             ApplicationHolder.persistApplication(application);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId);
     }
 
     public static void handleGroupTerminatingEvent(String appId, String groupId) {
@@ -346,15 +375,21 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            group.setStatus(GroupStatus.Terminating);
-            log.info("Group terminating adding status started for " + group.getUniqueIdentifier());
-
+            GroupStatus status = GroupStatus.Terminating;
+            if (group.isStateTransitionValid(status)) {
+                log.info("Group Terminating adding status started for " + group.getUniqueIdentifier());
+                group.setStatus(status);
+                //updating the groupMonitor
+                updateGroupMonitor(appId, groupId, status);
+                //publishing data
+                ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId);
+            } else {
+                log.warn("Terminating is not in the possible state list of [group] " + groupId);
+            }
             ApplicationHolder.persistApplication(application);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId);
     }
 
     public static void handleApplicationActivatedEvent(String appId) {
@@ -369,15 +404,19 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Active);
-            log.info("Application activated adding status started for Applications");
-
-            ApplicationHolder.persistApplication(application);
+            ApplicationStatus status = ApplicationStatus.Active;
+            if (application.isStateTransitionValid(status)) {
+                application.setStatus(status);
+                updateApplicationMonitor(appId, status);
+                log.info("Application activated adding status started for Applications");
+                ApplicationHolder.persistApplication(application);
+                //publishing data
+                ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+            }
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        //publishing data
-        ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+
     }
 
     /*public static void handleApplicationCreatedEvent(ApplicationCreatedEvent event) {
@@ -431,18 +470,19 @@ public class ApplicationBuilder {
 
             Application application = applications.getApplication(applicationId);
             // check and update application status to 'Terminating'
-            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
+            ApplicationStatus status = ApplicationStatus.Terminating;
+            if (!application.isStateTransitionValid(status)) {
                 log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
             }
             // for now anyway update the status forcefully
-            application.setStatus(ApplicationStatus.Terminating);
+            application.setStatus(status);
             log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
-
+            updateApplicationMonitor(appId, status);
+            ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
 
-        ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
     }
 
     private static void updateGroupStatusesRecursively(GroupStatus groupStatus, Collection<Group> groups) {
@@ -480,6 +520,7 @@ public class ApplicationBuilder {
                 }
                 // forcefully set status for now
                 application.setStatus(ApplicationStatus.Terminated);
+                updateApplicationMonitor(appId, ApplicationStatus.Terminated);
 
                 int tenantId = application.getTenantId();
                 String tenantDomain = application.getTenantDomain();
@@ -660,5 +701,31 @@ public class ApplicationBuilder {
                         "[application] %s", applicationMonitor.getId()));
             }
         }
+    }
+
+
+    private static void updateApplicationMonitor(String appId, ApplicationStatus status) {
+        //Updating the Application Monitor
+        ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+        if (applicationMonitor != null) {
+            applicationMonitor.setStatus(status);
+        } else {
+            //TODO
+        }
+
+    }
+
+    private static void updateGroupMonitor(String appId, String groupId, GroupStatus status) {
+        //Updating the Application Monitor
+        ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
+        if (applicationMonitor != null) {
+            GroupMonitor monitor = (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
+            if (monitor != null) {
+                monitor.setStatus(status);
+            } else {
+                //TODO
+            }
+        }
+
     }
 }

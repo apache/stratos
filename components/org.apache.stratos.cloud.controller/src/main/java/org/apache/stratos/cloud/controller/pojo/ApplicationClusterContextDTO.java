@@ -19,48 +19,31 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
-import org.apache.stratos.common.Properties;
+import java.util.Properties;
 
-import java.io.Serializable;
-
-public class ApplicationClusterContext implements Serializable {
-
-    private static final long serialVersionUID = 9040883765827407542L;
+public class ApplicationClusterContextDTO {
 
     // cluster id
     private String clusterId;
     // cartridge type
-    private final String cartridgeType;
+    private String cartridgeType;
     // payload as a String
-    private final String textPayload;
+    private String textPayload;
     // host name
     private String hostName;
     // flag to indicate LB cluster
-    private final boolean isLbCluster;
-    // flag to indicate Kubernetes cluster
-    private final boolean isKubernetesCluster;
+    private boolean isLbCluster;
     // autoscaling policy
     private String autoscalePolicyName;
     // deployment policy
-    private final String deploymentPolicyName;
+    private String deploymentPolicyName;
     // tenant rance
-    private final String tenantRange;
-    // properties
+    private String tenantRange;
+    // propertis
     private Properties properties;
 
-    public ApplicationClusterContext(String cartridgeType, String clusterId, String hostName,
-                                     String textPayload, String deploymentPolicyName, boolean isLbCluster,
-                                     boolean isKubernetesCluster, Properties properties) {
 
-        this.cartridgeType = cartridgeType;
-        this.clusterId = clusterId;
-        this.hostName = hostName;
-        this.textPayload = textPayload;
-        this.deploymentPolicyName = deploymentPolicyName;
-        this.isLbCluster = isLbCluster;
-        this.isKubernetesCluster = isKubernetesCluster;
-        this.tenantRange = "*";
-        this.properties = properties;
+    public ApplicationClusterContextDTO () {
     }
 
     public String getClusterId() {
@@ -75,8 +58,16 @@ public class ApplicationClusterContext implements Serializable {
         return cartridgeType;
     }
 
+    public void setCartridgeType(String cartridgeType) {
+        this.cartridgeType = cartridgeType;
+    }
+
     public String getTextPayload() {
         return textPayload;
+    }
+
+    public void setTextPayload(String textPayload) {
+        this.textPayload = textPayload;
     }
 
     public String getHostName() {
@@ -91,6 +82,10 @@ public class ApplicationClusterContext implements Serializable {
         return isLbCluster;
     }
 
+    public void setLbCluster(boolean lbCluster) {
+        isLbCluster = lbCluster;
+    }
+
     public String getAutoscalePolicyName() {
         return autoscalePolicyName;
     }
@@ -103,13 +98,21 @@ public class ApplicationClusterContext implements Serializable {
         return deploymentPolicyName;
     }
 
+    public void setDeploymentPolicyName(String deploymentPolicyName) {
+        this.deploymentPolicyName = deploymentPolicyName;
+    }
+
     public String getTenantRange() {
         return tenantRange;
     }
 
+    public void setTenantRange(String tenantRange) {
+        this.tenantRange = tenantRange;
+    }
+
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof ApplicationClusterContext)) {
+        if(other == null || !(other instanceof ApplicationClusterContextDTO)) {
             return false;
         }
 
@@ -117,7 +120,7 @@ public class ApplicationClusterContext implements Serializable {
             return true;
         }
 
-        ApplicationClusterContext that = (ApplicationClusterContext)other;
+        ApplicationClusterContextDTO that = (ApplicationClusterContextDTO)other;
 
         return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);
@@ -125,10 +128,6 @@ public class ApplicationClusterContext implements Serializable {
 
     public int hashCode () {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
-    }
-
-    public boolean isKubernetesCluster() {
-        return isKubernetesCluster;
     }
 
     public Properties getProperties() {

@@ -1,4 +1,4 @@
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax228="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax230="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax231="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax236="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax234="http://util.java/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.controller.cloud.stratos.apache.org" xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:ax230="http://pojo.controller.cloud.stratos.apache.org/xsd" xmlns:ax231="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax236="http://partition.deployment.controller.cloud.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax234="http://util.java/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://util.java/xsd">
@@ -66,6 +66,11 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="MemberTerminationFailedException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ApplicationClusterRegistrationException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -321,7 +326,7 @@
             <xs:element name="startContainers">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="containerClusterContext" nillable="true" type="ax233:ContainerClusterContext"></xs:element>
+                        <xs:element minOccurs="0" name="containerClusterContext" nillable="true" ></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -408,6 +413,21 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" ></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createApplicationClusters">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" ></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -605,10 +625,24 @@
                     <xs:element minOccurs="0" name="publicIpAddress" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="ContainerClusterContext">
+            <xs:complexType name="ApplicationClusterContextDTO">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="autoscalePolicyName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax226="http://pojo.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://partition.deployment.controller.cloud.stratos.apache.org/xsd">
+            <xs:import namespace="http://pojo.controller.cloud.stratos.apache.org/xsd"></xs:import>
+            <xs:complexType name="Partition">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax232:Properties"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -630,6 +664,12 @@
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceMemberTerminationFailedException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceMemberTerminationFailedException"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="createApplicationClustersRequest">
+        <wsdl:part name="parameters" element="ns:createApplicationClusters"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceApplicationClusterRegistrationException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceApplicationClusterRegistrationException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="validateDeploymentPolicyRequest">
         <wsdl:part name="parameters" element="ns:validateDeploymentPolicy"></wsdl:part>
@@ -770,6 +810,10 @@
             <wsdl:input message="ns:terminateContainerRequest" wsaw:Action="urn:terminateContainer"></wsdl:input>
             <wsdl:output message="ns:terminateContainerResponse" wsaw:Action="urn:terminateContainerResponse"></wsdl:output>
             <wsdl:fault message="ns:CloudControllerServiceMemberTerminationFailedException" name="CloudControllerServiceMemberTerminationFailedException" wsaw:Action="urn:terminateContainerCloudControllerServiceMemberTerminationFailedException"></wsdl:fault>
+        </wsdl:operation>>
+        <wsdl:operation name="createApplicationClusters">
+            <wsdl:input message="ns:createApplicationClustersRequest" wsaw:Action="urn:createApplicationClusters"></wsdl:input>
+            <wsdl:fault message="ns:CloudControllerServiceApplicationClusterRegistrationException" name="CloudControllerServiceApplicationClusterRegistrationException" wsaw:Action="urn:createApplicationClustersCloudControllerServiceApplicationClusterRegistrationException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="validateDeploymentPolicy">
             <wsdl:input message="ns:validateDeploymentPolicyRequest" wsaw:Action="urn:validateDeploymentPolicy"></wsdl:input>
@@ -876,6 +920,15 @@
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
+        <wsdl:operation name="createApplicationClusters">
+            <soap:operation soapAction="urn:createApplicationClusters" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceApplicationClusterRegistrationException">
+                <soap:fault use="literal" name="CloudControllerServiceApplicationClusterRegistrationException"></soap:fault>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="validatePartition">
             <soap:operation soapAction="urn:validatePartition" style="document"></soap:operation>
             <wsdl:input>
@@ -1146,6 +1199,15 @@
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
+        <wsdl:operation name="createApplicationClusters">
+            <soap12:operation soapAction="urn:createApplicationClusters" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceApplicationClusterRegistrationException">
+                <soap12:fault use="literal" name="CloudControllerServiceApplicationClusterRegistrationException"></soap12:fault>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="validatePartition">
             <soap12:operation soapAction="urn:validatePartition" style="document"></soap12:operation>
             <wsdl:input>
@@ -1416,6 +1478,12 @@
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
         <http:binding verb="POST"></http:binding>
+        <wsdl:operation name="createApplicationClusters">
+            <http:operation location="createApplicationClusters"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="validatePartition">
             <http:operation location="validatePartition"></http:operation>
             <wsdl:input>

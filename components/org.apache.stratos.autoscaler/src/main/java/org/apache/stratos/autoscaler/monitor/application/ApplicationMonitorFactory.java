@@ -18,10 +18,9 @@
  */
 package org.apache.stratos.autoscaler.monitor.application;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupContext;
@@ -35,15 +34,16 @@ import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.util.Map;
 
 /**
  * Factory class to get the Monitors.
@@ -95,16 +95,17 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
-        ApplicationManager.acquireReadLockForApplication(appId);
+        ApplicationHolder.acquireReadLock();
 
         try {
-            Group group = ApplicationManager.getApplications().getApplication(appId).getGroupRecursively(context.getId());
+            Group group = ApplicationHolder.getApplications().
+                    getApplication(appId).getGroupRecursively(context.getId());
             groupMonitor = new GroupMonitor(group, appId);
             groupMonitor.setAppId(appId);
-            if(parentMonitor != null) {
+            if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
-                if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
+                if (parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
                     groupMonitor.setHasDependent(true);
                 } else {
                     groupMonitor.setHasDependent(false);
@@ -119,7 +120,7 @@ public class ApplicationMonitorFactory {
             }
 
         } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+            ApplicationHolder.releaseReadLock();
 
         }
         return groupMonitor;
@@ -139,9 +140,9 @@ public class ApplicationMonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         ApplicationMonitor applicationMonitor;
-        ApplicationManager.acquireReadLockForApplication(appId);
+        ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationManager.getApplications().getApplication(appId);
+            Application application = ApplicationHolder.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasDependent(false);
@@ -151,7 +152,8 @@ public class ApplicationMonitorFactory {
                 throw new TopologyInConsistentException(msg);
             }
         } finally {
-            ApplicationManager.releaseReadLockForApplication(appId);
+            ApplicationHolder.releaseReadLock();
+
         }
 
         return applicationMonitor;
@@ -168,7 +170,7 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
     public static VMClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                   ClusterContext context, String appId)
+                                                     ClusterContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {

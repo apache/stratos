@@ -19,8 +19,6 @@
 
 package org.apache.stratos.autoscaler.applications;
 
-import org.apache.stratos.autoscaler.applications.ClusterInformation;
-
 public class STClusterInformation implements ClusterInformation {
 
     @Override
@@ -31,7 +29,7 @@ public class STClusterInformation implements ClusterInformation {
             throw new IllegalArgumentException("Invalid alias value provided: [ " + alias + " ]");
         }
 
-        if (!ApplicationUtils.isValid(cartridgeType))  {
+        if (!ApplicationUtils.isValid(cartridgeType)) {
             // cannot happen
             throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
         }

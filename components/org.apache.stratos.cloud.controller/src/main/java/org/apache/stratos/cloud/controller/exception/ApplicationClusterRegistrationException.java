@@ -17,29 +17,31 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.applications;
+package org.apache.stratos.cloud.controller.exception;
 
-public class MTClusterInformation implements ClusterInformation {
+public class ApplicationClusterRegistrationException extends Exception {
 
-    @Override
-    public String getClusterId(String alias, String cartridgeType) {
+    private String message;
 
-        if (!ApplicationUtils.isValid(cartridgeType)) {
-            // cannot happen
-            throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
-        }
-
-        return cartridgeType + ".domain";
+    public ApplicationClusterRegistrationException () {
+        super();
     }
 
-    @Override
-    public String getHostName(String alias, String cartridgeDefinitionHostName) {
+    public ApplicationClusterRegistrationException (String message, Throwable cause) {
+        super(message, cause);
+        this.message = message;
+    }
 
-        if (!ApplicationUtils.isValid(cartridgeDefinitionHostName)) {
-            // cannot happen
-            throw new IllegalArgumentException("Invalid host name value provided: [ " + cartridgeDefinitionHostName + " ]");
-        }
+    public ApplicationClusterRegistrationException (String message) {
+        super(message);
+        this.message = message;
+    }
 
-        return cartridgeDefinitionHostName;
+    public ApplicationClusterRegistrationException (Throwable cause) {
+        super(cause);
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

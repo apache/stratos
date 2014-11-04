@@ -18,27 +18,23 @@
  */
 package org.apache.stratos.autoscaler.status.checker;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import java.util.Map;
+
 
 /**
  * This will be used to evaluate the status of a group
@@ -104,8 +100,8 @@ public class StatusChecker {
                         if (cluster != null) {
                             try {
 
-                                ApplicationManager.acquireReadLockForApplication(appId);
-                                Application application = ApplicationManager.getApplications().getApplication(appId);
+                                ApplicationHolder.acquireReadLock();
+                                Application application = ApplicationHolder.getApplications().getApplication(appId);
 
                                 if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
                                     if (application.getStatus() == ApplicationStatus.Terminating) {
@@ -129,7 +125,7 @@ public class StatusChecker {
                         }*/
                                 }
                             } finally {
-                                ApplicationManager.releaseReadLockForApplication(appId);
+                                ApplicationHolder.releaseReadLock();
                             }
                         }
                     }
@@ -210,7 +206,7 @@ public class StatusChecker {
         groupThread.start();
     }
 
-    private boolean getClusterInActive(VMClusterMonitor monitor, String  partitionId) {
+    private boolean getClusterInActive(VMClusterMonitor monitor, String partitionId) {
         boolean clusterInActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
@@ -239,22 +235,22 @@ public class StatusChecker {
         Runnable group = new Runnable() {
             public void run() {
                 try {
-                    ApplicationManager.acquireReadLockForApplication(appId);
+                    ApplicationHolder.acquireReadLock();
                     ParentComponent component;
                     if (groupId.equals(appId)) {
                         //it is an application
-                        component = ApplicationManager.getApplications().
+                        component = ApplicationHolder.getApplications().
                                 getApplication(appId);
                     } else {
                         //it is a group
-                        component = ApplicationManager.getApplications().
+                        component = ApplicationHolder.getApplications().
                                 getApplication(appId).getGroupRecursively(groupId);
                     }
                     Map<String, ClusterDataHolder> clusterIds = component.getClusterDataMap();
                     Map<String, Group> groups = component.getAliasToGroupMap();
                     updateChildStatus(appId, idOfChild, groups, clusterIds, component);
                 } finally {
-                    ApplicationManager.releaseReadLockForApplication(appId);
+                    ApplicationHolder.releaseReadLock();
 
                 }
 
@@ -292,12 +288,12 @@ public class StatusChecker {
             clusterStatus = getClusterStatus(clusterData);
             groupStatus = getGroupStatus(groups);
             try {
-                ApplicationManager.acquireReadLockForApplication(appId);
-                Application application = ApplicationManager.getApplications().getApplication(appId);
+                ApplicationHolder.acquireReadLock();
+                Application application = ApplicationHolder.getApplications().getApplication(appId);
 
-                if (groups.isEmpty() && getAllClusterInSameState(clusterData,ClusterStatus.Active) ||
+                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active) ||
                         clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active) ||
-                        getAllClusterInSameState(clusterData,ClusterStatus.Active) &&
+                        getAllClusterInSameState(clusterData, ClusterStatus.Active) &&
                                 getAllGroupInSameState(groups, GroupStatus.Active)) {
                     //send activation event
                     if (parent instanceof Application) {
@@ -329,9 +325,9 @@ public class StatusChecker {
                         log.info("sending group created : " + parent.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupTerminatedEvent(appId, parent.getUniqueIdentifier());
                     }
-                } else if (groups.isEmpty() && getAllClusterInSameState(clusterData,ClusterStatus.Created) ||
+                } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Created) ||
                         clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Created) ||
-                        getAllClusterInSameState(clusterData,ClusterStatus.Created) &&
+                        getAllClusterInSameState(clusterData, ClusterStatus.Created) &&
                                 getAllGroupInSameState(groups, GroupStatus.Created)) {
                     if (parent instanceof Application) {
                         log.info("[Application] " + appId + "couldn't change to Created, since it is" +
@@ -358,7 +354,7 @@ public class StatusChecker {
                     log.warn("Clusters/groups not found in this [component] " + appId);
                 }
             } finally {
-                ApplicationManager.releaseReadLockForApplication(appId);
+                ApplicationHolder.releaseReadLock();
             }
 
 
@@ -457,7 +453,7 @@ public class StatusChecker {
             }
         }
 
-        if(groups == null || groups != null && groups.isEmpty()) {
+        if (groups == null || groups != null && groups.isEmpty()) {
             groupActive = false;
             groupTerminated = false;
             groupCreated = false;
@@ -467,7 +463,7 @@ public class StatusChecker {
             status = GroupStatus.Active;
         } else if (groupTerminated) {
             status = GroupStatus.Terminated;
-        } else if(groupCreated) {
+        } else if (groupCreated) {
             status = GroupStatus.Created;
         }
         return status;
@@ -503,7 +499,7 @@ public class StatusChecker {
             }
         }
 
-        if(clusterData == null || clusterData != null && clusterData.isEmpty()) {
+        if (clusterData == null || clusterData != null && clusterData.isEmpty()) {
             clusterActive = false;
             clusterTerminated = false;
             clusterCreated = false;
@@ -513,7 +509,7 @@ public class StatusChecker {
             status = ClusterStatus.Active;
         } else if (clusterTerminated) {
             status = ClusterStatus.Terminated;
-        } else if(clusterCreated) {
+        } else if (clusterCreated) {
             status = ClusterStatus.Created;
         }
         return status;
