@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.topic.instance.status;
+package org.apache.stratos.cloud.controller.receiver.instance.status;
 
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
