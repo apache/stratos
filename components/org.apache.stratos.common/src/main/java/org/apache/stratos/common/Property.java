@@ -23,14 +23,14 @@ import java.io.Serializable;
 /**
  * Holds a property
  */
-public class Property implements Serializable {
+public class Property implements Serializable, Cloneable {
 
     private static final long serialVersionUID = -2191782657999410197L;
+
     private String name;
     private String value;
 
     public Property() {
-
     }
 
     public Property(String name, String value) {
@@ -52,6 +52,14 @@ public class Property implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        Property clone = new Property();
+        clone.setName(this.getName());
+        clone.setValue(this.getValue());
+        return clone;
     }
 
     @Override

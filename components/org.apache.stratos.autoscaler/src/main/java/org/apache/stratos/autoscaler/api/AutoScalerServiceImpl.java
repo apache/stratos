@@ -342,11 +342,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return null;
     }
 
-    @Override
-    public void updateClusterMonitor(String clusterId, org.apache.stratos.common.Properties properties) throws InvalidArgumentException {
-
-    }
-
     public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
