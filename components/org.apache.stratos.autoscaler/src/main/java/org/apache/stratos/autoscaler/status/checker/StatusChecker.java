@@ -285,7 +285,7 @@ public class StatusChecker {
      */
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
-        boolean childFound;
+        boolean childFound = false;
         boolean clusterFound = false;
 
         for (ClusterDataHolder clusterDataHolder : clusterData.values()) {
