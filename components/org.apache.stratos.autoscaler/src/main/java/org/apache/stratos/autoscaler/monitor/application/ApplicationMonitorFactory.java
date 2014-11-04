@@ -18,8 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.application;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterContext;
@@ -32,10 +31,7 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.common.xsd.Properties;
-import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -43,13 +39,10 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.Map;
-
 /**
  * Factory class to get the Monitors.
  */
 public class ApplicationMonitorFactory {
-    private static final Log log = LogFactory.getLog(ApplicationMonitorFactory.class);
 
     /**
      * Factor method used to create relevant monitors based on the given context
@@ -66,15 +59,16 @@ public class ApplicationMonitorFactory {
     public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
+    	
         Monitor monitor;
-
         if (context instanceof GroupContext) {
             monitor = getGroupMonitor(parentMonitor, context, appId);
         } else if (context instanceof ClusterContext) {
             monitor = getClusterMonitor(parentMonitor, (ClusterContext) context, appId);
-            //Start the thread
-            Thread th = new Thread((AbstractClusterMonitor) monitor);
-            th.start();
+            if (monitor != null) {
+            	((AbstractClusterMonitor)monitor).startScheduler();
+            	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
+			}
         } else {
             monitor = getApplicationMonitor(appId);
         }
@@ -169,17 +163,16 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PolicyValidationException
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
-    public static VMClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
+    public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
                                                      ClusterContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
+    	
         //Retrieving the Cluster from Topology
         String clusterId = context.getId();
         String serviceName = context.getServiceName();
-
         Cluster cluster;
-        AbstractClusterMonitor clusterMonitor;
         //acquire read lock for the service and cluster
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
@@ -188,11 +181,6 @@ public class ApplicationMonitorFactory {
                 Service service = topology.getService(serviceName);
                 if (service.clusterExists(clusterId)) {
                     cluster = service.getCluster(clusterId);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Dependency check starting the [cluster]" + clusterId);
-                    }
-                    // startClusterMonitor(this, cluster);
-                    //context.setCurrentStatus(Status.Created);
                 } else {
                     String msg = "[Cluster] " + clusterId + " cannot be found in the " +
                             "Topology for [service] " + serviceName;
@@ -201,32 +189,10 @@ public class ApplicationMonitorFactory {
             } else {
                 String msg = "[Service] " + serviceName + " cannot be found in the Topology";
                 throw new TopologyInConsistentException(msg);
-
             }
-
-
-            clusterMonitor = ClusterMonitorFactory.getMonitor(cluster);
-            if (clusterMonitor instanceof VMClusterMonitor) {
-                return (VMClusterMonitor) clusterMonitor;
-            } else if (clusterMonitor != null) {
-                log.warn("Unknown cluster monitor found: " + clusterMonitor.getClass().toString());
-            }
-            return null;
+            return ClusterMonitorFactory.getMonitor(cluster);
         } finally {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
-    }
-
-
-    private static Properties convertMemberPropsToMemberContextProps(
-            java.util.Properties properties) {
-        Properties props = new Properties();
-        for (Map.Entry<Object, Object> e : properties.entrySet()) {
-            Property prop = new Property();
-            prop.setName((String) e.getKey());
-            prop.setValue((String) e.getValue());
-            props.addProperties(prop);
-        }
-        return props;
     }
 }
