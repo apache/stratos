@@ -322,71 +322,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
             }
         });
-//TODO delete this if we don't want this
-//        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
-//            @Override
-//            protected void onEvent(Event event) {
-//
-//                ClusterRemovedEvent clusterRemovedEvent = null;
-//                try {
-//                    clusterRemovedEvent = (ClusterRemovedEvent) event;
-//                    //TopologyManager.acquireReadLock();
-//                    TopologyManager.acquireReadLockForCluster(clusterRemovedEvent.getServiceName(),
-//                            clusterRemovedEvent.getClusterId());
-//
-//                    String clusterId = clusterRemovedEvent.getClusterId();
-//                    String deploymentPolicy = clusterRemovedEvent.getDeploymentPolicy();
-//
-//                    AbstractClusterMonitor monitor;
-//
-//                    if (clusterRemovedEvent.isLbCluster()) {
-//                        DeploymentPolicy depPolicy = PolicyManager.getInstance().
-//                                getDeploymentPolicy(deploymentPolicy);
-//                        if (depPolicy != null) {
-//                            List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
-//                                    .getNetworkPartitionLbHolders(depPolicy);
-//
-//                            for (NetworkPartitionLbHolder networkPartitionLbHolder : lbHolders) {
-//                                // removes lb cluster ids
-//                                boolean isRemoved = networkPartitionLbHolder.removeLbClusterId(clusterId);
-//                                if (isRemoved) {
-//                                    log.info("Removed the lb cluster [id]:"
-//                                            + clusterId
-//                                            + " reference from Network Partition [id]: "
-//                                            + networkPartitionLbHolder
-//                                            .getNetworkPartitionId());
-//
-//                                }
-//                                if (log.isDebugEnabled()) {
-//                                    log.debug(networkPartitionLbHolder);
-//                                }
-//
-//                            }
-//                        }
-//                        monitor = AutoscalerContext.getInstance()
-//                                .removeLbMonitor(clusterId);
-//
-//                    } else {
-//                        monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance()
-//                                .removeMonitor(clusterId);
-//                    }
-//
-//                    // runTerminateAllRule(monitor);
-//                    if (monitor != null) {
-//                        monitor.destroy();
-//                        log.info(String.format("Cluster monitor has been removed successfully: [cluster] %s ",
-//                                clusterId));
-//                    }
-//                } catch (Exception e) {
-//                    log.error("Error processing event", e);
-//                } finally {
-//                    //TopologyManager.releaseReadLock();
-//                    TopologyManager.releaseReadLockForCluster(clusterRemovedEvent.getServiceName(),
-//                            clusterRemovedEvent.getClusterId());
-//                }
-//            }
-//
-//        });
+
 
         topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
             @Override

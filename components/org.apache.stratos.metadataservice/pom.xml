@@ -26,7 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.metadataservice</artifactId>
     <packaging>war</packaging>
-    <name>Apache Stratos -Meta Data Service</name>
+    <name>Apache Stratos - Meta Data Service</name>
 
     <profiles>
         <profile>
