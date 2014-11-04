@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.ApplicationClusterContextDTO;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
@@ -41,6 +42,8 @@ import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.common.xsd.Property;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -207,7 +210,7 @@ public class CloudControllerClient {
 
     public synchronized void createApplicationClusters(String appId,
                                                        Set<ApplicationClusterContext> appClusterContexts) {
-        /*List<ApplicationClusterContextDTO> contextDTOs =
+        List<ApplicationClusterContextDTO> contextDTOs =
                                         new ArrayList<ApplicationClusterContextDTO>();
         for(ApplicationClusterContext context : appClusterContexts) {
            ApplicationClusterContextDTO dto = new ApplicationClusterContextDTO();
@@ -235,7 +238,7 @@ public class CloudControllerClient {
             //e.printStackTrace();
             String msg = e.getMessage();
             log.error(msg, e);
-        }*/
+        }
 
 
     }
