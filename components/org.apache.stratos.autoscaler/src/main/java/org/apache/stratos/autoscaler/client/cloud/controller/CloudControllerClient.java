@@ -35,8 +35,8 @@ import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
-import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

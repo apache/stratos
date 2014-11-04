@@ -33,10 +33,12 @@ import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 
 import java.util.*;
 import javax.crypto.Cipher;
@@ -306,16 +308,25 @@ public class DefaultApplicationParser implements ApplicationParser {
             String repoUrl = value.getRepoUrl();
 
             if (StringUtils.isNotEmpty(username)) {
-                properties.setProperty("REPO_USERNAME", username);
+                Property property = new Property();
+                property.setName("REPO_USERNAME");
+                property.setValue(username);
+                properties.addProperties(property);
             }
 
             if (StringUtils.isNotEmpty(password)) {
                 String encryptedPassword = encryptPassword(password, application.getKey());
-                properties.setProperty("REPO_PASSWORD", encryptedPassword);
+                Property property = new Property();
+                property.setName("REPO_PASSWORD");
+                property.setValue(encryptedPassword);
+                properties.addProperties(property);
             }
 
             if (StringUtils.isNotEmpty(repoUrl)) {
-                properties.setProperty("REPO_URL", repoUrl);
+                Property property = new Property();
+                property.setName("REPO_URL");
+                property.setValue(repoUrl);
+                properties.addProperties(property);
             }
 
             this.addProperties(alias, properties);
