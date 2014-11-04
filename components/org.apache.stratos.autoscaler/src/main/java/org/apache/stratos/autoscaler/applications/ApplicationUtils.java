@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.applications.payload.PayloadFactory;
 import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
-import org.apache.stratos.common.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.util.*;
 import java.util.regex.Pattern;
