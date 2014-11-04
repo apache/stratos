@@ -63,12 +63,10 @@ public class ApplicationBuilder {
         ApplicationHolder.acquireWriteLock();
         try {
             Applications applications = ApplicationHolder.getApplications();
-            if (applications.getApplication(application.getUniqueIdentifier()) != null) {
+            if (applications.getApplication(application.getUniqueIdentifier()) == null) {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
-                CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
-                        appClusterContexts);
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
