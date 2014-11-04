@@ -191,14 +191,29 @@ public class ApplicationBuilder {
     }
 
     public static void handleApplicationUndeployed(String applicationId) {
+        log.info("Un-deploying the [application] " + applicationId + "by marking it as terminating..");
 
-        Applications applications = ApplicationHolder.getApplications();
-
-        ApplicationHolder.acquireWriteLock();
-        Application applicationToRemove = applications.getApplication(applicationId);
-        Set<ClusterDataHolder> clusterData = null;
-
+        ApplicationHolder.acquireReadLock();
         try {
+            ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
+                    getAppMonitor(applicationId);
+
+            if (appMonitor != null) {
+                // update the status as Terminating
+                appMonitor.setStatus(ApplicationStatus.Terminating);
+
+            } else {
+                log.warn("Application Monitor cannot be found for the undeployed [application] "
+                        + applicationId);
+            }
+
+        } finally {
+            ApplicationHolder.releaseReadLock();
+
+        }
+        /*Set<ClusterDataHolder> clusterData = null;
+
+       try {
             if (applicationToRemove != null) {
                 clusterData = applicationToRemove.getClusterDataRecursively();
                 ApplicationHolder.removeApplication(applicationId);
@@ -208,9 +223,9 @@ public class ApplicationBuilder {
 
         } finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
 
-        ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
+        ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
     }
 
     public static void handleGroupTerminatedEvent(String appId, String groupId) {
@@ -512,8 +527,6 @@ public class ApplicationBuilder {
 
             if (!applications.applicationExists(appId)) {
                 log.warn("Application with id [ " + appId + " ] doesn't exist in Applications");
-                //ApplicationsEventPublisher.sendApplicationRemovedEvent(applicationId, tenantId, tenantDomain);
-
             } else {
                 Application application = applications.getApplication(appId);
 
@@ -523,51 +536,11 @@ public class ApplicationBuilder {
                 // forcefully set status for now
                 application.setStatus(ApplicationStatus.Terminated);
                 updateApplicationMonitor(appId, ApplicationStatus.Terminated);
-
-                int tenantId = application.getTenantId();
-                String tenantDomain = application.getTenantDomain();
-                Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
-                // remove clusters
-                /*for (ClusterDataHolder clusterDataHolder : clusterData) {
-                    Service service = applications.getService(clusterDataHolder.getServiceType());
-                    if (service != null) {
-                        // remove Cluster
-                        service.removeCluster(clusterDataHolder.getClusterId());
-
-                        if (log.isDebugEnabled()) {
-                            log.debug("Removed cluster with id " + clusterDataHolder.getClusterId());
-                        }
-                    } else {
-                        log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Applications, " +
-                                " associated Service [ " + clusterDataHolder.getServiceType() + " ] npt found");
-                    }
-
-                    // remove runtime data
-                    FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
-                    dataHolder.removeClusterContext(clusterDataHolder.getClusterId());
-                    if (log.isDebugEnabled()) {
-                        log.debug("Removed Cluster Context for Cluster id: " + clusterDataHolder.getClusterId());
-                    }
-
-                    try {
-                        RegistryManager.getInstance().persist(dataHolder);
-                    } catch (RegistryException e) {
-                        log.error("Unable to persist data in Registry", e);
-                    }
-                }
-
-
-                // remove application
-                applications.removeApplication(event.getAppId());
-                ApplicationHolder.persistApplication(applications);
-
-                deleteAppResourcesFromMetadataService(event);
-
-                log.info("Removed application [ " + event.getAppId() + " ] from Applications");
-
-                ApplicationsEventPublisher.sendApplicationTerminatedEvent(new org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent(event.getAppId(),
-                        clusterData, tenantId, tenantDomain))*/
-                ;
+                //removing the monitor
+                AutoscalerContext.getInstance().removeAppMonitor(appId);
+                //Removing the application from memory and registry
+                ApplicationHolder.removeApplication(appId);
+                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
             }
 
         } finally {
