@@ -22,6 +22,7 @@ package org.apache.stratos.manager.client;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
@@ -36,7 +37,6 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
 
