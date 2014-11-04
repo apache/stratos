@@ -102,7 +102,8 @@ public class StatusChecker {
 
                                 ApplicationHolder.acquireReadLock();
                                 Application application = ApplicationHolder.getApplications().getApplication(appId);
-
+                                //if all members removed from the cluster and cluster is in terminating,
+                                // either it has to be terminated or Reset
                                 if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
                                     if (application.getStatus() == ApplicationStatus.Terminating) {
                                         ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
@@ -113,16 +114,14 @@ public class StatusChecker {
                                     }
 
                                 } else {
-                                    log.info("Cluster has non terminated [members] and in the [status] "
-                                            + cluster.getStatus().toString());
-
-                        /*if(!clusterActive && !(cluster.getStatus() == ClusterStatus.Inactive ||
-                                cluster.getStatus() == ClusterStatus.Terminating)) {
-                            cluster.getStatus()
-                            StatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
-                                    monitor.getServiceId(), clusterId);
-
-                        }*/
+                                    //if the cluster is not active and, if it is in Active state
+                                    if (!clusterActive && cluster.getStatus() == ClusterStatus.Active) {
+                                        ClusterStatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
+                                                monitor.getServiceId(), clusterId);
+                                    } else {
+                                        log.info("Cluster has non terminated [members] and in the [status] "
+                                                + cluster.getStatus().toString());
+                                    }
                                 }
                             } finally {
                                 ApplicationHolder.releaseReadLock();
@@ -285,8 +284,6 @@ public class StatusChecker {
         log.info("cluster found: " + clusterFound);
         if (clusterFound || groups.containsKey(id)) {
             childFound = true;
-            clusterStatus = getClusterStatus(clusterData);
-            groupStatus = getGroupStatus(groups);
             try {
                 ApplicationHolder.acquireReadLock();
                 Application application = ApplicationHolder.getApplications().getApplication(appId);
@@ -425,7 +422,7 @@ public class StatusChecker {
         return clusterStat;
     }
 
-    private GroupStatus getGroupStatus(Map<String, Group> groups) {
+    /*private GroupStatus getGroupStatus(Map<String, Group> groups) {
         GroupStatus status = null;
         boolean groupActive = true;
         boolean groupTerminated = true;
@@ -513,7 +510,7 @@ public class StatusChecker {
             status = ClusterStatus.Created;
         }
         return status;
-    }
+    }*/
 
     private static class Holder {
         private static final StatusChecker INSTANCE = new StatusChecker();

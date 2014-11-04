@@ -26,6 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
+import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
@@ -144,16 +146,14 @@ public class ServiceUtils {
         applicationContext.setTeantAdminUsername(userName);
 
         if(appDefinition.getProperty() != null) {
-            //TODO: To be fixed
-            throw new NotImplementedException();
-//            PropertiesE properties = new PropertiesE();
-//            for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
-//                PropertyE property = new PropertyE();
-//                property.setName(propertyBean.getName());
-//                property.setValue(propertyBean.getValue());
-//                properties.addProperties(property);
-//            }
-//            applicationContext.setProperties(properties);
+            PropertiesE properties = new PropertiesE();
+            for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
+                PropertyE property = new PropertyE();
+                property.setName(propertyBean.getName());
+                property.setValue(propertyBean.getValue());
+                properties.addProperties(property);
+            }
+            applicationContext.setProperties(properties);
         }
 
         try {

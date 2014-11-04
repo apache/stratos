@@ -188,6 +188,8 @@ public class TopologyBuilder {
                 for(Cluster cluster : service.getClusters()) {
                     if(cluster.getAppId().equals(appId)) {
                         removedClusters.add(service.removeCluster(cluster.getClusterId()));
+                        FasterLookUpDataHolder.getInstance().
+                                removeClusterContext(cluster.getClusterId());
                     }
                 }
             }

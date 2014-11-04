@@ -242,27 +242,25 @@ public class PojoConverter {
 
 
     public static PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
-        //TODO: To be fixed
-        throw new NotImplementedException();
-//        if (propertyBeans == null || propertyBeans.isEmpty()) {
-//            return null;
-//        }
-//
-//        //convert to an array
-//        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
-//        propertyBeans.toArray(propertyBeansArray);
-//        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
-//
-//        for (int j = 0; j < propertyBeansArray.length; j++) {
-//            PropertyE property = new PropertyE();
-//            property.setName(propertyBeansArray[j].name);
-//            property.setValue(propertyBeansArray[j].value);
-//            propertyArray[j] = property;
-//        }
-//
-//        PropertiesE properties = new PropertiesE();
-//        properties.setProperties(propertyArray);
-//        return properties;
+        if (propertyBeans == null || propertyBeans.isEmpty()) {
+            return null;
+        }
+
+        //convert to an array
+        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+        propertyBeans.toArray(propertyBeansArray);
+        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
+
+        for (int j = 0; j < propertyBeansArray.length; j++) {
+            PropertyE property = new PropertyE();
+            property.setName(propertyBeansArray[j].name);
+            property.setValue(propertyBeansArray[j].value);
+            propertyArray[j] = property;
+        }
+
+        PropertiesE properties = new PropertiesE();
+        properties.setProperties(propertyArray);
+        return properties;
     }
 
     private static NetworkInterfaces getNetworkInterfaces(List<NetworkInterfaceBean> networkInterfaceBeans) {
