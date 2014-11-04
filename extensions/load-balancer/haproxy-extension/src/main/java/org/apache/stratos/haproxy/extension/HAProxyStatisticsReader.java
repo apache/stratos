@@ -96,4 +96,14 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
         }
         return 0;
     }
+
+    @Override
+    public int getServedRequestCount(String clusterId) {
+        return 0;
+    }
+
+    @Override
+    public int getActiveInstancesCount(Cluster cluster) {
+        return 0;
+    }
 }

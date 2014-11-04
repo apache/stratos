@@ -36,6 +36,7 @@ import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 
 /**

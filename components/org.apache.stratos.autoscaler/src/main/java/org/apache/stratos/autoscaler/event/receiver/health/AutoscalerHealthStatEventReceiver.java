@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -41,9 +42,11 @@ import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLo
 import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.listener.health.stat.AverageLoadAverageEventListener;
 import org.apache.stratos.messaging.listener.health.stat.AverageMemoryConsumptionEventListener;
 import org.apache.stratos.messaging.listener.health.stat.AverageRequestsInFlightEventListener;
+import org.apache.stratos.messaging.listener.health.stat.AverageRequestsServingCapabilityEventListener;
 import org.apache.stratos.messaging.listener.health.stat.GradientOfLoadAverageEventListener;
 import org.apache.stratos.messaging.listener.health.stat.GradientOfMemoryConsumptionEventListener;
 import org.apache.stratos.messaging.listener.health.stat.GradientOfRequestsInFlightEventListener;
@@ -122,6 +125,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             }
 
         });
+
         healthStatEventReceiver.addEventListener(new AverageMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
@@ -152,11 +156,33 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
                 monitor.handleAverageRequestsInFlightEvent(averageRequestsInFlightEvent);
+            }
+        });
+
+        healthStatEventReceiver.addEventListener(new AverageRequestsServingCapabilityEventListener() {
+            @Override
+            protected void onEvent(org.apache.stratos.messaging.event.Event event) {
+                AverageRequestsServingCapabilityEvent averageRequestsServingCapabilityEvent = (AverageRequestsServingCapabilityEvent) event;
+                String clusterId = averageRequestsServingCapabilityEvent.getClusterId();
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
+                if(monitor instanceof VMClusterMonitor) {
+                    VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) monitor;
+                    vmClusterMonitor.handleAverageRequestsServingCapabilityEvent(averageRequestsServingCapabilityEvent);
+                }
             }
         });
 

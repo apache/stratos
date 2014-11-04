@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
@@ -37,22 +38,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberAverageLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberAverageMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
 import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
@@ -193,7 +179,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
-                                        " [network partition] %s", networkPartitionId));
+                        " [network partition] %s", networkPartitionId));
             }
         }
     }
@@ -220,12 +206,42 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         }
     }
 
+    public void handleAverageRequestsServingCapabilityEvent(AverageRequestsServingCapabilityEvent averageRequestsServingCapabilityEvent) {
+
+        String clusterId = averageRequestsServingCapabilityEvent.getClusterId();
+        String networkPartitionId = averageRequestsServingCapabilityEvent.getNetworkPartitionId();
+        Float floatValue = averageRequestsServingCapabilityEvent.getValue();
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Average Requests Served per Instance event: [cluster] %s [network-partition] %s [value] %s",
+                    clusterId, networkPartitionId, floatValue));
+        }
+
+        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(networkPartitionId);
+        if(null != networkPartitionContext){
+            networkPartitionContext.setAverageRequestsServedPerInstance(floatValue);
+
+        } else {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Network partition context is not available for :" +
+                        " [network partition] %s", networkPartitionId));
+            }
+        }
+
+    }
+
     @Override
     public void handleAverageRequestsInFlightEvent(
             AverageRequestsInFlightEvent averageRequestsInFlightEvent) {
 
         String networkPartitionId = averageRequestsInFlightEvent.getNetworkPartitionId();
         String clusterId = averageRequestsInFlightEvent.getClusterId();
+        Float servedCount = averageRequestsInFlightEvent.getServedCount();
+        Float activeInstances = averageRequestsInFlightEvent.getActiveInstances();
+        Float requestsServedPerInstance = servedCount/activeInstances;
+        if(requestsServedPerInstance.isInfinite()){
+            requestsServedPerInstance = 0f;
+        }
         float value = averageRequestsInFlightEvent.getValue();
         if (log.isDebugEnabled()) {
             log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",

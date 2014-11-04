@@ -32,16 +32,25 @@
   </importedStreams>
   <queryExpressions><![CDATA[ 
 	from avg_rif_stat
-		select cluster_id, network_partition_id, in_flight_request_count, 
+		select cluster_id, network_partition_id,active_instances_count, in_flight_request_count,served_request_count,
 		stratos:concat(cluster_id, '-' , network_partition_id) as avg_rif_cluster_network
 		insert into avg_rif_concat;
 	define partition avg_rif_cluster_partition by  avg_rif_concat.avg_rif_cluster_network;
 	from avg_rif_concat#window.timeBatch(1 min)
-		select cluster_id,network_partition_id, avg(in_flight_request_count) as count 
+		select cluster_id,network_partition_id,avg(active_instances_count) as instances_count, avg(in_flight_request_count) as count , sum(served_request_count) as served_count
 		insert into average_in_flight_requests 
-		partition by avg_rif_cluster_partition;]]></queryExpressions>
+		partition by avg_rif_cluster_partition;
+	from average_in_flight_requests
+	    	select cluster_id, network_partition_id,instances_count, served_count,
+        	stratos:divider(served_count , instances_count) as requests_per_instance
+        	insert into served_requests_per_instance;
+        from served_requests_per_instance[requests_per_instance>0]#window.timeBatch(10 min)
+		select cluster_id,network_partition_id, avg(requests_per_instance) as average_served_count
+		insert into average_served_request_count;]]></queryExpressions>
   <exportedStreams>
     <stream name="average_in_flight_requests"
       valueOf="average_in_flight_requests" version="1.0.0"/>
+      <stream name="average_served_request_count"
+              valueOf="average_served_request_count" version="1.0.0"/>
   </exportedStreams>
 </executionPlan>

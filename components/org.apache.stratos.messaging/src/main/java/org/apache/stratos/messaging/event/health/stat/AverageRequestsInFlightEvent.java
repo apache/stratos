@@ -28,11 +28,15 @@ public class AverageRequestsInFlightEvent extends Event {
     private final String networkPartitionId;
     private final String clusterId;
     private final float value;
+    private final float servedCount;
+    private final float activeInstances;
 
-    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId, float value) {
+    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId,float activeInstances, float value, float servedCount ) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
         this.value = value;
+        this.servedCount = servedCount;
+        this.activeInstances = activeInstances;
     }
 
 
@@ -47,4 +51,9 @@ public class AverageRequestsInFlightEvent extends Event {
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+
+    public float getServedCount() { return servedCount;}
+
+    public float getActiveInstances() { return activeInstances;}
+
 }

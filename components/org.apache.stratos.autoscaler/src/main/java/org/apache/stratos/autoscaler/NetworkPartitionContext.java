@@ -41,6 +41,8 @@ public class NetworkPartitionContext implements Serializable{
     private final String id;
     private int scaleDownWaitCount = 5; //TODO get from a config
     private int scaleDownRequestsCount = 0;
+    private float averageRequestsServedPerInstance;
+    private float requestsServedPerInstance;
 
 //    private String defaultLbClusterId;
 //
@@ -58,6 +60,8 @@ public class NetworkPartitionContext implements Serializable{
     //boolean values to keep whether the load average parameters are reset or not
     private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
             secondDerivativeLoadAverageRest = false;
+    //boolean values to keep whether average requests served per instance parameters are reset or not
+    private boolean averageRequestServedPerInstanceReset= false;
 
     //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
     private int minInstanceCount = 1, maxInstanceCount = 1;
@@ -240,6 +244,21 @@ public class NetworkPartitionContext implements Serializable{
     public void setCurrentPartitionIndex(int currentPartitionIndex) {
         this.currentPartitionIndex = currentPartitionIndex;
     }
+
+    public float getAverageRequestsServedPerInstance() { return averageRequestsServedPerInstance;}
+
+    public void setAverageRequestsServedPerInstance(float averageRequestServedPerInstance) {
+        this.averageRequestsServedPerInstance = averageRequestServedPerInstance;
+        averageRequestServedPerInstanceReset = true;
+
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Average Requesets Served Per Instance stats are reset, ready to do scale check [network partition] %s"
+                    , this.id));
+
+        }
+    }
+
+    public float getRequestsServedPerInstance() { return requestsServedPerInstance;}
 
     public float getAverageRequestsInFlight() {
         return requestsInFlight.getAverage();

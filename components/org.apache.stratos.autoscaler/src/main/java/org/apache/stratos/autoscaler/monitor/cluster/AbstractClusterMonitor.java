@@ -36,6 +36,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
