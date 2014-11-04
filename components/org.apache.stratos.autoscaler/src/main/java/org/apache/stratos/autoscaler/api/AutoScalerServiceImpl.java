@@ -41,7 +41,7 @@ import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
@@ -341,8 +341,13 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         return null;
     }
-	
-	public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
+
+    @Override
+    public void updateClusterMonitor(String clusterId, org.apache.stratos.common.Properties properties) throws InvalidArgumentException {
+
+    }
+
+    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
