@@ -45,7 +45,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
-import org.apache.stratos.common.Property;
+import org.apache.stratos.common.*;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
@@ -69,6 +69,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -1063,11 +1064,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         String property = props.getProperty(Constants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
-        ClusterContext ctxt = null;//TODO buildClusterContext(cartridge, clusterId,
-        //payload, hostName, props, isLb, registrant.getPersistence());
+        //TODO fix the properties issue
+        /*ClusterContext ctxt = buildClusterContext(cartridge, clusterId,
+        payload, hostName, props, isLb, registrant.getPersistence());
 
 
-        dataHolder.addClusterContext(ctxt);
+        dataHolder.addClusterContext(ctxt);*/
         TopologyBuilder.handleClusterCreated(registrant, isLb);
 
         persist();
@@ -1080,13 +1082,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private ClusterContext buildClusterContext(Cartridge cartridge,
                                                String clusterId, String payload, String hostName,
                                                org.apache.stratos.common.Properties props, boolean isLb, Persistence persistence) {
-
-        //TODO
-        /*// initialize ClusterContext
+        //TODO fix properties issue
+        // initialize ClusterContext
 		ClusterContext ctxt = new ClusterContext(clusterId, cartridge.getType(), payload, 
 				hostName, isLb, props);
 		
-		String property;
+		/*String property;
 		property = props.get(Constants.GRACEFUL_SHUTDOWN_TIMEOUT);
 		long timeout = property != null ? Long.parseLong(property) : 30000;
 
@@ -1102,7 +1103,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             ctxt.setVolumeRequired(false);
         }
 	    ctxt.setTimeoutInMillis(timeout);
-		return ctxt;*/
+		return ctxt;
+        ;*/
         return null;
     }
 
@@ -1498,7 +1500,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             kubApi.createService(service);
 
             // set host port and update
-            ctxt.addProperty(StratosConstants.ALLOCATED_SERVICE_HOST_PORT, service.getPort());
+            //TODO to clean the impl of properties
+            Property[] properties = new Property[1];
+            Property property = new Property(StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
+                    String.valueOf(service.getPort()));
+            org.apache.stratos.common.Properties properties1 = new org.apache.stratos.common.Properties();
+            properties1.setProperties(properties);
+
+            ctxt.setProperties(properties1);
             dataHolder.addClusterContext(ctxt);
 
             if (LOG.isDebugEnabled()) {
@@ -1897,7 +1906,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    public void registerApplicationClusters(ApplicationClusterContextDTO[] appClustersContexts) throws
+    @Override
+    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts)  throws
             ApplicationClusterRegistrationException {
 
         // Create a Cluster Context obj. for each of the Clusters in the Application
@@ -1906,25 +1916,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.error(errorMsg);
             throw new ApplicationClusterRegistrationException(errorMsg);
         }
+        List<Cluster> clusters = new ArrayList<Cluster>();
 
-        //TODO
 
-        /*for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
-            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
         for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
-            /* TODO dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
+            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
                     appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
-            appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()))
-            appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
+                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
             // create Cluster objects
             Cluster newCluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                     appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
             newCluster.setLbCluster(false);
-            newCluster.setTenantRange("*");
+            newCluster.setTenantRange(appClusterCtxt.getTenantRange());
             newCluster.setStatus(ClusterStatus.Created);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-            clusters.add(newCluster);*/
+            Cartridge cartridge = dataHolder.getCartridge(appClusterCtxt.getCartridgeType());
+            if(cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
+                newCluster.setKubernetesCluster(true);
+            }
+            clusters.add(newCluster);
         }
+    }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 //
@@ -1950,39 +1962,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //        //TopologyBuilder.handleApplicationUndeployed(applicationId);
 //    }
 
-    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts)  throws
-            ApplicationClusterRegistrationException {
-
-        // Create a Cluster Context obj. for each of the Clusters in the Application
-        if (appClustersContexts == null || appClustersContexts.length == 0) {
-            String errorMsg = "No application cluster information found, unable to create clusters" ;
-            LOG.error(errorMsg);
-            throw new ApplicationClusterRegistrationException(errorMsg);
-        }
-
-        List<Cluster> clusters = new ArrayList<Cluster>();
-
-        for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
-            // add the context data
-            //TODO
-            /*dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
-                    appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
-                    appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));*/
-            // create Cluster objects
-            Cluster newCluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
-                    appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
-            newCluster.setLbCluster(false);
-            newCluster.setTenantRange("*");
-            newCluster.setStatus(ClusterStatus.Created);
-            newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-            //newCluster.setProperties(appClusterCtxt.getProperties());
-            clusters.add(newCluster);
-        }
-
-        TopologyBuilder.handleApplicationClustersCreated(appId, clusters);
-
-        persist();
-    }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 //

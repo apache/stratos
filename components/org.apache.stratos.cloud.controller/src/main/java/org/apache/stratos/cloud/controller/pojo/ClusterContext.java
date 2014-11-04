@@ -19,9 +19,9 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
-import java.util.Properties;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.stratos.common.Properties;
 
 /**
  * Holds runtime data of a Cluster.
@@ -122,11 +122,11 @@ public class ClusterContext implements Serializable{
 		this.properties = properties;
 	}
 	
-	public void addProperty(String key, int value) {
+	/*public void addProperty(String key, int value) {
 		this.properties.put(key, value);
 	}
 	
 	public void addProperty(String key, String value) {
 		this.properties.put(key, value);
-	}
+	}*/
 }

@@ -34,8 +34,6 @@ public class ApplicationClusterContextDTO {
     private String hostName;
     // flag to indicate LB cluster
     private boolean isLbCluster;
-    // flag to indicate Kubernetes cluster
-    private boolean isKubernetesCluster;
     // autoscaling policy
     private String autoscalePolicyName;
     // deployment policy
@@ -45,8 +43,6 @@ public class ApplicationClusterContextDTO {
     // propertis
     private Properties properties;
 
-    public ApplicationClusterContextDTO () {
-    }
 
     public ApplicationClusterContextDTO () {
     }
@@ -143,4 +139,5 @@ public class ApplicationClusterContextDTO {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+
 }
