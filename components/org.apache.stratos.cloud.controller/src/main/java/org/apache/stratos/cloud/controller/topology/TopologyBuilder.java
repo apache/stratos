@@ -40,6 +40,7 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -176,6 +177,32 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
 
     }
+
+    public static void handleApplicationClustersRemoved(String appId) {
+        TopologyManager.acquireWriteLock();
+
+        List<Cluster> removedClusters = new ArrayList<Cluster>();
+        try {
+            Topology topology = TopologyManager.getTopology();
+            for(Service service : topology.getServices()) {
+                for(Cluster cluster : service.getClusters()) {
+                    if(cluster.getAppId().equals(appId)) {
+                        removedClusters.add(service.removeCluster(cluster.getClusterId()));
+                    }
+                }
+            }
+            log.info("Application Cluster " + appId + " are removed from the topology");
+
+            TopologyManager.updateTopology(topology);
+
+        } finally {
+            TopologyManager.releaseWriteLock();
+        }
+
+        TopologyEventPublisher.sendApplicationClustersRemoved(appId, removedClusters);
+
+    }
+
 
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {

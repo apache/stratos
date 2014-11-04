@@ -18,8 +18,14 @@
  */
 package org.apache.stratos.common;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in current
@@ -27,54 +33,53 @@ import java.util.Arrays;
  */
 public class Properties implements Serializable {
 
-    private Property[] properties;
+    private static final long serialVersionUID = -9094584151615076171L;
+    private static final Log log = LogFactory.getLog(Properties.class);
+
+    private List<Property> properties;
+
+    public Properties() {
+        this.properties = new ArrayList<Property>();
+    }
 
     public Property[] getProperties() {
-        return properties;
+        return properties.toArray(new Property[properties.size()]);
+    }
+
+    public void addProperty(Property property) {
+        try {
+            this.properties.add((Property) property.clone());
+        } catch (CloneNotSupportedException e) {
+            log.error(e);
+        }
     }
 
     public void setProperties(Property[] properties) {
-        if(properties == null) {
-            this.properties = new Property[0];
-        } else {
-            this.properties = Arrays.copyOf(properties, properties.length);
-        }
+        this.properties = new ArrayList<Property>();
+        Collections.addAll(this.properties, properties.clone());
     }
 
     @Override
     public String toString() {
-        return "Properties [properties=" + Arrays.toString(properties) + "]";
+        return "Properties [properties=" + this.getProperties() + "]";
     }
 
     @Override
-    public boolean equals(Object anObject) {
-        if (anObject == null) {
-            return false;
-        }
-        if (this == anObject) {
+    public boolean equals(Object object) {
+        if (object == null) {
             return false;
         }
 
-        if (!(anObject instanceof Properties)) {
-            return false;
-        }
-        Properties propertiesObj = (Properties) anObject;
-        if (this.properties == null) {
-            if (propertiesObj.getProperties() != null) {
-                return false;
-            }
-        } else if (!Arrays.equals(this.properties, propertiesObj.getProperties())) {
+        if (!(object instanceof Properties)) {
             return false;
         }
 
-        return true;
+        Properties propertiesObject = (Properties) object;
+        return Arrays.equals(propertiesObject.getProperties(), this.getProperties());
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.properties == null) ? 0 : Arrays.hashCode(this.properties));
-        return result;
+        return this.hashCode();
     }
 }

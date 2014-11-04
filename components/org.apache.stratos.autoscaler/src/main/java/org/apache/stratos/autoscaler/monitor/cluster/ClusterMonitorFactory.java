@@ -40,8 +40,8 @@ import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.xsd.Properties;
-import org.apache.stratos.common.xsd.Property;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -209,10 +209,10 @@ public class ClusterMonitorFactory {
             java.util.Properties properties) {
         Properties props = new Properties();
         for (Map.Entry<Object, Object> e : properties.entrySet()) {
-            Property prop = new Property();
-            prop.setName((String) e.getKey());
-            prop.setValue((String) e.getValue());
-            props.addProperties(prop);
+            Property property = new Property();
+            property.setName((String) e.getKey());
+            property.setValue((String) e.getValue());
+            props.addProperty(property);
         }
         return props;
     }

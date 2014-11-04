@@ -16,37 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.deployment.policy;
-
-import static org.junit.Assert.*;
-
-import java.io.File;
-
-import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
-import org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyReader;
-import org.junit.Before;
-import org.junit.Test;
-
-/**
- * @author nirmal
- *
- */
-public class DeploymentPolicyDeployerTest {
-    
-    DeploymentPolicyReader reader;
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        reader = new DeploymentPolicyReader(new File("src/test/resources/deployment-policy.xml"));
-    }
-
-    @Test
-    public void test() throws InvalidPolicyException {
-        
-        DeploymentPolicy policy = reader.read();
-    }
-
-}
+//package org.apache.stratos.autoscaler.deployment.policy;
+//
+//import static org.junit.Assert.*;
+//
+//import java.io.File;
+//
+//import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
+//import org.apache.stratos.autoscaler.policy.deployers.DeploymentPolicyReader;
+//import org.junit.Before;
+//import org.junit.Test;
+//
+///**
+// * @author nirmal
+// *
+// */
+//public class DeploymentPolicyDeployerTest {
+//
+//    DeploymentPolicyReader reader;
+//
+//    /**
+//     * @throws java.lang.Exception
+//     */
+//    @Before
+//    public void setUp() throws Exception {
+//        reader = new DeploymentPolicyReader(new File("src/test/resources/deployment-policy.xml"));
+//    }
+//
+//    @Test
+//    public void test() throws InvalidPolicyException {
+//
+//        DeploymentPolicy policy = reader.read();
+//    }
+//
+//}

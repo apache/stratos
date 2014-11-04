@@ -24,10 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.grouping.topic.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
@@ -35,7 +33,6 @@ import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -43,27 +40,11 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterInActivateEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterRemovedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterResetEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterTerminatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterTerminatingEventListener;
-import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberMaintenanceListener;
-import org.apache.stratos.messaging.listener.topology.MemberReadyToShutdownEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
-
-import java.util.Set;
 
 /**
  * Autoscaler topology receiver.
@@ -310,6 +291,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 //changing the status in the monitor, will notify its parent monitor
                 if (clusterMonitor != null) {
                     clusterMonitor.setStatus(ClusterStatus.Terminated);
+                    //Destroying and Removing the Cluster monitor
+                    clusterMonitor.destroy();
+                    AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
+
                 }
             }
         });
@@ -337,71 +322,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
             }
         });
-//TODO delete this if we don't want this
-//        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
-//            @Override
-//            protected void onEvent(Event event) {
-//
-//                ClusterRemovedEvent clusterRemovedEvent = null;
-//                try {
-//                    clusterRemovedEvent = (ClusterRemovedEvent) event;
-//                    //TopologyManager.acquireReadLock();
-//                    TopologyManager.acquireReadLockForCluster(clusterRemovedEvent.getServiceName(),
-//                            clusterRemovedEvent.getClusterId());
-//
-//                    String clusterId = clusterRemovedEvent.getClusterId();
-//                    String deploymentPolicy = clusterRemovedEvent.getDeploymentPolicy();
-//
-//                    AbstractClusterMonitor monitor;
-//
-//                    if (clusterRemovedEvent.isLbCluster()) {
-//                        DeploymentPolicy depPolicy = PolicyManager.getInstance().
-//                                getDeploymentPolicy(deploymentPolicy);
-//                        if (depPolicy != null) {
-//                            List<NetworkPartitionLbHolder> lbHolders = PartitionManager.getInstance()
-//                                    .getNetworkPartitionLbHolders(depPolicy);
-//
-//                            for (NetworkPartitionLbHolder networkPartitionLbHolder : lbHolders) {
-//                                // removes lb cluster ids
-//                                boolean isRemoved = networkPartitionLbHolder.removeLbClusterId(clusterId);
-//                                if (isRemoved) {
-//                                    log.info("Removed the lb cluster [id]:"
-//                                            + clusterId
-//                                            + " reference from Network Partition [id]: "
-//                                            + networkPartitionLbHolder
-//                                            .getNetworkPartitionId());
-//
-//                                }
-//                                if (log.isDebugEnabled()) {
-//                                    log.debug(networkPartitionLbHolder);
-//                                }
-//
-//                            }
-//                        }
-//                        monitor = AutoscalerContext.getInstance()
-//                                .removeLbMonitor(clusterId);
-//
-//                    } else {
-//                        monitor = (AbstractClusterMonitor) AutoscalerContext.getInstance()
-//                                .removeMonitor(clusterId);
-//                    }
-//
-//                    // runTerminateAllRule(monitor);
-//                    if (monitor != null) {
-//                        monitor.destroy();
-//                        log.info(String.format("Cluster monitor has been removed successfully: [cluster] %s ",
-//                                clusterId));
-//                    }
-//                } catch (Exception e) {
-//                    log.error("Error processing event", e);
-//                } finally {
-//                    //TopologyManager.releaseReadLock();
-//                    TopologyManager.releaseReadLockForCluster(clusterRemovedEvent.getServiceName(),
-//                            clusterRemovedEvent.getClusterId());
-//                }
-//            }
-//
-//        });
+
 
         topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
             @Override

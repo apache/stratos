@@ -23,13 +23,14 @@ package org.apache.stratos.cloud.controller.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.application.status.receiver.ClusterStatusTopicReceiver;
+import org.apache.stratos.cloud.controller.receiver.application.ApplicationTopicReceiver;
+import org.apache.stratos.cloud.controller.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
-import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageDelegator;
-import org.apache.stratos.cloud.controller.topic.instance.status.InstanceStatusEventMessageListener;
+import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusEventMessageDelegator;
+import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusEventMessageListener;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
@@ -65,6 +66,8 @@ public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
     private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
+    private ApplicationTopicReceiver applicationTopicReceiver;
+
     protected void activate(ComponentContext context) {
         try {
                	
@@ -82,12 +85,20 @@ public class CloudControllerDSComponent {
                 log.info("Instance status message receiver thread started");
             }
 
+            applicationTopicReceiver = new ApplicationTopicReceiver();
+            Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
+            tApplicationTopicReceiver.start();
+
+            if (log.isInfoEnabled()) {
+                log.info("Application Receiver thread started");
+            }
+
             clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
             Thread tClusterStatusTopicReceiver = new Thread(clusterStatusTopicReceiver);
             tClusterStatusTopicReceiver.start();
 
-            if (log.isDebugEnabled()) {
-                log.debug("Cluster status Receiver thread started");
+            if (log.isInfoEnabled()) {
+                log.info("Cluster status Receiver thread started");
             }
 
         	// Register cloud controller service
