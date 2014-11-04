@@ -469,8 +469,10 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             for (Map.Entry<String, Properties> entry : applicationParser.getAliasToProperties().entrySet()) {
                 String alias = entry.getKey();
                 Properties properties = entry.getValue();
-                for(Property property : properties.getProperties()) {
-                    metaDataServiceClien.addPropertyToCluster(appId, alias, property.getName(), property.getValue());
+                if(properties != null) {
+                    for (Property property : properties.getProperties()) {
+                        metaDataServiceClien.addPropertyToCluster(appId, alias, property.getName(), property.getValue());
+                    }
                 }
             }
         } catch (MetaDataServiceClientException e) {
