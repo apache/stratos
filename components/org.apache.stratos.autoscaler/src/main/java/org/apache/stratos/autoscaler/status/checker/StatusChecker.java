@@ -25,7 +25,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.Cluster;

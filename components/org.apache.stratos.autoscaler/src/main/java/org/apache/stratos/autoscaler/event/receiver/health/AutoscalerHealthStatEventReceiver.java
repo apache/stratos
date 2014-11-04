@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.message.receiver.health;
+package org.apache.stratos.autoscaler.event.receiver.health;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

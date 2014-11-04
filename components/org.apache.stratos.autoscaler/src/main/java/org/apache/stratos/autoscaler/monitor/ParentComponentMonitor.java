@@ -28,7 +28,7 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-import org.apache.stratos.autoscaler.grouping.topic.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
