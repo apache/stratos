@@ -21,7 +21,7 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.xsd.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 public class PersistenceContext {
 

@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
-import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.lb.category.LoadBalancerCategory;
@@ -32,7 +32,6 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 
-import java.util.Set;
 
 public class LBCartridgeSubscription extends CartridgeSubscription {
 

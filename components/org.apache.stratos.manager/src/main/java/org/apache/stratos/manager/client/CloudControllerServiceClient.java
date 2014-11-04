@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
@@ -140,7 +139,7 @@ public class CloudControllerServiceClient {
                 String key = (String) iterator.next();
                 String value = properties.getProperty(key);
 
-                org.apache.stratos.common.xsd.Property prop = new org.apache.stratos.common.xsd.Property();
+                Property prop = new Property();
                 prop.setName(key);
                 prop.setValue(value);
 

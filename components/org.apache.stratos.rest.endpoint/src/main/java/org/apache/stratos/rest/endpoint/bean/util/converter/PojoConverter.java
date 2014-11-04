@@ -27,8 +27,7 @@ import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoConte
 import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
 import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.common.xsd.Properties;
-import org.apache.stratos.common.xsd.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;

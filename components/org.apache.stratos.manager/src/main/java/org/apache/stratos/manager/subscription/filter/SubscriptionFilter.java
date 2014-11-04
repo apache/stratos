@@ -19,7 +19,7 @@
 package org.apache.stratos.manager.subscription.filter;
 
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.subscription.SubscriptionData;
 

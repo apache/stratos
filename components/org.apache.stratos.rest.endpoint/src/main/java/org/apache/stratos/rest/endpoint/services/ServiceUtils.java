@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptio
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.common.xsd.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
