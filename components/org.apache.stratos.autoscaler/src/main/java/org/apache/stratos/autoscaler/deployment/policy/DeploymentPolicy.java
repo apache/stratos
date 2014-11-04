@@ -135,14 +135,14 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public Partition[] getAllPartitions() {
-    	ArrayList<Partition> partitionslist = new ArrayList<Partition>();
+    	ArrayList<Partition> partitionsList = new ArrayList<Partition>();
     	for (PartitionGroup partitionGroup : this.getPartitionGroups()) {
             Partition[] partitions = partitionGroup.getPartitions();
             if(partitions != null) {
-            	partitionslist.addAll(Arrays.asList(partitions));
+            	partitionsList.addAll(Arrays.asList(partitions));
             }
         }
-        return partitionslist.toArray(new Partition[0]);
+        return partitionsList.toArray(new Partition[partitionsList.size()]);
     }
         
     public Partition getPartitionById(String id){
