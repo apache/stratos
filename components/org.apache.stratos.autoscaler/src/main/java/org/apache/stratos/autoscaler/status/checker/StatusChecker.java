@@ -83,6 +83,13 @@ public class StatusChecker {
         groupThread.start();
     }
 
+    /**
+     * This will calculate the status of the cluster upon a member termination.
+     * The possible states which cluster can change upon member termination are
+     * Active --> InActive, Terminating-->Terminated, Terminating-->Reset(Created)
+     *
+     * @param clusterId id of the cluster
+     */
     public void onMemberTermination(final String clusterId) {
         Runnable group = new Runnable() {
             public void run() {
@@ -141,6 +148,12 @@ public class StatusChecker {
 
     }
 
+    /**
+     * Calculate whether the cluster is active based on the minimum count available in each partition
+     *
+     * @param monitor Cluster monitor which has the member
+     * @return whether cluster is active or not
+     */
     private boolean clusterActive(VMClusterMonitor monitor) {
         boolean clusterActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
@@ -152,8 +165,7 @@ public class StatusChecker {
                     log.info("cluster already activated...");
                     clusterActive = true;
                 } else {
-                    clusterActive = false;
-                    return clusterActive;
+                    return false;
                 }
             }
         }
@@ -175,7 +187,9 @@ public class StatusChecker {
     }
 
     /**
-     * @param clusterId
+     * This will calculate the status of the cluster upon a member fault event
+     *
+     * @param clusterId   id of the cluster
      * @param partitionId is to decide in which partition has less members while others have active members
      */
     public void onMemberFaultEvent(final String clusterId, final String partitionId) {
@@ -271,9 +285,7 @@ public class StatusChecker {
      */
     private boolean updateChildStatus(String appId, String id, Map<String, Group> groups,
                                       Map<String, ClusterDataHolder> clusterData, ParentComponent parent) {
-        ClusterStatus clusterStatus;
-        GroupStatus groupStatus;
-        boolean childFound = false;
+        boolean childFound;
         boolean clusterFound = false;
 
         for (ClusterDataHolder clusterDataHolder : clusterData.values()) {
