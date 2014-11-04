@@ -41,14 +41,20 @@ import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
+import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
+import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -288,6 +294,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
         Application application = applicationParser.parse(applicationContext);
+        publishMetadata(applicationParser, application.getUniqueIdentifier());
         ApplicationBuilder.handleApplicationCreated(application,
                 applicationParser.getApplicationClusterContexts());
     }
@@ -453,5 +460,25 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             throw new AutoScalerException("Error occurred while removing the service groups", e);
         }
 
+    }
+
+    private void publishMetadata(ApplicationParser applicationParser, String appId) {
+        MetaDataServiceClient metaDataServiceClien = null;
+        try {
+            metaDataServiceClien = new DefaultMetaDataServiceClient();
+            for (Map.Entry<String, Properties> entry : applicationParser.getAliasToProperties().entrySet()) {
+                String alias = entry.getKey();
+                Properties properties = entry.getValue();
+                Enumeration e = properties.propertyNames();
+
+                while (e.hasMoreElements()) {
+                    String key = (String) e.nextElement();
+                    String value = properties.getProperty(key);
+                    metaDataServiceClien.addPropertyToCluster(appId, alias, key, value);
+                }
+            }
+        } catch (MetaDataServiceClientException e) {
+            log.error("Could not publish to metadata service ", e);
+        }
     }
 }

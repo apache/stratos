@@ -24,6 +24,8 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.messaging.domain.applications.Application;
 
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -50,4 +52,6 @@ public interface ApplicationParser {
      * @throws ApplicationDefinitionException if any error occurs
      */
     public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException;
+
+    public Map<String, Properties> getAliasToProperties();
 }

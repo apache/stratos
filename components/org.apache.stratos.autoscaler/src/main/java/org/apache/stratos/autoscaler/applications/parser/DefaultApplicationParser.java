@@ -19,15 +19,6 @@
 
 package org.apache.stratos.autoscaler.applications.parser;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,11 +26,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationUtils;
 import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
@@ -51,6 +38,12 @@ import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
 
+import java.util.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Base64;
+
 /**
  * Default implementation of the Application Parser. One Application should be processed by one
  * instance of the DefaultApplicationParser.
@@ -60,10 +53,12 @@ public class DefaultApplicationParser implements ApplicationParser {
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private Set<ApplicationClusterContext> applicationClusterContexts;
+    private Map<String, Properties> aliasToProperties;
 
     public DefaultApplicationParser () {
-
         this.applicationClusterContexts = new HashSet<ApplicationClusterContext>();
+        this.setAliasToProperties(new HashMap<String, Properties>());
+
     }
 
     @Override
@@ -301,6 +296,31 @@ public class DefaultApplicationParser implements ApplicationParser {
                 application.setDependencyOrder(appDependencyOrder);
             }
         }
+
+        String alias;
+        Properties properties = new Properties();
+        for (SubscribableInfoContext value : subscribableInfoCtxts.values()) {
+            alias = value.getAlias();
+            String username = value.getRepoUsername();
+            String password = value.getRepoPassword();
+            String repoUrl = value.getRepoUrl();
+
+            if (StringUtils.isNotEmpty(username)) {
+                properties.setProperty("REPO_USERNAME", username);
+            }
+
+            if (StringUtils.isNotEmpty(password)) {
+                String encryptedPassword = encryptPassword(password, application.getKey());
+                properties.setProperty("REPO_PASSWORD", encryptedPassword);
+            }
+
+            if (StringUtils.isNotEmpty(repoUrl)) {
+                properties.setProperty("REPO_URL", repoUrl);
+            }
+
+            this.addProperties(alias, properties);
+        }
+
 
         log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
 
@@ -663,4 +683,33 @@ public class DefaultApplicationParser implements ApplicationParser {
         throw new ApplicationDefinitionException(errorMsg);
     }
 
+    public Map<String, Properties> getAliasToProperties() {
+        return aliasToProperties;
+    }
+
+    public void setAliasToProperties(Map<String, Properties> aliasToProperties) {
+        this.aliasToProperties = aliasToProperties;
+    }
+    public void addProperties(String alias, Properties properties) {
+        this.getAliasToProperties().put(alias, properties);
+    }
+
+    public static String encryptPassword(String repoUserPassword, String secKey) {
+        String encryptPassword = "";
+        String secret = secKey; // secret key length must be 16
+        SecretKey key;
+        Cipher cipher;
+        Base64 coder;
+        key = new SecretKeySpec(secret.getBytes(), "AES");
+        try {
+            cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
+            coder = new Base64();
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] cipherText = cipher.doFinal(repoUserPassword.getBytes());
+            encryptPassword = new String(coder.encode(cipherText));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encryptPassword;
+    }
 }
