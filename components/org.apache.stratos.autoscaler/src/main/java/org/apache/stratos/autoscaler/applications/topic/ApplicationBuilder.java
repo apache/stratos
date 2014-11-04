@@ -40,117 +40,6 @@ import java.util.Set;
 public class ApplicationBuilder {
     private static final Log log = LogFactory.getLog(ApplicationBuilder.class);
 
-
-    /*public static synchronized void handleApplicationDeployed(Application application,
-                                                              Set<ApplicationClusterContext> applicationClusterContexts,
-                                                              Set<MetaDataHolder> metaDataHolders) {
-
-
-        Applications applications = Appcation.getApplications();
-        try {
-            ApplicationHolder.acquireWriteLock();
-
-            if (applications.applicationExists(application.getUniqueIdentifier())) {
-                log.warn("Application with id [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
-                return;
-            }
-            List<Cluster> clusters = new ArrayList<Cluster>();
-            for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
-                Cluster cluster = new Cluster(applicationClusterContext.getCartridgeType(),
-                        applicationClusterContext.getClusterId(), applicationClusterContext.getDeploymentPolicyName(),
-                        applicationClusterContext.getAutoscalePolicyName(), application.getUniqueIdentifier());
-                //cluster.setStatus(Status.Created);
-                cluster.addHostName(applicationClusterContext.getHostName());
-                cluster.setTenantRange(applicationClusterContext.getTenantRange());
-                clusters.add(cluster);
-
-                Service service = applications.getService(applicationClusterContext.getCartridgeType());
-                if (service != null) {
-                    service.addCluster(cluster);
-                    log.info("Added Cluster " + cluster.toString() + " to Applications for Application with id: " + application.getUniqueIdentifier());
-                } else {
-                    log.error("Service " + applicationClusterContext.getCartridgeType() + " not found");
-                    return;
-                }
-            }
-
-            // add to Applications and update
-            applications.addApplication(application);
-            ApplicationHolder.persistApplication(applications);
-
-            log.info("Application with id [ " + application.getUniqueIdentifier() + " ] added to Applications successfully");
-            org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent applicationCreatedEvent = new org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent(application, clusters);
-            ApplicationsEventPublisher.sendApplicationCreatedEvent(applicationCreatedEvent);
-
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-    }*/
-
-    /*public static synchronized void handleApplicationUndeployed(String applicationId) {
-
-        Set<ClusterDataHolder> clusterData;
-
-        // update the Application and Cluster Statuses as 'Terminating'
-        ApplicationHolder.acquireWriteLock();
-
-        try {
-
-            Applications applications = ApplicationHolder.getApplications();
-
-            if (!applications.applicationExists(applicationId)) {
-                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Applications");
-                return;
-            }
-
-            Application application = applications.getApplication(applicationId);
-            // check and update application status to 'Terminating'
-            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
-                log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
-            }
-            // for now anyway update the status forcefully
-            application.setStatus(ApplicationStatus.Terminating);
-
-            // update all the Clusters' statuses to 'Terminating'
-            clusterData = application.getClusterDataRecursively();
-            for (ClusterDataHolder clusterDataHolder : clusterData) {
-                Service service = applications.getService(clusterDataHolder.getServiceType());
-                if (service != null) {
-                    Cluster aCluster = service.getCluster(clusterDataHolder.getClusterId());
-                    if (aCluster != null) {
-                        // validate state transition
-                        if (!aCluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                            log.error("Invalid state transfer from " + aCluster.getStatus() + " to "
-                                    + ClusterStatus.Terminating);
-                        }
-                        // for now anyway update the status forcefully
-                        aCluster.setStatus(ClusterStatus.Terminating);
-
-                    } else {
-                        log.warn("Unable to find Cluster with cluster id " + clusterDataHolder.getClusterId() +
-                                " in Applications");
-                    }
-
-                } else {
-                    log.warn("Unable to remove cluster with cluster id: " + clusterDataHolder.getClusterId() + " from Applications, " +
-                            " associated Service [ " + clusterDataHolder.getServiceType() + " ] not found");
-                }
-            }
-
-            // update all Group's statuses to 'Terminating'
-            if (application.getGroups() != null) {
-                updateGroupStatusesRecursively(GroupStatus.Terminating, application.getGroups());
-            }
-
-            ApplicationHolder.persistApplication(applications);
-
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-
-        ApplicationsEventPublisher.sendApplicationUndeployedEvent(applicationId, clusterData);
-    }*/
-
     public static synchronized void handleCompleteApplication(Applications applications) {
         if (log.isDebugEnabled()) {
             log.debug("Handling complete application");
@@ -166,69 +55,156 @@ public class ApplicationBuilder {
 
     public static synchronized void handleApplicationCreated(Application application,
                                                              Set<ApplicationClusterContext> appClusterContexts) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Application creation for the [application]: " +
+                    application.getUniqueIdentifier());
+        }
 
         ApplicationHolder.acquireWriteLock();
-
-        Applications applications = ApplicationHolder.getApplications();
-
         try {
+            Applications applications = ApplicationHolder.getApplications();
             if (applications.getApplication(application.getUniqueIdentifier()) != null) {
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
                 ApplicationHolder.persistApplication(application);
-                // startApplicationMonitor(application.getUniqueIdentifier());
                 CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
                         appClusterContexts);
             } else {
                 log.warn("Application [ " + application.getUniqueIdentifier() + " ] already exists in Applications");
             }
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+    }
 
+    public static void handleApplicationActivatedEvent(String appId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Application activation for the [application]: " + appId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        Application application = applications.getApplication(appId);
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    appId));
+            return;
+        }
+
+        try {
+            ApplicationHolder.acquireWriteLock();
+            ApplicationStatus status = ApplicationStatus.Active;
+            if (application.isStateTransitionValid(status)) {
+                application.setStatus(status);
+                updateApplicationMonitor(appId, status);
+                log.info("Application activated adding status started for Applications");
+                ApplicationHolder.persistApplication(application);
+                //publishing data
+                ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+            }
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
 
-        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
     public static void handleApplicationUndeployed(String applicationId) {
-        log.info("Un-deploying the [application] " + applicationId + "by marking it as terminating..");
+        if (log.isInfoEnabled()) {
+            log.info("Un-deploying the [application] " + applicationId + "by marking it as terminating..");
+        }
 
         ApplicationHolder.acquireReadLock();
         try {
             ApplicationMonitor appMonitor = AutoscalerContext.getInstance().
                     getAppMonitor(applicationId);
-
             if (appMonitor != null) {
                 // update the status as Terminating
+                log.info("Application" + applicationId + " updated as terminating" );
                 appMonitor.setStatus(ApplicationStatus.Terminating);
-
             } else {
                 log.warn("Application Monitor cannot be found for the undeployed [application] "
                         + applicationId);
             }
-
         } finally {
             ApplicationHolder.releaseReadLock();
 
         }
-        /*Set<ClusterDataHolder> clusterData = null;
+        ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
+    }
 
-       try {
-            if (applicationToRemove != null) {
-                clusterData = applicationToRemove.getClusterDataRecursively();
-                ApplicationHolder.removeApplication(applicationId);
+    public static void handleApplicationTerminatedEvent(String appId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Application termination for the [application]: " + appId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        try {
+            ApplicationHolder.acquireWriteLock();
+
+            if (!applications.applicationExists(appId)) {
+                log.warn("Application with id [ " + appId + " ] doesn't exist in Applications");
             } else {
-                log.warn("Application [ " + applicationId + " ] not found among existing Applications");
+                Application application = applications.getApplication(appId);
+
+                if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
+                    log.error("Invalid status change from " + application.getStatus() + " to " + ApplicationStatus.Terminated);
+                }
+                // forcefully set status for now
+                application.setStatus(ApplicationStatus.Terminated);
+                updateApplicationMonitor(appId, ApplicationStatus.Terminated);
+                //removing the monitor
+                AutoscalerContext.getInstance().removeAppMonitor(appId);
+                //Removing the application from memory and registry
+                ApplicationHolder.removeApplication(appId);
+                log.info("[Application] " + appId + " is removed");
+                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
             }
 
         } finally {
             ApplicationHolder.releaseWriteLock();
-        }*/
+        }
+    }
 
-        ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
+    public static void handleApplicationTerminatingEvent(String applicationId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Application terminating for the [application]: " + applicationId);
+        }
+
+        ApplicationHolder.acquireWriteLock();
+
+        try {
+            Applications applications = ApplicationHolder.getApplications();
+            if (!applications.applicationExists(applicationId)) {
+                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Applications");
+                return;
+            }
+
+            Application application = applications.getApplication(applicationId);
+            // check and update application status to 'Terminating'
+            ApplicationStatus status = ApplicationStatus.Terminating;
+            if (!application.isStateTransitionValid(status)) {
+                log.error("Invalid state transfer from " + application.getStatus() + " to " +
+                                                                ApplicationStatus.Terminating);
+            }
+            // for now anyway update the status forcefully
+            application.setStatus(status);
+            log.info("Application " + applicationId + "'s status updated to " +
+                                                            ApplicationStatus.Terminating);
+            updateApplicationMonitor(applicationId, status);
+            ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
     }
 
     public static void handleGroupTerminatedEvent(String appId, String groupId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Group termination for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
@@ -265,6 +241,11 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupActivatedEvent(String appId, String groupId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Group activation for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
@@ -301,6 +282,11 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupCreatedEvent(String appId, String groupId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Group creation for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
@@ -338,6 +324,11 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupInActivateEvent(String appId, String groupId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Group in-active for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
@@ -374,6 +365,11 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupTerminatingEvent(String appId, String groupId) {
+        if (log.isInfoEnabled()) {
+            log.info("Handling Group terminating for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
@@ -409,99 +405,6 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationActivatedEvent(String appId) {
-        Applications applications = ApplicationHolder.getApplications();
-        Application application = applications.getApplication(appId);
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    appId));
-            return;
-        }
-
-        try {
-            ApplicationHolder.acquireWriteLock();
-            ApplicationStatus status = ApplicationStatus.Active;
-            if (application.isStateTransitionValid(status)) {
-                application.setStatus(status);
-                updateApplicationMonitor(appId, status);
-                log.info("Application activated adding status started for Applications");
-                ApplicationHolder.persistApplication(application);
-                //publishing data
-                ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
-            }
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-
-    }
-
-    /*public static void handleApplicationCreatedEvent(ApplicationCreatedEvent event) {
-        Applications applications = ApplicationHolder.getApplications();
-        Application application = applications.getApplication(event.getAppId());
-        //update the status of the Group
-        if (application == null) {
-            log.warn(String.format("Application %s does not exist",
-                    event.getAppId()));
-            return;
-        }
-        List<Cluster> clusters = new ArrayList<Cluster>();
-        Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
-
-        for (ClusterDataHolder clusterDataHolder : allClusters) {
-            String clusterId = clusterDataHolder.getClusterId();
-            String serviceName = clusterDataHolder.getServiceType();
-            clusters.add(ApplicationHolder.getApplications().getService(serviceName).getCluster(clusterId));
-        }
-        org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent applicationActivatedEvent =
-                new org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent(
-                        application, clusters);
-        try {
-            ApplicationHolder.acquireWriteLock();
-            application.setStatus(ApplicationStatus.Created);
-            log.info("Application created adding status started for Applications");
-
-            ApplicationHolder.persistApplication(applications);
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-        //publishing data
-        ApplicationsEventPublisher.sendApplicationCreatedEvent(applicationActivatedEvent);
-    }*/
-
-    public static void handleApplicationTerminatingEvent(String appId) {
-
-        String applicationId = appId;
-
-        // update the Application Status as 'Terminating'
-        ApplicationHolder.acquireWriteLock();
-
-        try {
-
-            Applications applications = ApplicationHolder.getApplications();
-
-            if (!applications.applicationExists(applicationId)) {
-                log.warn("Application with id [ " + applicationId + " ] doesn't exist in Applications");
-                return;
-            }
-
-            Application application = applications.getApplication(applicationId);
-            // check and update application status to 'Terminating'
-            ApplicationStatus status = ApplicationStatus.Terminating;
-            if (!application.isStateTransitionValid(status)) {
-                log.error("Invalid state transfer from " + application.getStatus() + " to " + ApplicationStatus.Terminating);
-            }
-            // for now anyway update the status forcefully
-            application.setStatus(status);
-            log.info("Application " + applicationId + "'s status updated to " + ApplicationStatus.Terminating);
-            updateApplicationMonitor(appId, status);
-            ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-
-    }
-
     private static void updateGroupStatusesRecursively(GroupStatus groupStatus, Collection<Group> groups) {
 
         for (Group group : groups) {
@@ -518,174 +421,13 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationTerminatedEvent(String appId) {
-
-        Applications applications = ApplicationHolder.getApplications();
-
-        try {
-            ApplicationHolder.acquireWriteLock();
-
-            if (!applications.applicationExists(appId)) {
-                log.warn("Application with id [ " + appId + " ] doesn't exist in Applications");
-            } else {
-                Application application = applications.getApplication(appId);
-
-                if (!application.isStateTransitionValid(ApplicationStatus.Terminated)) {
-                    log.error("Invalid status change from " + application.getStatus() + " to " + ApplicationStatus.Terminated);
-                }
-                // forcefully set status for now
-                application.setStatus(ApplicationStatus.Terminated);
-                updateApplicationMonitor(appId, ApplicationStatus.Terminated);
-                //removing the monitor
-                AutoscalerContext.getInstance().removeAppMonitor(appId);
-                //Removing the application from memory and registry
-                ApplicationHolder.removeApplication(appId);
-                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
-            }
-
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-    }
-
-
-    protected static synchronized void startApplicationMonitor(String appId) {
-
-        ApplicationMonitor applicationMonitor = null;
-        int retries = 5;
-        boolean success = false;
-        do {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e1) {
-            }
-            try {
-                long start = System.currentTimeMillis();
-                if (log.isDebugEnabled()) {
-                    log.debug("application monitor is going to be started for [application] " +
-                            appId);
-                }
-                applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
-
-                long end = System.currentTimeMillis();
-                log.info("Time taken to start app monitor: " + (end - start) / 1000);
-                success = true;
-            } catch (DependencyBuilderException e) {
-                String msg = "Application monitor creation failed for Application: ";
-                log.warn(msg, e);
-                retries--;
-            } catch (TopologyInConsistentException e) {
-                String msg = "Application monitor creation failed for Application: ";
-                log.warn(msg, e);
-                retries--;
-            }
-        } while (!success && retries != 0);
-
-        if (applicationMonitor == null) {
-            String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                    + "for Application: " + appId;
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-
-        AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Application monitor has been added successfully: " +
-                    "[application] %s", applicationMonitor.getId()));
-        }
-    }
-
-
-        /*Thread th = null;
-        if (!AutoscalerContext.getInstance()
-                .appMonitorExist(applicationId)) {
-            th = new Thread(
-                    new ApplicationMonitorAdder(applicationId));
-        }
-
-        if (th != null) {
-            th.start();
-            //    try {
-            //        th.join();
-            //    } catch (InterruptedException ignore) {
-
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Application monitor thread has been started successfully: " +
-                                "[application] %s ", applicationId));
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Application monitor thread already exists: " +
-                                "[application] %s ", applicationId));
-            }
-        }*/
-
-
-    private class ApplicationMonitorAdder implements Runnable {
-        private String appId;
-
-        public ApplicationMonitorAdder(String appId) {
-            this.appId = appId;
-        }
-
-        public void run() {
-            ApplicationMonitor applicationMonitor = null;
-            int retries = 5;
-            boolean success = false;
-            do {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                }
-                try {
-                    long start = System.currentTimeMillis();
-                    if (log.isDebugEnabled()) {
-                        log.debug("application monitor is going to be started for [application] " +
-                                appId);
-                    }
-                    applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
-
-                    long end = System.currentTimeMillis();
-                    log.info("Time taken to start app monitor: " + (end - start) / 1000);
-                    success = true;
-                } catch (DependencyBuilderException e) {
-                    String msg = "Application monitor creation failed for Application: ";
-                    log.warn(msg, e);
-                    retries--;
-                } catch (TopologyInConsistentException e) {
-                    String msg = "Application monitor creation failed for Application: ";
-                    log.warn(msg, e);
-                    retries--;
-                }
-            } while (!success && retries != 0);
-
-            if (applicationMonitor == null) {
-                String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                        + "for Application: " + appId;
-                log.error(msg);
-                throw new RuntimeException(msg);
-            }
-
-            AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
-
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Application monitor has been added successfully: " +
-                        "[application] %s", applicationMonitor.getId()));
-            }
-        }
-    }
-
-
     private static void updateApplicationMonitor(String appId, ApplicationStatus status) {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
             applicationMonitor.setStatus(status);
         } else {
-            //TODO
+            log.warn("Application monitor cannot be found for the [application] " + appId);
         }
 
     }
@@ -698,7 +440,8 @@ public class ApplicationBuilder {
             if (monitor != null) {
                 monitor.setStatus(status);
             } else {
-                //TODO
+                log.warn("Group monitor cannot be found for the [group] " + groupId + " for the " +
+                        "[application] " + appId);
             }
         }
 
