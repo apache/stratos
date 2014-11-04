@@ -70,12 +70,4 @@ public class AutoscalerContext {
     public void removeAppMonitor(String applicationId) {
         applicationMonitors.remove(applicationId);
     }
-
-    public boolean appMonitorExist(String applicationId) {
-        return applicationMonitors.containsKey(applicationId);
-    }
-
-    public boolean clusterMonitorExist(String clusterId) {
-        return clusterMonitors.containsKey(clusterId);
-    }
 }

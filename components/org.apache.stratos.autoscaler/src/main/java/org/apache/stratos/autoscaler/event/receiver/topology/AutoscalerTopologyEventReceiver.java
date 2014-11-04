@@ -22,16 +22,13 @@ package org.apache.stratos.autoscaler.event.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -39,12 +36,31 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.topology.*;
+import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInactivateEvent;
+import org.apache.stratos.messaging.event.topology.ClusterTerminatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterTerminatingEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.listener.topology.ApplicationClustersCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInActivateEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterResetEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterTerminatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterTerminatingEventListener;
+import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberMaintenanceListener;
+import org.apache.stratos.messaging.listener.topology.MemberReadyToShutdownEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.FactHandle;
 
 /**
  * Autoscaler topology receiver.
@@ -193,7 +209,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterActivatedEvent] Received: " + event.getClass());
-
                 ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
                 String clusterId = clusterActivatedEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -214,9 +229,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new ClusterResetEventListener() {
             @Override
             protected void onEvent(Event event) {
-
                 log.info("[ClusterCreatedEvent] Received: " + event.getClass());
-
                 ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
                 String clusterId = clusterCreatedEvent.getCluster().getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -229,11 +242,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
                     return;
                 }
-
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStop(true);
                 monitor.setStatus(ClusterStatus.Created);
-
             }
         });
 
@@ -248,7 +259,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterInActivateEvent] Received: " + event.getClass());
-
                 ClusterInactivateEvent clusterInactivateEvent = (ClusterInactivateEvent) event;
                 String clusterId = clusterInactivateEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -269,9 +279,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new ClusterTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
-
                 log.info("[ClusterTerminatingEvent] Received: " + event.getClass());
-
                 ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
                 String clusterId = clusterTerminatingEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -300,7 +308,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterTerminatedEvent] Received: " + event.getClass());
-
                 ClusterTerminatedEvent clusterTerminatedEvent = (ClusterTerminatedEvent) event;
                 String clusterId = clusterTerminatedEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -313,7 +320,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     }
                     return;
                 }
-
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(ClusterStatus.Terminated);
                 //Destroying and Removing the Cluster monitor
@@ -350,9 +356,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
-
+            	
             }
-
         });
 
         topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
@@ -428,20 +433,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         });
     }
 
-    @SuppressWarnings("unused")
-    private void runTerminateAllRule(VMClusterMonitor monitor) {
-
-        FactHandle terminateAllFactHandle = null;
-
-        StatefulKnowledgeSession terminateAllKnowledgeSession = null;
-
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
-            terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll(terminateAllKnowledgeSession
-                    , terminateAllFactHandle, networkPartitionContext);
-        }
-
-    }
-
     /**
      * Terminate load balancer topology receiver thread.
      */
@@ -452,22 +443,11 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     protected synchronized void startApplicationMonitor(String applicationId) {
         Thread th = null;
-        if (!AutoscalerContext.getInstance().appMonitorExist(applicationId)) {
-            th = new Thread(
-                    new ApplicationMonitorAdder(applicationId));
+        if (AutoscalerContext.getInstance().getAppMonitor(applicationId) == null) {
+            th = new Thread(new ApplicationMonitorAdder(applicationId));
         }
-
         if (th != null) {
             th.start();
-            //    try {
-            //        th.join();
-            //    } catch (InterruptedException ignore) {
-
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Application monitor thread has been started successfully: " +
-                                "[application] %s ", applicationId));
-            }
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String
@@ -523,13 +503,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             }
 
             AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
-
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application monitor has been added successfully: " +
                         "[application] %s", applicationMonitor.getId()));
             }
         }
     }
-
-
 }
