@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
