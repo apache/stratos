@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.deployment.policy;
+package org.apache.stratos.autoscaler.policy.model;
 
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
