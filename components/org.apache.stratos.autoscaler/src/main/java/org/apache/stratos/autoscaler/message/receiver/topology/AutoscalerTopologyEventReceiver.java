@@ -196,14 +196,18 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
                 String clusterId = clusterActivatedEvent.getClusterId();
-                AbstractClusterMonitor clusterMonitor =
-                        AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-
-                //changing the status in the monitor, will notify its parent monitor
-                if (clusterMonitor != null) {
-                    clusterMonitor.setStatus(ClusterStatus.Active);
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
                 }
-
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(ClusterStatus.Active);
             }
         });
 
@@ -215,12 +219,20 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
                 String clusterId = clusterCreatedEvent.getCluster().getClusterId();
-                AbstractClusterMonitor clusterMonitor =
-                        AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
 
                 //changing the status in the monitor, will notify its parent monitor
-                clusterMonitor.setStop(true);
-                clusterMonitor.setStatus(ClusterStatus.Created);
+                monitor.setStop(true);
+                monitor.setStatus(ClusterStatus.Created);
 
             }
         });
@@ -239,14 +251,18 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ClusterInactivateEvent clusterInactivateEvent = (ClusterInactivateEvent) event;
                 String clusterId = clusterInactivateEvent.getClusterId();
-                AbstractClusterMonitor clusterMonitor =
-                        AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-
-                //changing the status in the monitor, will notify its parent monitor
-                if (clusterMonitor != null) {
-                    clusterMonitor.setStatus(ClusterStatus.Inactive);
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
                 }
-
+                //changing the status in the monitor, will notify its parent monitor
+                monitor.setStatus(ClusterStatus.Inactive);
             }
         });
 
@@ -258,22 +274,24 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
                 String clusterId = clusterTerminatingEvent.getClusterId();
-                AbstractClusterMonitor clusterMonitor =
-                        AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-
-                //changing the status in the monitor, will notify its parent monitor
-                if (clusterMonitor != null) {
-                    if (clusterMonitor.getStatus() == ClusterStatus.Active) {
-                        // terminated gracefully
-                        clusterMonitor.setStatus(ClusterStatus.Terminating);
-                        InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId);
-                    } else {
-                        clusterMonitor.setStatus(ClusterStatus.Terminating);
-                        clusterMonitor.terminateAllMembers();
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
                     }
-
+                    return;
+                }
+                //changing the status in the monitor, will notify its parent monitor
+                if (monitor.getStatus() == ClusterStatus.Active) {
+                	// terminated gracefully
+                	monitor.setStatus(ClusterStatus.Terminating);
+                	InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId);
                 } else {
-                    log.warn("No Cluster Monitor found for cluster id " + clusterId);
+                	monitor.setStatus(ClusterStatus.Terminating);
+                	monitor.terminateAllMembers();
                 }
             }
         });
@@ -285,17 +303,22 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                 ClusterTerminatedEvent clusterTerminatedEvent = (ClusterTerminatedEvent) event;
                 String clusterId = clusterTerminatedEvent.getClusterId();
-                AbstractClusterMonitor clusterMonitor =
-                        AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+                AutoscalerContext asCtx = AutoscalerContext.getInstance();
+                AbstractClusterMonitor monitor;
+                monitor = asCtx.getClusterMonitor(clusterId);
+                if (null == monitor) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("A cluster monitor is not found in autoscaler context "
+                                                + "[cluster] %s", clusterId));
+                    }
+                    return;
+                }
 
                 //changing the status in the monitor, will notify its parent monitor
-                if (clusterMonitor != null) {
-                    clusterMonitor.setStatus(ClusterStatus.Terminated);
-                    //Destroying and Removing the Cluster monitor
-                    clusterMonitor.destroy();
-                    AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
-
-                }
+                monitor.setStatus(ClusterStatus.Terminated);
+                //Destroying and Removing the Cluster monitor
+                monitor.destroy();
+                AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
             }
         });
 
