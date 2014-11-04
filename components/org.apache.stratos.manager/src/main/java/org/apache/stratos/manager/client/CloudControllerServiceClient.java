@@ -24,9 +24,9 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
@@ -73,15 +73,15 @@ public class CloudControllerServiceClient {
         return serviceClient;
     }
 
-    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig) 
-    		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException, 
-    		CloudControllerServiceInvalidIaasProviderExceptionException {
+    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig)
+    		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
+            CloudControllerServiceInvalidIaasProviderExceptionException {
 
 		stub.deployCartridgeDefinition(cartridgeConfig);
 
 	}
 
-    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException{
+    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
 		stub.undeployCartridgeDefinition(cartridgeType);
 
@@ -140,7 +140,7 @@ public class CloudControllerServiceClient {
                 String key = (String) iterator.next();
                 String value = properties.getProperty(key);
 
-                Property prop = new Property();
+                org.apache.stratos.common.xsd.Property prop = new org.apache.stratos.common.xsd.Property();
                 prop.setName(key);
                 prop.setValue(value);
 

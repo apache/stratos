@@ -22,6 +22,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 
 /**
  * This class is used to support <link>CartridgeConfig</link>
@@ -145,7 +147,7 @@ public class IaasConfig implements Serializable {
 
         StringBuilder iaasPropertyBuilder = new StringBuilder();
         if (properties != null) {
-            Property [] propertyArray = properties.getProperties();
+            Property[] propertyArray = properties.getProperties();
             if(propertyArray.length > 0) {
                 for (Property property : propertyArray) {
                     iaasPropertyBuilder.append(property.toString() + " | ");

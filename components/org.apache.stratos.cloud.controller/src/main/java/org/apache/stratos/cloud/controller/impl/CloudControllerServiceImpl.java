@@ -46,6 +46,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
@@ -452,9 +453,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
             if(memberContext.getProperties() != null) {
-            	org.apache.stratos.cloud.controller.pojo.Properties props1 = memberContext.getProperties();
-                if (props1 != null) {
-                    for (Property prop : props1.getProperties()) {
+            	org.apache.stratos.common.Properties properties = memberContext.getProperties();
+                if (properties != null) {
+                    for (Property prop : properties.getProperties()) {
                         addToPayload(payload, prop.getName(), prop.getValue());
                     }
                 }

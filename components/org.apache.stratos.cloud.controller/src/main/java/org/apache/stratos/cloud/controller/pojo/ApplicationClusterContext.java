@@ -19,6 +19,8 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.common.Properties;
+
 import java.io.Serializable;
 
 public class ApplicationClusterContext implements Serializable {

@@ -23,19 +23,17 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.cloud.controller.stub.pojo.application.ApplicationContext;
+import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
@@ -81,6 +79,7 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -138,21 +137,23 @@ public class ServiceUtils {
             throw new RestAPIException(e1);
         }
     	
-        org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext applicationContext =
+        ApplicationContext applicationContext =
                 PojoConverter.convertApplicationBeanToApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);
 
-        Properties properties = new Properties();
         if(appDefinition.getProperty() != null) {
-            for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
-                Property property = new Property();
-                property.setName(propertyBean.getName());
-                property.setValue(propertyBean.getValue());
-                properties.addProperties(property);
-            }
-            applicationContext.setProperties(properties);
+            //TODO: To be fixed
+            throw new NotImplementedException();
+//            PropertiesE properties = new PropertiesE();
+//            for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
+//                PropertyE property = new PropertyE();
+//                property.setName(propertyBean.getName());
+//                property.setValue(propertyBean.getValue());
+//                properties.addProperties(property);
+//            }
+//            applicationContext.setProperties(properties);
         }
 
         try {
@@ -160,10 +161,6 @@ public class ServiceUtils {
         } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         } catch (RemoteException e) {
-            throw new RestAPIException(e);
-        } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {
-            throw new RestAPIException(e);
-        } catch (CloudControllerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         }
     }

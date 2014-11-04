@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.xsd.Properties;
 import org.jaxen.JaxenException;
 
 /**

@@ -25,8 +25,8 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregister
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.deploy.service.Service;

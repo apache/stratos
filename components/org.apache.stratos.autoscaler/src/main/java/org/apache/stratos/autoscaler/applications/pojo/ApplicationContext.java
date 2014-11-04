@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.applications.pojo;
 
+import org.apache.stratos.common.Properties;
+
 import java.io.Serializable;
 
 public class ApplicationContext implements Serializable {
@@ -38,6 +40,8 @@ public class ApplicationContext implements Serializable {
     private ComponentContext componentContext;
 
     private SubscribableInfoContext[] subscribableInfoContexts;
+
+    private Properties properties;
 
     public ApplicationContext() {
     }
@@ -96,5 +100,13 @@ public class ApplicationContext implements Serializable {
 
     public void setTeantAdminUsername(String teantAdminUsername) {
         this.teantAdminUsername = teantAdminUsername;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

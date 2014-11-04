@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.common.kubernetes;
+package org.apache.stratos.common;
 
 import java.io.Serializable;
 import java.util.Arrays;

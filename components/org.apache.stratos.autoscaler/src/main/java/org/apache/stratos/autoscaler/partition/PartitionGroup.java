@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 
 /**
  * The model class for PartitionGroup definition.

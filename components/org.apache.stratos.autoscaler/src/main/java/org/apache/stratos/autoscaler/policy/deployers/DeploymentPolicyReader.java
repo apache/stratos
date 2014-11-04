@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.xsd.Properties;
 
 /**
  * 

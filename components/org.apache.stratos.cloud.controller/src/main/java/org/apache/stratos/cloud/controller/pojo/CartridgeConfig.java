@@ -22,6 +22,8 @@ package org.apache.stratos.cloud.controller.pojo;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 
 /**
  * This class is used as the pojo for supporting the service at CC,

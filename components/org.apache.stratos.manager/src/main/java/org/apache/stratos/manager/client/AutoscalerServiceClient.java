@@ -33,9 +33,10 @@ import org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
 import org.apache.stratos.autoscaler.pojo.xsd.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.xsd.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.rmi.RemoteException;
 
@@ -299,7 +300,9 @@ public class AutoscalerServiceClient {
     }
     
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
-        stub.updateClusterMonitor(clusterId, properties);
+        //TODO: To be fixed
+        throw new NotImplementedException();
+        //stub.updateClusterMonitor(clusterId, properties);
     }
 
 

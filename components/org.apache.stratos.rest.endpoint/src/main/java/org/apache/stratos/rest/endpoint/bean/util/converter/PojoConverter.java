@@ -20,21 +20,15 @@
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE;
-import org.apache.stratos.autoscaler.stub.kubernetes.PropertyE;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.ApplicationContext;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.ComponentContext;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.DependencyContext;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.GroupContext;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.SubscribableContext;
-import org.apache.stratos.cloud.controller.pojo.application.xsd.SubscribableInfoContext;
-import org.apache.stratos.autoscaler.applications.pojo.stub.DependencyContext;
-import org.apache.stratos.autoscaler.applications.pojo.stub.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableContext;
-import org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.DependencyContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoContext;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.common.xsd.Properties;
+import org.apache.stratos.common.xsd.Property;
+import org.apache.stratos.common.xsd.PropertiesE;
+import org.apache.stratos.common.xsd.PropertyE;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -44,8 +38,8 @@ import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -59,12 +53,9 @@ import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.PortRange;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class PojoConverter {
 
@@ -251,26 +242,28 @@ public class PojoConverter {
     }
 
 
-    public static org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
-        if (propertyBeans == null || propertyBeans.isEmpty()) {
-            return null;
-        }
-
-        //convert to an array
-        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
-        propertyBeans.toArray(propertyBeansArray);
-        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
-
-        for (int j = 0; j < propertyBeansArray.length; j++) {
-            PropertyE property = new PropertyE();
-            property.setName(propertyBeansArray[j].name);
-            property.setValue(propertyBeansArray[j].value);
-            propertyArray[j] = property;
-        }
-
-        org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE properties = new PropertiesE();
-        properties.setProperties(propertyArray);
-        return properties;
+    public static PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
+        //TODO: To be fixed
+        throw new NotImplementedException();
+//        if (propertyBeans == null || propertyBeans.isEmpty()) {
+//            return null;
+//        }
+//
+//        //convert to an array
+//        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+//        propertyBeans.toArray(propertyBeansArray);
+//        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
+//
+//        for (int j = 0; j < propertyBeansArray.length; j++) {
+//            PropertyE property = new PropertyE();
+//            property.setName(propertyBeansArray[j].name);
+//            property.setValue(propertyBeansArray[j].value);
+//            propertyArray[j] = property;
+//        }
+//
+//        PropertiesE properties = new PropertiesE();
+//        properties.setProperties(propertyArray);
+//        return properties;
     }
 
     private static NetworkInterfaces getNetworkInterfaces(List<NetworkInterfaceBean> networkInterfaceBeans) {
@@ -899,13 +892,15 @@ public class PojoConverter {
     
     public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
-        org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext applicationContext = new org.apache.stratos.autoscaler.applications.pojo.stub.ApplicationContext();
+        org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext applicationContext =
+                new org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
         applicationContext.setAlias(compositeAppDefinition.getAlias());
 
         // convert and set components
         if (compositeAppDefinition.getComponents() != null) {
-            org.apache.stratos.autoscaler.applications.pojo.stub.ComponentContext componentContext = new org.apache.stratos.autoscaler.applications.pojo.stub.ComponentContext();
+            org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext componentContext =
+                    new org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext();
             // top level subscribables
             if (compositeAppDefinition.getComponents().getSubscribables() != null) {
                 componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
@@ -964,7 +959,8 @@ public class PojoConverter {
         return dependencyContext;
     }
 
-    private static GroupContext[] getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
+    private static org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext[]
+        getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
 
         GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
         int i = 0;
@@ -976,7 +972,8 @@ public class PojoConverter {
             groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
             // nested Subscribables
             if (groupDefinition.getSubscribables() != null) {
-                groupContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
+                groupContext.setSubscribableContexts(
+                        getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
             }
             // nested Groups
             if (groupDefinition.getSubGroups() != null) {
@@ -988,12 +985,15 @@ public class PojoConverter {
         return groupContexts;
     }
 
-    private static org.apache.stratos.autoscaler.applications.pojo.stub.SubscribableContext [] getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+    private static org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext []
+        getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
-        SubscribableContext[] subscribableContexts = new SubscribableContext[subscribableDefinitions.size()];
+        org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[] subscribableContexts =
+                new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[subscribableDefinitions.size()];
         int i = 0;
         for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
-            SubscribableContext subscribableContext = new SubscribableContext();
+            org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext subscribableContext =
+                    new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext();
             subscribableContext.setType(subscribableDefinition.getType());
             subscribableContext.setAlias(subscribableDefinition.getAlias());
             subscribableContexts[i++] = subscribableContext;

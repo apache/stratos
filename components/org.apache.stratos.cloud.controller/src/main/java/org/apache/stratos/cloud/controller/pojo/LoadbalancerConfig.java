@@ -19,6 +19,9 @@
 
 package org.apache.stratos.cloud.controller.pojo;
 
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
+
 import java.io.Serializable;
 
 /**
@@ -58,7 +61,7 @@ public class LoadbalancerConfig implements Serializable {
 
         StringBuilder iaasPropertyBuilder = new StringBuilder();
         if (properties != null) {
-            Property [] propertyArray = properties.getProperties();
+            Property[] propertyArray = properties.getProperties();
             if(propertyArray.length > 0) {
                 for (Property property : propertyArray) {
                     iaasPropertyBuilder.append(property.toString() + " | ");
