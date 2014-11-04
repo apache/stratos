@@ -300,10 +300,6 @@ public class AutoscalerServiceClient {
     }
     
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
-        //TODO: To be fixed
-        throw new NotImplementedException();
-        //stub.updateClusterMonitor(clusterId, properties);
+        stub.updateClusterMonitor(clusterId, properties);
     }
-
-
 }
