@@ -25,8 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.common.xsd.Properties;
-import org.apache.stratos.common.xsd.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
