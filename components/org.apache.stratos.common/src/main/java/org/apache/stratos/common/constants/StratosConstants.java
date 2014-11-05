@@ -160,8 +160,8 @@ public class StratosConstants {
     public static final String VM_SCALE_CHECK_DROOL_FILE = "scaling.drl";
     public static final String CONTAINER_MIN_CHECK_DROOL_FILE = "container-mincheck.drl";
     public static final String VM_MIN_CHECK_DROOL_FILE = "mincheck.drl";
-    public static final String CONTAINER_OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
-    public static final String VM_OBSOLETE_CHECK_DROOL_FILE = "container-obsoletecheck.drl";
+    public static final String CONTAINER_OBSOLETE_CHECK_DROOL_FILE = "container-obsoletecheck.drl";
+    public static final String VM_OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
 
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
