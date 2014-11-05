@@ -190,7 +190,22 @@ public class ApplicationMonitorFactory {
                 String msg = "[Service] " + serviceName + " cannot be found in the Topology";
                 throw new TopologyInConsistentException(msg);
             }
-            return ClusterMonitorFactory.getMonitor(cluster);
+            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster);
+            //Setting the parent of the cluster monitor
+            clusterMonitor.setParent(parentMonitor);
+            //setting the dependent behaviour of the cluster monitor
+            if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
+                clusterMonitor.setHasDependent(true);
+            } else {
+                clusterMonitor.setHasDependent(false);
+            }
+            //setting the status of the cluster, if it doesn't match with Topology cluster status.
+            if (cluster.getStatus() != clusterMonitor.getStatus()) {
+                //updating the status, so that it will notify the parent
+                clusterMonitor.setStatus(cluster.getStatus());
+            }
+            return clusterMonitor;
+
         } finally {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
