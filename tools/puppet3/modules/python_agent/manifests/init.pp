@@ -16,7 +16,7 @@
 # under the License.
 
 class python_agent(
-  $version                = '1.0.0',
+  $version                = '4.1.0',
   $owner                  = 'root',
   $group                  = 'root',
   $target                 = "/mnt",
@@ -24,17 +24,23 @@ class python_agent(
   $enable_artifact_update = true,
   $auto_commit            = false,
   $auto_checkout          = true,
+  $module                 = 'undef',
+  $custom_templates       = [],
+  $exclude_templates	  = []
 ){
 
-  $deployment_code = 'cartridge-agent'
-  #$carbon_version  = $version
   $service_code    = 'cartridge-agent'
-  #$carbon_home     = "${target}/apache-stratos-${service_code}-${carbon_version}"
-  $agent_home= "${target}/${service_code}"
+  $agent_name = "apache-stratos-python-${service_code}-${version}"
+  $agent_home= "${target}/${agent_name}"
+
+  $split_mburl = split($mb_url, "//")
+  $split_mburl = split($split_mburl[1], ":")
+  $mb_ip = $split_mburl[0]
+  $mb_port = $split_mburl[1]
 
   tag($service_code)
 
-  $service_templates = [
+  $default_templates = [
     'extensions/clean.sh',
     'extensions/instance-activated.sh',
     'extensions/instance-started.sh',
@@ -49,49 +55,79 @@ class python_agent(
     'extensions/mount-volumes.sh',
     'extensions/subscription-domain-added.sh',
     'extensions/subscription-domain-removed.sh',
-    ]
+    'agent.conf',
+    'logging.ini',
+  ]
 
-  python_agent::initialize { $deployment_code:
+  agent::initialize { $service_code:
     repo      => $package_repo,
-    version   => $version,
-    service   => $service_code,
+    version   => $carbon_version,
+    service   => $agent_name,
     local_dir => $local_package_dir,
     target    => $target,
     owner     => $owner,
   }
 
-  exec { 'copy launch-params to python agent-payload':
+  exec { 'copy launch-params to agent_home':
     path    => '/bin/',
-    command => "mkdir -p ${target}/${service_code}/payload; cp /tmp/payload/launch-params ${target}/${service_code}/payload/launch-params",
-    require => Py_Agent::Initialize[$deployment_code],
+    command => "mkdir -p ${agent_home}/payload; cp /tmp/payload/launch-params ${agent_home}/payload/launch-params",
+    require => Agent::Initialize[$service_code];
   }
 
   exec { 'make extension folder':
     path    => '/bin/',
     command => "mkdir -p ${target}/${service_code}/extensions",
-    require => Exec["copy launch-params to python agent-payload"],
+    require => Agent::Initialize[$service_code];
   }
 
-  python_agent::push_templates {  $service_templates:
+
+# excluding templates which are not needed by a cartridge module from default_templates
+  $default_templates_excluded = difference($default_templates,$exclude_templates)
+
+# excluding custom_templates, if any,(which will be overrided by a cartridge module) from default_templates
+  $service_templates = $module ? {
+    'undef'    => $default_templates_excluded,
+    default   => difference($default_templates_excluded,$custom_templates)
+  }
+
+# applying default extensions
+  agent::push_templates {
+    $service_templates:
       target    => $agent_home,
-      require   => Exec["make extension folder"],
+      template_dir => "agent",
+      require   => Agent::Initialize[$service_code];
   }
 
-  file { "${target}/${service_code}/agent.conf":
-    ensure => file,
-    content => template("python_agent/agent.conf.erb"),
-    require => Py_Agent::Push_Templates[$service_templates],
+# applying custom extensions
+  unless $module == 'undef' {
+    agent::push_templates {
+      $custom_templates:
+        target    => $carbon_home,
+        template_dir => "${module}/agent",
+        require   => [Agent::Initialize[$service_code]]
+    }
   }
 
-  file { "${target}/${service_code}/logging.ini":
-    ensure => file,
-    content => template("python_agent/logging.ini.erb"),
-    require => File["${target}/${service_code}/agent.conf"],
+# removing default extensions which are shipped by agent.zip
+  agent::remove_templates {
+    $exclude_templates:
+      target    => $carbon_home,
   }
 
-  python_agent::start { $deployment_code:
+  $required_resources = $module ? {
+    'undef'  => [
+      Exec['copy launch-params to agent_home'],
+      Agent::Push_templates[$default_templates_excluded],
+    ],
+    default =>[
+      Exec['copy launch-params to agent_home'],
+      Agent::Push_templates[$default_templates_excluded],
+      Agent::Push_templates[$custom_templates]         ]
+  }
+
+  agent::start { $service_code:
     owner   => $owner,
-    target  => "${target}/${service_code}",
-    require => File["${target}/${service_code}/logging.ini"],
+    target  => $agent_home,
+    require => $required_resources
   }
 }

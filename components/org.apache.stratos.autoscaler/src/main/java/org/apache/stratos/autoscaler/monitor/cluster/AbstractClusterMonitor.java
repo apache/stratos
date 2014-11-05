@@ -92,6 +92,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.clusterId = clusterId;
         this.serviceId = serviceId;
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
         this.status = ClusterStatus.Created;

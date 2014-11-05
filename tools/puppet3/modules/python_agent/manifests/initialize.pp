@@ -17,7 +17,7 @@
 
 # Initializing the deployment
 
-define python_agent::initialize ($repo, $version, $service, $local_dir, $target, $owner,) {
+define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $target, $owner,) {
 
   exec { "updates":
         path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
@@ -52,19 +52,18 @@ define python_agent::initialize ($repo, $version, $service, $local_dir, $target,
         path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
         command => "pip install gittle",
         require => Exec["pip installs-psutil"];
-  }
 
-  exec { 'cleanup-python-agent':
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-    command => "rm -rf /${local_dir};rm -rf ${target}/${service};",
-    require => Exec["pip installs-gittle"];
+    "pip installs-pexpect":
+      path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      command => "pip install pexpect",
+      require => Exec["pip installs-gittle"];
   }
 
   exec {
     "creating_target_for_python_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       command => "mkdir -p ${target}",
-      require => Exec["cleanup-python-agent"];
+      require => Exec["pip installs-pexpect"];
 
     "creating_local_package_repo_for_python_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/java/bin/',
@@ -74,28 +73,28 @@ define python_agent::initialize ($repo, $version, $service, $local_dir, $target,
   }
 
   file {
-    "/${local_dir}/${service}.zip":
+    "/${local_dir}/${agent_name}.zip":
       ensure => present,
-      source => ["puppet:///modules/python_agent/${service}.zip"],
+      source => ["puppet:///modules/python_agent/${agent_name}.zip"],
       require   => Exec["creating_local_package_repo_for_python_${name}"],
   }
 
   exec {
-    "extracting_${service}.zip_for_${name}":
+    "extracting_${agent_name}.zip_for_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd       => $target,
-      #/mnt/cartridge-agent/agent.py
-      unless    => "test -d ${target}/${service}/agent.conf",
-      command   => "unzip -o ${local_dir}/${service}.zip",
+      #/mnt/apache-stratos-python-cartridge-agent-1.0.0/agent.py
+      unless    => "test -d ${target}/${agent_name}/agent.conf",
+      command   => "unzip -o ${local_dir}/${agent_name}.zip",
       logoutput => 'on_failure',
-      require   => File["/${local_dir}/${service}.zip"];
+      require   => File["/${local_dir}/${agent_name}.zip"];
 
     "setting_permission_for_python_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
       cwd       => $target,
-      command   => "chown -R ${owner}:${owner} ${target}/${service} ;
-                    chmod -R 755 ${target}/${service}",
+      command   => "chown -R ${owner}:${owner} ${target}/${agent_name} ;
+                    chmod -R 755 ${target}/${agent_name}",
       logoutput => 'on_failure',
-      require   => Exec["extracting_${service}.zip_for_${name}"];
+      require   => Exec["extracting_${agent_name}.zip_for_${name}"];
   }
 }

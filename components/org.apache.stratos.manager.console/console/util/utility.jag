@@ -335,17 +335,6 @@ consoleAppUtil = new function(){
            }
         } else {
            session.put("get-status", "Unknown response!");
-        
-        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
-           session.put("get-status", "succeeded");
-        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
-           if(response.data != null && response.data != undefined) {
-               session.put("get-status", parse(response.data).Error.errorMessage);
-           }
-        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
-           if(response.data != null && response.data != undefined) {
-               session.put("get-status", response.data); return;
-           }
         }
 
         log.debug("sent is: " + stringify(response));
@@ -426,16 +415,6 @@ consoleAppUtil = new function(){
            }
         } else {
            session.put("deploy-status", "Unknown response!");
-        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
-           session.put("deploy-status", "succeeded");
-        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
-           if(response.data != null && response.data != undefined) {
-               session.put("deploy-status", parse(response.data).Error.errorMessage);
-           }
-        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
-           if(response.data != null && response.data != undefined) {         
-               session.put("deploy-status", response.data); return;             
-           }
         }
         
         log.debug("sent is: " + stringify(response));
