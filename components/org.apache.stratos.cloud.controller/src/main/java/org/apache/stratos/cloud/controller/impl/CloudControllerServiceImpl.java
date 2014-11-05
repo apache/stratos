@@ -1931,7 +1931,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             newCluster.setStatus(ClusterStatus.Created);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
             Cartridge cartridge = dataHolder.getCartridge(appClusterCtxt.getCartridgeType());
-            if(cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
+            if(cartridge.getDeployerType() != null &&
+                    cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
                 newCluster.setKubernetesCluster(true);
             }
             clusters.add(newCluster);

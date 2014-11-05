@@ -331,9 +331,12 @@ public class DefaultApplicationParser implements ApplicationParser {
                 //properties.addProperties(property);
                 propertyList.add(property);
             }
-            Property[] properties1 = new Property[propertyList.size()];
-            properties.setProperties(propertyList.toArray(properties1));
-            this.addProperties(alias, properties);
+            if(propertyList.size() > 0 ) {
+                Property[] properties1 = new Property[propertyList.size()];
+                properties.setProperties(propertyList.toArray(properties1));
+                this.addProperties(alias, properties);
+            }
+
         }
 
 
