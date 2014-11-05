@@ -33,12 +33,12 @@ import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.Properties;
 
 import java.util.*;
 import javax.crypto.Cipher;
@@ -300,18 +300,18 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         String alias;
-        Properties properties = new Properties();
         for (SubscribableInfoContext value : subscribableInfoCtxts.values()) {
             alias = value.getAlias();
             String username = value.getRepoUsername();
             String password = value.getRepoPassword();
             String repoUrl = value.getRepoUrl();
+            List<Property> properties =  new ArrayList<Property>();
 
             if (StringUtils.isNotEmpty(username)) {
                 Property property = new Property();
                 property.setName("REPO_USERNAME");
                 property.setValue(username);
-                properties.addProperties(property);
+                properties.add(property);
             }
 
             if (StringUtils.isNotEmpty(password)) {
@@ -319,17 +319,23 @@ public class DefaultApplicationParser implements ApplicationParser {
                 Property property = new Property();
                 property.setName("REPO_PASSWORD");
                 property.setValue(encryptedPassword);
-                properties.addProperties(property);
+                properties.add(property);
             }
 
             if (StringUtils.isNotEmpty(repoUrl)) {
                 Property property = new Property();
                 property.setName("REPO_URL");
                 property.setValue(repoUrl);
-                properties.addProperties(property);
+                properties.add(property);
             }
 
-            this.addProperties(alias, properties);
+            Property[] probArr = new Property[properties.size()];
+
+            Properties prob = new Properties();
+            prob.setProperties(properties.toArray(probArr));
+
+
+            this.addProperties(alias, prob );
         }
 
 
