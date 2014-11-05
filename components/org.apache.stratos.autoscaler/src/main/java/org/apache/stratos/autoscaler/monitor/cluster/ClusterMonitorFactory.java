@@ -120,7 +120,6 @@ public class ClusterMonitorFactory {
                 new VMServiceClusterMonitor(cluster.getClusterId(),
                                             cluster.getServiceName(),
                                             deploymentPolicy, policy);
-        clusterMonitor.setStatus(ClusterStatus.Created);
 
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
