@@ -282,7 +282,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 String [] startupOrders = appCtxt.getComponents().getDependencyContext().getStartupOrdersContexts();
                 if (startupOrders != null) {
                 	if (log.isDebugEnabled()) {
-                    	log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " + 
+                    	log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " +
                     				appCtxt.getAlias() + " #: " + startupOrders.length);
                     }
                     appDependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders));
@@ -306,12 +306,12 @@ public class DefaultApplicationParser implements ApplicationParser {
             String username = value.getRepoUsername();
             String password = value.getRepoPassword();
             String repoUrl = value.getRepoUrl();
-
+            List<Property> propertyList = new ArrayList<Property>();
             if (StringUtils.isNotEmpty(username)) {
                 Property property = new Property();
                 property.setName("REPO_USERNAME");
                 property.setValue(username);
-                properties.addProperties(property);
+                propertyList.add(property);
             }
 
             if (StringUtils.isNotEmpty(password)) {
@@ -319,16 +319,20 @@ public class DefaultApplicationParser implements ApplicationParser {
                 Property property = new Property();
                 property.setName("REPO_PASSWORD");
                 property.setValue(encryptedPassword);
-                properties.addProperties(property);
+                //properties.addProperties(property);
+                propertyList.add(property);
+
             }
 
             if (StringUtils.isNotEmpty(repoUrl)) {
                 Property property = new Property();
                 property.setName("REPO_URL");
                 property.setValue(repoUrl);
-                properties.addProperties(property);
+                //properties.addProperties(property);
+                propertyList.add(property);
             }
-
+            Property[] properties1 = new Property[propertyList.size()];
+            properties.setProperties(propertyList.toArray(properties1));
             this.addProperties(alias, properties);
         }
 
