@@ -17,12 +17,12 @@
 
 # Apply the templates
 
-define python_agent::push_templates ($target) {
+define agent::push_templates ($target,$template_dir) {
   file { "${target}/${name}":
     ensure  => present,
     owner   => $agent::owner,
     group   => $agent::group,
     mode    => '0755',
-    content => template("python_agent/${name}.erb"),
+    content => template("${template_dir}/${name}.erb"),
   }
 }
