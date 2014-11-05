@@ -1,22 +1,19 @@
 [agent]
-mb.ip                                 =MB-IP
-mb.port                               =MB-PORT
+mb.ip                                 =<%= @mb_ip %>
+mb.port                               =<%= @mb_port %>
 listen.address                        =localhost
 thrift.receiver.ip                    =<%= @cep_ip %>
 thrift.receiver.port                  =<%= @cep_port %>
-agent.root                            =<%= @target %>/<%= @service_code %>
-param.file.path                       =<%= @target %>/<%= @service_code %>/payload/launch-params
-extensions.dir                        =<%= @target %>/<%= @service_code %>/extensions
+param.file.path                       =<%= @agent_home %>/payload/launch-params
+extensions.dir                        =<%= @agent_home %>/extensions
 cep.stats.publisher.enabled           =true
 lb.private.ip                         =
 lb.public.ip                          =
-javax.net.ssl.trustStore              =CERT-TRUSTSTORE
-javax.net.ssl.trustStorePassword      =<%= @truststore_password %>
 enable.artifact.update                =true
 auto.commit                           =false
 auto.checkout                         =true
 artifact.update.interval              =15
-port.check.timeout                    =600
+port.check.timeout                    =600000
 enable.data.publisher                 =<%= @enable_log_publisher %>
 monitoring.server.ip                  =<%= @bam_ip %>
 monitoring.server.port                =<%= @bam_port %>
@@ -24,7 +21,6 @@ monitoring.server.secure.port         =<%= @bam_secure_port %>
 monitoring.server.admin.username      =<%= @bam_username %>
 monitoring.server.admin.password      =<%= @bam_password %>
 log.file.paths                        =LOG_FILE_PATHS
-APP_PATH                              =APP_PATH
 super.tenant.repository.path          =/repository/deployment/server/
 tenant.repository.path                =/repository/tenants/
 extension.instance.started            =instance-started.sh

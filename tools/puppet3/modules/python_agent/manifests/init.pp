@@ -33,6 +33,11 @@ class python_agent(
   $agent_name = "apache-stratos-python-${service_code}-${version}"
   $agent_home= "${target}/${agent_name}"
 
+  $split_mburl = split($mb_url, "//")
+  $split_mburl = split($split_mburl[1], ":")
+  $mb_ip = $split_mburl[0]
+  $mb_port = $split_mburl[1]
+
   tag($service_code)
 
   $default_templates = [
