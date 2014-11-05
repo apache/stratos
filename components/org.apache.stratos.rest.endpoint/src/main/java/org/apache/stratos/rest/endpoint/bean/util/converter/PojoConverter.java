@@ -19,6 +19,12 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.DependencyContext;
@@ -26,8 +32,18 @@ import org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoContext;
 import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
 import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.Container;
+import org.apache.stratos.cloud.controller.stub.pojo.IaasConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterface;
+import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterfaces;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.stub.pojo.Volume;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -43,18 +59,28 @@ import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.LoadAverageThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.LoadThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.MemoryConsumptionThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.RequestsInFlightThresholds;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ContainerBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.NetworkInterfaceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.VolumeBean;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.PortRange;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.util.*;
 
 public class PojoConverter {
 
@@ -935,10 +961,18 @@ public class PojoConverter {
             subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
             subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
+            if (subscribableInfo.getProperty() != null) {
+            	org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
+            	for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
+            		Property property = new Property();
+            		property.setName(propertyBean.getName());
+            		property.setValue(propertyBean.getValue());
+            		properties.addProperties(property);
+            	}
+            	subscribableInfoContext.setProperties(properties);
+            }
             subscribableInfoContexts[i++] =  subscribableInfoContext;
-
         }
-
         return subscribableInfoContexts;
     }
 

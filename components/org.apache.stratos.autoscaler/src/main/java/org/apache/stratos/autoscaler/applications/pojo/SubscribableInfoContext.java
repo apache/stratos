@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.applications.pojo;
 
 import java.io.Serializable;
 
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+
 public class SubscribableInfoContext implements Serializable {
 
     private static final long serialVersionUID = -6874644941002783034L;
@@ -40,6 +42,8 @@ public class SubscribableInfoContext implements Serializable {
     private String repoPassword;
 
     private String[] dependencyAliases;
+    
+    private Properties properties;
 
     public String getAlias() {
         return alias;
@@ -103,5 +107,13 @@ public class SubscribableInfoContext implements Serializable {
 
     public void setDependencyAliases(String[] dependencyAliases) {
         this.dependencyAliases = dependencyAliases;
+    }
+    
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 }

@@ -19,6 +19,8 @@
 
 package org.apache.stratos.manager.composite.application.beans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "subscribableInfo")
@@ -39,6 +41,8 @@ public class SubscribableInfo {
     private String repoPassword;
 
     private String[] dependencyAliases;
+    
+    private List<PropertyBean> property;
 
     public String getAlias() {
         return alias;
@@ -102,5 +106,13 @@ public class SubscribableInfo {
 
     public void setDependencyAliases(String[] dependencyAliases) {
         this.dependencyAliases = dependencyAliases;
+    }
+    
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
     }
 }
