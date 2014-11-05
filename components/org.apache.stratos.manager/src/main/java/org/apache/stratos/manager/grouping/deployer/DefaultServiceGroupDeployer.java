@@ -273,7 +273,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     
     private ServiceGroupDefinition populateServiceGroupDefinitionPojo (ServiceGroup serviceGroup ) {
     	ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
-    	
+    	servicegroupDef.setName(serviceGroup.getName());
     	String [] cartridges = serviceGroup.getCartridges();
     	String [] subGroups = serviceGroup.getSubGroups();
     	org.apache.stratos.autoscaler.pojo.xsd.Dependencies deps = serviceGroup.getDependencies();
