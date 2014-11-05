@@ -29,12 +29,9 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskScheduler;
-import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusEventMessageDelegator;
-import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusEventMessageListener;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
@@ -66,12 +63,13 @@ public class CloudControllerDSComponent {
 
     private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
     private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
+    private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
     private ApplicationTopicReceiver applicationTopicReceiver;
 
     protected void activate(ComponentContext context) {
         try {
                	
-            // Start instance status event message listener
+            /*// Start instance status event message listener
             TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
             subscriber.setMessageListener(new InstanceStatusEventMessageListener());
             Thread tsubscriber = new Thread(subscriber);
@@ -80,10 +78,8 @@ public class CloudControllerDSComponent {
             // Start instance status message delegator
             InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
             Thread tdelegator = new Thread(delegator);
-            tdelegator.start();
-            if(log.isInfoEnabled()) {
-                log.info("Instance status message receiver thread started");
-            }
+            tdelegator.start();*/
+
 
             applicationTopicReceiver = new ApplicationTopicReceiver();
             Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
@@ -99,6 +95,13 @@ public class CloudControllerDSComponent {
 
             if (log.isInfoEnabled()) {
                 log.info("Cluster status Receiver thread started");
+            }
+
+            instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
+            Thread tInstanceStatusTopicReceiver = new Thread(instanceStatusTopicReceiver);
+            tInstanceStatusTopicReceiver.start();
+            if(log.isInfoEnabled()) {
+                log.info("Instance status message receiver thread started");
             }
 
         	// Register cloud controller service

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.cluster.status;
+package org.apache.stratos.messaging.message.receiver.instance.status;
 
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
@@ -36,13 +36,13 @@ import javax.jms.TextMessage;
  * instance notifier
  * message broker topic and add them to the event queue.
  */
-class ClusterStatusEventMessageListener implements MqttCallback {
+class InstanceStatusEventMessageListener implements MqttCallback {
 
-    private static final Log log = LogFactory.getLog(ClusterStatusEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(InstanceStatusEventMessageListener.class);
 
-    private final ClusterStatusEventMessageQueue messageQueue;
+    private final InstanceStatusEventMessageQueue messageQueue;
 
-    public ClusterStatusEventMessageListener(ClusterStatusEventMessageQueue messageQueue) {
+    public InstanceStatusEventMessageListener(InstanceStatusEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
     }
 

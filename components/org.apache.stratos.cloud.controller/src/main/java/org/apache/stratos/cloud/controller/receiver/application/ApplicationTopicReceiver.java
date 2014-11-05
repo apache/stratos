@@ -29,18 +29,43 @@ import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEv
 /**
  * This is to receive the application topic messages.
  */
-public class ApplicationTopicReceiver implements Runnable {
+public class ApplicationTopicReceiver implements Runnable{
     private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
     private ApplicationsEventReceiver applicationsEventReceiver;
     private boolean terminated;
 
-    @Override
-    public void run() {
+    public ApplicationTopicReceiver() {
         this.applicationsEventReceiver = new ApplicationsEventReceiver();
         addEventListeners();
+        //startAppReceiver();
 
     }
 
+    private void startAppReceiver() {
+        Thread thread = new Thread(applicationsEventReceiver);
+        thread.start();
+    }
+    @Override
+    public void run() {
+
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller application status thread started");
+        }
+        Thread thread = new Thread(applicationsEventReceiver);
+        thread.start();
+
+        // Keep the thread live until terminated
+        while (!terminated) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+        }
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller application status thread terminated");
+        }
+
+    }
     private void addEventListeners() {
         applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override

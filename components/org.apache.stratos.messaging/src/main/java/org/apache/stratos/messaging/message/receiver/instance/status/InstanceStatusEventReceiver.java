@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.cluster.status;
+package org.apache.stratos.messaging.message.receiver.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,17 +28,17 @@ import org.apache.stratos.messaging.util.Constants;
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class ClusterStatusEventReceiver implements Runnable {
-    private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
-    private final ClusterStatusEventMessageDelegator messageDelegator;
-    private final ClusterStatusEventMessageListener messageListener;
+public class InstanceStatusEventReceiver implements Runnable {
+    private static final Log log = LogFactory.getLog(InstanceStatusEventReceiver.class);
+    private final InstanceStatusEventMessageDelegator messageDelegator;
+    private final InstanceStatusEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
-    public ClusterStatusEventReceiver() {
-        ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
-        this.messageDelegator = new ClusterStatusEventMessageDelegator(messageQueue);
-        this.messageListener = new ClusterStatusEventMessageListener(messageQueue);
+    public InstanceStatusEventReceiver() {
+        InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
+        this.messageDelegator = new InstanceStatusEventMessageDelegator(messageQueue);
+        this.messageListener = new InstanceStatusEventMessageListener(messageQueue);
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -49,7 +49,7 @@ public class ClusterStatusEventReceiver implements Runnable {
     public void run() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Constants.CLUSTER_STATUS_TOPIC);
+            topicSubscriber = new TopicSubscriber(Constants.INSTANCE_STATUS_TOPIC);
             topicSubscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();

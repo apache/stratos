@@ -21,7 +21,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendCompleteApplicationsEvent (Applications completeApplications) {
 
-        publishEvent(new CompleteApplicationsEvent(completeApplications));
+        //publishEvent(new CompleteApplicationsEvent(completeApplications));
     }
 
     public static void sendApplicationCreatedEvent (Application application) {

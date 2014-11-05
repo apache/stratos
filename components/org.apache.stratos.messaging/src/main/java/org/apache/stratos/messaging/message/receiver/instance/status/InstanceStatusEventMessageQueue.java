@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,29 +17,13 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.receiver.instance.status;
+package org.apache.stratos.messaging.message.receiver.instance.status;
 
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Implements a blocking queue for managing instance status event messages.
+ * Implements a blocking queue for managing instance notifier event messages.
  */
-public class InstanceStatusEventMessageQueue extends LinkedBlockingQueue<TextMessage>{
-	private static final long serialVersionUID = 828304342209475302L;
-	private static volatile InstanceStatusEventMessageQueue instance;
-
-    private InstanceStatusEventMessageQueue(){
-    }
-
-    public static InstanceStatusEventMessageQueue getInstance() {
-        if (instance == null) {
-            synchronized (InstanceStatusEventMessageQueue.class){
-                if (instance == null) {
-                    instance = new InstanceStatusEventMessageQueue();
-                }
-            }
-        }
-        return instance;
-    }
+class InstanceStatusEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
 }

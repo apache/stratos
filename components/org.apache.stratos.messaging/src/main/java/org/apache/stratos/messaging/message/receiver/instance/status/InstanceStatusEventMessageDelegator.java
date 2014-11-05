@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.cluster.status;
+package org.apache.stratos.messaging.message.receiver.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
+import org.apache.stratos.messaging.message.processor.instance.status.InstanceStatusMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
 
 import javax.jms.TextMessage;
@@ -33,16 +34,16 @@ import javax.jms.TextMessage;
  * Implements logic for processing instance notifier event messages based on a given
  * topology process chain.
  */
-class ClusterStatusEventMessageDelegator implements Runnable {
+class InstanceStatusEventMessageDelegator implements Runnable {
 
-    private static final Log log = LogFactory.getLog(ClusterStatusEventMessageDelegator.class);
-    private ClusterStatusEventMessageQueue messageQueue;
+    private static final Log log = LogFactory.getLog(InstanceStatusEventMessageDelegator.class);
+    private InstanceStatusEventMessageQueue messageQueue;
     private MessageProcessorChain processorChain;
     private boolean terminated;
 
-    public ClusterStatusEventMessageDelegator(ClusterStatusEventMessageQueue messageQueue) {
+    public InstanceStatusEventMessageDelegator(InstanceStatusEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
-        this.processorChain = new InstanceNotifierMessageProcessorChain();
+        this.processorChain = new InstanceStatusMessageProcessorChain();
     }
 
     public void addEventListener(EventListener eventListener) {
