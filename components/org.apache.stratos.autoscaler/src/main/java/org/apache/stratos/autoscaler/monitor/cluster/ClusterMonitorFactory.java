@@ -19,34 +19,30 @@
 
 package org.apache.stratos.autoscaler.monitor.cluster;
 
-import java.util.Map;
-import java.util.Random;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
-import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
+
+import java.util.Map;
+import java.util.Random;
 
 /*
  * Factory class for creating cluster monitors.
@@ -109,7 +105,7 @@ public class ClusterMonitorFactory {
         if (allPartitions == null) {
             String msg =
                     "Partitions are null in deployment policy: [policy-name]: " +
-                    deploymentPolicyName;
+                            deploymentPolicyName;
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -118,14 +114,14 @@ public class ClusterMonitorFactory {
 
         VMServiceClusterMonitor clusterMonitor =
                 new VMServiceClusterMonitor(cluster.getClusterId(),
-                                            cluster.getServiceName(),
-                                            deploymentPolicy, policy);
+                        cluster.getServiceName(),
+                        deploymentPolicy, policy);
 
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
-                                                                                          partitionGroup.getPartitionAlgo(),
-                                                                                          partitionGroup.getPartitions());
+                    partitionGroup.getPartitionAlgo(),
+                    partitionGroup.getPartitions());
 
             for (Partition partition : partitionGroup.getPartitions()) {
                 PartitionContext partitionContext = new PartitionContext(partition);
@@ -144,19 +140,19 @@ public class ClusterMonitorFactory {
                         memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
                         if (MemberStatus.Activated.equals(member.getStatus())) {
-                        	if (log.isDebugEnabled()) {
-                        		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
-            					log.debug(msg);
-            				}
+                            if (log.isDebugEnabled()) {
+                                String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+                                log.debug(msg);
+                            }
                             partitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
                         } else if (MemberStatus.Created.equals(member.getStatus()) || MemberStatus.Starting.equals(member.getStatus())) {
-                        	if (log.isDebugEnabled()) {
-                        		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
-            					log.debug(msg);
-            				}
+                            if (log.isDebugEnabled()) {
+                                String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+                                log.debug(msg);
+                            }
                             partitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
@@ -173,14 +169,14 @@ public class ClusterMonitorFactory {
                 networkPartitionContext.addPartitionContext(partitionContext);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Partition context has been added: [partition] %s",
-                                           partitionContext.getPartitionId()));
+                            partitionContext.getPartitionId()));
                 }
             }
 
             clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition context has been added: [network partition] %s",
-                                       networkPartitionContext.getId()));
+                        networkPartitionContext.getId()));
             }
         }
 
@@ -188,17 +184,20 @@ public class ClusterMonitorFactory {
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
 
-        if (props.containsKey(Constants.LOAD_BALANCER_REF)) {
-            String value = props.getProperty(Constants.LOAD_BALANCER_REF);
-            clusterMonitor.setLbReferenceType(value);
-            if (log.isDebugEnabled()) {
-                log.debug("Set the lb reference type: " + value);
+        if (props != null) {
+            if (props.containsKey(Constants.LOAD_BALANCER_REF)) {
+                String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+                clusterMonitor.setLbReferenceType(value);
+                if (log.isDebugEnabled()) {
+                    log.debug("Set the lb reference type: " + value);
+                }
             }
+
+            // set hasPrimary property
+            // hasPrimary is true if there are primary members available in that cluster
+            clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
         }
 
-        // set hasPrimary property
-        // hasPrimary is true if there are primary members available in that cluster
-        clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(Constants.IS_PRIMARY)));
 
         log.info("VMServiceClusterMonitor created: " + clusterMonitor.toString());
         return clusterMonitor;
@@ -249,8 +248,8 @@ public class ClusterMonitorFactory {
         String clusterId = cluster.getClusterId();
         VMLbClusterMonitor clusterMonitor =
                 new VMLbClusterMonitor(clusterId,
-                                       cluster.getServiceName(),
-                                       deploymentPolicy, policy);
+                        cluster.getServiceName(),
+                        deploymentPolicy, policy);
         clusterMonitor.setStatus(ClusterStatus.Created);
         // partition group = network partition context
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
@@ -270,8 +269,8 @@ public class ClusterMonitorFactory {
             partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
-                                                                                          partitionGroup.getPartitionAlgo(),
-                                                                                          partitionGroup.getPartitions());
+                    partitionGroup.getPartitionAlgo(),
+                    partitionGroup.getPartitions());
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
                 if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
@@ -282,19 +281,19 @@ public class ClusterMonitorFactory {
                     memberContext.setInitTime(member.getInitTime());
 
                     if (MemberStatus.Activated.equals(member.getStatus())) {
-                    	if (log.isDebugEnabled()) {
-                    		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
-        					log.debug(msg);
-        				}
+                        if (log.isDebugEnabled()) {
+                            String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+                            log.debug(msg);
+                        }
                         partitionContext.addActiveMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
-                               MemberStatus.Starting.equals(member.getStatus())) {
-                    	if (log.isDebugEnabled()) {
-                    		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
-        					log.debug(msg);
-        				}
+                            MemberStatus.Starting.equals(member.getStatus())) {
+                        if (log.isDebugEnabled()) {
+                            String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+                            log.debug(msg);
+                        }
                         partitionContext.addPendingMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
@@ -360,17 +359,17 @@ public class ClusterMonitorFactory {
         }
 
         AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
-        
+
         if (policy == null) {
             String msg = "Autoscale Policy is null. Policy name: " + autoscalePolicyName;
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
-        
+
         java.util.Properties props = cluster.getProperties();
         String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
         KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID,
-                                                                                      cluster.getClusterId());
+                cluster.getClusterId());
 
         String minReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
         if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
@@ -400,26 +399,26 @@ public class ClusterMonitorFactory {
             memberContext.setMemberId(memberId);
             memberContext.setClusterId(clusterId);
             memberContext.setInitTime(member.getInitTime());
-            
+
             // if there is at least one member in the topology, that means service has been created already
             // this is to avoid calling startContainer() method again
             kubernetesClusterCtxt.setServiceClusterCreated(true);
-            
+
             if (MemberStatus.Activated.equals(member.getStatus())) {
-            	if (log.isDebugEnabled()) {
-            		String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
-					log.debug(msg);
-				}
+                if (log.isDebugEnabled()) {
+                    String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+                    log.debug(msg);
+                }
                 dockerClusterMonitor.getKubernetesClusterCtxt().addActiveMember(memberContext);
             } else if (MemberStatus.Created.equals(member.getStatus())
-                       || MemberStatus.Starting.equals(member.getStatus())) {
-            	if (log.isDebugEnabled()) {
-            		String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
-					log.debug(msg);
-				}
+                    || MemberStatus.Starting.equals(member.getStatus())) {
+                if (log.isDebugEnabled()) {
+                    String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+                    log.debug(msg);
+                }
                 dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
             }
-            
+
             kubernetesClusterCtxt.addMemberStatsContext(new MemberStatsContext(memberId));
             if (log.isInfoEnabled()) {
                 log.info(String.format("Member stat context has been added: [member] %s", memberId));
