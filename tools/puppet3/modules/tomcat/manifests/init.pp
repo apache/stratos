@@ -22,7 +22,7 @@ class tomcat(
 ){
 
   require java
-  class {'agent':}
+  class {'python_agent':}
 
   $package_name    = "apache-tomcat-${tomcat_version}"
   $service_code    = 'apache-tomcat'
@@ -81,6 +81,6 @@ class tomcat(
   }
 
   # install stratos_base before java before tomcat before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['tomcat']
+  Class['stratos_base'] -> Class['java'] -> Class['python_agent'] -> Class['tomcat']
 }
 

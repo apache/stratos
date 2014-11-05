@@ -39,7 +39,7 @@ class haproxy(
   tag($service_code)
 
   require java
-  class {'agent':}
+  class {'python_agent':}
 
   $service_templates = [
     'bin/haproxy-extension.sh',
@@ -75,5 +75,5 @@ class haproxy(
   }
 
   # install stratos_base before java before haproxy before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['haproxy']
+  Class['stratos_base'] -> Class['java'] -> Class['python_agent'] -> Class['haproxy']
 }

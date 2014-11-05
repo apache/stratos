@@ -25,7 +25,7 @@ class php () {
   require java
  
   $custom_agent_templates = ['extensions/artifacts-updated.sh']
-  class {'agent':
+  class {'python_agent':
     custom_templates => $custom_agent_templates,
     module=>'php'
   }
@@ -141,5 +141,5 @@ class php () {
   }
 
   #install stratos_base before java before php before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['php']
+  Class['stratos_base'] -> Class['python_agent'] -> Class['php']
 }

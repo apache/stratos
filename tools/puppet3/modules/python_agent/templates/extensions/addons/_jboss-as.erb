@@ -15,11 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# default (base) cartridge node
-node /default/ inherits base {
-
-  require java
-  class {'python_agent':}
-
-  Class['stratos_base'] -> Class['python_agent']
-}
+chown -R <%= @jboss_user %>:<%= @jboss_group %> <%= @docroot %>

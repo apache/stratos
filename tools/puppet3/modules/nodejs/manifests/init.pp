@@ -20,7 +20,7 @@ class nodejs {
   require java
 
   $custom_agent_templates = ['extensions/start-servers.sh']
-  class {'agent':
+  class {'python_agent':
     custom_templates => $custom_agent_templates,
     module=>'nodejs'
   }
@@ -75,6 +75,6 @@ class nodejs {
   }
 
   # install stratos_base before java before nodejs before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['nodejs']
+  Class['stratos_base'] -> Class['python_agent'] -> Class['nodejs']
 }
 

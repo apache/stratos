@@ -15,11 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# default (base) cartridge node
-node /default/ inherits base {
+export PATH='/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin'
 
-  require java
-  class {'python_agent':}
+PASSWD=`facter -p stratos_mysql_password`
 
-  Class['stratos_base'] -> Class['python_agent']
-}
+/etc/init.d/mysql start
+
+# Set mysql password
+mysqladmin -uroot password "$PASSWD"
+
+# Remove other users
+mysql -uroot -p"$PASSWD" -Bse "DELETE from mysql.user WHERE password=''"
+
+# Set root user with remote access
+mysql -uroot -p"$PASSWD" -Bse "CREATE USER 'root'@'%' IDENTIFIED BY '${PASSWD}'"
+

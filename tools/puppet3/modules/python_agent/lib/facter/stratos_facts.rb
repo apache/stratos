@@ -15,11 +15,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# default (base) cartridge node
-node /default/ inherits base {
+if FileTest.exists?("/tmp/payload/launch-params")
 
-  require java
-  class {'python_agent':}
+  configs = File.read("/tmp/payload/launch-params").split(",").map(&:strip)
 
-  Class['stratos_base'] -> Class['python_agent']
-}
+  configs.each { |x| key_value_pair = x.split("=").map(&:strip)
+    Facter.add("stratos_" + key_value_pair[0].to_s){
+      setcode {
+        key_value_pair[1].to_s
+      }
+    }
+  }
+end
