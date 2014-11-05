@@ -188,7 +188,7 @@ public class ClusterMonitorFactory {
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
 
-        if (props.containsKey(Constants.LOAD_BALANCER_REF)) {
+        if (props != null && props.containsKey(Constants.LOAD_BALANCER_REF)) {
             String value = props.getProperty(Constants.LOAD_BALANCER_REF);
             clusterMonitor.setLbReferenceType(value);
             if (log.isDebugEnabled()) {
