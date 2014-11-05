@@ -579,7 +579,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         assert serviceGroup != null;
         if (serviceGroup.getDependencies() != null) {
-            return serviceGroup.getDependencies().getKillBehaviour();
+            return serviceGroup.getDependencies().getTerminationBehaviour();
         }
 
         return null;

@@ -22,12 +22,11 @@ package org.apache.stratos.manager.grouping.deployer;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.pojo.xsd.Dependencies;
 import org.apache.stratos.autoscaler.pojo.xsd.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceAutoScalerExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidServiceGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.autoscaler.pojo.xsd.Dependencies;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
@@ -265,7 +264,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             }
             // validate termination behavior
             validateTerminationBehavior(depDefs.getTerminationBehaviour());
-            deps.setKillBehaviour(depDefs.getTerminationBehaviour());
+            deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
             servicegroup.setDependencies(deps);
         }
     	
@@ -287,7 +286,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 depsDef.setStartupOrders(startupOrdersDef);
             }
 
-            depsDef.setTerminationBehaviour(deps.getKillBehaviour());
+            depsDef.setTerminationBehaviour(deps.getTerminationBehaviour());
             servicegroupDef.setDependencies(depsDef);
         }
 
