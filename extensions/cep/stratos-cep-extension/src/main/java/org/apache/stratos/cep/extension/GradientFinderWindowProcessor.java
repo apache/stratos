@@ -181,13 +181,17 @@ public class GradientFinderWindowProcessor extends WindowProcessor implements Ru
 		
 		long t1 = firstInEvent.getTimeStamp();
 		long t2 = lastInEvent.getTimeStamp();
-		long tGap = t2 - t1;
+		long millisecondsForASecond = 1000;
+		long tGap = t2 - t1 > millisecondsForASecond ? t2 - t1 : millisecondsForASecond;
 		double gradient = 0.0;
 		if (tGap > 0) {
-			gradient = ((lastVal - firstVal) * 1000) / tGap;
+			gradient = ((lastVal - firstVal) * millisecondsForASecond) / tGap;
 		}
-		log.debug("Gradient: " + gradient + " Last val: " + lastVal +
-		          " First val: " + firstVal + " Time Gap: " + tGap );
+		if (log.isDebugEnabled()) {
+            log.debug("Gradient: " + gradient + " Last val: " + lastVal +
+                    " First val: " + firstVal + " Time Gap: " + tGap + " t1: "+t1+ " t2: "+
+                    t2+" hash: "+this.hashCode());
+        }
 		Object[] data = firstInEvent.getData().clone();
 		data[subjectedAttrIndex] = gradient;
 		InEvent gradientEvent =
