@@ -26,7 +26,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
@@ -144,19 +144,19 @@ public class AutoscalerServiceClient {
         return autoscalePolicy;
     }
 
-    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies()
+    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] getDeploymentPolicies()
             throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
+        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] deploymentPolicies;
         deploymentPolicies = stub.getAllDeploymentPolicies();
 
         return deploymentPolicies;
     }
 
-    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies(
+    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] getDeploymentPolicies(
             String cartridgeType) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
+        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] deploymentPolicies;
         deploymentPolicies = stub
                 .getValidDeploymentPoliciesforCartridge(cartridgeType);
 
@@ -177,9 +177,9 @@ public class AutoscalerServiceClient {
         return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
     }
 
-    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
+    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy;
+        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy;
         deploymentPolicy = stub.getDeploymentPolicy(deploymentPolicyId);
 
         return deploymentPolicy;

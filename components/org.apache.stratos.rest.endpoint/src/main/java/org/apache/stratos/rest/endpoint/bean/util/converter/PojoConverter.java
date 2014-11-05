@@ -354,11 +354,11 @@ public class PojoConverter {
         return autoscalePolicy;
     }
 
-    public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
+    public static org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
                                                                                                                                deploymentPolicyBean) {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = new
-                org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
+        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy = new
+                org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy();
 
         deploymentPolicy.setId(deploymentPolicyBean.getId());
         deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
@@ -608,7 +608,7 @@ public class PojoConverter {
         return loadThresholdBean;
     }
 
-    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[]
+    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[]
                                                                            deploymentPolicies) {
         DeploymentPolicy[] deploymentPolicyBeans;
         if (deploymentPolicies == null) {
@@ -623,7 +623,7 @@ public class PojoConverter {
         return deploymentPolicyBeans;
     }
 
-    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy
+    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy
                                                                         deploymentPolicy) {
 
         DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
