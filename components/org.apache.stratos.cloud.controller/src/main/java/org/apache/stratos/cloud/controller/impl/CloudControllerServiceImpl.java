@@ -1937,6 +1937,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             clusters.add(newCluster);
         }
+        TopologyBuilder.handleApplicationClustersCreated(appId, clusters);
+
+        persist();
+
     }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
@@ -1951,10 +1955,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
 //        }
 //
-//        /*TopologyBuilder.handleApplicationDeployed(application, applicationParser.getApplicationClusterContexts(),
-//                applicationParser.getPayloadData());
-//*/
-//        persist();
+//
 //    }
 //
 //    @Override
