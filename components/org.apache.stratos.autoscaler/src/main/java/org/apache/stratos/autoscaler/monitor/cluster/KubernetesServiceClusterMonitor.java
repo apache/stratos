@@ -47,8 +47,9 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                                            String serviceClusterID, String serviceId,
                                            String autoscalePolicyId) {
         super(serviceClusterID, serviceId, kubernetesClusterCtxt,
-              new AutoscalerRuleEvaluator(
+        		new AutoscalerRuleEvaluator(
                       StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
+                      StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE,
                       StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE),
               autoscalePolicyId);
         readConfigurations();
@@ -78,6 +79,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     protected void monitor() {
         minCheck();
+        obsoleteCheck();
         scaleCheck();
     }
 
@@ -125,10 +127,23 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 				getMinCheckKnowledgeSession(), minCheckFactHandle,
 				getKubernetesClusterCtxt());
 	}
+	
+	private void obsoleteCheck() {
+		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+		String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Running obsolete check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
+        }
+		obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+				getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle,
+				getKubernetesClusterCtxt());
+	}
 
 	@Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
+        getObsoleteCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
         stopScheduler();

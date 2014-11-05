@@ -51,19 +51,16 @@ global java.lang.String lbRef;
 global java.lang.Boolean isPrimary;
 global Integer primaryMemberCount;
 
-rule "Minimum Rule"
+rule "Terminate Obsoleted Instances"
 dialect "mvel"
-       when
-           $ctxt : PartitionContext ()
-           eval(log.debug("Running minimum rule: [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId()))
-	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Non terminated member count: " + $ctxt.getNonTerminatedMemberCount()))
-	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Minimum member count: " + $ctxt.getMinimumMemberCount()))
-	       eval ( (isPrimary && (primaryMemberCount < $ctxt.getMinimumMemberCount() )) || ( !isPrimary && ($ctxt.getNonTerminatedMemberCount() < $ctxt.getMinimumMemberCount() )) )
-       then
-           if (isPrimary){
-              log.debug("[min-check] true  [primary] true   [primary member count] " + primaryMemberCount);
-           } else{
-              log.debug("[min-check] true  [primary] false");
-           }
-	       $delegator.delegateSpawn($ctxt, clusterId, lbRef, isPrimary);
+        when
+            $ctxt : PartitionContext ()
+            eval(log.debug("Running obsolete instances rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
+            eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Obsolete member count: " + $ctxt.getObsoletedMembers().size()))
+            eval($ctxt.getObsoletedMembers().keySet().size() > 0)
+            memberId : String() from $ctxt.getObsoletedMembers().keySet()
+            eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
+        then
+           $delegator.terminateObsoleteInstance(memberId);
 end
+
