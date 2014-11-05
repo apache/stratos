@@ -36,7 +36,6 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
 import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
@@ -73,8 +72,10 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private int monitoringIntervalMilliseconds;
 
     protected FactHandle minCheckFactHandle;
+    protected FactHandle obsoleteCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
     private StatefulKnowledgeSession minCheckKnowledgeSession;
+    private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
     private StatefulKnowledgeSession scaleCheckKnowledgeSession;
     private boolean isDestroyed;
 
@@ -236,11 +237,19 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
         this.minCheckFactHandle = minCheckFactHandle;
     }
+    
+    public FactHandle getObsoleteCheckFactHandle() {
+        return obsoleteCheckFactHandle;
+    }
+    
+    public void setObsoleteCheckFactHandle(FactHandle obsoleteCheckFactHandle) {
+        this.obsoleteCheckFactHandle = obsoleteCheckFactHandle;
+    }
 
     public FactHandle getScaleCheckFactHandle() {
         return scaleCheckFactHandle;
     }
-
+    
     public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
         this.scaleCheckFactHandle = scaleCheckFactHandle;
     }
@@ -252,6 +261,15 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public void setMinCheckKnowledgeSession(
             StatefulKnowledgeSession minCheckKnowledgeSession) {
         this.minCheckKnowledgeSession = minCheckKnowledgeSession;
+    }
+    
+    public StatefulKnowledgeSession getObsoleteCheckKnowledgeSession() {
+        return obsoleteCheckKnowledgeSession;
+    }
+
+    public void setObsoleteCheckKnowledgeSession(
+            StatefulKnowledgeSession obsoleteCheckKnowledgeSession) {
+        this.obsoleteCheckKnowledgeSession = obsoleteCheckKnowledgeSession;
     }
 
     public StatefulKnowledgeSession getScaleCheckKnowledgeSession() {

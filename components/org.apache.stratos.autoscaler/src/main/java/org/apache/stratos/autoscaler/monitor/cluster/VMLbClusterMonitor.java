@@ -27,16 +27,15 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 
 /**
@@ -53,6 +52,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
         super(clusterId, serviceId,
               new AutoscalerRuleEvaluator(
                       StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+                      StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
                       StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
               deploymentPolicy, autoscalePolicy,
               new ConcurrentHashMap<String, NetworkPartitionContext>());
@@ -107,6 +107,9 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
                             AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
                                                                      minCheckFactHandle,
                                                                      partitionContext);
+                    obsoleteCheckFactHandle = 
+                    		AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(), 
+                    				obsoleteCheckFactHandle, partitionContext);
                     // start only in the first partition context
                     break;
                 }
@@ -119,6 +122,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     @Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
+        getObsoleteCheckKnowledgeSession().dispose();
         getMinCheckKnowledgeSession().dispose();
         setDestroyed(true);
         stopScheduler();
