@@ -23,6 +23,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.pojo.xsd.ServiceGroup;
+import org.apache.stratos.autoscaler.stub.AutoScalerServiceAutoScalerExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidServiceGroupExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidServiceGroupExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
@@ -205,24 +206,24 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
     	//throw new ServiceGroupDefinitioException("method not supported");
     	
-    	CloudControllerServiceClient ccServiceClient = null;
+    	AutoscalerServiceClient autoscalerServiceClient = null;
     	
     	try {
-            ccServiceClient = CloudControllerServiceClient.getServiceClient();
+            autoscalerServiceClient = AutoscalerServiceClient.getServiceClient();
             
             if (log.isDebugEnabled()) {
             	log.debug("undeploying service group from cloud controller " + name);
             }
-            
-            ccServiceClient.undeployServiceGroup(name);
+
+            autoscalerServiceClient.undeployServiceGroupDefinition(name);
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
         	throw new ADCException(e);
-		} catch (CloudControllerServiceInvalidServiceGroupExceptionException e) {
-			throw new ADCException(e);
-		}
+		} catch (AutoScalerServiceAutoScalerExceptionException e) {
+            throw new ADCException(e);
+        }
     }
     
     

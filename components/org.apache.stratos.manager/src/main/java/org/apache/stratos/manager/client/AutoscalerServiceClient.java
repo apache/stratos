@@ -87,6 +87,11 @@ public class AutoscalerServiceClient {
         return partitions;
     }
 
+    public void undeployServiceGroupDefinition (String serviceGroupName)
+            throws RemoteException, AutoScalerServiceAutoScalerExceptionException {
+        stub.undeployServiceGroup(serviceGroupName);
+    }
+
     public Partition getPartition(
             String partitionId) throws RemoteException {
 
