@@ -32,6 +32,7 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -203,6 +204,10 @@ public class ApplicationMonitorFactory {
             if (cluster.getStatus() != clusterMonitor.getStatus()) {
                 //updating the status, so that it will notify the parent
                 clusterMonitor.setStatus(cluster.getStatus());
+            } else {
+                if(!cluster.hasMembers()) {
+                    StatusChecker.getInstance().onMemberStatusChange(clusterId);
+                }
             }
             return clusterMonitor;
 
