@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
+import org.apache.stratos.messaging.message.processor.cluster.status.ClusterStatusMessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -42,7 +43,7 @@ class ClusterStatusEventMessageDelegator implements Runnable {
 
     public ClusterStatusEventMessageDelegator(ClusterStatusEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
-        this.processorChain = new InstanceNotifierMessageProcessorChain();
+        this.processorChain = new ClusterStatusMessageProcessorChain();
     }
 
     public void addEventListener(EventListener eventListener) {
