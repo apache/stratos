@@ -42,6 +42,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private ApplicationTerminatedMessageProcessor applicationTerminatedMessageProcessor;
     private ApplicationTerminatingMessageProcessor applicationTerminatingMessageProcessor;
     private ApplicationUndeployedMessageProcessor applicationUndeployedMessageProcessor;
+    private CompleteApplicationsMessageProcessor completeApplicationsMessageProcessor;
 
     public void initialize() {
         // Add instance notifier event processors
@@ -72,6 +73,9 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
         applicationTerminatingMessageProcessor = new ApplicationTerminatingMessageProcessor();
         add(applicationTerminatingMessageProcessor);
+
+        completeApplicationsMessageProcessor = new CompleteApplicationsMessageProcessor();
+        add(completeApplicationsMessageProcessor);
 
         applicationTerminatedMessageProcessor = new ApplicationTerminatedMessageProcessor();
         add(applicationTerminatedMessageProcessor);
@@ -106,6 +110,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             applicationTerminatingMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationTerminatedEventListener) {
             applicationTerminatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof CompleteApplicationsEventListener) {
+            completeApplicationsMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationUndeployedEventListener) {
             applicationUndeployedMessageProcessor.addEventListener(eventListener);
         } else {

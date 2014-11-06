@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.event.topology.GroupInactivateEvent;
+import org.apache.stratos.messaging.event.applications.GroupInactivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.util.Util;
@@ -45,14 +45,14 @@ public class GroupInActivateProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
-        if (GroupInactivateEvent.class.getName().equals(type)) {
+        if (GroupInactivatedEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
             if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            GroupInactivateEvent event = (GroupInactivateEvent) Util.
-                    jsonToObject(message, GroupInactivateEvent.class);
+            GroupInactivatedEvent event = (GroupInactivatedEvent) Util.
+                    jsonToObject(message, GroupInactivatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
 
@@ -73,7 +73,7 @@ public class GroupInActivateProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(GroupInactivateEvent event, Applications applications) {
+    private boolean doProcess(GroupInactivatedEvent event, Applications applications) {
 
         // Validate event against the existing applications
         Application application = applications.getApplication(event.getAppId());

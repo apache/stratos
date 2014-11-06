@@ -34,13 +34,7 @@ public class ClusterStatusTopicReceiver implements Runnable{
 
     public ClusterStatusTopicReceiver() {
         this.statusEventReceiver = new ClusterStatusEventReceiver();
-        //   addEventListeners();
-        //startAppReceiver();
-    }
-
-    private void startAppReceiver() {
-        Thread thread = new Thread(statusEventReceiver);
-        thread.start();
+        addEventListeners();
     }
 
     public void run() {
