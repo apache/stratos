@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.rest.endpoint.services;
+package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +24,6 @@ import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
@@ -33,8 +32,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/auth/")
-public class AuthenticationAdmin extends AbstractAdmin {
-    Log log = LogFactory.getLog(AuthenticationAdmin.class);
+public class AuthenticationApi extends AbstractApi {
+    Log log = LogFactory.getLog(AuthenticationApi.class);
     // TODO: investigate on the thread safety of this apprach...
     @Context
     HttpServletRequest httpServletRequest;

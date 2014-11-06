@@ -151,8 +151,8 @@ public class StratosAuthorizingHandler implements RequestHandler {
         if (method != null) {
             return method;
         }
-        log.error("The requested resource is not found. Please check the resource path etc..");
-        throw new AccessDeniedException("Method is not available : Unauthorized");
+        log.error("The requested resource is not found. Please check the resource path, etc");
+        throw new AccessDeniedException("Method is not available: Unauthorized");
     }
 
     /**

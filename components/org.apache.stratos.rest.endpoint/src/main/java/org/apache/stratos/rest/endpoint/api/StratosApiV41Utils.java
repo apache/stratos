@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-package org.apache.stratos.rest.endpoint.services;
+package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
@@ -86,20 +86,20 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-public class ServiceUtils {
+public class StratosApiV41Utils {
     public static final String IS_VOLUME_REQUIRED = "volume.required";
     public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
     public static final String VOLUME_ID = "volume.id";
 
-    private static Log log = LogFactory.getLog(ServiceUtils.class);
+    private static Log log = LogFactory.getLog(StratosApiV41Utils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceGroupingManager serviceGropingManager = new ServiceGroupingManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
-    static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                String userName, String tenantDomain) throws RestAPIException {
+    public static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+                                       String userName, String tenantDomain) throws RestAPIException {
 
         log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
 
@@ -116,8 +116,8 @@ public class ServiceUtils {
     }
 
 
-    static void deployApplicationDefinition(ApplicationDefinition appDefinition, ConfigurationContext ctxt,
-                                            String userName, String tenantDomain)
+    public static void deployApplicationDefinition(ApplicationDefinition appDefinition, ConfigurationContext ctxt,
+                                                   String userName, String tenantDomain)
             throws RestAPIException {
 
         // check if an application with same id already exists
@@ -170,8 +170,8 @@ public class ServiceUtils {
         }
     }
 
-    static void unDeployApplication(String appId, ConfigurationContext ctxt,
-                                    String userName, String tenantDomain) throws RestAPIException {
+    public static void unDeployApplication(String appId, ConfigurationContext ctxt,
+                                           String userName, String tenantDomain) throws RestAPIException {
 
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
@@ -206,7 +206,7 @@ public class ServiceUtils {
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
 
-    static void undeployCartridge(String cartridgeType) throws RestAPIException {
+    public static void undeployCartridge(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -713,7 +713,7 @@ public class ServiceUtils {
                         continue;
                     }
 
-                    if (!ServiceUtils.cartridgeMatches(cartridgeInfo, searchPattern)) {
+                    if (!StratosApiV41Utils.cartridgeMatches(cartridgeInfo, searchPattern)) {
                         continue;
                     }
 
@@ -1448,7 +1448,7 @@ public class ServiceUtils {
 
     }
 
-    static void deployServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
+    public static void deployServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
 
         try {
             serviceGropingManager.deployServiceGroupDefinition(serviceGroupDefinition);
@@ -1478,7 +1478,7 @@ public class ServiceUtils {
         }
     }
 
-    static void undeployServiceGroupDefinition(String serviceGroupDefinitionName) throws RestAPIException {
+    public static void undeployServiceGroupDefinition(String serviceGroupDefinitionName) throws RestAPIException {
 
         try {
             serviceGropingManager.undeployServiceGroupDefinition(serviceGroupDefinitionName);

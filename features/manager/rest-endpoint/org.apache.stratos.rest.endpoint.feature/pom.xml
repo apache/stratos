@@ -276,7 +276,7 @@
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/web-app/web-app</outputDirectory>
-                                    <destFileName>stratos.war</destFileName>
+                                    <destFileName>api.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

@@ -38,7 +38,7 @@
                 </property>
             </activation>
             <properties>
-                <appName>stratos-test</appName>
+                <appName>api-test</appName>
             </properties>
         </profile>
         <profile>
@@ -47,7 +47,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <appName>stratos</appName>
+                <appName>api</appName>
             </properties>
         </profile>
     </profiles>
@@ -73,7 +73,7 @@
                             <directory>src/main/webapp/${appName}</directory>
                         </resource>
                     </webResources>
-                    <warName>stratos</warName>
+                    <warName>api</warName>
                 </configuration>
             </plugin>
         </plugins>

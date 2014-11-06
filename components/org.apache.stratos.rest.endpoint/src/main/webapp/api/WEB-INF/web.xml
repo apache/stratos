@@ -23,18 +23,17 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
          http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>S2 Admin Endpoint</display-name>
+    <display-name>Stratos REST API</display-name>
 
     <servlet>
-        <servlet-name>StratosAdminEndpoint</servlet-name>
+        <servlet-name>StratosRestApi</servlet-name>
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>StratosAdminEndpoint</servlet-name>
+        <servlet-name>StratosRestApi</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-
 </web-app>
 
