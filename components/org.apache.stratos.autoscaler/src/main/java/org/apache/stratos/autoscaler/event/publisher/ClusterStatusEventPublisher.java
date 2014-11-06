@@ -190,8 +190,8 @@ public class ClusterStatusEventPublisher {
 
     public static void publishEvent(Event event) {
         //publishing events to application status topic
-        String clusterStatusTopic = Util.getMessageTopicName(event);
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(clusterStatusTopic);
+        String topic = Util.getMessageTopicName(event);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }
 }
