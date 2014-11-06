@@ -62,10 +62,9 @@ public class ApplicationsEventPublisher {
             log.info("Publishing Group in-activate event for [application]: " + appId +
                     " [group]: " + groupId);
         }
-        AppStatusGroupInactivateEvent appStatusGroupInactivateEvent = new
-                AppStatusGroupInactivateEvent(appId, groupId);
+        GroupInactivatedEvent groupInactivateEvent = new GroupInactivatedEvent(appId, groupId);
 
-        publishEvent(appStatusGroupInactivateEvent);
+        publishEvent(groupInactivateEvent);
     }
 
     public static void sendGroupTerminatingEvent(String appId, String groupId) {

@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -23,26 +23,21 @@ import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
 
-/**
- * This event is fired by cartridge agent when it has started the server and
- * applications are ready to serve the incoming requests.
- */
-public class AppStatusGroupInactivateEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
+public class GroupInactivatedEvent extends Event implements Serializable {
 
-    private String groupId;
     private String appId;
+    private String groupId;
 
-    public AppStatusGroupInactivateEvent(String appId, String groupId) {
+    public GroupInactivatedEvent (String appId, String groupId) {
         this.appId = appId;
         this.groupId = groupId;
     }
 
-    public String getGroupId() {
-        return this.groupId;
-    }
-
     public String getAppId() {
         return appId;
+    }
+
+    public String getGroupId() {
+        return groupId;
     }
 }
