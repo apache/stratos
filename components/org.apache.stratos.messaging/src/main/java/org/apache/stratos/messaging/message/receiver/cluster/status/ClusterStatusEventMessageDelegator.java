@@ -54,7 +54,7 @@ class ClusterStatusEventMessageDelegator implements Runnable {
     public void run() {
         try {
             if (log.isInfoEnabled()) {
-                log.info("Instance notifier event message delegator started");
+                log.info("Cluster Status event message delegator started");
             }
 
             while (!terminated) {
@@ -67,16 +67,16 @@ class ClusterStatusEventMessageDelegator implements Runnable {
                     // Retrieve the actual message
                     String json = message.getText();
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Instance notifier event message received from queue: %s", type));
+                        log.debug(String.format("Cluster Status event message received from queue: %s", type));
                     }
 
                     // Delegate message to message processor chain
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Delegating instance notifier event message: %s", type));
+                        log.debug(String.format("Delegating Cluster Status event message: %s", type));
                     }
                     processorChain.process(type, json, null);
                 } catch (Exception e) {
-                    log.error("Failed to retrieve instance notifier event message", e);
+                    log.error("Failed to retrieve Cluster Status event message", e);
                 }
             }
         } catch (Exception e) {
