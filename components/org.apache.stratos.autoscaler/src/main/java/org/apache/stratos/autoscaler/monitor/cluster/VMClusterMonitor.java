@@ -477,6 +477,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                                    + "[member] %s", memberId));
         }
         partitionContext.movePendingMemberToActiveMembers(memberId);
+        StatusChecker.getInstance().onMemberStatusChange(memberActivatedEvent.getClusterId());
     }
 
     @Override
