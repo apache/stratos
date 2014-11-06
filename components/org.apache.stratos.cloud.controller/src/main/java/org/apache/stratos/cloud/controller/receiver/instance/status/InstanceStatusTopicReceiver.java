@@ -46,13 +46,8 @@ public class InstanceStatusTopicReceiver implements Runnable {
     public InstanceStatusTopicReceiver() {
         this.statusEventReceiver = new InstanceStatusEventReceiver();
         addEventListeners();
-        //startAppReceiver();
     }
 
-    /*private void startAppReceiver() {
-        Thread thread = new Thread(statusEventReceiver);
-        thread.start();
-    }*/
 
     @Override
     public void run() {
