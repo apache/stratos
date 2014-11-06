@@ -68,7 +68,7 @@ public class ApplicationsEventMessageDelegator implements Runnable {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Delegating application status event message: %s", type));
                     }
-                    processorChain.process(type, json, null);
+                    processorChain.process(type, json, ApplicationManager.getApplications());
                 } catch (Exception e) {
                     log.error("Failed to retrieve application status event message", e);
                 }
