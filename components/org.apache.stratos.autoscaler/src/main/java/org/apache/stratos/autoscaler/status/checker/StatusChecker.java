@@ -248,7 +248,7 @@ public class StatusChecker {
         Runnable group = new Runnable() {
             public void run() {
                 try {
-                    ApplicationHolder.acquireReadLock();
+                    ApplicationHolder.acquireWriteLock();
                     ParentComponent component;
                     if (groupId.equals(appId)) {
                         //it is an application
@@ -263,7 +263,7 @@ public class StatusChecker {
                     Map<String, Group> groups = component.getAliasToGroupMap();
                     updateChildStatus(appId, idOfChild, groups, clusterIds, component);
                 } finally {
-                    ApplicationHolder.releaseReadLock();
+                    ApplicationHolder.releaseWriteLock();
 
                 }
 
@@ -296,8 +296,8 @@ public class StatusChecker {
         log.info("cluster found: " + clusterFound);
         if (clusterFound || groups.containsKey(id)) {
             childFound = true;
-            try {
-                ApplicationHolder.acquireReadLock();
+            /*try {
+                ApplicationHolder.acquireWriteLock();*/
                 Application application = ApplicationHolder.getApplications().getApplication(appId);
 
                 if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active) ||
@@ -362,9 +362,9 @@ public class StatusChecker {
                 } else {
                     log.warn("Clusters/groups not found in this [component] " + appId);
                 }
-            } finally {
-                ApplicationHolder.releaseReadLock();
-            }
+            /*} finally {
+                ApplicationHolder.releaseWriteLock();
+            }*/
 
 
             return childFound;
