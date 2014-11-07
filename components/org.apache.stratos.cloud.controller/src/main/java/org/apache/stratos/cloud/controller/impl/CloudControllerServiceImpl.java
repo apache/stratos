@@ -1935,6 +1935,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
                 newCluster.setKubernetesCluster(true);
             }
+            if (appClusterCtxt.getProperties() != null) {
+				Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());
+				newCluster.setProperties(properties);
+			}
+            
             clusters.add(newCluster);
         }
         TopologyBuilder.handleApplicationClustersCreated(appId, clusters);

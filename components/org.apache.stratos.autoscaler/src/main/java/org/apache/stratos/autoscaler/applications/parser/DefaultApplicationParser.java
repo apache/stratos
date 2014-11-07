@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
 import org.apache.stratos.autoscaler.applications.pojo.*;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -647,6 +647,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
+           	appClusterCtxt.setProperties(subscribableInfoCtxt.getProperties());
             this.applicationClusterContexts.add(appClusterCtxt);
 
             // add relevant information to the map
