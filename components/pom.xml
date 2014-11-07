@@ -49,6 +49,8 @@
         <module>org.apache.stratos.deployment</module>
         <!-- CLI -->
         <module>org.apache.stratos.cli</module>
+        <!-- Python Cartridge Agent -->
+        <module>org.apache.stratos.python.cartridge.agent</module>
         <!-- Cartridge Agent -->
         <module>org.apache.stratos.cartridge.agent</module>
         <!-- Load Balancer -->

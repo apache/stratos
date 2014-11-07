@@ -17,14 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.grouping.definitions;
+package org.apache.stratos.cli.beans.grouping.definitions;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement
-public class ServiceGroupDefinition implements Serializable {
+public class ServiceGroupDefinition {
 
     private String name;
 

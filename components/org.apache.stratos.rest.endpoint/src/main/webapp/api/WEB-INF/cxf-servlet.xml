@@ -117,6 +117,9 @@
                 <value>volumes</value>
                 <value>domains</value>
                 <value>kubernetesHost</value>
+                <value>cartridges</value>
+                <value>subGroups</value>
+                <value>startupOrders</value>
             </list>
         </property>
     </bean>

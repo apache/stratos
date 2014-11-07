@@ -298,7 +298,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartition(@PathParam("partitionId") String partitionId) throws RestAPIException {
+    public Response getPartition(@PathParam("partitiotnId") String partitionId) throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getPartition(partitionId)).build();
     }
 

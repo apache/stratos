@@ -281,7 +281,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         if (deps != null) {
             DependencyDefinitions depsDef = new DependencyDefinitions();
             String [] startupOrders = deps.getStartupOrders();
-            if (startupOrders != null && startupOrders.length > 0) {
+            if (startupOrders != null && startupOrders[0] != null) {
             	List<String> startupOrdersDef = Arrays.asList(startupOrders);
                 depsDef.setStartupOrders(startupOrdersDef);
             }
@@ -292,9 +292,12 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
         List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
-
-    	servicegroupDef.setCartridges(cartridgesDef);
-    	servicegroupDef.setSubGroups(subGroupsDef);
+        if(cartridges[0] != null){
+            servicegroupDef.setCartridges(cartridgesDef);
+        }
+    	if(subGroups[0] != null) {
+            servicegroupDef.setSubGroups(subGroupsDef);
+        }
    
     	return servicegroupDef;
     }
