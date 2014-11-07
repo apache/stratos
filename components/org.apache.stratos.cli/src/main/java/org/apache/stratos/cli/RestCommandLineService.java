@@ -50,6 +50,8 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
+import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupDefinition;
+import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
@@ -104,6 +106,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_USERS = "/stratos/admin/user/list";
     private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = "/stratos/admin/kubernetes/group";
     private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = "/stratos/admin/kubernetes/hosts/{groupId}";
+    private static final String ENDPOINT_LIST_SERVICE_GROUP = "/stratos/admin/group/definition/{groupDefinitionName}";
 
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/info/{id}";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = "/stratos/admin/cluster/";
@@ -1822,6 +1825,25 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
     }
 
+    public void listServiceGroup (String groupDefinitionName) {
+        try {
+
+            ServiceGroupDefinition list = (ServiceGroupDefinition) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupDefinition.class, "serviceGroup");
+
+            if ((list == null) || (list.getName() == null)) {
+                System.out.println("null");
+                System.out.println("Service group not found: " + groupDefinitionName);
+                return;
+            }
+
+            System.out.println(getGson().toJson(list));
+        } catch (Exception e) {
+            String message = "Error in describing service group: " + groupDefinitionName;
+            System.out.println(message);
+            log.error(message, e);
+        }
+    }
     // This method helps to deploy applications
     public void deployApplication (String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
