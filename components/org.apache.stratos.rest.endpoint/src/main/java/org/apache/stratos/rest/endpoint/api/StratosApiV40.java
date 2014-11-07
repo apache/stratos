@@ -84,7 +84,6 @@ public class StratosApiV40 extends AbstractApi {
     public StratosApiResponse initialize ()
             throws RestAPIException {
 
-
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
         stratosApiResponse.setMessage("Successfully logged in");
         return stratosApiResponse;
@@ -100,6 +99,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getCookie(){
+
         HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
         PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         httpSession.setAttribute("userName",carbonContext.getUsername());
