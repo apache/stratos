@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement(name = "serviceGroup")
+@XmlRootElement
 public class ServiceGroupDefinition implements Serializable {
 
     private String name;

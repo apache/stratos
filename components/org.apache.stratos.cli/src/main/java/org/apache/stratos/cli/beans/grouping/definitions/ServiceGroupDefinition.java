@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cli.beans.grouping.definitions;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 public class ServiceGroupDefinition {

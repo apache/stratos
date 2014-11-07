@@ -188,7 +188,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             if (validateLogin) {
-                HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_INIT, null);
+                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_INIT);
 
                 if (response != null) {
                     int responseCode = response.getStatusLine().getStatusCode();
@@ -1826,12 +1826,10 @@ public class RestCommandLineService {
 
     public void listServiceGroup (String groupDefinitionName) {
         try {
-
             ServiceGroupDefinition list = (ServiceGroupDefinition) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
                     ServiceGroupDefinition.class, "serviceGroup");
 
             if ((list == null) || (list.getName() == null)) {
-                System.out.println("null");
                 System.out.println("Service group not found: " + groupDefinitionName);
                 return;
             }
