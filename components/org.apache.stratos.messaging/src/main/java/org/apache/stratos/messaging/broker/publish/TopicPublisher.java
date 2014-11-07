@@ -19,9 +19,11 @@
 
 package org.apache.stratos.messaging.broker.publish;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
+import org.apache.stratos.messaging.util.Constants;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -79,18 +81,14 @@ public class TopicPublisher {
             boolean published = false;
 
             while (!published) {
-                // There will be only one publisher for a topic,
-                // hence using topic name as the client identifier
-                mqttClient = MQTTConnector.getMqttClient(topic);
+                String timestamp = String.valueOf(System.currentTimeMillis());
+                String clientId = timestamp + RandomStringUtils.random(Constants.CLIENT_ID_MAX_LENGTH - timestamp.length());
+                mqttClient = MQTTConnector.getMqttClient(clientId);
                 MqttMessage mqttMessage = new MqttMessage(message.getBytes());
                 // Set quality of service
                 mqttMessage.setQos(QOS);
 
                 try {
-                    MqttConnectOptions connectOptions = new MqttConnectOptions();
-                    // Maintain the session between client and server for reliable delivery
-                    connectOptions.setCleanSession(false);
-                    mqttClient.connect(connectOptions);
                     mqttClient.publish(topic, mqttMessage);
                     published = true;
                 } catch (Exception e) {

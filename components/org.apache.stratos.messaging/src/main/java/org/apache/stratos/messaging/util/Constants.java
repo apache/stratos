@@ -79,4 +79,5 @@ public class Constants {
 	public static final int DEFAULT_AVERAGE_PING_INTERVAL = 1000;
 	public static final int DEFAULT_FAILOVER_PING_INTERVAL = 30000;
 
+    public static final int CLIENT_ID_MAX_LENGTH = 23;
 }

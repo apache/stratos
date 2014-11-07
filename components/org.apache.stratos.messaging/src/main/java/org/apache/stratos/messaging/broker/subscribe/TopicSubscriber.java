@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
+import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -40,9 +41,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  */
 public class TopicSubscriber implements Runnable {
 
-	private static final Log log = LogFactory.getLog(TopicSubscriber.class);
+    private static final Log log = LogFactory.getLog(TopicSubscriber.class);
 
-	private boolean terminated = false;
+    private boolean terminated = false;
 	private MqttCallback messageListener;
 	private final String topicName;
 
@@ -63,7 +64,8 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
-        String clientId = topicName;
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String clientId = timestamp + RandomStringUtils.random(Constants.CLIENT_ID_MAX_LENGTH - timestamp.length());
 		MqttClient mqttClient = MQTTConnector.getMqttClient(clientId);
 
 		if (log.isInfoEnabled()) {

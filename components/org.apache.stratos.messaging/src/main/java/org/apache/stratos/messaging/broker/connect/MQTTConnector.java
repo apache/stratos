@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
@@ -52,6 +53,11 @@ public class MQTTConnector {
             String mqttUrl = mqttProperties.getProperty("mqtturl", MQTT_URL_DEFAULT);
             MemoryPersistence memoryPersistence = new MemoryPersistence();
             MqttClient mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
+            MqttConnectOptions connectOptions = new MqttConnectOptions();
+            // Do not maintain the session between client and server, reliable delivery
+            // will be managed by stratos messaging component
+            connectOptions.setCleanSession(true);
+            mqttClient.connect(connectOptions);
             if (log.isDebugEnabled()) {
                 log.debug("MQTT client created");
             }
