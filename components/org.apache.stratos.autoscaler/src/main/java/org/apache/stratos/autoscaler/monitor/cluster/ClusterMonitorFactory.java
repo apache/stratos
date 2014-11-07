@@ -366,18 +366,23 @@ public class ClusterMonitorFactory {
             throw new PolicyValidationException(msg);
         }
 
-        java.util.Properties props = cluster.getProperties();
-        String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
+        java.util.Properties properties = cluster.getProperties();
+        if(properties == null) {
+            throw new RuntimeException(String.format("Properties not found in kubernetes cluster: [cluster-id] %s",
+                    cluster.getClusterId()));
+        }
+
+        String kubernetesHostClusterID = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
         KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID,
                 cluster.getClusterId());
 
-        String minReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
+        String minReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
         if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
             int minReplicas = Integer.parseInt(minReplicasProperty);
             kubernetesClusterCtxt.setMinReplicas(minReplicas);
         }
 
-        String maxReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
+        String maxReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
         if (maxReplicasProperty != null && !maxReplicasProperty.isEmpty()) {
             int maxReplicas = Integer.parseInt(maxReplicasProperty);
             kubernetesClusterCtxt.setMaxReplicas(maxReplicas);
@@ -424,8 +429,8 @@ public class ClusterMonitorFactory {
         }
 
         // find lb reference type
-        if (props.containsKey(Constants.LOAD_BALANCER_REF)) {
-            String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+        if (properties.containsKey(Constants.LOAD_BALANCER_REF)) {
+            String value = properties.getProperty(Constants.LOAD_BALANCER_REF);
             dockerClusterMonitor.setLbReferenceType(value);
             if (log.isDebugEnabled()) {
                 log.debug("Set the lb reference type: " + value);
