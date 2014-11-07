@@ -42,6 +42,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 public class TopicSubscriber implements Runnable {
 
     private static final Log log = LogFactory.getLog(TopicSubscriber.class);
+    private final MqttClient mqttClient;
 
     private boolean terminated = false;
 	private MqttCallback messageListener;
@@ -56,6 +57,7 @@ public class TopicSubscriber implements Runnable {
 	 */
 	public TopicSubscriber(String aTopicName) {
 		topicName = aTopicName;
+        mqttClient = MQTTConnector.getMqttClient();
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic subscriber connector created: [topic] %s", topicName));
@@ -64,20 +66,17 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
-        String timestamp = String.valueOf(System.currentTimeMillis());
-        String clientId = timestamp + RandomStringUtils.random(Constants.CLIENT_ID_MAX_LENGTH - timestamp.length());
-		MqttClient mqttClient = MQTTConnector.getMqttClient(clientId);
-
 		if (log.isInfoEnabled()) {
-			log.info(String.format("Subscribing to topic: [topic] %s [server] %s [client-id] %s",
-                    topicName, mqttClient.getServerURI(), clientId));
+			log.info(String.format("Subscribing to topic: [topic] %s [server] %s",
+                    topicName, mqttClient.getServerURI()));
 		}
 
 		/* Subscribing to specific topic */
         while(true) {
             try {
-
                 MqttConnectOptions connOpts = new MqttConnectOptions();
+                // Do not maintain the session between client and server, reliable delivery
+                // will be managed by stratos messaging component
                 connOpts.setCleanSession(true);
                 mqttClient.connect(connOpts);
 

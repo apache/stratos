@@ -48,18 +48,14 @@ public class MQTTConnector {
     private static Properties mqttProperties = Util.getProperties(configFileLocation
             + File.separator + "mqtttopic.properties");
 
-    public static MqttClient getMqttClient(String clientId) {
+    public static MqttClient getMqttClient() {
         try {
             String mqttUrl = mqttProperties.getProperty("mqtturl", MQTT_URL_DEFAULT);
             MemoryPersistence memoryPersistence = new MemoryPersistence();
+            String clientId = Util.getRandomString(23);
             MqttClient mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
-            MqttConnectOptions connectOptions = new MqttConnectOptions();
-            // Do not maintain the session between client and server, reliable delivery
-            // will be managed by stratos messaging component
-            connectOptions.setCleanSession(true);
-            mqttClient.connect(connectOptions);
             if (log.isDebugEnabled()) {
-                log.debug("MQTT client created");
+                log.debug("MQTT client created: [client-id] " + clientId);
             }
             return mqttClient;
         } catch (Exception e) {

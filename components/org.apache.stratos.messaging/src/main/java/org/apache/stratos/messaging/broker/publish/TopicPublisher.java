@@ -63,6 +63,7 @@ public class TopicPublisher {
 	 */
 	TopicPublisher(String aTopicName) {
 		this.topic = aTopicName;
+        this.mqttClient = MQTTConnector.getMqttClient();
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic publisher connector created: [topic] %s", topic));
 		}
@@ -81,14 +82,16 @@ public class TopicPublisher {
             boolean published = false;
 
             while (!published) {
-                String timestamp = String.valueOf(System.currentTimeMillis());
-                String clientId = timestamp + RandomStringUtils.random(Constants.CLIENT_ID_MAX_LENGTH - timestamp.length());
-                mqttClient = MQTTConnector.getMqttClient(clientId);
                 MqttMessage mqttMessage = new MqttMessage(message.getBytes());
                 // Set quality of service
                 mqttMessage.setQos(QOS);
 
                 try {
+                    MqttConnectOptions connectOptions = new MqttConnectOptions();
+                    // Do not maintain the session between client and server, reliable delivery
+                    // will be managed by stratos messaging component
+                    connectOptions.setCleanSession(true);
+                    mqttClient.connect(connectOptions);
                     mqttClient.publish(topic, mqttMessage);
                     published = true;
                 } catch (Exception e) {
