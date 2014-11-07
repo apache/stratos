@@ -93,14 +93,14 @@ public class StratosApiV41 extends AbstractApi {
     @Context
     UriInfo uriInfo;
 
-    @POST
+    @GET
     @Path("/init")
     @AuthorizationAction("/permission/admin/restlogin")
-    public StratosApiResponse initialize()
+    public Response initialize()
             throws RestAPIException {
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully logged in");
-        return stratosApiResponse;
+        StratosApiResponse response = new StratosApiResponse();
+        response.setMessage("Successfully authenticated");
+        return Response.ok(response).build();
     }
 //
 //    /**
