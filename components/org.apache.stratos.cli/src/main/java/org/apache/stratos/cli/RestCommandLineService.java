@@ -1824,7 +1824,7 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
     }
 
-    public void listServiceGroup (String groupDefinitionName) {
+    public void describeServiceGroup (String groupDefinitionName) {
         try {
             ServiceGroupDefinition list = (ServiceGroupDefinition) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
                     ServiceGroupDefinition.class, "serviceGroup");

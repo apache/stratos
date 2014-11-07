@@ -28,19 +28,19 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListServiceGroupCommand implements Command<StratosCommandContext> {
+public class DescribeServiceGroupCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListServiceGroupCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(DescribeServiceGroupCommand.class);
 
-	public ListServiceGroupCommand() {
+	public DescribeServiceGroupCommand() {
 	}
 
 	public String getName() {
-		return "list-service-group";
+		return "describe-service-group";
 	}
 
 	public String getDescription() {
-		return "List service groups";
+		return "Describe service groups";
 	}
 
 	public String getArgumentSyntax() {
@@ -56,7 +56,7 @@ public class ListServiceGroupCommand implements Command<StratosCommandContext> {
             return CliConstants.COMMAND_FAILED;
 		} else {
             String groupId = args[0];
-            RestCommandLineService.getInstance().listServiceGroup(groupId);
+            RestCommandLineService.getInstance().describeServiceGroup(groupId);
             return CliConstants.COMMAND_SUCCESSFULL;
 		}
 	}

@@ -216,7 +216,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployServiceGroupCommand();
         commands.put(command.getName(), command);
 
-        command = new ListServiceGroupCommand();
+        command = new DescribeServiceGroupCommand();
         commands.put(command.getName(), command);
 
         command = new UndeployServiceGroupCommand();
