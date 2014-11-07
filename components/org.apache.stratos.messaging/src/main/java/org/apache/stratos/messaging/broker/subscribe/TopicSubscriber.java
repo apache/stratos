@@ -66,8 +66,8 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
-		if (log.isInfoEnabled()) {
-			log.info(String.format("Subscribing to topic: [topic] %s [server] %s",
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
                     topicName, mqttClient.getServerURI()));
 		}
 
