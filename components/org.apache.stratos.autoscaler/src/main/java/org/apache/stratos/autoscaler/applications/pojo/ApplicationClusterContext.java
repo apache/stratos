@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.applications.pojo;
 
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+
 public class ApplicationClusterContext {
 
     // cluster id
@@ -37,6 +39,8 @@ public class ApplicationClusterContext {
     private String deploymentPolicyName;
     // tenant rance
     private String tenantRange;
+    // propertis
+    private Properties properties;
 
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
                                       String textPayload, String deploymentPolicyName, boolean isLbCluster) {
@@ -112,6 +116,14 @@ public class ApplicationClusterContext {
 
     public void setTenantRange(String tenantRange) {
         this.tenantRange = tenantRange;
+    }
+    
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     public boolean equals(Object other) {

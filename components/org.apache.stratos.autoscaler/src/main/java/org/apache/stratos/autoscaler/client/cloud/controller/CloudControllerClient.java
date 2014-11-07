@@ -219,6 +219,7 @@ public class CloudControllerClient {
             dto.setTenantRange(context.getTenantRange());
             dto.setTextPayload(context.getTextPayload());
             dto.setLbCluster(context.isLbCluster());
+            dto.setProperties(context.getProperties());
             contextDTOs.add(dto);
         }
 
