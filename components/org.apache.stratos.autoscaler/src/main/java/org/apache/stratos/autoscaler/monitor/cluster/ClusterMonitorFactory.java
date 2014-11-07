@@ -389,8 +389,6 @@ public class ClusterMonitorFactory {
                 cluster.getServiceName(),
                 policy.getId());
 
-        dockerClusterMonitor.setStatus(ClusterStatus.Created);
-
         //populate the members after restarting        
         for (Member member : cluster.getMembers()) {
             String memberId = member.getMemberId();

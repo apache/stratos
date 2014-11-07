@@ -647,6 +647,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
+           	appClusterCtxt.setProperties(subscribableInfoCtxt.getProperties());
             this.applicationClusterContexts.add(appClusterCtxt);
 
             // add relevant information to the map

@@ -76,56 +76,57 @@ public class RestCommandLineService {
     private RestClient restClient;
 
     // REST endpoints
-    private static final String ENDPOINT_INIT_COOKIE = "/stratos/admin/cookie";
+    private static final String API_CONTEXT = "/api/v4.1";
+    private static final String ENDPOINT_INIT = API_CONTEXT + "/init";
 
-    private static final String ENDPOINT_ADD_TENANT = "/stratos/admin/tenant";
-    private static final String ENDPOINT_ADD_USER = "/stratos/admin/user";
+    private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenant";
+    private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/user";
 
-    private static final String ENDPOINT_DEPLOY_CARTRIDGE = "/stratos/admin/cartridge/definition";
-    private static final String ENDPOINT_DEPLOY_PARTITION = "/stratos/admin/policy/deployment/partition";
-    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
-    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_DEPLOY_SERVICE = "/stratos/admin/service/definition";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/deploy/group";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/deploy/host";
-    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = "/stratos/admin/group/definition";
-    private static final String ENDPOINT_DEPLOY_APPLICATION = "/stratos/admin/application/definition";
+    private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridge/definition";
+    private static final String ENDPOINT_DEPLOY_PARTITION = API_CONTEXT + "/policy/deployment/partition";
+    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
+    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_DEPLOY_SERVICE = API_CONTEXT + "/service/definition";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/deploy/group";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/deploy/host";
+    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/application/definition";
 
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/host/{id}";
-    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = "/stratos/admin/group/definition/{id}";
-    private static final String ENDPOINT_UNDEPLOY_APPLICATION = "/stratos/admin/application/definition/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/host/{id}";
+    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition/{id}";
+    private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/application/definition/{id}";
 
-    private static final String ENDPOINT_LIST_PARTITIONS = "/stratos/admin/partition";
-    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = "/stratos/admin/policy/autoscale";
-    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_LIST_CARTRIDGES = "/stratos/admin/cartridge/available/list";
-    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = "/stratos/admin/cartridge/list/subscribed";
-    private static final String ENDPOINT_LIST_SERVICES = "/stratos/admin/service";
-    private static final String ENDPOINT_LIST_TENANTS = "/stratos/admin/tenant/list";
-    private static final String ENDPOINT_LIST_USERS = "/stratos/admin/user/list";
-    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = "/stratos/admin/kubernetes/group";
-    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = "/stratos/admin/kubernetes/hosts/{groupId}";
-    private static final String ENDPOINT_LIST_SERVICE_GROUP = "/stratos/admin/group/definition/{groupDefinitionName}";
+    private static final String ENDPOINT_LIST_PARTITIONS = API_CONTEXT + "/partition";
+    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/policy/autoscale";
+    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridge/available/list";
+    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/cartridge/list/subscribed";
+    private static final String ENDPOINT_LIST_SERVICES = API_CONTEXT + "/service";
+    private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenant/list";
+    private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/user/list";
+    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = API_CONTEXT + "/kubernetes/group";
+    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetes/hosts/{groupId}";
+    private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/group/definition/{groupDefinitionName}";
 
-    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/info/{id}";
-    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = "/stratos/admin/cluster/";
-    private static final String ENDPOINT_GET_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_MASTER = "/stratos/admin/kubernetes/master/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_HOST = "/stratos/admin/kubernetes/hosts/{id}";
+    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/info/{id}";
+    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/cluster/";
+    private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/master/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/hosts/{id}";
 
-    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = "/stratos/admin/kubernetes/update/master";
-    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = "/stratos/admin/kubernetes/update/host";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/update/master";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/update/host";
 
-    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = "/stratos/admin/cartridge/subscribe";
-    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/unsubscribe";
-    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = "/stratos/admin/cartridge/sync";
-    private static final String ENDPOINT_ACTIVATE_TENANT = "/stratos/admin/tenant/activate";
-    private static final String ENDPOINT_DEACTIVATE_TENANT = "/stratos/admin/tenant/deactivate";
+    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = API_CONTEXT + "/cartridge/subscribe";
+    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/unsubscribe";
+    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/cartridge/sync";
+    private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenant/activate";
+    private static final String ENDPOINT_DEACTIVATE_TENANT = API_CONTEXT + "/tenant/deactivate";
 
-    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = "/stratos/admin/subscriptions/{alias}/properties";
-    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
+    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = API_CONTEXT + "/subscriptions/{alias}/properties";
+    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
 
 
     private static class SingletonHolder {
@@ -144,10 +145,8 @@ public class RestCommandLineService {
     // Login method. This will authenticate the user
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
-            // Following code will avoid validating certificate
-            SSLContext sc;
-            // Get SSL context
-            sc = SSLContext.getInstance("SSL");
+            // Avoid validating SSL certificate
+            SSLContext sc = SSLContext.getInstance("SSL");
             // Create empty HostnameVerifier
             HostnameVerifier hv = new HostnameVerifier() {
                 public boolean verify(String urlHostName, SSLSession session) {
@@ -174,7 +173,7 @@ public class RestCommandLineService {
             throw new RuntimeException("Error while authentication process!", e);
         }
 
-        // Initialized client
+        // Initialize client
         try {
             initializeRestClient(serverURL, username, password);
 
@@ -189,11 +188,11 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             if (validateLogin) {
-                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_INIT_COOKIE);
+                HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_INIT, null);
 
                 if (response != null) {
-                    String responseCode = "" + response.getStatusLine().getStatusCode();
-                    if ((responseCode.equals(CliConstants.RESPONSE_OK)) && (response.toString().contains("WWW-Authenticate: Basic"))) {
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    if (responseCode == 200) {
                         return true;
                     } else {
                         System.out.println("Invalid STRATOS_URL");
