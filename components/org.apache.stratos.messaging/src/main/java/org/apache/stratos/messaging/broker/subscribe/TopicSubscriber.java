@@ -63,7 +63,7 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
-        String clientId = topicName + "-" + RandomStringUtils.random(10);
+        String clientId = topicName;
 		MqttClient mqttClient = MQTTConnector.getMqttClient(clientId);
 
 		if (log.isInfoEnabled()) {
