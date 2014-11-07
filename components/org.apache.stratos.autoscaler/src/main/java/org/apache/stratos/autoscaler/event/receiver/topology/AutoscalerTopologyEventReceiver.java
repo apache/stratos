@@ -36,29 +36,8 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterActivatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterInactivateEvent;
-import org.apache.stratos.messaging.event.topology.ClusterTerminatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterTerminatingEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
-import org.apache.stratos.messaging.listener.topology.ApplicationClustersCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterInActivateEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterResetEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterTerminatedEventListener;
-import org.apache.stratos.messaging.listener.topology.ClusterTerminatingEventListener;
-import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberMaintenanceListener;
-import org.apache.stratos.messaging.listener.topology.MemberReadyToShutdownEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
+import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -105,7 +84,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     private boolean allClustersInitialized(Application application) {
         boolean allClustersInitialized = false;
-        for (ClusterDataHolder holder : application.getClusterDataMap().values()) {
+        for (ClusterDataHolder holder : application.getClusterDataRecursively()) {
             TopologyManager.acquireReadLockForCluster(holder.getServiceType(),
                     holder.getClusterId());
 
@@ -116,13 +95,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     if (service != null) {
                         if (service.clusterExists(holder.getClusterId())) {
                             allClustersInitialized = true;
+                            return allClustersInitialized;
                         } else {
                             if (log.isDebugEnabled()) {
                                 log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
                                         "the Topology");
                             }
                             allClustersInitialized = false;
-                            return allClustersInitialized;
                         }
                     } else {
                         if (log.isDebugEnabled()) {
