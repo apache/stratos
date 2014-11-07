@@ -77,7 +77,7 @@ class ClusterStatusEventMessageListener implements MqttCallback {
             if (log.isDebugEnabled()) {
                 log.debug(String.format(
                         "Instance notifier message received: %s",
-                        ((TextMessage) message).getText()));
+                        receivedMessage.getText()));
             }
             // Add received message to the queue
             messageQueue.add(receivedMessage);
