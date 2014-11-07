@@ -36,6 +36,7 @@ import org.apache.stratos.manager.user.mgt.StratosUserManager;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
 import org.apache.stratos.manager.user.mgt.exception.UserManagerException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
+import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
@@ -70,8 +71,10 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
@@ -93,38 +96,38 @@ public class StratosApiV41 extends AbstractApi {
     @Context
     UriInfo uriInfo;
 
-    @POST
+    @GET
     @Path("/init")
     @AuthorizationAction("/permission/admin/restlogin")
-    public StratosApiResponse initialize()
+    public Response initialize()
             throws RestAPIException {
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully logged in");
-        return stratosApiResponse;
+        StratosApiResponse response = new StratosApiResponse();
+        response.setMessage("Successfully authenticated");
+        return Response.ok(response).build();
     }
-//
-//    /**
-//     * This method gets called by the client who are interested in using session mechanism to authenticate themselves in
-//     * subsequent calls. This method call get authenticated by the basic authenticator.
-//     * Once the authenticated call received, the method creates a session.
-//     * @return
-//     */
-//    @GET
-//    @Path("/cookie")
-//    @Produces("application/json")
-//    @Consumes("application/json")
-//    @AuthorizationAction("/permission/admin/restlogin")
-//    public Response getCookie() {
-//        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
-//        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-//        httpSession.setAttribute("userName", carbonContext.getUsername());
-//        httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
-//        httpSession.setAttribute("tenantId", carbonContext.getTenantId());
-//
-//        String sessionId = httpSession.getId();
-//        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
-//                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
-//    }
+
+    /**
+     * This method gets called by the client who are interested in using session mechanism to authenticate
+     * themselves in subsequent calls. This method call get authenticated by the basic authenticator.
+     * Once the authenticated call received, the method creates a session and returns the session id.
+     * @return
+     */
+    @GET
+    @Path("/session")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/restlogin")
+    public Response getSession() {
+        HttpSession httpSession = httpServletRequest.getSession(true);//create session if not found
+        PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        httpSession.setAttribute("userName", carbonContext.getUsername());
+        httpSession.setAttribute("tenantDomain", carbonContext.getTenantDomain());
+        httpSession.setAttribute("tenantId", carbonContext.getTenantId());
+
+        String sessionId = httpSession.getId();
+        return Response.ok().header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON).
+                entity(Utils.buildAuthenticationSuccessMessage(sessionId)).build();
+    }
 
     @POST
     @Path("/application/definition/")
