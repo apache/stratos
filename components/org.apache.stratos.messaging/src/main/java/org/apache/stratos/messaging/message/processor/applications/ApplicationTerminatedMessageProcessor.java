@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.event.topology.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
@@ -94,12 +94,6 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         // check if required properties are available
         if (event.getAppId() == null) {
             String errorMsg = "Application Id of application removed event is invalid";
-            log.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
-
-        if (event.getTenantDomain() == null) {
-            String errorMsg = "Application tenant domain of application removed event is invalid";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }

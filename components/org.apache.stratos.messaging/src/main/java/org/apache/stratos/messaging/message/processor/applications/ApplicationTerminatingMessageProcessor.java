@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.event.topology.ApplicationTerminatingEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.util.Util;

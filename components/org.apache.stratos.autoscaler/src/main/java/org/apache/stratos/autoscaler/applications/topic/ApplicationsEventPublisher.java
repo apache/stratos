@@ -4,15 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.*;
-import org.apache.stratos.messaging.event.topology.ApplicationUndeployedEvent;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
-
-import java.util.Set;
 
 /**
  * This will publish application related events to application status topic.
@@ -28,11 +24,6 @@ public class ApplicationsEventPublisher {
     public static void sendApplicationCreatedEvent (Application application) {
 
         publishEvent(new ApplicationCreatedEvent(application));
-    }
-
-    public static void sendApplicationUndeployedEvent (String appId, Set<ClusterDataHolder> clusterData) {
-
-        publishEvent(new ApplicationUndeployedEvent(appId, clusterData));
     }
 
     public static void sendGroupCreatedEvent(String appId, String groupId) {
