@@ -355,29 +355,36 @@ public class ClusterMonitorFactory {
 
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
         if (log.isDebugEnabled()) {
-            log.debug("Autoscaler policy name: " + autoscalePolicyName);
+            log.debug("Autoscaling policy name: " + autoscalePolicyName);
         }
 
         AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
 
         if (policy == null) {
-            String msg = "Autoscale Policy is null. Policy name: " + autoscalePolicyName;
+            String msg = String.format("Autoscaling policy is null: [policy-name] %s", autoscalePolicyName);
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
 
-        java.util.Properties props = cluster.getProperties();
-        String kubernetesHostClusterID = props.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
+        java.util.Properties properties = cluster.getProperties();
+        if(properties == null) {
+            String message = String.format("Properties not found in kubernetes cluster: [cluster-id] %s",
+                    cluster.getClusterId());
+            log.error(message);
+            throw new RuntimeException(message);
+        }
+
+        String kubernetesHostClusterID = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
         KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID,
                 cluster.getClusterId());
 
-        String minReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
+        String minReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
         if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
             int minReplicas = Integer.parseInt(minReplicasProperty);
             kubernetesClusterCtxt.setMinReplicas(minReplicas);
         }
 
-        String maxReplicasProperty = props.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
+        String maxReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
         if (maxReplicasProperty != null && !maxReplicasProperty.isEmpty()) {
             int maxReplicas = Integer.parseInt(maxReplicasProperty);
             kubernetesClusterCtxt.setMaxReplicas(maxReplicas);
@@ -424,8 +431,8 @@ public class ClusterMonitorFactory {
         }
 
         // find lb reference type
-        if (props.containsKey(Constants.LOAD_BALANCER_REF)) {
-            String value = props.getProperty(Constants.LOAD_BALANCER_REF);
+        if (properties.containsKey(Constants.LOAD_BALANCER_REF)) {
+            String value = properties.getProperty(Constants.LOAD_BALANCER_REF);
             dockerClusterMonitor.setLbReferenceType(value);
             if (log.isDebugEnabled()) {
                 log.debug("Set the lb reference type: " + value);
