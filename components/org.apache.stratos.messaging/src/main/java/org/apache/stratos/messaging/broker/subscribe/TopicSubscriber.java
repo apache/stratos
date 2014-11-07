@@ -20,14 +20,12 @@
 package org.apache.stratos.messaging.broker.subscribe;
 
 import javax.jms.JMSException;
-import javax.jms.TopicSession;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
-import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -65,11 +63,12 @@ public class TopicSubscriber implements Runnable {
 
 	private void doSubscribe() throws MqttException {
 
-		MqttClient mqttClient = MQTTConnector.getMQTTSubClient(Util.getRandomString(5));
+        String clientId = topicName + "-" + RandomStringUtils.random(10);
+		MqttClient mqttClient = MQTTConnector.getMqttClient(clientId);
 
-		if (log.isDebugEnabled()) {
-			log.debug("Subscribing to topic '" + topicName + "' from " +
-			          mqttClient.getServerURI());
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Subscribing to topic: [topic] %s [server] %s [client-id] %s",
+                    topicName, mqttClient.getServerURI(), clientId));
 		}
 
 		/* Subscribing to specific topic */

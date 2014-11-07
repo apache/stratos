@@ -41,18 +41,23 @@ import com.google.gson.Gson;
  */
 public class TopicPublisher {
 
-	private static final Log log = LogFactory.getLog(TopicPublisher.class);
+    private static final Log log = LogFactory.getLog(TopicPublisher.class);
 
+    /**
+     * Quality of Service for message delivery:
+     * Setting it to 2 to make sure that message is guaranteed to deliver once
+     * using two-phase acknowledgement across the network.
+     */
 	private static final int QOS = 2;
+    public static final int PUBLISH_RETRY_INTERVAL = 60000;
 
-	public static TopicPublisher topicPub;
+    public static TopicPublisher topicPub;
 	private boolean initialized;
 	private final String topic;
 	MqttClient mqttClient;
 
 	/**
-	 * @param aTopicName
-	 *            topic name of this publisher instance.
+	 * @param aTopicName topic name of this publisher instance.
 	 */
 	TopicPublisher(String aTopicName) {
 		this.topic = aTopicName;
@@ -68,24 +73,27 @@ public class TopicPublisher {
 	 */
 
 	public void publish(Object messageObj, boolean retry) {
-
 		synchronized (TopicPublisher.class) {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
             boolean published = false;
+
             while (!published) {
-                mqttClient = MQTTConnector.getMQTTConClient();
-                MqttMessage mqttMSG = new MqttMessage(message.getBytes());
+                // There will be only one publisher for a topic,
+                // hence using topic name as the client identifier
+                mqttClient = MQTTConnector.getMqttClient(topic);
+                MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+                // Set quality of service
+                mqttMessage.setQos(QOS);
 
-                mqttMSG.setQos(QOS);
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                connOpts.setCleanSession(true);
                 try {
-                    mqttClient.connect(connOpts);
-                    mqttClient.publish(topic, mqttMSG);
-
+                    MqttConnectOptions connectOptions = new MqttConnectOptions();
+                    // Maintain the session between client and server for reliable delivery
+                    connectOptions.setCleanSession(false);
+                    mqttClient.connect(connectOptions);
+                    mqttClient.publish(topic, mqttMessage);
                     published = true;
-                } catch (MqttException e) {
+                } catch (Exception e) {
                     initialized = false;
                     if (!retry) {
                         if (log.isDebugEnabled()) {
@@ -95,17 +103,16 @@ public class TopicPublisher {
                     }
 
                     if (log.isInfoEnabled()) {
-                        log.info("Will try to re-publish in 60 sec");
+                        log.info(String.format("Will try to re-publish in %d sec", (PUBLISH_RETRY_INTERVAL/1000)));
                     }
                     try {
-                        Thread.sleep(60000);
+                        Thread.sleep(PUBLISH_RETRY_INTERVAL);
                     } catch (InterruptedException ignore) {
                     }
                 } finally {
                     try {
                         mqttClient.disconnect();
                     } catch (MqttException ignore) {
-
                     }
                 }
             }
