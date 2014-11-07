@@ -78,8 +78,8 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     protected void monitor() {
+    	obsoleteCheck();
         minCheck();
-        obsoleteCheck();
         scaleCheck();
     }
 
