@@ -27,9 +27,9 @@
          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-    <jaxrs:server id="stratosAdmin" address="/">
+    <jaxrs:server id="stratosApi" address="/">
         <jaxrs:serviceBeans>
-            <ref bean="stratosRestEndpointTestBean"/>
+            <ref bean="stratosApiBeanV41"/>
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
@@ -37,24 +37,69 @@
             <ref bean="genericExceptionHandler"/>
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
-			<ref bean="throwableExceptionHandler"/>
-			<ref bean="basicAuthenticationFilter"/>
-            <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-                <property name="dropRootElement" value="true"/>
-                <property name="supportUnwrapped" value="true"/>
-            </bean>>
             <ref bean="exceptionHandler"/>
+            <ref bean="basicAuthenticationFilter"/>
+            <ref bean="sessionAuthenticationFilter"/>
+            <ref bean="authorizationFilterV41"/>
         </jaxrs:providers>
     </jaxrs:server>
 
-    <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
-    <bean id="basicAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosMockHandler"/>
+    <jaxrs:server id="stratosApiV40" address="/v4.0">
+        <jaxrs:serviceBeans>
+            <ref bean="stratosApiBeanV40"/>
+        </jaxrs:serviceBeans>
+
+        <jaxrs:providers>
+            <ref bean="throwableExceptionHandler"/>
+            <ref bean="genericExceptionHandler"/>
+            <ref bean="badRequestExceptionHandler"/>
+            <ref bean="jsonProvider"/>
+            <ref bean="exceptionHandler"/>
+            <ref bean="basicAuthenticationFilter"/>
+            <ref bean="sessionAuthenticationFilter"/>
+            <ref bean="authorizationFilterV40"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <jaxrs:server id="stratosApiV41" address="/v4.1">
+        <jaxrs:serviceBeans>
+            <ref bean="stratosApiBeanV41"/>
+        </jaxrs:serviceBeans>
+
+        <jaxrs:providers>
+            <ref bean="throwableExceptionHandler"/>
+            <ref bean="genericExceptionHandler"/>
+            <ref bean="badRequestExceptionHandler"/>
+            <ref bean="jsonProvider"/>
+            <ref bean="exceptionHandler"/>
+            <ref bean="basicAuthenticationFilter"/>
+            <ref bean="sessionAuthenticationFilter"/>
+            <ref bean="authorizationFilterV41"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <bean id="stratosApiBeanV40" class="org.apache.stratos.rest.endpoint.api.StratosApiV40"/>
+    <bean id="stratosApiBeanV41" class="org.apache.stratos.rest.endpoint.api.StratosApiV41"/>
+    <bean id="basicAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthenticationHandler"/>
+    <bean id="sessionAuthenticationFilter" class="org.apache.stratos.rest.endpoint.handlers.CookieBasedAuthenticationHandler"/>
+    <bean id="authorizationFilterV40" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthorizingHandler">
+        <property name="securedObject" ref="stratosApiBeanV40"/>
+    </bean>
+    <bean id="authorizationFilterV41" class="org.apache.stratos.rest.endpoint.handlers.StratosAuthorizingHandler">
+        <property name="securedObject" ref="stratosApiBeanV41"/>
+    </bean>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
     <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <!--The below config enables OAuth based authentication/authorization for REST API-->
+    <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
+        <property name="password" value="admin"/>
+        <property name="username" value="admin"/>
+        <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
+    </bean>
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
-        <property name="schemaHandler" ref="schemaHolder"/>
+        <!-- property name="schemaHandler" ref="schemaHolder"/-->
         <property name="supportUnwrapped" value="true"/>
         <property name="serializeAsArray" value="true"/>
         <property name="arrayKeys">
@@ -70,6 +115,8 @@
                 <value>hostNames</value>
                 <value>portMappings</value>
                 <value>volumes</value>
+                <value>domains</value>
+                <value>kubernetesHost</value>
             </list>
         </property>
     </bean>
@@ -81,4 +128,5 @@
     <util:list id="theSchemas">
         <value>classpath:/WEB-INF/schemas/schema.xsd</value>
     </util:list>
+
 </beans>

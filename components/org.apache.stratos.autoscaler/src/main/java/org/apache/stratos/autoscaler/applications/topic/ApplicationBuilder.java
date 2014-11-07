@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
@@ -90,8 +90,8 @@ public class ApplicationBuilder {
             return;
         }
 
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
             ApplicationStatus status = ApplicationStatus.Active;
             if (application.isStateTransitionValid(status)) {
                 application.setStatus(status);
@@ -101,9 +101,9 @@ public class ApplicationBuilder {
                 //publishing data
                 ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
             }
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
 
     }
 
@@ -137,8 +137,8 @@ public class ApplicationBuilder {
         }
 
         Applications applications = ApplicationHolder.getApplications();
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
 
             if (!applications.applicationExists(appId)) {
                 log.warn("Application with id [ " + appId + " ] doesn't exist in Applications");
@@ -159,9 +159,9 @@ public class ApplicationBuilder {
                 ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
             }
 
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
     }
 
     public static void handleApplicationTerminatingEvent(String applicationId) {
@@ -219,8 +219,8 @@ public class ApplicationBuilder {
             return;
         }
 
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
             GroupStatus status = GroupStatus.Terminated;
             if (group.isStateTransitionValid(status)) {
                 log.info("Group Terminated adding status started for " + group.getUniqueIdentifier());
@@ -233,9 +233,9 @@ public class ApplicationBuilder {
                 log.warn("Terminated is not in the possible state list of [group] " + groupId);
             }
             ApplicationHolder.persistApplication(application);
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
     }
 
     public static void handleGroupActivatedEvent(String appId, String groupId) {
@@ -260,8 +260,8 @@ public class ApplicationBuilder {
             return;
         }
 
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
             GroupStatus status = GroupStatus.Active;
             if (group.isStateTransitionValid(status)) {
                 log.info("Group Active adding status started for " + group.getUniqueIdentifier());
@@ -274,9 +274,9 @@ public class ApplicationBuilder {
                 log.warn("Active is not in the possible state list of [group] " + groupId);
             }
             ApplicationHolder.persistApplication(application);
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
     }
 
     public static void handleGroupCreatedEvent(String appId, String groupId) {
@@ -301,8 +301,8 @@ public class ApplicationBuilder {
             return;
         }
 
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
             GroupStatus status = GroupStatus.Created;
             if (group.isStateTransitionValid(status)) {
                 log.info("Group created adding status started for " + group.getUniqueIdentifier());
@@ -315,9 +315,9 @@ public class ApplicationBuilder {
                 log.warn("Created is not in the possible state list of [group] " + groupId);
             }
             ApplicationHolder.persistApplication(application);
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
 
     }
 
@@ -343,8 +343,8 @@ public class ApplicationBuilder {
             return;
         }
 
-        try {
-            ApplicationHolder.acquireWriteLock();
+        /*try {
+            ApplicationHolder.acquireWriteLock();*/
             GroupStatus status = GroupStatus.Inactive;
             if (group.isStateTransitionValid(status)) {
                 log.info("Group Inactive adding status started for " + group.getUniqueIdentifier());
@@ -357,9 +357,9 @@ public class ApplicationBuilder {
                 log.warn("Inactive is not in the possible state list of [group] " + groupId);
             }
             ApplicationHolder.persistApplication(application);
-        } finally {
+        /*} finally {
             ApplicationHolder.releaseWriteLock();
-        }
+        }*/
     }
 
     public static void handleGroupTerminatingEvent(String appId, String groupId) {

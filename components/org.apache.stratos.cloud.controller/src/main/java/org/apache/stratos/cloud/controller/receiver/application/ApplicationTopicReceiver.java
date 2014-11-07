@@ -37,14 +37,10 @@ public class ApplicationTopicReceiver implements Runnable{
     public ApplicationTopicReceiver() {
         this.applicationsEventReceiver = new ApplicationsEventReceiver();
         addEventListeners();
-        //startAppReceiver();
 
     }
 
-    private void startAppReceiver() {
-        Thread thread = new Thread(applicationsEventReceiver);
-        thread.start();
-    }
+    
     @Override
     public void run() {
 

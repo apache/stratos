@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.rest.endpoint.services;
+package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
@@ -31,8 +31,8 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
  * The abstract class for service beans. If the admin service want to get {@link ConfigurationContext} etc,
  * they should acquire them through this class' methods.
  */
-public class AbstractAdmin {
-    private static Log log = LogFactory.getLog(AbstractAdmin.class);
+public class AbstractApi {
+    private static Log log = LogFactory.getLog(AbstractApi.class);
 
     protected ConfigurationContext getConfigContext() {
 

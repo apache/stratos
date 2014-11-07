@@ -17,7 +17,7 @@
 
 instructions.configure = \
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/cxf,target:${installFolder}/../../../lib/runtimes/cxf,overwrite:true);\
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/web-app/stratos.war,target:${installFolder}/../../deployment/server/webapps/stratos.war,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/web-app/api.war,target:${installFolder}/../../deployment/server/webapps/api.war,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/tomcat/webapp-classloading.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/tomcat/webapp-classloading-environments.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading-environments.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.rest.endpoint_${feature.version}/tomcat/context.xml,target:${installFolder}/../../conf/tomcat/context.xml,overwrite:true);\

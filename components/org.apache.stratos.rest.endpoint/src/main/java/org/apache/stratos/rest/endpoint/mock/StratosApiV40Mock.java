@@ -24,21 +24,15 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
-import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.ServiceDoesNotExistException;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
-import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
-import org.apache.stratos.rest.endpoint.bean.StratosAdminResponse;
+import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
@@ -49,15 +43,6 @@ import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinit
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.apache.stratos.rest.endpoint.services.ServiceUtils;
-import org.apache.stratos.tenant.mgt.core.TenantPersistor;
-import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.context.RegistryType;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.user.core.tenant.Tenant;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.util.List;
 
@@ -69,9 +54,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-@Path("/admin/")
-public class StratosTestAdmin {
-    private static Log log = LogFactory.getLog(StratosTestAdmin.class);
+@Path("/")
+public class StratosApiV40Mock {
+    private static Log log = LogFactory.getLog(StratosApiV40Mock.class);
     @Context
     HttpServletRequest httpServletRequest;
     @Context
@@ -80,12 +65,12 @@ public class StratosTestAdmin {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse initialize ()
+    public StratosApiResponse initialize ()
             throws RestAPIException {
 
-        StratosAdminResponse stratosAdminResponse = new StratosAdminResponse();
-        stratosAdminResponse.setMessage("Successfully logged in");
-        return stratosAdminResponse;
+        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        stratosApiResponse.setMessage("Successfully logged in");
+        return stratosApiResponse;
     }
 
 
@@ -161,7 +146,7 @@ public class StratosTestAdmin {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse unsubscribe(String alias) throws RestAPIException{
+    public StratosApiResponse unsubscribe(String alias) throws RestAPIException{
           return MockContext.getInstance().unsubscribe(alias);
     }
 
@@ -171,7 +156,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public StratosApiResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
     	return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
@@ -181,7 +166,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public StratosApiResponse updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         return MockContext.getInstance().addTenant(tenantInfoBean);
     }
 
@@ -201,7 +186,7 @@ public class StratosTestAdmin {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public StratosApiResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
          return  MockContext.getInstance().deleteTenant(tenantDomain);
     }
 
@@ -240,7 +225,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public StratosApiResponse deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         return  MockContext.getInstance().deactivateTenant(tenantDomain);
     }
 
@@ -250,7 +235,7 @@ public class StratosTestAdmin {
    @Consumes("application/json")
    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
    @SuperTenantService(true)
-   public StratosAdminResponse deployService(ServiceDefinitionBean serviceDefinitionBean)
+   public StratosApiResponse deployService(ServiceDefinitionBean serviceDefinitionBean)
            throws RestAPIException {
 
        log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
@@ -282,7 +267,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
+    public StratosApiResponse deployCartridgeDefinition (CartridgeDefinitionBean cartridgeDefinitionBean)
             throws RestAPIException {
         return MockContext.getInstance().addCartirdgeDefinition(cartridgeDefinitionBean);
     }
@@ -324,7 +309,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployPartition (Partition partition)
+    public StratosApiResponse deployPartition (Partition partition)
             throws RestAPIException {
         return MockContext.getInstance().addPartition(partition);
     }
@@ -335,7 +320,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+    public StratosApiResponse deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
             throws RestAPIException {
           return MockContext.getInstance().addAutoScalingPolicyDefinition(autoscalePolicy);
 
@@ -347,7 +332,7 @@ public class StratosTestAdmin {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosAdminResponse deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+    public StratosApiResponse deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
            return MockContext.getInstance().addDeploymentPolicyDefinition(deploymentPolicy);
 
@@ -503,7 +488,7 @@ public class StratosTestAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
+    public StratosApiResponse addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                                       @PathParam("subscriptionAlias") String subscriptionAlias,
                                                       SubscriptionDomainRequest request) throws RestAPIException {
 
@@ -533,7 +518,7 @@ public class StratosTestAdmin {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosAdminResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+    public StratosApiResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
                                                          @PathParam("domainName") String domainName) throws RestAPIException {
 
