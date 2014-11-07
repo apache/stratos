@@ -53,6 +53,16 @@
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
     <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <!--The below config enables OAuth based authentication/authorization for REST API-->
+    <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
+        <property name="password" value="admin"/>
+        <property name="username" value="admin"/>
+        <property name="oauthValidationEndpoint" value="https://localhost:9443/services/"/>
+    </bean>
+    <!--
+    <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider">
+    </bean>
+    -->
     <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
         <property name="schemaHandler" ref="schemaHolder"/>
         <property name="supportUnwrapped" value="true"/>
@@ -70,10 +80,14 @@
                 <value>hostNames</value>
                 <value>portMappings</value>
                 <value>volumes</value>
+                <value>domains</value>
+                <value>kubernetesHost</value>
+                <value>cartridges</value>
+                <value>startupOrders</value>
+                <value>dependencies</value>
             </list>
         </property>
     </bean>
-
     <bean id="schemaHolder" class="org.apache.cxf.jaxrs.utils.schemas.SchemaHandler">
         <property name="schemas" ref="theSchemas"/>
     </bean>
