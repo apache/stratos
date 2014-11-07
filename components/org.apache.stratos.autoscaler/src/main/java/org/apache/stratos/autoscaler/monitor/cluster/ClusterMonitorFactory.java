@@ -355,21 +355,23 @@ public class ClusterMonitorFactory {
 
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
         if (log.isDebugEnabled()) {
-            log.debug("Autoscaler policy name: " + autoscalePolicyName);
+            log.debug("Autoscaling policy name: " + autoscalePolicyName);
         }
 
         AutoscalePolicy policy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
 
         if (policy == null) {
-            String msg = "Autoscale Policy is null. Policy name: " + autoscalePolicyName;
+            String msg = String.format("Autoscaling policy is null: [policy-name] %s", autoscalePolicyName);
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
 
         java.util.Properties properties = cluster.getProperties();
         if(properties == null) {
-            throw new RuntimeException(String.format("Properties not found in kubernetes cluster: [cluster-id] %s",
-                    cluster.getClusterId()));
+            String message = String.format("Properties not found in kubernetes cluster: [cluster-id] %s",
+                    cluster.getClusterId());
+            log.error(message);
+            throw new RuntimeException(message);
         }
 
         String kubernetesHostClusterID = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
