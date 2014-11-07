@@ -407,6 +407,19 @@ public class StratosApiV41 extends AbstractApi {
         return  Response.ok().entity(subscriptions).build();
     }
 
+    @GET
+    @Path("/application/")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getApplications() throws RestAPIException {
+        ApplicationBean[] applications = StratosApiV41Utils.getApplications();
+        if(applications == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }else{
+            return  Response.ok().entity(applications).build();
+        }
+    }
+
     /**
      * This API resource provides information about the application denoted by the given appId. Details includes,
      * Application details, top level cluster details, details of the group and sub groups.
@@ -421,7 +434,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationInfo(@PathParam("appId") String applicationId) throws RestAPIException {
-        ApplicationBean application = StratosApiV41Utils.getApplicationInfo(applicationId, getConfigContext());
+        ApplicationBean application = StratosApiV41Utils.getApplicationInfo(applicationId);
         if(application == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }else{
@@ -618,15 +631,6 @@ public class StratosApiV41 extends AbstractApi {
         }
         StratosApiV41Utils.updateSubscriptionProperties(getConfigContext(), alias, cartridgeInfoBean.getProperty());
         return Response.ok().build();
-    }
-
-    @POST
-    @Path("/cartridge/unsubscribe")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response unsubscribe(String alias) throws RestAPIException {
-        StratosApiV41Utils.unsubscribe(alias, getTenantDomain());
-        return Response.noContent().build();
     }
 
     @POST

@@ -1492,7 +1492,25 @@ public class StratosApiV41Utils {
         log.info("Successfully undeployed the Service Group Definition with name " + serviceGroupDefinitionName);
     }
 
-    public static ApplicationBean getApplicationInfo(String applicationId, ConfigurationContext configContext) {
+    public static ApplicationBean[] getApplications() {
+        List<ApplicationBean> applicationBeanList = new ArrayList<ApplicationBean>();
+        try {
+            ApplicationManager.acquireReadLockForApplications();
+            ApplicationBean applicationBean;
+            for(Application application : ApplicationManager.getApplications().getApplications().values()) {
+                applicationBean = PojoConverter.applicationToBean(application);
+                addClustersToApplicationBean(applicationBean, application);
+                addGroupsToApplicationBean(applicationBean, application);
+                applicationBeanList.add(applicationBean);
+            }
+        } finally {
+            ApplicationManager.releaseReadLockForApplications();
+        }
+
+        return applicationBeanList.toArray(new ApplicationBean[applicationBeanList.size()]);
+    }
+
+    public static ApplicationBean getApplicationInfo(String applicationId) {
         ApplicationBean applicationBean = null;
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);
@@ -1501,36 +1519,40 @@ public class StratosApiV41Utils {
                 return null;
             }
             applicationBean = PojoConverter.applicationToBean(application);
-
-            Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
-            for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
-                ClusterDataHolder clusterDataHolder = entry.getValue();
-                String clusterId = clusterDataHolder.getClusterId();
-                String serviceType = clusterDataHolder.getServiceType();
-                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                Cluster topLevelCluster;
-
-                try {
-                    TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                    topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-                } finally {
-                    TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
-                }
-                applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster));
-            }
-
-            Collection<Group> groups = application.getGroups();
-            for (Group group : groups) {
-                GroupBean groupBean = PojoConverter.toGroupBean(group);
-                setSubGroups(group, groupBean);
-                applicationBean.addGroup(groupBean);
-            }
+            addClustersToApplicationBean(applicationBean, application);
+            addGroupsToApplicationBean(applicationBean, application);
         } finally {
             ApplicationManager.releaseReadLockForApplication(applicationId);
         }
-
-
         return applicationBean;
+    }
+
+    private static void addGroupsToApplicationBean(ApplicationBean applicationBean, Application application) {
+        Collection<Group> groups = application.getGroups();
+        for (Group group : groups) {
+            GroupBean groupBean = PojoConverter.toGroupBean(group);
+            setSubGroups(group, groupBean);
+            applicationBean.addGroup(groupBean);
+        }
+    }
+
+    private static void addClustersToApplicationBean(ApplicationBean applicationBean, Application application) {
+        Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
+        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
+            ClusterDataHolder clusterDataHolder = entry.getValue();
+            String clusterId = clusterDataHolder.getClusterId();
+            String serviceType = clusterDataHolder.getServiceType();
+            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+            Cluster topLevelCluster;
+
+            try {
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+            } finally {
+                TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+            }
+            applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster));
+        }
     }
 
     private static void setSubGroups(Group group, GroupBean groupBean) {
