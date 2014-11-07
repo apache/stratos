@@ -32,4 +32,27 @@
 	<description>Apache Stratos Python Cartridge Agent</description>
 	<url>http://apache.org</url>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <zip destfile="${project.build.directory}/apache-stratos-python-cartridge-agent-${project.version}.zip"
+                                     basedir="cartridgeagent/cartridgeagent"
+                                        />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
