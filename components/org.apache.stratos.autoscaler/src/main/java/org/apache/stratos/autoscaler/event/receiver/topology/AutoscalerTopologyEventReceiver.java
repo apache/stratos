@@ -84,7 +84,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
     private boolean allClustersInitialized(Application application) {
         boolean allClustersInitialized = false;
-        for (ClusterDataHolder holder : application.getClusterDataMap().values()) {
+        for (ClusterDataHolder holder : application.getClusterDataRecursively()) {
             TopologyManager.acquireReadLockForCluster(holder.getServiceType(),
                     holder.getClusterId());
 
@@ -95,13 +95,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     if (service != null) {
                         if (service.clusterExists(holder.getClusterId())) {
                             allClustersInitialized = true;
+                            return allClustersInitialized;
                         } else {
                             if (log.isDebugEnabled()) {
                                 log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
                                         "the Topology");
                             }
                             allClustersInitialized = false;
-                            return allClustersInitialized;
                         }
                     } else {
                         if (log.isDebugEnabled()) {
