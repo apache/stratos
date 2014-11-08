@@ -177,6 +177,37 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
 
     public abstract void handleDynamicUpdates(Properties properties) throws InvalidArgumentException;
+    
+    @Override
+    public int hashCode() {
+    	final int prime = 31;
+    	int result = 1;
+    	result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
+    	return result;
+    }
+    
+    @Override
+    public boolean equals(final Object obj) {
+    	if (this == obj) {
+    		return true;
+    	}
+    	if (obj == null) {
+    		return false;
+    	}
+    	if (!(obj instanceof AbstractClusterMonitor)) {
+    		return false;
+    	}
+    	final AbstractClusterMonitor other = (AbstractClusterMonitor) obj;
+    	if (this.clusterId == null) {
+    		if (other.clusterId != null) {
+    			return false;
+    		}
+    	}
+    	if (!this.clusterId.equals(other.clusterId)) {
+    		return false;
+    	}
+    	return true;
+    }
 
     public String getClusterId() {
         return clusterId;
