@@ -32,32 +32,32 @@ public class ApplicationContextFactory {
     private static final Log log = LogFactory.getLog(ApplicationContextFactory.class);
 
     /**
-     * Will return the GroupContext/ClusterContext based on the type in start order
+     * Will return the GroupContext/ClusterContext based on the type in start order/scaling order
      *
-     * @param startOrder      reference of group/cluster in the start order
+     * @param order      reference of group/cluster in the start/scaling order
      * @param component       The component which used to build the dependency
      * @param tree kill dependent behaviour of this component
      * @return Context
      */
-    public static ApplicationContext getApplicationContext(String startOrder,
+    public static ApplicationContext getApplicationContext(String order,
                                                            ParentComponent component,
                                                            DependencyTree tree) {
         String id;
         ApplicationContext applicationContext = null;
         boolean isDependent = tree.isKillDependent() || tree.isKillAll();
-        if (startOrder.startsWith(Constants.GROUP + ".")) {
+        if (order.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
-            id = getGroupFromStartupOrder(startOrder);
+            id = getGroupFromStartupOrder(order);
             applicationContext = getGroupContext(id, isDependent);
-        } else if (startOrder.startsWith(Constants.CARTRIDGE + ".")) {
+        } else if (order.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
-            id = getClusterFromStartupOrder(startOrder);
+            id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
             applicationContext = getClusterContext(clusterDataHolder, isDependent);
 
         } else {
-            log.warn("[Startup Order]: " + startOrder + " contains unknown reference");
+            log.warn("[Startup Order]: " + order + " contains unknown reference");
         }
         return applicationContext;
 
