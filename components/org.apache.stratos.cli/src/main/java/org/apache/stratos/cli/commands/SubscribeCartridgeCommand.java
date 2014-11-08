@@ -36,9 +36,10 @@ import org.apache.stratos.cli.utils.CliConstants;
 
 import java.io.IOException;
 
+@Deprecated
 public class SubscribeCartridgeCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ListCartridgeSubscriptionsCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubscribeCartridgeCommand.class);
 
     private final Options options;
 
