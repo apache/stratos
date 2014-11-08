@@ -18,17 +18,17 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
-public class Groups
+public class Group
 {
     private String deploymentPolicy;
 
-    private Clusters clusters;
+    private Cluster cluster;
 
     private String alias;
 
     private String autoScalingPolicy;
 
-    private SubGroups[] subGroups;
+    private SubGroup[] subGroups;
 
     public String getDeploymentPolicy ()
     {
@@ -40,14 +40,14 @@ public class Groups
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public Clusters getClusters ()
+    public Cluster getCluster()
     {
-        return clusters;
+        return cluster;
     }
 
-    public void setClusters (Clusters clusters)
+    public void setCluster(Cluster cluster)
     {
-        this.clusters = clusters;
+        this.cluster = cluster;
     }
 
     public String getAlias ()
@@ -70,12 +70,12 @@ public class Groups
         this.autoScalingPolicy = autoScalingPolicy;
     }
 
-    public SubGroups[] getSubGroups ()
+    public SubGroup[] getSubGroups ()
     {
         return subGroups;
     }
 
-    public void setSubGroups (SubGroups[] subGroups)
+    public void setSubGroups (SubGroup[] subGroups)
     {
         this.subGroups = subGroups;
     }

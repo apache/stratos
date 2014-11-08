@@ -138,7 +138,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new UndeployServiceDefinitionCommand();
         commands.put(command.getName(), command);
 
-        command = new ListDeployServiceCommand();
+        command = new ListApplicationsCommand();
+        commands.put(command.getName(), command);
+
+        command = new ListServicesCommand();
         commands.put(command.getName(), command);
 
         command = new UndeployCartridgeDefinitionCommand();
@@ -146,9 +149,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         command = new DeployDeploymentPolicyCommand();
         commands.put(command.getName(), command);
-		
-		command = new ListCartridgeSubscriptionsCommand();
-		commands.put(command.getName(), command);
 
         command = new ListPartitionCommand();
         commands.put(command.getName(), command);
@@ -377,7 +377,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 			}
 		} else {
 			if (login(usernameInput, passwordInput, true)) {
-				System.out.println("Successfully Authenticated.");
+				System.out.println("Successfully authenticated");
 			} else {
 				// Exit
 				return CliConstants.ERROR_CODE;
@@ -436,7 +436,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		}
 		if (success) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Successfully Authenticated.");
+				logger.debug("Successfully authenticated");
 			}
 		} else {
 			if (logger.isDebugEnabled()) {

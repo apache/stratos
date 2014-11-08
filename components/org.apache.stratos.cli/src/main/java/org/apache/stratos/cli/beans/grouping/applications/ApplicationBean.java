@@ -20,15 +20,15 @@ package org.apache.stratos.cli.beans.grouping.applications;
 
 public class ApplicationBean
 {
-    private Applications applications;
+    private Application application;
 
-    public Applications getApplications ()
+    public Application getApplication()
     {
-        return applications;
+        return application;
     }
 
-    public void setApplications (Applications applications)
+    public void setApplication(Application application)
     {
-        this.applications = applications;
+        this.application = application;
     }
 }

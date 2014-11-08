@@ -27,11 +27,11 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListDeployServiceCommand implements Command<StratosCommandContext> {
+public class ListServicesCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ListDeployServiceCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(ListServicesCommand.class);
 
-    public ListDeployServiceCommand() {
+    public ListServicesCommand() {
     }
 
     public String getName() {

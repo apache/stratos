@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
-public class Clusters {
+public class Cluster {
     private Member[] member;
 
     private String isLbCluster;
