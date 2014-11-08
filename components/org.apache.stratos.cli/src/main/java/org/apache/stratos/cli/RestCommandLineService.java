@@ -50,6 +50,7 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
+import org.apache.stratos.cli.beans.grouping.applications.Application;
 import org.apache.stratos.cli.beans.grouping.applications.ApplicationBean;
 import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
@@ -108,8 +109,9 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = API_CONTEXT + "/kubernetes/group";
     private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetes/hosts/{groupId}";
     private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/group/definition/{groupDefinitionName}";
-    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/application/{appId}";
+    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/application";
 
+    private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/application/{appId}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/info/{id}";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/cluster/";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
@@ -1270,7 +1272,6 @@ public class RestCommandLineService {
                     data[3] = definition.getClusterDomain();
                     data[4] = definition.getTenantRange();
                     data[5] = definition.getIsPublic() ? "Public" : "Private";
-                    ;
                     return data;
                 }
             };
@@ -1283,6 +1284,36 @@ public class RestCommandLineService {
                     "Autoscaling Policy Name", "Cluster Domain", "Tenant Range", "Accessibility");
         } catch (Exception e) {
             String message = "Error in listing services";
+            System.out.println(message);
+            log.error(message, e);
+        }
+    }
+
+    public void listApplications() throws CommandException {
+        try {
+            ApplicationList list = (ApplicationList) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
+                    ApplicationList.class, "application");
+
+            if ((list == null) || (list.getApplications() == null) || (list.getApplications().size() == 0)) {
+                System.out.println("No applications found");
+                return;
+            }
+
+            RowMapper<Application> rowMapper = new RowMapper<Application>() {
+                public String[] getData(Application definition) {
+                    String[] data = new String[1];
+                    data[0] = definition.getId();
+                    return data;
+                }
+            };
+
+            Application[] array = new Application[list.getApplications().size()];
+            array = list.getApplications().toArray(array);
+
+            System.out.println("Applications found:");
+            CliUtils.printTable(array, rowMapper, "Application ID");
+        } catch (Exception e) {
+            String message = "Error in listing applications";
             System.out.println(message);
             log.error(message, e);
         }
@@ -1617,6 +1648,22 @@ public class RestCommandLineService {
         }
     }
 
+    private class ApplicationList {
+        private ArrayList<Application> applications;
+
+        public ArrayList<Application> getApplications() {
+            return applications;
+        }
+
+        public void setDeploymentPolicy(ArrayList<Application> applications) {
+            this.applications = applications;
+        }
+
+        ApplicationList() {
+            applications = new ArrayList<Application>();
+        }
+    }
+
     // This class convert JSON string to servicedefinitionbean object
     private class ServiceDefinitionList {
         private ArrayList<ServiceDefinitionBean> serviceDefinitionBean;
@@ -1858,16 +1905,16 @@ public class RestCommandLineService {
     // This method helps to describe applications
     public void describeApplication (String applicationID) {
         try {
-            ApplicationBean list = (ApplicationBean) restClient.listEntity(ENDPOINT_LIST_APPLICATION.replace("{appId}", applicationID),
+            ApplicationBean bean = (ApplicationBean) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
                     ApplicationBean.class, "applications");
 
-            if ((list == null) || (list.getApplications() == null)) {
+            if ((bean == null) || (bean.getApplication() == null)) {
                 System.out.println("Application not found: " + applicationID);
                 return;
             }
 
             System.out.println("Application : " + applicationID);
-            System.out.println(getGson().toJson(list.getApplications()));
+            System.out.println(getGson().toJson(bean.getApplication()));
         } catch (Exception e) {
             String message = "Error in describing application: " + applicationID;
             System.out.println(message);

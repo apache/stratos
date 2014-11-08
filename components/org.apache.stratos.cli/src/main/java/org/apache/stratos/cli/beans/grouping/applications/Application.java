@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
-public class Applications
+public class Application
 {
     private String id;
 
@@ -26,7 +26,7 @@ public class Applications
 
     private String tenantDomain;
 
-    private Groups groups;
+    private Group group;
 
     public String getId ()
     {
@@ -58,13 +58,13 @@ public class Applications
         this.tenantDomain = tenantDomain;
     }
 
-    public Groups getGroups ()
+    public Group getGroup()
     {
-        return groups;
+        return group;
     }
 
-    public void setGroups (Groups groups)
+    public void setGroup(Group group)
     {
-        this.groups = groups;
+        this.group = group;
     }
 }

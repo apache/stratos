@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
-public class SubGroups
+public class SubGroup
 {
     private String deploymentPolicy;
 
-    private Clusters clusters;
+    private Cluster cluster;
 
     private String alias;
 
@@ -38,14 +38,14 @@ public class SubGroups
         this.deploymentPolicy = deploymentPolicy;
     }
 
-    public Clusters getClusters ()
+    public Cluster getCluster()
     {
-        return clusters;
+        return cluster;
     }
 
-    public void setClusters (Clusters clusters)
+    public void setCluster(Cluster cluster)
     {
-        this.clusters = clusters;
+        this.cluster = cluster;
     }
 
     public String getAlias ()
