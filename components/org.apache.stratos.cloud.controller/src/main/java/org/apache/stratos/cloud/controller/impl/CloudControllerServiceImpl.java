@@ -56,8 +56,6 @@ import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
@@ -1500,14 +1498,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             kubApi.createService(service);
 
             // set host port and update
-            //TODO to clean the impl of properties
-            Property[] properties = new Property[1];
-            Property property = new Property(StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                    String.valueOf(service.getPort()));
-            org.apache.stratos.common.Properties properties1 = new org.apache.stratos.common.Properties();
-            properties1.setProperties(properties);
-
-            ctxt.setProperties(properties1);
+            Property allocatedServiceHostPortProp = new Property();
+            allocatedServiceHostPortProp.setName(StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+            allocatedServiceHostPortProp.setValue(String.valueOf(service.getPort()));
+            ctxt.getProperties().addProperty(allocatedServiceHostPortProp);
             dataHolder.addClusterContext(ctxt);
 
             if (LOG.isDebugEnabled()) {
