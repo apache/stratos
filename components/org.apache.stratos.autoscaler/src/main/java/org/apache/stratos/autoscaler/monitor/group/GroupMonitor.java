@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
@@ -33,9 +32,9 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 /**
@@ -74,7 +73,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             onChildInActiveEvent(id);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+            if (this.aliasToInActiveMonitorsMap.containsKey(id)) {
                 this.aliasToInActiveMonitorsMap.remove(id);
             }
             if (this.status == GroupStatus.Terminating) {
@@ -88,7 +87,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
+            if (this.aliasToInActiveMonitorsMap.containsKey(id)) {
                 this.aliasToInActiveMonitorsMap.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");

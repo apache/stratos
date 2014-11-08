@@ -453,6 +453,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.info(String.format("Faulty member is terminated and removed from the active members list: "
                                    + "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
         }
+
+        StatusChecker.getInstance().onMemberFaultEvent(memberFaultEvent.getClusterId(), partitionId);
     }
 
     @Override

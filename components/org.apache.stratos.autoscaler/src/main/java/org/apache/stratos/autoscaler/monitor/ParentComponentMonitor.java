@@ -20,19 +20,19 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
+import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
-import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.applications.ParentComponent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +55,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         //Building the dependency for this monitor within the immediate children
         dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
-    
+
     /**
      * This will start the child monitors based on the active of siblings according to start up order
      *
@@ -107,7 +107,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     }*/
 
     // move to inactive monitors list to use in the Terminated event
-    protected synchronized void markMonitorAsInactive (String monitorKey) {
+    protected synchronized void markMonitorAsInactive(String monitorKey) {
 
         if (!this.aliasToInActiveMonitorsMap.containsKey(monitorKey)) {
             this.aliasToInActiveMonitorsMap.put(monitorKey,
@@ -116,7 +116,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
-     *
      * @param idOfEvent
      */
     protected void onChildInActiveEvent(String idOfEvent) {
@@ -132,12 +131,12 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (terminationList.size() ==
                     (this.aliasToActiveMonitorsMap.size() + this.aliasToInActiveMonitorsMap.size())) {
                 if (this.parent != null) {
-                    ApplicationsEventPublisher.sendGroupTerminatingEvent(this.appId, this.id);
+                    ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id);
                 }
             } else {
                 //TODO application InActive
                 if (this.parent != null) {
-                    ApplicationsEventPublisher.sendGroupInActivateEvent(this.appId, this.id);
+                    ApplicationBuilder.handleGroupInActivateEvent(this.appId, this.id);
                 }
                 //Since it is reached the most independent unit and has few independent monitors,
                 // has to put the children down to terminating
@@ -152,7 +151,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                         if (monitor != null) {
                             if (monitor.hasActiveMonitors()) {
                                 //it is a group
-                                ApplicationsEventPublisher.sendGroupTerminatingEvent(this.appId,
+                                ApplicationBuilder.handleGroupTerminatingEvent(this.appId,
                                         terminationContext.getId());
                             } else {
                                 ClusterStatusEventPublisher.sendClusterTerminatingEvent(this.appId,

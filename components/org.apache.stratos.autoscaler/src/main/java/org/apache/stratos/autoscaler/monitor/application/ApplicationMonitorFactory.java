@@ -194,6 +194,7 @@ public class ApplicationMonitorFactory {
             AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster);
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
+            clusterMonitor.setId(clusterId);
             //setting the dependent behaviour of the cluster monitor
             if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
                 clusterMonitor.setHasDependent(true);
