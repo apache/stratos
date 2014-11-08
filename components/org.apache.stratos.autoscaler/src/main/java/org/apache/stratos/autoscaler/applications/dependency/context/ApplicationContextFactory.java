@@ -44,7 +44,7 @@ public class ApplicationContextFactory {
                                                            DependencyTree tree) {
         String id;
         ApplicationContext applicationContext = null;
-        boolean isDependent = tree.isKillDependent() || tree.isKillAll();
+        boolean isDependent = tree.isTerminateDependent() || tree.isTerminateAll();
         if (order.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);

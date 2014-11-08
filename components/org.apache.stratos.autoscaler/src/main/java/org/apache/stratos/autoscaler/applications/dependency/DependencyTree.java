@@ -37,11 +37,7 @@ public class DependencyTree {
 
     private boolean terminated;
 
-    private boolean killAll;
-
-    private boolean killNone;
-
-    private boolean killDependent;
+    private TerminationBehavior terminationBehavior;
 
     private boolean startupOder;
 
@@ -191,14 +187,14 @@ public class DependencyTree {
         List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
         ApplicationContext applicationContext = findApplicationContextWithId(id);
 
-        if (this.killDependent) {
+        if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
             allChildrenOfAppContext.add(applicationContext);
             findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
                     allChildrenOfAppContext);
             return allChildrenOfAppContext;
-        } else if (this.killAll) {
+        } else if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
                     allChildrenOfAppContext);
@@ -224,44 +220,20 @@ public class DependencyTree {
         return childContexts;
     }
 
-    public boolean isKillAll() {
-        return killAll;
+    public void setTerminationBehavior(TerminationBehavior terminationBehavior) {
+        this.terminationBehavior = terminationBehavior;
     }
 
-    public void setKillAll(boolean killAll) {
-        this.killAll = killAll;
+    public boolean isTerminateDependent() {
+        return this.terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT;
     }
 
-    public boolean isKillNone() {
-        return killNone;
+    public boolean isTerminateAll() {
+        return this.terminationBehavior == TerminationBehavior.TERMINATE_ALL;
     }
 
-    public void setKillNone(boolean killNone) {
-        this.killNone = killNone;
-    }
-
-    public boolean isStarted() {
-        return started;
-    }
-
-    public void setStarted(boolean started) {
-        this.started = started;
-    }
-
-    public boolean isTerminated() {
-        return terminated;
-    }
-
-    public void setTerminated(boolean terminated) {
-        this.terminated = terminated;
-    }
-
-    public boolean isKillDependent() {
-        return killDependent;
-    }
-
-    public void setKillDependent(boolean killDependent) {
-        this.killDependent = killDependent;
+    public enum TerminationBehavior {
+        TERMINATE_ALL, TERMINATE_NONE, TERMINATE_DEPENDENT
     }
 
     public String getId() {
@@ -287,4 +259,5 @@ public class DependencyTree {
     public void setReverseStartupOrder(boolean reverseStartupOrder) {
         this.reverseStartupOrder = reverseStartupOrder;
     }
+
 }

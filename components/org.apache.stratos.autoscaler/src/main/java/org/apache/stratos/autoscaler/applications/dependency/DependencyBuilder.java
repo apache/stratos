@@ -65,11 +65,11 @@ public class DependencyBuilder {
             String terminationBehaviour = dependencyOrder.getTerminationBehaviour();
 
             if (Constants.TERMINATE_NONE.equals(terminationBehaviour)) {
-                dependencyTree.setKillNone(true);
+                dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_NONE);
             } else if (Constants.TERMINATE_ALL.equals(terminationBehaviour)) {
-                dependencyTree.setKillAll(true);
+                dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_ALL);
             } else if (Constants.TERMINATE_DEPENDENTS.equals(terminationBehaviour)) {
-                dependencyTree.setKillDependent(true);
+                dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_DEPENDENT);
             }
 
             log.info("Setting the [terminationBehaviour] " + terminationBehaviour + " to the " +
@@ -139,14 +139,14 @@ public class DependencyBuilder {
         for (Group group1 : component.getAliasToGroupMap().values()) {
             if (dependencyTree.findApplicationContextWithId(group1.getAlias()) == null) {
                 ApplicationContext context = ApplicationContextFactory.
-                        getGroupContext(group1.getAlias(), dependencyTree.isKillDependent());
+                        getGroupContext(group1.getAlias(), dependencyTree.isTerminateDependent());
                 dependencyTree.addApplicationContext(context);
             }
         }
         for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
             if (dependencyTree.findApplicationContextWithId(dataHolder.getClusterId()) == null) {
                 ApplicationContext context = ApplicationContextFactory.getClusterContext(dataHolder,
-                                                                dependencyTree.isKillDependent());
+                                                                dependencyTree.isTerminateDependent());
                 dependencyTree.addApplicationContext(context);
 
             }
