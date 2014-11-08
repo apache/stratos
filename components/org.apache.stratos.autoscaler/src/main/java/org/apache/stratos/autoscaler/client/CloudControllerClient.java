@@ -285,9 +285,14 @@ public class CloudControllerClient {
 
     /**
      * @param kubernetesClusterId
+     * 				kubernetes cluster id in which the cluster needs be created
      * @param clusterId
-     * @return
+     * 				service cluster id
+     * @return the {@link MemberContext}
      * @throws SpawningException
+     * 				if client can't connect to cloud controller service, if
+     * 				cartridge not found for the given cluster id, or if the given
+     * 				kubernetes cluster id is not valid
      */
     public synchronized MemberContext[] startContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
@@ -321,15 +326,17 @@ public class CloudControllerClient {
             }
             return memberContexts;
         } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-            String message = e.getFaultMessage().getUnregisteredCartridgeException().getMessage();
-            log.error(message, e);
-            throw new SpawningException(message, e);
+            String msg = String.format("Error while creating containers. Cartridge not found for cluster [%s] ", clusterId);
+            log.error(msg, e);
+            throw new SpawningException(msg, e);
         } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
+        	String msg = "Error while creating containers, couldn't communicate with cloud controller service";
+        	log.error(msg, e);
+        	throw new SpawningException(msg, e);
         } catch (NonExistingKubernetesGroupException e) {
-            log.error(e.getMessage(), e);
-            throw new SpawningException(e.getMessage(), e);
+        	String msg = String.format("Error while creating containers, invalid kubernetes group [%s] ", kubernetesClusterId);
+        	log.error(msg, e);
+        	throw new SpawningException(msg, e);
         }
     }
 
@@ -345,11 +352,11 @@ public class CloudControllerClient {
                 log.debug(String.format("Service call terminateContainer() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
-            String msg = e.getMessage();
+        	String msg = "Error while creating containers, couldn't communicate with cloud controller service";
             log.error(msg, e);
             throw new TerminationException(msg, e);
         } catch (CloudControllerServiceInvalidClusterExceptionException e) {
-            String msg = e.getFaultMessage().getInvalidClusterException().getMessage();
+        	String msg = "Invalid Cluster [clusterId] " + clusterId;
             log.error(msg, e);
             throw new TerminationException(msg, e);
         }
