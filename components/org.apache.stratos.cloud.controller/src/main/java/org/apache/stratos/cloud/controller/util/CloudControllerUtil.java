@@ -336,19 +336,19 @@ public class CloudControllerUtil {
 	 */
     public static Properties toJavaUtilProperties(
         org.apache.stratos.common.Properties properties) {
-        Properties javaProps = new Properties();
+        Properties javaUtilsProperties = new Properties();
 
         if (properties != null && properties.getProperties() != null) {
 
             for (Property property : properties.getProperties()) {
-                if(property.getValue() != null){
-                    javaProps.put(property.getName(), property.getValue());
+                if((property != null) && (property.getValue() != null)) {
+                    javaUtilsProperties.put(property.getName(), property.getValue());
                 }
             }
 
         }
 
-        return javaProps;
+        return javaUtilsProperties;
     }
     
     public static void persistTopology(Topology topology) {
