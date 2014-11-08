@@ -1501,6 +1501,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Property allocatedServiceHostPortProp = new Property();
             allocatedServiceHostPortProp.setName(StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
             allocatedServiceHostPortProp.setValue(String.valueOf(service.getPort()));
+            ctxt.getProperties().addProperty(allocatedServiceHostPortProp);
+            dataHolder.addClusterContext(ctxt);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Cloud Controller successfully started the service "
