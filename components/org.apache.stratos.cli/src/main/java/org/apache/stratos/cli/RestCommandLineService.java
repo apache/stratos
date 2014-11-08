@@ -1826,15 +1826,16 @@ public class RestCommandLineService {
 
     public void describeServiceGroup (String groupDefinitionName) {
         try {
-            ServiceGroupDefinition list = (ServiceGroupDefinition) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    ServiceGroupDefinition.class, "serviceGroup");
+            ServiceGroupList list = (ServiceGroupList) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupList.class, "serviceGroup");
 
-            if ((list == null) || (list.getName() == null)) {
+            if ((list == null) || (list.getServiceGroupDefinition() == null)) {
                 System.out.println("Service group not found: " + groupDefinitionName);
                 return;
             }
 
-            System.out.println(getGson().toJson(list));
+            System.out.println("Service Group : " + groupDefinitionName);
+            System.out.println(getGson().toJson(list.getServiceGroupDefinition()));
         } catch (Exception e) {
             String message = "Error in describing service group: " + groupDefinitionName;
             System.out.println(message);
