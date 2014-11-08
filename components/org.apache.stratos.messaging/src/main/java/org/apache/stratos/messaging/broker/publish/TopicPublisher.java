@@ -19,17 +19,15 @@
 
 package org.apache.stratos.messaging.broker.publish;
 
-import org.apache.commons.lang.RandomStringUtils;
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import com.google.gson.Gson;
 
 /**
  * Any instance who needs to publish data to a topic, should communicate with
@@ -51,21 +49,19 @@ public class TopicPublisher {
      * using two-phase acknowledgement across the network.
      */
 	private static final int QOS = 2;
-    public static final int PUBLISH_RETRY_INTERVAL = 60000;
+    private static final int PUBLISH_RETRY_INTERVAL = 60000;
 
-    public static TopicPublisher topicPub;
-	private boolean initialized;
-	private final String topic;
-	MqttClient mqttClient;
+	private final String topicName;
+	private final MqttClient mqttClient;
 
 	/**
-	 * @param aTopicName topic name of this publisher instance.
+	 * @param topicName topic name of this publisher instance.
 	 */
-	TopicPublisher(String aTopicName) {
-		this.topic = aTopicName;
+	TopicPublisher(String topicName) {
+		this.topicName = topicName;
         this.mqttClient = MQTTConnector.getMqttClient();
 		if (log.isDebugEnabled()) {
-			log.debug(String.format("Topic publisher connector created: [topic] %s", topic));
+			log.debug(String.format("Topic publisher created: [topic] %s", topicName));
 		}
 	}
 
@@ -88,19 +84,19 @@ public class TopicPublisher {
 
                 try {
                     MqttConnectOptions connectOptions = new MqttConnectOptions();
-                    // Do not maintain the session between client and server, reliable delivery
-                    // will be managed by stratos messaging component
+                    // Do not maintain a session between the client and the server since it is nearly impossible to
+                    // generate unique client ids for each subscriber & publisher with the distributed nature of stratos.
+                    // Reliable message delivery is managed by topic subscriber and publisher.
                     connectOptions.setCleanSession(true);
                     mqttClient.connect(connectOptions);
-                    mqttClient.publish(topic, mqttMessage);
+                    mqttClient.publish(topicName, mqttMessage);
                     published = true;
                 } catch (Exception e) {
-                    initialized = false;
                     if (!retry) {
                         if (log.isDebugEnabled()) {
-                            log.debug("Retry disabled for topic " + topic);
+                            log.debug("Retry disabled for topic " + topicName);
                         }
-                        throw new RuntimeException(e);
+                        throw new MessagingException(e);
                     }
 
                     if (log.isInfoEnabled()) {

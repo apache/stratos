@@ -19,19 +19,17 @@
 
 package org.apache.stratos.messaging.broker.subscribe;
 
-import javax.jms.JMSException;
-
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+
+import javax.jms.JMSException;
 
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
@@ -60,25 +58,26 @@ public class TopicSubscriber implements Runnable {
         mqttClient = MQTTConnector.getMqttClient();
 
 		if (log.isDebugEnabled()) {
-			log.debug(String.format("Topic subscriber connector created: [topic] %s", topicName));
+			log.debug(String.format("Topic subscriber created: [topic] %s", topicName));
 		}
 	}
 
 	private void doSubscribe() throws MqttException {
 
-		if (log.isInfoEnabled()) {
-			log.info(String.format("Subscribing to topic: [topic] %s [server] %s",
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
                     topicName, mqttClient.getServerURI()));
 		}
 
 		/* Subscribing to specific topic */
         while(true) {
             try {
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                // Do not maintain the session between client and server, reliable delivery
-                // will be managed by stratos messaging component
-                connOpts.setCleanSession(true);
-                mqttClient.connect(connOpts);
+                MqttConnectOptions connectOptions = new MqttConnectOptions();
+                // Do not maintain a session between the client and the server since it is nearly impossible to
+                // generate unique client ids for each subscriber & publisher with the distributed nature of stratos.
+                // Reliable message delivery is managed by topic subscriber and publisher.
+                connectOptions.setCleanSession(true);
+                mqttClient.connect(connectOptions);
 
                 mqttClient.subscribe(topicName);
                 mqttClient.setCallback(messageListener);
@@ -90,7 +89,6 @@ public class TopicSubscriber implements Runnable {
                     } catch (InterruptedException ignored) {
                     }
                 }
-
             } finally {
                 mqttClient.disconnect();
             }
