@@ -192,7 +192,8 @@ public class ApplicationUtils {
     }
 
     public static PayloadData createPayload(String appId, String groupName, CartridgeInfo cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
-                                            String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases)
+                                            String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
+                                            org.apache.stratos.cloud.controller.stub.pojo.Properties properties)
             throws ApplicationDefinitionException {
 
         //Create the payload
@@ -223,7 +224,18 @@ public class ApplicationUtils {
                 }
             }
         }
-
+        
+        // get subscription payload parameters (MB_IP, MB_PORT so on) and set them to payload (kubernetes scenario)
+        if (properties != null && properties.getProperties() != null && properties.getProperties().length != 0) {
+			for (Property property : properties.getProperties()) {
+				if (property.getName().startsWith("payload_parameter.")) {
+                    String payloadParamName = property.getName();
+                    String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
+                    payloadData.add(payloadParamSubstring, property.getValue());
+				}
+			}
+		}
+        
         // DEPLOYMENT payload param must be set because its used by puppet agent
         // to generate the hostname. Therefore, if DEPLOYMENT is not set in cartridgeInfo properties,
         // adding the DEPLOYMENT="default" param

@@ -644,7 +644,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             assert subscribableInfoCtxt != null;
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
-                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases());
+                    clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases(), subscribableInfoCtxt.getProperties());
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
            	appClusterCtxt.setProperties(subscribableInfoCtxt.getProperties());
@@ -678,12 +678,12 @@ public class DefaultApplicationParser implements ApplicationParser {
     private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, CartridgeInfo cartridgeInfo,
                                                                        String subscriptionKey, int tenantId, String repoUrl,
                                                                        String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases)
+                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases, Properties properties)
             throws ApplicationDefinitionException {
 
         // Create text payload
         String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases).toString();
+                hostname, repoUrl, alias, null, dependencyAliases, properties).toString();
 
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
