@@ -27,12 +27,16 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 
 public class InstanceNotificationPublisher {
     private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
 
     private static void publish(Event event) {
-        EventPublisher instanceNotifyingEvent = EventPublisherPool.getPublisher(Constants.INSTANCE_NOTIFIER_TOPIC);
+        String topic = Util.getMessageTopicName(event);
+
+        EventPublisher instanceNotifyingEvent = EventPublisherPool.
+                                getPublisher(topic);
         instanceNotifyingEvent.publish(event);
     }
 
