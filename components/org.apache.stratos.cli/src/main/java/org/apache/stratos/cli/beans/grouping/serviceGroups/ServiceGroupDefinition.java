@@ -16,51 +16,55 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli.beans.grouping.serviceGroups;
 
-package org.apache.stratos.cli.beans.grouping.definitions;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
-
-public class ServiceGroupDefinition {
+public class ServiceGroupDefinition
+{
+    private Dependencies dependencies;
 
     private String name;
 
-    private List<String> subGroups;
+    private String[] subGroups;
 
-    private List<String> cartridges;
+    private String[] cartridges;
 
-    private DependencyDefinitions dependencies;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getSubGroups() {
-        return subGroups;
-    }
-
-    public void setSubGroups(List<String> subGroups) {
-        this.subGroups = subGroups;
-    }
-
-    public List<String> getCartridges() {
-        return cartridges;
-    }
-
-    public void setCartridges(List<String> cartridges) {
-        this.cartridges = cartridges;
-    }
-
-    public DependencyDefinitions getDependencies() {
+    public Dependencies getDependencies ()
+    {
         return dependencies;
     }
 
-    public void setDependencies(DependencyDefinitions dependencies) {
+    public void setDependencies (Dependencies dependencies)
+    {
         this.dependencies = dependencies;
+    }
+
+    public String getName ()
+    {
+        return name;
+    }
+
+    public void setName (String name)
+    {
+        this.name = name;
+    }
+
+    public String[] getSubGroups ()
+    {
+        return subGroups;
+    }
+
+    public void setSubGroups (String[] subGroups)
+    {
+        this.subGroups = subGroups;
+    }
+
+    public String[] getCartridges ()
+    {
+        return cartridges;
+    }
+
+    public void setCartridges (String[] cartridges)
+    {
+        this.cartridges = cartridges;
     }
 }

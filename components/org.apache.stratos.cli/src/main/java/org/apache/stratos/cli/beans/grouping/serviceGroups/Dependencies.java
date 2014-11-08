@@ -16,35 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli.beans.grouping.serviceGroups;
 
-package org.apache.stratos.cli.beans.grouping.definitions;
-
-import java.util.List;
-
-public class DependencyDefinitions {
-
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	private List<String> startupOrders;
-
+public class Dependencies
+{
     private String terminationBehaviour;
 
-    public String getTerminationBehaviour() {
+    private String[] startupOrders;
+
+    public String getTerminationBehaviour ()
+    {
         return terminationBehaviour;
     }
 
-    public void setTerminationBehaviour(String terminationBehaviour) {
+    public void setTerminationBehaviour (String terminationBehaviour)
+    {
         this.terminationBehaviour = terminationBehaviour;
     }
 
-	public List<String> getStartupOrders() {
-		return startupOrders;
-	}
+    public String[] getStartupOrders ()
+    {
+        return startupOrders;
+    }
 
-	public void setStartupOrders(List<String> startupOrders) {
-		this.startupOrders = startupOrders;
-	}
+    public void setStartupOrders (String[] startupOrders)
+    {
+        this.startupOrders = startupOrders;
+    }
 }

@@ -50,8 +50,8 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
-import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupList;
+import org.apache.stratos.cli.beans.grouping.applications.ApplicationBean;
+import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
@@ -108,6 +108,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = API_CONTEXT + "/kubernetes/group";
     private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetes/hosts/{groupId}";
     private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/group/definition/{groupDefinitionName}";
+    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/application/{appId}";
 
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/info/{id}";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/cluster/";
@@ -1824,23 +1825,26 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
     }
 
+    // This method helps to describe service group definition
     public void describeServiceGroup (String groupDefinitionName) {
         try {
-            ServiceGroupDefinition list = (ServiceGroupDefinition) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    ServiceGroupDefinition.class, "serviceGroup");
+            ServiceGroupList list = (ServiceGroupList) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupList.class, "serviceGroup");
 
-            if ((list == null) || (list.getName() == null)) {
+            if ((list == null) || (list.getServiceGroupDefinition() == null)) {
                 System.out.println("Service group not found: " + groupDefinitionName);
                 return;
             }
 
-            System.out.println(getGson().toJson(list));
+            System.out.println("Service Group : " + groupDefinitionName);
+            System.out.println(getGson().toJson(list.getServiceGroupDefinition()));
         } catch (Exception e) {
             String message = "Error in describing service group: " + groupDefinitionName;
             System.out.println(message);
             log.error(message, e);
         }
     }
+
     // This method helps to deploy applications
     public void deployApplication (String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
@@ -1849,5 +1853,25 @@ public class RestCommandLineService {
     // This method helps to undeploy applications
     public void undeployApplication(String id) throws CommandException {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "application", id);
+    }
+
+    // This method helps to describe applications
+    public void describeApplication (String applicationID) {
+        try {
+            ApplicationBean list = (ApplicationBean) restClient.listEntity(ENDPOINT_LIST_APPLICATION.replace("{appId}", applicationID),
+                    ApplicationBean.class, "applications");
+
+            if ((list == null) || (list.getApplications() == null)) {
+                System.out.println("Application not found: " + applicationID);
+                return;
+            }
+
+            System.out.println("Application : " + applicationID);
+            System.out.println(getGson().toJson(list.getApplications()));
+        } catch (Exception e) {
+            String message = "Error in describing application: " + applicationID;
+            System.out.println(message);
+            log.error(message, e);
+        }
     }
 }

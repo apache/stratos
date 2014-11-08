@@ -16,26 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+package org.apache.stratos.cli.beans.grouping.applications;
 
-package org.apache.stratos.cli.beans.grouping.definitions;
+public class Property
+{
+    private String name;
 
-import java.util.ArrayList;
+    private String value;
 
-/**
- * Service group list.
- */
-public class ServiceGroupList {
-    private ArrayList<ServiceGroupDefinition> serviceGroup;
-
-    public ArrayList<ServiceGroupDefinition> getServiceGroup() {
-        return serviceGroup;
+    public String getName ()
+    {
+        return name;
     }
 
-    public void setServiceGroup(ArrayList<ServiceGroupDefinition> serviceGroup) {
-        this.serviceGroup = serviceGroup;
+    public void setName (String name)
+    {
+        this.name = name;
     }
 
-    ServiceGroupList () {
-        serviceGroup = new ArrayList<ServiceGroupDefinition>();
+    public String getValue ()
+    {
+        return value;
+    }
+
+    public void setValue (String value)
+    {
+        this.value = value;
     }
 }

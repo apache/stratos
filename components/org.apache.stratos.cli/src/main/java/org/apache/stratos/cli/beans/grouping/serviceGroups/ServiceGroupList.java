@@ -16,28 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.cli.beans.grouping.serviceGroups;
 
-package org.apache.stratos.cli.beans.grouping.definitions;
+public class ServiceGroupList {
+    private ServiceGroupDefinition serviceGroup;
 
-public class StartupOrderDefinition {
-
-    private String start;
-
-    private String after;
-
-    public String getStart() {
-        return start;
+    public ServiceGroupDefinition getServiceGroupDefinition ()
+    {
+        return serviceGroup;
     }
 
-    public void setStart(String start) {
-        this.start = start;
-    }
-
-    public String getAfter() {
-        return after;
-    }
-
-    public void setAfter(String after) {
-        this.after = after;
+    public void setServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
+    {
+        this.serviceGroup = serviceGroupDefinition;
     }
 }
