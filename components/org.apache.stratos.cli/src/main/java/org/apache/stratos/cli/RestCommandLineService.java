@@ -50,8 +50,7 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
-import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupDefinition;
-import org.apache.stratos.cli.beans.grouping.definitions.ServiceGroupList;
+import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
@@ -1824,6 +1823,7 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
     }
 
+    // This method helps to describe service group definition
     public void describeServiceGroup (String groupDefinitionName) {
         try {
             ServiceGroupList list = (ServiceGroupList) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
@@ -1842,6 +1842,7 @@ public class RestCommandLineService {
             log.error(message, e);
         }
     }
+
     // This method helps to deploy applications
     public void deployApplication (String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
