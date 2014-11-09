@@ -38,13 +38,6 @@ class python_agent(
   $mb_ip = $split_mburl[0]
   $mb_port = $split_mburl[1]
 
-#  $split_mburl = split($mb_url, "//")
-#  $split_mburl = split($split_mburl[1], ":")
-#  $mb_ip = $split_mburl[0]
-#  $mb_port = $split_mburl[1]
-#  $mb_ip = '127.0.0.1'
-#  $mb_port = '1883'
-
   tag($service_code)
 
   $default_templates = [
