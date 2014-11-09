@@ -16,7 +16,7 @@
 # under the License.
 
 class python_agent(
-  $version                = '4.1.0',
+  $version                = '4.1.0-SNAPSHOT',
   $owner                  = 'root',
   $group                  = 'root',
   $target                 = "/mnt",
@@ -33,8 +33,8 @@ class python_agent(
   $agent_name = "apache-stratos-python-${service_code}-${version}"
   $agent_home= "${target}/${agent_name}"
 
-  $split_mburl = split($mb_url, "//")
-  $split_mburl = split($split_mburl[1], ":")
+  $split_mburls = split($mb_url, "//")
+  $split_mburl = split($split_mburls[1], ":")
   $mb_ip = $split_mburl[0]
   $mb_port = $split_mburl[1]
 
@@ -55,14 +55,12 @@ class python_agent(
     'extensions/mount-volumes.sh',
     'extensions/subscription-domain-added.sh',
     'extensions/subscription-domain-removed.sh',
-    'agent.conf',
-    'logging.ini',
   ]
 
-  agent::initialize { $service_code:
+ python_agent::initialize { $service_code:
     repo      => $package_repo,
-    version   => $carbon_version,
-    service   => $agent_name,
+    version   => $version,
+    agent_name => $agent_name,
     local_dir => $local_package_dir,
     target    => $target,
     owner     => $owner,
@@ -71,13 +69,13 @@ class python_agent(
   exec { 'copy launch-params to agent_home':
     path    => '/bin/',
     command => "mkdir -p ${agent_home}/payload; cp /tmp/payload/launch-params ${agent_home}/payload/launch-params",
-    require => Agent::Initialize[$service_code];
+    require => Python_agent::Initialize[$service_code];
   }
 
   exec { 'make extension folder':
     path    => '/bin/',
     command => "mkdir -p ${target}/${service_code}/extensions",
-    require => Agent::Initialize[$service_code];
+    require => Python_agent::Initialize[$service_code];
   }
 
 
@@ -91,43 +89,56 @@ class python_agent(
   }
 
 # applying default extensions
-  agent::push_templates {
+  python_agent::push_templates {
     $service_templates:
       target    => $agent_home,
       template_dir => "agent",
-      require   => Agent::Initialize[$service_code];
+      require   => Python_agent::Initialize[$service_code];
   }
 
 # applying custom extensions
   unless $module == 'undef' {
-    agent::push_templates {
+    python_agent::push_templates {
       $custom_templates:
-        target    => $carbon_home,
+        target    => $agent_home,
         template_dir => "${module}/agent",
-        require   => [Agent::Initialize[$service_code]]
+        require   => [Python_agent::Initialize[$service_code]]
     }
   }
 
 # removing default extensions which are shipped by agent.zip
-  agent::remove_templates {
+  python_agent::remove_templates {
     $exclude_templates:
-      target    => $carbon_home,
+      target    => $agent_home,
   }
 
   $required_resources = $module ? {
     'undef'  => [
       Exec['copy launch-params to agent_home'],
-      Agent::Push_templates[$default_templates_excluded],
+      Python_agent::Push_templates[$default_templates_excluded],
     ],
     default =>[
       Exec['copy launch-params to agent_home'],
-      Agent::Push_templates[$default_templates_excluded],
-      Agent::Push_templates[$custom_templates]         ]
+      Python_agent::Push_templates[$default_templates_excluded],
+      Python_agent::Push_templates[$custom_templates]         ]
   }
 
-  agent::start { $service_code:
+  file { "${agent_home}/agent.conf":
+    ensure => file,
+    content => template("python_agent/agent.conf.erb"),
+    require => Python_agent::Initialize[$service_code],
+  }
+
+  file { "${agent_home}/logging.ini":
+    ensure => file,
+    content => template("python_agent/logging.ini.erb"),
+    require => File["${agent_home}/agent.conf"],
+  }
+
+  python_agent::start { $service_code:
     owner   => $owner,
     target  => $agent_home,
     require => $required_resources
   }
 }
+

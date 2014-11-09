@@ -17,7 +17,7 @@
 
 # Apply the templates
 
-define agent::push_templates ($target,$template_dir) {
+define python_agent::push_templates ($target,$template_dir) {
   file { "${target}/${name}":
     ensure  => present,
     owner   => $agent::owner,
