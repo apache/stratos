@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,8 +26,6 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.VMServiceClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -42,6 +36,9 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -56,10 +53,10 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     public VMServiceClusterMonitor(String clusterId, VMServiceClusterContext vmServiceClusterContext) {
         super(clusterId, new AutoscalerRuleEvaluator(
-            		  StratosConstants.VM_MIN_CHECK_DROOL_FILE,
-            		  StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
-            		  StratosConstants.VM_SCALE_CHECK_DROOL_FILE), vmServiceClusterContext
-              );
+                        StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+                        StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
+                        StratosConstants.VM_SCALE_CHECK_DROOL_FILE), vmServiceClusterContext
+        );
         readConfigurations();
     }
 
@@ -67,9 +64,9 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     public void run() {
         while (!isDestroyed()) {
             try {
-                if ((getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
-                        (getStatus() == ClusterStatus.Inactive && !hasDependent) ||
-                        !this.hasFaultyMember) {
+                if  (((getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
+                        (getStatus() == ClusterStatus.Inactive && !hasDependent)) && !this.hasFaultyMember
+                        && !stop) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is running.. " + this.toString());
                     }
@@ -148,7 +145,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                         , minCheckFactHandle, partitionContext);
 
                 obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
-                		obsoleteCheckFactHandle, partitionContext);
+                        obsoleteCheckFactHandle, partitionContext);
 
                 //checking the status of the cluster
 
@@ -183,8 +180,8 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     @Override
     public String toString() {
         return "VMServiceClusterMonitor [clusterId=" + getClusterId() +
-               ", lbReferenceType=" + lbReferenceType +
-               ", hasPrimary=" + hasPrimary + " ]";
+                ", lbReferenceType=" + lbReferenceType +
+                ", hasPrimary=" + hasPrimary + " ]";
     }
 
     public String getLbReferenceType() {

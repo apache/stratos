@@ -99,17 +99,6 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
             }
         }
 
-        // Validate event properties
-        /*Cluster cluster = event.getCluster();
-
-        if(cluster == null) {
-            String msg = "Cluster object of cluster created event is null.";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-        if (cluster.getHostNames().isEmpty()) {
-            throw new RuntimeException("Host name/s not found in cluster created event");
-        }*/
         // Validate event against the existing topology
         Service service = topology.getService(event.getServiceName());
         if (service == null) {
@@ -119,26 +108,21 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
             }
             return false;
         }
-        if (service.clusterExists(event.getClusterId())) {
+        Cluster cluster = service.getCluster(event.getClusterId());
+
+        if (cluster == null) {
             if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster already exists in service: [service] %s [cluster] %s", event.getServiceName(),
+                log.warn(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
                         event.getClusterId()));
             }
         } else {
-
             // Apply changes to the topology
-            Cluster cluster = service.getCluster(event.getClusterId());
             if (!cluster.isStateTransitionValid(ClusterStatus.Created)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Created + " " +
-                        "for cluster " + cluster.getClusterId());
+                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Created);
             }
             cluster.setStatus(ClusterStatus.Created);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Cluster reset as Created: %s",
-                        cluster.toString()));
-            }
-        }
 
+        }
         // Notify event listeners
         notifyEventListeners(event);
         return true;

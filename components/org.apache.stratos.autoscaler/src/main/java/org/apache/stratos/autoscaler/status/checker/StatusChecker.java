@@ -422,14 +422,22 @@ public class StatusChecker {
                                              ClusterStatus status) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
-            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
-            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
-            if (cluster.getStatus() == status) {
-                clusterStat = true;
-            } else {
-                clusterStat = false;
-                return clusterStat;
+            String serviceName = clusterDataHolderEntry.getValue().getServiceType();
+            String clusterId = clusterDataHolderEntry.getValue().getClusterId();
+            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+            try {
+                Service service = TopologyManager.getTopology().getService(serviceName);
+                Cluster cluster = service.getCluster(clusterId);
+                if (cluster.getStatus() == status) {
+                    clusterStat = true;
+                } else {
+                    clusterStat = false;
+                    return clusterStat;
+                }
+            } finally {
+               TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
             }
+
         }
         return clusterStat;
     }
