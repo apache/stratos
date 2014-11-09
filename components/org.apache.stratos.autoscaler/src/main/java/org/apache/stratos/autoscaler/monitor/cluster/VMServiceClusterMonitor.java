@@ -63,16 +63,6 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         readConfigurations();
     }
 
-//TODO why this method?
-//    private static void terminateMember(String memberId) {
-//        try {
-//            CloudControllerClient.getInstance().terminate(memberId);
-//
-//        } catch (TerminationException e) {
-//            log.error("Unable to terminate member [member id ] " + memberId, e);
-//        }
-//    }
-
     @Override
     public void run() {
         while (!isDestroyed()) {
@@ -101,50 +91,6 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
 
     }
-
-//TODO why this method?
-//    @Override
-//    public void terminateAllMembers() {
-//
-//        Thread memberTerminator = new Thread(new Runnable() {
-//            public void run() {
-//
-//                for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
-//                    for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-//                        //if (log.isDebugEnabled()) {
-//                        log.info("Starting to terminate all members in Network Partition [ " +
-//                                networkPartitionContext.getId() + " ], Partition [ " +
-//                                partitionContext.getPartitionId() + " ]");
-//                        // }
-//                        // need to terminate active, pending and obsolete members
-//
-//                        // active members
-//                        for (MemberContext activeMemberCtxt : partitionContext.getActiveMembers()) {
-//                            log.info("Terminating active member [member id] " + activeMemberCtxt.getMemberId());
-//                            terminateMember(activeMemberCtxt.getMemberId());
-//                        }
-//
-//                        // pending members
-//                        for (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
-//                            log.info("Terminating pending member [member id] " + pendingMemberCtxt.getMemberId());
-//                            terminateMember(pendingMemberCtxt.getMemberId());
-//                        }
-//
-//                        // obsolete members
-//                        for (String obsoleteMemberId : partitionContext.getObsoletedMembers()) {
-//                            log.info("Terminating obsolete member [member id] " + obsoleteMemberId);
-//                            terminateMember(obsoleteMemberId);
-//                        }
-//
-////                terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
-////                        (terminateAllKnowledgeSession, terminateAllFactHandle, partitionContext);
-//                    }
-//                }
-//            }
-//        }, "Member Terminator - [cluster id] " + this.clusterId);
-//
-//        memberTerminator.start();
-//    }
 
     private boolean isPrimaryMember(MemberContext memberContext) {
         Properties props = memberContext.getProperties();
@@ -209,41 +155,6 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
             }
 
-        	/*boolean rifReset = networkPartitionContext.isRifReset();
-            boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
-            boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
-
-            if (log.isDebugEnabled()) {
-                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
-                        + " flag of loadAverageReset" + loadAverageReset);
-            }
-            if (rifReset || memoryConsumptionReset || loadAverageReset) {
-
-                scaleCheckKnowledgeSession.setGlobal("clusterId", clusterId);
-                //scaleCheckKnowledgeSession.setGlobal("deploymentPolicy", deploymentPolicy);
-                scaleCheckKnowledgeSession.setGlobal("autoscalePolicy", autoscalePolicy);
-                scaleCheckKnowledgeSession.setGlobal("rifReset", rifReset);
-                scaleCheckKnowledgeSession.setGlobal("mcReset", memoryConsumptionReset);
-                scaleCheckKnowledgeSession.setGlobal("laReset", loadAverageReset);
-                scaleCheckKnowledgeSession.setGlobal("lbRef", lbReferenceType);
-                scaleCheckKnowledgeSession.setGlobal("isPrimary", false);
-                scaleCheckKnowledgeSession.setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
-                    log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
-                }
-
-                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(scaleCheckKnowledgeSession
-                        , scaleCheckFactHandle, networkPartitionContext);
-
-                networkPartitionContext.setRifReset(false);
-                networkPartitionContext.setMemoryConsumptionReset(false);
-                networkPartitionContext.setLoadAverageReset(false);
-            } else if (log.isDebugEnabled()) {
-                log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
-                        "cycle for network partition %s", networkPartitionContext.getId()));
-            }*/
         }
     }
 
