@@ -67,6 +67,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 	private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
 
     private String clusterId;
+    private String serviceId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
 
@@ -322,11 +323,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
             AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
     }
-
-    public String getAppId() {
-    	return this.appId;
-    }
-
 
     @Override
     public void onParentEvent(MonitorStatusEvent statusEvent) {
