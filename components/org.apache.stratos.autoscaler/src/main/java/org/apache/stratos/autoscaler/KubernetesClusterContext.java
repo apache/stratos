@@ -52,6 +52,7 @@ public class KubernetesClusterContext extends AbstractClusterContext {
     private int minReplicas;
     private int maxReplicas;
     private int currentReplicas;
+    private float RequiredReplicas;
 
     private AutoscalePolicy autoscalePolicy;
 
@@ -306,6 +307,14 @@ public class KubernetesClusterContext extends AbstractClusterContext {
 
     public AutoscalePolicy getAutoscalePolicy() {
         return autoscalePolicy;
+    }
+
+    public float getRequiredReplicas() {
+        return RequiredReplicas;
+    }
+
+    public void setRequiredReplicas(float requiredReplicas) {
+        RequiredReplicas = requiredReplicas;
     }
 
     private class PendingMemberWatcher implements Runnable {

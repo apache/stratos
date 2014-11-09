@@ -43,6 +43,10 @@ public class NetworkPartitionContext implements Serializable{
     private float averageRequestsServedPerInstance;
     private float requestsServedPerInstance;
 
+    private int minInstanceCount = 0, maxInstanceCount = 0;
+    private float  requiredInstanceCount;
+
+
     private final String partitionAlgorithm;
 
     //boolean values to keep whether the requests in flight parameters are reset or not
@@ -55,9 +59,6 @@ public class NetworkPartitionContext implements Serializable{
             secondDerivativeLoadAverageRest = false;
     //boolean values to keep whether average requests served per instance parameters are reset or not
     private boolean averageRequestServedPerInstanceReset= false;
-
-    //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
-    private int minInstanceCount = 1, maxInstanceCount = 1;
 
     private final Partition[] partitions;
 
@@ -86,6 +87,11 @@ public class NetworkPartitionContext implements Serializable{
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
+        for(Partition partition : partitions){
+            minInstanceCount += partition.getPartitionMin();
+            maxInstanceCount += partition.getPartitionMax();
+        }
+        requiredInstanceCount = minInstanceCount;
 
     }
 
@@ -396,4 +402,11 @@ public class NetworkPartitionContext implements Serializable{
         this.scaleDownRequestsCount += 1;
     }
 
+    public float getRequiredInstanceCount() {
+        return requiredInstanceCount;
+    }
+
+    public void setRequiredInstanceCount(int requiredInstanceCount) {
+        this.requiredInstanceCount = requiredInstanceCount;
+    }
 }
