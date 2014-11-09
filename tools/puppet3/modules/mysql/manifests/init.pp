@@ -20,7 +20,7 @@ class mysql{
   require java
 
   $custom_agent_templates = ['extensions/instance-started.sh']
-  class {'agent':
+  class {'python_agent':
     custom_templates => $custom_agent_templates,
     module=>'mysql'
   }
@@ -105,5 +105,5 @@ class mysql{
   }
 
   # install stratos_base before java before mysql before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['mysql'] 
+  Class['stratos_base'] -> Class['python_agent'] -> Class['mysql'] 
 }

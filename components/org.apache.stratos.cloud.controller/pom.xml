@@ -57,6 +57,7 @@
                             org.apache.stratos.cloud.controller.pojo.*,
                             org.apache.stratos.cloud.controller.deployers.*,
                             org.apache.stratos.cloud.controller.exception.*,
+                            org.apache.stratos.cloud.controller.pojo.application.*,
                         </Export-Package>
                         <Private-Package>
                             !org.apache.stratos.cloud.controller.interfaces.*,
@@ -64,6 +65,7 @@
                             !org.apache.stratos.cloud.controller.topic.*,
                             !org.apache.stratos.cloud.controller.iaases.*,
                             !org.apache.stratos.cloud.controller.pojo.*,
+                            !org.apache.stratos.cloud.controller.pojo.application.*,
                             !org.apache.stratos.cloud.controller.deployers.*,
                             !org.apache.stratos.cloud.controller.exception.*,
                             !org.apache.stratos.cloud.controller.topology.*,
@@ -308,6 +310,11 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core</artifactId>
             <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.metadata.client</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <properties>

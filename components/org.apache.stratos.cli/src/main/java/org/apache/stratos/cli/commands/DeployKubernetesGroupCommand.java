@@ -44,6 +44,7 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
                 "Kubernetes group resource path");
+        option.setArgName("resource path");
         options.addOption(option);
     }
 

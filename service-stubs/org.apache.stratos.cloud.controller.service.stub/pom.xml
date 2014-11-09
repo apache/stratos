@@ -17,8 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -33,7 +32,7 @@
     <url>http://apache.org</url>
     <build>
         <plugins>
-
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -49,7 +48,7 @@
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/CloudControllerService.wsdl -u -uw -o target/generated-code
                                     -p org.apache.stratos.cloud.controller.stub
-                                    -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl"/>
+                                    -ns2p http://policy.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.policy,http://partition.deployment.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://exception.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.exception,http://pojo.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://impl.controller.cloud.stratos.apache.org=org.apache.stratos.cloud.controller.stub.impl,http://common.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo"/>
                                     <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -82,7 +81,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-
+                
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -93,7 +92,8 @@
                             org.apache.stratos.cloud.controller.stub.deployment.partition.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.pojo.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.impl.*; version=${project.version},
-                            org.apache.stratos.cloud.controller.stub.*; version=${project.version}
+                            org.apache.stratos.cloud.controller.stub.*; version=${project.version},
+                            org.apache.stratos.cloud.controller.pojo.application.xsd.*; version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional

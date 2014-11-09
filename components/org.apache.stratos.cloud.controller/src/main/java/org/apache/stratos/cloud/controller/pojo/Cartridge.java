@@ -79,7 +79,9 @@ public class Cartridge implements Serializable{
     private List<String> deploymentDirs;
     
     private IaasProvider lastlyUsedIaas;
-    
+
+    private String[] exportingProperties;
+
     /**
      * Key - partition id
      * Value - Corresponding IaasProvider.
@@ -389,6 +391,14 @@ public class Cartridge implements Serializable{
 	public void setDeployerType(String deployerType) {
 		this.deployerType = deployerType;
 	}
-    
-    
+
+
+    public String[] getExportingProperties() {
+        return exportingProperties;
+    }
+
+    public void setExportingProperties(String[] exportingProperties) {
+        this.exportingProperties = exportingProperties;
+    }
+
 }

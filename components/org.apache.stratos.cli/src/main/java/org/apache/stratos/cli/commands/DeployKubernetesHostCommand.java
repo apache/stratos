@@ -44,6 +44,7 @@ public class DeployKubernetesHostCommand implements Command<StratosCommandContex
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
                 "Kubernetes host resource path");
+        option.setArgName("resource path");
         options.addOption(option);
     }
 

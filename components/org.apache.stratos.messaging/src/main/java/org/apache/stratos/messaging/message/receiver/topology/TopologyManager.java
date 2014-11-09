@@ -22,7 +22,8 @@ package org.apache.stratos.messaging.message.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
 /**
  *  A singleton class for managing the topology data structure.
@@ -30,41 +31,181 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *  Usage:
  *  Acquire a relevant lock and invoke the getTopology() method inside a try block.
  *  Once processing is done release the lock using a finally block.
+ *
+ *  Acquiring Locks:
+ *
+ *  Stratos supports hierarchical locking. As per the practice, we need to lock the
+ *  hierarchy from root level till the relevant sub tree.
+ *
+ *  Acquire a read lock:
+ *
+ *  From root level, acquire read locks till the relevant sub tree
+ *
+ *  Examples -
+ *
+ *  Example 1: Acquiring read lock to read Cluster information
+ *           acquiring:
+ *           public static void acquireReadLockForCluster (String serviceName, String clusterId)
+ *
+ *           releasing:
+ *           public static void releaseReadLockForCluster (String serviceName, String clusterId)
+ *
+ *
+ *  Example 2: Acquiring read lock for a particular Service
+ *          acquiring:
+ *          public static void acquireReadLockForService (String serviceName)
+ *
+ *          releasing:
+ *          public static void releaseReadLockForService (String serviceName)
  */
 public class TopologyManager {
     private static final Log log = LogFactory.getLog(TopologyManager.class);
 
     private static volatile Topology topology;
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private static volatile TopologyLockHierarchy topologyLockHierarchy =
+            TopologyLockHierarchy.getInstance();
 
+    /**
+     * Acquires read lock for the Complete Topology
+     */
     public static void acquireReadLock() {
         if(log.isDebugEnabled()) {
-            log.debug("Read lock acquired");
+            log.debug("Read lock acquired for Topology");
         }
-        readLock.lock();
+        topologyLockHierarchy.getCompleteTopologyLock().acquireReadLock();
     }
 
+    /**
+     * Releases read lock for the Complete Topology
+     */
     public static void releaseReadLock() {
         if(log.isDebugEnabled()) {
-            log.debug("Read lock released");
+            log.debug("Read lock released for Topology");
         }
-        readLock.unlock();
+        topologyLockHierarchy.getCompleteTopologyLock().releaseReadLock();
     }
 
-    public static void acquireWriteLock() {
+    // Service read locks
+
+    /**
+     * Acquires read lock for the all Services
+     */
+    public static void acquireReadLockForServices() {
         if(log.isDebugEnabled()) {
-            log.debug("Write lock acquired");
+            log.debug("Read lock acquired for Services");
         }
-        writeLock.lock();
+        topologyLockHierarchy.getServiceLock().acquireReadLock();
     }
 
-    public static void releaseWriteLock() {
+    /**
+     * Releases read lock for the all Services
+     */
+    public static void releaseReadLockForServices() {
         if(log.isDebugEnabled()) {
-            log.debug("Write lock released");
+            log.debug("Read lock released for Services");
         }
-        writeLock.unlock();
+        topologyLockHierarchy.getServiceLock().releaseReadLock();
+    }
+
+    /**
+     * Acquires read lock for a Service
+     *
+     * @param serviceName service name to acquire read lock
+     */
+    public static void acquireReadLockForService (String serviceName) {
+
+        // acquire read lock for all Services
+        acquireReadLockForServices();
+
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        if (topologyServiceLock == null) {
+            handleLockNotFound("Topology lock not found for Service " + serviceName);
+
+        } else {
+            topologyServiceLock.acquireReadLock();
+            if(log.isDebugEnabled()) {
+                log.debug("Read lock acquired for Service " + serviceName);
+            }
+        }
+    }
+
+    /**
+     * Releases read lock for a Service
+     *
+     * @param serviceName service name to release read lock
+     */
+    public static void releaseReadLockForService (String serviceName) {
+
+        TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
+        if (topologyServiceLock == null) {
+            handleLockNotFound("Topology lock not found for Service " + serviceName);
+
+        } else {
+            topologyServiceLock.releaseReadLock();
+            if(log.isDebugEnabled()) {
+                log.debug("Read lock released for Service " + serviceName);
+            }
+        }
+
+        // release read lock for all Services
+        releaseReadLockForServices();
+    }
+
+    /**
+     * Acquires read lock for a Cluster. This will acquire the read lock in the following order
+     *      1. for the Service
+     *      2. for the Cluster
+     *
+     * @param serviceName service name to acquire read lock
+     * @param clusterId cluster id to acquire read lock
+     */
+    public static void acquireReadLockForCluster (String serviceName, String clusterId) {
+
+        // acquire read lock for the relevant Services
+        acquireReadLockForService(serviceName);
+
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        if (topologyClusterLock == null) {
+            handleLockNotFound("Topology lock not found for Cluster " + clusterId);
+
+        }  else {
+            // acquire read lock for the relevant Cluster
+            topologyClusterLock.acquireReadLock();
+            if(log.isDebugEnabled()) {
+                log.debug("Read lock acquired for Cluster " + clusterId);
+            }
+        }
+    }
+
+    /**
+     * Releases read lock for a Cluster. This will release the read lock in the following order
+     *      1. for the Cluster
+     *      2. for the Service
+     *
+     * @param serviceName service name to release read lock
+     * @param clusterId cluster id to release read lock
+     */
+    public static void releaseReadLockForCluster (String serviceName, String clusterId) {
+
+        TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
+        if (topologyClusterLock == null) {
+            handleLockNotFound("Topology lock not found for Cluster " + clusterId);
+
+        } else {
+            // release read lock for the relevant Cluster
+            topologyClusterLock.releaseReadLock();
+            if(log.isDebugEnabled()) {
+                log.debug("Read lock released for Cluster " + clusterId);
+            }
+        }
+
+        // release read lock for relevant Service
+        releaseReadLockForService(serviceName);
+    }
+
+    private static void handleLockNotFound (String errorMsg) {
+        log.warn(errorMsg);
+        //throw new RuntimeException(errorMsg);
     }
 
     public static Topology getTopology() {

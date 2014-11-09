@@ -19,6 +19,8 @@
 
 package org.apache.stratos.common.kubernetes;
 
+import org.apache.stratos.common.Properties;
+
 import java.io.Serializable;
 import java.util.Arrays;
 

@@ -2,3 +2,4 @@ org.apache.stratos.cep.extension.GradientFinderWindowProcessor
 org.apache.stratos.cep.extension.SecondDerivativeFinderWindowProcessor
 org.apache.stratos.cep.extension.FaultHandlingWindowProcessor
 org.apache.stratos.cep.extension.ConcatWindowProcessor
+org.apache.stratos.cep.extension.MemeberRequestHandlingCapabilityWindowProcessor

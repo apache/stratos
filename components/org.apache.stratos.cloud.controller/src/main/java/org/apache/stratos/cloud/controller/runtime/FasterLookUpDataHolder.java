@@ -95,6 +95,11 @@ public class FasterLookUpDataHolder implements Serializable{
 	 * List of registered {@link Cartridge}s
 	 */
 	private List<Cartridge> cartridges;
+	
+	/**
+	 * List of deployed service groups
+	 */
+	private List<ServiceGroup> serviceGroups;
 
 	/**
 	 * List of IaaS Providers.
@@ -139,7 +144,7 @@ public class FasterLookUpDataHolder implements Serializable{
 	private FasterLookUpDataHolder() {
 
 		cartridges = new ArrayList<Cartridge>();
-		
+		serviceGroups = new ArrayList<ServiceGroup>();
 	}
 
 	public List<Cartridge> getCartridges() {
@@ -149,6 +154,15 @@ public class FasterLookUpDataHolder implements Serializable{
 	public void setCartridges(List<Cartridge> cartridges) {
 	    this.cartridges = cartridges;
 	}
+	
+	public void setServiceGroups(List<ServiceGroup> serviceGroups) {
+		this.serviceGroups = serviceGroups;
+	}
+	
+	public List<ServiceGroup> getServiceGroups() {
+		return this.serviceGroups;
+	}
+
 
 	public Cartridge getCartridge(String cartridgeType) {
 		for (Cartridge cartridge : cartridges) {
@@ -158,7 +172,6 @@ public class FasterLookUpDataHolder implements Serializable{
 		}
 
 		return null;
-
 	}
 	
 	public void addCartridge(Cartridge newCartridges) {
@@ -171,6 +184,26 @@ public class FasterLookUpDataHolder implements Serializable{
 			this.cartridges.removeAll(cartridges);
 		}
 
+	}
+	
+	public ServiceGroup getServiceGroup(String name) {
+		for (ServiceGroup serviceGroup : serviceGroups) {
+			if (serviceGroup.getName().equals(name)) {
+				return serviceGroup;
+			}
+		}
+
+		return null;
+	}
+	
+	public void addServiceGroup(ServiceGroup newServiceGroup) {
+		this.serviceGroups.add(newServiceGroup);
+	}
+	
+	public void removeServiceGroup(List<ServiceGroup> serviceGroup) {
+		if (this.serviceGroups != null) {
+			this.serviceGroups.removeAll(serviceGroup);
+		}
 	}
 	
 	public IaasProvider getIaasProvider(String type) {

@@ -21,7 +21,6 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.openjpa.util.java$util$ArrayList$proxy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
@@ -35,10 +34,7 @@ import org.apache.stratos.manager.lb.category.*;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscriber.Subscriber;
-import org.apache.stratos.manager.subscription.CartridgeSubscription;
-import org.apache.stratos.manager.subscription.PersistenceContext;
-import org.apache.stratos.manager.subscription.SubscriptionData;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.subscription.*;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.filter.LBCreationSubscriptionFilter;
 import org.apache.stratos.manager.subscription.filter.SubscriptionFilter;
@@ -63,13 +59,199 @@ import org.apache.stratos.manager.publisher.CartridgeSubscriptionDataPublisher;
 
 import java.util.*;
 
+
 /**
  * Manager class for the purpose of managing CartridgeSubscriptionInfo subscriptions, groupings, etc.
  */
 public class CartridgeSubscriptionManager {
 
     private static Log log = LogFactory.getLog(CartridgeSubscriptionManager.class);
+    //private static DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
+
+    public GroupSubscription createGroupSubscription (String groupName, String groupAlias, int tenantId)
+            throws GroupSubscriptionException {
+
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        GroupSubscription groupSubscription;
+
+        try {
+            groupSubscription = dataInsertionAndRetrievalMgr.getGroupSubscription(tenantId, groupName, groupAlias);
+
+        } catch (PersistenceManagerException e) {
+            throw new GroupSubscriptionException(e);
+        }
+
+        if (groupSubscription != null) {
+            // Group Subscription already exists with same Group name and alias
+            throw new GroupSubscriptionException("Group Subscription already exists with name [ " + groupName + " ], alias [ " + groupAlias + " ]");
+        }
+
+        return new GroupSubscription(groupName, groupAlias);
+    }
+
+    public ApplicationSubscription createApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
+
+    	if (log.isDebugEnabled()) {
+            log.debug("create Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        ApplicationSubscription appSubscription;
+
+        try {
+            appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            log.error("failed to retrieve application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
+            throw new ApplicationSubscriptionException(e);
+        }
+
+        if (appSubscription != null) {
+            // Composite App Subscription already exists with same app id
+           log.error("app Id already exists, failed to createappSubscription for appId: " + appId + " and tenantId: " + tenantId);
+           throw new ApplicationSubscriptionException("Composite App Subscription already exists with Id [ " +  appId + " ]");
+        } else {
+        	
+        	if (log.isDebugEnabled()) {
+        		log.debug("creating new application subscription for app:" + appId );
+        	}
+        	
+        	appSubscription = new ApplicationSubscription(appId);
+        	// persist 
+        	try {
+				this.persistApplicationSubscription(appSubscription);
+			} catch (ADCException e) {
+				// TODO Auto-generated catch block
+				log.error("Failed to persist applicaiton subscription for appId: " + appId +
+																			" and tenantId: " + tenantId + " e:" + e);
+			}
+        }
+
+        return new ApplicationSubscription(appId);
+    }
     
+    public void removeApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
+
+    	if (log.isDebugEnabled()) {
+            log.debug("remove Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        ApplicationSubscription appSubscription = null;
+
+        try {
+        	appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            log.error("failed to retrieve Application Subscription for appId: " + appId + " and tenantId: " + tenantId + "with exception:" + e);
+            throw new ApplicationSubscriptionException(e);
+        }
+
+        if (appSubscription != null) {
+        	
+        	try {
+				dataInsertionAndRetrievalMgr.removeApplicationSubscription(tenantId, appId);
+			} catch (PersistenceManagerException e) {
+				log.error("failed to remove Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " with exception:" + e);
+				throw new ApplicationSubscriptionException(e);
+			}
+        	
+        	if (log.isDebugEnabled()) {
+                log.debug("successfully removed Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+            }
+        	
+        } 
+    }
+    
+    public ApplicationSubscription getApplicationSubscription (String appId, int tenantId)  throws ApplicationSubscriptionException {
+    	if (log.isDebugEnabled()) {
+            log.debug("get Application Subscription for appId: " + appId + " and tenantId: " + tenantId);
+        }
+    	
+        DataInsertionAndRetrievalManager dataInsertionAndRetrievalMgr = new DataInsertionAndRetrievalManager();
+        ApplicationSubscription appSubscription = null;
+
+        try {
+            appSubscription = dataInsertionAndRetrievalMgr.getApplicationSubscription(tenantId, appId);
+
+        } catch (PersistenceManagerException e) {
+            log.error("failed to Application Subscription for appId: " + appId + " and tenantId: " + tenantId + " e:" + e);
+            throw new ApplicationSubscriptionException(e);
+        }
+        
+        return appSubscription;
+    }
+
+    public CartridgeSubscription createCartridgeSubscription (SubscriptionData subscriptionData) throws ADCException,
+            InvalidCartridgeAliasException, DuplicateCartridgeAliasException, PolicyException, UnregisteredCartridgeException,
+            RepositoryRequiredException, RepositoryCredentialsRequiredException, RepositoryTransportException,
+            AlreadySubscribedException, InvalidRepositoryException {
+
+
+        CartridgeSubscriptionUtils.validateCartridgeAlias(subscriptionData.getTenantId(), subscriptionData.getCartridgeType(), subscriptionData.getCartridgeAlias());
+
+        CartridgeInfo cartridgeInfo;
+        try {
+            cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(subscriptionData.getCartridgeType());
+
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String message = subscriptionData.getCartridgeType() + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
+            log.error(message);
+            throw new ADCException(message, e);
+
+        } catch (Exception e) {
+            String message = "Error getting info for " + subscriptionData.getCartridgeType();
+            log.error(message, e);
+            throw new ADCException(message, e);
+        }
+
+        // subscribe to relevant service cartridge
+        CartridgeSubscription serviceCartridgeSubscription = subscribe (subscriptionData, cartridgeInfo, null);
+
+        return serviceCartridgeSubscription;
+    }
+
+    public void persistCartridgeSubscription (CartridgeSubscription cartridgeSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+
+        } catch (PersistenceManagerException e) {
+            String errorMsg = "Error saving subscription for tenant " +
+                    cartridgeSubscription.getSubscriber().getTenantDomain() + ", alias " + cartridgeSubscription.getType();
+            log.error(errorMsg);
+            throw new ADCException(errorMsg, e);
+        }
+
+        log.info("Successful Subscription: " + cartridgeSubscription.toString());
+
+        // Publish tenant subscribed event to message broker
+        Set<String> clusterIds = new HashSet<String>();
+        clusterIds.add(cartridgeSubscription.getCluster().getClusterDomain());
+        CartridgeSubscriptionUtils.publishTenantSubscribedEvent(cartridgeSubscription.getSubscriber().getTenantId(),
+                cartridgeSubscription.getCartridgeInfo().getType(), clusterIds);
+    }
+
+    public void persistGroupSubscription (GroupSubscription groupSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().persistGroupSubscription(groupSubscription);
+
+        } catch (PersistenceManagerException e) {
+            throw new ADCException(e);
+        }
+    }
+
+    public void persistApplicationSubscription (ApplicationSubscription compositeAppSubscription) throws ADCException {
+
+        try {
+            new DataInsertionAndRetrievalManager().persistApplicationSubscription(compositeAppSubscription);
+
+        } catch (PersistenceManagerException e) {
+            throw new ADCException(e);
+        }
+    }
+
     /**
      * 
      * @param subscriptionData
@@ -242,6 +424,7 @@ public class CartridgeSubscriptionManager {
         }else {
         	// Generate and set the key
             subscriptionKey = CartridgeSubscriptionUtils.generateSubscriptionKey();
+
         }
         
         cartridgeSubscription.setSubscriptionKey(subscriptionKey);
@@ -251,7 +434,7 @@ public class CartridgeSubscriptionManager {
                     " username: " + subscriptionData.getRepositoryUsername() +
                     " Type: " + subscriptionData.getRepositoryType());
         }
-        
+
         // Create subscriber
         Subscriber subscriber = new Subscriber(subscriptionData.getTenantAdminUsername(), subscriptionData.getTenantId(), subscriptionData.getTenantDomain());
         cartridgeSubscription.setSubscriber(subscriber);
@@ -376,7 +559,8 @@ public class CartridgeSubscriptionManager {
                 }
 
             cartridgeSubscription.addSubscriptionDomain(new SubscriptionDomain(domainName, applicationContext));
-            new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+
         } catch (PersistenceManagerException e) {
             String errorMsg = "Could not add domain to cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
             " [domain-name] " + domainName + " [application-context] " + applicationContext;
@@ -406,7 +590,8 @@ public class CartridgeSubscriptionManager {
                 throw new DomainSubscriptionDoesNotExist("Cartridge subscription not found", domainName);
             }
             cartridgeSubscription.removeSubscriptionDomain(domainName);
-            new DataInsertionAndRetrievalManager().cacheAndUpdateSubscription(cartridgeSubscription);
+            new DataInsertionAndRetrievalManager().cacheAndPersistSubcription(cartridgeSubscription);
+
         } catch (PersistenceManagerException e) {
             String errorMsg = "Could not remove domain from cartridge subscription: [tenant-id] " + tenantId + " [subscription-alias] " + subscriptionAlias +
                     " [domain-name] " + domainName;
@@ -607,5 +792,10 @@ public class CartridgeSubscriptionManager {
     	
     	DataInsertionAndRetrievalManager dataInsertionAndRetrievalManager = new DataInsertionAndRetrievalManager();
         return dataInsertionAndRetrievalManager.getCartridgeSubscriptions(tenantId, cartridgeType);
+    }
+
+    public Collection<CartridgeSubscription> getCartridgeSubscriptionsForType (String cartridgeType) {
+
+        return new DataInsertionAndRetrievalManager().getCartridgeSubscriptions(cartridgeType);
     }
 }

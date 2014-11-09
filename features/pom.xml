@@ -43,6 +43,7 @@
         <module>manager</module>
         <!-- Messaging -->
         <module>messaging</module>
+        <module>common</module>
     </modules>
 
     <build>

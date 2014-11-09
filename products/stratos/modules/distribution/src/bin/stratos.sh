@@ -17,7 +17,7 @@
 #  specific language governing permissions and limitations
 #  under the License.
 # ----------------------------------------------------------------------------
-# Main Script for the Apache Stratos 
+# Main Script for the Apache Stratos (incubating)
 #
 # Environment Variable Prerequisites
 #
@@ -183,7 +183,7 @@ elif [ "$CMD" = "start" ]; then
   fi
   export CARBON_HOME=$CARBON_HOME
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/stratos.sh $args < /dev/null > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME=$CARBON_HOME
@@ -202,7 +202,7 @@ elif [ "$CMD" = "restart" ]; then
   done
 
 # using nohup bash to avoid erros in solaris OS.TODO
-  nohup bash $CARBON_HOME/bin/stratos.sh $args < /dev/null > /dev/null 2>&1 &
+  nohup bash $CARBON_HOME/bin/stratos.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "test" ]; then
     JAVACMD="exec "$JAVACMD""
@@ -300,6 +300,7 @@ do
     -Dfile.encoding=UTF8 \
     -Ddisable.cassandra.server.startup=true \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
+    -DMETADATA_CLIENT_CONFIG_FILE="$CARBON_HOME/repository/conf/metadataservice.xml" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
 done

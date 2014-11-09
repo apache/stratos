@@ -27,9 +27,10 @@ import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.ClusterContext;
 import org.apache.stratos.cloud.controller.pojo.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.pojo.PortMapping;
-import org.apache.stratos.cloud.controller.pojo.Property;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Container;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
@@ -102,7 +103,7 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Co
         addToEnvironment(envVars, ctxt.getPayload());
         addToEnvironment(envVars, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
         if (memberCtxt.getProperties() != null) {
-            org.apache.stratos.cloud.controller.pojo.Properties props1 = memberCtxt.getProperties();
+            Properties props1 = memberCtxt.getProperties();
             if (props1 != null) {
                 for (Property prop : props1.getProperties()) {
                     addToEnvironment(envVars, prop.getName(), prop.getValue());

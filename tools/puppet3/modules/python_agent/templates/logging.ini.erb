@@ -1,0 +1,34 @@
+[formatters]
+keys=default
+
+[formatter_default]
+format=%(asctime)s:%(levelname)s:%(message)s
+class=logging.Formatter
+
+[handlers]
+keys=console, error_file
+
+[handler_console]
+class=logging.StreamHandler
+formatter=default
+args=tuple()
+
+[handler_log_file]
+class=logging.FileHandler
+level=INFO
+formatter=default
+args=("agent.log", "w")
+
+[handler_error_file]
+class=logging.FileHandler
+level=ERROR
+formatter=default
+args=("error.log", "w")
+
+[loggers]
+keys=root
+
+[logger_root]
+level=DEBUG
+formatter=default
+handlers=console,error_file

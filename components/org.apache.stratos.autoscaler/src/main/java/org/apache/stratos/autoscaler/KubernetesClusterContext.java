@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
@@ -40,7 +41,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 /*
  * It holds the runtime data of a kubernetes service cluster
  */
-public class KubernetesClusterContext implements Serializable {
+public class KubernetesClusterContext extends AbstractClusterContext {
 
     private static final long serialVersionUID = 808741789615481596L;
     private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
@@ -49,9 +50,12 @@ public class KubernetesClusterContext implements Serializable {
     private String serviceName;
 
     private int minReplicas;
-    private int maxReplicas = 10;
-    private int currentReplicas = 0;
-    
+    private int maxReplicas;
+    private int currentReplicas;
+    private float RequiredReplicas;
+
+    private AutoscalePolicy autoscalePolicy;
+
     // it will tell whether the startContainers() method succeed or not for the 1st time
     // we should call startContainers() only once
     private boolean isServiceClusterCreated = false;
@@ -66,13 +70,13 @@ public class KubernetesClusterContext implements Serializable {
 
     // active members
     private List<MemberContext> activeMembers;
-    
+
     // 1 day as default
     private long obsoltedMemberExpiryTime = 1*24*60*60*1000;
 
     // members to be terminated
     private Map<String, MemberContext> obsoletedMembers;
-    
+
     // termination pending members, member is added to this when Autoscaler send grace fully shut down event
     private List<MemberContext> terminationPendingMembers;
 
@@ -84,9 +88,6 @@ public class KubernetesClusterContext implements Serializable {
     private MemoryConsumption memoryConsumption;
     private LoadAverage loadAverage;
 
-    // cluster id
-    private String clusterId;
-
     //boolean values to keep whether the requests in flight parameters are reset or not
     private boolean rifReset = false, averageRifReset = false,
             gradientRifReset = false, secondDerivativeRifRest = false;
@@ -97,9 +98,13 @@ public class KubernetesClusterContext implements Serializable {
     private boolean loadAverageReset = false, averageLoadAverageReset = false,
             gradientLoadAverageReset = false, secondDerivativeLoadAverageRest = false;
 
-    public KubernetesClusterContext(String kubernetesClusterId, String clusterId) {
+    public KubernetesClusterContext(String kubernetesClusterId, String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
+                                    int minCount, int maxCount) {
+
+        super(clusterId, serviceId);
         this.kubernetesClusterId = kubernetesClusterId;
-        this.clusterId = clusterId;
+        this.minReplicas = minCount;
+        this.maxReplicas = maxCount;
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
@@ -108,6 +113,7 @@ public class KubernetesClusterContext implements Serializable {
         this.requestsInFlight = new RequestsInFlight();
         this.loadAverage = new LoadAverage();
         this.memoryConsumption = new MemoryConsumption();
+        this.autoscalePolicy = autoscalePolicy;
 
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -297,6 +303,18 @@ public class KubernetesClusterContext implements Serializable {
             }
         }
         return false;
+    }
+
+    public AutoscalePolicy getAutoscalePolicy() {
+        return autoscalePolicy;
+    }
+
+    public float getRequiredReplicas() {
+        return RequiredReplicas;
+    }
+
+    public void setRequiredReplicas(float requiredReplicas) {
+        RequiredReplicas = requiredReplicas;
     }
 
     private class PendingMemberWatcher implements Runnable {

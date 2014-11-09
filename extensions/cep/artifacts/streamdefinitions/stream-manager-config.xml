@@ -32,7 +32,9 @@
          <payloadData>
              <property name="cluster_id" type="String"/>
              <property name="network_partition_id" type="String"/>
+             <property name="active_instances_count" type="double"/>
              <property name="in_flight_request_count" type="double"/>
+             <property name="served_request_count" type="double"/>
          </payloadData>
      </streamDefinition> 
 
@@ -60,9 +62,25 @@
          <payloadData>
              <property name="cluster_id" type="String"/>
              <property name="network_partition_id" type="String"/>
+             <property name="instances_count" type="double"/>
              <property name="count" type="double"/>
+             <property name="served_count" type="double"/>
          </payloadData>
-     </streamDefinition> 
+     </streamDefinition>
+
+    <streamDefinition name="average_served_request_count" version="1.0.0">
+        <description>average served count per instance</description>
+        <nickName>average in-flight requests</nickName>
+        <metaData>
+        </metaData>
+        <correlationData>
+        </correlationData>
+        <payloadData>
+            <property name="cluster_id" type="String"/>
+            <property name="network_partition_id" type="String"/>
+            <property name="average_served_count" type="double"/>
+        </payloadData>
+    </streamDefinition>
 
     <streamDefinition name="second_derivative_in_flight_requests" version="1.0.0">
          <description>second derivative of in-flight request count</description>

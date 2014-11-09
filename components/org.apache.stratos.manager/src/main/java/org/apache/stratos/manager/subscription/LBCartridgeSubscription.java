@@ -32,7 +32,6 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 
-import java.util.Set;
 
 public class LBCartridgeSubscription extends CartridgeSubscription {
 

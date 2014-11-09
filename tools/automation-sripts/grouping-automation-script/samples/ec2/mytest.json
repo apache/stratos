@@ -1,0 +1,33 @@
+{
+      "type": "mytest",
+      "provider": "apache",
+      "host": "isuruh.lk",
+      "displayName": "mytest",
+      "description": "mytest Cartridge",
+      "version": "7",
+      "multiTenant": "false",
+      "portMapping": [
+         {
+            "protocol": "http",
+            "port": "80",
+            "proxyPort": "8280"
+         }
+       ],
+      "deployment": {
+        },
+       "iaasProvider": [
+	     {
+          "type": "ec2",
+          "imageId": "ap-southeast-1/ami-3c0f5d6e",
+          "maxInstanceLimit": "2",
+          "property": [
+          ]
+         }
+      ],
+     "loadBalancer": {
+        "property": {
+            "name": "no.load.balancer",
+            "value": "true"
+        }
+      },
+}

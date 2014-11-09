@@ -36,7 +36,7 @@ class jboss (
   require java
 
   $custom_agent_templates = ['extensions/artifacts-updated.sh']
-  class {'agent':
+  class {'python_agent':
     custom_templates => $custom_agent_templates,
     module=>'jboss'
   }
@@ -55,5 +55,5 @@ class jboss (
   }
   
   #install stratos_base before java before jboss before agent
-  Class['stratos_base'] -> Class['java'] -> Class['agent'] -> Class['jboss']
+  Class['stratos_base'] -> Class['java'] -> Class['python_agent'] -> Class['jboss']
 }

@@ -26,6 +26,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
@@ -50,91 +51,14 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
             MemberReadyToShutdownEvent event = (MemberReadyToShutdownEvent) Util.
                                             jsonToObject(message, MemberReadyToShutdownEvent.class);
 
-            // Apply service filter
-            if (TopologyServiceFilter.getInstance().isActive()) {
-                if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                    // Service is excluded, do not update topology or fire event
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                    }
-                    return false;
-                }
+            TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
+            try {
+                return doProcess(event, topology);
+
+            } finally {
+                TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
             }
 
-            // Apply cluster filter
-            if (TopologyClusterFilter.getInstance().isActive()) {
-                if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
-                    // Cluster is excluded, do not update topology or fire event
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
-                    }
-                    return false;
-                }
-            }
-
-            // Validate event against the existing topology
-            Service service = topology.getService(event.getServiceName());
-            if (service == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Service does not exist: [service] %s",
-                            event.getServiceName()));
-                }
-                return false;
-            }
-            Cluster cluster = service.getCluster(event.getClusterId());
-            if (cluster == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
-                            event.getServiceName(), event.getClusterId()));
-                }
-                return false;
-            }
-            Member member = cluster.getMember(event.getMemberId());
-            if (member == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-                }
-                return false;
-            }
-
-            // Apply member filter
-            if(TopologyMemberFilter.getInstance().isActive()) {
-                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
-                    }
-                    return false;
-                }
-            }
-
-            if (member.getStatus() == MemberStatus.ReadyToShutDown) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Member already updated as Ready to Shutdown: " +
-                            "[service] %s [cluster] %s [member] %s",
-                            event.getServiceName(),
-                            event.getClusterId(),
-                            event.getMemberId()));
-                }
-            } else {
-            	
-            	// Apply changes to the topology
-            	member.setStatus(MemberStatus.ReadyToShutDown);
-            	
-            	if (log.isInfoEnabled()) {
-            		log.info(String.format("Member updated as Ready to shutdown: [service] %s [cluster] %s [member] %s",
-            				event.getServiceName(),
-            				event.getClusterId(),
-            				event.getMemberId()));
-            	}
-            }
-
-
-            // Notify event listeners
-            notifyEventListeners(event);
-            return true;
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
@@ -143,5 +67,98 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
+    }
+
+    private boolean doProcess (MemberReadyToShutdownEvent event,Topology topology) {
+
+        // Apply service filter
+        if (TopologyServiceFilter.getInstance().isActive()) {
+            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
+                // Service is excluded, do not update topology or fire event
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                }
+                return false;
+            }
+        }
+
+        // Apply cluster filter
+        if (TopologyClusterFilter.getInstance().isActive()) {
+            if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
+                // Cluster is excluded, do not update topology or fire event
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
+                }
+                return false;
+            }
+        }
+
+        // Validate event against the existing topology
+        Service service = topology.getService(event.getServiceName());
+        if (service == null) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Service does not exist: [service] %s",
+                        event.getServiceName()));
+            }
+            return false;
+        }
+        Cluster cluster = service.getCluster(event.getClusterId());
+        if (cluster == null) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
+                        event.getServiceName(), event.getClusterId()));
+            }
+            return false;
+        }
+        Member member = cluster.getMember(event.getMemberId());
+        if (member == null) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Member does not exist: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
+            return false;
+        }
+
+        // Apply member filter
+        if(TopologyMemberFilter.getInstance().isActive()) {
+            if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
+                }
+                return false;
+            }
+        }
+
+        if (member.getStatus() == MemberStatus.ReadyToShutDown) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Member already updated as Ready to Shutdown: " +
+                        "[service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
+        } else {
+
+            // Apply changes to the topology
+            if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+            }
+            member.setStatus(MemberStatus.ReadyToShutDown);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member updated as Ready to shutdown: [service] %s [cluster] %s [member] %s",
+                        event.getServiceName(),
+                        event.getClusterId(),
+                        event.getMemberId()));
+            }
+        }
+
+
+        // Notify event listeners
+        notifyEventListeners(event);
+        return true;
+
     }
 }

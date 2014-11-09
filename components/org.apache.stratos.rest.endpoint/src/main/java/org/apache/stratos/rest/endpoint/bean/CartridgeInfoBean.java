@@ -37,6 +37,7 @@ public class CartridgeInfoBean {
     String dataCartridgeType;
     String dataCartridgeAlias;
     boolean commitsEnabled;
+
     private String serviceGroup;
 
     private PersistenceBean persistence;
@@ -160,9 +161,7 @@ public class CartridgeInfoBean {
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
     }
-
     public List<String> getDomains() { return domains; }
 
     public void setDomains(List<String> domains) { this.domains = domains; }
-
 }

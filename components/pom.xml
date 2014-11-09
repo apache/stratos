@@ -49,6 +49,8 @@
         <module>org.apache.stratos.deployment</module>
         <!-- CLI -->
         <module>org.apache.stratos.cli</module>
+        <!-- Python Cartridge Agent -->
+        <module>org.apache.stratos.python.cartridge.agent</module>
         <!-- Cartridge Agent -->
         <module>org.apache.stratos.cartridge.agent</module>
         <!-- Load Balancer -->
@@ -102,7 +104,10 @@
         <module>org.apache.stratos.rest.endpoint</module>
         <!-- Stratos manager styles bundle -->
         <module>org.apache.stratos.manager.styles</module>
-	
+		
+	<module>org.apache.stratos.metadataservice</module>
+	<!-- meta data client -->
+        <module>org.apache.stratos.metadata.client</module>	
     </modules>
 	    
 	    <build>

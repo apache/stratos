@@ -23,7 +23,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;

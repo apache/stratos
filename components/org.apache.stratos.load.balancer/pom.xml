@@ -49,21 +49,6 @@
             <version>${synapse.core.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.logging</artifactId>
-            <version>${wso2carbon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2</artifactId>
-            <version>${axis2.wso2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-kernel</artifactId>
-            <version>1.6.1-wso2v9</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
@@ -72,36 +57,6 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.load.balancer.common</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>0.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.databridge.agent.thrift</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.databridge.commons.thrift</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.databridge.commons</artifactId>
-            <version>4.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
- 	    <groupId>org.eclipse.paho</groupId>
-            <artifactId>mqtt-client</artifactId>
-            <version>0.4.0</version>
         </dependency>
     </dependencies>
 

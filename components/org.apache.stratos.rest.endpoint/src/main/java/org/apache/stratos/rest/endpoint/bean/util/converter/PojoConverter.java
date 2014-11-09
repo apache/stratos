@@ -19,30 +19,68 @@
 
 package org.apache.stratos.rest.endpoint.bean.util.converter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE;
-import org.apache.stratos.autoscaler.stub.kubernetes.PropertyE;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.DependencyContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
+import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
+import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.Container;
+import org.apache.stratos.cloud.controller.stub.pojo.IaasConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
+import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterface;
+import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterfaces;
+import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
+import org.apache.stratos.cloud.controller.stub.pojo.Volume;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
+import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
+import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
+import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
+import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.*;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.LoadAverageThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.LoadThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.MemoryConsumptionThresholds;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.RequestsInFlightThresholds;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.*;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ContainerBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.IaasProviderBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.LoadBalancerBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.NetworkInterfaceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PortMappingBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.VolumeBean;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.PortRange;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
 
 public class PojoConverter {
 
@@ -95,11 +133,24 @@ public class PojoConverter {
             cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
         }
 
+        if(cartridgeDefinitionBean.getExportingProperties() != null)
+        {
+            cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
+        }
+        
         if (cartridgeDefinitionBean.container != null) {
             cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
         }
 
         return cartridgeConfig;
+    }
+    
+    public static ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
+    	ServiceGroup servicegroup = new ServiceGroup();
+    	
+    	// implement conversion (mostly List -> Array)
+    	
+    	return servicegroup;
     }
 
 
@@ -216,7 +267,7 @@ public class PojoConverter {
     }
 
 
-    public static org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
+    public static PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
         if (propertyBeans == null || propertyBeans.isEmpty()) {
             return null;
         }
@@ -233,7 +284,7 @@ public class PojoConverter {
             propertyArray[j] = property;
         }
 
-        org.apache.stratos.autoscaler.stub.kubernetes.PropertiesE properties = new PropertiesE();
+        PropertiesE properties = new PropertiesE();
         properties.setProperties(propertyArray);
         return properties;
     }
@@ -329,11 +380,11 @@ public class PojoConverter {
         return autoscalePolicy;
     }
 
-    public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
+    public static org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
                                                                                                                                deploymentPolicyBean) {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = new
-                org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
+        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy = new
+                org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy();
 
         deploymentPolicy.setId(deploymentPolicyBean.getId());
         deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
@@ -583,7 +634,7 @@ public class PojoConverter {
         return loadThresholdBean;
     }
 
-    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[]
+    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[]
                                                                            deploymentPolicies) {
         DeploymentPolicy[] deploymentPolicyBeans;
         if (deploymentPolicies == null) {
@@ -598,7 +649,7 @@ public class PojoConverter {
         return deploymentPolicyBeans;
     }
 
-    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy
+    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy
                                                                         deploymentPolicy) {
 
         DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
@@ -861,4 +912,151 @@ public class PojoConverter {
         portRangeBean.setLower(portRange.getLower());
         return portRangeBean;
     }
+    
+    public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
+
+        org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext applicationContext =
+                new org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext();
+        applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
+        applicationContext.setAlias(compositeAppDefinition.getAlias());
+
+        // convert and set components
+        if (compositeAppDefinition.getComponents() != null) {
+            org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext componentContext =
+                    new org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext();
+            // top level subscribables
+            if (compositeAppDefinition.getComponents().getSubscribables() != null) {
+                componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
+                        compositeAppDefinition.getComponents().getSubscribables()));
+            }
+            // top level Groups
+            if (compositeAppDefinition.getComponents().getGroups() != null) {
+                componentContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(compositeAppDefinition.getComponents().getGroups()));
+            }
+            // top level dependency information
+            if (compositeAppDefinition.getComponents().getDependencies() != null) {
+                componentContext.setDependencyContext(getDependencyContextFromDependencyDefinition(compositeAppDefinition.getComponents().getDependencies()));
+            }
+
+            applicationContext.setComponents(componentContext);
+        }
+
+        // subscribable information
+        applicationContext.setSubscribableInfoContext(getSubscribableInfoContextArrFromSubscribableInfoDefinition(compositeAppDefinition.getSubscribableInfo()));
+
+        return applicationContext;
+    }
+
+    private static SubscribableInfoContext[] getSubscribableInfoContextArrFromSubscribableInfoDefinition (List<SubscribableInfo> subscribableInfos) {
+
+        SubscribableInfoContext[] subscribableInfoContexts = new SubscribableInfoContext[subscribableInfos.size()];
+        int i = 0;
+        for (SubscribableInfo subscribableInfo : subscribableInfos) {
+            SubscribableInfoContext subscribableInfoContext = new SubscribableInfoContext();
+            subscribableInfoContext.setAlias(subscribableInfo.getAlias());
+            subscribableInfoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+            subscribableInfoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
+            subscribableInfoContext.setRepoUrl(subscribableInfo.getRepoUrl());
+            subscribableInfoContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
+            subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
+            subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
+            subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
+            if (subscribableInfo.getProperty() != null) {
+            	org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
+            	for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
+            		Property property = new Property();
+            		property.setName(propertyBean.getName());
+            		property.setValue(propertyBean.getValue());
+            		properties.addProperties(property);
+            	}
+            	subscribableInfoContext.setProperties(properties);
+            }
+            subscribableInfoContexts[i++] =  subscribableInfoContext;
+        }
+        return subscribableInfoContexts;
+    }
+
+    private static DependencyContext getDependencyContextFromDependencyDefinition (DependencyDefinitions dependencyDefinitions) {
+
+        DependencyContext dependencyContext = new DependencyContext();
+        dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
+        
+        if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
+        	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
+        	startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
+        	dependencyContext.setStartupOrdersContexts(startupOrders);
+        }
+
+        return dependencyContext;
+    }
+
+    private static org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext[]
+        getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
+
+        GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
+        int i = 0;
+        for (GroupDefinition groupDefinition : groupDefinitions) {
+            GroupContext groupContext = new GroupContext();
+            groupContext.setName(groupDefinition.getName());
+            groupContext.setAlias(groupDefinition.getAlias());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
+            groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
+            // nested Subscribables
+            if (groupDefinition.getSubscribables() != null) {
+                groupContext.setSubscribableContexts(
+                        getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
+            }
+            // nested Groups
+            if (groupDefinition.getSubGroups() != null) {
+                groupContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(groupDefinition.getSubGroups()));
+            }
+            groupContexts[i++] = groupContext;
+        }
+
+        return groupContexts;
+    }
+
+    private static org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext []
+        getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+
+        org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[] subscribableContexts =
+                new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[subscribableDefinitions.size()];
+        int i = 0;
+        for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
+            org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext subscribableContext =
+                    new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext();
+            subscribableContext.setType(subscribableDefinition.getType());
+            subscribableContext.setAlias(subscribableDefinition.getAlias());
+            subscribableContexts[i++] = subscribableContext;
+        }
+
+        return subscribableContexts;
+    }
+
+
+    public static ApplicationBean applicationToBean(Application application) {
+
+        if(application == null){
+            return null;
+        }
+
+        ApplicationBean applicationBean = new ApplicationBean();
+        applicationBean.setId(application.getUniqueIdentifier());
+        applicationBean.setTenantDomain(application.getTenantDomain());
+        applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        return applicationBean;
+    }
+
+    public static GroupBean toGroupBean(Group group) {
+        if(group == null){
+            return null;
+        }
+
+        GroupBean groupBean = new GroupBean();
+        groupBean.setAlias(group.getUniqueIdentifier());
+        groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
+        groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
+        return groupBean;
+    }
+	
 }

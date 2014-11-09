@@ -34,6 +34,10 @@ public class Constants {
     public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;
     public static final int SCHEDULE_DEFAULT_PERIOD = 15;
 
+    public static final String APPLICATION_SYNC_CRON = "1 * * * * ? *";
+    public static final String APPLICATION_SYNC_TASK_NAME = "APPLICATION_SYNC_TASK";
+    public static final String APPLICATION_SYNC_TASK_TYPE = "APPLICATION_SYNC_TASK_TYPE";
+
     public static final String AUTOSCALER_CONFIG_FILE_NAME = "autoscaler.xml";
 
     public static final String CLOUD_CONTROLLER_SERVICE_SFX = "services/CloudControllerService";
@@ -71,4 +75,13 @@ public class Constants {
 
     //member expiry interval
     public static final String MEMBER_EXPIRY_INTERVAL = "member.expiry.interval";
+
+    //Grouping
+    public static final String TERMINATE_NONE = "terminate-none";
+    public static final String TERMINATE_ALL = "terminate-all";
+    public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
+    public static final String GROUP = "group";
+    public static final String CARTRIDGE = "cartridge";
+
+
 }

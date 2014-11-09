@@ -50,6 +50,9 @@ import org.apache.stratos.cli.beans.cartridge.Cartridge;
 import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
+import org.apache.stratos.cli.beans.grouping.applications.Application;
+import org.apache.stratos.cli.beans.grouping.applications.ApplicationBean;
+import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupBean;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
@@ -74,51 +77,59 @@ public class RestCommandLineService {
     private RestClient restClient;
 
     // REST endpoints
-    private static final String ENDPOINT_INIT_COOKIE = "/stratos/admin/cookie";
+    private static final String API_CONTEXT = "/api/v4.1";
+    private static final String ENDPOINT_INIT = API_CONTEXT + "/init";
 
-    private static final String ENDPOINT_ADD_TENANT = "/stratos/admin/tenant";
-    private static final String ENDPOINT_ADD_USER = "/stratos/admin/user";
+    private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenant";
+    private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/user";
 
-    private static final String ENDPOINT_DEPLOY_CARTRIDGE = "/stratos/admin/cartridge/definition";
-    private static final String ENDPOINT_DEPLOY_PARTITION = "/stratos/admin/policy/deployment/partition";
-    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
-    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_DEPLOY_SERVICE = "/stratos/admin/service/definition";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/deploy/group";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/deploy/host";
+    private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridge/definition";
+    private static final String ENDPOINT_DEPLOY_PARTITION = API_CONTEXT + "/policy/deployment/partition";
+    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
+    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_DEPLOY_SERVICE = API_CONTEXT + "/service/definition";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/deploy/group";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/deploy/host";
+    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/application/definition";
 
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = "/stratos/admin/kubernetes/host/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/host/{id}";
+    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition/{id}";
+    private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/application/definition/{id}";
 
-    private static final String ENDPOINT_LIST_PARTITIONS = "/stratos/admin/partition";
-    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = "/stratos/admin/policy/autoscale";
-    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_LIST_CARTRIDGES = "/stratos/admin/cartridge/available/list";
-    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = "/stratos/admin/cartridge/list/subscribed";
-    private static final String ENDPOINT_LIST_SERVICES = "/stratos/admin/service";
-    private static final String ENDPOINT_LIST_TENANTS = "/stratos/admin/tenant/list";
-    private static final String ENDPOINT_LIST_USERS = "/stratos/admin/user/list";
-    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = "/stratos/admin/kubernetes/group";
-    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = "/stratos/admin/kubernetes/hosts/{groupId}";
+    private static final String ENDPOINT_LIST_PARTITIONS = API_CONTEXT + "/partition";
+    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/policy/autoscale";
+    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridge/available/list";
+    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/cartridge/list/subscribed";
+    private static final String ENDPOINT_LIST_SERVICES = API_CONTEXT + "/service";
+    private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenant/list";
+    private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/user/list";
+    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = API_CONTEXT + "/kubernetes/group";
+    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetes/hosts/{groupId}";
+    private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/group/definition/{groupDefinitionName}";
+    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/application";
 
-    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/info/{id}";
-    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = "/stratos/admin/cluster/";
-    private static final String ENDPOINT_GET_KUBERNETES_GROUP = "/stratos/admin/kubernetes/group/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_MASTER = "/stratos/admin/kubernetes/master/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_HOST = "/stratos/admin/kubernetes/hosts/{id}";
+    private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/application/{appId}";
+    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/info/{id}";
+    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/cluster/";
+    private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/master/{id}";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/hosts/{id}";
 
-    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = "/stratos/admin/kubernetes/update/master";
-    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = "/stratos/admin/kubernetes/update/host";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/update/master";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/update/host";
 
-    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = "/stratos/admin/cartridge/subscribe";
-    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = "/stratos/admin/cartridge/unsubscribe";
-    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = "/stratos/admin/cartridge/sync";
-    private static final String ENDPOINT_ACTIVATE_TENANT = "/stratos/admin/tenant/activate";
-    private static final String ENDPOINT_DEACTIVATE_TENANT = "/stratos/admin/tenant/deactivate";
+    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = API_CONTEXT + "/cartridge/subscribe";
+    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/unsubscribe";
+    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/cartridge/sync";
+    private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenant/activate";
+    private static final String ENDPOINT_DEACTIVATE_TENANT = API_CONTEXT + "/tenant/deactivate";
 
-    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = "/stratos/admin/subscriptions/{alias}/properties";
-    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = "/stratos/admin/policy/deployment";
-    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = "/stratos/admin/policy/autoscale";
+    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = API_CONTEXT + "/subscriptions/{alias}/properties";
+    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
+    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
 
 
     private static class SingletonHolder {
@@ -137,10 +148,8 @@ public class RestCommandLineService {
     // Login method. This will authenticate the user
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
-            // Following code will avoid validating certificate
-            SSLContext sc;
-            // Get SSL context
-            sc = SSLContext.getInstance("SSL");
+            // Avoid validating SSL certificate
+            SSLContext sc = SSLContext.getInstance("SSL");
             // Create empty HostnameVerifier
             HostnameVerifier hv = new HostnameVerifier() {
                 public boolean verify(String urlHostName, SSLSession session) {
@@ -167,7 +176,7 @@ public class RestCommandLineService {
             throw new RuntimeException("Error while authentication process!", e);
         }
 
-        // Initialized client
+        // Initialize client
         try {
             initializeRestClient(serverURL, username, password);
 
@@ -182,11 +191,11 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             if (validateLogin) {
-                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_INIT_COOKIE);
+                HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_INIT);
 
                 if (response != null) {
-                    String responseCode = "" + response.getStatusLine().getStatusCode();
-                    if ((responseCode.equals(CliConstants.RESPONSE_OK)) && (response.toString().contains("WWW-Authenticate: Basic"))) {
+                    int responseCode = response.getStatusLine().getStatusCode();
+                    if (responseCode == 200) {
                         return true;
                     } else {
                         System.out.println("Invalid STRATOS_URL");
@@ -1263,7 +1272,6 @@ public class RestCommandLineService {
                     data[3] = definition.getClusterDomain();
                     data[4] = definition.getTenantRange();
                     data[5] = definition.getIsPublic() ? "Public" : "Private";
-                    ;
                     return data;
                 }
             };
@@ -1276,6 +1284,36 @@ public class RestCommandLineService {
                     "Autoscaling Policy Name", "Cluster Domain", "Tenant Range", "Accessibility");
         } catch (Exception e) {
             String message = "Error in listing services";
+            System.out.println(message);
+            log.error(message, e);
+        }
+    }
+
+    public void listApplications() throws CommandException {
+        try {
+            ApplicationList list = (ApplicationList) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
+                    ApplicationList.class, "application");
+
+            if ((list == null) || (list.getApplications() == null) || (list.getApplications().size() == 0)) {
+                System.out.println("No applications found");
+                return;
+            }
+
+            RowMapper<Application> rowMapper = new RowMapper<Application>() {
+                public String[] getData(Application definition) {
+                    String[] data = new String[1];
+                    data[0] = definition.getId();
+                    return data;
+                }
+            };
+
+            Application[] array = new Application[list.getApplications().size()];
+            array = list.getApplications().toArray(array);
+
+            System.out.println("Applications found:");
+            CliUtils.printTable(array, rowMapper, "Application ID");
+        } catch (Exception e) {
+            String message = "Error in listing applications";
             System.out.println(message);
             log.error(message, e);
         }
@@ -1610,6 +1648,22 @@ public class RestCommandLineService {
         }
     }
 
+    private class ApplicationList {
+        private ArrayList<Application> applications;
+
+        public ArrayList<Application> getApplications() {
+            return applications;
+        }
+
+        public void setDeploymentPolicy(ArrayList<Application> applications) {
+            this.applications = applications;
+        }
+
+        ApplicationList() {
+            applications = new ArrayList<Application>();
+        }
+    }
+
     // This class convert JSON string to servicedefinitionbean object
     private class ServiceDefinitionList {
         private ArrayList<ServiceDefinitionBean> serviceDefinitionBean;
@@ -1806,5 +1860,65 @@ public class RestCommandLineService {
     public void updateSubscritptionProperties(String alias, String subscriptionJson) {
         String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{alias}", alias);
         restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
+    }
+
+    // This method helps to deploy service groups
+    public void deployServiceGroup (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
+    }
+
+    // This method helps to undeploy service groups
+    public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
+    }
+
+    // This method helps to describe service group definition
+    public void describeServiceGroup (String groupDefinitionName) {
+        try {
+            ServiceGroupBean bean = (ServiceGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupBean.class, "serviceGroup");
+
+            if ((bean == null) || (bean.getServiceGroupDefinition() == null)) {
+                System.out.println("Service group not found: " + groupDefinitionName);
+                return;
+            }
+
+            System.out.println("Service Group : " + groupDefinitionName);
+            System.out.println(getGson().toJson(bean.getServiceGroupDefinition()));
+        } catch (Exception e) {
+            String message = "Error in describing service group: " + groupDefinitionName;
+            System.out.println(message);
+            log.error(message, e);
+        }
+    }
+
+    // This method helps to deploy applications
+    public void deployApplication (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
+    }
+
+    // This method helps to undeploy applications
+    public void undeployApplication(String id) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "application", id);
+    }
+
+    // This method helps to describe applications
+    public void describeApplication (String applicationID) {
+        try {
+            ApplicationBean bean = (ApplicationBean) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
+                    ApplicationBean.class, "applications");
+
+            if ((bean == null) || (bean.getApplication() == null)) {
+                System.out.println("Application not found: " + applicationID);
+                return;
+            }
+
+            System.out.println("Application : " + applicationID);
+            System.out.println(getGson().toJson(bean.getApplication()));
+        } catch (Exception e) {
+            String message = "Error in describing application: " + applicationID;
+            System.out.println(message);
+            log.error(message, e);
+        }
     }
 }

@@ -19,15 +19,7 @@
 package org.apache.stratos.cloud.controller.interfaces;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeDefinitionException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
-import org.apache.stratos.cloud.controller.exception.InvalidClusterException;
-import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.exception.MemberTerminationFailedException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredCartridgeException;
-import org.apache.stratos.cloud.controller.exception.UnregisteredClusterException;
+import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
 
 /**
@@ -44,7 +36,7 @@ public interface CloudControllerService {
 	 * @throws InvalidIaasProviderException if the iaas providers configured are not valid.
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
-    void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) 
+    void deployCartridgeDefinition(CartridgeConfig cartridgeConfig)
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
@@ -52,7 +44,19 @@ public interface CloudControllerService {
      * @param cartridgeType type of the cartridge to be undeployed.
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
-    void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    
+    public void undeployServiceGroup(String name) throws InvalidServiceGroupException;
+    
+    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException;
+    
+    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
+    
+    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
+    
+    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
@@ -63,9 +67,9 @@ public interface CloudControllerService {
     boolean validatePartition(Partition partition) throws InvalidPartitionException;
     
     /**
-     * Validate a given {@link DeploymentPolicy} against a Cartridge.
-     * @param cartridgeType type of the cartridge that this policy is going to be attached to.
-     * @param deploymentPolicy policy to be validated.
+     * Validate a given deployment policy.
+     * @param cartridgeType type of the cartridge
+     * @param partitions partitions
      * @return whether the policy is a valid one against the given Cartridge.
      * @throws InvalidPartitionException if the policy contains at least one invalid partition.
      * @throws InvalidCartridgeTypeException if the given Cartridge type is not a valid one.
@@ -79,7 +83,7 @@ public interface CloudControllerService {
      * present service cluster, if there is any. A service cluster is uniquely identified by its
      * domain and sub domain combination.
      * </p>
-     * @param clusterContext information about the new subscription.
+     * @param registrant information about the new subscription.
      * @return whether the registration is successful or not.
      * 
      * @throws UnregisteredCartridgeException
@@ -93,7 +97,7 @@ public interface CloudControllerService {
      * to the provided Cluster ID. Also note that the instance that is starting up
      * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
      * by a hyphen (<i>-</i>).
-     * @param Member Context with cluster id, partition etc.
+     * @param member Context with cluster id, partition etc.
      * @return updated {@link MemberContext}
      * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
      * @throws InvalidIaasProviderException if the iaas requested is not valid.
@@ -113,9 +117,6 @@ public interface CloudControllerService {
      * 
      * @param memberId
      *            member ID of the instance to be terminated.
-     * @param partition
-     *            It contains the region, zone, network and host of a IaaS where
-     *            an instance need to be terminated..
      * @return whether an instance terminated successfully or not.
      */
     void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;
@@ -194,6 +195,15 @@ public interface CloudControllerService {
      * @param clusterId cluster id
      * @return {@link org.apache.stratos.cloud.controller.pojo.ClusterContext} object  associated with the given cluster id, or null
      */
-    ClusterContext getClusterContext (String clusterId);
+    public ClusterContext getClusterContext (String clusterId);
 
+    /**
+     * Creates the clusters relevant to an application in the topology model
+     *
+     * @param appId application id
+     * @param appClustersContexts  cluster information holder object
+     * @throws ApplicationClusterRegistrationException if the cluster information are null/empty
+     */
+    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts) throws
+            ApplicationClusterRegistrationException;
 }

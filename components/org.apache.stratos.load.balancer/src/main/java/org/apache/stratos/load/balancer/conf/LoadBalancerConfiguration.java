@@ -441,7 +441,7 @@ public class LoadBalancerConfiguration {
 
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
-                        Cluster cluster = new Cluster(service.getServiceName(), clusterId, null, null);
+                        Cluster cluster = new Cluster(service.getServiceName(), clusterId, null, null, null);
 
                         String tenantRange = clusterNode.getProperty(Constants.CONF_PROPERTY_TENANT_RANGE);
                         if (StringUtils.isNotBlank(tenantRange)) {
@@ -498,12 +498,15 @@ public class LoadBalancerConfiguration {
 
                         // Add service to topology manager if not exists
                         try {
-                            TopologyManager.acquireWriteLock();
+                            // TODO - fix properly!
+                            // this lock is not needed since, this Topology is not shared. This is
+                            // used by LB only
+                            //TopologyManager.acquireWriteLock();
                             if (!TopologyManager.getTopology().serviceExists(service.getServiceName())) {
                                 TopologyManager.getTopology().addService(service);
                             }
                         } finally {
-                            TopologyManager.releaseWriteLock();
+                            //TopologyManager.releaseWriteLock();
                         }
 
                         // Add cluster to load balancer context

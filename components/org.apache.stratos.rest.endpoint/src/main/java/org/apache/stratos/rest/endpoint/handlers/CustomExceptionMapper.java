@@ -40,7 +40,7 @@ public class CustomExceptionMapper implements ExceptionMapper<RestAPIException> 
         }
         // if no specific error message specified, spitting out a generaic error message
         String errorMessage = (restAPIException.getMessage() != null)?
-                restAPIException.getMessage():"Error while fullfilling the request";
+                restAPIException.getMessage():"Error while fulfilling the request";
         // if no specific error specified we are throwing the bad request http status code by default
         Response.Status httpStatus= (restAPIException.getHTTPStatusCode() != null)?
                 restAPIException.getHTTPStatusCode():Response.Status.BAD_REQUEST;

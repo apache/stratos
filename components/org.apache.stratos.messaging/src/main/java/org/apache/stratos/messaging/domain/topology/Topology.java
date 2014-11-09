@@ -24,6 +24,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
+
 /**
  * Defines a topology of serviceMap in Stratos.
  */
@@ -31,7 +37,9 @@ public class Topology implements Serializable {
     private static final long serialVersionUID = -2453583548027402122L;
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
+
     private boolean initialized;
+    private static Log log = LogFactory.getLog(Topology.class);
 
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
@@ -43,9 +51,10 @@ public class Topology implements Serializable {
 
     public void addService(Service service) {
         this.serviceMap.put(service.getServiceName(), service);
+        TopologyLockHierarchy.getInstance().addServiceLock(service.getServiceName(), new TopologyLock());
     }
 
-    public void addServices(Collection<Service> services) {
+    public synchronized void addServices(Collection<Service> services) {
         for (Service service : services) {
             addService(service);
         }
@@ -53,10 +62,12 @@ public class Topology implements Serializable {
 
     public void removeService(Service service) {
         this.serviceMap.remove(service.getServiceName());
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(service.getServiceName());
     }
 
     public void removeService(String serviceName) {
         this.serviceMap.remove(serviceName);
+        TopologyLockHierarchy.getInstance().removeTopologyLockForService(serviceName);
     }
 
     public Service getService(String serviceName) {
@@ -71,7 +82,7 @@ public class Topology implements Serializable {
         this.serviceMap.clear();
     }
 
-    public void setInitialized(boolean initialized) {
+	public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
 

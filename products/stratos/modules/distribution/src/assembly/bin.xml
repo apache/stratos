@@ -483,6 +483,9 @@
 	<fileSet>
             <directory>../../conf/temp-artifacts</directory>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/components/plugins</outputDirectory>
+            <includes>
+                <include>org.wso2.stratos.identity.saml2.sso.mgt_2.2.0.jar</include>
+            </includes>
         </fileSet>
 
     <!-- autoscaler -->
@@ -660,9 +663,20 @@
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
-		<!-- drools files start-->
+        <file>
+            <source>src/main/conf/metadataservice.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
 	<file>
             <source>src/main/conf/drools/mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/drools/obsoletecheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
@@ -682,6 +696,12 @@
                 <!-- container-drools files -->
         <file>
             <source>src/main/conf/drools/container-mincheck.drl</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/drools/container-obsoletecheck.drl</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/drools</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
@@ -899,7 +919,7 @@
         </file>
         <!-- REST endpoint webapp -->
         <file>
-            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/stratos.war</source>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/api.war</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
             <fileMode>644</fileMode>
         </file>

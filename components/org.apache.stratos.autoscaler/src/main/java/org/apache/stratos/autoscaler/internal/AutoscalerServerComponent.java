@@ -21,11 +21,12 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
-import org.apache.stratos.autoscaler.message.receiver.health.AutoscalerHealthStatEventReceiver;
-import org.apache.stratos.autoscaler.message.receiver.topology.AutoscalerTopologyEventReceiver;
+import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
+import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -34,6 +35,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 
@@ -48,39 +50,34 @@ import java.util.List;
  * "org.wso2.carbon.registry.core.service.RegistryService"
  * cardinality="1..1" policy="dynamic" bind="setRegistryService"
  * unbind="unsetRegistryService"
+ * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService"
+ * unbind="unsetTaskService"
  */
 
 public class AutoscalerServerComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
-    AutoscalerTopologyEventReceiver asTopologyReceiver;
-//    TopicSubscriber healthStatTopicSubscriber;
-    AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+
+    private AutoscalerTopologyEventReceiver asTopologyReceiver;
+    private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
     protected void activate(ComponentContext componentContext) throws Exception {
         try {
             // Start topology receiver
-        	asTopologyReceiver = new AutoscalerTopologyEventReceiver();
+            asTopologyReceiver = new AutoscalerTopologyEventReceiver();
             Thread topologyTopicSubscriberThread = new Thread(asTopologyReceiver);
             topologyTopicSubscriberThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Topology receiver thread started");
             }
-//            healthStatTopicSubscriber = new TopicSubscriber(Constants.HEALTH_STAT_TOPIC);
-//            healthStatTopicSubscriber.setMessageListener(new HealthEventMessageReceiver());
-//            Thread healthStatTopicSubscriberThread = new Thread(healthStatTopicSubscriber);
-//            healthStatTopicSubscriberThread.start();
-//            if (log.isDebugEnabled()) {
-//                log.debug("Health event message receiver thread started");
-//            }
-
 
             // Start health stat receiver
             autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
             Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
             healthDelegatorThread.start();
             if (log.isDebugEnabled()) {
-                log.debug("Health message processor thread started");
+                log.debug("Health statistics receiver thread started");
             }
 
             // Adding the registry stored partitions to the information model
@@ -122,7 +119,15 @@ public class AutoscalerServerComponent {
             }
 
             if (log.isInfoEnabled()) {
-                log.info("Autoscaler Server Component activated");
+                log.info("Scheduling tasks to publish applications");
+            }
+
+            ApplicationSynchronizerTaskScheduler
+                    .schedule(ServiceReferenceHolder.getInstance()
+                            .getTaskService());
+
+            if (log.isInfoEnabled()) {
+                log.info("Autoscaler server Component activated");
             }
         } catch (Throwable e) {
             log.error("Error in activating the autoscaler component ", e);
@@ -130,10 +135,10 @@ public class AutoscalerServerComponent {
     }
 
     protected void deactivate(ComponentContext context) {
-    	asTopologyReceiver.terminate();
-    	autoscalerHealthStatEventReceiver.terminate();
+        asTopologyReceiver.terminate();
+        autoscalerHealthStatEventReceiver.terminate();
     }
-    
+
     protected void setRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting the Registry Service");
@@ -149,8 +154,22 @@ public class AutoscalerServerComponent {
 
     protected void unsetRegistryService(RegistryService registryService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting the Registry Service");
+            log.debug("Un-setting the Registry Service");
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
+    }
+
+    protected void setTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Setting the Task Service");
+        }
+        ServiceReferenceHolder.getInstance().setTaskService(taskService);
+    }
+
+    protected void unsetTaskService(TaskService taskService) {
+        if (log.isDebugEnabled()) {
+            log.debug("Un-setting the Task Service");
+        }
+        ServiceReferenceHolder.getInstance().setTaskService(null);
     }
 }

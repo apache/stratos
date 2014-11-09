@@ -18,14 +18,10 @@
  */
 package org.apache.stratos.autoscaler.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.*;
 
 public class Deserializer {
     
@@ -75,7 +71,7 @@ public class Deserializer {
      * @return the deserialized {@link Object}
      * @throws Exception if the deserialization is failed.
      */
-    public static Object deserializeFromByteArray(byte[] bytes) throws Exception {
+    public static Object deserializeFromByteArray(byte[] bytes) throws IOException, ClassNotFoundException {
 
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInput in = null;

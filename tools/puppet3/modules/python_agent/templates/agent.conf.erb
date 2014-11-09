@@ -1,0 +1,42 @@
+[agent]
+mb.ip                                 =<%= @mb_ip %>
+mb.port                               =<%= @mb_port %>
+listen.address                        =localhost
+thrift.receiver.ip                    =<%= @cep_ip %>
+thrift.receiver.port                  =<%= @cep_port %>
+param.file.path                       =<%= @agent_home %>/payload/launch-params
+extensions.dir                        =<%= @agent_home %>/extensions
+cep.stats.publisher.enabled           =true
+lb.private.ip                         =
+lb.public.ip                          =
+enable.artifact.update                =true
+auto.commit                           =false
+auto.checkout                         =true
+artifact.update.interval              =15
+port.check.timeout                    =600000
+enable.data.publisher                 =<%= @enable_log_publisher %>
+monitoring.server.ip                  =<%= @bam_ip %>
+monitoring.server.port                =<%= @bam_port %>
+monitoring.server.secure.port         =<%= @bam_secure_port %>
+monitoring.server.admin.username      =<%= @bam_username %>
+monitoring.server.admin.password      =<%= @bam_password %>
+log.file.paths                        =LOG_FILE_PATHS
+super.tenant.repository.path          =/repository/deployment/server/
+tenant.repository.path                =/repository/tenants/
+extension.instance.started            =instance-started.sh
+extension.start.servers               =start-servers.sh
+extension.instance.activated          =instance-activated.sh
+extension.artifacts.updated           =artifacts-updated.sh
+extension.clean                       =clean.sh
+extension.mount.volumes               =mount_volumes.sh
+extension.member.started              =member-started.sh
+extension.member.activated            =member-activated.sh
+extension.member.suspended            =member-suspended.sh
+extension.member.terminated           =member-terminated.sh
+extension.complete.topology           =complete-topology.sh
+extension.complete.tenant             =complete-tenant.sh
+extension.subscription.domain.added   =subscription-domain-added.sh
+extension.subscription.domain.removed =subscription-domain-removed.sh
+extension.artifacts.copy              =artifacts-copy.sh
+extension.tenant.subscribed           =tenant-subscribed.sh
+extension.tenant.unsubscribed         =tenant-unsubscribed.sh

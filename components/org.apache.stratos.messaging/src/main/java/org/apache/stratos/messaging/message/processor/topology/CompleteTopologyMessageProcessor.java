@@ -20,18 +20,20 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CompleteTopologyMessageProcessor extends MessageProcessor {
@@ -51,93 +53,125 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         if (CompleteTopologyEvent.class.getName().equals(type)) {
         	// Parse complete message and build event
         	CompleteTopologyEvent event = (CompleteTopologyEvent) Util.jsonToObject(message, CompleteTopologyEvent.class);
-        	
-            // if topology has not already initialized
-			if (!topology.isInitialized()) {
 
-				// Apply service filter
-				if (TopologyServiceFilter.getInstance().isActive()) {
-					// Add services included in service filter
-					for (Service service : event.getTopology().getServices()) {
-						if (TopologyServiceFilter.getInstance()
-								.serviceNameIncluded(service.getServiceName())) {
-							topology.addService(service);
-						} else {
-							if (log.isDebugEnabled()) {
-								log.debug(String.format(
-										"Service is excluded: [service] %s",
-										service.getServiceName()));
-							}
-						}
-					}
-				} else {
-					// Add all services
-					topology.addServices(event.getTopology().getServices());
-				}
+            if (!topology.isInitialized()) {
+                TopologyUpdater.acquireWriteLock();
 
-				// Apply cluster filter
-				if (TopologyClusterFilter.getInstance().isActive()) {
-					for (Service service : topology.getServices()) {
-						List<Cluster> clustersToRemove = new ArrayList<Cluster>();
-						for (Cluster cluster : service.getClusters()) {
-							if (TopologyClusterFilter.getInstance()
-									.clusterIdExcluded(cluster.getClusterId())) {
-								clustersToRemove.add(cluster);
-							}
-						}
-						for (Cluster cluster : clustersToRemove) {
-							service.removeCluster(cluster);
-							if (log.isDebugEnabled()) {
-								log.debug(String.format(
-										"Cluster is excluded: [cluster] %s",
-										cluster.getClusterId()));
-							}
-						}
-					}
-				}
+                try {
+                    doProcess(event, topology);
 
-				// Apply member filter
-				if (TopologyMemberFilter.getInstance().isActive()) {
-					for (Service service : topology.getServices()) {
-						for (Cluster cluster : service.getClusters()) {
-							List<Member> membersToRemove = new ArrayList<Member>();
-							for (Member member : cluster.getMembers()) {
-								if (TopologyMemberFilter.getInstance()
-										.lbClusterIdExcluded(
-												member.getLbClusterId())) {
-									membersToRemove.add(member);
-								}
-							}
-							for (Member member : membersToRemove) {
-								cluster.removeMember(member);
-								if (log.isDebugEnabled()) {
-									log.debug(String
-											.format("Member is excluded: [member] %s [lb-cluster-id] %s",
-													member.getMemberId(),
-													member.getLbClusterId()));
-								}
-							}
-						}
-					}
-				}
-
-				if (log.isInfoEnabled()) {
-					log.info("Topology initialized");
-				}
-
-				// Set topology initialized
-				topology.setInitialized(true);
-			}
+                } finally {
+                    TopologyUpdater.releaseWriteLock();
+                }
+            }
 
             // Notify event listeners
             notifyEventListeners(event);
             return true;
+
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, message, topology);
             }
             return false;
+        }
+    }
+
+    private void doProcess (CompleteTopologyEvent event, Topology topology) {
+
+        // add locks for all the Clusters currently in Topology
+        addTopologyLocksForClusters(event.getTopology().getServices());
+
+        // Apply service filter
+        if (TopologyServiceFilter.getInstance().isActive()) {
+            // Add services included in service filter
+            for (Service service : event.getTopology().getServices()) {
+                if (TopologyServiceFilter.getInstance()
+                        .serviceNameIncluded(service.getServiceName())) {
+                    topology.addService(service);
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Service is excluded: [service] %s",
+                                service.getServiceName()));
+                    }
+                }
+            }
+        } else {
+            // Add all services
+            topology.addServices(event.getTopology().getServices());
+        }
+
+        // Apply cluster filter
+        if (TopologyClusterFilter.getInstance().isActive()) {
+            for (Service service : topology.getServices()) {
+                List<Cluster> clustersToRemove = new ArrayList<Cluster>();
+                for (Cluster cluster : service.getClusters()) {
+                    if (TopologyClusterFilter.getInstance()
+                            .clusterIdExcluded(cluster.getClusterId())) {
+                        clustersToRemove.add(cluster);
+                    }
+                }
+                for (Cluster cluster : clustersToRemove) {
+                    service.removeCluster(cluster);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format(
+                                "Cluster is excluded: [cluster] %s",
+                                cluster.getClusterId()));
+                    }
+                }
+            }
+        }
+
+        // Apply member filter
+        if (TopologyMemberFilter.getInstance().isActive()) {
+            for (Service service : topology.getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    List<Member> membersToRemove = new ArrayList<Member>();
+                    for (Member member : cluster.getMembers()) {
+                        if (TopologyMemberFilter.getInstance()
+                                .lbClusterIdExcluded(
+                                        member.getLbClusterId())) {
+                            membersToRemove.add(member);
+                        }
+                    }
+                    for (Member member : membersToRemove) {
+                        cluster.removeMember(member);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String
+                                    .format("Member is excluded: [member] %s [lb-cluster-id] %s",
+                                            member.getMemberId(),
+                                            member.getLbClusterId()));
+                        }
+                    }
+                }
+            }
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Topology initialized");
+        }
+
+        // Set topology initialized
+        topology.setInitialized(true);
+    }
+
+
+    private void addTopologyLocksForClusters (Collection<Service> services) {
+
+        if (services == null) {
+            return;
+        }
+
+        for (Service service : services) {
+            // get all the clusters and add locks
+            if (service.getClusters() != null) {
+                for (Cluster aCluster: service.getClusters()) {
+                    TopologyLockHierarchy.getInstance().addClusterLock(aCluster.getClusterId(),
+                            new TopologyLock());
+                }
+            }
         }
     }
 }

@@ -19,9 +19,9 @@
 
 package org.apache.stratos.cloud.controller.deployment.partition;
 
-import java.io.Serializable;
+import org.apache.stratos.common.Properties;
 
-import org.apache.stratos.cloud.controller.pojo.Properties;
+import java.io.Serializable;
 
 /**
  * The model class for Partition definition.

@@ -33,8 +33,6 @@ import java.util.List;
 public abstract class AbstractAuthenticationAuthorizationHandler implements RequestHandler {
     private Log log = LogFactory.getLog(AbstractAuthenticationAuthorizationHandler.class);
 
-
-
     public Response handleRequest(Message message, ClassResourceInfo classResourceInfo) {
         HttpHeaders headers = new HttpHeadersImpl(message);
         List<String> authHeader = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
@@ -47,9 +45,9 @@ public abstract class AbstractAuthenticationAuthorizationHandler implements Requ
         }
         // give the control to the next handler
         return null;
-
     }
 
     protected abstract boolean canHandle(String authHeaderPrefix);
+
     protected abstract Response handle(Message message,ClassResourceInfo classResourceInfo);
 }

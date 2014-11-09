@@ -30,6 +30,7 @@ import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -77,7 +78,7 @@ public class CloudControllerUtil {
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
         cartridge.setServiceGroup(config.getServiceGroup());
         cartridge.setDeployerType(config.getDeployerType());
-        org.apache.stratos.cloud.controller.pojo.Properties props = config.getProperties();
+        org.apache.stratos.common.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
                 cartridge.addProperty(prop.getName(), prop.getValue());
@@ -144,7 +145,7 @@ public class CloudControllerUtil {
                         iaasProvider.setPayload(payload);
                     }
 
-                    org.apache.stratos.cloud.controller.pojo.Properties props1 =
+                    org.apache.stratos.common.Properties props1 =
                                                                                  iaasConfig.getProperties();
                     if (props1 != null) {
                         for (Property prop : props1.getProperties()) {
@@ -165,6 +166,10 @@ public class CloudControllerUtil {
         // populate container
         if(config.getContainer() != null) {
         	cartridge.setContainer(config.getContainer());
+        }
+
+        if(config.getExportingProperties() != null){
+            cartridge.setExportingProperties(config.getExportingProperties());
         }
 
         return cartridge;
@@ -306,20 +311,20 @@ public class CloudControllerUtil {
     	return null;
     }
 	
-	public static String getProperty(org.apache.stratos.cloud.controller.pojo.Properties properties, String key) {
+	public static String getProperty(org.apache.stratos.common.Properties properties, String key) {
 		Properties props = toJavaUtilProperties(properties);
 		
 		return getProperty(props, key);
 	}
 	
-    public static org.apache.stratos.cloud.controller.pojo.Properties addProperty(
-            org.apache.stratos.cloud.controller.pojo.Properties properties, String key, String value) {
+    public static org.apache.stratos.common.Properties addProperty(
+            org.apache.stratos.common.Properties properties, String key, String value) {
         Property property = new Property();
         property.setName(key);
         property.setValue(value);
 
-        org.apache.stratos.cloud.controller.pojo.Properties newProperties = 
-                new org.apache.stratos.cloud.controller.pojo.Properties();
+        org.apache.stratos.common.Properties newProperties =
+                new org.apache.stratos.common.Properties();
         newProperties.setProperties(ArrayUtils.add(properties.getProperties(), property));
         return newProperties;
     }
@@ -330,20 +335,20 @@ public class CloudControllerUtil {
 	 * @return java.util.Properties
 	 */
     public static Properties toJavaUtilProperties(
-        org.apache.stratos.cloud.controller.pojo.Properties properties) {
-        Properties javaProps = new Properties();
+        org.apache.stratos.common.Properties properties) {
+        Properties javaUtilsProperties = new Properties();
 
         if (properties != null && properties.getProperties() != null) {
 
-            for (org.apache.stratos.cloud.controller.pojo.Property property : properties.getProperties()) {
-                if(property.getValue() != null){
-                    javaProps.put(property.getName(), property.getValue());
+            for (Property property : properties.getProperties()) {
+                if((property != null) && (property.getValue() != null)) {
+                    javaUtilsProperties.put(property.getName(), property.getValue());
                 }
             }
 
         }
 
-        return javaProps;
+        return javaUtilsProperties;
     }
     
     public static void persistTopology(Topology topology) {

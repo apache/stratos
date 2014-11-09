@@ -228,6 +228,7 @@
                 <artifactId>org.apache.stratos.redirector.servlet</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            
             <dependency>
                 <groupId>org.apache.batik.wso2</groupId>
                 <artifactId>batik</artifactId>

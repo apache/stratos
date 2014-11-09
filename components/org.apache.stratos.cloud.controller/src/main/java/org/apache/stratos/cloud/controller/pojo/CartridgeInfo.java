@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.stratos.common.Property;
 
 /**
  * Holds useful information for externals, regarding a Cartridge.

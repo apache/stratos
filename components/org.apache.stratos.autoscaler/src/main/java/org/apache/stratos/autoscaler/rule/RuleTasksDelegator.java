@@ -30,12 +30,17 @@ import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.client.cloud.controller.InstanceNotificationClient;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.InstanceNotificationClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
  * This will have utility methods that need to be executed from rule file...
@@ -44,6 +49,7 @@ public class RuleTasksDelegator {
 
     public static final double SCALE_UP_FACTOR = 0.8;   //get from config
     public static final double SCALE_DOWN_FACTOR = 0.2;
+    private static boolean arspiIsSet = false;
 
     private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
 
@@ -57,6 +63,86 @@ public class RuleTasksDelegator {
         predictedValue = average + gradient * timeInterval + 0.5 * secondDerivative * timeInterval * timeInterval;
 
         return predictedValue;
+    }
+
+
+    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue , float requestsServedPerInstance , float averageRequestsServedPerInstance , boolean arspiReset){
+
+        float requestsInstanceCanHandle = requestsServedPerInstance;
+
+        if(arspiReset && averageRequestsServedPerInstance != 0){
+            requestsInstanceCanHandle = averageRequestsServedPerInstance;
+           
+        }
+        float numberOfInstances = 0;
+        if(requestsInstanceCanHandle!=0) {
+            numberOfInstances = rifPredictedValue / requestsInstanceCanHandle;
+            arspiReset = true;
+
+        }else{
+            arspiReset = false;
+        }
+        return (int)Math.ceil(numberOfInstances);
+    }
+
+    public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit , float lowerLimit ,double predictedValue , int activeMemberCount ){
+
+        double numberOfInstances = 0;
+        if(predictedValue > upperLimit){
+            numberOfInstances = (activeMemberCount*predictedValue)/upperLimit;
+        }else if((upperLimit >= predictedValue) && (predictedValue >= lowerLimit)){
+            numberOfInstances = activeMemberCount;
+        }else{
+            numberOfInstances = (activeMemberCount*predictedValue)/lowerLimit;
+        }
+
+        return (int)Math.ceil(numberOfInstances);
+    }
+
+    public int getMaxNumberOfInstancesRequired(int numberOfInstancesReuquiredBasedOnRif , int numberOfInstancesReuquiredBasedOnMemoryConsumption , boolean mcReset , int numberOfInstancesReuquiredBasedOnLoadAverage , boolean laReset){
+        int  numberOfInstances = 0;
+
+        int rifBasedRequiredInstances = 0;
+        int mcBasedRequiredInstances  = 0;
+        int laBasedRequiredInstances  = 0;
+        if(arspiIsSet){
+            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnRif;
+        }
+        if(mcReset){
+            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnMemoryConsumption;
+        }
+        if(laReset){
+            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
+        }
+        numberOfInstances = Math.max(Math.max(numberOfInstancesReuquiredBasedOnMemoryConsumption,numberOfInstancesReuquiredBasedOnLoadAverage),numberOfInstancesReuquiredBasedOnRif);
+        return  numberOfInstances;
+    }
+
+    public int getMemberCount(String clusterId , int scalingPara ){
+
+        int activeMemberCount = 0;
+        int memberCount = 0;
+       for( Service service : TopologyManager.getTopology().getServices()) {
+           if(service.clusterExists(clusterId)) {
+               Cluster cluster = service.getCluster(clusterId);
+
+               for (Member member : cluster.getMembers()) {
+                   if (member.isActive() || member.getStatus() == MemberStatus.Created || member.getStatus() == MemberStatus.Starting  ) {
+                       memberCount++;
+                       if(member.isActive()) {
+                           activeMemberCount++;
+                       }
+                   }
+               }
+           }
+       }
+        if(scalingPara == 1){
+            return memberCount;
+        }else{
+            return activeMemberCount;
+        }
+
+
     }
 
     public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm){
@@ -175,10 +261,29 @@ public class RuleTasksDelegator {
     }
 
     public void delegateTerminate(PartitionContext partitionContext, String memberId) {
+
+        log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
+                partitionContext.getPartitionId() + " ], NW Partition [ " +
+                partitionContext.getNetworkPartitionId() + " ]");
+
         try {
             //calling SM to send the instance notification event.
             InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
             partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+            //CloudControllerClient.getInstance().terminate(memberId);
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
+
+    public void delegateTerminateDependency(PartitionContext partitionContext, String memberId) {
+        try {
+            //calling SM to send the instance notification event.
+        	if (log.isDebugEnabled()) {
+        		log.debug("delegateTerminateDependency:memberId:" + memberId);
+        	}
+            //InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
+            //partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
             //CloudControllerClient.getInstance().terminate(memberId);
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
@@ -193,10 +298,16 @@ public class RuleTasksDelegator {
         }
     }
 
+    //Grouping
    	public void delegateTerminateAll(String clusterId) {
            try {
-
+        	   if (log.isDebugEnabled()) {
+           		log.debug("delegateTerminateAll - begin");
+        	   }
                CloudControllerClient.getInstance().terminateAllInstances(clusterId);
+               if (log.isDebugEnabled()) {
+              		log.debug("delegateTerminateAll - done");
+           	   }
            } catch (Throwable e) {
                log.error("Cannot terminate instance", e);
            }

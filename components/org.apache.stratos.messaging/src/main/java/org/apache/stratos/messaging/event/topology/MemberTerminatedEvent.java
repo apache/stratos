@@ -34,6 +34,7 @@ public class
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    private String groupId;
     private Properties properties;
 
 
@@ -64,6 +65,13 @@ public class
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+	public String getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 
     public Properties getProperties() {
         return properties;

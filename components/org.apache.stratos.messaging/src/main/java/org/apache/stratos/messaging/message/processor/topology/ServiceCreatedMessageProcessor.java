@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ServiceCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
 public class ServiceCreatedMessageProcessor extends MessageProcessor {
@@ -43,43 +44,20 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
 
         if (ServiceCreatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
-            if (!topology.isInitialized())
+            if (!topology.isInitialized()) {
                 return false;
+            }
 
             // Parse complete message and build event
             ServiceCreatedEvent event = (ServiceCreatedEvent) Util.jsonToObject(message, ServiceCreatedEvent.class);
 
-            // Apply service filter
-            if (TopologyServiceFilter.getInstance().isActive()) {
-                if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                    // Service is excluded, do not update topology or fire event
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                    }
-                    return false;
-                }
+            TopologyUpdater.acquireWriteLockForServices();
+            try {
+                return doProcess(event, topology);
+
+            } finally {
+                TopologyUpdater.releaseWriteLockForServices();
             }
-
-            // Validate event against the existing topology
-            if (topology.serviceExists(event.getServiceName())) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
-                }
-            } else {
-            	
-            	// Apply changes to the topology
-            	Service service = new Service(event.getServiceName(), event.getServiceType());
-            	service.addPorts(event.getPorts());
-            	topology.addService(service);
-            	
-            	if (log.isInfoEnabled()) {
-            		log.info(String.format("Service created: [service] %s", event.getServiceName()));
-            	}
-            }
-
-
-            notifyEventListeners(event);
-            return true;
 
         } else {
             if (nextProcessor != null) {
@@ -89,5 +67,41 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
                 throw new RuntimeException(String.format("Failed to process message using available message processors: [type] %s [body] %s", type, message));
             }
         }
+    }
+
+    private boolean doProcess (ServiceCreatedEvent event, Topology topology) {
+
+        // Apply service filter
+        if (TopologyServiceFilter.getInstance().isActive()) {
+            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
+                // Service is excluded, do not update topology or fire event
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
+                }
+                return false;
+            }
+        }
+
+        // Validate event against the existing topology
+        if (topology.serviceExists(event.getServiceName())) {
+            if (log.isWarnEnabled()) {
+                log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
+            }
+        } else {
+
+            // Apply changes to the topology
+            Service service = new Service(event.getServiceName(), event.getServiceType());
+            service.addPorts(event.getPorts());
+            topology.addService(service);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Service created: [service] %s", event.getServiceName()));
+            }
+        }
+
+
+        notifyEventListeners(event);
+        return true;
+
     }
 }

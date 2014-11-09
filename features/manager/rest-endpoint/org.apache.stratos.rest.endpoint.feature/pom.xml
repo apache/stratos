@@ -216,6 +216,16 @@
             <artifactId>carbon-cxf</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.ws.stub</artifactId>
+            <version>4.2.0</version>
+        </dependency>
         <!--dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
@@ -266,7 +276,7 @@
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/web-app/web-app</outputDirectory>
-                                    <destFileName>stratos.war</destFileName>
+                                    <destFileName>api.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

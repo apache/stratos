@@ -24,16 +24,10 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidClusterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceStub;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredClusterExceptionException;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -78,19 +72,43 @@ public class CloudControllerServiceClient {
         return serviceClient;
     }
 
-    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig) 
-    		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException, 
-    		CloudControllerServiceInvalidIaasProviderExceptionException {
+    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig)
+    		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
+            CloudControllerServiceInvalidIaasProviderExceptionException {
 
 		stub.deployCartridgeDefinition(cartridgeConfig);
 
 	}
 
-    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException{
+    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
 
 		stub.undeployCartridgeDefinition(cartridgeType);
 
 	}
+    
+    public void deployServiceGroup (ServiceGroup serviceGroup) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	stub.deployServiceGroup(serviceGroup);
+    }
+    
+    public void undeployServiceGroup (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	stub.undeployServiceGroup(name);
+    }
+    
+    public String [] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupSubGroups(name);
+    }
+    
+    public String [] getServiceGroupCartridges(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupCartridges(name);
+    }
+    
+    public Dependencies getServiceGroupDependencies (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroupDependencies(name);
+    }
+     
+    public ServiceGroup getServiceGroup(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+    	return stub.getServiceGroup(name);
+    }
 
 	public boolean register(String clusterId, String cartridgeType,
                             String payload, String tenantRange,

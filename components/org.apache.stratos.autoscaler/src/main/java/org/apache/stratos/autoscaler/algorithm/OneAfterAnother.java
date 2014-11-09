@@ -37,7 +37,7 @@ import java.util.List;
  * This class is used for selecting a {@link Partition} one after another and checking availability of
  * partitions of a {@link NetworkPartitionContext}
  * One after another means it completes partitions in the order defined in
- * {@link org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy}, and go to next  if current one
+ * {@link org.apache.stratos.autoscaler.policy.model.DeploymentPolicy}, and go to next  if current one
  * reached the max limit
  */
 public class OneAfterAnother implements AutoscaleAlgorithm {

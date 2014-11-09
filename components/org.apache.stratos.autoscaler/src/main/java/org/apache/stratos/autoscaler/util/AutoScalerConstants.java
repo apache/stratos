@@ -39,11 +39,14 @@ public final class AutoScalerConstants {
 	public static final String NETWORK_PARTITION_LB_HOLDER_RESOURCE = "/network-partitions";
 	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
 	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
-
+    public static final String APPLICATIONS_RESOURCE = "/applications";
 
     /**
      * Cluster monitoring  interval
      */
+    public static final String AUTOSCALER_MONITOR_INTERVAL = "autoscaler.monitorInterval";
+
+    public static final String SERVICE_GROUP = "/groups";
     public static final String VMService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.service";
     public static final String VMLb_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.lb";
     public static final String KubernetesService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.kubernetes.service";

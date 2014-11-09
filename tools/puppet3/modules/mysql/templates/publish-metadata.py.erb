@@ -1,0 +1,95 @@
+__author__ = 'udara'
+
+import urllib2
+from urllib2 import URLError, HTTPError
+import json
+import base64
+import logging
+import os,subprocess
+from subprocess import Popen, PIPE
+import random,string
+
+logging.basicConfig(filename='publish_metadata.log',level=logging.DEBUG,format='%(asctime)s: [%(levelname)s] %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+def get_launch_param_file_location():
+    launch_params_file = os.path.abspath(os.path.dirname(__file__)).split("extensions")[0] + "payload/launch-params"
+    logging.debug("Launch param file location " + launch_params_file)
+    return launch_params_file
+
+def get_paylod_property(name):
+    logging.debug("[property  " + name + " = " + properties[name] + "]")
+    return properties[name]
+
+
+def get_metadataserviceurl():
+    return properties['METADATASERVICE_URL']
+
+def do_post(url, data):
+    req = urllib2.Request(url)
+    base64string = base64.encodestring('%s:%s' % ("admin", "admin")).replace('\n', '')
+    req.add_header("Authorization", "Basic %s" % base64string)
+    req.add_header('Content-Type', 'application/json')
+
+    try:
+        logging.info('sending to ' + url)
+        logging.info('sent data ' + json.dumps(data))
+        response = urllib2.urlopen(req, json.dumps(data))
+    except HTTPError as e:
+        logging.error('The server couldn\'t fulfill the request.')
+        logging.error('Error code .' + e.code)
+    except URLError as e:
+        print 'We failed to reach a server.'
+        logging.error('We failed to reach a server.')
+        logging.error('Reason: ' + e.reason)
+
+def generate_mysql_password(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+def set_mysql_password(password):
+    command = "./mysql_root_password_setter.sh " + password
+    logging.debug(" Setting mysql password [" + command + "]")
+    p = subprocess.Popen(command , stdout=PIPE, stderr=PIPE, shell=True)
+    stdout_data, stderr_data = p.communicate()
+    if p.returncode != 0:
+        logging.error(" failed, status code %s stdout %r stderr %r" % ( p.returncode, stdout_data, stderr_data))
+        raise RuntimeError(" failed, status code %s stdout %r stderr %r" % ( p.returncode, stdout_data, stderr_data))
+    print(stdout_data)
+
+param_file = get_launch_param_file_location()
+print param_file
+try:
+    metadata_file = open(param_file, "r")
+except IOError:
+    logging.error( 'Cannot open' + param_file)
+    raise RuntimeError("Could not open payload params, halting....")
+
+metadata_payload_content = metadata_file.read()
+logging.debug("Payload : " + metadata_payload_content)
+properties = {}
+for param in metadata_payload_content.split(","):
+    if param.strip() != "":
+        param_value = param.strip().split("=")
+        properties[param_value[0]] = param_value[1]
+
+logging.debug("Payload properties : ")
+logging.debug(properties)
+
+my_alias = get_paylod_property('CARTRIDGE_ALIAS')
+
+my_ip = urllib2.urlopen('http://ip.42.pl/raw').read()
+my_username = "root"
+my_password = generate_mysql_password()
+set_mysql_password(my_password)
+app_id= get_paylod_property('APP_ID')
+
+resource_url = get_metadataserviceurl()+ "/stratosmetadataservice/application/" + app_id + "/cluster/" + my_alias + "/property"
+data = {"key":"MYSQL_IP","values":my_ip}
+do_post(resource_url, data)
+data = {"key":"MYSQL_PASS","values":my_password}
+do_post(resource_url, data)
+
+data = {"key":"MYSQL_UNAME","values":my_username}
+do_post(resource_url, data)
+
+logging.info("************************")
+

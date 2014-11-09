@@ -19,6 +19,8 @@
 package org.apache.stratos.cloud.controller.pojo;
 
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 
 import java.io.Serializable;
 

@@ -19,20 +19,17 @@
 
 package org.apache.stratos.messaging.broker.subscribe;
 
-import javax.jms.JMSException;
-import javax.jms.TopicSession;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.MQTTConnector;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
-import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+
+import javax.jms.JMSException;
 
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
@@ -42,9 +39,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  */
 public class TopicSubscriber implements Runnable {
 
-	private static final Log log = LogFactory.getLog(TopicSubscriber.class);
+    private static final Log log = LogFactory.getLog(TopicSubscriber.class);
+    private final MqttClient mqttClient;
 
-	private boolean terminated = false;
+    private boolean terminated = false;
 	private MqttCallback messageListener;
 	private final String topicName;
 
@@ -57,28 +55,29 @@ public class TopicSubscriber implements Runnable {
 	 */
 	public TopicSubscriber(String aTopicName) {
 		topicName = aTopicName;
+        mqttClient = MQTTConnector.getMqttClient();
 
 		if (log.isDebugEnabled()) {
-			log.debug(String.format("Topic subscriber connector created: [topic] %s", topicName));
+			log.debug(String.format("Topic subscriber created: [topic] %s", topicName));
 		}
 	}
 
 	private void doSubscribe() throws MqttException {
 
-		MqttClient mqttClient = MQTTConnector.getMQTTSubClient(Util.getRandomString(5));
-
 		if (log.isDebugEnabled()) {
-			log.debug("Subscribing to topic '" + topicName + "' from " +
-			          mqttClient.getServerURI());
+			log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
+                    topicName, mqttClient.getServerURI()));
 		}
 
 		/* Subscribing to specific topic */
         while(true) {
             try {
-
-                MqttConnectOptions connOpts = new MqttConnectOptions();
-                connOpts.setCleanSession(true);
-                mqttClient.connect(connOpts);
+                MqttConnectOptions connectOptions = new MqttConnectOptions();
+                // Do not maintain a session between the client and the server since it is nearly impossible to
+                // generate unique client ids for each subscriber & publisher with the distributed nature of stratos.
+                // Reliable message delivery is managed by topic subscriber and publisher.
+                connectOptions.setCleanSession(true);
+                mqttClient.connect(connectOptions);
 
                 mqttClient.subscribe(topicName);
                 mqttClient.setCallback(messageListener);
@@ -90,7 +89,6 @@ public class TopicSubscriber implements Runnable {
                     } catch (InterruptedException ignored) {
                     }
                 }
-
             } finally {
                 mqttClient.disconnect();
             }

@@ -25,7 +25,7 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 
 /**
- * This interface is should be implemented by all the algorithms that are there to select partitions of a particulaler
+ * This interface is should be implemented by all the algorithms that are there to select partitions of a particular
  * partition group
  */
 public interface AutoscaleAlgorithm {

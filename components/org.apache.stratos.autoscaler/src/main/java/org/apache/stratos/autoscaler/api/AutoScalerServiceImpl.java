@@ -18,27 +18,43 @@
  */
 package org.apache.stratos.autoscaler.api;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.client.cloud.controller.CloudControllerClient;
-import org.apache.stratos.autoscaler.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
+import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
-import org.apache.stratos.autoscaler.monitor.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
+import org.apache.stratos.autoscaler.pojo.Dependencies;
+import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
+import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
+import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -271,7 +287,25 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         return null;
     }
+    
+    @Override
+    public void deployApplicationDefinition(ApplicationContext applicationContext)
+            throws ApplicationDefinitionException {
 
+        ApplicationParser applicationParser = new DefaultApplicationParser();
+        Application application = applicationParser.parse(applicationContext);
+        publishMetadata(applicationParser, application.getUniqueIdentifier());
+        ApplicationBuilder.handleApplicationCreated(application,
+                applicationParser.getApplicationClusterContexts());
+    }
+
+    @Override
+    public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain)
+            throws ApplicationDefinitionException {
+
+        ApplicationBuilder.handleApplicationUndeployed(applicationId);
+    }
+    
     public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
@@ -319,22 +353,22 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
+                        NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-            if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cluster LB [cluster id] " + clusterId + " does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyId);
+                if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Cluster LB [cluster id] "+clusterId+" does not exist in [network partition] " +
+                                  nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+                                  deploymentPolicyId);
 
+                    }
+                    return false;
                 }
-                return false;
-            }
 
         }
-
+        
         return true;
-
+        
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
@@ -351,5 +385,98 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     clusterId));
         }
     }
+    
+    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
+        if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
+            String msg = "Service group can not be null service name can not be empty.";
+            log.error(msg);
+            throw new IllegalArgumentException(msg);
+
+        }
+        String name = servicegroup.getName();
+
+        if(RegistryManager.getInstance().serviceGroupExist(name)){
+            throw new InvalidServiceGroupException("Service group with the name " + name + " already exist.");
+        }
+
+        if(log.isDebugEnabled()) {
+            log.debug(MessageFormat.format("Deploying service group {0}", servicegroup.getName()));
+        }
+
+        String [] subGroups = servicegroup.getCartridges();
+
+        if(log.isDebugEnabled()) {
+            log.debug("SubGroups" + subGroups);
+            if (subGroups != null) {
+                log.debug("subGroups:size" + subGroups.length);
+            } else {
+                log.debug("subGroups: are null");
+            }
+        }
+
+
+        Dependencies dependencies = servicegroup.getDependencies();
+
+        if(log.isDebugEnabled()) {
+            log.debug("Dependencies" + dependencies);
+        }
+
+        if (dependencies != null) {
+            String [] startupOrders = dependencies.getStartupOrders();
+
+            if(log.isDebugEnabled()) {
+                log.debug("StartupOrders" + startupOrders);
+
+                if (startupOrders != null) {
+                    log.debug("StartupOrder:size" + startupOrders.length);
+                } else {
+                    log.debug("StartupOrder: is null");
+                }
+            }
+        }
+
+        RegistryManager.getInstance().persistServiceGroup(servicegroup);
+    }
+
+    public ServiceGroup getServiceGroup(String name) {
+        if(StringUtils.isEmpty(name)){
+            return null;
+        }
+        try {
+            return RegistryManager.getInstance().getServiceGroup(name);
+        } catch (Exception e) {
+            throw new AutoScalerException("Error occurred while retrieving service groups", e);
+        }
+    }
+    public boolean serviceGroupExist(String serviceName){
+        return false;
+    }
+
+    public void undeployServiceGroup(String name) throws AutoScalerException {
+        try {
+            RegistryManager.getInstance().removeServiceGroup(name);
+        } catch (Exception e) {
+            throw new AutoScalerException("Error occurred while removing the service groups", e);
+        }
+
+    }
+
+    private void publishMetadata(ApplicationParser applicationParser, String appId) {
+        MetaDataServiceClient metaDataServiceClien = null;
+        try {
+            metaDataServiceClien = new DefaultMetaDataServiceClient();
+            for (Map.Entry<String, Properties> entry : applicationParser.getAliasToProperties().entrySet()) {
+                String alias = entry.getKey();
+                Properties properties = entry.getValue();
+                if(properties != null) {
+                    for (Property property : properties.getProperties()) {
+                        metaDataServiceClien.addPropertyToCluster(appId, alias, property.getName(), property.getValue());
+                    }
+                }
+            }
+        } catch (MetaDataServiceClientException e) {
+            log.error("Could not publish to metadata service ", e);
+        }
+    }
 }

@@ -1,0 +1,46 @@
+{
+      "type": "php",
+      "provider": "apache",
+      "host": "isuruh.lk",
+      "displayName": "PHP",
+      "description": "PHP Cartridge",
+      "version": "7",
+      "multiTenant": "false",
+      "portMapping": [
+         {
+            "protocol": "http",
+            "port": "80",
+            "proxyPort": "8280"
+         },
+         {
+            "protocol": "https",
+            "port": "443",
+            "proxyPort": "8243"
+         }
+       ],
+      "deployment": {
+        },
+       "iaasProvider": [
+	     {
+          "type": "openstack",
+          "imageId": "RegionOne/f2ddf72a-4e76-4893-a9fa-e5f4352f1a86",
+          "maxInstanceLimit": "2",
+          "property": [
+           {
+             "name": "instanceType",
+             "value": "RegionOne/3"
+           },
+           {
+             "name": "keyPair",
+             "value": "isuruh"
+           }
+          ]
+         }
+      ],
+     "loadBalancer": {
+        "property": {
+            "name": "no.load.balancer",
+            "value": "true"
+        }
+      },
+}

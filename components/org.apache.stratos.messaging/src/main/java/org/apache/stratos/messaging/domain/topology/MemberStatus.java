@@ -19,21 +19,65 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents status of a member during its lifecycle.
  */
 @XmlRootElement
-public enum MemberStatus {
-    Created(1),
-    Starting(2),
-    Activated(3),
-    In_Maintenance(4),
-    ReadyToShutDown(5),
-    Terminated(6),
-    Suspended(0),
-    ShuttingDown(0);
+public enum MemberStatus implements LifeCycleState {
+
+    Created(0) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Created, MemberStatus.Starting));
+        }
+    },
+    Starting(1) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting, MemberStatus.Activated));
+        }
+    },
+    Activated(2) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated, MemberStatus.Suspended,
+                    MemberStatus.In_Maintenance, MemberStatus.Starting));
+        }
+    },
+    In_Maintenance(3) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.In_Maintenance,
+                    MemberStatus.ReadyToShutDown));
+        }
+    },
+    ReadyToShutDown(4) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.ReadyToShutDown,
+                    MemberStatus.Terminated));
+        }
+    },
+    Suspended(5) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Suspended,
+                    MemberStatus.Terminated));
+        }
+    },
+    Terminated(6) {
+        @Override
+        public Set<LifeCycleState> getNextStates() {
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Terminated));
+        }
+    };
 
     private int code;
 

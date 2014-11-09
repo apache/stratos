@@ -18,139 +18,141 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>org.apache.stratos</groupId>
-		<artifactId>stratos-components-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-components-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.apache.stratos.autoscaler</artifactId>
-	<packaging>bundle</packaging>
-	<name>Apache Stratos - Autoscaler</name>
-	<description>Autoscaler components</description>
-	<url>http://apache.org</url>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.stratos.autoscaler</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Stratos - Autoscaler</name>
+    <description>Autoscaler components</description>
+    <url>http://apache.org</url>
 
-	<dependencies>
-		 <dependency>
-		    <groupId>org.wso2.carbon</groupId>
-		    <artifactId>org.wso2.carbon.registry.core</artifactId>
-		    <version>${carbon.platform.version}</version>
-		    <scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-core</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-compiler</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.thoughtworks.xstream</groupId>
-			<artifactId>xstream</artifactId>
-			<version>1.4.1</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.registry.core</artifactId>
+            <version>${carbon.platform.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.4.1</version>
+        </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
             <version>1.9</version>
         </dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr</artifactId>
-			<version>3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-decisiontables</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr-runtime</artifactId>
-			<version>3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>stringtemplate</artifactId>
-			<version>3.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-jsr94</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>knowledge-internal-api</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>knowledge-api</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mvel</groupId>
-			<artifactId>mvel2</artifactId>
-			<version>2.1.3.Final</version>
-		</dependency>
-		<!--dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.4</version>
-		</dependency-->
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-verifier</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.drools</groupId>
-			<artifactId>drools-templates</artifactId>
-			<version>${drools.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jdt.core.compiler</groupId>
-			<artifactId>ecj</artifactId>
-			<version>3.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>xmlpull</groupId>
-			<artifactId>xmlpull</artifactId>
-			<version>1.1.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>xpp3</groupId>
-			<artifactId>xpp3_min</artifactId>
-			<version>1.1.4c</version>
-		</dependency>
-		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>2.1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>jsr94</groupId>
-			<artifactId>jsr94</artifactId>
-			<version>1.1</version>
-   		</dependency>
-		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.messaging</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-decisiontables</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>stringtemplate</artifactId>
+            <version>3.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-jsr94</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>knowledge-internal-api</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>knowledge-api</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mvel</groupId>
+            <artifactId>mvel2</artifactId>
+            <version>2.1.3.Final</version>
+        </dependency>
+        <!--dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.6.4</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-verifier</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-templates</artifactId>
+            <version>${drools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jdt.core.compiler</groupId>
+            <artifactId>ecj</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>xmlpull</groupId>
+            <artifactId>xmlpull</artifactId>
+            <version>1.1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>xpp3</groupId>
+            <artifactId>xpp3_min</artifactId>
+            <version>1.1.4c</version>
+        </dependency>
+        <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>jsr94</groupId>
+            <artifactId>jsr94</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.messaging</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.common</artifactId>
@@ -169,42 +171,56 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-	 <dependency>
+        <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.manager.cleanup.notification.stub</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+            <scope>provided</scope>
+            <version>4.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.metadata.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-scr-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
 
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Name>${project.artifactId}</Bundle-Name>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Private-Package>org.apache.stratos.autoscaler.internal.*</Private-Package>
-						<Export-Package>!org.apache.stratos.autoscaler.internal.*,org.apache.stratos.autoscaler.*</Export-Package>
-						<Import-Package>
-							org.osgi.framework.*;resolution:=optional,
-							*;resolution:=optional
+                        <Export-Package>!org.apache.stratos.autoscaler.internal.*,org.apache.stratos.autoscaler.*
+                        </Export-Package>
+                        <Import-Package>
+                            org.osgi.framework.*;resolution:=optional,
+                            *;resolution:=optional
                         </Import-Package>
-						<Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
-						<DynamicImport-Package>*</DynamicImport-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-						<Embed-Directory>lib</Embed-Directory>
-					</instructions>
-				</configuration>
-			</plugin>
+                        <Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+                        <Embed-Directory>lib</Embed-Directory>
+                    </instructions>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
@@ -221,17 +237,17 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
+        </plugins>
         <resources>
-           <resource>
-            <directory>src/main/rules</directory>
-           </resource>
-           <resource>
-             <directory>src/main/resources</directory>
-           </resource>
-          </resources>
-	</build>
-     <properties>
+            <resource>
+                <directory>src/main/rules</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+    </build>
+    <properties>
         <drools.version>5.5.0.Final</drools.version>
     </properties>
 </project>

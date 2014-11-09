@@ -35,6 +35,7 @@ public class InstanceActivatedEvent extends InstanceStatusEvent implements Seria
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
+    private String groupId;
 
     public InstanceActivatedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
         this.serviceName = serviceName;
@@ -63,4 +64,12 @@ public class InstanceActivatedEvent extends InstanceStatusEvent implements Seria
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+    
+    public String getGroupId() {
+		return groupId;
+	}
+	
+	public void setGroupId(String groupId) {
+		this.groupId = groupId;
+	}
 }

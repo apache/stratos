@@ -1,0 +1,10 @@
+{
+    "id": "P1",
+    "provider": "ec2",
+    "property": [
+        {
+        "name": "region",
+        "value": "ap-southeast-1"
+      }
+    ]
+}
