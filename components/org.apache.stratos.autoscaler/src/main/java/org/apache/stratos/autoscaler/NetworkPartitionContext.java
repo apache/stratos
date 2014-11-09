@@ -39,16 +39,9 @@ public class NetworkPartitionContext implements Serializable{
 	private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     private static final long serialVersionUID = 572769304374110159L;
     private final String id;
-    private int scaleDownWaitCount = 5; //TODO get from a config
     private int scaleDownRequestsCount = 0;
     private float averageRequestsServedPerInstance;
     private float requestsServedPerInstance;
-
-//    private String defaultLbClusterId;
-//
-//    private Map<String, String> serviceNameToLBClusterIdMap;
-//
-//    private Map<String, String> clusterIdToLBClusterIdMap;
 
     private final String partitionAlgorithm;
 
@@ -75,7 +68,6 @@ public class NetworkPartitionContext implements Serializable{
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-//    private Map<String, Integer> partitionToMemberCountMap;
 
     //partitions of this network partition
     private final Map<String, PartitionContext> partitionCtxts;
@@ -90,96 +82,12 @@ public class NetworkPartitionContext implements Serializable{
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-//        this.setServiceToLBClusterId(new HashMap<String, String>());
-//        this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
-//        partitionToMemberCountMap = new HashMap<String, Integer>();
         partitionCtxts = new HashMap<String, PartitionContext>();
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
 
     }
-
-//    public String getDefaultLbClusterId() {
-//
-//        return this.defaultLbClusterId;
-//
-//    }
-//
-//    public void setDefaultLbClusterId(final String defaultLbClusterId) {
-//
-//        this.defaultLbClusterId = defaultLbClusterId;
-//
-//    }
-
-//    public String getLBClusterIdOfService(final String serviceName) {
-//
-//        return (String) this.serviceNameToLBClusterIdMap.get(serviceName);
-//
-//    }
-
-//    public Map<String, String> getServiceToLBClusterId() {
-//
-//        return this.serviceNameToLBClusterIdMap;
-//
-//    }
-//
-//    public void setServiceToLBClusterId(final Map<String, String> serviceToLBClusterId) {
-//
-//        this.serviceNameToLBClusterIdMap = serviceToLBClusterId;
-//
-//    }
-//
-//    public void addServiceLB(final String serviceName, final String lbClusterId) {
-//        this.serviceNameToLBClusterIdMap.put(serviceName, lbClusterId);
-//    }
-
-//    public String getLBClusterIdOfCluster(final String clusterId) {
-//
-//        return (String) this.clusterIdToLBClusterIdMap.get(clusterId);
-//
-//    }
-//
-//    public Map<String, String> getClusterIdToLBClusterIdMap() {
-//
-//        return this.clusterIdToLBClusterIdMap;
-//
-//    }
-//
-//    public void setClusterIdToLBClusterIdMap(final Map<String, String> clusterIdToLBClusterIdMap) {
-//
-//        this.clusterIdToLBClusterIdMap = clusterIdToLBClusterIdMap;
-//
-//    }
-
-
-//    public boolean isLBExist(final String clusterId) {
-//
-//        return clusterId != null &&
-//               (clusterId.equals(this.defaultLbClusterId) ||
-//                this.serviceNameToLBClusterIdMap.containsValue(clusterId) || this.clusterIdToLBClusterIdMap.containsValue(clusterId));
-//
-//    }
-//
-//    public boolean isDefaultLBExist() {
-//
-//        return defaultLbClusterId != null;
-//
-//    }
-//
-//    public boolean isServiceLBExist(String serviceName) {
-//
-//        return this.serviceNameToLBClusterIdMap.containsKey(serviceName) &&
-//                this.serviceNameToLBClusterIdMap.get(serviceName) != null;
-//
-//    }
-
-//    public boolean isClusterLBExist(String clusterId) {
-//
-//        return this.clusterIdToLBClusterIdMap.containsKey(clusterId) &&
-//                this.clusterIdToLBClusterIdMap.get(clusterId) != null;
-//
-//    }
 
     public int getMinInstanceCount() {
         return minInstanceCount;
@@ -228,8 +136,6 @@ public class NetworkPartitionContext implements Serializable{
         }
         return true;
     }
-
-
 
     @Override
     public String toString() {
@@ -445,43 +351,6 @@ public class NetworkPartitionContext implements Serializable{
         return id;
     }
 
-//    public void increaseMemberCountOfPartition(String partitionId, int count){
-//         if(!partitionCountExists(partitionId)){
-//             addPartitionCount(partitionId, 1);
-//         } else{
-//            partitionToMemberCountMap.put(partitionId, getMemberCountOfPartition(partitionId) + count);
-//         }
-//     }
-
-//     public void decreaseMemberCountOfPartition(String partitionId, int count){
-//
-//         partitionToMemberCountMap.put(partitionId, getMemberCountOfPartition(partitionId) - count);
-//     }
-//
-//     public void addPartitionCount(String partitionId, int count){
-//         partitionToMemberCountMap.put(partitionId, count);
-//     }
-//
-//     public void removePartitionCount(String partitionId){
-//
-//         partitionToMemberCountMap.remove(partitionId);
-//     }
-
-//     public boolean partitionCountExists(String partitionId){
-//         return partitionToMemberCountMap.containsKey(partitionId);
-//     }
-
-//     public int getMemberCountOfPartition(String partitionId){
-//         if(partitionToMemberCountMap.containsKey(partitionId)) {
-//             return partitionToMemberCountMap.get(partitionId);
-//         }
-//         return 0;
-//         if(partitionCtxts.containsKey(partitionId)){
-//             return getPartitionCtxt(partitionId).getTotalMemberCount();
-//         }
-//         return 0;
-//     }
-
     public Map<String, PartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
@@ -516,10 +385,6 @@ public class NetworkPartitionContext implements Serializable{
         return 0;
     }
 
-    public int getScaleDownWaitCount() {
-        return scaleDownWaitCount;
-    }
-
     public int getScaleDownRequestsCount() {
         return scaleDownRequestsCount;
     }
@@ -530,17 +395,5 @@ public class NetworkPartitionContext implements Serializable{
     public void increaseScaleDownRequestsCount() {
         this.scaleDownRequestsCount += 1;
     }
-
-
-//    public void setPartitions(Partition[] partitions) {
-//        this.partitions = partitions;
-//        for (Partition partition: partitions){
-//            partitionToMemberCountMap.put(partition.getNetworkPartitionId(), 0);
-//        }
-//    }
-
-//    public void setPartitionToMemberCountMap(Map<String, Integer> partitionToMemberCountMap) {
-//        this.partitionToMemberCountMap = partitionToMemberCountMap;
-//    }
 
 }
