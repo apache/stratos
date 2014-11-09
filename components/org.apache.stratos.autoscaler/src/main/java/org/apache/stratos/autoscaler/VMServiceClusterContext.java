@@ -20,43 +20,27 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.model.*;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.topology.Member;
 
-import java.util.*;
+import java.util.Map;
 
 /*
  * It holds the runtime data of a VM service cluster
  */
-public class VMServiceClusterContext extends AbstractClusterContext {
+public class VMServiceClusterContext extends VMClusterContext {
 
     private static final Log log = LogFactory.getLog(VMServiceClusterContext.class);
 
-    // Map<NetworkpartitionId, Network Partition Context>
-    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
-    protected DeploymentPolicy deploymentPolicy;
     protected AutoscalePolicy autoscalePolicy;
 
-    public VMServiceClusterContext(String clusterId, AutoscalePolicy autoscalePolicy, DeploymentPolicy deploymentPolicy,
+    public VMServiceClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy, DeploymentPolicy deploymentPolicy,
                                    Map<String, NetworkPartitionContext> networkPartitionCtxts) {
 
-        super(clusterId);
-        this.deploymentPolicy = deploymentPolicy;
-        this.networkPartitionCtxts = networkPartitionCtxts;
+        super(clusterId, serviceId, autoscalePolicy, deploymentPolicy, networkPartitionCtxts);
         this.autoscalePolicy = autoscalePolicy;
 
-    }
-
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts(){
-        return networkPartitionCtxts;
-    }
-
-    public DeploymentPolicy getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
     }
 
     public AutoscalePolicy getAutoscalePolicy() {
@@ -67,38 +51,5 @@ public class VMServiceClusterContext extends AbstractClusterContext {
         this.autoscalePolicy = autoscalePolicy;
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
-        return networkPartitionCtxts.get(networkPartitionId);
-    }
-
-    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
-        this.networkPartitionCtxts = partitionCtxt;
-    }
-
-    public boolean partitionCtxtAvailable(String partitionId) {
-        return networkPartitionCtxts.containsKey(partitionId);
-    }
-
-    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
-        this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
-    }
-
-    public NetworkPartitionContext getPartitionCtxt(String id) {
-        return this.networkPartitionCtxts.get(id);
-    }
-
-
-
-    public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
-        log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
-        String networkPartitionId = member.getNetworkPartitionId();
-        if (networkPartitionCtxts.containsKey(networkPartitionId)) {
-            log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
-            return networkPartitionCtxts.get(networkPartitionId);
-        }
-
-        log.info("returning null getNetworkPartitionCtxt");
-        return null;
-    }
 
 }
