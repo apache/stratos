@@ -22,6 +22,6 @@ define python_agent::start ($target, $owner) {
     user    => $owner,
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:',
     cwd     => "${target}/",
-    command => "python agent.py &",
+    command => "python agent.py > /tmp/agent.screen.log 2>&1 &",
   }
 }

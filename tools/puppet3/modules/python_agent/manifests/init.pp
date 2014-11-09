@@ -38,6 +38,13 @@ class python_agent(
   $mb_ip = $split_mburl[0]
   $mb_port = $split_mburl[1]
 
+#  $split_mburl = split($mb_url, "//")
+#  $split_mburl = split($split_mburl[1], ":")
+#  $mb_ip = $split_mburl[0]
+#  $mb_port = $split_mburl[1]
+#  $mb_ip = '127.0.0.1'
+#  $mb_port = '1883'
+
   tag($service_code)
 
   $default_templates = [
@@ -74,7 +81,8 @@ class python_agent(
 
   exec { 'make extension folder':
     path    => '/bin/',
-    command => "mkdir -p ${target}/${service_code}/extensions",
+    command => "mkdir -p ${agent_home}/extensions",
+    #command => "mkdir -p ${target}/${service_code}/extensions",
     require => Python_agent::Initialize[$service_code];
   }
 
@@ -93,7 +101,7 @@ class python_agent(
     $service_templates:
       target    => $agent_home,
       template_dir => "agent",
-      require   => Python_agent::Initialize[$service_code];
+      require   => Exec['make extension folder'];
   }
 
 # applying custom extensions
@@ -102,8 +110,8 @@ class python_agent(
       $custom_templates:
         target    => $agent_home,
         template_dir => "${module}/agent",
-        require   => [Python_agent::Initialize[$service_code]]
-    }
+        require   => [Exec['make extension folder']]
+	}
   }
 
 # removing default extensions which are shipped by agent.zip

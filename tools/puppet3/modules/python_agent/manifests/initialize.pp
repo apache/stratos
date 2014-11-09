@@ -62,7 +62,7 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
   exec {
     "creating_target_for_python_${name}":
       path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      command => "mkdir -p ${target}",
+      command => "mkdir -p ${target}/${agent_name}",
       require => Exec["pip installs-pexpect"];
 
     "creating_local_package_repo_for_python_${name}":
@@ -82,7 +82,7 @@ define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $targ
   exec {
     "extracting_${agent_name}.zip_for_${name}":
       path      => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-      cwd       => $target,
+      cwd       => "$target/${agent_name}",
       #/mnt/apache-stratos-python-cartridge-agent-1.0.0/agent.py
       unless    => "test -d ${target}/${agent_name}/agent.conf",
       command   => "unzip -o ${local_dir}/${agent_name}.zip",
