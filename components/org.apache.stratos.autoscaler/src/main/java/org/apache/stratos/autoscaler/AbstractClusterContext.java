@@ -48,6 +48,7 @@ public class AbstractClusterContext implements Serializable {
 
     public AbstractClusterContext(String clusterId, String serviceId){
         this.clusterId = clusterId;
+        this.serviceId = serviceId;
     }
 
     public String getServiceId() {
