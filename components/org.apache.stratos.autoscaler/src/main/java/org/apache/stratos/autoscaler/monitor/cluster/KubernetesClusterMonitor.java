@@ -62,16 +62,13 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     private static final Log log = LogFactory.getLog(KubernetesClusterMonitor.class);
 
     private KubernetesClusterContext kubernetesClusterCtxt;
-    protected String autoscalePolicyId;
 
-    protected KubernetesClusterMonitor(String clusterId, String serviceId,
-                                       KubernetesClusterContext kubernetesClusterContext,
+    protected KubernetesClusterMonitor(String clusterId,
                                        AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                                       String autoscalePolicyId) {
+                                       KubernetesClusterContext kubernetesClusterContext) {
 
-        super(clusterId, serviceId, autoscalerRuleEvaluator);
+        super(clusterId, autoscalerRuleEvaluator, kubernetesClusterContext);
         this.kubernetesClusterCtxt = kubernetesClusterContext;
-        this.autoscalePolicyId = autoscalePolicyId;
     }
 
     @Override
@@ -373,7 +370,7 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
             }
             return;
         }
-        
+
         if (!getKubernetesClusterCtxt().activeMemberExist(memberId)) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Could not find the active member in kubernetes cluster context, "
@@ -488,9 +485,6 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
         this.kubernetesClusterCtxt = kubernetesClusterCtxt;
     }
 
-    public AutoscalePolicy getAutoscalePolicy() {
-        return PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyId);
-    }
 
     private Member getMemberByMemberId(String memberId) {
         try {

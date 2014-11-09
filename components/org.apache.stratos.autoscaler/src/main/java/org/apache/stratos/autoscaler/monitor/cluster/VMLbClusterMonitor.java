@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.VMClusterContext;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -47,15 +48,10 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMLbClusterMonitor.class);
 
-    public VMLbClusterMonitor(String clusterId, String serviceId, DeploymentPolicy deploymentPolicy,
-                              AutoscalePolicy autoscalePolicy) {
-        super(clusterId, serviceId,
-              new AutoscalerRuleEvaluator(
-                      StratosConstants.VM_MIN_CHECK_DROOL_FILE,
-                      StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
-                      StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
-              deploymentPolicy, autoscalePolicy,
-              new ConcurrentHashMap<String, NetworkPartitionContext>());
+    public VMLbClusterMonitor(String clusterId, String serviceId, VMClusterContext vmClusterContext) {
+        super(clusterId, new AutoscalerRuleEvaluator( StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE, StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
+                vmClusterContext);
         readConfigurations();
     }
 
@@ -88,7 +84,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
     @Override
     protected void monitor() {
         // TODO make this concurrent
-        for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+        for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()) {
 
             // minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
@@ -173,7 +169,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
 
     @Override
     public String toString() {
-        return "VMLbClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() + "]";
+        return "VMLbClusterMonitor [clusterId=" + getClusterId() + "]";
     }
 
 }

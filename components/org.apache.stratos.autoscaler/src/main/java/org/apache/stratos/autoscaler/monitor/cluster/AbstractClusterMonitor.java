@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AbstractClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
@@ -62,12 +63,10 @@ import org.drools.runtime.rule.FactHandle;
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
  */
 public abstract class AbstractClusterMonitor extends Monitor implements Runnable {
-	
+
 	private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
 
     private String clusterId;
-    private String serviceId;
-    private String appId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
 
@@ -83,15 +82,17 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
 
+    protected AbstractClusterContext clusterContext;
+
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    protected AbstractClusterMonitor(String clusterId, String serviceId,
-                                     AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+    protected AbstractClusterMonitor(String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator,
+                                     AbstractClusterContext abstractClusterContext) {
 
         super();
         this.clusterId = clusterId;
-        this.serviceId = serviceId;
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+        this.clusterContext = abstractClusterContext;
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
@@ -177,7 +178,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public abstract void handleClusterRemovedEvent(ClusterRemovedEvent clusterRemovedEvent);
 
     public abstract void handleDynamicUpdates(Properties properties) throws InvalidArgumentException;
-    
+
     @Override
     public int hashCode() {
     	final int prime = 31;
@@ -185,7 +186,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     	result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
     	return result;
     }
-    
+
     @Override
     public boolean equals(final Object obj) {
     	if (this == obj) {
@@ -245,14 +246,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         //}
 
     }
-    
-    public String getServiceId() {
-        return serviceId;
-    }
-
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
 
     public int getMonitorIntervalMilliseconds() {
         return monitoringIntervalMilliseconds;
@@ -269,11 +262,11 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public void setMinCheckFactHandle(FactHandle minCheckFactHandle) {
         this.minCheckFactHandle = minCheckFactHandle;
     }
-    
+
     public FactHandle getObsoleteCheckFactHandle() {
         return obsoleteCheckFactHandle;
     }
-    
+
     public void setObsoleteCheckFactHandle(FactHandle obsoleteCheckFactHandle) {
         this.obsoleteCheckFactHandle = obsoleteCheckFactHandle;
     }
@@ -281,7 +274,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public FactHandle getScaleCheckFactHandle() {
         return scaleCheckFactHandle;
     }
-    
+
     public void setScaleCheckFactHandle(FactHandle scaleCheckFactHandle) {
         this.scaleCheckFactHandle = scaleCheckFactHandle;
     }
@@ -294,7 +287,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
             StatefulKnowledgeSession minCheckKnowledgeSession) {
         this.minCheckKnowledgeSession = minCheckKnowledgeSession;
     }
-    
+
     public StatefulKnowledgeSession getObsoleteCheckKnowledgeSession() {
         return obsoleteCheckKnowledgeSession;
     }
@@ -329,7 +322,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
             AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
     }
-    
+
     public String getAppId() {
     	return this.appId;
     }
@@ -368,12 +361,16 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public abstract void terminateAllMembers();
-    
+
     public boolean isStop() {
         return stop;
     }
 
     public void setStop(boolean stop) {
         this.stop = stop;
+    }
+
+    public String getServiceId(){
+        return clusterContext.getServiceId();
     }
 }

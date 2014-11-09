@@ -41,6 +41,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.util.Constants;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -88,7 +89,7 @@ public class ClusterMonitorFactory {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
 
-        AutoscalePolicy policy =
+        AutoscalePolicy autoscalePolicy =
                 PolicyManager.getInstance()
                         .getAutoscalePolicy(autoscalePolicyName);
         DeploymentPolicy deploymentPolicy =
@@ -112,14 +113,12 @@ public class ClusterMonitorFactory {
 
         CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
 
-        VMServiceClusterMonitor clusterMonitor =
-                new VMServiceClusterMonitor(cluster.getClusterId(),
-                        cluster.getServiceName(),
-                        deploymentPolicy, policy);
+        Map<String, NetworkPartitionContext> networkPartitionContextMap = new HashMap<String, NetworkPartitionContext>();
 
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+            String networkPartitionId = partitionGroup.getId();
+            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(networkPartitionId,
                     partitionGroup.getPartitionAlgo(),
                     partitionGroup.getPartitions());
 
@@ -173,7 +172,7 @@ public class ClusterMonitorFactory {
                 }
             }
 
-            clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+            networkPartitionContextMap.put(networkPartitionId, networkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition context has been added: [network partition] %s",
                         networkPartitionContext.getId()));
@@ -181,6 +180,11 @@ public class ClusterMonitorFactory {
         }
 
 
+        VMServiceClusterContext clusterContext =
+                new VMServiceClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
+                        deploymentPolicy, networkPartitionContextMap);
+        VMServiceClusterMonitor clusterMonitor = new VMServiceClusterMonitor(cluster.getClusterId(),
+                clusterContext);
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
 
@@ -232,7 +236,7 @@ public class ClusterMonitorFactory {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
 
-        AutoscalePolicy policy =
+        AutoscalePolicy autoscalePolicy =
                 PolicyManager.getInstance()
                         .getAutoscalePolicy(autoscalePolicyName);
         DeploymentPolicy deploymentPolicy =
@@ -246,17 +250,16 @@ public class ClusterMonitorFactory {
         }
 
         String clusterId = cluster.getClusterId();
-        VMLbClusterMonitor clusterMonitor =
-                new VMLbClusterMonitor(clusterId,
-                        cluster.getServiceName(),
-                        deploymentPolicy, policy);
-        clusterMonitor.setStatus(ClusterStatus.Created);
+
+        Map<String, NetworkPartitionContext> networkPartitionContextMap = new HashMap<String, NetworkPartitionContext>();
+
         // partition group = network partition context
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
+            String networkPartitionId = partitionGroup.getId();
             NetworkPartitionLbHolder networkPartitionLbHolder =
                     PartitionManager.getInstance()
-                            .getNetworkPartitionLbHolder(partitionGroup.getId());
+                            .getNetworkPartitionLbHolder(networkPartitionId);
 //                                                              PartitionManager.getInstance()
 //                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
             // FIXME pick a random partition
@@ -265,10 +268,10 @@ public class ClusterMonitorFactory {
             PartitionContext partitionContext = new PartitionContext(partition);
             partitionContext.setServiceName(cluster.getServiceName());
             partitionContext.setProperties(cluster.getProperties());
-            partitionContext.setNetworkPartitionId(partitionGroup.getId());
+            partitionContext.setNetworkPartitionId(networkPartitionId);
             partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(networkPartitionId,
                     partitionGroup.getPartitionAlgo(),
                     partitionGroup.getPartitions());
             for (Member member : cluster.getMembers()) {
@@ -335,8 +338,16 @@ public class ClusterMonitorFactory {
                 }
             }
 
-            clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+            networkPartitionContextMap.put(networkPartitionId, networkPartitionContext);
         }
+
+        VMClusterContext clusterContext = new VMClusterContext(clusterId, cluster.getServiceName(), autoscalePolicy,
+                deploymentPolicy, networkPartitionContextMap);
+
+        VMLbClusterMonitor clusterMonitor =
+                new VMLbClusterMonitor(clusterId,
+                        cluster.getServiceName(), clusterContext);
+        clusterMonitor.setStatus(ClusterStatus.Created);
 
         log.info("VMLbClusterMonitor created: " + clusterMonitor.toString());
         return clusterMonitor;
@@ -354,6 +365,10 @@ public class ClusterMonitorFactory {
         }
 
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
+
+        AutoscalePolicy autoscalePolicy =
+                PolicyManager.getInstance()
+                        .getAutoscalePolicy(autoscalePolicyName);
         if (log.isDebugEnabled()) {
             log.debug("Autoscaling policy name: " + autoscalePolicyName);
         }
@@ -373,28 +388,25 @@ public class ClusterMonitorFactory {
             log.error(message);
             throw new RuntimeException(message);
         }
+        String minReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
+        int minReplicas = 0;
+        if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
+            minReplicas = Integer.parseInt(minReplicasProperty);
+        }
+
+        int maxReplicas = 0;
+        String maxReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
+        if (maxReplicasProperty != null && !maxReplicasProperty.isEmpty()) {
+            maxReplicas = Integer.parseInt(maxReplicasProperty);
+        }
 
         String kubernetesHostClusterID = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
         KubernetesClusterContext kubernetesClusterCtxt = new KubernetesClusterContext(kubernetesHostClusterID,
-                cluster.getClusterId());
+                cluster.getClusterId(), cluster.getServiceName(),  autoscalePolicy, minReplicas, maxReplicas);
 
-        String minReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MIN_REPLICAS);
-        if (minReplicasProperty != null && !minReplicasProperty.isEmpty()) {
-            int minReplicas = Integer.parseInt(minReplicasProperty);
-            kubernetesClusterCtxt.setMinReplicas(minReplicas);
-        }
 
-        String maxReplicasProperty = properties.getProperty(StratosConstants.KUBERNETES_MAX_REPLICAS);
-        if (maxReplicasProperty != null && !maxReplicasProperty.isEmpty()) {
-            int maxReplicas = Integer.parseInt(maxReplicasProperty);
-            kubernetesClusterCtxt.setMaxReplicas(maxReplicas);
-        }
-
-        KubernetesServiceClusterMonitor dockerClusterMonitor = new KubernetesServiceClusterMonitor(
-                kubernetesClusterCtxt,
-                cluster.getClusterId(),
-                cluster.getServiceName(),
-                policy.getId());
+        KubernetesServiceClusterMonitor dockerClusterMonitor = new KubernetesServiceClusterMonitor(cluster.getClusterId()
+                , kubernetesClusterCtxt);
 
         //populate the members after restarting        
         for (Member member : cluster.getMembers()) {

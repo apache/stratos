@@ -22,10 +22,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.MemberStatsContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
@@ -55,19 +52,9 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMClusterMonitor.class);
-    // Map<NetworkpartitionId, Network Partition Context>
-    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
-    protected DeploymentPolicy deploymentPolicy;
-    protected AutoscalePolicy autoscalePolicy;
-
-    protected VMClusterMonitor(String clusterId, String serviceId,
-                               AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                               DeploymentPolicy deploymentPolicy, AutoscalePolicy autoscalePolicy,
-                               Map<String, NetworkPartitionContext> networkPartitionCtxts) {
-        super(clusterId, serviceId, autoscalerRuleEvaluator);
-        this.deploymentPolicy = deploymentPolicy;
-        this.autoscalePolicy = autoscalePolicy;
-        this.networkPartitionCtxts = networkPartitionCtxts;
+    protected VMClusterMonitor(String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator,
+                               VMClusterContext vmClusterContext) {
+        super(clusterId, autoscalerRuleEvaluator, vmClusterContext);
     }
 
     @Override
@@ -573,10 +560,10 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             ClusterRemovedEvent clusterRemovedEvent) {
 
     }
-    
+
     @Override
     public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
-        
+
     }
 
     private String getNetworkPartitionIdByMemberId(String memberId) {
@@ -606,17 +593,6 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         }
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
-        log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
-        String networkPartitionId = member.getNetworkPartitionId();
-        if (networkPartitionCtxts.containsKey(networkPartitionId)) {
-            log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
-            return networkPartitionCtxts.get(networkPartitionId);
-        }
-        log.info("returning null getNetworkPartitionCtxt");
-        return null;
-    }
-
     public String getPartitionOfMember(String memberId) {
         for (Service service : TopologyManager.getTopology().getServices()) {
             for (Cluster cluster : service.getClusters()) {
@@ -628,53 +604,13 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         return null;
     }
 
-    public DeploymentPolicy getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
-
-    public AutoscalePolicy getAutoscalePolicy() {
-        return autoscalePolicy;
-    }
-
-    public void setAutoscalePolicy(AutoscalePolicy autoscalePolicy) {
-        this.autoscalePolicy = autoscalePolicy;
-    }
-
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
-        return networkPartitionCtxts;
-    }
-
-    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
-        return networkPartitionCtxts.get(networkPartitionId);
-    }
-
-    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
-        this.networkPartitionCtxts = partitionCtxt;
-    }
-
-    public boolean partitionCtxtAvailable(String partitionId) {
-        return networkPartitionCtxts.containsKey(partitionId);
-    }
-
-    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
-        this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
-    }
-
-    public NetworkPartitionContext getPartitionCtxt(String id) {
-        return this.networkPartitionCtxts.get(id);
-    }
-
     @Override
     public void terminateAllMembers() {
 
         Thread memberTerminator = new Thread(new Runnable(){
             public void run(){
 
-                for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+                for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()) {
                     for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                         //if (log.isDebugEnabled()) {
                         log.info("Starting to terminate all members in Network Partition [ " +
@@ -711,6 +647,23 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         memberTerminator.start();
     }
 
+    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
+
+        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        return vmClusterContext.getNetworkPartitionCtxts();
+    }
+    protected NetworkPartitionContext getNetworkPartitionCtxt(String id) {
+
+        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        return vmClusterContext.getNetworkPartitionCtxt(id);
+    }
+
+    protected NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
+
+        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        return vmClusterContext.getNetworkPartitionCtxt(member);
+    }
+
     private static void terminateMember (String memberId) {
         try {
             CloudControllerClient.getInstance().terminate(memberId);
@@ -719,4 +672,6 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.error("Unable to terminate member [member id ] " + memberId, e);
         }
     }
+
+
 }

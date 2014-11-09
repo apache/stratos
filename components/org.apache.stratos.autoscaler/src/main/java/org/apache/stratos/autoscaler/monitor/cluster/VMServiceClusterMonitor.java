@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.VMServiceClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -53,18 +54,15 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     private String lbReferenceType;
     private boolean hasPrimary;
 
-    public VMServiceClusterMonitor(String clusterId, String serviceId,
-                                   DeploymentPolicy deploymentPolicy,
-                                   AutoscalePolicy autoscalePolicy) {
-        super(clusterId, serviceId, new AutoscalerRuleEvaluator(
-            		  StratosConstants.VM_MIN_CHECK_DROOL_FILE, 
-            		  StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE, 
-            		  StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
-              deploymentPolicy, autoscalePolicy,
-              new ConcurrentHashMap<String, NetworkPartitionContext>());
+    public VMServiceClusterMonitor(String clusterId, VMServiceClusterContext vmServiceClusterContext) {
+        super(clusterId, new AutoscalerRuleEvaluator(
+            		  StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+            		  StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
+            		  StratosConstants.VM_SCALE_CHECK_DROOL_FILE), vmServiceClusterContext
+              );
         readConfigurations();
     }
-    
+
 //TODO why this method?
 //    private static void terminateMember(String memberId) {
 //        try {
@@ -103,7 +101,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
 
     }
-    
+
 //TODO why this method?
 //    @Override
 //    public void terminateAllMembers() {
@@ -170,7 +168,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     public void monitor() {
         //TODO make this concurrent
 
-        for (NetworkPartitionContext networkPartitionContext : networkPartitionCtxts.values()) {
+        for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()) {
             // store primary members in the network partition context
             List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
             //minimum check per partition
@@ -202,8 +200,8 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
                 minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession()
                         , minCheckFactHandle, partitionContext);
-                
-                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(), 
+
+                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
                 		obsoleteCheckFactHandle, partitionContext);
 
                 //checking the status of the cluster
@@ -273,8 +271,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     @Override
     public String toString() {
-        return "VMServiceClusterMonitor [clusterId=" + getClusterId() + ", serviceId=" + getServiceId() +
-               ", deploymentPolicy=" + deploymentPolicy + ", autoscalePolicy=" + autoscalePolicy +
+        return "VMServiceClusterMonitor [clusterId=" + getClusterId() +
                ", lbReferenceType=" + lbReferenceType +
                ", hasPrimary=" + hasPrimary + " ]";
     }
