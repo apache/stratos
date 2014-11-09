@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cli.beans.grouping.serviceGroups;
 
-public class ServiceGroupList {
+public class ServiceGroupBean {
     private ServiceGroupDefinition serviceGroup;
 
     public ServiceGroupDefinition getServiceGroupDefinition ()

@@ -52,7 +52,7 @@ import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
 import org.apache.stratos.cli.beans.grouping.applications.Application;
 import org.apache.stratos.cli.beans.grouping.applications.ApplicationBean;
-import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupList;
+import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupBean;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
@@ -1875,16 +1875,16 @@ public class RestCommandLineService {
     // This method helps to describe service group definition
     public void describeServiceGroup (String groupDefinitionName) {
         try {
-            ServiceGroupList list = (ServiceGroupList) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    ServiceGroupList.class, "serviceGroup");
+            ServiceGroupBean bean = (ServiceGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupBean.class, "serviceGroup");
 
-            if ((list == null) || (list.getServiceGroupDefinition() == null)) {
+            if ((bean == null) || (bean.getServiceGroupDefinition() == null)) {
                 System.out.println("Service group not found: " + groupDefinitionName);
                 return;
             }
 
             System.out.println("Service Group : " + groupDefinitionName);
-            System.out.println(getGson().toJson(list.getServiceGroupDefinition()));
+            System.out.println(getGson().toJson(bean.getServiceGroupDefinition()));
         } catch (Exception e) {
             String message = "Error in describing service group: " + groupDefinitionName;
             System.out.println(message);
