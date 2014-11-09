@@ -87,8 +87,8 @@ public class ClusterStatusEventPublisher {
     }
 
     public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
+        TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
-            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);

@@ -209,8 +209,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterCreatedEvent] Received: " + event.getClass());
-                ClusterCreatedEvent clusterCreatedEvent = (ClusterCreatedEvent) event;
-                String clusterId = clusterCreatedEvent.getCluster().getClusterId();
+                ClusterResetEvent clusterResetEvent = (ClusterResetEvent) event;
+                String clusterId = clusterResetEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
@@ -222,8 +222,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                monitor.setStop(true);
+                monitor.destroy();
                 monitor.setStatus(ClusterStatus.Created);
+
             }
         });
 
