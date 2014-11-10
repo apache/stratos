@@ -1,0 +1,46 @@
+{
+    "type":"lb",
+    "isPublic":false,
+    "provider":"lb",
+    "host":"stratos.org",
+    "displayName":"load balancer",
+    "description":"LB Cartridge",
+    "version":"4",
+    "defaultAutoscalingPolicy":"economyPolicy",
+    "portMapping":[
+        {
+            "protocol":"http",
+            "port":"8280",
+            "proxyPort":"8280"
+        },
+        {
+            "protocol":"https",
+            "port":"8243",
+            "proxyPort":"8243"
+        }
+    ],
+    "iaasProvider":[
+        {
+            "type":"ec2",
+            "imageId":"ap-southeast-1/ami­-70326522",
+            "maxInstanceLimit":"5",
+            "property":[
+                {
+                    "name":"instanceType",
+                    "value":"m1.medium"
+                },
+                {
+                    "name":"keyPair",
+                    "value":"xxxxxx"
+                }
+            ]
+        }
+    ],
+
+    "property":[
+        {
+            "name":"load.balancer",
+            "value":"true"
+        }
+    ]
+} 

@@ -4,6 +4,8 @@ mb.port                               =<%= @mb_port %>
 listen.address                        =localhost
 thrift.receiver.ip                    =<%= @cep_ip %>
 thrift.receiver.port                  =<%= @cep_port %>
+thrift.server.admin.username          =<%= @cep_username %>
+thrift.server.admin.password          =<%= @cep_password %>
 param.file.path                       =<%= @agent_home %>/payload/launch-params
 extensions.dir                        =<%= @agent_home %>/extensions
 cep.stats.publisher.enabled           =true
@@ -21,6 +23,7 @@ monitoring.server.secure.port         =<%= @bam_secure_port %>
 monitoring.server.admin.username      =<%= @bam_username %>
 monitoring.server.admin.password      =<%= @bam_password %>
 log.file.paths                        =LOG_FILE_PATHS
+APP_PATH                              =<%= @docroot %>
 super.tenant.repository.path          =/repository/deployment/server/
 tenant.repository.path                =/repository/tenants/
 extension.instance.started            =instance-started.sh

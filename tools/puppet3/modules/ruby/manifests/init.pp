@@ -17,8 +17,6 @@
 
 class ruby( $target = '/mnt' ) {
 
-  require java
-
   $custom_agent_templates = ['extensions/instance-started.sh']
   class {'python_agent':
     custom_templates => $custom_agent_templates,

@@ -1,0 +1,182 @@
+{{#if isForm}}
+    <div id="centered">
+        <div class="row title">
+            <div class="title-main text-center">
+                {{#if isForm}}
+                    <h1>Add new {{formTitle}}</h1>
+                {{else}}
+                    <h1>{{formTitle}}</h1>
+                {{/if}}
+            </div>
+        </div>
+        {{#if isForm}}
+            <div class='container' id='content'>
+                <div class='row'>
+                    <div class='container text-center form-toolbar'>
+                        <div class='col-md-5'></div>
+                        <div class='col-md-7 '>
+                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''> Add </button>
+                            <button class='btn btn-default btn-lg pull-right button-gap' type='button' onclick='window.location.replace(document.referrer)'> Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class='form' action='#' id='textform'></div>
+                <div id='jsonform'>
+                    <div class='form-group'>
+                        <div class='form' action='#'><textarea placeholder='JSON Editor' id='jsoneditor'
+                                                               class='form-control'></textarea></div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+{{else}}
+    <div class="row title">
+        <div class="title-main text-center">
+            <h1>{{formTitle}}</h1>
+        </div>
+    </div>
+    <div class="container content">
+        <div class="row text-center">
+
+            {{#if content_body.sections}}
+                <div class="row form-toolbar ">
+                    <div class="col-md-5 col-sm-3 text-left">
+                        <!--<input type="text" class="form-control" placeholder="Search">-->
+                        <div class="btn-group">
+                            <a href="#" id="list" class="btn btn-default">
+                                <i class="fa fa-list-ul"></i> List
+                            </a>
+                            <a href="#" id="grid" class="btn btn-default">
+                                <i class="fa fa-th"></i> Grid
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-7 col-sm-3 text-right">
+                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New</a>
+                    </div>
+                </div>
+            {{else}}
+                <div class="row no-item row-overide">
+                    <div class="row title">
+                        <h2>No {{formTitle}} found..</h2>
+                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formTitle}}</a>
+                    </div>
+                </div>
+            {{/if}}
+
+            <div class="row general-table row-overide">
+                {{#each content_body.sections.userInfoBean}}
+                    <div class="block col-md-4 grid-group-item border-right">
+                        <div class="toggle-menu-icon">
+                            <i class="fa fa-user"></i>
+                        </div>
+                        <h2>{{userName}} </h2>
+
+                        <div class="toggle-menu-description">Define partitions/partition groups to be used in
+                            autoscaling and deployment policies.
+                        </div>
+                        <!--<div class="toggle-menu-button">
+                            <button type="button" class="btn btn-primary" >Remove</button>
+                        </div>-->
+                    </div>
+                {{/each}}
+                {{#each content_body.sections.tenantInfoBean}}
+                    <div class="block col-md-4 grid-group-item border-right">
+                        <div class="toggle-menu-icon">
+                            <i class="fa fa-building"></i>
+                        </div>
+                        <h2>{{tenantDomain}} </h2>
+
+                        <div class="toggle-menu-description">{{email}} - {{createdDate}} </div>
+                        <!--<div class="toggle-menu-button">
+                            <button type="button" class="btn btn-primary" >Remove</button>
+                        </div>-->
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+{{/if}}
+<script>
+
+    $(document).ready(function () {
+        {{#if isForm}}
+            // Set the default CSS theme and icon library globally
+            JSONEditor.defaults.theme = 'bootstrap3';
+            JSONEditor.defaults.iconlib = 'fontawesome4';
+            JSONEditor.defaults.show_errors = "always";
+
+            // This is the starting value for the editor
+            // We will use this to seed the initial editor
+            // and to provide a "Restore to Default" button.
+            var starting_value = {{{formDataRaw}}};
+
+            // Initialize the editor
+            var editor = new JSONEditor(document.getElementById('textform'), {
+                // Enable fetching schemas via ajax
+                ajax: false,
+                disable_edit_json: true,
+                //  disable_properties:true,
+                // The schema for the editor
+                schema: {{{formData}}},
+                format: "grid",
+
+                // Seed the form with a starting value
+                startval: starting_value
+            });
+
+
+            //    status whenever the editor changes
+            editor.on('change', function () {
+                // Get an array of errors from the validator
+                var errors = editor.validate();
+                console.log(errors);
+                //       var indicator = document.getElementById('valid_indicator');
+
+//        // Not valid
+//        if(errors.length) {
+//            indicator.className = 'label alert';
+//            indicator.textContent = 'not valid';
+//        }
+//        // Valid
+//        else {
+//            indicator.className = 'label success';
+//            indicator.textContent = 'valid';
+//        }
+            });
+        {{/if}}
+
+        $('#deploy').click(function () {
+
+            var payload = editor.getValue();
+            var btn = $(this);
+            var formtype = '{{formContext}}';
+
+            btn.html("<i class='fa fa-spinner fa-spin'></i> Adding "+formtype);
+            $.ajax({
+                type: "POST",
+                url: caramel.context + "/controllers/users/users_requests.jag",
+                dataType: 'json',
+                data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
+                success: function (data) {
+                    console.log(data);
+                    if (data.status == 'error') {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                    } else if (data.status == 'warning') {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                    } else {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                    }
+                }
+            })
+                    .always(function () {
+                        btn.html('Add '+formtype);
+                    });
+            console.log(payload);
+        });//end of deploy button trigger
+
+    });
+
+</script>

@@ -1,0 +1,9 @@
+{
+    "name": "group1",
+    "cartridges": [
+        "tomcat"
+    ],
+    "dependencies": {
+        "terminationBehaviour": "terminate-none"
+    }
+}

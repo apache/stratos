@@ -1,0 +1,23 @@
+{
+    "applicationId": "mysql-only",
+    "alias": "mytestapp2",
+    "components": {
+        "subscribables": [
+            {
+                "type": "mysql",
+                "alias": "mymysql"
+            }
+        ]
+    },
+    "subscribableInfo": [
+        {
+            "alias": "mymysql",
+            "deploymentPolicy": "dep",
+            "autoscalingPolicy": "auto",
+            "repoURL": "www.mygit.com/tomcat.git",
+            "privateRepo": "false",
+            "repoUsername": "admin",
+            "repoPassword": "yyyy"
+        }
+    ]
+}

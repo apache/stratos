@@ -21,8 +21,7 @@ class wordpress (
   $docroot     = '/var/www/html/',
   $wp_password = 'wordpress'
 ) { 
-  
-  require java
+
   class {'python_agent':}
 
   $packages = [

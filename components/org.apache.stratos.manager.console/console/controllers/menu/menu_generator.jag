@@ -1,0 +1,125 @@
+<%
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+var log = new Log("controller.menu_generator");
+
+/**
+ * This will use to generate menu with permissions
+ * @param jsonobject: menu json
+ * @param permissions: user permissions
+ * @returns menu html content for partial
+ */
+function menuGenerator(context, jsonobject, permissions) {
+    var menupermission,
+            link='',
+            menu_html = '';
+
+    if (permissions instanceof Array) {
+        for (menupermission in jsonobject) {
+            var jsonPermission = jsonobject[menupermission],
+                    hasPermission = intersection(jsonPermission.permissionPaths, permissions);
+
+            if (hasPermission.length > 0) {
+                if(jsonPermission.linkexternal){
+                    link = jsonPermission.link;
+                }else{
+                    link = context + '/' + jsonPermission.link;
+                }
+                menu_html += '<li><a href="'+ link + '">' +
+                        '<i class="fa ' + jsonPermission.icon + '"></i>' +
+                        jsonPermission.title + '</a>';
+                if (jsonPermission.hasOwnProperty('sub-menu')) {
+                    menu_html += '<i class="fa fa-angle-down"></i>';
+                    menu_html += '<ul>';
+                    for (submenupermission in jsonPermission['sub-menu']) {
+                        var jsonSubmenuPermission = jsonPermission['sub-menu'][submenupermission],
+                                hasSubmenuPermission = intersection(jsonSubmenuPermission.permissionPaths, permissions);
+
+                        if (hasSubmenuPermission.length > 0) {
+                            menu_html += '<li><a href="' + context + '/' + jsonSubmenuPermission.link +
+                                    '"><i class="fa ' + jsonSubmenuPermission.icon + '"></i>' + jsonSubmenuPermission.title + '</a></li>';
+                        }
+                    }
+                    menu_html += '</ul></li>';
+                } else {
+                    menu_html += '</li>';
+                }
+            }
+
+        }
+    } else {
+        return 'Need to send permissions as an array';
+    }
+
+    return menu_html;
+
+}
+
+
+function intersection(x, y) {
+    x.sort();
+    y.sort();
+    var i = j = 0;
+    var ret = [];
+    while (i < x.length && j < y.length) {
+        if (x[i] < y[j]) i++;
+        else if (y[j] < x[i]) j++;
+        else {
+            ret.push(i);
+            i++, j++;
+        }
+    }
+    return ret;
+}
+
+
+function metroGenerator(context, jsonobject, permissions) {
+    var metroPermission,
+            metroJSON = [];
+
+    if (permissions instanceof Array) {
+        for (metroPermission in jsonobject) {
+            var jsonPermission = jsonobject[metroPermission],
+                    hasPermission = intersection(jsonPermission.permissionPaths, permissions);
+
+            if (hasPermission.length > 0 && jsonPermission.context == context) {
+                metroJSON.push(jsonPermission);
+            }
+
+            if (jsonPermission.hasOwnProperty('sub-menu')) {
+                for (submenupermission in jsonPermission['sub-menu']) {
+                    var jsonSubmenuPermission = jsonPermission['sub-menu'][submenupermission],
+                            hasSubmenuPermission = intersection(jsonSubmenuPermission.permissionPaths, permissions);
+
+                    if (hasSubmenuPermission.length > 0 && jsonSubmenuPermission.context == context) {
+                        metroJSON.push(jsonSubmenuPermission);
+                    }
+                }
+            }
+
+        }
+    } else {
+        return 'Need to send permissions as an array';
+    }
+
+    return metroJSON;
+}
+%>

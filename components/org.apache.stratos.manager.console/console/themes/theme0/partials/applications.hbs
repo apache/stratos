@@ -1,0 +1,86 @@
+<div class="row title">
+    <div class="title-main text-center">
+        <h1>{{content_title}}</h1>
+    </div>
+</div>
+<div class="container content">
+    <div class="row text-center">
+        {{#if content_body.sections}}
+            <div class="row form-toolbar ">
+                <div class="col-md-5 col-sm-3 text-left">
+                    <!--<input type="text" class="form-control" placeholder="Search">-->
+                    <div class="btn-group">
+                        <a href="#" id="list" class="btn btn-default">
+                            <i class="fa fa-list-ul"></i> List
+                        </a>
+                        <a href="#" id="grid" class="btn btn-default">
+                            <i class="fa fa-th"></i> Grid
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {{else}}
+            <div class="row no-item row-overide">
+                <div class="row title">
+                    <h2>No Cartridges found..</h2>
+                    <a type="button" class="btn btn-primary btn-lg" href="{{url ""}}/configure/cartridges/">Add New Cartridges</a>
+                </div>
+            </div>
+        {{/if}}
+        <div class="row general-table row-overide">
+            {{#each content_body.sections}}
+                {{#unless loadBalancer}}
+                <div data-url="{{url ""}}/cartridges/subscribe/{{cartridgeType}}" class="data-url">
+                {{/unless}}
+                <div class="col-md-4 border-right block grid-group-item ">
+                    <div class="toggle-menu-icon">
+                        <i class="fa icon-{{cartridgeType}} fa-inbox"></i>
+                    </div>
+
+                    {{#if loadBalancer}}
+
+                        <h2>{{displayName}} - {{version}}</h2>
+
+                        <div class="cartridge-description">{{description}}</div>
+                        <div class="lb-description">This will be auto subscribed for you</div>
+
+                    {{else}}
+                        <h2>{{displayName}} - {{version}}</h2>
+                        {{#if multiTenant}}
+                            Multi Tenant Enabled
+                        {{else}}
+                            Single Tenant
+                        {{/if}}
+                        <div class="toggle-menu-description">{{description}}</div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-subscribe" type="button" id="subscribe"
+                                        data-form=""> Subscribe
+                                </button>
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+                {{#unless loadBalancer}}
+                </div>
+                {{/unless}}
+
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.general-table div.data-url').click(function () {
+            window.location = $(this).attr("data-url");
+        });
+
+        $('.general-table .grid-group-item').hover(function () {
+            $(this).find('.bottom-bar').stop().animate({bottom: '37px'}, 'slow');
+        }, function () {
+            $(this).find('.bottom-bar').stop().animate({bottom: '-32px'}, 'slow');
+        })
+    });
+
+</script>

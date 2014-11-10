@@ -17,19 +17,15 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 var caramel = require('caramel');
 
 caramel.configs({
-    context: '/console',
+    context: '/stratos-4.1.0-ui',
     cache: true,
     negotiation: true,
     themer: function () {
-        return 'theme1';
-    }/*,
-     languagesDir: '/i18n',
-     language: function() {
-     return 'si';
-     }*/
+        return 'theme0';
+    }
 });

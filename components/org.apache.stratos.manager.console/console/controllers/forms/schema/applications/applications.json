@@ -1,0 +1,112 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "http://jsonschema.net",
+    "title": "Application Definition",
+    "name": "Application",
+    "properties":{
+        "alias": {
+            "type":"string",
+            "id": "root/alias",
+            "default": "mytestapp2",
+            "required":false
+        },
+        "applicationId": {
+            "type":"string",
+            "id": "root/applicationId",
+            "default": "mysql-only-app2",
+            "required":false
+        },
+        "components": {
+            "type":"object",
+            "id": "root/components",
+            "required":false,
+            "properties":{
+                "subscribables": {
+                    "type":"array",
+                    "id": "root/components/subscribables",
+                    "required":false,
+                    "items":
+                    {
+                        "type":"object",
+                        "id": "root/components/subscribables/0",
+                        "required":false,
+                        "properties":{
+                            "alias": {
+                                "type":"string",
+                                "id": "root/components/subscribables/0/alias",
+                                "default": "mymysql",
+                                "required":false
+                            },
+                            "type": {
+                                "type":"string",
+                                "id": "root/components/subscribables/0/type",
+                                "default": "mysql",
+                                "required":false
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        },
+        "subscribableInfo": {
+            "type":"array",
+            "id": "root/subscribableInfo",
+            "required":false,
+            "items":
+            {
+                "type":"object",
+                "id": "root/subscribableInfo/0",
+                "required":false,
+                "properties":{
+                    "alias": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/alias",
+                        "default": "mymysql",
+                        "required":false
+                    },
+                    "autoscalingPolicy": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/autoscalingPolicy",
+                        "default": "auto",
+                        "required":false
+                    },
+                    "deploymentPolicy": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/deploymentPolicy",
+                        "default": "dep",
+                        "required":false
+                    },
+                    "privateRepo": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/privateRepo",
+                        "default": "false",
+                        "required":false
+                    },
+                    "repoPassword": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/repoPassword",
+                        "default": "yyyy",
+                        "required":false
+                    },
+                    "repoURL": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/repoURL",
+                        "default": "www.mygit.com/tomcat.git",
+                        "required":false
+                    },
+                    "repoUsername": {
+                        "type":"string",
+                        "id": "root/subscribableInfo/0/repoUsername",
+                        "default": "admin",
+                        "required":false
+                    }
+                }
+            }
+
+
+        }
+    }
+}

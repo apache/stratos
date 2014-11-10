@@ -19,32 +19,25 @@
  * under the License.
  *
  */
-var log = new Log("console.index");
-var error=[];
-var caramel = require('caramel');
-var utils = require('/util/utility.jag');
-var process = require('process');
+include('/controllers/login/validator.jag');
+include('/controllers/menu/menu_generator.jag');
 
-var subscribedCartridges =  utils.consoleAppUtil.getSubscribedCartridges();
+var log = new Log("apacheStratos.index");
+var error = [];
+var caramel = require('caramel'),
+        context = caramel.configs().context,
+        menuJson = require('/controllers/menu/menu.json'),
+        userPermissions = session.get('PERMISSIONS');
 
-if(subscribedCartridges == null || subscribedCartridges == undefined || subscribedCartridges == ""){
-    subscribedCartridges = {};
-}
+//create left menu
+var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
+//create metro block
+var metroMenu = metroGenerator('/', menuJson.menu, userPermissions);
 
-var errorInSession = session.get("errorinbackend");
-if(errorInSession != undefined) {
-   session.remove("errorinbackend");
-   error.push(errorInSession);
-}
-
-if(subscribedCartridges.Error != undefined){
-   error.push(subscribedCartridges.Error);
-}
-
-var bamInfo ={bamip:process.getProperty('bam.ip'),bamport:process.getProperty('bam.port')};
 caramel.render({
-    mycartridges:subscribedCartridges,
-    bamInfo:bamInfo,
-    error:error
+    metro_menu: metroMenu,
+    left_menu: leftMenu,
+    error: error
 });
+
 %>

@@ -1,0 +1,87 @@
+div.stratos-tab-container{
+    z-index: 10;
+    background-color: #ffffff;
+    padding: 0 !important;
+    border-radius: 0;
+    -moz-border-radius: 0;
+    border:1px solid #ddd;
+    margin-top: 20px;
+    margin-left: 50px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    -moz-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    background-clip: padding-box;
+    opacity: 0.97;
+    filter: alpha(opacity=97);
+}
+div.stratos-tab-menu{
+    padding-right: 0;
+    padding-left: 0;
+    padding-bottom: 0;
+}
+div.stratos-tab-menu div.list-group{
+    margin-bottom: 0;
+}
+div.stratos-tab-menu div.list-group .list-group-item { border: none; }
+div.stratos-tab-menu div.list-group .list-group-item:first-child, div.stratos-tab-menu div.list-group .list-group-item:last-child { border-radius: 0; }
+div.stratos-tab-menu div.list-group>a{
+    margin-bottom: 0;
+}
+div.stratos-tab-menu div.list-group>a .glyphicon,
+div.stratos-tab-menu div.list-group>a .fa {
+    color: #7fbee8;
+}
+div.stratos-tab-menu div.list-group>a:first-child{
+    border-top-right-radius: 0;
+    -moz-border-top-right-radius: 0;
+}
+div.stratos-tab-menu div.list-group>a:last-child{
+    border-bottom-right-radius: 0;
+    -moz-border-bottom-right-radius: 0;
+}
+div.stratos-tab-menu div.list-group>a.active,
+div.stratos-tab-menu div.list-group>a.active .glyphicon,
+div.stratos-tab-menu div.list-group>a.active .fa{
+    background-color: #7fbee8;
+    background-image: #7fbee8;
+    color: #ffffff;
+}
+div.stratos-tab-menu div.list-group>a.active:after{
+    content: '';
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    margin-top: -13px;
+    border-left: 0;
+    border-bottom: 13px solid transparent;
+    border-top: 13px solid transparent;
+    border-left: 10px solid #7fbee8;
+}
+
+div.stratos-tab-content{
+    background-color: #ffffff;
+    /* border: 1px solid #eeeeee; */
+    padding-left: 20px;
+    padding-top: 10px;
+    text-align: left;
+}
+
+div.stratos-tab div.stratos-tab-content:not(.active){
+    display: none;
+}
+
+.wizard a{font-size: 1.5em;}
+
+span.auto-correct {
+    float: left;
+    margin-left: 1em;
+}
+
+.wizard-button{
+    margin-left: 0.5em;width: 7em;
+}
+
+.stratos-tab-menu .wizard{position: fixed}
+.wizard a.list-group-item {
+    text-align: left;
+}

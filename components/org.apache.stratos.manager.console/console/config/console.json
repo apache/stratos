@@ -1,22 +1,5 @@
 {
-    "backendServerConfiguration":{
-        "url":"%https.host%/stratos/admin"
-    },
-
-    "oauthConfiguration":{
-        "clientId":"",
-        "clientSecret":"",
-        "tokenEndpoint":"%https.host%/oauth2/token"
-    },
-
-    "ssoConfiguration": {
-        "enabled": false,
-        "issuer": "console",
-        "identityProviderURL": "%https.host%/sso/samlsso.jag",
-        "keyStorePassword": "wso2carbon",
-        "identityAlias": "wso2carbon",
-        "responseSigningEnabled": "true",
-        "storeAcs" : "%https.host%/console/controllers/acs",
-        "keyStoreName": "/repository/resources/security/wso2carbon.jks"
+    "backendServerConfiguration": {
+        "url": "%https.host%/api/v4.1"
     }
 }

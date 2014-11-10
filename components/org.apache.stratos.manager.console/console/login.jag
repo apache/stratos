@@ -19,12 +19,18 @@
  * under the License.
  *
  */
-var caramel = require('caramel');
-var error = session.get("error");
-if(error == null) {
+
+var log = new Log("apachestratos.login");
+var error = session.get("error"),
+        caramel = require('caramel');
+
+if (error == null) {
     error = "";
 }
-session.remove("error"); // remove previous errors if any
 
-caramel.render({error:error});
+session.remove("error");
+
+caramel.render({
+    error: error
+});
 %>

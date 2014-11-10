@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
@@ -40,6 +41,7 @@ import org.apache.stratos.messaging.util.Util;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * this is to send the relevant events from cloud controller to topology topic
@@ -113,13 +115,13 @@ public class TopologyEventPublisher {
         publishEvent(new ApplicationClustersCreatedEvent(clusters, appId));
     }
 
-    public static void sendApplicationClustersRemoved(String appId, List<Cluster> clusters) {
+    public static void sendApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusters) {
 
         if (log.isInfoEnabled()) {
             log.info("Publishing Application Clusters removed event for Application: " + appId);
         }
 
-        //TODO publishEvent(new ApplicationClustersCreatedEvent(clusters, appId));
+        publishEvent(new ApplicationClustersRemovedEvent(clusters, appId));
     }
 
 //    public static void sendApplicationRemovedEvent(String applicationId, Set<ClusterDataHolder> clusterData,
@@ -228,12 +230,12 @@ public class TopologyEventPublisher {
         publishEvent(clusterActivatedEvent);
     }
 
-    public static void sendClusterInActivateEvent(ClusterInactivateEvent clusterInActiveEvent) {
+    public static void sendClusterInactivateEvent(ClusterInactivateEvent clusterInactiveEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster in-active event: [service] %s [cluster] %s [appId] %s",
-                    clusterInActiveEvent.getServiceName(), clusterInActiveEvent.getClusterId(), clusterInActiveEvent.getAppId()));
+                    clusterInactiveEvent.getServiceName(), clusterInactiveEvent.getClusterId(), clusterInactiveEvent.getAppId()));
         }
-        publishEvent(clusterInActiveEvent);
+        publishEvent(clusterInactiveEvent);
     }
 
 

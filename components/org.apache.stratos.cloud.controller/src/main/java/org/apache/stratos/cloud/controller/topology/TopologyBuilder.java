@@ -21,14 +21,17 @@ package org.apache.stratos.cloud.controller.topology;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.pojo.Cartridge;
 import org.apache.stratos.cloud.controller.pojo.*;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
@@ -39,11 +42,9 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * this is to manipulate the received events by cloud controller
@@ -178,21 +179,32 @@ public class TopologyBuilder {
 
     }
 
-    public static void handleApplicationClustersRemoved(String appId) {
+    public static void handleApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusterData) {
         TopologyManager.acquireWriteLock();
 
         List<Cluster> removedClusters = new ArrayList<Cluster>();
+        FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
         try {
             Topology topology = TopologyManager.getTopology();
-            for(Service service : topology.getServices()) {
-                for(Cluster cluster : service.getClusters()) {
-                    if(cluster.getAppId().equals(appId)) {
-                        removedClusters.add(service.removeCluster(cluster.getClusterId()));
-                        FasterLookUpDataHolder.getInstance().
-                                removeClusterContext(cluster.getClusterId());
+
+            if (clusterData != null) {
+                // remove clusters from CC topology model and remove runtime information
+                for (ClusterDataHolder aClusterData : clusterData) {
+                    Service aService = topology.getService(aClusterData.getServiceType());
+                    if (aService != null) {
+                        removedClusters.add(aService.removeCluster(aClusterData.getClusterId()));
+                    } else {
+                        log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
                     }
+                    // remove runtime data
+                    dataHolder.removeClusterContext(aClusterData.getClusterId());
                 }
+                // persist runtime data changes
+                persist(dataHolder);
+            } else {
+                log.info("No cluster data found for application " + appId + " to remove");
             }
+
             log.info("Application Cluster " + appId + " are removed from the topology");
 
             TopologyManager.updateTopology(topology);
@@ -201,11 +213,24 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
 
-        TopologyEventPublisher.sendApplicationClustersRemoved(appId, removedClusters);
+        TopologyEventPublisher.sendApplicationClustersRemoved(appId, clusterData);
 
     }
 
+    /**
+     * Persist data in registry.
+     */
+    private static void persist(FasterLookUpDataHolder dataHolder) {
+        try {
+            RegistryManager.getInstance().persist(
+                    dataHolder);
+        } catch (RegistryException e) {
 
+            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
+            log.fatal(msg);
+            throw new CloudControllerException(msg, e);
+        }
+    }
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
 
@@ -356,31 +381,40 @@ public class TopologyBuilder {
 			member.setMemberPublicIp(publicIp);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
             try {
-                // Update port mappings with generated service proxy port
-                // TODO: Need to properly fix with the latest Kubernetes version
-                String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-                if(StringUtils.isEmpty(serviceHostPortStr)) {
-                    log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
-                }
 
-                Cartridge cartridge = FasterLookUpDataHolder.getInstance().
-                        getCartridge(serviceName);
+                Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(serviceName);
                 List<PortMapping> portMappings = cartridge.getPortMappings();
                 Port port;
-                // Adding ports to the member
-                for (PortMapping portMapping : portMappings) {
-                    if (cluster.isKubernetesCluster() && (StringUtils.isNotEmpty(serviceHostPortStr))) {
-                        port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(serviceHostPortStr),
-                                Integer.parseInt(portMapping.getProxyPort()));
-                        member.addPort(port);
-                    } else {
+                if(cluster.isKubernetesCluster()){
+                    // Update port mappings with generated service proxy port
+                    // TODO: Need to properly fix with the latest Kubernetes version
+                    String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                    if(StringUtils.isEmpty(serviceHostPortStr)) {
+                        log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
+                    }
+                    // Adding ports to the member
+                    if (StringUtils.isNotEmpty(serviceHostPortStr)) {
+                        for (PortMapping portMapping : portMappings) {
+                            port = new Port(portMapping.getProtocol(),
+                                    Integer.parseInt(serviceHostPortStr),
+                                    Integer.parseInt(portMapping.getProxyPort()));
+                            member.addPort(port);
+                        }
+                    }
+
+                } else {
+
+                    // Adding ports to the member
+                    for (PortMapping portMapping : portMappings) {
+
                         port = new Port(portMapping.getProtocol(),
                                 Integer.parseInt(portMapping.getPort()),
                                 Integer.parseInt(portMapping.getProxyPort()));
                         member.addPort(port);
+
                     }
                 }
+
             } catch (Exception e) {
                 log.error("Could not update member port-map: [member-id] " + memberId, e);
             }
@@ -738,7 +772,7 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         //publishing data
-        TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
+        TopologyEventPublisher.sendClusterInactivateEvent(clusterActivatedEvent1);
     }
 
 

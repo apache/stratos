@@ -96,7 +96,7 @@ public class ApplicationBuilder {
             updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
             //publishing data
-            ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+            //TODO ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                     " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
@@ -130,8 +130,7 @@ public class ApplicationBuilder {
                 application.setStatus(status);
                 updateApplicationMonitor(appId, status);
                 ApplicationHolder.persistApplication(application);
-                //publishing data
-                ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+                ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
@@ -155,6 +154,7 @@ public class ApplicationBuilder {
             log.warn("Application does not exist: [application-id] " + appId);
         } else {
             Application application = applications.getApplication(appId);
+            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
 
             ApplicationStatus status = ApplicationStatus.Terminated;
             if (application.isStateTransitionValid(status)) {
@@ -168,7 +168,8 @@ public class ApplicationBuilder {
                 //Removing the application from memory and registry
                 ApplicationHolder.removeApplication(appId);
                 log.info("Application is removed: [application-id] " + appId);
-                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
+
+                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
@@ -244,7 +245,7 @@ public class ApplicationBuilder {
             //updating the groupMonitor
             updateGroupMonitor(appId, groupId, status);
             //publishing data
-            ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId);
+            //TODO ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId);
         } else {
             log.warn(String.format("Group state transition is not valid: [group-id] %s [current-status] %s " +
                     " [requested-status] %s", groupId, group.getStatus(), status));
@@ -286,7 +287,7 @@ public class ApplicationBuilder {
             //updating the groupMonitor
             updateGroupMonitor(appId, groupId, status);
             //publishing data
-            ApplicationsEventPublisher.sendGroupActivatedEvent(appId, groupId);
+            //TODO ApplicationsEventPublisher.sendGroupActivatedEvent(appId, groupId);
         } else {
             log.warn(String.format("Group state transition is not valid: [group-id] %s [current-status] %s " +
                     " [requested-status] %s", groupId, group.getStatus(), status));
@@ -328,7 +329,7 @@ public class ApplicationBuilder {
             //updating the groupMonitor
             updateGroupMonitor(appId, groupId, status);
             //publishing data
-            ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+            //TODO ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
         } else {
             log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
                     + "[requested-state] " + status);
@@ -371,7 +372,7 @@ public class ApplicationBuilder {
             //updating the groupMonitor
             updateGroupMonitor(appId, groupId, status);
             //publishing data
-            ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId);
+            //TODO ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId);
         } else {
             log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
                     + "[requested-state] " + status);
@@ -413,7 +414,7 @@ public class ApplicationBuilder {
                 //updating the groupMonitor
                 updateGroupMonitor(appId, groupId, status);
                 //publishing data
-                ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId);
+                //TODO ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId);
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
                         + "[requested-state] " + status);
