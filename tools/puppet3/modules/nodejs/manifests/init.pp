@@ -17,8 +17,6 @@
 
 class nodejs {
 
-  require java
-
   $custom_agent_templates = ['extensions/start-servers.sh']
   class {'python_agent':
     custom_templates => $custom_agent_templates,
