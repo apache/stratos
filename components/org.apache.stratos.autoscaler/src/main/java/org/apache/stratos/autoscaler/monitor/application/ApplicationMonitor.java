@@ -109,7 +109,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         Monitor monitor;
         monitor = findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
         if (monitor == null) {
-            monitor = findGroupMonitor(groupId, aliasToInActiveMonitorsMap.values());
+            monitor = findGroupMonitor(groupId, aliasToInactiveMonitorsMap.values());
         }
         return monitor;
     }
@@ -160,7 +160,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             onChildActivatedEvent(id);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            onChildInActiveEvent(id);
+            onChildInactiveEvent(id);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
@@ -168,8 +168,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if(this.aliasToInActiveMonitorsMap.containsKey(id)) {
-                this.aliasToInActiveMonitorsMap.remove(id);
+            if(this.aliasToInactiveMonitorsMap.containsKey(id)) {
+                this.aliasToInactiveMonitorsMap.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }

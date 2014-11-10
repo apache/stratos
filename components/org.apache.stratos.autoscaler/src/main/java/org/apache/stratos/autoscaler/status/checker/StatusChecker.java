@@ -196,7 +196,7 @@ public class StatusChecker {
         Runnable group = new Runnable() {
             public void run() {
                 VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-                boolean clusterInActive = getClusterInActive(monitor, partitionId);
+                boolean clusterInActive = getClusterInactive(monitor, partitionId);
                 String appId = monitor.getAppId();
                 if (clusterInActive) {
                     //if the monitor is dependent, temporarily pausing it
@@ -219,7 +219,7 @@ public class StatusChecker {
         groupThread.start();
     }
 
-    private boolean getClusterInActive(VMClusterMonitor monitor, String partitionId) {
+    private boolean getClusterInactive(VMClusterMonitor monitor, String partitionId) {
         boolean clusterInActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
             for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
@@ -346,9 +346,9 @@ public class StatusChecker {
                         log.info("sending group created : " + parent.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupCreatedEvent(appId, parent.getUniqueIdentifier());
                     }
-                } else if (groups.isEmpty() && getAllClusterInActive(clusterData) ||
+                } else if (groups.isEmpty() && getAllClusterInactive(clusterData) ||
                         clusterData.isEmpty() && getAllGroupInActive(groups) ||
-                        getAllClusterInActive(clusterData) && getAllGroupInActive(groups)) {
+                        getAllClusterInactive(clusterData) && getAllGroupInActive(groups)) {
                     //send the in activation event
                     if (parent instanceof Application) {
                         //send application activated event
@@ -402,7 +402,7 @@ public class StatusChecker {
     }
 
 
-    private boolean getAllClusterInActive(Map<String, ClusterDataHolder> clusterData) {
+    private boolean getAllClusterInactive(Map<String, ClusterDataHolder> clusterData) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());

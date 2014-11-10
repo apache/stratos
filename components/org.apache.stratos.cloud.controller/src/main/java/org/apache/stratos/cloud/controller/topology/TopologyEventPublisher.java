@@ -228,12 +228,12 @@ public class TopologyEventPublisher {
         publishEvent(clusterActivatedEvent);
     }
 
-    public static void sendClusterInActivateEvent(ClusterInactivateEvent clusterInActiveEvent) {
+    public static void sendClusterInactivateEvent(ClusterInactivateEvent clusterInactiveEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster in-active event: [service] %s [cluster] %s [appId] %s",
-                    clusterInActiveEvent.getServiceName(), clusterInActiveEvent.getClusterId(), clusterInActiveEvent.getAppId()));
+                    clusterInactiveEvent.getServiceName(), clusterInactiveEvent.getClusterId(), clusterInactiveEvent.getAppId()));
         }
-        publishEvent(clusterInActiveEvent);
+        publishEvent(clusterInactiveEvent);
     }
 
 

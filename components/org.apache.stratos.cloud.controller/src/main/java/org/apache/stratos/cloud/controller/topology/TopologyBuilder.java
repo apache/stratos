@@ -738,7 +738,7 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         //publishing data
-        TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
+        TopologyEventPublisher.sendClusterInactivateEvent(clusterActivatedEvent1);
     }
 
 

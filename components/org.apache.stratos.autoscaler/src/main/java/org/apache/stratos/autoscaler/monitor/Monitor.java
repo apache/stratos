@@ -33,7 +33,7 @@ public abstract class Monitor implements EventHandler {
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //monitors map, stopped monitors
-    protected Map<String, Monitor> aliasToInActiveMonitorsMap;
+    protected Map<String, Monitor> aliasToInactiveMonitorsMap;
     //flag will get set to true in MonitorTerminateAllEvent when termination of
     // this monitor decided by its parent
     protected boolean terminateChildren = false;
@@ -76,7 +76,7 @@ public abstract class Monitor implements EventHandler {
     public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
         if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) ||
-                (this.aliasToInActiveMonitorsMap != null && !this.aliasToInActiveMonitorsMap.isEmpty())) {
+                (this.aliasToInactiveMonitorsMap != null && !this.aliasToInactiveMonitorsMap.isEmpty())) {
             hasMonitor = true;
         }
         return hasMonitor;
@@ -84,7 +84,7 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasMonitors() {
 
-        return this.aliasToActiveMonitorsMap != null || this.aliasToInActiveMonitorsMap != null;
+        return this.aliasToActiveMonitorsMap != null || this.aliasToInactiveMonitorsMap != null;
     }
 
     public boolean isDependent() {
