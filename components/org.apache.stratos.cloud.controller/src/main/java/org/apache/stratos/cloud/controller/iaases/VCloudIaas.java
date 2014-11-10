@@ -18,10 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -37,6 +35,9 @@ import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.vcloud.compute.options.VCloudTemplateOptions;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 public class VCloudIaas extends Iaas {
 
@@ -164,7 +165,7 @@ public class VCloudIaas extends Iaas {
 			}
 		}
 
-		if (customizationScript == null || customizationScript.isEmpty()) {
+		if (StringUtils.isEmpty(customizationScript)) {
 			if (log.isDebugEnabled()) {
 				log.debug("No content vCloud Customization script not found from properties");
 			}
