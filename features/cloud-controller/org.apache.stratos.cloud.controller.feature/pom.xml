@@ -130,11 +130,6 @@
             <version>1.8.0-stratos</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>docker</artifactId>
-            <version>1.8.0-stratos</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.5</version>
