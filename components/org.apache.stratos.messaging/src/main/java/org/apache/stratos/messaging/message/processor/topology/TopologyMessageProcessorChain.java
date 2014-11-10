@@ -35,8 +35,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private CompleteTopologyMessageProcessor completeTopologyMessageProcessor;
     private ServiceCreatedMessageProcessor serviceCreatedMessageProcessor;
     private ServiceRemovedMessageProcessor serviceRemovedMessageProcessor;
-    private ApplicationClustersCreatedMessageProcessor clustersCreatedMessageProcessor;
-    private ApplicationClustersRemovedMessageProcessor clustersRemovedMessageProcessor;
+    private ApplicationClustersCreatedMessageProcessor appClustersCreatedMessageProcessor;
+    private ApplicationClustersRemovedMessageProcessor appClustersRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterResetMessageProcessor clusterResetMessageProcessor;
     private ClusterActivatedProcessor clusterActivatedProcessor;
@@ -63,11 +63,11 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         serviceRemovedMessageProcessor = new ServiceRemovedMessageProcessor();
         add(serviceRemovedMessageProcessor);
 
-        clustersCreatedMessageProcessor = new ApplicationClustersCreatedMessageProcessor();
-        add(clustersCreatedMessageProcessor);
+        appClustersCreatedMessageProcessor = new ApplicationClustersCreatedMessageProcessor();
+        add(appClustersCreatedMessageProcessor);
 
-        clustersRemovedMessageProcessor = new ApplicationClustersRemovedMessageProcessor();
-        add(clusterRemovedMessageProcessor);
+        appClustersRemovedMessageProcessor = new ApplicationClustersRemovedMessageProcessor();
+        add(appClustersRemovedMessageProcessor);
 
         clusterCreatedMessageProcessor = new ClusterCreatedMessageProcessor();
         add(clusterCreatedMessageProcessor);
@@ -122,9 +122,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         } else if (eventListener instanceof ClusterCreatedEventListener) {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationClustersCreatedEventListener) {
-            clustersCreatedMessageProcessor.addEventListener(eventListener);
+            appClustersCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationClustersRemovedEventListener) {
-            clustersRemovedMessageProcessor.addEventListener(eventListener);
+            appClustersRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterInActivateEventListener) {
