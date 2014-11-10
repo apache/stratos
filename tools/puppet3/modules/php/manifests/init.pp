@@ -22,8 +22,6 @@
 
 class php () {
 
-  require java
- 
   $custom_agent_templates = ['extensions/artifacts-updated.sh']
   class {'python_agent':
     custom_templates => $custom_agent_templates,
