@@ -105,4 +105,12 @@ public abstract class Monitor implements EventHandler {
         }
         return hasInDepChild;
     }
+
+    public Map<String, Monitor> getAliasToInActiveMonitorsMap() {
+        return this.aliasToInactiveMonitorsMap;
+    }
+
+    public void setAliasToInActiveMonitorsMap(Map<String, Monitor> aliasToInActiveMonitorsMap) {
+        this.aliasToInactiveMonitorsMap = aliasToInActiveMonitorsMap;
+    }
 }
