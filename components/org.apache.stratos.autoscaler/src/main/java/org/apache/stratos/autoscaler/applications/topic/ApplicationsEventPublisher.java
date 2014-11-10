@@ -6,9 +6,12 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.*;
 import org.apache.stratos.messaging.util.Util;
+
+import java.util.Set;
 
 /**
  * This will publish application related events to application status topic.
@@ -101,19 +104,19 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationTerminatingEvent(String appId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application terminated event for [application]: " + appId);
+            log.info("Publishing Application terminating event for [application]: " + appId);
         }
         ApplicationTerminatingEvent applicationTerminatingEvent =
                 new ApplicationTerminatingEvent(appId);
         publishEvent(applicationTerminatingEvent);
     }
 
-    public static void sendApplicationTerminatedEvent(String appId) {
+    public static void sendApplicationTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application terminated event for [application]: " + appId);
         }
         ApplicationTerminatedEvent applicationTerminatedEvent =
-                new ApplicationTerminatedEvent(appId, null);
+                new ApplicationTerminatedEvent(appId, clusterData);
         publishEvent(applicationTerminatedEvent);
     }
 

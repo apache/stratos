@@ -70,7 +70,7 @@ public class ApplicationTopicReceiver implements Runnable{
                 log.info("ApplicationTerminatedEvent received for [application]");
                 ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent)event;
                 String appId = terminatedEvent.getAppId();
-                TopologyBuilder.handleApplicationClustersRemoved(appId);
+                TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
             }
         });
     }

@@ -130,8 +130,7 @@ public class ApplicationBuilder {
                 application.setStatus(status);
                 updateApplicationMonitor(appId, status);
                 ApplicationHolder.persistApplication(application);
-                //publishing data
-                //TODO ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+                ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
@@ -155,6 +154,7 @@ public class ApplicationBuilder {
             log.warn("Application does not exist: [application-id] " + appId);
         } else {
             Application application = applications.getApplication(appId);
+            Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
 
             ApplicationStatus status = ApplicationStatus.Terminated;
             if (application.isStateTransitionValid(status)) {
@@ -168,7 +168,8 @@ public class ApplicationBuilder {
                 //Removing the application from memory and registry
                 ApplicationHolder.removeApplication(appId);
                 log.info("Application is removed: [application-id] " + appId);
-                //TODO ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId);
+
+                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
