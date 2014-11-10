@@ -1,0 +1,103 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "root",
+    "title": "Deployment Definition",
+    "name": "Deployment Policy",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "required":["id","partitionGroup"],
+    "properties":{
+        "id": {
+            "type":"string",
+            "id": "root/id",
+            "title": "Deployment Policy ID",
+            "name": "Deployment Policy ID",
+            "default": "isuruh-ec2",
+            "maxItems":1
+        },
+        "description": {
+            "type":"string",
+            "id": "root/description",
+            "title": "Description",
+            "name": "Description",
+            "maxItems":1
+        },
+        "isPublic": {
+            "type":"boolean",
+            "id": "root/isPublic",
+            "title": "Is Public",
+            "name": "Is Public",
+            "default": false,
+            "maxItems":1
+        },
+        "partitionGroup": {
+            "type":"object",
+            "id": "root/partitionGroup",
+            "title": "Partition Group",
+            "name": "Partition Group",
+            "required":["id","partitionAlgo","partition"],
+            "properties":{
+                "id": {
+                    "type":"string",
+                    "id": "root/partitionGroup/id",
+                    "title": "Partition Group ID",
+                    "name": "Partition Group ID",
+                    "default": "ec2",
+                    "maxItems":1
+                },
+                "partitionAlgo": {
+                    "type":"string",
+                    "id": "root/partitionGroup/partitionAlgo",
+                    "title": "Partition Algorithm",
+                    "name": "Partition Algorithm",
+                    "default": "one-after-another",
+                    "enum": ["round-robin", "one-after-another"],
+                    "maxItems":1
+                },
+                "partition": {
+                    "type":"array",
+                    "id": "root/partitionGroup/partition",
+                    "title": "Partition",
+                    "name": "Partition",
+                    "minItems":1,
+                    "items":
+                    {
+                        "type":"object",
+                        "id": "root/partitionGroup/partition/0",
+                        "required":["id","partitionMin","partitionMax"],
+                        "format": "grid",
+                        "properties":{
+                            "id": {
+                                "type":"string",
+                                "id": "root/partitionGroup/partition/0/id",
+                                "default": "P1",
+
+                            },
+                            "partitionMax": {
+                                "type":"string",
+                                "id": "root/partitionGroup/partition/0/partitionMax",
+                                "default": "3",
+                            },
+                            "partitionMin": {
+                                "type":"string",
+                                "id": "root/partitionGroup/partition/0/partitionMin",
+                                "default": "1",
+                            },
+                            "description": {
+                                "type": "string",
+                                "id": "root/partitionGroup/partition/0/description",
+                                "default": "description",
+
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+}

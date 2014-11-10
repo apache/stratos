@@ -1,0 +1,29 @@
+# Ignoring system files
+.DS_Store
+
+
+
+
+# Ignoring node modules
+node_modules
+
+*.class
+*.iml
+.idea
+*.~
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+
+target
+.classpath
+.settings
+.project
+*.iml
+*.iws
+*.ipr
+.idea
+atlassian-ide-plugin.xml

@@ -1,0 +1,65 @@
+{
+    "groupId": "KubGrp1",
+    "description": "Kubernetes CoreOS cluster on EC2 ",
+    "kubernetesMaster": {
+        "hostId": "KubHostMaster1",
+        "hostname": "master.dev.kubernetes.example.org",
+        "hostIpAddress": "172.17.8.100",
+        "property": [
+            {
+                "name": "prop1",
+                "value": "val1"
+            },
+            {
+                "name": "prop2",
+                "value": "val2"
+            }
+        ]
+    },
+    "portRange": {
+        "upper": "5000",
+        "lower": "4500"
+    },
+    "kubernetesHosts": [
+        {
+            "hostId": "KubHostSlave1",
+            "hostname": "slave1.dev.kubernetes.example.org",
+            "hostIpAddress": "172.17.8.101",
+            "property": [
+                {
+                    "name": "prop1",
+                    "value": "val1"
+                },
+                {
+                    "name": "prop2",
+                    "value": "val2"
+                }
+            ]
+        },
+        {
+            "hostId": "KubHostSlave2",
+            "hostname": "slave2.dev.kubernetes.example.org",
+            "hostIpAddress": "172.17.8.102",
+            "property": [
+                {
+                    "name": "prop1",
+                    "value": "val1"
+                },
+                {
+                    "name": "prop2",
+                    "value": "val2"
+                }
+            ]
+        }
+    ],
+    "property": [
+        {
+            "name": "prop1",
+            "value": "val1"
+        },
+        {
+            "name": "prop2",
+            "value": "val2"
+        }
+    ]
+}

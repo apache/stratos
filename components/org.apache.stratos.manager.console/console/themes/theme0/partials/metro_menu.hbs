@@ -1,0 +1,28 @@
+<div class="row title">
+    <div class="title-main text-center">
+        <h1>{{content_title}}</h1>
+    </div>
+</div>
+<div class="container content">
+    <div class="row text-center">
+        {{#each content_body.sections}}
+            <a href="{{#if linkexternal}}
+                        {{link}}
+                     {{else}}
+                        {{url ""}}/{{link}}
+            {{/if}}" {{#if linkexternal}}target="blank"{{/if}} class="block">
+                <div class="col-md-4  content-menu-block border-right" >
+                    <div class="content-menu-icon">
+                        <i class="fa {{icon}} block"></i>
+                    </div>
+                    <div class="content-menu-title">
+                        <h2>{{title}}</h2>
+                    </div>
+                    <div class="content-menu-description">{{description}} </div>
+
+                </div>
+
+            </a>
+        {{/each}}
+    </div>
+</div>

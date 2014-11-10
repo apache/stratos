@@ -1,0 +1,17 @@
+<div class="row title">
+    <div class="title-main text-center">
+        <h1>{{content_title}}</h1>
+    </div>
+</div>
+<div class="container content">
+    <div class="row text-center error-page">
+        {{#each error}}
+            <div class="col-md-12">
+                <div class="alert alert-danger alert-dismissable">
+
+                    <strong>Error!</strong> {{errorMessage}}
+                </div>
+            </div>
+        {{/each}}
+    </div>
+</div>

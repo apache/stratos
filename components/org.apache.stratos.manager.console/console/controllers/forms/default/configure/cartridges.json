@@ -1,0 +1,67 @@
+{
+    "type":"php",
+    "isPublic":false,
+    "provider":"apache",
+    "host":"stratos.org",
+    "displayName":"PHP",
+    "description":"PHP Cartridge",
+    "version":"7",
+    "defaultAutoscalingPolicy":"economyPolicy",
+    "multiTenant":"false",
+    "portMapping":[
+        {
+            "protocol":"http",
+            "port":"80",
+            "proxyPort":"8280"
+        },
+        {
+            "protocol":"https",
+            "port":"443",
+            "proxyPort":"8243"
+        }
+    ],
+    "iaasProvider":[
+        {
+            "type":"ec2",
+            "imageId":"ap-southeast-1/ami-2e0d5a7c",
+            "maxInstanceLimit":"4",
+            "property":[
+                {
+                    "name":"instanceType",
+                    "value":"m1.medium"
+                },
+                {
+                    "name":"keyPair",
+                    "value":"xxxxxxxx"
+                }
+            ],
+            "networkInterfaces": [
+                {
+                    "networkUuid": "fb9c21f4-0672-48b2-8279-77334bb63a53"
+                },
+                {
+                    "networkUuid": "1e43f86f-4165-4f2e-8017-dd4cfb5548b0"
+                }
+            ]
+        }
+    ],
+    "loadBalancer":{
+        "type":"lb",
+        "property":{
+            "name":"default.load.balancer",
+            "value":"true"
+        }
+    },
+    "persistence": {
+        "isRequired": "true",
+        "volume" : [
+            {
+                "device": "/dev/sdc",
+                "mappingPath": "/home/ubuntu/sdc",
+                "size": "11",
+                "removeOnTermination": "false"
+            }
+
+        ]
+    }
+} 

@@ -1,0 +1,17 @@
+{
+    "id":"dakshika-ec2",
+    "description":"Deployment policy description",
+    "isPublic":false,
+    "partitionGroup":{
+        "id":"ec2",
+        "partitionAlgo":"one-after-another",
+        "partition":[
+            {
+                "id":"P1",
+                "description":"description",
+                "partitionMax":"3",
+                "partitionMin":"1"
+            }
+        ]
+    }
+}

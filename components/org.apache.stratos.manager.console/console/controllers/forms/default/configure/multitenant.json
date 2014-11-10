@@ -1,0 +1,10 @@
+{
+    "serviceName": "appserver",
+    "isPublic":"true",
+    "cartridgeType": "appserver",
+    "deploymentPolicyName": "D1",
+    "autoscalingPolicyName": "AS1",
+    "clusterDomain": "appserverdev.dev.domain",
+    "clusterSubDomain": "subdomain2",
+    "tenantRange": "*"
+}

@@ -1,0 +1,89 @@
+<%
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+var log = new Log("controller.login"),
+        carbon = require('carbon'),
+        process = require('process'),
+        util = require('/controllers/rest/rest_calls.jag'),
+        server = new carbon.server.Server(),
+        conf = carbon.server.loadConfig('carbon.xml'),
+        offset = conf.*::['Ports'].*::['Offset'].text(),
+        hostName = conf.*::['HostName'].text().toString();
+
+if (hostName === null || hostName === '') {
+    hostName = 'localhost';
+}
+
+var httpPort = 9763 + parseInt(offset, 10),
+        httpsPort = 9443 + parseInt(offset, 10);
+
+process.setProperty('server.host', hostName);
+process.setProperty('http.port', httpPort.toString());
+process.setProperty('https.port', httpsPort.toString());
+
+
+var username = request.getParameter('username').trim(),
+        password = request.getParameter('password');
+
+if (username || password) {
+    session.put("error", "Enter your username and password.");
+}
+
+try {
+    var auth = server.authenticate(username, password);
+
+    if (!auth) {
+        session.put("error", "The username or password you entered is incorrect.");
+        print({status: 0});
+    } else {
+        var userObject = carbon.server.tenantUser(username);
+        var um = new carbon.user.UserManager({}, userObject.tenantId);
+        var user = um.getUser(userObject.username);
+        var roles = user.getRoles();
+        //storing in session
+        session.put("USER_NAME", username);
+        session.put("TENANT_DOMAIN", userObject.domain);
+        session.put("ROLE_ARRAY", roles);
+        session.put("TENANT_ID", userObject.tenantId);
+
+        try {
+            //get all user permission
+            var userPermissions = um.authorizer.getAllowedUIResourcesForUser(userObject.username, '/'); //TODO need to
+            session.put("PERMISSIONS", userPermissions);
+            //call the authentication rest-endpoint and get the JSESSION_ID
+            var result = util.RESTCalls.getSession(username, password);
+            //save the JSESSION_ID in current console.session.
+            var jSessionId = result.data.Success.sessionId;
+            session.put("JSESSIONID", jSessionId);
+        } catch (e) {
+            log.warn(e);
+        }
+        // require('console').server.current(session,username);
+        print({status: 1});
+    }
+
+} catch (e) {
+    session.put("error", e.toString());
+    print({status: e.toString()});
+}
+
+
+%>

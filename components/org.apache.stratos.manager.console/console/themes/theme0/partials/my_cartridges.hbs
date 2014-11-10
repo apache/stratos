@@ -1,0 +1,123 @@
+<div class="row title">
+    <div class="title-main text-center">
+        <h1>{{content_title}}</h1>
+    </div>
+</div>
+<div class="container content">
+    <div class="row text-center">
+
+        {{#if content_body.sections}}
+            <div class="row form-toolbar ">
+                <div class="col-md-5 col-sm-3 text-left">
+                    <!--<input type="text" class="form-control" placeholder="Search">-->
+                    <div class="btn-group">
+                        <a href="#" id="list" class="btn btn-default">
+                            <i class="fa fa-list-ul"></i> List
+                        </a>
+                        <a href="#" id="grid" class="btn btn-default">
+                            <i class="fa fa-th"></i> Grid
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <div class="row general-table row-overide">
+            {{#each content_body.sections}}
+                <!--<div data-url="{{url ""}}/mycartridges/info/{{cartridgeAlias}}" class="data-url">-->
+
+                <div class="col-md-4 block grid-group-item border-right">
+                    <div class="toggle-menu-icon">
+                        <i class="fa icon-{{cartridgeType}} fa-inbox"></i>
+                    </div>
+                    {{#if loadBalancer}}
+                        <h2>{{displayName}} - {{version}}</h2>
+                        <div class="cartridge-description">{{description}}</div>
+                        <div class="lb-description">This will be auto subscribed for you</div>
+                    {{else}}
+                        <h2>{{cartridgeAlias}} ({{displayName}} - {{version}})</h2>
+                        {{#if multiTenant}}
+                            Multi Tenant Enabled
+                        {{else}}
+                            Single Tenant
+                        {{/if}}
+                        <div class="toggle-menu-description">{{description}}</div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-danger btn-lg hover-unsubscribe" type="button" id="unsubscribe_{{cartridgeAlias}}"
+                                        data-cartridge="{{cartridgeAlias}}" > Unsubscribe
+                                </button>
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{cartridgeAlias}}"
+                                        data-url="{{url ""}}/mycartridges/info/{{cartridgeAlias}}" > Details
+                                </button>
+
+
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+                <!--</div>-->
+            {{/each}}
+
+        </div>
+
+        {{else}}
+            <div class="row no-item row-overide">
+                <div class="row title">
+                    <h2>No Cartridge found..</h2>
+                    <a type="button" class="btn btn-primary btn-lg" href="{{url ""}}/cartridges/">Subscribe to Cartridge</a>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('.general-table .grid-group-item').hover(function () {
+            $(this).find('.bottom-bar').stop().animate({bottom: '37px'}, 'slow');
+        }, function () {
+            $(this).find('.bottom-bar').stop().animate({bottom: '-32px'}, 'slow');
+        });
+
+        $('.general-table').on('click', '.hover-details', function (event) {
+            window.location = $(this).attr("data-url");
+        });
+
+        $('.general-table').on('click', '.hover-unsubscribe', function (event) {
+            var cartridge_name = $(this).attr("data-cartridge");
+            noty({
+                text: 'Are you sure want to unsubscribe from cartridge <strong><i>'+ cartridge_name+'</i></strong> ?',
+                layout: 'bottomRight',
+                buttons: [
+                    {addClass: 'btn btn-primary', text: 'YES', onClick: function($noty) {
+                        $noty.close();
+                        $.ajax({
+                            type: "POST",
+                            url: caramel.context + "/controllers/cartridges/unsubscription_requests.jag",
+                            dataType: 'json',
+                            data: { "cartridge_name":cartridge_name},
+                            success: function (data) {
+                                console.log(data);
+                                if (data.status == 'error') {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                                } else if (data.status == 'warning') {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                                } else {
+                                    var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                                    location.reload();
+                                }
+                            }
+                        })
+                    }
+                    },
+                    {addClass: 'btn btn-danger', text: 'NO', onClick: function($noty) {
+                        $noty.close();
+                    }
+                    }
+                ]
+            });
+        });
+
+    });
+
+</script>
