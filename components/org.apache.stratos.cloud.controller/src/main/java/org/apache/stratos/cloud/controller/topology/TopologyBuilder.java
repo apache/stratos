@@ -356,31 +356,40 @@ public class TopologyBuilder {
 			member.setMemberPublicIp(publicIp);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
             try {
-                // Update port mappings with generated service proxy port
-                // TODO: Need to properly fix with the latest Kubernetes version
-                String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-                if(StringUtils.isEmpty(serviceHostPortStr)) {
-                    log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
-                }
 
-                Cartridge cartridge = FasterLookUpDataHolder.getInstance().
-                        getCartridge(serviceName);
+                Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(serviceName);
                 List<PortMapping> portMappings = cartridge.getPortMappings();
                 Port port;
-                // Adding ports to the member
-                for (PortMapping portMapping : portMappings) {
-                    if (cluster.isKubernetesCluster() && (StringUtils.isNotEmpty(serviceHostPortStr))) {
-                        port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(serviceHostPortStr),
-                                Integer.parseInt(portMapping.getProxyPort()));
-                        member.addPort(port);
-                    } else {
+                if(cluster.isKubernetesCluster()){
+                    // Update port mappings with generated service proxy port
+                    // TODO: Need to properly fix with the latest Kubernetes version
+                    String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                    if(StringUtils.isEmpty(serviceHostPortStr)) {
+                        log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
+                    }
+                    // Adding ports to the member
+                    if (StringUtils.isNotEmpty(serviceHostPortStr)) {
+                        for (PortMapping portMapping : portMappings) {
+                            port = new Port(portMapping.getProtocol(),
+                                    Integer.parseInt(serviceHostPortStr),
+                                    Integer.parseInt(portMapping.getProxyPort()));
+                            member.addPort(port);
+                        }
+                    }
+
+                } else {
+
+                    // Adding ports to the member
+                    for (PortMapping portMapping : portMappings) {
+
                         port = new Port(portMapping.getProtocol(),
                                 Integer.parseInt(portMapping.getPort()),
                                 Integer.parseInt(portMapping.getProxyPort()));
                         member.addPort(port);
+
                     }
                 }
+
             } catch (Exception e) {
                 log.error("Could not update member port-map: [member-id] " + memberId, e);
             }
@@ -738,7 +747,7 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         //publishing data
-        TopologyEventPublisher.sendClusterInActivateEvent(clusterActivatedEvent1);
+        TopologyEventPublisher.sendClusterInactivateEvent(clusterActivatedEvent1);
     }
 
 

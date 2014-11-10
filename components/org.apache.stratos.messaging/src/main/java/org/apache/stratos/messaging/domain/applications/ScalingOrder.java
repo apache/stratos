@@ -20,43 +20,21 @@
 package org.apache.stratos.messaging.domain.applications;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
-public class DependencyOrder implements Serializable {
+public class ScalingOrder implements Serializable {
 
-	private static final long serialVersionUID = -599600831844477527L;
+    private List<String> scalingOrderList;
 
-	private Set<StartupOrder> startupOrders;
-
-	private Set<ScalingOrder> scalingOrders;
-
-    private String terminationBehaviour;
-
-    public DependencyOrder () {
-
+    public ScalingOrder(List<String> scalingOrderList) {
+        this.scalingOrderList = scalingOrderList;
     }
 
-    public String getTerminationBehaviour() {
-        return terminationBehaviour;
+    public List<String> getScalingOrderList() {
+        return scalingOrderList;
     }
 
-    public void setTerminationBehaviour(String terminationBehaviour) {
-        this.terminationBehaviour = terminationBehaviour;
-    }
-
-	public Set<StartupOrder> getStartupOrders() {
-		return startupOrders;
-	}
-
-	public void setStartupOrders(Set<StartupOrder> startupOrders) {
-		this.startupOrders = startupOrders;
-	}
-
-    public Set<ScalingOrder> getScalingOrders() {
-        return scalingOrders;
-    }
-
-    public void setScalingOrders(Set<ScalingOrder> scalingOrders) {
-        this.scalingOrders = scalingOrders;
+    public void setScalingOrderList(List<String> scalingOrderList) {
+        this.scalingOrderList = scalingOrderList;
     }
 }

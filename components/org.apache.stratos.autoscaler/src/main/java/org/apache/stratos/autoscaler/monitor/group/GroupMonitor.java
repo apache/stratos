@@ -70,11 +70,11 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             onChildActivatedEvent(id);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            onChildInActiveEvent(id);
+            onChildInactiveEvent(id);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.aliasToInActiveMonitorsMap.containsKey(id)) {
-                this.aliasToInActiveMonitorsMap.remove(id);
+            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
+                this.aliasToInactiveMonitorsMap.remove(id);
             }
             if (this.status == GroupStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
@@ -87,8 +87,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if (this.aliasToInActiveMonitorsMap.containsKey(id)) {
-                this.aliasToInActiveMonitorsMap.remove(id);
+            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
+                this.aliasToInactiveMonitorsMap.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
@@ -160,17 +160,11 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         if (status == GroupStatus.Inactive && !this.hasDependent) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");
-
-        /*} else if (status == GroupStatus.Terminating) {
-            log.info("[Group] " + this.id + " is not notifying the parent, " +
-                    "since it is in Terminating State");
-*/
         } else {
             // notify parent
             log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
         }
-        //}
         //notify the children about the state change
         MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId()));
     }
