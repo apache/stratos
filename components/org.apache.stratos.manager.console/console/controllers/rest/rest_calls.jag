@@ -1,0 +1,374 @@
+<%
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+RESTCalls = new function(){
+    var log = new Log('RESTCalls');
+
+    this.getAvailableSingleTenantCartridges = function(){
+        return this.sendReceive("GET","/cartridge/list",{});
+    };
+
+    this.getAvailableMultiTenantCartridges = function(){
+        return this.sendReceive("GET","/cartridge/tenanted/list",{});
+    };
+
+    this.getSubscribedCartridges = function(){
+        return this.sendReceive("GET","/cartridge/list/subscribed",{});
+    }
+
+    this.getTenants = function(){
+        return this.sendReceive("GET","/tenant/list",{});
+    };
+
+    this.getServices = function(){
+        return this.sendReceive("GET","/service",{});
+    };
+
+    this.deployCartridgeDefinition = function(cartridgeDefinition){
+        return this.send("POST","/cartridge/definition",cartridgeDefinition);
+    };
+
+    this.deployServiceDefinition = function(serviceDefinition){
+        return this.send("POST","/service/definition",serviceDefinition);
+    };
+
+    this.deployLbDefinition = function(lbDefinition){
+        return this.send("POST","/cartridge/definition",lbDefinition);
+    };
+
+    this.activateTenant = function(tenantDomain){
+        return this.send("POST","/tenant/activate/" + tenantDomain,{});
+    };
+
+    this.deactivateTenant = function(tenantDomain){
+        return this.send("POST","/tenant/deactivate/" + tenantDomain,{});
+    };
+
+    this.deleteTenant = function(tenantDomain){
+        return this.send("DELETE","/tenant/" + tenantDomain,{});
+    };
+
+    this.checkAvailability = function(tenantDomain){
+        return this.send("POST","/tenant/availability/" + tenantDomain,{});
+    };
+
+    this.deployPartitionDefinition = function(partitionDefinition){
+        return this.send("POST","/policy/deployment/partition",partitionDefinition);
+    };
+
+    this.deployDeploymentPolicyDefinition = function(policyDefinition){
+        return this.send("POST","/policy/deployment",policyDefinition);
+    };
+
+    this.deployAutoscalePolicyDefinition = function(policyDefinition){
+        return this.send("POST","/policy/autoscale",policyDefinition);
+    };
+
+    this.deployKubernetesGroupDefinition = function(groupDefinition){
+        return this.send("POST","/kubernetes/deploy/group",groupDefinition);
+    };
+
+    this.deployGroupDefinition = function(groupDefinition){
+        return this.send("POST","/group/definition", groupDefinition);
+    };
+
+    this.deployApplicationDefinition = function(applicationDefinition){
+        return this.send("POST","/application/definition", applicationDefinition);
+    };
+
+    this.subscribeToCartridge = function(cartridgeBeanInfo){
+        return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo);
+    };
+
+    this.addTenant = function(tenantInfoBean){
+        return this.sendReceive("POST","/tenant",tenantInfoBean);
+    };
+
+
+    this.addUser = function(userInfoBean){
+        return this.sendReceive("POST","/user", userInfoBean);
+    };
+
+    this.syncRepo = function(alias){
+        return this.send("POST","/cartridge/sync",alias);
+    };
+
+    this.getAutoScalePolicies = function(){
+        return this.sendReceive("GET","/policy/autoscale",{});
+    };
+
+    this.getDeploymentPolicies = function(){
+        return this.sendReceive("GET","/policy/deployment",{});
+    };
+
+    this.getKubernetesGroups = function(){
+        return this.sendReceive("GET","/kubernetes/group",{});
+    };
+
+    this.getApplicableDeploymentPolicies = function(cartridgeType){
+        return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{});
+    };
+
+    this.getPartitions = function(){
+        return this.sendReceive("GET","/partition",{});
+    };
+
+    this.getSingleTenantCartridgeInfo = function(cartridgeType){
+        return this.sendReceive("GET","/cartridge/available/info/" + cartridgeType,{});
+    };
+
+    this.getServiceInfo = function(cartridgeType){
+        return this.sendReceive("GET","/service/" + cartridgeType,{});
+    };
+
+    this.getPolicyAutoScale = function(){
+        return this.sendReceive("GET","/policy/autoscale",{});
+    };
+
+    this.getPolicyDeployment = function(){
+        return this.sendReceive("GET","/policy/deployment",{});
+    };
+    this.unsubscribeCartridge = function(alias){
+        return this.send("POST","/cartridge/unsubscribe",alias);
+    };
+    this.getCartridges = function(){
+        return this.sendReceive("GET","/cartridge/available/list",{});
+    };
+
+    this.getLbCartridges = function(){
+        return this.sendReceive("GET","/cartridge/lb",{});
+    };
+
+    this.getApplications = function(){
+        return this.sendReceive("GET","/application",{});
+    };
+
+    this.getClusterInfo = function(clusterId){
+        return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
+    };
+
+    this.getLBClusterInfo = function(){
+        return this.sendReceive("GET","/cluster/lb",{});
+    };
+
+    this.getClusterInfoWithAlias = function(cartridgeType, alias){
+        return this.sendReceive("GET","/cluster/" + cartridgeType + "/" + alias,{});
+    };
+    this.getCartridgeInfo = function(alias){
+        return this.sendReceive("GET","/cartridge/info/"+alias,{});
+    };
+    this.getCartridgeServiceGroup = function(serviceGroup){
+        return this.sendReceive("GET","/cartridge/list/subscribed/group/"+serviceGroup,{});
+    };
+    this.validateCaptcha = function(captchaText){
+        return this.sendReceive("POST","/captcha",captchaText);
+    };
+    this.getCaptcha = function(){
+        return this.sendReceiveImage("Get","/simpleImg",{});
+    };
+    this.undeployCartridge = function(cartridgeType){
+        return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{});
+    };
+    this.getUserList = function(){
+        return this.sendReceive("GET", "/user/list", {});
+    }
+    this.getConfigStatus = function(){
+        var configStatus = {};
+        var error;
+        var par_res = this.sendReceive("GET","/policy/autoscale",{});
+        var get_status = session.get("get-status");
+        if(par_res.Error != undefined){
+            error = par_res.Error;
+            configStatus.first_use = true;
+        }else{
+            if(get_status.status == "success") {
+                if(par_res.autoscalePolicy.length == 0){
+                    configStatus.first_use = true;
+                }else{
+                    var car_res = this.sendReceive("GET","/cartridge/available/list",{});
+                    if(car_res.Error != undefined){
+                        error=car_res.Error;
+                        configStatus.first_use = false;
+                        configStatus.not_complete = true;
+                    }else{
+                        get_status = session.get("get-status");
+                        if(get_status.status == "success") {
+                            if(car_res.cartridge.length == 0){
+                                configStatus.first_use = false;
+                                configStatus.not_complete = true;
+                            }else{
+
+                                configStatus.not_complete = false;
+                                configStatus.first_use = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        return configStatus;
+    };
+
+    this.getRequestHeaders = function(ssoEnabled){
+        var requestHeaders;
+        if(ssoEnabled){
+            var accessToken = this.getAccessTokenFromSession();
+            requestHeaders = {
+                "Authorization": "Bearer "+accessToken,
+                "Content-Type": "application/json"
+            };
+        }else{
+            requestHeaders = {
+                "Content-Type": "application/json",
+                "Cookie": "JSESSIONID="+session.get("JSESSIONID")
+            };
+        }
+        return requestHeaders;
+    };
+
+    // refactor sendRecive and send method. duplicate code...
+    this.sendReceive = function(httpMethod,urlPostFix,data){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        // getting the access token from the session.
+        var endpoint = backendServerURL + urlPostFix;
+        var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
+        var response;
+        switch (httpMethod){
+            case  "GET":
+                response = get(endpoint,{},headers);
+                break;
+            case   "POST":
+                response = post(endpoint,stringify(data),headers);
+                break;
+            case    "PUT":
+                response = put(endpoint,stringify(data),headers);
+                break;
+            case    "DELETE":
+                response = del(endpoint,stringify(data),headers);
+                break;
+            default :
+                log.error("Error in the programme flow.");
+        }
+        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
+
+            session.put("get-status", { "message": "success" , "status": "success" });
+        } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
+            if(response.data != null && response.data != undefined) {
+                session.put("get-status", { "message": parse(response.data).Error.errorMessage , "status": "warning" } );
+            }
+        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
+            if(response.data != null && response.data != undefined) {
+                session.put("get-status",{ "message":  parse(response.data).Error.errorMessage, "status": "warning" } );
+            }
+        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
+            if(response.data != null && response.data != undefined) {
+                session.put("get-status", { "message": parse(response.data).Error.errorMessage, "status": "warning" } );
+            }
+        } else {
+            session.put("get-status", "Unknown response!");
+        }
+
+        log.debug("sent is: " + stringify(response));
+
+        if (response.data != null && response.data != undefined) {
+            return parse(response.data);
+        } else {
+            return response.data;
+        }
+    };
+
+
+    this.send = function(httpMethod,urlPostFix,data){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        // getting the access token from the session.
+        var endpoint = backendServerURL + urlPostFix;
+        var headers = this.getRequestHeaders(false); //NEED TO FIX THIS
+        var response;
+        switch (httpMethod){
+            case  "GET":
+                response = get(endpoint,{},headers);
+                break;
+            case   "POST":
+                response = post(endpoint,data,headers);
+                break;
+            case    "PUT":
+                response = put(endpoint,data,headers);
+                break;
+            case    "DELETE":
+                response = del(endpoint,data,headers);
+                break;
+            default :
+                log.error("Error in the programme flow.");
+        }
+
+        if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
+            session.put("deploy-status", { "message": "success" , "status": "success" });
+        } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
+            if(response.data != null && response.data != undefined) {
+                session.put("deploy-status",{ "message": parse(response.data).Error.errorMessage, "status": "warning" } );
+            }
+        } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
+            if(response.data != null && response.data != undefined) {
+                session.put("deploy-status", { "message":  parse(response.data).Error.errorMessage, "status": "error"});
+            }
+        } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
+            if(response.data != null && response.data != undefined) {
+                session.put("deploy-status", { "message": parse(response.data).Error.errorMessage, "status": "error"});
+            }
+        } else {
+            session.put("deploy-status", "Unknown response!");
+        }
+
+        if (response.data != null && response.data != undefined) {
+            return parse(response.data);
+        } else {
+            return response.data;
+        }
+    };
+
+
+    this.getSession = function(userName, password){
+        var config = require('/config/console.js').config();
+        var backendServerURL = config.backendServerConfiguration.url;
+        var endpoint = backendServerURL + "/session";
+        var sso = require("sso"); //TODO: get rid of this...
+        var basicAuthToken = sso.client.b64encode(userName + ":" + password);
+        var headers = {
+            "Authorization": "Basic "+basicAuthToken,
+            "Content-Type": "application/json"
+        };
+        var response = get(endpoint,{},headers,"json");
+        return response;
+    };
+
+    this.getAccessTokenFromSession = function(){
+        return session.get("access_token");
+    };
+
+
+
+};
+%>

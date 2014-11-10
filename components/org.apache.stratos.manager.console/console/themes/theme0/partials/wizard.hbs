@@ -1,0 +1,247 @@
+<div id="centered">
+    {{#if isSelection}}
+        <div class="row title">
+            <div class="title-main text-center">
+                <h1>{{content_title}}</h1>
+            </div>
+        </div>
+        <div class="container content">
+            <div class="row text-center">
+                <div class="row no-item row-overide">
+                    <div class="row title">
+                        <a type="button" class="btn btn-primary btn-lg" href="{{url ""}}/wizard/vm/">Virtual Machine</a>
+                        <span>Or</span>
+                        <a type="button" class="btn btn-primary btn-lg" href="{{url ""}}/wizard/docker/">Docker</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{else}}
+    <div class="row title">
+        <div class="title-main text-center">
+            <h1>{{content_title}} - {{formTitle}}</h1>
+        </div>
+    </div>
+
+
+    <div class="container content">
+        <div class="row text-center">
+            <div class='container text-center form-toolbar'>
+                <div class="col-md-3"></div>
+                <div class='col-md-9'>
+                    <div class="editor-button">
+                                <span class='pull-left'>Editor
+                                <input type="checkbox" name="my-checkbox" id='editortoggle' checked>
+                                </span>
+                        <span class="auto-correct"><input type="checkbox" checked id="auto-correct-check">Auto correct with schema</span>
+
+                        <button class='btn btn-info btn-lg pull-right wizard-button' type='button'
+                                id="{{#if steplast}}finished{{else}}next-step{{/if}}"
+                                data-step="{{step}}" data-pstep="{{pstep}}"> {{#if steplast}}Finished{{else}}
+                            Next{{/if}}</button>
+                        {{#ifCond wizardstep "!=" 1}}
+                            <button class='btn btn-default btn-lg pull-right wizard-button' type='button'
+                                    id="previous-step" data-pstep="{{pstep}}"> Previous</button>
+                        {{/ifCond}}
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-md-3 stratos-tab-menu">
+                    <div class="list-group wizard ">
+
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 1}} active{{/ifCond}}">
+                            <i class="fa fa-th-large"></i> Partitions
+                        </a>
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 2}} active{{/ifCond}}">
+                            <i class="fa fa-expand"></i> Autoscaling Policies
+                        </a>
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 3}} active{{/ifCond}}">
+                            <i class="fa fa-road"></i> Deployment Policies
+                        </a>
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 4}} active{{/ifCond}}">
+                            <i class="fa fa-tasks"></i> Loadbalancers
+                        </a>
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 5}} active{{/ifCond}}">
+                            <i class="fa fa-inbox"></i> Cartridges
+                        </a>
+                        <a href="#" class="list-group-item {{#ifCond wizardstep "==" 6}} active{{/ifCond}}">
+                            <i class="fa fa-sitemap"></i> Multitenant Services
+                        </a>
+
+                    </div>
+            </div>
+            <div class="col-md-9 stratos-tab">
+                    <div class="stratos-tab-content active">
+                        <div class='form' action='#' id='textform'></div>
+                        <div id='jsonform'>
+                            <div class='form-group'>
+                                <div class='form' action='#'>
+                                    <textarea placeholder='JSON Editor' id='jsoneditor' class='form-control'></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        // Set the default CSS theme and icon library globally
+        JSONEditor.defaults.theme = 'bootstrap3';
+        JSONEditor.defaults.iconlib = 'fontawesome4';
+        JSONEditor.defaults.show_errors = "always";
+
+        // This is the starting value for the editor
+        // We will use this to seed the initial editor
+        // and to provide a "Restore to Default" button.
+        var starting_value = {{{formDataRaw}}};
+
+        // Initialize the editor
+        var editor = new JSONEditor(document.getElementById('textform'), {
+            // Enable fetching schemas via ajax
+            ajax: false,
+            disable_edit_json: true,
+            //  disable_properties:true,
+            // The schema for the editor
+            schema: {{{formData}}},
+            format: "grid",
+
+            // Seed the form with a starting value
+            startval: starting_value
+        });
+
+        JSONEditor.prototype.showErrors = function () {
+            this.setOption('show_errors', 'always');
+        }
+
+        //    Hook up the validation indicator to update its
+        //    status whenever the editor changes
+        editor.on('change', function () {
+            // Get an array of errors from the validator
+            var errors = editor.validate();
+            if (errors.length) {
+                for (var i = 0; i < errors.length; i++) {
+                    var n = noty({text: errors[i].message + ' in ' + errors[i].path, layout: 'bottomRight',
+                        type: 'error', timeout: 2000});
+                }
+
+            }
+
+        });
+
+        /**
+         * Function to handle hiding and showing the JSON form
+         */
+        $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+            if (isForm) {
+
+                changeDisplayMode('#textform', '#jsonform');
+                $('#editortoggle').text('Form View');
+                isForm = false;
+                $('textarea#jsoneditor').val(JSON.stringify(editor.getValue(), null, '\t'));
+                console.log('click once')
+            } else {
+
+                changeDisplayMode('#jsonform', '#textform');
+                $('#editortoggle').text('JSON Editor');
+                editor.validate();
+                editor.setValue(JSON.parse($('textarea#jsoneditor').val()));
+                isForm = true;
+                // Fire a change event to force revalidation
+                editor.onChange();
+            }
+
+            if(state){
+                $('.auto-correct').css({"display":"block"});
+            }else{
+                $('.auto-correct').css({"display":"none"});
+            }
+        });
+
+        //handle changes happens on json editor
+        $('textarea#jsoneditor').on('keyup', function (event) {
+            //valiadate raw json and do validation
+            try {
+                var rawEditValidate = JSON.parse($('textarea#jsoneditor').val());
+                $(this).addClass("has-success").removeClass('has-error');
+                $('#deploy').prop('disabled', false);
+            } catch (e) {
+                $(this).addClass("has-error").removeClass('has-success');
+                $('#deploy').prop('disabled', true);
+                return false;
+            }
+
+            var autoCorrect = $('#auto-correct-check:checked').val();
+
+            if (rawEditValidate && autoCorrect ) {
+
+                editor.setValue(rawEditValidate);
+                editor.onChange();
+                if (event.keyCode == '13' || event.keyCode == '32') {
+                }else{
+                    $('textarea#jsoneditor').val(JSON.stringify(editor.getValue(), null, '\t'));
+                }
+
+            }
+
+        });
+
+        // Finding the height of the rendered form, and setting the JSON
+        // editor to the same height
+        var formHeight = $('#textform').height();
+        $('#jsoneditor').css('height', formHeight);
+
+        $.fn.bootstrapSwitch.defaults.onText = 'JSON';
+        $.fn.bootstrapSwitch.defaults.offText = 'UI';
+        $("[name='my-checkbox']").bootstrapSwitch('state', false, true);
+
+
+        $('#previous-step').click(function() {
+            window.location = '{{url ""}}/wizard/vm/{{pstep}}/'
+        });
+
+        $('#finished').click(function() {
+            window.location = '{{url ""}}/'
+        });
+
+
+        $('#next-step').click(function () {
+            console.log('get hit')
+            var payload = editor.getValue();
+            var btn = $(this);
+            var formtype = '{{step}}';
+            btn.html("<i class='fa fa-spinner fa-spin'></i> Deploying...");
+            $.ajax({
+                type: "POST",
+                url: caramel.context + "/controllers/wizard/wizard_requests.jag",
+                dataType: 'json',
+                data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
+                success: function (data) {
+                    console.log(data);
+                    if (data.status == 'error') {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+
+                    } else if (data.status == 'warning') {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                    } else {
+                        var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                        setTimeout(function () {
+                            window.location = '{{url ""}}/wizard/vm/{{nsettype}}/'
+                        }, 5000);
+                    }
+                }
+            })
+                    .always(function () {
+                        btn.html('Deploy');
+                    });
+
+        });//end of deploy button trigger
+
+    });
+
+</script>
+    {{/if}}

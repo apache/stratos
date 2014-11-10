@@ -1,0 +1,165 @@
+{
+    "menu": [
+        {
+            "link": "configure/",
+            "linkexternal": false,
+            "context": "/",
+            "title": "Configurations",
+            "icon": "fa-gears",
+            "permissionPaths": ["/permission", "/permission/admin"],
+            "description": "Configure partitions, deployment and scaling policies, cartridges and manage docker groups",
+            "sub-menu": [
+                {
+                    "link": "configure/partitions/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Partitions",
+                    "icon": "fa-th-large",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Define partitions/partition groups to be used in autoscaling and deployment policies."
+                },
+                {
+                    "link": "configure/deployments/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Deployment Policies",
+                    "icon": "fa-road",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/deploymentpolicy"],
+                    "description": "Define specific policies for cartridge deployment."
+                },
+                {
+                    "link": "configure/autoscalingpolicies/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Autoscaling Policies",
+                    "icon": "fa-expand",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
+                    "description": "Define policies which specify inbound requests, memory usage and CPU usage etc."
+                },
+                {
+                    "link": "configure/loadbalancer/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Load Balancers",
+                    "icon": "fa-tasks",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Define load balancer for cartridges."
+                },
+                {
+                    "link": "configure/cartridges/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Cartridges",
+                    "icon": "fa-inbox",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Define and manage single/multi tenant cartridges."
+                },
+                {
+                    "link": "configure/docker/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Docker Clusters",
+                    "icon": "fa-sitemap",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Define and manage multitenant services."
+                }
+                /*     ,
+                 {
+                 "link": "configure/application/",
+                 "linkexternal":false,
+                 "context":"/configure",
+                 "title": "Application Deployment",
+                 "icon": "fa-archive ",
+                 "permissionPaths": ["/permission","/permission/admin"],
+                 "description": "Define and manage multitenant services."
+                 }
+                 */
+            ]
+        },
+        {
+            "link": "users/",
+            "linkexternal": false,
+            "context": "/",
+            "title": "Users",
+            "icon": "fa-users",
+            "permissionPaths": ["/permission", "/permission/admin" ],
+            "description": "Manage Users and Tenants",
+            "sub-menu": [
+                {
+                    "link": "users/users/",
+                    "linkexternal": false,
+                    "context": "/users",
+                    "title": "Manage Users",
+                    "icon": "fa-user",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Manage users."
+                },
+                {
+                    "link": "users/tenants/",
+                    "linkexternal": false,
+                    "context": "/users",
+                    "title": "Manage Tenants",
+                    "icon": "fa-building",
+                    "permissionPaths": ["/permission"],
+                    "description": "Manage tenants."
+                }
+            ]
+        },
+        {
+            "link": "applications/",
+            "linkexternal": false,
+            "context": "/",
+            "title": "Applications",
+            "icon": "fa-archive",
+            "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
+            "description": "Subscribe to Application.",
+            "sub-menu": [
+                {
+                    "link": "applications/groups/",
+                    "linkexternal": false,
+                    "context": "/applications",
+                    "title": "Application Groups",
+                    "icon": "fa-briefcase",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "description": "Add application groups."
+                },
+                {
+                    "link": "applications/applications/",
+                    "linkexternal": false,
+                    "context": "/applications",
+                    "title": "Applications",
+                    "icon": "fa-archive",
+                    "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
+                    "description": "Add applications"
+                }
+            ]
+        },
+//        {
+//            "link": "mycartridges/",
+//            "linkexternal": false,
+//            "context": "/",
+//            "title": "Instances",
+//            "icon": "fa-inbox",
+//            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
+//            "description": "Your Instances"
+//        },
+        {
+            "link": "https://issues.apache.org/jira/",
+            "linkexternal": true,
+            "context": "/",
+            "title": "JIRA",
+            "icon": "fa-bug",
+            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
+            "description": "Report your issues to keep this alive"
+        },
+        {
+            "link": "https://cwiki.apache.org/confluence/display/STRATOS/Home",
+            "linkexternal": true,
+            "context": "/",
+            "title": "Documentation",
+            "icon": "fa-life-saver",
+            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
+            "description": "Read Documentation to get more information"
+        }
+    ]
+}

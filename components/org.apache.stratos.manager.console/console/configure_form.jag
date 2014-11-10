@@ -1,0 +1,160 @@
+<%
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+include('/controllers/login/validator.jag');
+include('/controllers/menu/menu_generator.jag');
+
+var log = new Log("apachestratos.configure_form"),
+        error = [],
+        list_data,
+        caramel = require('caramel'),
+        context = caramel.configs().context,
+        menuJson = require('/controllers/menu/menu.json'),
+        userPermissions = session.get('PERMISSIONS'),
+        util = require('/controllers/rest/rest_calls.jag'),
+        uriMatcher = new URIMatcher(request.getRequestURI()),
+        elements = uriMatcher.match('/{context}/configure/{formtype}/'),
+        breadcrumbPathLevelOne = 'configure',
+        formDataEdit = '',
+        isEdit = false,
+        isForm = false;
+
+//create left menu
+var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
+
+
+if (!elements) {
+    elements = uriMatcher.match('/{context}/configure/{formtype}/{action}/');
+    isForm = true;
+
+    if (elements.action != 'new') {
+        isEdit = true;
+    }
+}
+
+try {
+    var formData = require('controllers/forms/schema/configure/' + elements.formtype + '.json'),
+            formDataRaw = require('controllers/forms/default/configure/' + elements.formtype + '.json'),
+            formTitle = formData.title,
+            buttonText = formData.name;
+} catch (e) {
+    log.error(e.message);
+    error.push({"errorMessage": e.message});
+}
+
+
+if (elements.action != 'new' && isEdit) {
+    formTitle = 'Partition Details - ' + elements.action;
+}
+
+var formtype = elements.formtype;
+
+switch (formtype) {
+    case "partitions":
+        list_data = util.RESTCalls.getPartitions();
+        if (list_data.partition && list_data.partition.length === 0) {
+            list_data = null;
+        } else {
+            formDataEdit = list_data.partition;
+            for (specNumber in list_data.partition) {
+                if (list_data.partition[specNumber].id == elements.action) {
+                    formDataEdit = list_data.partition[specNumber];
+                }
+
+            }
+
+        }
+        break;
+
+    case "autoscalingpolicies":
+        list_data = util.RESTCalls.getPolicyAutoScale();
+        if (list_data.autoscalePolicy && list_data.autoscalePolicy.length === 0) {
+            list_data = null;
+        }
+        break;
+
+    case "deployments":
+        list_data = util.RESTCalls.getPolicyDeployment();
+        break;
+
+    case "loadbalancer":
+        list_data = util.RESTCalls.getLbCartridges();
+        if (list_data.cartridge && list_data.cartridge.length === 0) {
+            list_data = null;
+        }
+        break;
+
+    case "cartridges":
+        list_data = util.RESTCalls.getCartridges();
+
+        if (list_data.cartridge && list_data.cartridge.length === 0) {
+            list_data = null;
+        } else if (list_data.hasOwnProperty('cartridge')) {
+            //remove LB from current object
+            for (var i = 0; i < list_data.cartridge.length; i++) {
+                if (list_data.cartridge[i].loadBalancer === true) {
+                    list_data.cartridge.splice(i, 1);
+                    i = i - 1;
+                }
+            }
+        }
+        break;
+
+    case "multitenant":
+        list_data = util.RESTCalls.getServices();
+        if (list_data.serviceDefinitionBean && list_data.serviceDefinitionBean.length === 0) {
+            list_data = null;
+        }
+        break;
+
+    case "docker":
+        list_data = util.RESTCalls.getKubernetesGroups();
+        break;
+
+    default:
+        error.push({"errorMessage":"Incorrect resource path found"});
+
+}
+
+//check user has permission to access endpoints
+if (list_data != null && list_data.hasOwnProperty('Error')) {
+    error.push(list_data.Error);
+}
+
+var caramelData = {
+    breadcrumbPathLevelOne: breadcrumbPathLevelOne,
+    breadcrumbPathLevelTwo: elements.formtype,
+    left_menu: leftMenu,
+    isForm: isForm,
+    isEdit: isEdit,
+    formDataEdit: JSON.stringify(formDataEdit),
+    formTitle: formTitle,
+    formDataRaw: JSON.stringify(formDataRaw),
+    formData: JSON.stringify(formData),
+    buttonText: buttonText,
+    list_data: list_data,
+    error: error
+}
+
+
+caramel.render(caramelData);
+
+%>

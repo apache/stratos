@@ -1,0 +1,46 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "root",
+    "title": "Group Definition",
+    "name": "Group",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "properties":{
+        "cartridges": {
+            "type":"array",
+            "id": "root/cartridges",
+            "required":false,
+            "items":
+            {
+                "type":"string",
+                "id": "root/cartridges/0",
+                "default": "tomcat",
+                "required":false
+            }
+
+
+        },
+        "dependencies": {
+            "type":"object",
+            "id": "root/dependencies",
+            "required":false,
+            "properties":{
+                "terminationBehaviour": {
+                    "type":"string",
+                    "id": "root/dependencies/terminationBehaviour",
+                    "default": "terminate-none",
+                    "required":false
+                }
+            }
+        },
+        "name": {
+            "type":"string",
+            "id": "root/name",
+            "default": "group1",
+            "required":false
+        }
+    }
+}

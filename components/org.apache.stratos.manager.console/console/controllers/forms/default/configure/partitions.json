@@ -1,0 +1,16 @@
+{
+    "id": "P1",
+    "description":"partition description",
+    "isPublic":false,
+    "provider": "ec2",
+    "property": [
+        {
+            "name": "region",
+            "value": "ap-southeast-1"
+        },
+        {
+            "name": "zone",
+            "value": "ap-southeast-1a"
+        }
+    ]
+}

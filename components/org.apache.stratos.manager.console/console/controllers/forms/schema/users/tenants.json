@@ -1,0 +1,52 @@
+{
+    "type":"object",
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "root",
+    "title": "Tenant",
+    "name": "Tenant",
+    "required":false,
+    "properties":{
+        "active": {
+            "type":"string",
+            "id": "root/active",
+            "default": "true",
+            "required":false
+        },
+        "adminPassword": {
+            "type":"string",
+            "id": "root/adminPassword",
+            "default": "admin123",
+            "required":false
+        },
+        "admin": {
+            "type":"string",
+            "id": "root/admin",
+            "default": "admin",
+            "required":false
+        },
+        "email": {
+            "type":"string",
+            "id": "root/email",
+            "default": "foo@bar.com",
+            "required":false
+        },
+        "firstname": {
+            "type":"string",
+            "id": "root/firstname",
+            "default": "Frank",
+            "required":false
+        },
+        "lastname": {
+            "type":"string",
+            "id": "root/lastname",
+            "default": "Myers",
+            "required":false
+        },
+        "tenantDomain": {
+            "type":"string",
+            "id": "root/tenantDomain",
+            "default": "frank.com",
+            "required":false
+        }
+    }
+}

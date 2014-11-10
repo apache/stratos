@@ -1,0 +1,33 @@
+<%
+if(session.get("USER_NAME")==null || session.get("USER_NAME") === undefined){
+    response.sendRedirect(request.getContextPath()+'/login/');
+}
+
+function pageValidate(pagePermission, rolePermission, error){
+    hasPermission = checkPagePermission(pagePermission, rolePermission);
+
+    if(hasPermission.length > 0){
+        return true;
+    }else{
+        error.push({"errorMessage": "Sorry You don't have permission to access this content"});
+        return error;
+    }
+
+}
+
+function checkPagePermission(x, y) {
+    x.sort();
+    y.sort();
+    var i = j = 0;
+    var ret = [];
+    while (i < x.length && j < y.length) {
+        if (x[i] < y[j]) i++;
+        else if (y[j] < x[i]) j++;
+        else {
+            ret.push(i);
+            i++, j++;
+        }
+    }
+    return ret;
+}
+%>

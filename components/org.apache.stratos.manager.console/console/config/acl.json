@@ -1,12 +1,6 @@
 {
-    "carbonsuper": {
-        "admin": ["view", "edit", "subscribe","configure","tenant-mgt", "tenant-edit"],
-	"Internal/admin": ["view", "edit", "subscribe","configure","tenant-mgt", "tenant-edit"],
-        "Internal/Everyone": ["view", "tenant-edit"]
-    },
-    "tenants": {
-        "admin": ["view","subscribe", "post"],
-	"Internal/admin": ["view","subscribe", "post"],
-        "Internal/Everyone": ["test1","test2","view"]
+    "resourcePaths":{
+        "/permission/admin/restlogin":"/",
+        "":""
     }
 }

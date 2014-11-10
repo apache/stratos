@@ -1,0 +1,134 @@
+<%
+var outputHtml,path,i= "";
+/**
+ * UI generation logic
+ */
+
+/**
+ * Function to generate HTML for the form
+ * @param  {JSON} jsonSpec JSON description of the form
+ * @return {String}        Formatted HTML ready to be inserted into the template
+ */
+function traverse(jsonSpec, path) {
+
+    for (specNumber in jsonSpec) {
+        var spec = jsonSpec[specNumber];
+
+        if (typeof(spec.value)==="object") {
+            if (spec.type === 'name_object') {
+                path += spec.name + '.';
+			    outputHtml += generateSectionHtml(spec.label,spec.name, spec.value);
+		    }else if(spec.type === 'name_array'){
+                i=-1;
+                path += spec.name ;
+		        outputHtml += generateSectionHtml(spec.label,spec.name, spec.value);
+		    }else if(spec.type === 'object'){
+                ++i;
+                path += '.'+ i + '.';
+            }
+
+            traverse(spec.value, path);
+
+            if (spec.type === 'name_object') {
+                path = path.replace(spec.name+'.', '');
+			    outputHtml += "</div></div></div>";
+		    }else if(spec.type === 'name_array'){
+                path = path.replace(spec.name, '');
+                i=0;
+		        outputHtml += "</div></div></div>";
+		    }else if(spec.type === 'object'){
+                path = path.replace('.'+ i + '.', '');
+		        outputHtml += "<hr>";
+		    }
+
+        }else{
+            if (spec.type === 'field') {
+                path += spec.name+'.';
+
+                outputHtml += generateFieldHtml(spec.label,spec.placeholder, spec.name, spec.value, path);
+                path = path.replace(spec.name+'.', '');
+		    }
+        }
+    }
+
+     return outputHtml;
+
+}
+
+
+
+/**
+ * Function to generate the html for a text field in the form
+ * @param  {String} label       Label to be put in the form
+ * @param  {String} placeholder Placeholder for the field
+ * @param  {String} fieldName   Name of the field
+ * @return {String}             Formatted HTML ready to be inserted in the template
+ */
+function generateFieldHtml (label, placeholder, fieldName, value, path) {
+    log.info(path);
+    var labelHtml = "<label class='formlabel'>" + label + "</label>";
+    var inputHtml = "<input type='text' placeholder='" + placeholder + "' id='" +
+                    fieldName + "' class='form-control' value='"+value+"' data-path='"+
+                    path+"'>";
+    return labelHtml + inputHtml;
+}
+
+/**
+ * @param myParam1
+ * @param myParam2
+ */
+function generateSectionHtml(label, name, content){
+    var outputHtml = "";
+    outputHtml += "<div class='panel-group subform' id='" + name + "'>";
+    outputHtml += "<div class='panel panel-default'>";
+    outputHtml += "<div class='panel-heading'>";
+    outputHtml += "<h4 class='panel-title'><a class='togglelink' data-toggle='collapse' data-parent='" + name + "' href='#" + name + "panel'>" + label + "</a></h4>";
+    outputHtml += "</div>";
+    outputHtml += "<div class='panel-collapse collapse' id='" + name + "panel'>";
+    return outputHtml;
+}
+
+
+var outputJSON = "";
+/**
+ * Function to generate JSON for the form
+ * @param  {JSON} jsonSpec JSON description of the form
+ * @return {String}        Formatted JSON ready to be inserted into the editor box
+ */
+function generateJSON(jsonSpec){
+
+    for (specNumber in jsonSpec) {
+        var spec = jsonSpec[specNumber];
+        if (typeof(spec.value)==="object") {
+
+            if(spec.type === 'name_object'){
+                outputJSON += '"'+ spec.name + '":';
+                outputJSON += "{";
+            }else if(spec.type === 'name_array'){
+                outputJSON += '"'+ spec.name + '":';
+                outputJSON += "[";
+		    }else if(spec.type == 'object'){
+		        outputJSON += "{";
+		    }
+
+            generateJSON(spec.value);
+
+            if(spec.type === 'name_object'){
+                outputJSON += "},";
+            }else if(spec.type === 'name_array'){
+                outputJSON += "],";
+		    }else if(spec.type == 'object'){
+		        outputJSON += "},";
+		    }
+        }else{
+            if (spec.type === 'field') {
+                    outputJSON += '"'+spec.name + '":"'+ spec.value + '",';
+            }
+        }
+
+    }
+
+    return outputJSON;
+}
+
+%>
