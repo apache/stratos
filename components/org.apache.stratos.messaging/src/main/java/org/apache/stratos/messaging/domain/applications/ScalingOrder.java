@@ -24,17 +24,17 @@ import java.util.List;
 
 public class ScalingOrder implements Serializable {
 
-    private List<String> startList;
+    private List<String> scalingOrderList;
 
-    public ScalingOrder(List<String> startList) {
-        this.startList = startList;
+    public ScalingOrder(List<String> scalingOrderList) {
+        this.scalingOrderList = scalingOrderList;
     }
 
-    public List<String> getStartList() {
-        return startList;
+    public List<String> getScalingOrderList() {
+        return scalingOrderList;
     }
 
-    public void setStartList(List<String> startList) {
-        this.startList = startList;
+    public void setScalingOrderList(List<String> scalingOrderList) {
+        this.scalingOrderList = scalingOrderList;
     }
 }
