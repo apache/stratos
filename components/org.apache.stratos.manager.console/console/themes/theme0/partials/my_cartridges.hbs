@@ -97,7 +97,6 @@
                             dataType: 'json',
                             data: { "cartridge_name":cartridge_name},
                             success: function (data) {
-                                console.log(data);
                                 if (data.status == 'error') {
                                     var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
                                 } else if (data.status == 'warning') {
