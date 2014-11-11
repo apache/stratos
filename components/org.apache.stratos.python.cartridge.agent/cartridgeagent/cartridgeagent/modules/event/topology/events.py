@@ -186,7 +186,7 @@ class CompleteTopologyEvent:
 
                         member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id, mm_partition_id, member_id)
                         member_obj.member_public_ip = member_str["memberPublicIp"] if "memberPublicIp" in member_str else None
-                        member_obj.status = member_str["status"] if "status" in cluster_str else None
+                        member_obj.status = member_str["status"] if "status" in member_str else None
                         member_obj.member_ip = member_str["memberIp"]
                         member_obj.properties = member_str["properties"]
                         member_obj.lb_cluster_id = member_str["lbClusterId"] if "lbClusterId" in member_str else None
