@@ -35,7 +35,6 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'index_header',
                     context:{
-                        user_name: 'admin@wso2.com'
                     }
                 }
             ],

@@ -4,48 +4,60 @@
     "id": "root",
     "title": "Tenant",
     "name": "Tenant",
-    "required":false,
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "required":["admin","adminPassword","email", "firstname", "lastname", "tenantDomain"],
     "properties":{
-        "active": {
+        "admin": {
             "type":"string",
-            "id": "root/active",
-            "default": "true",
-            "required":false
+            "id": "root/admin",
+            "default": "admin",
+            "title": "Admin user name",
+            "name": "Admin user name"
         },
         "adminPassword": {
             "type":"string",
             "id": "root/adminPassword",
             "default": "admin123",
-            "required":false
-        },
-        "admin": {
-            "type":"string",
-            "id": "root/admin",
-            "default": "admin",
-            "required":false
+            "title": "Admin user password",
+            "name": "Admin user password"
         },
         "email": {
             "type":"string",
             "id": "root/email",
             "default": "foo@bar.com",
-            "required":false
+            "title": "Admin email",
+            "name": "Admin email"
         },
         "firstname": {
             "type":"string",
             "id": "root/firstname",
             "default": "Frank",
-            "required":false
+            "title": "First name",
+            "name": "First name"
         },
         "lastname": {
             "type":"string",
             "id": "root/lastname",
             "default": "Myers",
-            "required":false
+            "title": "Last name",
+            "name": "Last name"
         },
         "tenantDomain": {
             "type":"string",
             "id": "root/tenantDomain",
             "default": "frank.com",
+            "title": "Tenant domain",
+            "name": "Tenant domain"
+        },
+        "active": {
+            "type":"boolean",
+            "id": "root/active",
+            "default": "true",
+            "title": "Active",
+            "name": "Active",
             "required":false
         }
     }

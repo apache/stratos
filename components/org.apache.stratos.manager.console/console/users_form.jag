@@ -21,40 +21,47 @@
  */
 //add login validator for pages
 include('/controllers/login/validator.jag');
+include('/controllers/menu/menu_generator.jag');
 
 var log = new Log("apacheStratos.users");
-var error=[];
+var error = [];
 var caramel = require('caramel'),
-    util = require('/controllers/rest/rest_calls.jag'),
-    uriMatcher = new URIMatcher(request.getRequestURI()),
-    elements = uriMatcher.match('/{context}/users/{formtype}/'),
-    list_data,
-    isForm = false;
+        util = require('/controllers/rest/rest_calls.jag'),
+        uriMatcher = new URIMatcher(request.getRequestURI()),
+        elements = uriMatcher.match('/{context}/users/{formtype}/'),
+        context = caramel.configs().context,
+        menuJson = require('/controllers/menu/menu.json'),
+        userPermissions = session.get('PERMISSIONS'),
+        list_data,
+        isForm = false;
 
-if(!elements){
+if (!elements) {
     elements = uriMatcher.match('/{context}/users/{formtype}/{action}/');
     isForm = true;
 }
+
+//create left menu
+var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 var formData = require('controllers/forms/schema/users/' + elements.formtype + '.json'),
         formDataRaw = require('controllers/forms/default/users/' + elements.formtype + '.json'),
         formTitle = formData.title;
 
-if(elements.formtype == 'users'){
-    list_data =  util.RESTCalls.getUserList();
-    if(list_data.userInfoBean && list_data.userInfoBean.length === 0){
+if (elements.formtype == 'users') {
+    list_data = util.RESTCalls.getUserList();
+    if (list_data.userInfoBean && list_data.userInfoBean.length === 0) {
         list_data = null;
     }
 
-}else if(elements.formtype == 'tenants'){
-    list_data =  util.RESTCalls.getTenants();
-    if(list_data.tenantInfoBean && list_data.tenantInfoBean.length === 0){
+} else if (elements.formtype == 'tenants') {
+    list_data = util.RESTCalls.getTenants();
+    if (list_data.tenantInfoBean && list_data.tenantInfoBean.length === 0) {
         list_data = null;
     }
 }
 
 //check user has permission to access endpoints
-if( list_data != null && list_data.hasOwnProperty('Error')){
+if (list_data != null && list_data.hasOwnProperty('Error')) {
     error.push(list_data.Error);
 }
 
@@ -62,10 +69,11 @@ caramel.render({
     breadcrumbPathLevelOne: 'users',
     breadcrumbPathLevelTwo: elements.formtype,
     isForm: isForm,
-    formTitle:  formTitle,
+    formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formData: JSON.stringify(formData),
     list_data: list_data,
+    left_menu: leftMenu,
     error: error
 });
 

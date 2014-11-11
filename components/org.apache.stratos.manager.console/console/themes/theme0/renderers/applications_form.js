@@ -26,8 +26,8 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'index_title',
                     context: {
-                        page_title: 'Apache Stratos - Cartridges',
-                        page_description: 'Apache Stratos - Cartridges'
+                        page_title: 'Apache Stratos - Application Managment',
+                        page_description: 'Apache Stratos - Application Managment'
                     }
                 }
             ],
@@ -35,7 +35,6 @@ var render = function (theme, data, meta, require) {
                 {
                     partial: 'index_header',
                     context:{
-                        user_name: 'admin@wso2.com'
                     }
                 }
             ],

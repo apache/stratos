@@ -1,9 +1,9 @@
 {
-    "userName":"lasindu",
-    "credential":"lasindu",
+    "userName":"UserName",
+    "credential":"Password",
     "role":"Internal/user",
-    "firstName":"Lasindu",
-    "lastName":"Charith",
-    "email":"lasindu@wso2.com",
-    "profileName":"null"
+    "firstName":"FirstName",
+    "lastName":"LastName",
+    "email":"user@apache.org",
+    "profileName":"profilename"
 }
