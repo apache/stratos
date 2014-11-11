@@ -60,23 +60,12 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
                     jsonToObject(message, ApplicationTerminatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplications();
-            Set<ClusterDataHolder> clusterDataHolders = event.getClusterData();
-            if (clusterDataHolders != null) {
-                for (ClusterDataHolder clusterData : clusterDataHolders) {
-                    TopologyUpdater.acquireWriteLockForService(clusterData.getServiceType());
-                }
-            }
 
             try {
                 return doProcess(event, applications);
 
             } finally {
                 ApplicationsUpdater.releaseWriteLockForApplications();
-                if (clusterDataHolders != null) {
-                    for (ClusterDataHolder clusterData : clusterDataHolders) {
-                        TopologyUpdater.releaseWriteLockForService(clusterData.getServiceType());
-                    }
-                }
             }
 
         } else {
@@ -101,24 +90,8 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         // check if an Application with same name exists in applications
         String appId = event.getAppId();
         if (applications.applicationExists(appId)) {
-            log.warn("Application with id [ " + appId + " ] still exists in Topology, removing it");
+            log.warn("Application with id [ " + appId + " ] still exists in Applications, removing it");
             applications.removeApplication(appId);
-        }
-
-        if (event.getClusterData() != null) {
-            // remove the Clusters from the Topology
-            for (ClusterDataHolder clusterData : event.getClusterData()) {
-                log.info("################################ TODO ################################");
-//                Service service = applications.getService(clusterData.getServiceType());
-//                if (service != null) {
-//                    service.removeCluster(clusterData.getClusterId());
-//                    if (log.isDebugEnabled()) {
-//                        log.debug("Removed the Cluster " + clusterData.getClusterId() + " from Topology");
-//                    }
-//                }  else {
-//                    log.warn("Service " + clusterData.getServiceType() + " not found in Topology!");
-//                }
-            }
         }
 
         if (log.isDebugEnabled()) {

@@ -48,8 +48,7 @@ class TenantEventMessageListener implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable arg0) {
-		// TODO Auto-generated method stub
-
+        log.warn("MQTT Connection is lost", arg0);
 	}
 
 	@Override

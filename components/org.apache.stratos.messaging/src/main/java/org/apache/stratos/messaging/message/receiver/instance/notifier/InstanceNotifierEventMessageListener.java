@@ -48,10 +48,7 @@ class InstanceNotifierEventMessageListener implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable err) {
-		if (log.isDebugEnabled()) {
-			log.debug("MQTT connection lost" , err);
-		}
-
+        log.warn("MQTT Connection is lost", err);
 	}
 
 	@Override

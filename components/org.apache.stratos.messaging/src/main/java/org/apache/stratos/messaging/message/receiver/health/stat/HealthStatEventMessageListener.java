@@ -48,7 +48,7 @@ public class HealthStatEventMessageListener implements MqttCallback {
 
 	@Override
 	public void connectionLost(Throwable err) {
-		log.debug("MQTT connection lost", err);
+        log.warn("MQTT Connection is lost", err);
 	}
 
 	@Override

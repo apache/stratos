@@ -67,8 +67,8 @@ public class ApplicationTopicReceiver implements Runnable{
             @Override
             protected void onEvent(Event event) {
                 //Remove the application related data
-                log.info("ApplicationTerminatedEvent received for [application]");
                 ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent)event;
+                log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
                 String appId = terminatedEvent.getAppId();
                 TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
             }

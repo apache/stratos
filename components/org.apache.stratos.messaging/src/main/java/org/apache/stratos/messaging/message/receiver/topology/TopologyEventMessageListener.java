@@ -45,7 +45,7 @@ class TopologyEventMessageListener implements MqttCallback {
 
     @Override
     public void connectionLost(Throwable throwable) {
-        log.warn("Connection is lost", throwable);
+        log.warn("MQTT Connection is lost", throwable);
     }
 
     @Override

@@ -198,14 +198,14 @@ public class TopologyBuilder {
                     }
                     // remove runtime data
                     dataHolder.removeClusterContext(aClusterData.getClusterId());
+
+                    log.info("Removed application [ " + appId + " ]'s Cluster [ " + aClusterData.getClusterId() + " ] from the topology");
                 }
                 // persist runtime data changes
                 persist(dataHolder);
             } else {
                 log.info("No cluster data found for application " + appId + " to remove");
             }
-
-            log.info("Application Cluster " + appId + " are removed from the topology");
 
             TopologyManager.updateTopology(topology);
 
