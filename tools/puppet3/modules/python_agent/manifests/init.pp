@@ -79,6 +79,17 @@ class python_agent(
     require => Python_agent::Initialize[$service_code];
   }
 
+  exec { 'make extension log folder':
+    path    => '/bin/',
+    command => "mkdir -p /var/log/apache-stratos",
+    require => Exec['make extension folder'];
+  }
+
+  exec { 'make extension log file':
+    path    => '/bin/',
+    command => "touch /var/log/apache-stratos/cartridge-agent-extensions.log",
+    require => Exec['make extension log folder'];
+  }
 
 # excluding templates which are not needed by a cartridge module from default_templates
   $default_templates_excluded = difference($default_templates,$exclude_templates)
@@ -94,7 +105,7 @@ class python_agent(
     $service_templates:
       target    => $agent_home,
       template_dir => "agent",
-      require   => Exec['make extension folder'];
+      require   => Exec['make extension log file'];
   }
 
 # applying custom extensions
@@ -103,7 +114,7 @@ class python_agent(
       $custom_templates:
         target    => $agent_home,
         template_dir => "${module}/agent",
-        require   => [Exec['make extension folder']]
+        require   => [Exec['make extension log file']]
 	}
   }
 
