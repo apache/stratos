@@ -87,14 +87,7 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit , float lowerLimit ,double predictedValue , int activeMemberCount ){
 
-        double numberOfInstances = 0;
-        if(predictedValue > upperLimit){
-            numberOfInstances = (activeMemberCount*predictedValue)/upperLimit;
-        }else if((upperLimit >= predictedValue) && (predictedValue >= lowerLimit)){
-            numberOfInstances = activeMemberCount;
-        }else{
-            numberOfInstances = (activeMemberCount*predictedValue)/lowerLimit;
-        }
+        double numberOfInstances = (activeMemberCount*predictedValue)/upperLimit;
 
         return (int)Math.ceil(numberOfInstances);
     }
