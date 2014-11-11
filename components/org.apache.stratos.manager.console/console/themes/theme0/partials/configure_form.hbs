@@ -220,7 +220,6 @@
                     $('#editortoggle').text('Form View');
                     isForm = false;
                     $('textarea#jsoneditor').val(JSON.stringify(editor.getValue(), null, '\t'));
-                    console.log('click once')
                 } else {
 
                     changeDisplayMode('#jsonform', '#textform');
@@ -287,7 +286,6 @@
                 dataType: 'json',
                 data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
                 success: function (data) {
-                    console.log(data);
                     if (data.status == 'error') {
                         var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
                     } else if (data.status == 'warning') {
