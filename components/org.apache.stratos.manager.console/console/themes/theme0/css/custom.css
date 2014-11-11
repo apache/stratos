@@ -2,7 +2,7 @@ body{ background: url('../images/stratos_background.png')  no-repeat; background
 .error-page{margin-top: 2em;}
 /* index_header partial related styles */
 .logo img { width: 140px; }
-.user-image img { width: 50px; }
+.user-image img { width: 50px; background-color: rgb(228, 242, 255);}
 
 .navbar { border-radius: 0px; box-shadow:0 0 5px -1px rgb(100,100,100); margin-bottom: 0px; z-index: 99999; position: fixed; width: 100%; }
 .navbar-default { background: #fff; }
