@@ -15,7 +15,7 @@
                     <div class='container text-center form-toolbar'>
                         <div class='col-md-5'></div>
                         <div class='col-md-7 '>
-                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''> Add </button>
+                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''> Add {{formContext}}</button>
                             <button class='btn btn-default btn-lg pull-right button-gap' type='button' onclick='window.location.replace(document.referrer)'> Cancel
                             </button>
                         </div>
@@ -54,14 +54,14 @@
                         </div>
                     </div>
                     <div class="col-md-7 col-sm-3 text-right">
-                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New</a>
+                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add new {{formContext}}</a>
                     </div>
                 </div>
             {{else}}
                 <div class="row no-item row-overide">
                     <div class="row title">
                         <h2>No {{formTitle}} found..</h2>
-                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formTitle}}</a>
+                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add new {{formTitle}}</a>
                     </div>
                 </div>
             {{/if}}
@@ -74,12 +74,8 @@
                         </div>
                         <h2>{{userName}} </h2>
 
-                        <div class="toggle-menu-description">Define partitions/partition groups to be used in
-                            autoscaling and deployment policies.
+                        <div class="toggle-menu-description">{{role}}
                         </div>
-                        <!--<div class="toggle-menu-button">
-                            <button type="button" class="btn btn-primary" >Remove</button>
-                        </div>-->
                     </div>
                 {{/each}}
                 {{#each content_body.sections.tenantInfoBean}}
@@ -90,9 +86,6 @@
                         <h2>{{tenantDomain}} </h2>
 
                         <div class="toggle-menu-description">{{email}} - {{createdDate}} </div>
-                        <!--<div class="toggle-menu-button">
-                            <button type="button" class="btn btn-primary" >Remove</button>
-                        </div>-->
                     </div>
                 {{/each}}
             </div>
@@ -132,7 +125,6 @@
             editor.on('change', function () {
                 // Get an array of errors from the validator
                 var errors = editor.validate();
-                console.log(errors);
                 //       var indicator = document.getElementById('valid_indicator');
 
 //        // Not valid
@@ -174,7 +166,6 @@
                     .always(function () {
                         btn.html('Add '+formtype);
                     });
-            console.log(payload);
         });//end of deploy button trigger
 
     });

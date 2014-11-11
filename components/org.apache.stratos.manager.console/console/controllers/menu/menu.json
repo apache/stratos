@@ -92,7 +92,7 @@
                     "title": "Manage Users",
                     "icon": "fa-user",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Manage users."
+                    "description": "Manage current tenant users."
                 },
                 {
                     "link": "users/tenants/",
