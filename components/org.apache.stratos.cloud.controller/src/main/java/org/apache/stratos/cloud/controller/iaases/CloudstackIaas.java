@@ -198,7 +198,8 @@ public class CloudstackIaas extends Iaas {
      * we cannot assign public ips.
      * <p/>
      * When we use an advanced zone, a public IP address will get automatically assigned to the vm. So we don't need
-     * to find an unallocated IP address and assign that address to the vm (Not like in ec2 and openstack).
+     * to find an unallocated IP address and assign that address to the vm. If you are using a basic zone you cannot
+     * assign public IPs
      * <p/>
      * So  this method will find the IP that has been assigned to the vm and return it.
      */
@@ -223,7 +224,7 @@ public class CloudstackIaas extends Iaas {
             if (publicIPAddress.getVirtualMachineId().equals(id)) { //check whether this instance has
                 // already got an public ip or not
                 ip = publicIPAddress.getIPAddress(); //A public ip has been successfully assigned to the vm
-                log.debug("Successfully associated an IP address " + ip
+                log.info("Successfully associated an IP address " + ip
                         + " for node with id: " + node.getId());
                 break;
             }
@@ -233,7 +234,7 @@ public class CloudstackIaas extends Iaas {
         if (ip == null || ip.isEmpty()) { //IP has not been successfully assigned to VM(That means there are
             //  no more IPs  available for the VM)
             String msg = "No address associated for node with id: " + node.getId();
-            log.debug(msg);
+            log.warn(msg);
             throw new CloudControllerException(msg);
         }
 
@@ -331,7 +332,7 @@ public class CloudstackIaas extends Iaas {
         String diskOfferingID = iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
                 .getDiskOfferingId();
         if (zone == null && diskOfferingID == null) {
-            log.fatal("Cannot create a new volume in the , [zone] : " + zone + " of Iaas : " + iaasInfo);
+            log.error("Could not create a volume in the , [zone] : " + zone + " of Iaas : " + iaasInfo);
             return null;
         }
 
@@ -339,7 +340,7 @@ public class CloudstackIaas extends Iaas {
 
         Volume volume;
         if (StringUtils.isEmpty(snapshotId)) {
-            if (log.isDebugEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Creating a volume in the zone " + zone);
             }
 
@@ -348,7 +349,7 @@ public class CloudstackIaas extends Iaas {
 
             //  volume = blockStoreApi.createVolumeInAvailabilityZone(zone, sizeGB);
         } else {
-            if (log.isDebugEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Creating a volume in the zone " + zone + " from the snapshot " + snapshotId);
             }
             volumeApi.createVolumeFromSnapshotInZone(null, diskOfferingID, zone);
@@ -421,8 +422,8 @@ public class CloudstackIaas extends Iaas {
         try {
             // waiting 5seconds till volumes are actually attached.
             Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
+
         }
 
         //If volume state is not 'READY'
@@ -481,8 +482,8 @@ public class CloudstackIaas extends Iaas {
         return null;
     }
 
-    private boolean waitForStatus(String volumeId, Volume.State expectedStatus, int timeoutInMins) throws TimeoutException {
-        int timeout = 1000 * 60 * timeoutInMins;
+    private boolean waitForStatus(String volumeId, Volume.State expectedStatus, int timeoutInMilliseconds) throws TimeoutException {
+        int timeout = 1000 * 60 * timeoutInMilliseconds;
         long timout = System.currentTimeMillis() + timeout;
 
         IaasProvider iaasInfo = getIaasProvider();

@@ -61,7 +61,7 @@
 			<property name="securityGroupIds" value="security_group_Id1,security_group_id2"/>
 			<property name="networkIds" value="network_Id1,network_Id2"/>
 			<property name="diskOffering" value="disk_offering_Id"/>
-			<property name="userName" value="username"/>
+			<property name="username" value="username"/>
 			<property name="domainId" value="domainId"/>
 			<property name="keyPair" value="asanka-key"/>
 			<property name="tags" value="tag1,tag2,tag3" />
