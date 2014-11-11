@@ -63,17 +63,10 @@ class php () {
     source => 'puppet:///modules/php/90forceyes';
   }
 
-  exec { 'update-apt':
-    path      => ['/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/'],
-    command   => 'apt-get update > /dev/null 2>&1',
-    logoutput => on_failure,
-    require   => File['/etc/apt/apt.conf.d/90forceyes'];
-  }
-
   package { $packages:
     ensure   => installed,
     provider => apt,
-    require  => Exec['update-apt'],
+    require  => File['/etc/apt/apt.conf.d/90forceyes'],
   }
 
   exec { 'clean sites':

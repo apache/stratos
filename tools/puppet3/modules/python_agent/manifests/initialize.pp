@@ -19,17 +19,11 @@
 
 define python_agent::initialize ($repo, $version, $agent_name, $local_dir, $target, $owner,) {
 
-  exec { "updates":
-        path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-        command => "apt-get update",
-  }
-
   $packages = ['python-dev', 'python-pip', 'gcc']
 
   package { $packages:
     ensure => installed,
     provider => 'apt',
-    require => Exec["updates"],
   }
 
   exec {
