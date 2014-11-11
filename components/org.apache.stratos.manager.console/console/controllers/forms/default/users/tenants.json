@@ -1,9 +1,9 @@
 {
-    "admin":"admin",
-    "firstname":"Frank",
-    "lastname":"Myers",
+    "admin":"AdminUserName",
+    "firstname":"FirstName",
+    "lastname":"LastName",
     "adminPassword":"admin123",
-    "tenantDomain":"frank.com",
-    "email":"foo@bar.com",
+    "tenantDomain":"apache.org",
+    "email":"user@apache.org",
     "active":"true"
 }
