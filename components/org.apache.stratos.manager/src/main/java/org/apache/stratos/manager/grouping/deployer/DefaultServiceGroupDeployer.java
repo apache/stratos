@@ -282,8 +282,14 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             DependencyDefinitions depsDef = new DependencyDefinitions();
             String [] startupOrders = deps.getStartupOrders();
             if (startupOrders != null && startupOrders[0] != null) {
-            	List<String> startupOrdersDef = Arrays.asList(startupOrders);
+                List<String> startupOrdersDef = Arrays.asList(startupOrders);
                 depsDef.setStartupOrders(startupOrdersDef);
+            }
+
+            String [] scalingOrders = deps.getScalingOrders();
+            if (scalingOrders != null && scalingOrders[0] != null) {
+                List<String> scalingOrdersDef = Arrays.asList(scalingOrders);
+                depsDef.setStartupOrders(scalingOrdersDef);
             }
 
             depsDef.setTerminationBehaviour(deps.getTerminationBehaviour());

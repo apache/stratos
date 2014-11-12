@@ -30,8 +30,10 @@ public class DependencyDefinitions implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private List<String> startupOrders;
+
+    private List<String> startupOrders;
+
+    private List<String> scalingOrders;
 
     private String terminationBehaviour;
 
@@ -50,4 +52,12 @@ public class DependencyDefinitions implements Serializable {
 	public void setStartupOrders(List<String> startupOrders) {
 		this.startupOrders = startupOrders;
 	}
+
+    public List<String> getScalingOrders() {
+        return scalingOrders;
+    }
+
+    public void setScalingOrders(List<String> scalingOrders) {
+        this.scalingOrders = scalingOrders;
+    }
 }
