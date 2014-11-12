@@ -167,6 +167,8 @@ class ThriftPublisher:
             self.log.debug("connected! stream ID: %r" % self.stream_id)
 
             self.publish(event)
+        except Exception as ex:
+            self.log.error("Couldn't publish event. Connection to CEP receiver dropped.")
 
         self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
 
