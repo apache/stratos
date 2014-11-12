@@ -205,7 +205,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getServiceGroupDefinition(@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
-        Response.ResponseBuilder rb = Response.ok().entity(StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName));
+        ServiceGroupDefinition serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
+        Response.ResponseBuilder rb;
+        if (serviceGroupDefinition != null) {
+            rb = Response.ok().entity(serviceGroupDefinition);
+        } else {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        }
+
         return rb.build();
     }
 
