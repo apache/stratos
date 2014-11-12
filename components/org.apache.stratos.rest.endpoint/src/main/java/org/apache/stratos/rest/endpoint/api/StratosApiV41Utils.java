@@ -1478,6 +1478,16 @@ public class StratosApiV41Utils {
         }
     }
 
+    public static ServiceGroupDefinition[] getServiceGroupDefinitions() throws RestAPIException {
+        try {
+            return serviceGropingManager.getServiceGroupDefinitions();
+        } catch (ADCException e) {
+            throw new RestAPIException(e);
+        } catch (ServiceGroupDefinitioException e) {
+            throw new RestAPIException(e);
+        }
+    }
+
     public static void undeployServiceGroupDefinition(String serviceGroupDefinitionName) throws RestAPIException {
 
         try {
@@ -1497,7 +1507,7 @@ public class StratosApiV41Utils {
         try {
             ApplicationManager.acquireReadLockForApplications();
             ApplicationBean applicationBean;
-            for(Application application : ApplicationManager.getApplications().getApplications().values()) {
+            for (Application application : ApplicationManager.getApplications().getApplications().values()) {
                 applicationBean = PojoConverter.applicationToBean(application);
                 addClustersToApplicationBean(applicationBean, application);
                 addGroupsToApplicationBean(applicationBean, application);

@@ -28,7 +28,6 @@ import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParse
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
@@ -39,6 +38,7 @@ import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
@@ -53,7 +53,6 @@ import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExcepti
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -287,7 +286,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         return null;
     }
-    
+
     @Override
     public void deployApplicationDefinition(ApplicationContext applicationContext)
             throws ApplicationDefinitionException {
@@ -305,7 +304,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         ApplicationBuilder.handleApplicationUndeployed(applicationId);
     }
-    
+
     public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
@@ -353,22 +352,22 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         for (PartitionGroup partitionGroup : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getPartitionGroups()) {
 
-                        NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
+            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(partitionGroup.getId());
 
-                if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Cluster LB [cluster id] "+clusterId+" does not exist in [network partition] " +
-                                  nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                                  deploymentPolicyId);
+            if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cluster LB [cluster id] " + clusterId + " does not exist in [network partition] " +
+                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+                            deploymentPolicyId);
 
-                    }
-                    return false;
                 }
+                return false;
+            }
 
         }
-        
+
         return true;
-        
+
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
@@ -377,15 +376,15 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         }
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
         AbstractClusterMonitor monitor = asCtx.getClusterMonitor(clusterId);
-        
+
         if (monitor != null) {
             monitor.handleDynamicUpdates(properties);
         } else {
-            log.debug(String.format("Updating Cluster monitor failed: Cluster monitor [Cluster id] %s not found.", 
+            log.debug(String.format("Updating Cluster monitor failed: Cluster monitor [Cluster id] %s not found.",
                     clusterId));
         }
     }
-    
+
     public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
@@ -396,17 +395,17 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         }
         String name = servicegroup.getName();
 
-        if(RegistryManager.getInstance().serviceGroupExist(name)){
+        if (RegistryManager.getInstance().serviceGroupExist(name)) {
             throw new InvalidServiceGroupException("Service group with the name " + name + " already exist.");
         }
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(MessageFormat.format("Deploying service group {0}", servicegroup.getName()));
         }
 
-        String [] subGroups = servicegroup.getCartridges();
+        String[] subGroups = servicegroup.getCartridges();
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("SubGroups" + subGroups);
             if (subGroups != null) {
                 log.debug("subGroups:size" + subGroups.length);
@@ -418,14 +417,14 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         Dependencies dependencies = servicegroup.getDependencies();
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Dependencies" + dependencies);
         }
 
         if (dependencies != null) {
-            String [] startupOrders = dependencies.getStartupOrders();
+            String[] startupOrders = dependencies.getStartupOrders();
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("StartupOrders " + startupOrders);
 
                 if (startupOrders != null) {
@@ -434,9 +433,9 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     log.debug("StartupOrder: is null");
                 }
             }
-            String [] scalingOrders = dependencies.getScalingOrders();
+            String[] scalingOrders = dependencies.getScalingOrders();
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("ScalingOrders " + scalingOrders);
 
                 if (startupOrders != null) {
@@ -451,16 +450,21 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     }
 
     public ServiceGroup getServiceGroup(String name) {
-        if(StringUtils.isEmpty(name)){
+        if (StringUtils.isEmpty(name)) {
             return null;
         }
         try {
             return RegistryManager.getInstance().getServiceGroup(name);
         } catch (Exception e) {
-            throw new AutoScalerException("Error occurred while retrieving service groups", e);
+            throw new AutoScalerException("Error occurred while retrieving service group", e);
         }
     }
-    public boolean serviceGroupExist(String serviceName){
+
+    public ServiceGroup[] getServiceGroups() throws AutoScalerException {
+        return RegistryManager.getInstance().getServiceGroups();
+    }
+
+    public boolean serviceGroupExist(String serviceName) {
         return false;
     }
 
@@ -480,7 +484,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             for (Map.Entry<String, Properties> entry : applicationParser.getAliasToProperties().entrySet()) {
                 String alias = entry.getKey();
                 Properties properties = entry.getValue();
-                if(properties != null) {
+                if (properties != null) {
                     for (Property property : properties.getProperties()) {
                         metaDataServiceClien.addPropertyToCluster(appId, alias, property.getName(), property.getValue());
                     }

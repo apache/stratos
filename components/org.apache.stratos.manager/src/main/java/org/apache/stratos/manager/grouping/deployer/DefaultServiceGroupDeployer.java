@@ -43,28 +43,28 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
     private static Log log = LogFactory.getLog(DefaultServiceGroupDeployer.class);
 
 
-    public DefaultServiceGroupDeployer () {
+    public DefaultServiceGroupDeployer() {
     }
 
-    public void deployServiceGroupDefinition (Object serviceGroupDefinitionObj) throws InvalidServiceGroupException, ServiceGroupDefinitioException, ADCException {
+    public void deployServiceGroupDefinition(Object serviceGroupDefinitionObj) throws InvalidServiceGroupException, ServiceGroupDefinitioException, ADCException {
 
-        ServiceGroupDefinition serviceGroupDefinition = null; 
+        ServiceGroupDefinition serviceGroupDefinition = null;
         ServiceGroup serviceGroup = null;
-        
+
         if (serviceGroupDefinitionObj == null) {
-        	if (log.isDebugEnabled()) {
-            	log.debug("deploying service group is null ");
+            if (log.isDebugEnabled()) {
+                log.debug("deploying service group is null ");
             }
             throw new InvalidServiceGroupException("Service Group definition not found");
         }
 
         if (serviceGroupDefinitionObj instanceof ServiceGroupDefinition) {
             serviceGroupDefinition = (ServiceGroupDefinition) serviceGroupDefinitionObj;
-            
+
             if (log.isDebugEnabled()) {
-            	log.debug("deploying service group with name " + serviceGroupDefinition.getName());
+                log.debug("deploying service group with name " + serviceGroupDefinition.getName());
             }
-            
+
             // convert serviceGroupDefinition to serviceGroup
             serviceGroup = this.populateServiceGroupPojo(serviceGroupDefinition);
         } else {
@@ -74,25 +74,25 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         // if any cartridges are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getCartridges() != null) {
-        	
-        	if (log.isDebugEnabled()) {
-            	log.debug("checking cartridges in service group " + serviceGroupDefinition.getName());
+
+            if (log.isDebugEnabled()) {
+                log.debug("checking cartridges in service group " + serviceGroupDefinition.getName());
             }
-        	
+
             List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
-            
+
             Set<String> duplicates = this.findDuplicates(cartridgeTypes);
-            
+
             if (duplicates.size() > 0) {
-            	
-            	StringBuffer buf = new StringBuffer();
-            	for (String dup : duplicates) {
-            		buf. append(dup).append(" ");
-            	}
-            	if (log.isDebugEnabled()) {
-                	log.debug("duplicate cartridges defined: " + buf.toString());
+
+                StringBuffer buf = new StringBuffer();
+                for (String dup : duplicates) {
+                    buf.append(dup).append(" ");
                 }
-            	throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate cartridges defined:" + buf.toString());
+                if (log.isDebugEnabled()) {
+                    log.debug("duplicate cartridges defined: " + buf.toString());
+                }
+                throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate cartridges defined:" + buf.toString());
             }
 
             CloudControllerServiceClient ccServiceClient = null;
@@ -106,112 +106,141 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
             for (String cartridgeType : cartridgeTypes) {
                 try {
-                    if(ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
+                    if (ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
                         // cartridge is not deployed, can't continue
-                    	log.error("invalid cartridge found in service group " + cartridgeType);
+                        log.error("invalid cartridge found in service group " + cartridgeType);
                         throw new InvalidServiceGroupException("No Cartridge Definition found with type " + cartridgeType);
                     }
                 } catch (RemoteException e) {
                     throw new ADCException(e);
                 } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-                	throw new ADCException(e);
+                    throw new ADCException(e);
                 }
             }
         }
 
         // if any sub groups are specified in the group, they should be already deployed
         if (serviceGroupDefinition.getSubGroups() != null) {
-        	
-        	if (log.isDebugEnabled()) {
-            	log.debug("checking subGroups in service group " + serviceGroupDefinition.getName());
+
+            if (log.isDebugEnabled()) {
+                log.debug("checking subGroups in service group " + serviceGroupDefinition.getName());
             }
-        	
+
             List<String> subGroupNames = serviceGroupDefinition.getSubGroups();
-            
-        	Set<String> duplicates = this.findDuplicates(subGroupNames);
-            
+
+            Set<String> duplicates = this.findDuplicates(subGroupNames);
+
             if (duplicates.size() > 0) {
-            	
-            	StringBuffer buf = new StringBuffer();
-            	for (String dup : duplicates) {
-            		buf. append(dup).append(" ");
-            	}
-            	if (log.isDebugEnabled()) {
-                	log.debug("duplicate subGroups defined: " + buf.toString());
+
+                StringBuffer buf = new StringBuffer();
+                for (String dup : duplicates) {
+                    buf.append(dup).append(" ");
                 }
-            	throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
+                if (log.isDebugEnabled()) {
+                    log.debug("duplicate subGroups defined: " + buf.toString());
+                }
+                throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
             }
 
             for (String subGroupName : subGroupNames) {
                 if (getServiceGroupDefinition(subGroupName) == null) {
                     // sub group not deployed, can't continue
-                	if (log.isDebugEnabled()) {
-                		log.debug("invalid sub group found in service group " + subGroupName);
-                	}
+                    if (log.isDebugEnabled()) {
+                        log.debug("invalid sub group found in service group " + subGroupName);
+                    }
                     throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
                 }
             }
         }
-        
+
         AutoscalerServiceClient asServiceClient = null;
 
         try {
             asServiceClient = AutoscalerServiceClient.getServiceClient();
-            
+
             if (log.isDebugEnabled()) {
-            	log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
+                log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
             }
 
             asServiceClient.deployServiceGroup(serviceGroup);
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
-        }catch (RemoteException e) {
+        } catch (RemoteException e) {
             throw new ADCException(e);
         } catch (AutoScalerServiceInvalidServiceGroupExceptionException e) {
             e.printStackTrace();
         }
     }
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
+    public ServiceGroupDefinition getServiceGroupDefinition(String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
-    	if (log.isDebugEnabled()) {
-        	log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
+        if (log.isDebugEnabled()) {
+            log.debug("getting service group from cloud controller " + serviceGroupDefinitionName);
         }
-    	
-    	AutoscalerServiceClient asServiceClient = null;
+
+        AutoscalerServiceClient asServiceClient = null;
 
         try {
             asServiceClient = AutoscalerServiceClient.getServiceClient();
-            
+
             if (log.isDebugEnabled()) {
-            	log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
+                log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
             }
-            
+
             ServiceGroup serviceGroup = asServiceClient.getServiceGroup(serviceGroupDefinitionName);
             ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
-            
+
             return serviceGroupDef;
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
-        	throw new ADCException(e);
-		}
+            throw new ADCException(e);
+        }
+    }
+
+    public ServiceGroupDefinition[] getServiceGroupDefinitions() throws ADCException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("getting service group from cloud controller ");
+        }
+
+        AutoscalerServiceClient asServiceClient;
+
+        try {
+            asServiceClient = AutoscalerServiceClient.getServiceClient();
+
+            ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
+            if (serviceGroups == null || serviceGroups.length == 0) {
+                return null;
+            }
+
+            ServiceGroupDefinition[] serviceGroupDefinitions = new ServiceGroupDefinition[serviceGroups.length];
+            for (int i = 0; i < serviceGroups.length; i++) {
+                serviceGroupDefinitions[i] = populateServiceGroupDefinitionPojo(serviceGroups[i]);
+            }
+            return serviceGroupDefinitions;
+
+        } catch (AxisFault axisFault) {
+            throw new ADCException(axisFault);
+        } catch (RemoteException e) {
+            throw new ADCException(e);
+        }
     }
 
 
-    public void undeployServiceGroupDefinition (String name) throws ADCException, ServiceGroupDefinitioException {
+    public void undeployServiceGroupDefinition(String name) throws ADCException, ServiceGroupDefinitioException {
 
-    	//throw new ServiceGroupDefinitioException("method not supported");
-    	
-    	AutoscalerServiceClient autoscalerServiceClient = null;
-    	
-    	try {
+        //throw new ServiceGroupDefinitioException("method not supported");
+
+        AutoscalerServiceClient autoscalerServiceClient = null;
+
+        try {
             autoscalerServiceClient = AutoscalerServiceClient.getServiceClient();
-            
+
             if (log.isDebugEnabled()) {
-            	log.debug("undeploying service group from cloud controller " + name);
+                log.debug("undeploying service group from cloud controller " + name);
             }
 
             autoscalerServiceClient.undeployServiceGroupDefinition(name);
@@ -219,47 +248,47 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
-        	throw new ADCException(e);
-		} catch (AutoScalerServiceAutoScalerExceptionException e) {
+            throw new ADCException(e);
+        } catch (AutoScalerServiceAutoScalerExceptionException e) {
             throw new ADCException(e);
         }
     }
-    
-    
-    private ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) throws ServiceGroupDefinitioException {
-    	ServiceGroup servicegroup = new ServiceGroup();
-    	
-    	// implement conversion (mostly List -> Array)
-    	servicegroup.setName(serviceGroupDefinition.getName());
-    	List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
-    	List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
-    	
-    	
-    	if (subGroupsDef == null) {
-    		subGroupsDef = new ArrayList<String>(0);
-    	}
-    	
-    	if (cartridgesDef == null) {
-    		cartridgesDef = new ArrayList<String>(0);
-    	}
 
-    	String [] subGroups = new String[subGroupsDef.size()];
-    	String [] cartridges = new String[cartridgesDef.size()];
-    	
-    	subGroups = subGroupsDef.toArray(subGroups);
-    	cartridges = cartridgesDef.toArray(cartridges);
-    	
-    	servicegroup.setSubGroups(subGroups);
-    	servicegroup.setCartridges(cartridges);
-    	
-    	DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
-    			
+
+    private ServiceGroup populateServiceGroupPojo(ServiceGroupDefinition serviceGroupDefinition) throws ServiceGroupDefinitioException {
+        ServiceGroup servicegroup = new ServiceGroup();
+
+        // implement conversion (mostly List -> Array)
+        servicegroup.setName(serviceGroupDefinition.getName());
+        List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
+        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+
+
+        if (subGroupsDef == null) {
+            subGroupsDef = new ArrayList<String>(0);
+        }
+
+        if (cartridgesDef == null) {
+            cartridgesDef = new ArrayList<String>(0);
+        }
+
+        String[] subGroups = new String[subGroupsDef.size()];
+        String[] cartridges = new String[cartridgesDef.size()];
+
+        subGroups = subGroupsDef.toArray(subGroups);
+        cartridges = cartridgesDef.toArray(cartridges);
+
+        servicegroup.setSubGroups(subGroups);
+        servicegroup.setCartridges(cartridges);
+
+        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+
         if (depDefs != null) {
             Dependencies deps = new Dependencies();
             List<String> startupOrdersDef = depDefs.getStartupOrders();
             if (startupOrdersDef != null) {
-            	String [] startupOrders = new String [startupOrdersDef.size()];
-            	startupOrders = startupOrdersDef.toArray(startupOrders);
+                String[] startupOrders = new String[startupOrdersDef.size()];
+                startupOrders = startupOrdersDef.toArray(startupOrders);
                 deps.setStartupOrders(startupOrders);
             }
             // validate termination behavior
@@ -267,20 +296,20 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
             servicegroup.setDependencies(deps);
         }
-    	
-    	return servicegroup;
+
+        return servicegroup;
     }
-    
-    private ServiceGroupDefinition populateServiceGroupDefinitionPojo (ServiceGroup serviceGroup ) {
-    	ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
-    	servicegroupDef.setName(serviceGroup.getName());
-    	String [] cartridges = serviceGroup.getCartridges();
-    	String [] subGroups = serviceGroup.getSubGroups();
-    	org.apache.stratos.autoscaler.pojo.xsd.Dependencies deps = serviceGroup.getDependencies();
+
+    private ServiceGroupDefinition populateServiceGroupDefinitionPojo(ServiceGroup serviceGroup) {
+        ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
+        servicegroupDef.setName(serviceGroup.getName());
+        String[] cartridges = serviceGroup.getCartridges();
+        String[] subGroups = serviceGroup.getSubGroups();
+        org.apache.stratos.autoscaler.pojo.xsd.Dependencies deps = serviceGroup.getDependencies();
 
         if (deps != null) {
             DependencyDefinitions depsDef = new DependencyDefinitions();
-            String [] startupOrders = deps.getStartupOrders();
+            String[] startupOrders = deps.getStartupOrders();
             if (startupOrders != null && startupOrders[0] != null) {
                 List<String> startupOrdersDef = Arrays.asList(startupOrders);
                 depsDef.setStartupOrders(startupOrdersDef);
@@ -298,26 +327,26 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
         List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
-        if(cartridges[0] != null){
+        if (cartridges[0] != null) {
             servicegroupDef.setCartridges(cartridgesDef);
         }
-    	if(subGroups[0] != null) {
+        if (subGroups[0] != null) {
             servicegroupDef.setSubGroups(subGroupsDef);
         }
-   
-    	return servicegroupDef;
+
+        return servicegroupDef;
     }
 
     /**
      * Validates terminationBehavior. The terminationBehavior should be one of the following:
-     *      1. terminate-none
-     *      2. terminate-dependents
-     *      3. terminate-all
+     * 1. terminate-none
+     * 2. terminate-dependents
+     * 3. terminate-all
      *
      * @throws ServiceGroupDefinitioException if terminationBehavior is different to what is
-     * listed above
+     *                                        listed above
      */
-    private static void validateTerminationBehavior (String terminationBehavior) throws ServiceGroupDefinitioException {
+    private static void validateTerminationBehavior(String terminationBehavior) throws ServiceGroupDefinitioException {
 
         if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
                 "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
@@ -329,21 +358,21 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
     /**
      * returns any duplicates in a List
+     *
      * @param checkedList
      * @return
      */
-    private Set<String> findDuplicates(List<String> checkedList)
-    { 
-      final Set<String> retVals = new HashSet<String>(); 
-      final Set<String> set1 = new HashSet<String>();
+    private Set<String> findDuplicates(List<String> checkedList) {
+        final Set<String> retVals = new HashSet<String>();
+        final Set<String> set1 = new HashSet<String>();
 
-      for (String val : checkedList) {
-    	  
-    	  if (!set1.add(val)) {
-	        retVals.add(val);
-    	  }
-      }
-      return retVals;
+        for (String val : checkedList) {
+
+            if (!set1.add(val)) {
+                retVals.add(val);
+            }
+        }
+        return retVals;
     }
-    
- }
+
+}

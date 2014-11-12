@@ -27,10 +27,12 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 
 public interface ServiceGroupDeployer {
 
-    public void deployServiceGroupDefinition (Object serviceGroupObj) throws InvalidServiceGroupException, ServiceGroupDefinitioException,
+    public void deployServiceGroupDefinition(Object serviceGroupObj) throws InvalidServiceGroupException, ServiceGroupDefinitioException,
             ADCException, CloudControllerServiceUnregisteredCartridgeExceptionException;
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ServiceGroupDefinitioException, ADCException;
+    public ServiceGroupDefinition getServiceGroupDefinition(String serviceGroupDefinitionName) throws ServiceGroupDefinitioException, ADCException;
 
-    public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException;
+    public void undeployServiceGroupDefinition(String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException;
+
+    ServiceGroupDefinition[] getServiceGroupDefinitions() throws ADCException;
 }
