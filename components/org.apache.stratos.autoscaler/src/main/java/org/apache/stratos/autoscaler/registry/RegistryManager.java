@@ -479,26 +479,20 @@ public class RegistryManager {
         return groupArr;
     }
 
-    public ServiceGroup removeServiceGroup(String name) throws Exception {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.SERVICE_GROUP + "/" + name;
-        Object serializedObj = registryManager.retrieve(resourcePath);
-        ServiceGroup group = null;
-        if (serializedObj != null) {
-            Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-            if (dataObj instanceof ServiceGroup) {
-                group = (ServiceGroup) dataObj;
-                if (log.isDebugEnabled()) {
-                    log.debug(group.toString());
-                }
-            } else {
-                return null;
-            }
+    public void removeServiceGroup(String name) throws Exception {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("Name of the service group can not be empty");
         }
 
-        return group;
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
+                AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        if (registryService.resourceExists(resourcePath)) {
+            registryService.delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Service group %s is removed from registry", name));
+            }
+        }
     }
-
 
     public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
