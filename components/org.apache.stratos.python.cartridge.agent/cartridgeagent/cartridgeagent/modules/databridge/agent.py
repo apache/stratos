@@ -161,6 +161,7 @@ class ThriftPublisher:
 
         try:
             self.__publisher.publish(event_bundle)
+            self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
         except ThriftSessionExpiredException as ex:
             self.log.debug("ThriftSession expired. Reconnecting")
             self.__publisher.connect(self.username, self.password)
@@ -168,9 +169,12 @@ class ThriftPublisher:
 
             self.publish(event)
         except Exception as ex:
-            self.log.error("Couldn't publish event. Connection to CEP receiver dropped.")
-
-        self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
+            self.log.error("Couldn't publish event. Connection to CEP receiver dropped. Reconnecting...")
+            try:
+                self.__publisher.connect(self.username, self.password)
+            except Exception as ex:
+                if "Connection refused" in ex:
+                    self.log.error("CEP Offline")
 
     def create_event_bundle(self, event):
         """
