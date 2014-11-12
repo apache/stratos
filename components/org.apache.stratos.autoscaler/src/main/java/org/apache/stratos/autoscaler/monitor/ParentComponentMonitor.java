@@ -65,21 +65,21 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * This will start the child monitors based on the active of siblings according to start up order
      *
-     * @param idOfEvent parent id of the event which received
+     * @param eventId parent id of the event which received
      */
-    protected void onChildActivatedEvent(String idOfEvent) {
+    protected void onChildActivatedEvent(String eventId) {
         try {
             //if the activated monitor is in in_active map move it to active map
-            if (this.aliasToInactiveMonitorsMap.containsKey(idOfEvent)) {
-                this.aliasToActiveMonitorsMap.put(id, this.aliasToInactiveMonitorsMap.remove(idOfEvent));
+            if (this.aliasToInactiveMonitorsMap.containsKey(eventId)) {
+                this.aliasToActiveMonitorsMap.put(id, this.aliasToInactiveMonitorsMap.remove(eventId));
             }
-            boolean startDep = startDependency(idOfEvent);
+            boolean startDep = startDependency(eventId);
             if (log.isDebugEnabled()) {
-                log.debug("started a child: " + startDep + " by the group/cluster: " + idOfEvent);
+                log.debug("started a child: " + startDep + " by the group/cluster: " + eventId);
 
             }
             if (!startDep) {
-                StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
+                StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
             }
         } catch (TopologyInConsistentException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
@@ -122,17 +122,17 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
-     * @param idOfEvent
+     * @param eventId
      */
-    protected void onChildInactiveEvent(String idOfEvent) {
+    protected void onChildInactiveEvent(String eventId) {
         List<ApplicationContext> terminationList;
         Monitor monitor;
 
         if (this.hasDependent) {
             //need to notify the parent
-            StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
         } else {
-            terminationList = this.startupDependencyTree.getTerminationDependencies(idOfEvent);
+            terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
             //Checking whether all children are to be terminated.
             if (terminationList.size() ==
                     (this.aliasToActiveMonitorsMap.size() + this.aliasToInactiveMonitorsMap.size())) {
@@ -171,7 +171,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
                     }
                 } else {
-                    log.warn("Wrong inActive event received from [Child] " + idOfEvent +
+                    log.warn("Wrong inActive event received from [Child] " + eventId +
                             "  to the [parent]" + " where child is identified as a independent");
                 }
             }
@@ -181,14 +181,14 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     }
 
-    protected void onChildTerminatedEvent(String idOfEvent) {
+    protected void onChildTerminatedEvent(String eventId) {
         List<ApplicationContext> terminationList;
         boolean allDependentTerminated = false;
 
-        ApplicationContext context = this.startupDependencyTree.findApplicationContextWithId(idOfEvent);
+        ApplicationContext context = this.startupDependencyTree.findApplicationContextWithId(eventId);
         context.setTerminated(true);
 
-        terminationList = this.startupDependencyTree.getTerminationDependencies(idOfEvent);
+        terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
 
 
         /**
@@ -198,7 +198,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             allDependentTerminated = allDependentTerminated(terminationList);
         }
 
-        List<ApplicationContext> parentContexts = this.startupDependencyTree.findAllParentContextWithId(idOfEvent);
+        List<ApplicationContext> parentContexts = this.startupDependencyTree.findAllParentContextWithId(eventId);
         boolean parentsTerminated = false;
         if (parentContexts != null) {
             parentsTerminated = allParentTerminated(parentContexts);
@@ -216,7 +216,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.error("Error while starting the monitor upon termination" + e);
             }
         } else {
-            StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
             log.info("" +
                     "Checking the status of group/application as no dependent found...");
         }

@@ -87,7 +87,7 @@ public abstract class Monitor implements EventHandler {
         return this.aliasToActiveMonitorsMap != null || this.aliasToInactiveMonitorsMap != null;
     }
 
-    public boolean isDependent() {
+    public boolean hasDependents() {
         return hasDependent;
     }
 
@@ -98,7 +98,7 @@ public abstract class Monitor implements EventHandler {
     public boolean hasInDependentChild() {
         boolean hasInDepChild = false;
         for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
-            if (!monitor.isDependent()) {
+            if (!monitor.hasDependents()) {
                 hasInDepChild = true;
                 break;
             }

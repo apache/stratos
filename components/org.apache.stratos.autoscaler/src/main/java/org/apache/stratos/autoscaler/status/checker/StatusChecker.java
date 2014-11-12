@@ -200,7 +200,7 @@ public class StatusChecker {
                 String appId = monitor.getAppId();
                 if (clusterInActive) {
                     //if the monitor is dependent, temporarily pausing it
-                    if (monitor.isDependent()) {
+                    if (monitor.hasDependents()) {
                         monitor.setHasFaultyMember(true);
                     }
                     //send cluster In-Active event to cluster status topic

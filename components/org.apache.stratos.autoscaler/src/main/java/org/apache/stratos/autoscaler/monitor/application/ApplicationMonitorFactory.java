@@ -100,7 +100,7 @@ public class ApplicationMonitorFactory {
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
-                if (parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
+                if (parentMonitor.hasDependents() || (context.isHasDependents() && context.hasChild())) {
                     groupMonitor.setHasDependent(true);
                 } else {
                     groupMonitor.setHasDependent(false);
@@ -196,7 +196,7 @@ public class ApplicationMonitorFactory {
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
             //setting the dependent behaviour of the cluster monitor
-            if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
+            if(parentMonitor.hasDependents() || (context.isHasDependents() && context.hasChild())) {
                 clusterMonitor.setHasDependent(true);
             } else {
                 clusterMonitor.setHasDependent(false);
