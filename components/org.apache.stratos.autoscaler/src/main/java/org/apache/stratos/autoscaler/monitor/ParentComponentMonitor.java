@@ -427,5 +427,4 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    onScaling()
 }
