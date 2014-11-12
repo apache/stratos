@@ -6,7 +6,7 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -16,10 +16,9 @@
 # under the License.
 
 
-class ParameterNotFoundException(Exception):
+class ThriftReceiverOfflineException(Exception):
     """
-    Exception raised when a property is not present in the configuration or the payload
-    of the cartridge agent
+    Exception raised when the connection to the Thrift receiver is dropped when publishing events
     """
     __message = None
 

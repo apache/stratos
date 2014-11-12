@@ -18,6 +18,7 @@
 from thrift.publisher import *
 from thrift.gen.Exception.ttypes import ThriftSessionExpiredException
 from ..util.log import *
+from ..exception.thriftreceiverofflineexception import ThriftReceiverOfflineException
 import time
 
 
@@ -169,12 +170,7 @@ class ThriftPublisher:
 
             self.publish(event)
         except Exception as ex:
-            self.log.error("Couldn't publish event. Connection to CEP receiver dropped. Reconnecting...")
-            try:
-                self.__publisher.connect(self.username, self.password)
-            except Exception as ex:
-                if "Connection refused" in ex:
-                    self.log.error("CEP Offline")
+            raise ThriftReceiverOfflineException(ex)
 
     def create_event_bundle(self, event):
         """
