@@ -48,11 +48,11 @@ public class DependencyBuilder {
     }
 
     /**
-     * This will build the dependency tree based on the given dependency order
+     * This will build the dependency tree based on the given startup dependency order
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
-    public DependencyTree buildDependency(ParentComponent component) throws DependencyBuilderException{
+    public DependencyTree buildStartupDependency(ParentComponent component) throws DependencyBuilderException{
 
         String identifier = component.getUniqueIdentifier();
         DependencyTree dependencyTree = new DependencyTree(identifier);
@@ -73,7 +73,7 @@ public class DependencyBuilder {
             }
 
             log.info("Setting the [terminationBehaviour] " + terminationBehaviour + " to the " +
-                        "[dependency-tree] " + dependencyTree.getId());
+                    "[dependency-tree] " + dependencyTree.getId());
 
 
             //Parsing the start up order
@@ -130,7 +130,6 @@ public class DependencyBuilder {
 
                 }
             }
-            //TODO need to parser the scalable dependencies
         }
 
 
@@ -146,11 +145,87 @@ public class DependencyBuilder {
         for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
             if (dependencyTree.findApplicationContextWithId(dataHolder.getClusterId()) == null) {
                 ApplicationContext context = ApplicationContextFactory.getClusterContext(dataHolder,
-                                                                dependencyTree.isTerminateDependent());
+                        dependencyTree.isTerminateDependent());
                 dependencyTree.addApplicationContext(context);
 
             }
         }
         return dependencyTree;
     }
+
+    /**
+     * This will build the dependency tree based on the given scaling dependency order
+     * @param component it will give the necessary information to build the tree
+     * @return the dependency tree out of the dependency orders
+     */
+    public DependencyTree buildScalingDependency(ParentComponent component) throws DependencyBuilderException{
+
+        String identifier = component.getUniqueIdentifier();
+        DependencyTree dependencyTree = new DependencyTree(identifier);
+        DependencyOrder dependencyOrder = component.getDependencyOrder();
+
+        if (dependencyOrder != null) {
+            log.info("Building dependency for the Application/Group " + identifier);
+
+
+            //Parsing the scaling order
+            Set<ScalingOrder> scalingOrders = dependencyOrder.getScalingOrders();
+            ApplicationContext foundContext;
+            ApplicationContext parentContext;
+
+            if (scalingOrders != null) {
+                for (ScalingOrder scalingOrder : scalingOrders) {
+                    foundContext = null;
+                    parentContext = null;
+                    for (String scalingOrderElement : scalingOrder.getScalingOrderList()) {
+
+                        if (scalingOrderElement != null) {
+                            ApplicationContext applicationContext = ApplicationContextFactory.
+                                    getApplicationContext(scalingOrderElement, component, dependencyTree);
+                            String id = applicationContext.getId();
+
+                            ApplicationContext existingApplicationContext =
+                                    dependencyTree.findApplicationContextWithId(id);
+                            if (existingApplicationContext == null) {
+                                if (parentContext != null) {
+                                    //appending the scaling order to already added parent group/cluster
+                                    parentContext.addApplicationContext(applicationContext);
+                                    parentContext = applicationContext;
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Found an existing [dependency] " + parentContext.getId() +
+                                                " and adding the [dependency] " + id + " as the child");
+                                    }
+                                } else {
+                                    //adding list of scaling order to the dependency tree
+                                    dependencyTree.addApplicationContext(applicationContext);
+                                    parentContext = applicationContext;
+                                }
+                            } else {
+                                if (foundContext == null) {
+                                    //if existing context found, add it to child of existing context and
+                                    //set the existing context as the next parent
+                                    existingApplicationContext.addApplicationContext(applicationContext);
+                                    parentContext = existingApplicationContext;
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("Found an existing [dependency] " + id + " and setting it " +
+                                                "for the next dependency to follow");
+                                    }
+                                } else {
+                                    String msg = "Scaling order is not consistent. It contains the group/cluster " +
+                                            "which has been used more than one in another scaling order";
+                                    throw new DependencyBuilderException(msg);
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return dependencyTree;
+    }
+
+
 }

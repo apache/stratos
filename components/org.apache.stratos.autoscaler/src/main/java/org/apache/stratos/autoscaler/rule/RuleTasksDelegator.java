@@ -179,6 +179,9 @@ public class RuleTasksDelegator {
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
                 }
+                //Notify parent for checking scaling dependencies
+
+
             } else if(log.isDebugEnabled()){
                 log.debug("Returned member context is null, did not add to pending members");
             }
