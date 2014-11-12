@@ -38,12 +38,14 @@ public abstract class ApplicationContext {
 
     private Stack<ClusterStatus> statusLifeCycle;
 
-    protected boolean hasDependents;
+    protected boolean hasStartupDependents;
+    
+    protected boolean hasScalingDependents;
 
     public ApplicationContext(String id, boolean killDependent) {
         applicationContextList = new ArrayList<ApplicationContext>();
         statusLifeCycle = new Stack<ClusterStatus>();
-        this.setHasDependents(killDependent);
+        this.setHasStartupDependents(killDependent);
         this.id = id;
     }
 
@@ -103,11 +105,19 @@ public abstract class ApplicationContext {
         this.terminated = terminated;
     }
 
-    public boolean isHasDependents() {
-        return hasDependents;
+    public boolean hasStartupDependents() {
+        return hasStartupDependents;
     }
 
-    public void setHasDependents(boolean isDependent) {
-        this.hasDependents = isDependent;
+    public void setHasStartupDependents(boolean isDependent) {
+        this.hasStartupDependents = isDependent;
+    }
+
+    public boolean hasScalingDependents() {
+        return hasScalingDependents;
+    }
+
+    public void setHasScalingDependents(boolean isDependent) {
+        this.hasScalingDependents = isDependent;
     }
 }
