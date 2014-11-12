@@ -479,7 +479,7 @@ public class RegistryManager {
         return groupArr;
     }
 
-    public void removeServiceGroup(String name) throws Exception {
+    public void removeServiceGroup(String name) throws RegistryException {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Name of the service group can not be empty");
         }
@@ -491,6 +491,8 @@ public class RegistryManager {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Service group %s is removed from registry", name));
             }
+        } else {
+            throw new AutoScalerException("No service group is found with name" + name);
         }
     }
 

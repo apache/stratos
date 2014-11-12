@@ -50,6 +50,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
+import org.wso2.carbon.registry.api.RegistryException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -471,7 +472,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     public void undeployServiceGroup(String name) throws AutoScalerException {
         try {
             RegistryManager.getInstance().removeServiceGroup(name);
-        } catch (Exception e) {
+        } catch (RegistryException e) {
             throw new AutoScalerException("Error occurred while removing the service groups", e);
         }
 
