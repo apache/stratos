@@ -45,15 +45,21 @@ public abstract class ParentComponentMonitor extends Monitor {
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
 
     //The monitors dependency tree with all the start-able/kill-able dependencies
-    protected DependencyTree dependencyTree;
+    protected DependencyTree startupDependencyTree;
+
+    //The monitors dependency tree with all the scaling dependencies
+    protected DependencyTree scalingDependencyTree;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         aliasToInactiveMonitorsMap = new HashMap<String, Monitor>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
-        //Building the dependency for this monitor within the immediate children
-        dependencyTree = DependencyBuilder.getInstance().buildDependency(component);
+        //Building the startup dependencies for this monitor within the immediate children
+        startupDependencyTree = DependencyBuilder.getInstance().buildStartupDependency(component);
+
+        //Building the scaling dependencies for this monitor within the immediate children
+        scalingDependencyTree = DependencyBuilder.getInstance().buildStartupDependency(component);
     }
 
     /**
@@ -126,7 +132,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //need to notify the parent
             StatusChecker.getInstance().onChildStatusChange(idOfEvent, this.id, this.appId);
         } else {
-            terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
+            terminationList = this.startupDependencyTree.getTerminationDependencies(idOfEvent);
             //Checking whether all children are to be terminated.
             if (terminationList.size() ==
                     (this.aliasToActiveMonitorsMap.size() + this.aliasToInactiveMonitorsMap.size())) {
@@ -179,10 +185,10 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationContext> terminationList;
         boolean allDependentTerminated = false;
 
-        ApplicationContext context = this.dependencyTree.findApplicationContextWithId(idOfEvent);
+        ApplicationContext context = this.startupDependencyTree.findApplicationContextWithId(idOfEvent);
         context.setTerminated(true);
 
-        terminationList = this.dependencyTree.getTerminationDependencies(idOfEvent);
+        terminationList = this.startupDependencyTree.getTerminationDependencies(idOfEvent);
 
 
         /**
@@ -192,7 +198,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             allDependentTerminated = allDependentTerminated(terminationList);
         }
 
-        List<ApplicationContext> parentContexts = this.dependencyTree.findAllParentContextWithId(idOfEvent);
+        List<ApplicationContext> parentContexts = this.startupDependencyTree.findAllParentContextWithId(idOfEvent);
         boolean parentsTerminated = false;
         if (parentContexts != null) {
             parentsTerminated = allParentTerminated(parentContexts);
@@ -203,7 +209,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //Find the non existent monitor by traversing dependency tree
             try {
                 this.startDependencyOnTermination();
-                List<ApplicationContext> applicationContexts = this.dependencyTree.
+                List<ApplicationContext> applicationContexts = this.startupDependencyTree.
                         getStarAbleDependenciesByTermination();
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
@@ -266,7 +272,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      */
     public void startDependency() throws TopologyInConsistentException {
         //start the first dependency
-        List<ApplicationContext> applicationContexts = this.dependencyTree.getStarAbleDependencies();
+        List<ApplicationContext> applicationContexts = this.startupDependencyTree.getStarAbleDependencies();
         startDependency(applicationContexts);
 
     }
@@ -278,7 +284,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      */
     public void startDependencyOnTermination() throws TopologyInConsistentException {
         //start the first dependency which went to terminated
-        List<ApplicationContext> applicationContexts = this.dependencyTree.
+        List<ApplicationContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination();
         startDependency(applicationContexts);
 
@@ -290,7 +296,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param id alias/clusterId of which receive the activated event
      */
     public boolean startDependency(String id) throws TopologyInConsistentException {
-        List<ApplicationContext> applicationContexts = this.dependencyTree.getStarAbleDependencies(id);
+        List<ApplicationContext> applicationContexts = this.startupDependencyTree.getStarAbleDependencies(id);
         return startDependency(applicationContexts);
     }
 
@@ -420,4 +426,6 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
     }
+
+    onScaling()
 }

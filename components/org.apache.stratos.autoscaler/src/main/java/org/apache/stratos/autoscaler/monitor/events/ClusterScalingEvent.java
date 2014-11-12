@@ -21,22 +21,23 @@ package org.apache.stratos.autoscaler.monitor.events;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
- * This will use to notify observers upon a cluster activation events received in Topology.
+ * This will use to notify observers upon a cluster scaling events received.
  */
-public class ClusterScalingEvent extends MonitorStatusEvent {
+public class ClusterScalingEvent extends MonitorScalingEvent {
 
-    private ClusterStatus status;
+    private String scalingAction;
+    private float factor;
 
-    public ClusterScalingEvent(ClusterStatus status, String id) {
+    public ClusterScalingEvent(String scalingAction, String id) {
         super(id);
-        this.status = status;
+        this.scalingAction = scalingAction;
     }
 
-    public ClusterStatus getStatus() {
-        return this.status;
+    public String getScalingAction() {
+        return scalingAction;
     }
 
-    public void setStatus(ClusterStatus status) {
-        this.status = status;
+    public void setScalingAction(String scalingAction) {
+        this.scalingAction = scalingAction;
     }
 }
