@@ -185,12 +185,15 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             asServiceClient = AutoscalerServiceClient.getServiceClient();
 
             if (log.isDebugEnabled()) {
-                log.debug("deploying to cloud controller service group " + serviceGroupDefinitionName);
+                log.debug(String.format("Calling AS to get service group %s", serviceGroupDefinitionName));
             }
 
             ServiceGroup serviceGroup = asServiceClient.getServiceGroup(serviceGroupDefinitionName);
-            ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
+            if (serviceGroup == null) {
+                return null;
+            }
 
+            ServiceGroupDefinition serviceGroupDef = populateServiceGroupDefinitionPojo(serviceGroup);
             return serviceGroupDef;
 
         } catch (AxisFault axisFault) {
