@@ -439,7 +439,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             if (log.isDebugEnabled()) {
                 log.debug("ScalingOrders " + scalingOrders);
 
-                if (startupOrders != null) {
+                if (scalingOrders != null) {
                     log.debug("ScalingOrder:size " + scalingOrders.length);
                 } else {
                     log.debug("ScalingOrder: is null");
