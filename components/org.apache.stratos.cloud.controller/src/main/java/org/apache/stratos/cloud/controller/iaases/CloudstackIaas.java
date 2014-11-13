@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-public class CloudstackIaas extends Iaas {
+public class CloudStackIaas extends Iaas {
 
-    private static final Log log = LogFactory.getLog(CloudstackIaas.class);
+    private static final Log log = LogFactory.getLog(CloudStackIaas.class);
 
-    public CloudstackIaas(IaasProvider iaasProvider) {
+    public CloudStackIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
     }
 
