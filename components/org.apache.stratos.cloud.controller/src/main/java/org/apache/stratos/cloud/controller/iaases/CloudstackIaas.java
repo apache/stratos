@@ -12,7 +12,7 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator;
+import org.apache.stratos.cloud.controller.validate.CloudStackPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
@@ -317,7 +317,7 @@ public class CloudStackIaas extends Iaas {
 
     @Override
     public PartitionValidator getPartitionValidator() {
-        return new CloudstackPartitionValidator();
+        return new CloudStackPartitionValidator();
     }
 
     @Override

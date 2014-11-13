@@ -13,7 +13,7 @@ import org.apache.stratos.messaging.domain.topology.Scope;
 import java.util.Properties;
 
 
-public class CloudstackPartitionValidator implements PartitionValidator {
+public class CloudStackPartitionValidator implements PartitionValidator {
 
 
     private static final Log log = LogFactory.getLog(AWSEC2PartitionValidator.class);
