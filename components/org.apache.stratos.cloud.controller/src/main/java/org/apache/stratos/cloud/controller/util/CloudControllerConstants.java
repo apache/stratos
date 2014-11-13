@@ -258,4 +258,10 @@ public final class CloudControllerConstants {
     public static final String NETWORK_FIXED_IP = "fixedIp";
     public static final String NETWORK_PORT = "portUuid";
     public static final String NETWORK_UUID = "networkUuid";
+
+    // CloudStack specific
+    public static final String USER_NAME = "username";
+    public static final String DOMAIN_ID = "domainId";
+    public static final String DISK_OFFERING = "diskOffering";
+    public static final String NETWORK_IDS= "networkIds";
 }

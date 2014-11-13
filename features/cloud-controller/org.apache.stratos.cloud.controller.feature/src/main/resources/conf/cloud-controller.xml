@@ -16,62 +16,79 @@
   #  KIND, either express or implied.  See the License for the
   #  specific language governing permissions and limitations
   #  under the License.
-  --> 
+  -->
 <cloudController xmlns:svns="http://org.wso2.securevault/configuration">
 
-	<svns:secureVault
-		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
+    <svns:secureVault
+            provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler"/>
 
-    	<dataPublisher enable="false">
-		<!-- BAM Server Info - default values are 'admin' and 'admin' 
-			 Optional element. -->
-		<bamServer>
-            	<!-- BAM server URL should be specified in carbon.xml -->
-			<adminUserName>admin</adminUserName>
-			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
-		</bamServer>
-		<!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
-			 Optional element. -->
-		<cron>1 * * * * ? *</cron>
-		<!-- Cassandra cluster related info -->
-		<!--cassandraInfo>
-			<connectionUrl>localhost:9160</connectionUrl>
-			<userName>admin</userName>
-			<password svns:secretAlias="cloud.controller.cassandra.server.password">admin</password>
-		</cassandraInfo-->
-	</dataPublisher>
+    <dataPublisher enable="false">
+        <!-- BAM Server Info - default values are 'admin' and 'admin'
+             Optional element. -->
+        <bamServer>
+            <!-- BAM server URL should be specified in carbon.xml -->
+            <adminUserName>admin</adminUserName>
+            <adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">admin</adminPassword>
+        </bamServer>
+        <!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
+             Optional element. -->
+        <cron>1 * * * * ? *</cron>
+        <!-- Cassandra cluster related info -->
+        <!--cassandraInfo>
+            <connectionUrl>localhost:9160</connectionUrl>
+            <userName>admin</userName>
+            <password svns:secretAlias="cloud.controller.cassandra.server.password">admin</password>
+        </cassandraInfo-->
+    </dataPublisher>
 
-    	<topologySync enable="true">
-		<property name="cron" value="1 * * * * ? *" />
-	</topologySync>	
+    <topologySync enable="true">
+        <property name="cron" value="1 * * * * ? *"/>
+    </topologySync>
 
-	<!-- Specify the properties that are common to an IaaS here. This element 
-		is not necessary [0..1]. But you can use this section to avoid specifying 
-		same property over and over again. -->
-	<iaasProviders>
-        	<!--iaasProvider type="ec2" name="ec2 specific details">
-            		<className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
-			<provider>aws-ec2</provider>
-			<identity svns:secretAlias="cloud.controller.ec2.identity">dhsaghfdal</identity>
-			<credential svns:secretAlias="cloud.controller.ec2.credential">jdkjaskd</credential>
-			<scaleUpOrder>1</scaleUpOrder>
-			<scaleDownOrder>2</scaleDownOrder>
-			<property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
-            		<property name="availabilityZone" value="us-east-1c"/>
-			<property name="securityGroups" value="manager,cep,mb,default"/>
-            		<property name="instanceType" value="m1.large"/>
-            		<property name="keyPair" value="nirmal-key"/>
-		</iaasProvider-->
-		<iaasProvider type="openstack" name="openstack specific details">
-            		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
-			<provider>openstack-nova</provider>
-			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
-			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
-			<property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
-           		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
-			<property name="jclouds.api-version" value="2.0/" />
-			<property name="X" value="x" />
-			<property name="Y" value="y" />
-		</iaasProvider>
-	</iaasProviders>
+    <!-- Specify the properties that are common to an IaaS here. This element
+        is not necessary [0..1]. But you can use this section to avoid specifying
+        same property over and over again. -->
+    <iaasProviders>
+        <!--iaasProvider type="ec2" name="ec2 specific details">
+                <className>org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas</className>
+        <provider>aws-ec2</provider>
+        <identity svns:secretAlias="cloud.controller.ec2.identity">dhsaghfdal</identity>
+        <credential svns:secretAlias="cloud.controller.ec2.credential">jdkjaskd</credential>
+        <scaleUpOrder>1</scaleUpOrder>
+        <scaleDownOrder>2</scaleDownOrder>
+        <property name="jclouds.ec2.ami-query" value="owner-id=XX-XX-XX;state=available;image-type=machine"/>
+                <property name="availabilityZone" value="us-east-1c"/>
+        <property name="securityGroups" value="manager,cep,mb,default"/>
+                <property name="instanceType" value="m1.large"/>
+                <property name="keyPair" value="nirmal-key"/>
+    </iaasProvider-->
+        <iaasProvider type="openstack" name="openstack specific details">
+            <className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+            <provider>openstack-nova</provider>
+            <identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
+            <credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
+            <property name="jclouds.endpoint" value="http://192.168.16.20:5000/"/>
+            <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+            <property name="jclouds.api-version" value="2.0/"/>
+            <property name="X" value="x"/>
+            <property name="Y" value="y"/>
+        </iaasProvider>
+        <!-- iaasProvider type="cloudstack" name="cloudstack specific details">
+            <className>org.apache.stratos.cloud.controller.iaases.CloudstackIaas</className>
+            <provider>cloudstack</provider>
+            <identity svns:secretAlias="cloud.controller.cloudstack.identity">api-key</identity>
+            <credential svns:secretAlias="cloud.controller.cloudstack.credential">secret-key</credential>
+            <property name="jclouds.endpoint" value="ip:port"/>
+            <property name="availabilityZone" value="zone_Id"/>
+            <property name="instanceType" value="instance_type_Id"/>
+            <property name="securityGroupIds" value="security_group_Id1,security_group_id2"/>
+            <property name="networkIds" value="network_Id1,network_Id2"/>
+            <property name="diskOffering" value="disk_offering_Id"/>
+            <property name="username" value="username"/>
+            <property name="domainId" value="domainId"/>
+            <property name="keyPair" value="asanka-key"/>
+            <property name="tags" value="tag1,tag2,tag3"/>
+            <property name="autoAssignIp" value="false"/>
+        </iaasProvider -->
+    </iaasProviders>
 </cloudController>
