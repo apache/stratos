@@ -209,8 +209,6 @@ public abstract class ParentComponentMonitor extends Monitor {
             //Find the non existent monitor by traversing dependency tree
             try {
                 this.startDependencyOnTermination();
-                List<ApplicationContext> applicationContexts = this.startupDependencyTree.
-                        getStarAbleDependenciesByTermination();
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                 log.error("Error while starting the monitor upon termination" + e);

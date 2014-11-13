@@ -166,6 +166,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
             if (this.inactiveMonitorsList.contains(id)) {
                 this.inactiveMonitorsList.remove(id);
+                this.aliasToActiveMonitorsMap.remove(id);
             }
             if (this.status == ApplicationStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);

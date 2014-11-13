@@ -186,15 +186,15 @@ public class DependencyTree {
     public List<ApplicationContext> getTerminationDependencies(String id) {
         List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
         ApplicationContext applicationContext = findApplicationContextWithId(id);
-
+        //adding the terminated one to the list
+        allChildrenOfAppContext.add(applicationContext);
         if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
-            allChildrenOfAppContext.add(applicationContext);
             findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
                     allChildrenOfAppContext);
             return allChildrenOfAppContext;
-        } else if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
+        } else if (terminationBehavior == TerminationBehavior.TERMINATE_ALL) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.applicationContextList,
                     allChildrenOfAppContext);

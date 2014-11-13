@@ -75,6 +75,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
             if (this.inactiveMonitorsList.contains(id)) {
                 this.inactiveMonitorsList.remove(id);
+                this.aliasToActiveMonitorsMap.remove(id);
             }
             if (this.status == GroupStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
