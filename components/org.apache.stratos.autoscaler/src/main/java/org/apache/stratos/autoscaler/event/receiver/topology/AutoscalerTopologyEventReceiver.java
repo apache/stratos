@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -60,10 +61,10 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
     @Override
     public void run() {
         //FIXME this activated before autoscaler deployer activated.
-        try {
+        /*try {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
-        }
+        }*/
         Thread thread = new Thread(topologyEventReceiver);
         thread.start();
         if (log.isInfoEnabled()) {
@@ -281,6 +282,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 	monitor.setStatus(ClusterStatus.Terminating);
                 	monitor.terminateAllMembers();
                 }
+                StatusChecker.getInstance().onMemberTermination(clusterId);
             }
         });
 

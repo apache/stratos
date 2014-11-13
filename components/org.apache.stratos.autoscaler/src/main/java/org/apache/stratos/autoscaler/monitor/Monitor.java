@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +34,7 @@ public abstract class Monitor implements EventHandler {
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //monitors map, stopped monitors
-    protected Map<String, Monitor> aliasToInactiveMonitorsMap;
+    protected List<String> inactiveMonitorsList;
     //flag will get set to true in MonitorTerminateAllEvent when termination of
     // this monitor decided by its parent
     protected boolean terminateChildren = false;
@@ -76,7 +77,7 @@ public abstract class Monitor implements EventHandler {
     public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
         if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) ||
-                (this.aliasToInactiveMonitorsMap != null && !this.aliasToInactiveMonitorsMap.isEmpty())) {
+                (this.inactiveMonitorsList != null && !this.inactiveMonitorsList.isEmpty())) {
             hasMonitor = true;
         }
         return hasMonitor;
@@ -84,7 +85,7 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasMonitors() {
 
-        return this.aliasToActiveMonitorsMap != null || this.aliasToInactiveMonitorsMap != null;
+        return this.aliasToActiveMonitorsMap != null || this.inactiveMonitorsList != null;
     }
 
     public boolean hasDependents() {
@@ -106,11 +107,11 @@ public abstract class Monitor implements EventHandler {
         return hasInDepChild;
     }
 
-    public Map<String, Monitor> getAliasToInActiveMonitorsMap() {
-        return this.aliasToInactiveMonitorsMap;
+    public List<String> getAliasToInActiveMonitorsMap() {
+        return this.inactiveMonitorsList;
     }
 
-    public void setAliasToInActiveMonitorsMap(Map<String, Monitor> aliasToInActiveMonitorsMap) {
-        this.aliasToInactiveMonitorsMap = aliasToInActiveMonitorsMap;
+    public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
+        this.inactiveMonitorsList = inactiveMonitorsList;
     }
 }

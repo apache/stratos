@@ -34,6 +34,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
-        aliasToInactiveMonitorsMap = new HashMap<String, Monitor>();
+        inactiveMonitorsList = new ArrayList<String>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
@@ -70,8 +71,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected void onChildActivatedEvent(String eventId) {
         try {
             //if the activated monitor is in in_active map move it to active map
-            if (this.aliasToInactiveMonitorsMap.containsKey(eventId)) {
-                this.aliasToActiveMonitorsMap.put(id, this.aliasToInactiveMonitorsMap.remove(eventId));
+            if (this.inactiveMonitorsList.contains(eventId)) {
+                this.aliasToActiveMonitorsMap.put(id, this.aliasToActiveMonitorsMap.remove(eventId));
             }
             boolean startDep = startDependency(eventId);
             if (log.isDebugEnabled()) {
@@ -115,9 +116,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markMonitorAsInactive(String monitorKey) {
 
-        if (!this.aliasToInactiveMonitorsMap.containsKey(monitorKey)) {
-            this.aliasToInactiveMonitorsMap.put(monitorKey,
-                    this.aliasToActiveMonitorsMap.remove(monitorKey));
+        if (!this.inactiveMonitorsList.contains(monitorKey)) {
+            this.inactiveMonitorsList.add(monitorKey);
         }
     }
 
@@ -135,7 +135,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
             //Checking whether all children are to be terminated.
             if (terminationList.size() ==
-                    (this.aliasToActiveMonitorsMap.size() + this.aliasToInactiveMonitorsMap.size())) {
+                    (this.aliasToActiveMonitorsMap.size())) {
                 if (this.parent != null) {
                     ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id);
                 }
@@ -231,7 +231,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
                 allDependentTerminated = false;
                 return allDependentTerminated;
-            } else if (this.aliasToInactiveMonitorsMap.containsKey(context1.getId())) {
+            } else if (this.inactiveMonitorsList.contains(context1.getId())) {
                 log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
                 allDependentTerminated = false;
                 return allDependentTerminated;
@@ -246,7 +246,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     private boolean allParentTerminated(List<ApplicationContext> parentContexts) {
         boolean parentsTerminated = false;
         for (ApplicationContext context1 : parentContexts) {
-            if (this.aliasToInactiveMonitorsMap.containsKey(context1.getId())) {
+            if (this.inactiveMonitorsList.contains(context1.getId())) {
                 log.info("Waiting for the [Parent Monitor] " + context1.getId()
                         + " to be terminated");
                 parentsTerminated = false;

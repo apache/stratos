@@ -108,12 +108,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public Monitor findGroupMonitorWithId(String groupId) {
         Monitor monitor;
         //searching within active monitors
-        monitor = findGroupMonitor(groupId, aliasToActiveMonitorsMap.values(), true);
-        if (monitor == null) {
-            //searching within inActive monitors
-            monitor = findGroupMonitor(groupId, aliasToInactiveMonitorsMap.values(), false);
-        }
-        return monitor;
+        return findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
     }
 
 
@@ -124,18 +119,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param monitors the group monitors found in the app monitor
      * @return the found GroupMonitor
      */
-    private Monitor findGroupMonitor(String id, Collection<Monitor> monitors, boolean active) {
+    private Monitor findGroupMonitor(String id, Collection<Monitor> monitors) {
         for (Monitor monitor : monitors) {
             // check if alias is equal, if so, return
             if (monitor.getId().equals(id)) {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor.getAliasToActiveMonitorsMap() != null && active) {
-                    return findGroupMonitor(id, monitor.getAliasToActiveMonitorsMap().values(), active);
-                } else if (monitor.getAliasToInActiveMonitorsMap() != null && !active) {
-                    return findGroupMonitor(id, monitor.getAliasToInActiveMonitorsMap().values(), active);
-
+                if (monitor.getAliasToActiveMonitorsMap() != null) {
+                    return findGroupMonitor(id, monitor.getAliasToActiveMonitorsMap().values());
                 }
             }
         }
@@ -172,8 +164,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             this.markMonitorAsInactive(id);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if (this.inactiveMonitorsList.contains(id)) {
+                this.inactiveMonitorsList.remove(id);
             }
             if (this.status == ApplicationStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
@@ -182,8 +174,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if(this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if(this.inactiveMonitorsList.contains(id)) {
+                this.inactiveMonitorsList.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }

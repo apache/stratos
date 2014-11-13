@@ -73,8 +73,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             onChildInactiveEvent(id);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if (this.inactiveMonitorsList.contains(id)) {
+                this.inactiveMonitorsList.remove(id);
             }
             if (this.status == GroupStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
@@ -87,8 +87,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if (this.inactiveMonitorsList.contains(id)) {
+                this.inactiveMonitorsList.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
