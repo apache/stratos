@@ -133,8 +133,8 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
         }
 
         if (member.getStatus() == MemberStatus.In_Maintenance) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Member already updated as In_Maintenance: " +
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member already updated as In_Maintenance: " +
                         "[service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),

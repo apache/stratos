@@ -87,8 +87,8 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
         // Validate event against the existing topology
         Service service = topology.getService(event.getServiceName());
         if (service == null) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Service does not exist: [service] %s",
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Service does not exist: [service] %s",
                         event.getServiceName()));
             }
         } else {

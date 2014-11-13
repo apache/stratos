@@ -94,10 +94,6 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
             applications.removeApplication(appId);
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("ApplicationRemovedMessageProcessor notifying listener ");
-        }
-
         notifyEventListeners(event);
         return true;
 

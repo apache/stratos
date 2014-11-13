@@ -106,8 +106,8 @@ public class ClusterRemovedMessageProcessor extends MessageProcessor {
         notifyEventListeners(event);
 
         if (!service.clusterExists(event.getClusterId())) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster does not exist: [service] %s [cluster] %s",
                         event.getServiceName(),
                         event.getClusterId()));
             }
