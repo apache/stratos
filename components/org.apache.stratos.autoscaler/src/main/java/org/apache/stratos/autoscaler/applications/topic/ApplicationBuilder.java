@@ -52,8 +52,8 @@ public class ApplicationBuilder {
 
     public static synchronized void handleApplicationCreated(Application application,
                                                              Set<ApplicationClusterContext> appClusterContexts) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling application creation event: [application-id] " +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
 
@@ -74,8 +74,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleApplicationActivatedEvent(String appId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling application activation event: [application-id] " + appId);
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application activation event: [application-id] " + appId);
         }
 
         Applications applications = ApplicationHolder.getApplications();
@@ -108,8 +108,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleApplicationUndeployed(String appId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling application terminating event: [application-id] " + appId);
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminating event: [application-id] " + appId);
         }
 
         Applications applications = ApplicationHolder.getApplications();
@@ -142,8 +142,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleApplicationTerminatedEvent(String appId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling application terminated event: [application-id] " + appId);
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminated event: [application-id] " + appId);
         }
 
         Applications applications = ApplicationHolder.getApplications();
@@ -182,8 +182,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleApplicationTerminatingEvent(String applicationId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling application terminating event: [application-id] " + applicationId);
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminating event: [application-id] " + applicationId);
         }
 
         ApplicationHolder.acquireWriteLock();
@@ -215,8 +215,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupTerminatedEvent(String appId, String groupId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling group terminated event: [group-id] " + groupId +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling group terminated event: [group-id] " + groupId +
                     " [application-id] " + appId);
         }
 
@@ -257,8 +257,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupActivatedEvent(String appId, String groupId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling group activation for the [group-id]: " + groupId +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling group activation for the [group-id]: " + groupId +
                     " in the [application-id] " + appId);
         }
 
@@ -299,8 +299,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupCreatedEvent(String appId, String groupId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling Group creation for the [group]: " + groupId +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling Group creation for the [group]: " + groupId +
                     " in the [application] " + appId);
         }
 
@@ -342,8 +342,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupInActivateEvent(String appId, String groupId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling group in-active event: [group]: " + groupId +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling group in-active event: [group]: " + groupId +
                     " [application-id] " + appId);
         }
 
@@ -384,8 +384,8 @@ public class ApplicationBuilder {
     }
 
     public static void handleGroupTerminatingEvent(String appId, String groupId) {
-        if (log.isInfoEnabled()) {
-            log.info("Handling group terminating: [group-id] " + groupId +
+        if (log.isDebugEnabled()) {
+            log.debug("Handling group terminating: [group-id] " + groupId +
                     " [application-id] " + appId);
         }
 

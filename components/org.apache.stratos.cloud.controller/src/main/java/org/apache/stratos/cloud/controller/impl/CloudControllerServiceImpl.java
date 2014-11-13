@@ -840,8 +840,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                         if (ip != null) {
                             memberContext.setAllocatedIpAddress(ip);
-                            LOG.info("Allocated an ip address: "
-                                    + memberContext.toString());
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Allocated an ip address: "
+                                        + memberContext.toString());
+                            } else if (LOG.isInfoEnabled()) {
+                                LOG.info("Allocated ip address [ " + memberContext.getAllocatedIpAddress() +
+                                       " ] to member with id: " + memberContext.getMemberId());
+                            }
                         }
                     }
 
@@ -863,7 +868,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     ip = node.getPublicAddresses().iterator().next();
                     publicIp = ip;
                     memberContext.setPublicIpAddress(ip);
-                    LOG.info("Retrieving Public IP Address : " + memberContext.toString());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Retrieving Public IP Address : " + memberContext.toString());
+                    } else if (LOG.isInfoEnabled()) {
+                        LOG.info("Retrieving Public IP Address: " + memberContext.getPublicIpAddress() +
+                                ", member id: " + memberContext.getMemberId());
+                    }
                 }
 
                 // private IP
@@ -871,7 +881,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         node.getPrivateAddresses().iterator().hasNext()) {
                     ip = node.getPrivateAddresses().iterator().next();
                     memberContext.setPrivateIpAddress(ip);
-                    LOG.info("Retrieving Private IP Address. " + memberContext.toString());
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Retrieving Private IP Address. " + memberContext.toString());
+                    } else if (LOG.isInfoEnabled()) {
+                        LOG.info("Retrieving Private IP Address: " + memberContext.getPrivateIpAddress() +
+                            ", member id: " +  memberContext.getMemberId());
+                    }
                 }
 
                 dataHolder.addMemberContext(memberContext);
@@ -978,7 +993,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaas.releaseAddress(ctxt.getAllocatedIpAddress());
         }
 
-        LOG.info("Member is terminated: " + ctxt.toString());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Member is terminated: " + ctxt.toString());
+        } else if (LOG.isInfoEnabled()) {
+            LOG.info("Member with id " + ctxt.getMemberId() + " is terminated");
+        }
         return iaasProvider;
     }
 
