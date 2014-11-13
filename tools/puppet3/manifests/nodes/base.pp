@@ -24,7 +24,7 @@ node 'base' {
   $mb_url		= 'tcp://127.0.0.1:1883'
   $mb_type		= 'activemq' #in wso2 mb case, value should be 'wso2mb'
   $cep_ip               = '127.0.0.1'
-  $cep_port             = '7611'
+  $cep_port             = '7711'
   $cep_username       ='admin'
   $cep_password       ='admin'
   $truststore_password  = 'wso2carbon'
