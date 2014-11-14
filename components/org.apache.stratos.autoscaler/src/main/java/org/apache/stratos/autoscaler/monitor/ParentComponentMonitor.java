@@ -57,10 +57,10 @@ public abstract class ParentComponentMonitor extends Monitor {
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
-        startupDependencyTree = DependencyBuilder.getInstance().buildStartupDependency(component);
+        startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
 
         //Building the scaling dependencies for this monitor within the immediate children
-        scalingDependencyTree = DependencyBuilder.getInstance().buildStartupDependency(component);
+        scalingDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationContext> terminationList;
         boolean allDependentTerminated = false;
 
-        ApplicationContext context = this.startupDependencyTree.findApplicationContextWithId(eventId);
+        ApplicationContext context = this.startupDependencyTree.findApplicationContextWithIdInPrimaryTree(eventId);
         context.setTerminated(true);
 
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);

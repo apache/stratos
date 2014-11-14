@@ -24,17 +24,17 @@ import java.util.List;
 
 public class StartupOrder implements Serializable {
 
-    private List<String> startList;
+    private List<String> startupOrderComponentList;
 
     public StartupOrder (List<String> startList) {
-        this.startList = startList;
+        this.startupOrderComponentList = startList;
     }
 
-    public List<String> getStartList() {
-        return startList;
+    public List<String> getStartupOrderComponentList() {
+        return startupOrderComponentList;
     }
 
-    public void setStartList(List<String> startList) {
-        this.startList = startList;
+    public void setStartupOrderComponentList(List<String> startupOrderComponentList) {
+        this.startupOrderComponentList = startupOrderComponentList;
     }
 }

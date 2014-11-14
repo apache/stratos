@@ -44,17 +44,17 @@ public class ApplicationContextFactory {
                                                            DependencyTree tree) {
         String id;
         ApplicationContext applicationContext = null;
-        boolean isDependent = tree.isTerminateDependent() || tree.isTerminateAll();
+        boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
         if (order.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);
-            applicationContext = getGroupContext(id, isDependent);
+            applicationContext = getGroupContext(id, hasDependents);
         } else if (order.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
-            applicationContext = getClusterContext(clusterDataHolder, isDependent);
+            applicationContext = getClusterContext(clusterDataHolder, hasDependents);
 
         } else {
             log.warn("[Startup Order]: " + order + " contains unknown reference");

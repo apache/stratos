@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * This is to keep track of the
+ * This is to keep track of the group/cluster status and their dependencies
  */
 public abstract class ApplicationContext {
     private List<ApplicationContext> applicationContextList;

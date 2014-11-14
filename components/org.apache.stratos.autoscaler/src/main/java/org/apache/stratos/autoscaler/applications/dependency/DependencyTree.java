@@ -31,7 +31,9 @@ import java.util.List;
 public class DependencyTree {
     private static final Log log = LogFactory.getLog(DependencyTree.class);
 
-    private List<ApplicationContext> applicationContextList;
+    private List<ApplicationContext> primaryApplicationContextList;
+
+    private List<ApplicationContext> scalingDependencyApplicationContextList;
 
     private boolean started;
 
@@ -46,23 +48,28 @@ public class DependencyTree {
     private String id;
 
     public DependencyTree(String id) {
-        applicationContextList = new ArrayList<ApplicationContext>();
+        primaryApplicationContextList = new ArrayList<ApplicationContext>();
         this.setId(id);
         if (log.isDebugEnabled()) {
             log.debug("Starting a dependency tree for the [group/application] " + id);
         }
     }
 
-    public List<ApplicationContext> getApplicationContextList() {
-        return applicationContextList;
+    public List<ApplicationContext> getPrimaryApplicationContextList() {
+        return primaryApplicationContextList;
     }
 
-    public void setApplicationContextList(List<ApplicationContext> applicationContextList) {
-        this.applicationContextList = applicationContextList;
+    public void setPrimaryApplicationContextList(List<ApplicationContext> primaryApplicationContextList) {
+        this.primaryApplicationContextList = primaryApplicationContextList;
     }
 
-    public void addApplicationContext(ApplicationContext applicationContext) {
-        applicationContextList.add(applicationContext);
+    public void addPrimaryApplicationContext(ApplicationContext applicationContext) {
+        primaryApplicationContextList.add(applicationContext);
+
+    }
+
+    public void addScalingApplicationContext(ApplicationContext applicationContext) {
+        scalingDependencyApplicationContextList.add(applicationContext);
 
     }
 
@@ -72,8 +79,18 @@ public class DependencyTree {
      * @param id the alias/id of group/cluster
      * @return ApplicationContext of the given id
      */
-    public ApplicationContext findApplicationContextWithId(String id) {
-        return findApplicationContextWithId(id, applicationContextList);
+    public ApplicationContext findApplicationContextWithIdInPrimaryTree(String id) {
+        return findApplicationContextWithId(id, primaryApplicationContextList);
+    }
+
+    /**
+     * Find an ApplicationContext from dependency tree with the given id
+     *
+     * @param id the alias/id of group/cluster
+     * @return ApplicationContext of the given id
+     */
+    public ApplicationContext findApplicationContextWithIdInScalingDependencyTree(String id) {
+        return findApplicationContextWithId(id, scalingDependencyApplicationContextList);
     }
 
     /**
@@ -98,7 +115,7 @@ public class DependencyTree {
     }
 
     public ApplicationContext findParentContextWithId(String id) {
-        return findParentContextWithId(null, id, this.applicationContextList);
+        return findParentContextWithId(null, id, this.primaryApplicationContextList);
     }
 
     public List<ApplicationContext> findAllParentContextWithId(String id) {
@@ -107,7 +124,7 @@ public class DependencyTree {
     }
 
     private List<ApplicationContext> findAllParent(List<ApplicationContext> parentContexts, String id) {
-        ApplicationContext context = findParentContextWithId(null, id, this.applicationContextList);
+        ApplicationContext context = findParentContextWithId(null, id, this.primaryApplicationContextList);
         if (context != null) {
             parentContexts.add(context);
             findAllParent(parentContexts, context.getId());
@@ -125,7 +142,7 @@ public class DependencyTree {
             }
         }
         //if not found in the top level search recursively
-        for (ApplicationContext context : this.applicationContextList) {
+        for (ApplicationContext context : this.primaryApplicationContextList) {
             return findParentContextWithId(context, id, context.getApplicationContextList());
         }
         return null;
@@ -141,7 +158,7 @@ public class DependencyTree {
     public List<ApplicationContext> getStarAbleDependencies(String id) {
         //finding the application context which received the activated event and
         // returning it's immediate children as the dependencies.
-        ApplicationContext context = findApplicationContextWithId(id);
+        ApplicationContext context = findApplicationContextWithIdInPrimaryTree(id);
         return context.getApplicationContextList();
     }
 
@@ -152,12 +169,12 @@ public class DependencyTree {
      */
     public List<ApplicationContext> getStarAbleDependencies() {
         //returning the top level as the monitor is in initializing state
-        return this.applicationContextList;
+        return this.primaryApplicationContextList;
     }
 
     public List<ApplicationContext> getStarAbleDependenciesByTermination() {
         //Breadth First search over the graph to find out which level has the terminated contexts
-        return traverseGraphByLevel(this.applicationContextList);
+        return traverseGraphByLevel(this.primaryApplicationContextList);
     }
 
 
@@ -185,7 +202,7 @@ public class DependencyTree {
      */
     public List<ApplicationContext> getTerminationDependencies(String id) {
         List<ApplicationContext> allChildrenOfAppContext = new ArrayList<ApplicationContext>();
-        ApplicationContext applicationContext = findApplicationContextWithId(id);
+        ApplicationContext applicationContext = findApplicationContextWithIdInPrimaryTree(id);
         //adding the terminated one to the list
         allChildrenOfAppContext.add(applicationContext);
         if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
@@ -196,7 +213,7 @@ public class DependencyTree {
             return allChildrenOfAppContext;
         } else if (terminationBehavior == TerminationBehavior.TERMINATE_ALL) {
             //killall will be killed by the monitor from it's list.
-            findAllChildrenOfAppContext(this.applicationContextList,
+            findAllChildrenOfAppContext(this.primaryApplicationContextList,
                     allChildrenOfAppContext);
 
         }
@@ -230,6 +247,14 @@ public class DependencyTree {
 
     public boolean isTerminateAll() {
         return this.terminationBehavior == TerminationBehavior.TERMINATE_ALL;
+    }
+
+    public List<ApplicationContext> getScalingDependencyApplicationContextList() {
+        return scalingDependencyApplicationContextList;
+    }
+
+    public void setScalingDependencyApplicationContextList(List<ApplicationContext> scalingDependencyApplicationContextList) {
+        this.scalingDependencyApplicationContextList = scalingDependencyApplicationContextList;
     }
 
     public enum TerminationBehavior {
