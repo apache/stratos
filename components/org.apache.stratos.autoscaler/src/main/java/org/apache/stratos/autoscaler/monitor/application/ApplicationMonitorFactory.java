@@ -20,9 +20,9 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.ClusterContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.GroupContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -57,15 +57,15 @@ public class ApplicationMonitorFactory {
      * @throws PolicyValidationException     throws while validating the policy associated with cluster
      * @throws PartitionValidationException  throws while validating the partition used in a cluster
      */
-    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
+    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
     	
         Monitor monitor;
-        if (context instanceof GroupContext) {
+        if (context instanceof GroupChildContext) {
             monitor = getGroupMonitor(parentMonitor, context, appId);
-        } else if (context instanceof ClusterContext) {
-            monitor = getClusterMonitor(parentMonitor, (ClusterContext) context, appId);
+        } else if (context instanceof ClusterChildContext) {
+            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, appId);
             if (monitor != null) {
             	((AbstractClusterMonitor)monitor).startScheduler();
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
@@ -86,7 +86,7 @@ public class ApplicationMonitorFactory {
      * @throws DependencyBuilderException    throws while building dependency for app monitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
-    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
+    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
@@ -165,7 +165,7 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
     public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                     ClusterContext context, String appId)
+                                                     ClusterChildContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {

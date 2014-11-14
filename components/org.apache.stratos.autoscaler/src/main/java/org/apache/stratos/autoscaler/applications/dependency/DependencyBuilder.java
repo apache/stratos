@@ -21,9 +21,9 @@ package org.apache.stratos.autoscaler.applications.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContextFactory;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContextFactory;
 import org.apache.stratos.messaging.domain.applications.*;
 
 import java.util.Set;
@@ -78,8 +78,8 @@ public class DependencyBuilder {
 
             //Parsing the start up order
             Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
-            ApplicationContext foundContext;
-            ApplicationContext parentContext;
+            ApplicationChildContext foundContext;
+            ApplicationChildContext parentContext;
 
             if (startupOrders != null) {
                 for (StartupOrder startupOrder : startupOrders) {
@@ -88,11 +88,11 @@ public class DependencyBuilder {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
                         if (startupOrderComponent != null) {
-                            ApplicationContext applicationContext = ApplicationContextFactory.
+                            ApplicationChildContext applicationContext = ApplicationChildContextFactory.
                                     getApplicationContext(startupOrderComponent, component, dependencyTree);
                             String id = applicationContext.getId();
 
-                            ApplicationContext existingApplicationContext =
+                            ApplicationChildContext existingApplicationContext =
                                     dependencyTree.findApplicationContextWithIdInPrimaryTree(id);
                             if (existingApplicationContext == null) {
                                 if (parentContext != null) {
@@ -158,10 +158,10 @@ public class DependencyBuilder {
                             }
 
                             if(applicationContextId != null) {
-                                ApplicationContext applicationContext
+                                ApplicationChildContext applicationContext
                                          = dependencyTree.findApplicationContextWithIdInPrimaryTree(applicationContextId);
 
-                                ApplicationContext existingApplicationContext =
+                                ApplicationChildContext existingApplicationContext =
                                         dependencyTree.findApplicationContextWithIdInScalingDependencyTree(applicationContextId);
                                 if (existingApplicationContext == null) {
 
@@ -200,14 +200,13 @@ public class DependencyBuilder {
         // as they can start in parallel.
         for (Group group1 : component.getAliasToGroupMap().values()) {
             if (dependencyTree.findApplicationContextWithIdInPrimaryTree(group1.getAlias()) == null) {
-                ApplicationContext context = ApplicationContextFactory.
-                        getGroupContext(group1.getAlias(), dependencyTree.isTerminateDependent());
+                ApplicationChildContext context = ApplicationChildContextFactory.getGroupChildContext(group1.getAlias(), dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
             }
         }
         for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
             if (dependencyTree.findApplicationContextWithIdInPrimaryTree(dataHolder.getClusterId()) == null) {
-                ApplicationContext context = ApplicationContextFactory.getClusterContext(dataHolder,
+                ApplicationChildContext context = ApplicationChildContextFactory.getClusterChildContext(dataHolder,
                         dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
 
