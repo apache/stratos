@@ -140,9 +140,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status) {
-        log.info(String.format("[ApplicationMonitor] %s " +
-                "state changes from %s to %s", id, this.status, status));
-
         this.status = status;
         //notify the children about the state change
         MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId));

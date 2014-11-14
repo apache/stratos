@@ -348,7 +348,7 @@ public class StatusChecker {
                     }
                 } else if (groups.isEmpty() && getAllClusterInactive(clusterData) ||
                         clusterData.isEmpty() && getAllGroupInActive(groups) ||
-                        getAllClusterInactive(clusterData) && getAllGroupInActive(groups)) {
+                        getAllClusterInactive(clusterData) || getAllGroupInActive(groups)) {
                     //send the in activation event
                     if (parent instanceof Application) {
                         //send application activated event

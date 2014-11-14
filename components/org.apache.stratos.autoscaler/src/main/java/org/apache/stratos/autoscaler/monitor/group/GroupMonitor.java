@@ -89,7 +89,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
             if (this.inactiveMonitorsList.contains(id)) {
-                this.inactiveMonitorsList.remove(id);
+                this.inactiveMonitorsList.remove(id); //TODO remove from monitor map
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
