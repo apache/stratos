@@ -24,9 +24,11 @@ import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 
 import java.util.Collection;
 import java.util.Set;
@@ -114,6 +116,8 @@ public class ApplicationBuilder {
             return;
         }
 
+        Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
+
         try {
             ApplicationHolder.acquireWriteLock();
             ApplicationStatus status = ApplicationStatus.Terminating;
@@ -121,8 +125,9 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 application.setStatus(status);
                 updateApplicationMonitor(appId, status);
+
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
+                //ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
@@ -131,6 +136,15 @@ public class ApplicationBuilder {
             ApplicationHolder.releaseWriteLock();
         }
         ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
+
+        // if monitors is not found for any cluster, assume cluster is not there and send cluster terminating event.
+        // this assumes the cluster monitor will not fail after creating members, but will only fail before
+        for (ClusterDataHolder aClusterData : clusterData){
+            if (AutoscalerContext.getInstance().getClusterMonitor(aClusterData.getClusterId()) == null) {
+                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, aClusterData.getServiceType(),
+                        aClusterData.getClusterId());
+            }
+        }
     }
 
     public static void handleApplicationTerminatedEvent(String appId) {

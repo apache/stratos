@@ -77,8 +77,15 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
                 try {
                     Service aService = topology.getService(aClusterData.getServiceType());
                     if (aService != null) {
-                        aService.removeCluster(aClusterData.getClusterId());
-                        log.info("Cluster " + aClusterData.getClusterId() + " removed from topology for application " + event.getAppId());
+                        if (aService.clusterExists(aClusterData.getClusterId())) {
+                            aService.removeCluster(aClusterData.getClusterId());
+                            log.info("Cluster " + aClusterData.getClusterId() + " removed from topology for application " + event.getAppId());
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("Cluster " + aClusterData.getClusterId() + " of application " +
+                                        event.getAppId() + " already removed from topology");
+                            }
+                        }
                     } else {
                         log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
                     }

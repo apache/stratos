@@ -23,12 +23,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
@@ -271,6 +276,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
                                                 + "[cluster] %s", clusterId));
                     }
+                    // if monitor does not exist, send cluster terminated event
+                    ClusterStatusEventPublisher.sendClusterTerminatedEvent(clusterTerminatingEvent.getAppId(),
+                            clusterTerminatingEvent.getServiceName(), clusterId);
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
@@ -300,6 +308,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
                                                 + "[cluster] %s", clusterId));
                     }
+                    // if the cluster monitor is null, assume that its termianted
+                    AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId()).
+                            onChildEvent(new ClusterStatusEvent(ClusterStatus.Terminated, clusterId));
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
