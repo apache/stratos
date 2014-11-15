@@ -195,11 +195,19 @@ public class ApplicationMonitorFactory {
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
-            //setting the dependent behaviour of the cluster monitor
+
+            //setting the startup dependent behaviour of the cluster monitor
             if(parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
                 clusterMonitor.setHasStartupDependents(true);
             } else {
                 clusterMonitor.setHasStartupDependents(false);
+            }
+
+            //setting the scaling dependent behaviour of the cluster monitor
+            if(parentMonitor.hasScalingDependents() || (context.hasScalingDependents())) {
+                clusterMonitor.setHasScalingDependents(true);
+            } else {
+                clusterMonitor.setHasScalingDependents(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
             if (cluster.getStatus() != clusterMonitor.getStatus()) {

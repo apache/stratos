@@ -94,8 +94,16 @@ public abstract class Monitor implements EventHandler {
         return hasStartupDependents;
     }
 
+    public boolean hasScalingDependents() {
+        return hasScalingDependents;
+    }
+
     public void setHasStartupDependents(boolean hasDependent) {
         this.hasStartupDependents = hasDependent;
+    }
+
+    public void setHasScalingDependents(boolean hasDependent) {
+        this.hasScalingDependents = hasDependent;
     }
 
     public boolean hasIndependentChild() {
