@@ -1002,17 +1002,17 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("tenant/search/{domain}")
+    @Path("tenant/search/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain") String domain) throws RestAPIException {
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         List<TenantInfoBean> tenantList = null;
         try {
-            tenantList = searchPartialTenantsDomains(domain);
+            tenantList = searchPartialTenantsDomains(tenantDomain);
         } catch (Exception e) {
-            String msg = "Error in getting information for tenant " + domain;
+            String msg = "Error in getting information for tenant " + tenantDomain;
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
