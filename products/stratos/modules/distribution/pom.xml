@@ -16,8 +16,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -39,34 +38,34 @@
             <version>${rampart.mar.version}</version>
             <type>mar</type>
         </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.2.0.GA</version>
-            <!-- filter out unwanted jars -->
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-httpclient</groupId>
-                    <artifactId>commons-httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxb-provider</artifactId>
-            <version>2.2.0.GA</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson-provider</artifactId>
-            <version>2.2.0.GA</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
+	<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>2.2.0.GA</version>
+			<!-- filter out unwanted jars -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-httpclient</groupId>
+					<artifactId>commons-httpclient</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxb-provider</artifactId>
+			<version>2.2.0.GA</version>
+		</dependency>
+	<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson-provider</artifactId>
+			<version>2.2.0.GA</version>
+		</dependency>
+	<dependency>
+        	<groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.kubernetes.client</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -467,7 +466,7 @@
         </dependency>
         <!-- activemq client jars -->
         <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
+	    <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
             <version>1.0.1</version>
         </dependency>
@@ -477,29 +476,29 @@
             <version>1.9</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>5.9.1</version>
+           <groupId>org.apache.activemq</groupId>
+           <artifactId>activemq-client</artifactId>
+           <version>5.9.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.cep.extension</artifactId>
             <version>4.1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.paho</groupId>
-            <artifactId>mqtt-client</artifactId>
-            <version>1.0.0</version>
+         <dependency>
+		        <groupId>org.eclipse.paho</groupId>
+		        <artifactId>mqtt-client</artifactId>
+		        <version>0.4.0</version>
+   		 </dependency>
+	<dependency>
+	    <groupId>org.apache.geronimo.specs</groupId>
+	    <artifactId>geronimo-jta_1.1_spec</artifactId>
+	    <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>4.2.0-stratos</version>
+	<dependency>
+	    <groupId>org.apache.stratos</groupId>
+	    <artifactId>org.wso2.carbon.ui</artifactId>
+	    <version>4.2.0-stratos</version>
         </dependency>
     </dependencies>
 
@@ -574,18 +573,17 @@
                         <configuration>
                             <tasks>
                                 <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath"/>
+                                    <path refid="maven.compile.classpath" />
                                 </path>
-                                <echo message="########### Create Billing Database ##############"/>
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2BILLING_DB"
-                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                <echo message="########### Create Billing Database ##############" />
+                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2BILLING_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath"/>
+                                        <path refid="h2.classpath" />
                                     </classpath>
-                                    <fileset file="../../dbscripts/billing-h2.sql"/>
-                                    <fileset file="../../dbscripts/metering_h2.sql"/>
+                                    <fileset file="../../dbscripts/billing-h2.sql" />
+                                    <fileset file="../../dbscripts/metering_h2.sql" />
                                 </sql>
-                                <echo message="##################### END ########################"/>
+                                <echo message="##################### END ########################" />
                             </tasks>
                         </configuration>
                     </execution>
@@ -599,33 +597,32 @@
                         <configuration>
                             <tasks>
                                 <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath"/>
+                                    <path refid="maven.compile.classpath" />
                                 </path>
-                                <echo message="########### Create S2 Foundation Schema Database ##############"/>
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2S2_DB"
-                                     userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
+                                <echo message="########### Create S2 Foundation Schema Database ##############" />
+                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2S2_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
-                                        <path refid="h2.classpath"/>
+                                        <path refid="h2.classpath" />
                                     </classpath>
-                                    <fileset file="../../dbscripts/s2_h2.sql"/>
+                                    <fileset file="../../dbscripts/s2_h2.sql" />
                                 </sql>
-                                <echo message="##################### END ########################"/>
+                                <echo message="##################### END ########################" />
                             </tasks>
                         </configuration>
-                    </execution>
+		     </execution>
                     <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="target/archive-tmp"/>
-                                <delete dir="target/dependency-maven-plugin-markers"/>
-                                <delete dir="target/maven-archiver"/>
-                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}"/>
-                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}"/>
-                                <delete file="target/${project.artifactId}-${project.version}.jar"/>
-                                <delete dir="target/sources"/>
-                                <delete dir="target/database"/>
+                                <delete dir="target/archive-tmp" />
+                                <delete dir="target/dependency-maven-plugin-markers" />
+                                <delete dir="target/maven-archiver" />
+                                <delete dir="target/wso2carbon-core-${carbon.kernel.version}" />
+                                <delete dir="target/shopping-cart-global-${shoppingcart.global.version}" />
+                                <delete file="target/${project.artifactId}-${project.version}.jar" />
+                                <delete dir="target/sources" />
+                                <delete dir="target/database" />
                             </tasks>
                         </configuration>
                         <goals>
