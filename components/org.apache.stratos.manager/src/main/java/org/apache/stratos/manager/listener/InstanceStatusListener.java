@@ -18,121 +18,92 @@
  */
 package org.apache.stratos.manager.listener;
 
-import java.util.Set;
-
-import javax.jms.TextMessage;
-
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
+import org.apache.stratos.messaging.broker.subscribe.MessageListener;
+import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class InstanceStatusListener implements MqttCallback {
+import java.util.Set;
 
-	private static final Log log = LogFactory.getLog(InstanceStatusListener.class);
+public class InstanceStatusListener implements MessageListener {
 
-	@Override
-	public void connectionLost(Throwable arg0) {
-		// TODO Auto-generated method stub
+    private static final Log log = LogFactory.getLog(InstanceStatusListener.class);
 
-	}
+    @Override
+    public void messageReceived(Message message) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Instance status message received");
+            }
 
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		// TODO Auto-generated method stub
+            String type = message.getEventClassName();
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Event class name: %s ", type));
+            }
+            // If member started event is received publish artifact update
+            // message
+            // To do a git clone
+            if (InstanceStartedEvent.class.getName().equals(type)) {
+                String json = message.getText();
+                InstanceStartedEvent event =
+                        (InstanceStartedEvent) Util.jsonToObject(json,
+                                InstanceStartedEvent.class);
+                String clusterId = event.getClusterId();
+                if (log.isInfoEnabled()) {
+                    log.info("Cluster id: " + clusterId);
+                }
 
-	}
+                Set<CartridgeSubscription> cartridgeSubscriptions =
+                        new DataInsertionAndRetrievalManager().getCartridgeSubscriptionForCluster(clusterId);
+                if (cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
+                    // No subscriptions, return
+                    if (log.isDebugEnabled()) {
+                        log.debug("No subscription information found for cluster id " +
+                                clusterId);
+                    }
+                    return;
+                }
 
-	@Override
-	public void messageArrived(String arg0, MqttMessage message) throws Exception {
-		if (message instanceof MqttMessage) {
+                for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
+                    // We need to send this event for all types, single
+                    // tenant
+                    // and multi tenant.
+                    // In an autoscaling scenario, we need to send this
+                    // event
+                    // for all existing subscriptions for the newly spawned
+                    // instance
+                    // Also in a case of restarting the agent, this event
+                    // needs
+                    // to be sent for all subscriptions for the existing
+                    // instance
+                    if (cartridgeSubscription.getRepository() != null) {
+                        InstanceNotificationPublisher publisher =
+                                new InstanceNotificationPublisher();
+                        publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
+                                clusterId,
+                                String.valueOf(cartridgeSubscription.getSubscriber()
+                                        .getTenantId()));
 
-			TextMessage receivedMessage = new ActiveMQTextMessage();
-			System.out.println("instance notifier messege received....");
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  "org.apache.stratos.messaging.event.".concat(arg0.replace("/",
-			                                                                                            ".")));
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("No repository found for subscription with alias: " +
+                                    cartridgeSubscription.getAlias() + ", type: " +
+                                    cartridgeSubscription.getType() +
+                                    ". Not sending the Artifact Updated event");
+                        }
+                    }
+                }
 
-			if (log.isInfoEnabled()) {
-				log.info("Instance status message received");
-			}
-
-			try {
-				String type = receivedMessage.getStringProperty(Constants.EVENT_CLASS_NAME);
-				if (log.isInfoEnabled()) {
-					log.info(String.format("Event class name: %s ", type));
-				}
-				// If member started event is received publish artifact update
-				// message
-				// To do a git clone
-				if (InstanceStartedEvent.class.getName().equals(type)) {
-					String json = receivedMessage.getText();
-					InstanceStartedEvent event =
-					                             (InstanceStartedEvent) Util.jsonToObject(json,
-					                                                                      InstanceStartedEvent.class);
-					String clusterId = event.getClusterId();
-					if (log.isInfoEnabled()) {
-						log.info("Cluster id: " + clusterId);
-					}
-
-					Set<CartridgeSubscription> cartridgeSubscriptions =
-					                                                    new DataInsertionAndRetrievalManager().getCartridgeSubscriptionForCluster(clusterId);
-					if (cartridgeSubscriptions == null || cartridgeSubscriptions.isEmpty()) {
-						// No subscriptions, return
-						if (log.isDebugEnabled()) {
-							log.debug("No subscription information found for cluster id " +
-							          clusterId);
-						}
-						return;
-					}
-
-					for (CartridgeSubscription cartridgeSubscription : cartridgeSubscriptions) {
-						// We need to send this event for all types, single
-						// tenant
-						// and multi tenant.
-						// In an autoscaling scenario, we need to send this
-						// event
-						// for all existing subscriptions for the newly spawned
-						// instance
-						// Also in a case of restarting the agent, this event
-						// needs
-						// to be sent for all subscriptions for the existing
-						// instance
-						if (cartridgeSubscription.getRepository() != null) {
-							InstanceNotificationPublisher publisher =
-							                                          new InstanceNotificationPublisher();
-							publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
-							                                  clusterId,
-							                                  String.valueOf(cartridgeSubscription.getSubscriber()
-							                                                                      .getTenantId()));
-
-						} else {
-							if (log.isDebugEnabled()) {
-								log.debug("No repository found for subscription with alias: " +
-								          cartridgeSubscription.getAlias() + ", type: " +
-								          cartridgeSubscription.getType() +
-								          ". Not sending the Artifact Updated event");
-							}
-						}
-					}
-
-				}
-			} catch (Exception e) {
-				if (log.isErrorEnabled()) {
-					log.error("Could not process instance status message", e);
-				}
-			}
-		}
-
-	}
-
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not process instance status message", e);
+            }
+        }
+    }
 }
