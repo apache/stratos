@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +17,17 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.tenant;
+package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.stratos.messaging.domain.Message;
 
-import javax.jms.TextMessage;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
- * Implements a blocking queue for managing tenant event messages.
+ * Message listener for receiving call backs from message broker when a message is received.
  */
-class TenantEventMessageQueue extends LinkedBlockingQueue<Message> {
+public interface MessageListener {
+    /**
+     * Invoked when a message is received.
+     * @param message Message received
+     */
+    public void messageReceived(Message message);
 }

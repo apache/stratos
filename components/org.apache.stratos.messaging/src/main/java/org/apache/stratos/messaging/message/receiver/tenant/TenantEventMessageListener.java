@@ -19,24 +19,17 @@
 
 package org.apache.stratos.messaging.message.receiver.tenant;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.util.Constants;
-import org.apache.stratos.messaging.util.Util;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.apache.stratos.messaging.broker.subscribe.MessageListener;
+import org.apache.stratos.messaging.domain.Message;
 
 /**
  * Implements functionality for receiving text based event messages from the
  * tenant
  * message broker topic and add them to the event queue.
  */
-class TenantEventMessageListener implements MqttCallback {
+class TenantEventMessageListener implements MessageListener {
 
 	private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
 
@@ -46,38 +39,18 @@ class TenantEventMessageListener implements MqttCallback {
 		this.messageQueue = messageQueue;
 	}
 
-	@Override
-	public void connectionLost(Throwable arg0) {
-        log.warn("MQTT Connection is lost", arg0);
-	}
+    @Override
+    public void messageReceived(Message message) {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Tanent message received: %s",
+                        message.getText()));
+            }
+            // Add received message to the queue
+            messageQueue.add(message);
 
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void messageArrived(String topicName, MqttMessage message) throws Exception {
-		if (message instanceof MqttMessage) {
-
-			TextMessage receivedMessage = new ActiveMQTextMessage();
-
-			receivedMessage.setText(new String(message.getPayload()));
-			receivedMessage.setStringProperty(Constants.EVENT_CLASS_NAME,
-			                                  Util.getEventNameForTopic(topicName));
-
-			try {
-				if (log.isDebugEnabled()) {
-					log.debug(String.format("Tanent message received: %s",
-					                        ((TextMessage) message).getText()));
-				}
-				// Add received message to the queue
-				messageQueue.add(receivedMessage);
-
-			} catch (JMSException e) {
-				log.error(e.getMessage(), e);
-			}
-		}
-	}
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 }

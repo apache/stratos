@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +17,33 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.tenant;
+package org.apache.stratos.messaging.domain;
 
-import org.apache.stratos.messaging.domain.Message;
-
-import javax.jms.TextMessage;
-import java.util.concurrent.LinkedBlockingQueue;
+import org.apache.stratos.messaging.util.Util;
 
 /**
- * Implements a blocking queue for managing tenant event messages.
+ * Message definition.
  */
-class TenantEventMessageQueue extends LinkedBlockingQueue<Message> {
+public class Message {
+    private final String topicName;
+    private final String text;
+    private final String eventClassName;
+
+    public Message(String topicName, String text) {
+        this.topicName = topicName;
+        this.text = text;
+        this.eventClassName = Util.getEventNameForTopic(topicName);
+    }
+
+    public String getTopicName() {
+        return topicName;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public String getEventClassName() {
+        return eventClassName;
+    }
 }

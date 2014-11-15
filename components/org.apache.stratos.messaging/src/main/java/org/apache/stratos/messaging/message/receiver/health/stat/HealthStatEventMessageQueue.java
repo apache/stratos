@@ -20,11 +20,13 @@
  */
 package org.apache.stratos.messaging.message.receiver.health.stat;
 
+import org.apache.stratos.messaging.domain.Message;
+
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Implements a blocking queue for managing instance notifier event messages.
  */
-class HealthStatEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
+class HealthStatEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

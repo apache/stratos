@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,15 +17,17 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.tenant;
-
-import org.apache.stratos.messaging.domain.Message;
-
-import javax.jms.TextMessage;
-import java.util.concurrent.LinkedBlockingQueue;
+package org.apache.stratos.messaging.broker.connect;
 
 /**
- * Implements a blocking queue for managing tenant event messages.
+ * Topic connector factory.
  */
-class TenantEventMessageQueue extends LinkedBlockingQueue<Message> {
+public class TopicConnectorFactory {
+    /**
+     * Create topic connector instance.
+     * @return
+     */
+    public static TopicConnector createConnector() {
+        return new MqttTopicConnector();
+    }
 }
