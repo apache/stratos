@@ -39,7 +39,7 @@ public class TopicPublisher {
 	private final String topicName;
 	private final TopicConnector topicConnector;
 
-	/**
+    /**
 	 * @param topicName topic name of this publisher instance.
 	 */
 	TopicPublisher(String topicName) {
