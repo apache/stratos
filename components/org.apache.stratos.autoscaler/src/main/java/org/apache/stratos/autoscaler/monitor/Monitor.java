@@ -39,7 +39,9 @@ public abstract class Monitor implements EventHandler {
     // this monitor decided by its parent
     protected boolean terminateChildren = false;
 
-    protected boolean hasDependent;
+    protected boolean hasStartupDependents;
+
+    protected boolean hasScalingDependents;
 
     public String getId() {
         return id;
@@ -88,18 +90,18 @@ public abstract class Monitor implements EventHandler {
         return this.aliasToActiveMonitorsMap != null || this.inactiveMonitorsList != null;
     }
 
-    public boolean hasDependents() {
-        return hasDependent;
+    public boolean hasStartupDependents() {
+        return hasStartupDependents;
     }
 
-    public void setHasDependent(boolean hasDependent) {
-        this.hasDependent = hasDependent;
+    public void setHasStartupDependents(boolean hasDependent) {
+        this.hasStartupDependents = hasDependent;
     }
 
-    public boolean hasInDependentChild() {
+    public boolean hasIndependentChild() {
         boolean hasInDepChild = false;
         for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
-            if (!monitor.hasDependents()) {
+            if (!monitor.hasStartupDependents()) {
                 hasInDepChild = true;
                 break;
             }

@@ -65,7 +65,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         while (!isDestroyed()) {
             try {
                 if  (((getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
-                        (getStatus() == ClusterStatus.Inactive && !hasDependent)) && !this.hasFaultyMember
+                        (getStatus() == ClusterStatus.Inactive && !hasStartupDependents)) && !this.hasFaultyMember
                         && !stop) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is running.. " + this.toString());

@@ -90,7 +90,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /*protected void onChildTerminatingEvent(String idOfEvent) {
-        //Check whether hasDependent true
+        //Check whether hasStartupDependents true
         if (!this.aliasToInactiveMonitorsMap.containsKey(idOfEvent)) {
             this.aliasToInactiveMonitorsMap.put(idOfEvent, this.aliasToActiveMonitorsMap.remove(idOfEvent));
         }
@@ -128,7 +128,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationChildContext> terminationList;
         Monitor monitor;
 
-        if (this.hasDependent) {
+        if (this.hasStartupDependents) {
             //need to notify the parent
             StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
         } else {

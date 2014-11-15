@@ -100,10 +100,10 @@ public class ApplicationMonitorFactory {
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
-                if (parentMonitor.hasDependents() || (context.hasStartupDependents() && context.hasChild())) {
-                    groupMonitor.setHasDependent(true);
+                if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+                    groupMonitor.setHasStartupDependents(true);
                 } else {
-                    groupMonitor.setHasDependent(false);
+                    groupMonitor.setHasStartupDependents(false);
                 }
                 //TODO make sure when it is async
 
@@ -140,7 +140,7 @@ public class ApplicationMonitorFactory {
             Application application = ApplicationHolder.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
-                applicationMonitor.setHasDependent(false);
+                applicationMonitor.setHasStartupDependents(false);
 
             } else {
                 String msg = "[Application] " + appId + " cannot be found in the Topology";
@@ -196,10 +196,10 @@ public class ApplicationMonitorFactory {
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
             //setting the dependent behaviour of the cluster monitor
-            if(parentMonitor.hasDependents() || (context.hasStartupDependents() && context.hasChild())) {
-                clusterMonitor.setHasDependent(true);
+            if(parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+                clusterMonitor.setHasStartupDependents(true);
             } else {
-                clusterMonitor.setHasDependent(false);
+                clusterMonitor.setHasStartupDependents(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
             if (cluster.getStatus() != clusterMonitor.getStatus()) {

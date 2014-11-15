@@ -231,7 +231,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
              * If the cluster in_active and if it is a in_dependent cluster,
              * then won't send the notification to parent.
              */
-            if (status == ClusterStatus.Inactive && !this.hasDependent) {
+            if (status == ClusterStatus.Inactive && !this.hasStartupDependents) {
                 log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
                         "since it is identified as the independent unit");
 

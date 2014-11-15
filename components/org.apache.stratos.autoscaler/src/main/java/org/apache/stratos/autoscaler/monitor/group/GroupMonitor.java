@@ -158,7 +158,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         //if(this.status != status) {
         this.status = status;
         //notifying the parent
-        if (status == GroupStatus.Inactive && !this.hasDependent) {
+        if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");
         } else {
