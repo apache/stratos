@@ -127,7 +127,7 @@ public class MqttTopicConnector implements TopicConnector {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Message received: %s", messageText));
                     }
-                    messageListener.messageReceived(new Message(topicName, messageText));
+                    messageListener.messageReceived(new Message(topic, messageText));
                 }
 
                 @Override
