@@ -39,8 +39,8 @@ public class AutoscalerContext {
     private Map<String, ApplicationMonitor> applicationMonitors;
 
     private AutoscalerContext() {
-        clusterMonitors = new HashMap<String, AbstractClusterMonitor>();
-        applicationMonitors = new HashMap<String, ApplicationMonitor>();
+        setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
+        setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
     }
 
     public static AutoscalerContext getInstance() {
@@ -48,26 +48,42 @@ public class AutoscalerContext {
     }
 
     public void addClusterMonitor(AbstractClusterMonitor clusterMonitor) {
-        clusterMonitors.put(clusterMonitor.getClusterId(), clusterMonitor);
+        getClusterMonitors().put(clusterMonitor.getClusterId(), clusterMonitor);
     }
 
     public AbstractClusterMonitor getClusterMonitor(String clusterId) {
-        return clusterMonitors.get(clusterId);
+        return getClusterMonitors().get(clusterId);
     }
 
     public AbstractClusterMonitor removeClusterMonitor(String clusterId) {
-        return clusterMonitors.remove(clusterId);
+        return getClusterMonitors().remove(clusterId);
     }
 
     public void addAppMonitor(ApplicationMonitor applicationMonitor) {
-        applicationMonitors.put(applicationMonitor.getId(), applicationMonitor);
+        getApplicationMonitors().put(applicationMonitor.getId(), applicationMonitor);
     }
 
     public ApplicationMonitor getAppMonitor(String applicationId) {
-        return applicationMonitors.get(applicationId);
+        return getApplicationMonitors().get(applicationId);
     }
 
     public void removeAppMonitor(String applicationId) {
-        applicationMonitors.remove(applicationId);
+        getApplicationMonitors().remove(applicationId);
+    }
+
+    public Map<String, AbstractClusterMonitor> getClusterMonitors() {
+        return clusterMonitors;
+    }
+
+    public void setClusterMonitors(Map<String, AbstractClusterMonitor> clusterMonitors) {
+        this.clusterMonitors = clusterMonitors;
+    }
+
+    public Map<String, ApplicationMonitor> getApplicationMonitors() {
+        return applicationMonitors;
+    }
+
+    public void setApplicationMonitors(Map<String, ApplicationMonitor> applicationMonitors) {
+        this.applicationMonitors = applicationMonitors;
     }
 }

@@ -45,7 +45,7 @@ import java.util.Collection;
 public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
     //status of the monitor whether it is running/in_maintainable/terminated
-    protected ApplicationStatus status;
+    private ApplicationStatus status;
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
@@ -154,15 +154,23 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             onChildActivatedEvent(id);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+            this.markMonitorAsInactive(id);
             onChildInactiveEvent(id);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
-            this.markMonitorAsInactive(id);
+            this.markMonitorAsTerminating(id);
+            if (this.status != ApplicationStatus.Terminating) {
+                //notification coming from the child, so that have to act upon it and decide other
+                //children status
+                //TODO onChildInactiveEvent(id);
+                //StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            }
+
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.inactiveMonitorsList.contains(id)) {
-                this.inactiveMonitorsList.remove(id);
+            if (this.terminatingMonitorsList.contains(id)) {
+                this.terminatingMonitorsList.remove(id);
                 this.aliasToActiveMonitorsMap.remove(id);
             }
             if (this.status == ApplicationStatus.Terminating) {
@@ -178,7 +186,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
 
-            if (this.status == ApplicationStatus.Terminating || this.status == ApplicationStatus.Terminated) {
+            if (this.getStatus() == ApplicationStatus.Terminating || this.getStatus() == ApplicationStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
             } else {
@@ -200,5 +208,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     @Override
     public void onEvent(MonitorScalingEvent scalingEvent) {
 
+    }
+
+    public ApplicationStatus getStatus() {
+        return status;
     }
 }

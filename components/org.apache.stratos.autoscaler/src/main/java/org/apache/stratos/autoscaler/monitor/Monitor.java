@@ -35,6 +35,9 @@ public abstract class Monitor implements EventHandler {
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //monitors map, stopped monitors
     protected List<String> inactiveMonitorsList;
+
+    protected List<String> terminatingMonitorsList;
+
     //flag will get set to true in MonitorTerminateAllEvent when termination of
     // this monitor decided by its parent
     protected boolean terminateChildren = false;
@@ -78,8 +81,7 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasActiveMonitors() {
         boolean hasMonitor = false;
-        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty()) ||
-                (this.inactiveMonitorsList != null && !this.inactiveMonitorsList.isEmpty())) {
+        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty())) {
             hasMonitor = true;
         }
         return hasMonitor;
@@ -87,7 +89,7 @@ public abstract class Monitor implements EventHandler {
 
     public boolean hasMonitors() {
 
-        return this.aliasToActiveMonitorsMap != null || this.inactiveMonitorsList != null;
+        return this.aliasToActiveMonitorsMap != null;
     }
 
     public boolean hasStartupDependents() {
@@ -123,5 +125,13 @@ public abstract class Monitor implements EventHandler {
 
     public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
         this.inactiveMonitorsList = inactiveMonitorsList;
+    }
+
+    public List<String> getTerminatingMonitorsList() {
+        return terminatingMonitorsList;
+    }
+
+    public void setTerminatingMonitorsList(List<String> terminatingMonitorsList) {
+        this.terminatingMonitorsList = terminatingMonitorsList;
     }
 }

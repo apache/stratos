@@ -210,6 +210,10 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing Cluster terminating event for [application]: " + appId +
+                        " [cluster]: " + this.getClusterId());
+            }
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId());
         }
     }

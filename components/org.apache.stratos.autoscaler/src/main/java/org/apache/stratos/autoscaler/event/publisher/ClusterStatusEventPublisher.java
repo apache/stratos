@@ -68,11 +68,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Created)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster created event for [application]: " + appId +
-                                " [cluster]: " + clusterId);
-                    }
+                if (cluster.isStateTransitionValid(ClusterStatus.Created) &&
+                        cluster.getStatus() != ClusterStatus.Created) {
                     ClusterStatusClusterResetEvent clusterCreatedEvent =
                             new ClusterStatusClusterResetEvent(appId, serviceName, clusterId);
 
@@ -92,11 +89,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Active)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster activated event for [application]: " + appId +
-                                " [cluster]: " + clusterId);
-                    }
+                if (cluster.isStateTransitionValid(ClusterStatus.Active) &&
+                        cluster.getStatus() != ClusterStatus.Active) {
                     ClusterStatusClusterActivatedEvent clusterActivatedEvent =
                             new ClusterStatusClusterActivatedEvent(appId, serviceName, clusterId);
 
@@ -116,11 +110,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster in-activate event for [application]: " + appId +
-                                " [cluster]: " + clusterId);
-                    }
+                if (cluster.isStateTransitionValid(ClusterStatus.Inactive) &&
+                                                cluster.getStatus() != ClusterStatus.Inactive) {
                     ClusterStatusClusterInactivateEvent clusterInActivateEvent =
                             new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId);
 
@@ -142,11 +133,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster Terminating event for [application]: " + appId +
-                                " [cluster]: " + clusterId);
-                    }
+                if (cluster.isStateTransitionValid(ClusterStatus.Terminating) &&
+                        cluster.getStatus() != ClusterStatus.Terminating) {
                     ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
                             new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId);
 
@@ -168,11 +156,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Terminated)) {
-                    if (log.isInfoEnabled()) {
-                        log.info("Publishing Cluster terminated event for [application]: " + appId +
-                                " [cluster]: " + clusterId);
-                    }
+                if (cluster.isStateTransitionValid(ClusterStatus.Terminated) &&
+                        cluster.getStatus() != ClusterStatus.Terminated) {
                     ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
                             new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId);
 

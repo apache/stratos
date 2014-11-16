@@ -413,7 +413,9 @@ public class ApplicationBuilder {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
-            applicationMonitor.setStatus(status);
+            if(applicationMonitor.getStatus() != status) {
+                applicationMonitor.setStatus(status);
+            }
         } else {
             log.warn("Application monitor cannot be found: [application-id] " + appId);
         }
@@ -425,8 +427,10 @@ public class ApplicationBuilder {
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
             GroupMonitor monitor = (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
-            if (monitor != null) {
-                monitor.setStatus(status);
+            if (monitor != null ) {
+                if(monitor.getStatus() != status) {
+                    monitor.setStatus(status);
+                }
             } else {
                 log.warn("Group monitor cannot be found: [group-id] " + groupId +
                         " [application-id] " + appId);

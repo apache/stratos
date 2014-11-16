@@ -205,13 +205,13 @@ public class DependencyTree {
         ApplicationChildContext applicationContext = findApplicationContextWithIdInPrimaryTree(id);
         //adding the terminated one to the list
         allChildrenOfAppContext.add(applicationContext);
-        if (terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT) {
+        if (getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
             findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
                     allChildrenOfAppContext);
             return allChildrenOfAppContext;
-        } else if (terminationBehavior == TerminationBehavior.TERMINATE_ALL) {
+        } else if (getTerminationBehavior() == TerminationBehavior.TERMINATE_ALL) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.primaryApplicationContextList,
                     allChildrenOfAppContext);
@@ -242,11 +242,11 @@ public class DependencyTree {
     }
 
     public boolean isTerminateDependent() {
-        return this.terminationBehavior == TerminationBehavior.TERMINATE_DEPENDENT;
+        return this.getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT;
     }
 
     public boolean isTerminateAll() {
-        return this.terminationBehavior == TerminationBehavior.TERMINATE_ALL;
+        return this.getTerminationBehavior() == TerminationBehavior.TERMINATE_ALL;
     }
 
     public List<ApplicationChildContext> getScalingDependencyApplicationContextList() {
@@ -255,6 +255,10 @@ public class DependencyTree {
 
     public void setScalingDependencyApplicationContextList(List<ApplicationChildContext> scalingDependencyApplicationContextList) {
         this.scalingDependencyApplicationContextList = scalingDependencyApplicationContextList;
+    }
+
+    public TerminationBehavior getTerminationBehavior() {
+        return terminationBehavior;
     }
 
     public enum TerminationBehavior {
