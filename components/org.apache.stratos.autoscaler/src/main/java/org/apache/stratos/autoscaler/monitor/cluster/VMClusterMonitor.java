@@ -434,7 +434,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.error(msg, e);
         }
         // remove from active member list
-        partitionCtxt.removeActiveMemberById(memberId);
+        partitionCtxt.moveActiveMemberToTerminationPendingMembers(memberId);
         if (log.isInfoEnabled()) {
             String clusterId = memberFaultEvent.getClusterId();
             log.info(String.format("Faulty member is terminated and removed from the active members list: "
@@ -613,7 +613,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                 for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()) {
                     for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                         //if (log.isDebugEnabled()) {
-                        log.info("Starting to terminate all members in Network Partition [ " +
+                        log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
                                 networkPartitionContext.getId() + " ], Partition [ " +
                                 partitionContext.getPartitionId() + " ]");
                         // }

@@ -111,8 +111,8 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
         Cluster cluster = service.getCluster(event.getClusterId());
 
         if (cluster == null) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
                         event.getClusterId()));
             }
         } else {

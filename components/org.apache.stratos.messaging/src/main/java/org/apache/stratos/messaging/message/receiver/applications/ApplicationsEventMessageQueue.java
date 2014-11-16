@@ -19,8 +19,10 @@
 package org.apache.stratos.messaging.message.receiver.applications;
 
 
+import org.apache.stratos.messaging.domain.Message;
+
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ApplicationsEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
+public class ApplicationsEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

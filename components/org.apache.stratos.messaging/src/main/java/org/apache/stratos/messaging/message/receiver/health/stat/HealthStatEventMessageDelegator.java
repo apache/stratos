@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.health.stat.HealthStatMessageProcessorChain;
@@ -58,7 +59,7 @@ class HealthStatEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = messageQueue.take();
+                    Message message = messageQueue.take();
 
                     String messageText = message.getText();
                     if (log.isDebugEnabled()) {

@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
@@ -58,10 +59,8 @@ class InstanceNotifierEventMessageDelegator implements Runnable {
 
             while (!terminated) {
                 try {
-                    TextMessage message = messageQueue.take();
-
-                    // Retrieve the header
-                    String type = message.getStringProperty(Constants.EVENT_CLASS_NAME);
+                    Message message = messageQueue.take();
+                    String type = message.getEventClassName();
 
                     // Retrieve the actual message
                     String json = message.getText();

@@ -23,7 +23,7 @@
                         <div class='col-md-5'>
                             <div class="editor-button">
                                 <span class='pull-left'>Editor
-                                <input type="checkbox" name="my-checkbox" id='editortoggle' checked>
+                                <input type="checkbox" name="editor-view" id='editortoggle' checked>
                                 </span>
                                 <span class="auto-correct"><input type="checkbox" checked id="auto-correct-check">Auto correct with schema</span>
                             </div>
@@ -213,7 +213,7 @@
             /**
              * Function to handle hiding and showing the JSON form
              */
-            $('input[name="my-checkbox"]').on('switchChange.bootstrapSwitch', function(event, state) {
+            $('input[name="editor-view"]').on('switchChange.bootstrapSwitch', function(event, state) {
                 if (isForm) {
 
                     changeDisplayMode('#textform', '#jsonform');
@@ -250,10 +250,12 @@
                 try {
                     var rawEditValidate = JSON.parse($('textarea#jsoneditor').val());
                     $(this).addClass("has-success").removeClass('has-error');
+                    $('input[name="editor-view"]').bootstrapSwitch('readonly', false, true);
                     $('#deploy').prop('disabled', false);
                 } catch (e) {
                     $(this).addClass("has-error").removeClass('has-success');
                     $('#deploy').prop('disabled', true);
+                    $('input[name="editor-view"]').bootstrapSwitch('readonly', true, false);
                     return false;
                 }
 
@@ -305,7 +307,7 @@
 
         $.fn.bootstrapSwitch.defaults.onText = 'JSON';
         $.fn.bootstrapSwitch.defaults.offText = 'UI';
-        $("[name='my-checkbox']").bootstrapSwitch('state', false, true);
+        $("[name='editor-view']").bootstrapSwitch('state', false, true);
 
     });
 

@@ -19,11 +19,13 @@
 
 package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
+import org.apache.stratos.messaging.domain.Message;
+
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Implements a blocking queue for managing instance notifier event messages.
  */
-class InstanceNotifierEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
+class InstanceNotifierEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

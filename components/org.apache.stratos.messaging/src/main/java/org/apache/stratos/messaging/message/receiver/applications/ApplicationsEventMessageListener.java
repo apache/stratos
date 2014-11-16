@@ -18,19 +18,12 @@
  */
 package org.apache.stratos.messaging.message.receiver.applications;
 
-import javax.jms.JMSException;
-import javax.jms.TextMessage;
-
-import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.util.Constants;
-import org.apache.stratos.messaging.util.Util;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.apache.stratos.messaging.broker.subscribe.MessageListener;
+import org.apache.stratos.messaging.domain.Message;
 
-public class ApplicationsEventMessageListener implements MqttCallback {
+public class ApplicationsEventMessageListener implements MessageListener {
     private static final Log log = LogFactory.getLog(ApplicationsEventMessageListener.class);
 
     private ApplicationsEventMessageQueue messageQueue;
@@ -40,32 +33,14 @@ public class ApplicationsEventMessageListener implements MqttCallback {
     }
 
     @Override
-    public void connectionLost(Throwable throwable) {
-        log.warn("MQTT Connection is lost", throwable);
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken deliveryToken) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Message delivery is complete: %s",
-                    ((deliveryToken != null) ? deliveryToken.toString() : "")));
-        }
-    }
-
-    @Override
-    public void messageArrived(String topicName, MqttMessage message) throws Exception {
-        TextMessage textMessage = new ActiveMQTextMessage();
-        textMessage.setText(new String(message.getPayload()));
-        textMessage.setStringProperty(Constants.EVENT_CLASS_NAME, Util.getEventNameForTopic(topicName));
-
+    public void messageReceived(Message message) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Tenant message received: %s", textMessage.getText()));
+                log.debug(String.format("Tenant message received: %s", message.getText()));
             }
             // Add received message to the queue
-            messageQueue.add(textMessage);
-
-        } catch (JMSException e) {
+            messageQueue.add(message);
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }

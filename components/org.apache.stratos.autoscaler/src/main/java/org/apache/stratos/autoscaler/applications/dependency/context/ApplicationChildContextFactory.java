@@ -26,35 +26,35 @@ import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 
 /**
- * Factory to create new GroupContext or ClusterContext
+ * Factory to create new GroupChildContext or ClusterChildContext
  */
-public class ApplicationContextFactory {
-    private static final Log log = LogFactory.getLog(ApplicationContextFactory.class);
+public class ApplicationChildContextFactory {
+    private static final Log log = LogFactory.getLog(ApplicationChildContextFactory.class);
 
     /**
-     * Will return the GroupContext/ClusterContext based on the type in start order/scaling order
+     * Will return the GroupChildContext/ClusterChildContext based on the type in start order/scaling order
      *
      * @param order      reference of group/cluster in the start/scaling order
      * @param component       The component which used to build the dependency
      * @param tree kill dependent behaviour of this component
      * @return Context
      */
-    public static ApplicationContext getApplicationContext(String order,
+    public static ApplicationChildContext getApplicationContext(String order,
                                                            ParentComponent component,
                                                            DependencyTree tree) {
         String id;
-        ApplicationContext applicationContext = null;
-        boolean isDependent = tree.isTerminateDependent() || tree.isTerminateAll();
+        ApplicationChildContext applicationContext = null;
+        boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
         if (order.startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);
-            applicationContext = getGroupContext(id, isDependent);
+            applicationContext = getGroupChildContext(id, hasDependents);
         } else if (order.startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cluster alias
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
-            applicationContext = getClusterContext(clusterDataHolder, isDependent);
+            applicationContext = getClusterChildContext(clusterDataHolder, hasDependents);
 
         } else {
             log.warn("[Startup Order]: " + order + " contains unknown reference");
@@ -83,18 +83,18 @@ public class ApplicationContextFactory {
         return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
     }
 
-    public static ApplicationContext getClusterContext(ClusterDataHolder dataHolder,
+    public static ApplicationChildContext getClusterChildContext(ClusterDataHolder dataHolder,
                                                        boolean isKillDependent) {
-        ApplicationContext applicationContext;
-        applicationContext = new ClusterContext(dataHolder.getClusterId(),
+        ApplicationChildContext applicationContext;
+        applicationContext = new ClusterChildContext(dataHolder.getClusterId(),
                 isKillDependent);
-        ((ClusterContext) applicationContext).setServiceName(dataHolder.getServiceType());
+        ((ClusterChildContext) applicationContext).setServiceName(dataHolder.getServiceType());
         return  applicationContext;
     }
 
-    public static ApplicationContext getGroupContext(String id, boolean isDependent) {
-        ApplicationContext applicationContext;
-        applicationContext = new GroupContext(id,
+    public static ApplicationChildContext getGroupChildContext(String id, boolean isDependent) {
+        ApplicationChildContext applicationContext;
+        applicationContext = new GroupChildContext(id,
                 isDependent);
         return applicationContext;
     }

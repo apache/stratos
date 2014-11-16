@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.monitor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
@@ -70,25 +71,39 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             onChildActivatedEvent(id);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
+            this.markMonitorAsInactive(id);
             onChildInactiveEvent(id);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if (this.terminatingMonitorsList.contains(id)) {
+                this.terminatingMonitorsList.remove(id);
+                this.aliasToActiveMonitorsMap.remove(id);
+                if(AutoscalerContext.getInstance().getClusterMonitors().containsKey(id)) {
+                    AutoscalerContext.getInstance().removeClusterMonitor(id);
+                }
             }
+            //If cluster monitor, need to terminate the existing one
             if (this.status == GroupStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
             } else {
                 onChildTerminatedEvent(id);
             }
+
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
-            this.markMonitorAsInactive(id);
+            this.markMonitorAsTerminating(id);
+            if (this.status != GroupStatus.Terminating) {
+                //notification coming from the child, so that have to act upon it and decide other
+                //children status
+                //TODO onChildInactiveEvent(id);
+                //StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
+            }
+
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if (this.aliasToInactiveMonitorsMap.containsKey(id)) {
-                this.aliasToInactiveMonitorsMap.remove(id);
+            if (this.terminatingMonitorsList.contains(id)) {
+                this.terminatingMonitorsList.remove(id); //TODO remove from monitor map
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
@@ -157,7 +172,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         //if(this.status != status) {
         this.status = status;
         //notifying the parent
-        if (status == GroupStatus.Inactive && !this.hasDependent) {
+        if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");
         } else {

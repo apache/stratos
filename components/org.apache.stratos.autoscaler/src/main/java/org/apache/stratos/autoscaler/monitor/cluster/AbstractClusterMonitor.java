@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AbstractClusterContext;
@@ -34,57 +30,36 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberAverageLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberAverageMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
-import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
-import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
-import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.event.health.stat.*;
+import org.apache.stratos.messaging.event.topology.*;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /*
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
  */
 public abstract class AbstractClusterMonitor extends Monitor implements Runnable {
 
-	private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
-
-    private String clusterId;
-    private ClusterStatus status;
-    private int monitoringIntervalMilliseconds;
-
+    private static final Log log = LogFactory.getLog(AbstractClusterMonitor.class);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     protected FactHandle minCheckFactHandle;
     protected FactHandle obsoleteCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
+    protected boolean hasFaultyMember = false;
+    protected boolean stop = false;
+    protected AbstractClusterContext clusterContext;
+    private String clusterId;
+    private ClusterStatus status;
+    private int monitoringIntervalMilliseconds;
     private StatefulKnowledgeSession minCheckKnowledgeSession;
     private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
     private StatefulKnowledgeSession scaleCheckKnowledgeSession;
     private boolean isDestroyed;
-
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-    protected boolean hasFaultyMember = false;
-    protected boolean stop = false;
-
-    protected AbstractClusterContext clusterContext;
-
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     protected AbstractClusterMonitor(String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator,
                                      AbstractClusterContext abstractClusterContext) {
@@ -181,33 +156,33 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     @Override
     public int hashCode() {
-    	final int prime = 31;
-    	int result = 1;
-    	result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
-    	return result;
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
+        return result;
     }
 
     @Override
     public boolean equals(final Object obj) {
-    	if (this == obj) {
-    		return true;
-    	}
-    	if (obj == null) {
-    		return false;
-    	}
-    	if (!(obj instanceof AbstractClusterMonitor)) {
-    		return false;
-    	}
-    	final AbstractClusterMonitor other = (AbstractClusterMonitor) obj;
-    	if (this.clusterId == null) {
-    		if (other.clusterId != null) {
-    			return false;
-    		}
-    	}
-    	if (!this.clusterId.equals(other.clusterId)) {
-    		return false;
-    	}
-    	return true;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof AbstractClusterMonitor)) {
+            return false;
+        }
+        final AbstractClusterMonitor other = (AbstractClusterMonitor) obj;
+        if (this.clusterId == null) {
+            if (other.clusterId != null) {
+                return false;
+            }
+        }
+        if (!this.clusterId.equals(other.clusterId)) {
+            return false;
+        }
+        return true;
     }
 
     public String getClusterId() {
@@ -231,7 +206,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
              * If the cluster in_active and if it is a in_dependent cluster,
              * then won't send the notification to parent.
              */
-            if (status == ClusterStatus.Inactive && !this.hasDependent) {
+            if (status == ClusterStatus.Inactive && !this.hasStartupDependents) {
                 log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
                         "since it is identified as the independent unit");
 
@@ -347,12 +322,12 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     }
 
-    public void setHasFaultyMember(boolean hasFaultyMember) {
-        this.hasFaultyMember = hasFaultyMember;
-    }
-
     public boolean isHasFaultyMember() {
         return hasFaultyMember;
+    }
+
+    public void setHasFaultyMember(boolean hasFaultyMember) {
+        this.hasFaultyMember = hasFaultyMember;
     }
 
     public abstract void terminateAllMembers();
@@ -365,7 +340,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.stop = stop;
     }
 
-    public String getServiceId(){
+    public String getServiceId() {
         return clusterContext.getServiceId();
     }
 }

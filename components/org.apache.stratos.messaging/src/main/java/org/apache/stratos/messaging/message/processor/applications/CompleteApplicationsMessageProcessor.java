@@ -79,17 +79,13 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
             for (Application application : applicationsList) {
                 applications.addApplication(application);
                 if (log.isDebugEnabled()) {
-                    log.debug("Application with id [ " + application.getUniqueIdentifier() + " ] added to Topology");
+                    log.debug("Application with id [ " + application.getUniqueIdentifier() + " ] added to Applications");
                 }
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("No Application information found in Complete Topology event");
+                log.debug("No Application information found in Complete Applications event");
             }
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info("Topology initialized");
         }
 
         // Set topology initialized

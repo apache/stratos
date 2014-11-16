@@ -110,6 +110,7 @@ public class StratosApiV41 extends AbstractApi {
      * This method gets called by the client who are interested in using session mechanism to authenticate
      * themselves in subsequent calls. This method call get authenticated by the basic authenticator.
      * Once the authenticated call received, the method creates a session and returns the session id.
+     *
      * @return
      */
     @GET
@@ -138,13 +139,13 @@ public class StratosApiV41 extends AbstractApi {
     // Grouping
     public Response deployApplicationDefinition(ApplicationDefinition applicationDefinitionBean)
             throws RestAPIException {
-         StratosApiV41Utils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(),
-                 getUsername(), getTenantDomain());
-         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
-         return Response.created(url).build();
+        StratosApiV41Utils.deployApplicationDefinition(applicationDefinitionBean, getConfigContext(),
+                getUsername(), getTenantDomain());
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
+        return Response.created(url).build();
     }
 
-    
+
     @DELETE
     @Path("/application/definition/{applicationId}")
     @Produces("application/json")
@@ -158,7 +159,7 @@ public class StratosApiV41 extends AbstractApi {
                 getTenantDomain());
         return Response.noContent().build();
     }
-    
+
 
     @POST
     @Path("/cartridge/definition/")
@@ -190,10 +191,10 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition)
+    public Response deployServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition)
             throws RestAPIException {
         StratosApiV41Utils.deployServiceGroupDefinition(serviceGroupDefinition);
-        URI url =  uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
         return Response.created(url).build();
     }
 
@@ -202,9 +203,34 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+    public Response getServiceGroupDefinition(@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
-        Response.ResponseBuilder rb = Response.ok().entity(StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName));
+        ServiceGroupDefinition serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
+        Response.ResponseBuilder rb;
+        if (serviceGroupDefinition != null) {
+            rb = Response.ok().entity(serviceGroupDefinition);
+        } else {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        }
+
+        return rb.build();
+    }
+
+    @GET
+    @Path("/groups")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getServiceGroups()
+            throws RestAPIException {
+        ServiceGroupDefinition[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
+        Response.ResponseBuilder rb;
+        if (serviceGroups != null) {
+            rb = Response.ok().entity(serviceGroups);
+        } else {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        }
+
         return rb.build();
     }
 
@@ -214,7 +240,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response undeployServiceGroupDefinition (@PathParam("groupDefinitionName") String groupDefinitionName)
+    public Response undeployServiceGroupDefinition(@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
 
         StratosApiV41Utils.undeployServiceGroupDefinition(groupDefinitionName);
@@ -401,10 +427,10 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscriptionsOfApplication(@PathParam("application_id") String applicationId) throws RestAPIException {
         ApplicationSubscription subscriptions = StratosApiV41Utils.getApplicationSubscriptions(applicationId, getConfigContext());
-        if(subscriptions  == null){
+        if (subscriptions == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        return  Response.ok().entity(subscriptions).build();
+        return Response.ok().entity(subscriptions).build();
     }
 
     @GET
@@ -413,16 +439,17 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplications() throws RestAPIException {
         ApplicationBean[] applications = StratosApiV41Utils.getApplications();
-        if(applications == null) {
+        if (applications == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        }else{
-            return  Response.ok().entity(applications).build();
+        } else {
+            return Response.ok().entity(applications).build();
         }
     }
 
     /**
      * This API resource provides information about the application denoted by the given appId. Details includes,
      * Application details, top level cluster details, details of the group and sub groups.
+     *
      * @param applicationId Id of the application.
      * @return Json representing the application details with 200 as HTTP status. HTTP 404 is returned when there is
      * no application with given Id.
@@ -435,10 +462,10 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationInfo(@PathParam("appId") String applicationId) throws RestAPIException {
         ApplicationBean application = StratosApiV41Utils.getApplicationInfo(applicationId);
-        if(application == null) {
+        if (application == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
-        }else{
-            return  Response.ok().entity(application).build();
+        } else {
+            return Response.ok().entity(application).build();
         }
     }
 
@@ -620,7 +647,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         return Response.ok().entity(cluster).build();
     }
-    
+
     @PUT
     @Path("/subscriptions/{subscriptionAlias}/properties")
     @Consumes("application/json")
@@ -975,17 +1002,17 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("tenant/search/{domain}")
+    @Path("tenant/search/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("domain") String domain) throws RestAPIException {
+    public TenantInfoBean[] retrievePartialSearchTenants(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         List<TenantInfoBean> tenantList = null;
         try {
-            tenantList = searchPartialTenantsDomains(domain);
+            tenantList = searchPartialTenantsDomains(tenantDomain);
         } catch (Exception e) {
-            String msg = "Error in getting information for tenant " + domain;
+            String msg = "Error in getting information for tenant " + tenantDomain;
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
@@ -1093,13 +1120,13 @@ public class StratosApiV41 extends AbstractApi {
     public Response deployService(ServiceDefinitionBean serviceDefinitionBean)
             throws RestAPIException {
 
-    	log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
-    	// super tenant Deploying service (MT) 
-    	// here an alias is generated
-       StratosApiV41Utils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
-               serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
-               serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
-               serviceDefinitionBean.getTenantRange(), serviceDefinitionBean.getIsPublic());
+        log.info("Service definition request.. : " + serviceDefinitionBean.getServiceName());
+        // super tenant Deploying service (MT)
+        // here an alias is generated
+        StratosApiV41Utils.deployService(serviceDefinitionBean.getCartridgeType(), UUID.randomUUID().toString(), serviceDefinitionBean.getAutoscalingPolicyName(),
+                serviceDefinitionBean.getDeploymentPolicyName(), getTenantDomain(), getUsername(), getTenantId(),
+                serviceDefinitionBean.getClusterDomain(), serviceDefinitionBean.getClusterSubDomain(),
+                serviceDefinitionBean.getTenantRange(), serviceDefinitionBean.getIsPublic());
 
         URI url = uriInfo.getAbsolutePathBuilder().path(serviceDefinitionBean.getServiceName()).build();
         return Response.created(url).build();
@@ -1298,6 +1325,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         return Response.status(Response.Status.NOT_FOUND).build();
     }
+
     @POST
     @Path("/user")
     @Consumes("application/json")
@@ -1531,5 +1559,5 @@ public class StratosApiV41 extends AbstractApi {
         }
         return Response.noContent().build();
     }
-    
+
 }

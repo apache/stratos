@@ -20,9 +20,9 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.ClusterContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.GroupContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -57,15 +57,15 @@ public class ApplicationMonitorFactory {
      * @throws PolicyValidationException     throws while validating the policy associated with cluster
      * @throws PartitionValidationException  throws while validating the partition used in a cluster
      */
-    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
+    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
     	
         Monitor monitor;
-        if (context instanceof GroupContext) {
+        if (context instanceof GroupChildContext) {
             monitor = getGroupMonitor(parentMonitor, context, appId);
-        } else if (context instanceof ClusterContext) {
-            monitor = getClusterMonitor(parentMonitor, (ClusterContext) context, appId);
+        } else if (context instanceof ClusterChildContext) {
+            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, appId);
             if (monitor != null) {
             	((AbstractClusterMonitor)monitor).startScheduler();
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
@@ -86,7 +86,7 @@ public class ApplicationMonitorFactory {
      * @throws DependencyBuilderException    throws while building dependency for app monitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
-    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationContext context, String appId)
+    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
@@ -100,10 +100,10 @@ public class ApplicationMonitorFactory {
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
-                if (parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
-                    groupMonitor.setHasDependent(true);
+                if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+                    groupMonitor.setHasStartupDependents(true);
                 } else {
-                    groupMonitor.setHasDependent(false);
+                    groupMonitor.setHasStartupDependents(false);
                 }
                 //TODO make sure when it is async
 
@@ -140,7 +140,7 @@ public class ApplicationMonitorFactory {
             Application application = ApplicationHolder.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
-                applicationMonitor.setHasDependent(false);
+                applicationMonitor.setHasStartupDependents(false);
 
             } else {
                 String msg = "[Application] " + appId + " cannot be found in the Topology";
@@ -165,7 +165,7 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
     public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                     ClusterContext context, String appId)
+                                                     ClusterChildContext context, String appId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
@@ -195,11 +195,19 @@ public class ApplicationMonitorFactory {
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
-            //setting the dependent behaviour of the cluster monitor
-            if(parentMonitor.isDependent() || (context.isDependent() && context.hasChild())) {
-                clusterMonitor.setHasDependent(true);
+
+            //setting the startup dependent behaviour of the cluster monitor
+            if(parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+                clusterMonitor.setHasStartupDependents(true);
             } else {
-                clusterMonitor.setHasDependent(false);
+                clusterMonitor.setHasStartupDependents(false);
+            }
+
+            //setting the scaling dependent behaviour of the cluster monitor
+            if(parentMonitor.hasScalingDependents() || (context.hasScalingDependents())) {
+                clusterMonitor.setHasScalingDependents(true);
+            } else {
+                clusterMonitor.setHasScalingDependents(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
             if (cluster.getStatus() != clusterMonitor.getStatus()) {

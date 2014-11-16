@@ -88,7 +88,7 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
         // check if an Application with same name exists in applications
         if (applications.applicationExists(event.getApplication().getUniqueIdentifier())) {
-            log.warn("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists in Topology");
+            log.warn("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists");
 
         } else {
             // add application and the clusters to Topology

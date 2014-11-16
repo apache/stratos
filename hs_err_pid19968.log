@@ -1,0 +1,1394 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f17912fbb52, pid=19968, tid=139738837137152
+#
+# JRE version: 6.0_45-b06
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (20.45-b01 mixed mode linux-amd64 compressed oops)
+# Problematic frame:
+# V  [libjvm.so+0x233b52]  markOopDesc::must_be_preserved_with_bias(oopDesc*) const+0x32
+#
+# If you would like to submit a bug report, please visit:
+#   http://java.sun.com/webapps/bugreport/crash.jsp
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f178c065800):  VMThread [stack: 0x00007f177bafb000,0x00007f177bbfc000] [id=19984]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0x00000000000000b0
+
+Registers:
+RAX=0x0000000080012ba8, RBX=0x00000000c6cbeaa8, RCX=0x0000000000000000, RDX=0x0000000000000000
+RSP=0x00007f177bbfa5d0, RBP=0x00007f177bbfa5d0, RSI=0x00000000c6cbeaa8, RDI=0x0000001700000000
+R8 =0x00007f1791b6e300, R9 =0x0000000080012b90, R10=0x0000000000000002, R11=0x000000000000000b
+R12=0x00000000c6cbeaa4, R13=0x0000001700000000, R14=0x0000000080012ba0, R15=0x00000000c6cbeaa8
+RIP=0x00007f17912fbb52, EFLAGS=0x0000000000010246, CSGSFS=0x0000000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f177bbfa5d0)
+0x00007f177bbfa5d0:   00007f177bbfa620 00007f179157ae9d
+0x00007f177bbfa5e0:   0000000080012ba8 00000000c6cbea98
+0x00007f177bbfa5f0:   0000000000000003 00007f1791b6e300
+0x00007f177bbfa600:   00007f1791ca4400 0000000000000000
+0x00007f177bbfa610:   00007f177bbfa6a0 00007f178c015a40
+0x00007f177bbfa620:   00007f177bbfa660 00007f17917666eb
+0x00007f177bbfa630:   0000000000000000 00007f1791ca46a0
+0x00007f177bbfa640:   00000000c6c95f98 00007f1700000600
+0x00007f177bbfa650:   00007f1791ca46a0 00007f177bbfa690
+0x00007f177bbfa660:   00007f177bbfa700 00007f1791820904
+0x00007f177bbfa670:   00007f1791b5c710 0000000000000000
+0x00007f177bbfa680:   00007f1791ca46a0 0000000000000001
+0x00007f177bbfa690:   0000000000000001 00007f178c063201
+0x00007f177bbfa6a0:   00007f178c010100 0000000000000000
+0x00007f177bbfa6b0:   00007f178c064c30 00007f178c024300
+0x00007f177bbfa6c0:   00007f177bbfa6e0 00007f178c0008c0
+0x00007f177bbfa6d0:   00007f178c0630b0 00007f1791b68250
+0x00007f177bbfa6e0:   00007f177bbfa800 00007f1791b681f8
+0x00007f177bbfa6f0:   00007f1791b64750 0000000000000000
+0x00007f177bbfa700:   00007f177bbfa960 00007f179181f7b1
+0x00007f177bbfa710:   00007f1790dbfd01 000000000618d401
+0x00007f177bbfa720:   000000002aab0001 00007f177bbfa7d0
+0x00007f177bbfa730:   00007f178c0638d0 000000008618d4c0
+0x00007f177bbfa740:   0000000011dd8020 0000000013ea47f8
+0x00007f177bbfa750:   00007f177bbfa910 00007f177bbfa8e0
+0x00007f177bbfa760:   00007f177bbfa860 00007f177bbfa890
+0x00007f177bbfa770:   00007f177bbfa8c0 0000000025c7c818
+0x00007f177bbfa780:   00007f177bbfa920 0000000001d90000
+0x00007f177bbfa790:   0000000014903b88 000000000618d4c0
+0x00007f177bbfa7a0:   0000000016693b88 00007f177bbfa840
+0x00007f177bbfa7b0:   00007f177bbfa880 00007f177bbfa8b0
+0x00007f177bbfa7c0:   00007f177bbfa910 00007f178c017d90 
+
+Instructions: (pc=0x00007f17912fbb52)
+0x00007f17912fbb32:   48 8b 15 cf c5 99 00 80 3a 00 74 52 4c 8b 05 93
+0x00007f17912fbb42:   a9 99 00 8b 56 08 41 8b 48 08 48 d3 e2 49 03 10
+0x00007f17912fbb52:   48 8b 8a b0 00 00 00 ba 01 00 00 00 83 e1 07 48
+0x00007f17912fbb62:   83 f9 05 74 21 48 89 fe 31 d2 83 e6 07 48 83 fe 
+
+Register to memory mapping:
+
+RAX=0x0000000080012ba8 is an oop
+[S 
+ - klass: {type array short}
+ - length: 8
+RBX=0x00000000c6cbeaa8 is an oop
+java.lang.String 
+ - klass: 'java/lang/String'
+RCX=0x0000000000000000 is an unknown value
+RDX=0x0000000000000000 is an unknown value
+RSP=0x00007f177bbfa5d0 is an unknown value
+RBP=0x00007f177bbfa5d0 is an unknown value
+RSI=0x00000000c6cbeaa8 is an oop
+java.lang.String 
+ - klass: 'java/lang/String'
+RDI=0x0000001700000000 is an unknown value
+R8 =0x00007f1791b6e300: <offset 0xaa6300> in /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/server/libjvm.so at 0x00007f17910c8000
+R9 =0x0000000080012b90 is an oop
+{instance class} 
+ - klass: {other class}
+R10=0x0000000000000002 is an unknown value
+R11=0x000000000000000b is an unknown value
+R12=0x00000000c6cbeaa4 is an oop
+java.lang.String 
+ - klass: 'java/lang/String'
+R13=0x0000001700000000 is an unknown value
+R14=0x0000000080012ba0 is an oop
+{instance class} 
+ - klass: {other class}
+R15=0x00000000c6cbeaa8 is an oop
+java.lang.String 
+ - klass: 'java/lang/String'
+
+
+Stack: [0x00007f177bafb000,0x00007f177bbfc000],  sp=0x00007f177bbfa5d0,  free space=1021k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x233b52]  markOopDesc::must_be_preserved_with_bias(oopDesc*) const+0x32
+V  [libjvm.so+0x4b2e9d]  instanceKlass::oop_follow_contents(oopDesc*)+0x1dd
+V  [libjvm.so+0x69e6eb]  MarkSweep::follow_stack()+0x7b
+V  [libjvm.so+0x758904]  PSMarkSweep::mark_sweep_phase1(bool)+0xe4
+V  [libjvm.so+0x7577b1]  PSMarkSweep::invoke_no_policy(bool)+0x481
+V  [libjvm.so+0x764317]  PSScavenge::invoke()+0x147
+V  [libjvm.so+0x7262fe]  ParallelScavengeHeap::failed_mem_allocate(unsigned long, bool)+0x5e
+V  [libjvm.so+0x863638]  VM_ParallelGCFailedAllocation::doit()+0x68
+V  [libjvm.so+0x870a2a]  VM_Operation::evaluate()+0x4a
+V  [libjvm.so+0x86fff2]  VMThread::evaluate_operation(VM_Operation*)+0x82
+V  [libjvm.so+0x870268]  VMThread::loop()+0x198
+V  [libjvm.so+0x86fd6e]  VMThread::run()+0x6e
+V  [libjvm.so+0x712eef]  java_start(Thread*)+0x13f
+
+VM_Operation (0x00007f1790dbfa60): ParallelGCFailedAllocation, mode: safepoint, requested by thread 0x00007f178c007800
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007f178ca43000 JavaThread "resolver-5" daemon [_thread_blocked, id=20365, stack(0x00007f177a58b000,0x00007f177a68c000)]
+  0x00007f178ca42800 JavaThread "resolver-4" daemon [_thread_blocked, id=20364, stack(0x00007f177a68c000,0x00007f177a78d000)]
+  0x00007f178c26c000 JavaThread "resolver-3" daemon [_thread_blocked, id=20363, stack(0x00007f177a78d000,0x00007f177a88e000)]
+  0x00007f178c26b000 JavaThread "resolver-2" daemon [_thread_blocked, id=20362, stack(0x00007f177a88e000,0x00007f177a98f000)]
+  0x00007f178c1ce800 JavaThread "resolver-1" daemon [_thread_blocked, id=20361, stack(0x00007f177ac11000,0x00007f177ad12000)]
+  0x00007f178c091800 JavaThread "Low Memory Detector" daemon [_thread_blocked, id=19990, stack(0x00007f177ae13000,0x00007f177af14000)]
+  0x00007f178c08f000 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=19989, stack(0x00007f177af14000,0x00007f177b015000)]
+  0x00007f178c08c800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=19988, stack(0x00007f177b015000,0x00007f177b116000)]
+  0x00007f178c08a000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=19987, stack(0x00007f177b116000,0x00007f177b217000)]
+  0x00007f178c06e000 JavaThread "Finalizer" daemon [_thread_blocked, id=19986, stack(0x00007f177b8f9000,0x00007f177b9fa000)]
+  0x00007f178c06c000 JavaThread "Reference Handler" daemon [_thread_blocked, id=19985, stack(0x00007f177b9fa000,0x00007f177bafb000)]
+  0x00007f178c007800 JavaThread "main" [_thread_blocked, id=19979, stack(0x00007f1790cc2000,0x00007f1790dc3000)]
+
+Other Threads:
+=>0x00007f178c065800 VMThread [stack: 0x00007f177bafb000,0x00007f177bbfc000] [id=19984]
+  0x00007f178c0a4000 WatcherThread [stack: 0x00007f177ad12000,0x00007f177ae13000] [id=19991]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007f178c004680] Threads_lock - owner thread: 0x00007f178c065800
+[0x00007f178c004b80] Heap_lock - owner thread: 0x00007f178c007800
+
+Heap
+ PSYoungGen      total 300032K, used 30272K [0x00000000eaab0000, 0x0000000100000000, 0x0000000100000000)
+  eden space 269760K, 0% used [0x00000000eaab0000,0x00000000eaab0000,0x00000000fb220000)
+  from space 30272K, 100% used [0x00000000fdd20000,0x00000000ffab0000,0x00000000ffab0000)
+  to   space 39872K, 0% used [0x00000000fb220000,0x00000000fb220000,0x00000000fd910000)
+ PSOldGen        total 349568K, used 336910K [0x00000000c0000000, 0x00000000d5560000, 0x00000000eaab0000)
+  object space 349568K, 96% used [0x00000000c0000000,0x00000000d4903b88,0x00000000d5560000)
+ PSPermGen       total 174016K, used 99893K [0x0000000080000000, 0x000000008a9f0000, 0x00000000c0000000)
+  object space 174016K, 57% used [0x0000000080000000,0x000000008618d4c0,0x000000008a9f0000)
+
+Code Cache  [0x00007f1788eec000, 0x00007f178a65c000, 0x00007f178beec000)
+ total_blobs=4900 nmethods=4520 adapters=333 free_code_cache=27884736 largest_free_block=116224
+
+Dynamic libraries:
+40000000-40009000 r-xp 00000000 08:01 18616728                           /usr/local/java6/jdk1.6.0_45/bin/java
+40108000-4010a000 rwxp 00008000 08:01 18616728                           /usr/local/java6/jdk1.6.0_45/bin/java
+419ef000-41a10000 rwxp 00000000 00:00 0                                  [heap]
+80000000-8a9f0000 rwxp 00000000 00:00 0 
+8a9f0000-c0000000 rwxp 00000000 00:00 0 
+c0000000-d5560000 rwxp 00000000 00:00 0 
+d5560000-eaab0000 rwxp 00000000 00:00 0 
+eaab0000-100000000 rwxp 00000000 00:00 0 
+7f1718000000-7f171bfff000 rwxp 00000000 00:00 0 
+7f171bfff000-7f171c000000 ---p 00000000 00:00 0 
+7f171c000000-7f171f56b000 rwxp 00000000 00:00 0 
+7f171f56b000-7f1720000000 ---p 00000000 00:00 0 
+7f1720000000-7f1720021000 rwxp 00000000 00:00 0 
+7f1720021000-7f1724000000 ---p 00000000 00:00 0 
+7f1728000000-7f17280c7000 rwxp 00000000 00:00 0 
+7f17280c7000-7f172c000000 ---p 00000000 00:00 0 
+7f172c000000-7f172c021000 rwxp 00000000 00:00 0 
+7f172c021000-7f1730000000 ---p 00000000 00:00 0 
+7f1730000000-7f1730021000 rwxp 00000000 00:00 0 
+7f1730021000-7f1734000000 ---p 00000000 00:00 0 
+7f1734000000-7f1734021000 rwxp 00000000 00:00 0 
+7f1734021000-7f1738000000 ---p 00000000 00:00 0 
+7f1738000000-7f1738021000 rwxp 00000000 00:00 0 
+7f1738021000-7f173c000000 ---p 00000000 00:00 0 
+7f173c000000-7f173c021000 rwxp 00000000 00:00 0 
+7f173c021000-7f1740000000 ---p 00000000 00:00 0 
+7f1740000000-7f1740021000 rwxp 00000000 00:00 0 
+7f1740021000-7f1744000000 ---p 00000000 00:00 0 
+7f1744000000-7f1744021000 rwxp 00000000 00:00 0 
+7f1744021000-7f1748000000 ---p 00000000 00:00 0 
+7f1748000000-7f1748021000 rwxp 00000000 00:00 0 
+7f1748021000-7f174c000000 ---p 00000000 00:00 0 
+7f174c000000-7f174c021000 rwxp 00000000 00:00 0 
+7f174c021000-7f1750000000 ---p 00000000 00:00 0 
+7f1750000000-7f1750021000 rwxp 00000000 00:00 0 
+7f1750021000-7f1754000000 ---p 00000000 00:00 0 
+7f1754000000-7f1754021000 rwxp 00000000 00:00 0 
+7f1754021000-7f1758000000 ---p 00000000 00:00 0 
+7f1758000000-7f175ba66000 rwxp 00000000 00:00 0 
+7f175ba66000-7f175c000000 ---p 00000000 00:00 0 
+7f175c000000-7f175c021000 rwxp 00000000 00:00 0 
+7f175c021000-7f1760000000 ---p 00000000 00:00 0 
+7f1760000000-7f1763ebf000 rwxp 00000000 00:00 0 
+7f1763ebf000-7f1764000000 ---p 00000000 00:00 0 
+7f1764000000-7f1764021000 rwxp 00000000 00:00 0 
+7f1764021000-7f1768000000 ---p 00000000 00:00 0 
+7f1768000000-7f1768021000 rwxp 00000000 00:00 0 
+7f1768021000-7f176c000000 ---p 00000000 00:00 0 
+7f176c000000-7f176c021000 rwxp 00000000 00:00 0 
+7f176c021000-7f1770000000 ---p 00000000 00:00 0 
+7f1770000000-7f1770288000 rwxp 00000000 00:00 0 
+7f1770288000-7f1774000000 ---p 00000000 00:00 0 
+7f1774000000-7f1774026000 rwxp 00000000 00:00 0 
+7f1774026000-7f1778000000 ---p 00000000 00:00 0 
+7f1778542000-7f1778543000 r-xs 00010000 08:01 26874783                   /home/sanjaya/.m2/repository/org/wso2/maven/carbon-p2-plugin/1.5/carbon-p2-plugin-1.5.jar
+7f1778543000-7f1778545000 r-xs 00002000 08:01 16122990                   /home/sanjaya/.m2/repository/org/eclipse/tycho/org.eclipse.tycho.p2.tools.facade/0.13.0/org.eclipse.tycho.p2.tools.facade-0.13.0.jar
+7f1778545000-7f1778547000 r-xs 00005000 08:01 16122989                   /home/sanjaya/.m2/repository/org/eclipse/tycho/org.eclipse.tycho.p2.resolver.facade/0.13.0/org.eclipse.tycho.p2.resolver.facade-0.13.0.jar
+7f1778547000-7f1778549000 r-xs 00009000 08:01 16122986                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-p2-facade/0.13.0/tycho-p2-facade-0.13.0.jar
+7f1778549000-7f177854b000 r-xs 00001000 08:01 16122984                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-embedder-api/0.13.0/tycho-embedder-api-0.13.0.jar
+7f177854b000-7f177854e000 r-xs 00019000 08:01 11313836                   /home/sanjaya/.m2/repository/de/pdark/decentxml/1.3/decentxml-1.3.jar
+7f177854e000-7f1778550000 r-xs 00005000 08:01 16122982                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-metadata-model/0.13.0/tycho-metadata-model-0.13.0.jar
+7f1778550000-7f1778554000 r-xs 00029000 08:01 15861220                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/1.2/plexus-archiver-1.2.jar
+7f1778554000-7f1778558000 r-xs 0001f000 08:01 16122981                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-core/0.13.0/tycho-core-0.13.0.jar
+7f1778558000-7f177855a000 r-xs 00004000 08:01 16122979                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-equinox-launching/0.13.0/tycho-equinox-launching-0.13.0.jar
+7f177855a000-7f177855b000 r-xs 00000000 08:01 16122977                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-equinox-api/0.13.0/tycho-equinox-api-0.13.0.jar
+7f177855b000-7f177856e000 r-xs 0013c000 08:01 16122975                   /home/sanjaya/.m2/repository/org/eclipse/tycho/org.eclipse.osgi/3.8.0.v20110726-1606/org.eclipse.osgi-3.8.0.v20110726-1606.jar
+7f177856e000-7f1778570000 r-xs 00001000 08:01 16122974                   /home/sanjaya/.m2/repository/org/eclipse/tycho/tycho-equinox/0.13.0/tycho-equinox-0.13.0.jar
+7f1778570000-7f1778574000 r-xs 00033000 08:01 13112283                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/2.0.4/plexus-utils-2.0.4.jar
+7f1778574000-7f1778576000 r-xs 00010000 08:01 16122994                   /home/sanjaya/.m2/repository/org/wso2/maven/carbon-p2-plugin/1.5.3/carbon-p2-plugin-1.5.3.jar
+7f1778576000-7f1778578000 r-xs 00007000 08:01 15860742                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-filtering/1.0-beta-2/maven-filtering-1.0-beta-2.jar
+7f1778578000-7f1778583000 r-xs 0005f000 08:01 15861222                   /home/sanjaya/.m2/repository/com/thoughtworks/xstream/xstream/1.3.1/xstream-1.3.1.jar
+7f1778583000-7f1778586000 r-xs 00011000 08:01 28447127                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-war-plugin/2.2/maven-war-plugin-2.2.jar
+7f1778586000-7f1778588000 r-xs 00002000 08:01 15860029                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-javac/1.8.1/plexus-compiler-javac-1.8.1.jar
+7f1778588000-7f177858a000 r-xs 00000000 08:01 15860028                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.8.1/plexus-compiler-manager-1.8.1.jar
+7f177858a000-7f177858c000 r-xs 00006000 08:01 12720584                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.3.2/maven-compiler-plugin-2.3.2.jar
+7f177858c000-7f1778599000 r-xs 0007f000 08:01 11535608                   /home/sanjaya/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar
+7f1778599000-7f177859e000 r-xs 00034000 08:01 12721794                   /home/sanjaya/.m2/repository/commons-beanutils/commons-beanutils/1.8.0/commons-beanutils-1.8.0.jar
+7f177859e000-7f17785a0000 r-xs 00009000 08:01 5939                       /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-tfs/1.7/maven-scm-provider-tfs-1.7.jar
+7f17785a0000-7f17785a2000 r-xs 0000f000 08:01 5938                       /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-vss/1.7/maven-scm-provider-vss-1.7.jar
+7f17785a2000-7f17785a5000 r-xs 0000c000 08:01 5937                       /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-synergy/1.7/maven-scm-provider-synergy-1.7.jar
+7f17785a5000-7f17785a8000 r-xs 00010000 08:01 28578123                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-starteam/1.7/maven-scm-provider-starteam-1.7.jar
+7f17785a8000-7f17785aa000 r-xs 00012000 08:01 28051815                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-perforce/1.7/maven-scm-provider-perforce-1.7.jar
+7f17785aa000-7f17785ac000 r-xs 0000a000 08:01 27789221                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-local/1.7/maven-scm-provider-local-1.7.jar
+7f17785ac000-7f17785ae000 r-xs 0000e000 08:01 27003218                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-jazz/1.7/maven-scm-provider-jazz-1.7.jar
+7f17785ae000-7f17785b0000 r-xs 0000e000 08:01 26349926                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-hg/1.7/maven-scm-provider-hg-1.7.jar
+7f17785b0000-7f17785b2000 r-xs 00008000 08:01 25953896                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-git-commons/1.7/maven-scm-provider-git-commons-1.7.jar
+7f17785b2000-7f17785b5000 r-xs 0000d000 08:01 25560606                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-gitexe/1.7/maven-scm-provider-gitexe-1.7.jar
+7f17785b5000-7f17785b9000 r-xs 00038000 08:01 11313874                   /home/sanjaya/.m2/repository/ch/ethz/ganymed/ganymed-ssh2/build210/ganymed-ssh2-build210.jar
+7f17785b9000-7f17785c1000 r-xs 00090000 08:01 11313873                   /home/sanjaya/.m2/repository/org/netbeans/lib/cvsclient/20060125/cvsclient-20060125.jar
+7f17785c1000-7f17785c3000 r-xs 00009000 08:01 25431244                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-cvsjava/1.7/maven-scm-provider-cvsjava-1.7.jar
+7f17785c3000-7f17785c6000 r-xs 00011000 08:01 24774672                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-cvs-commons/1.7/maven-scm-provider-cvs-commons-1.7.jar
+7f17785c6000-7f17785c8000 r-xs 00006000 08:01 24512155                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-cvsexe/1.7/maven-scm-provider-cvsexe-1.7.jar
+7f17785c8000-7f17785cb000 r-xs 0000f000 08:01 23991049                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-clearcase/1.7/maven-scm-provider-clearcase-1.7.jar
+7f17785cb000-7f17785ce000 r-xs 0000b000 08:01 23726288                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-bazaar/1.7/maven-scm-provider-bazaar-1.7.jar
+7f17785ce000-7f17785d1000 r-xs 00014000 08:01 22552244                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-accurev/1.7/maven-scm-provider-accurev-1.7.jar
+7f17785d1000-7f17785d3000 r-xs 00002000 08:01 21892026                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-client/1.7/maven-scm-client-1.7.jar
+7f17785d3000-7f17785d5000 r-xs 00008000 08:01 21497779                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-svn-commons/1.7/maven-scm-provider-svn-commons-1.7.jar
+7f17785d5000-7f17785d7000 r-xs 00008000 08:01 15862407                   /home/sanjaya/.m2/repository/classworlds/classworlds/1.1-alpha-2/classworlds-1.1-alpha-2.jar
+7f17785d7000-7f17785de000 r-xs 00029000 08:01 15863082                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-container-default/1.0-alpha-9/plexus-container-default-1.0-alpha-9.jar
+7f17785de000-7f17785df000 r-xs 00002000 08:01 21236679                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-manager-plexus/1.7/maven-scm-manager-plexus-1.7.jar
+7f17785df000-7f17785e3000 r-xs 00015000 08:01 20978046                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-api/1.7/maven-scm-api-1.7.jar
+7f17785e3000-7f17785e6000 r-xs 00010000 08:01 19668747                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-svnexe/1.7.0-wso2v1/maven-scm-provider-svnexe-1.7.0-wso2v1.jar
+7f17785e6000-7f1778612000 r-xs 001db000 08:01 19400393                   /home/sanjaya/.m2/repository/org/apache/maven/scm/wso2/maven-scm/1.7.0.wso2v1/maven-scm-1.7.0.wso2v1.jar
+7f1778612000-7f1778622000 r-xs 00119000 08:01 18483373                   /home/sanjaya/.m2/repository/org/apache/juddi/wso2/juddi/3.0.3.wso2v2/juddi-3.0.3.wso2v2.jar
+7f1778622000-7f1778624000 r-xs 00002000 08:01 14814811                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.server/4.2.0/org.wso2.carbon.registry.server-4.2.0.jar
+7f1778624000-7f1778626000 r-xs 00010000 08:01 5936                       /home/sanjaya/.m2/repository/org/eclipse/core/org.eclipse.core.runtime/3.5.0.v20090429-1800/org.eclipse.core.runtime-3.5.0.v20090429-1800.jar
+7f1778626000-7f1778629000 r-xs 00029000 08:01 5935                       /home/sanjaya/.m2/repository/uddi/uddi4j/1.0.1/uddi4j-1.0.1.jar
+7f1778629000-7f177863f000 r-xs 000fa000 08:01 15992972                   /home/sanjaya/.m2/repository/com/sun/xml/bind/jaxb-impl/2.2.6/jaxb-impl-2.2.6.jar
+7f177863f000-7f1778643000 r-xs 00015000 08:01 16385735                   /home/sanjaya/.m2/repository/javax/xml/bind/jaxb-api/2.2.6/jaxb-api-2.2.6.jar
+7f1778643000-7f1778644000 r-xs 00001000 08:01 15861848                   /home/sanjaya/.m2/repository/com/sun/localizer/comresrcgen/1.0/comresrcgen-1.0.jar
+7f1778644000-7f1778645000 r-xs 00001000 08:01 15861847                   /home/sanjaya/.m2/repository/com/sun/localizer/localizer/1.0/localizer-1.0.jar
+7f1778645000-7f1778647000 r-xs 00002000 08:01 15992971                   /home/sanjaya/.m2/repository/com/google/code/findbugs/annotations/1.3.9/annotations-1.3.9.jar
+7f1778647000-7f177864a000 r-xs 00009000 08:01 16385732                   /home/sanjaya/.m2/repository/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar
+7f177864a000-7f177864e000 r-xs 00020000 08:01 15861841                   /home/sanjaya/.m2/repository/com/sun/codemodel/codemodel/2.4.1/codemodel-2.4.1.jar
+7f177864e000-7f1778652000 r-xs 00035000 08:01 12978707                   /home/sanjaya/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.9.9/jackson-core-asl-1.9.9.jar
+7f1778652000-7f1778661000 r-xs 000b0000 08:01 12978706                   /home/sanjaya/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.9.9/jackson-mapper-asl-1.9.9.jar
+7f1778661000-7f1778665000 r-xs 0002e000 08:01 15861840                   /home/sanjaya/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.0.0/jackson-core-2.0.0.jar
+7f1778665000-7f1778667000 r-xs 00007000 08:01 15861839                   /home/sanjaya/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.0.0/jackson-annotations-2.0.0.jar
+7f1778667000-7f1778676000 r-xs 000c7000 08:01 15861837                   /home/sanjaya/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.0.0/jackson-databind-2.0.0.jar
+7f1778676000-7f1778678000 r-xs 0000c000 08:01 15861838                   /home/sanjaya/.m2/repository/com/googlecode/jsonschema2pojo/jsonschema2pojo-core/0.3.4/jsonschema2pojo-core-0.3.4.jar
+7f1778678000-7f17786b3000 r-xs 002bb000 08:01 15861836                   /home/sanjaya/.m2/repository/com/sun/xml/bind/jaxb-xjc/2.2/jaxb-xjc-2.2.jar
+7f17786b3000-7f17786b5000 r-xs 00018000 08:01 11273015                   /home/sanjaya/.m2/repository/org/jvnet/ws/wadl/wadl-core/1.1.3/wadl-core-1.1.3.jar
+7f17786b5000-7f17786e5000 r-xs 00277000 08:01 12587675                   /home/sanjaya/.m2/repository/org/wso2/wadl/core/wso2/wadl-core/1.1.3.wso2v2/wadl-core-1.1.3.wso2v2.jar
+7f17786e5000-7f1778722000 r-xs 006dd000 08:01 17827638                   /home/sanjaya/.m2/repository/org/wso2/wsdl/validator/wso2/wsdl-validator/1.2.0.wso2v1/wsdl-validator-1.2.0.wso2v1.jar
+7f1778722000-7f1778723000 r-xs 00001000 08:01 11314040                   /home/sanjaya/.m2/repository/eclipse/validateutility/0.95/validateutility-0.95.jar
+7f1778723000-7f1778749000 r-xs 00230000 08:01 5934                       /home/sanjaya/.m2/repository/org/apache/derby/derby/10.4.2.0/derby-10.4.2.0.jar
+7f1778749000-7f177874a000 r-xs 00007000 08:01 21111354                   /home/sanjaya/.m2/repository/commons-fileupload/commons-fileupload/1.1.1/commons-fileupload-1.1.1.jar
+7f177874a000-7f1778750000 r-xs 00059000 08:01 17303594                   /home/sanjaya/.m2/repository/javax/mail/mail/1.4/mail-1.4.jar
+7f1778750000-7f1778751000 r-xs 0000a000 08:01 5933                       /home/sanjaya/.m2/repository/asm/asm/3.2/asm-3.2.jar
+7f1778751000-7f1778752000 r-xs 00003000 08:01 17172639                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1.1/geronimo-jta_1.1_spec-1.1.1.jar
+7f1778752000-7f1778756000 r-xs 0002f000 08:01 17041427                   /home/sanjaya/.m2/repository/net/sourceforge/serp/serp/1.13.1/serp-1.13.1.jar
+7f1778756000-7f177875c000 r-xs 00017000 08:01 5931                       /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-jpa_2.0_spec/1.0/geronimo-jpa_2.0_spec-1.0.jar
+7f177875c000-7f177875f000 r-xs 0001d000 08:01 11587177                   /home/sanjaya/.m2/repository/org/apache/juddi/juddi-client/3.1.5.wso2v1/juddi-client-3.1.5.wso2v1.jar
+7f177875f000-7f1778766000 r-xs 00049000 08:01 6432                       /home/sanjaya/.m2/repository/cglib/cglib-nodep/2.1_3/cglib-nodep-2.1_3.jar
+7f1778766000-7f177876f000 r-xs 0005e000 08:01 5930                       /home/sanjaya/.m2/repository/jboss/jboss-common-core/2.0.4.GA/jboss-common-core-2.0.4.GA.jar
+7f177876f000-7f1778776000 r-xs 0006a000 08:01 5929                       /home/sanjaya/.m2/repository/jboss/javassist/3.3.ga/javassist-3.3.ga.jar
+7f1778776000-7f1778778000 r-xs 0000d000 08:01 5928                       /home/sanjaya/.m2/repository/org/hibernate/hibernate-validator/3.0.0.ga/hibernate-validator-3.0.0.ga.jar
+7f1778778000-7f177877b000 r-xs 0000e000 08:01 5927                       /home/sanjaya/.m2/repository/org/hibernate/hibernate-commons-annotations/3.0.0.ga/hibernate-commons-annotations-3.0.0.ga.jar
+7f177877b000-7f177877f000 r-xs 0003d000 08:01 5926                       /home/sanjaya/.m2/repository/org/hibernate/hibernate-annotations/3.3.0.ga/hibernate-annotations-3.3.0.ga.jar
+7f177877f000-7f1778782000 r-xs 0001a000 08:01 5925                       /home/sanjaya/.m2/repository/org/hibernate/hibernate-entitymanager/3.3.1.ga/hibernate-entitymanager-3.3.1.ga.jar
+7f1778782000-7f1778788000 r-xs 00067000 08:01 7414                       /home/sanjaya/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar
+7f1778788000-7f177878a000 r-xs 00003000 08:01 5923                       /home/sanjaya/.m2/repository/asm/asm-attrs/1.5.3/asm-attrs-1.5.3.jar
+7f177878a000-7f177878c000 r-xs 00001000 08:01 5924                       /home/sanjaya/.m2/repository/javax/transaction/jta/1.0.1B/jta-1.0.1B.jar
+7f177878c000-7f1778790000 r-xs 0002f000 08:01 5922                       /home/sanjaya/.m2/repository/net/sf/ehcache/ehcache/1.2.3/ehcache-1.2.3.jar
+7f1778790000-7f17787b1000 r-xs 00206000 08:01 5921                       /home/sanjaya/.m2/repository/org/hibernate/hibernate/3.2.5.ga/hibernate-3.2.5.ga.jar
+7f17787b1000-7f17787b4000 r-xs 0000a000 08:01 5920                       /home/sanjaya/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar
+7f17787b4000-7f17787b8000 r-xs 0002f000 08:01 11587176                   /home/sanjaya/.m2/repository/commons-beanutils/commons-beanutils-core/1.8.0/commons-beanutils-core-1.8.0.jar
+7f17787b8000-7f17787be000 r-xs 00043000 08:01 11314046                   /home/sanjaya/.m2/repository/commons-configuration/commons-configuration/1.6/commons-configuration-1.6.jar
+7f17787be000-7f17787c1000 r-xs 00015000 08:01 11555361                   /home/sanjaya/.m2/repository/xmlunit/xmlunit/1.3/xmlunit-1.3.jar
+7f17787c1000-7f17787c4000 r-xs 0001c000 08:01 11587175                   /home/sanjaya/.m2/repository/org/apache/juddi/uddi-tck-base/3.1.5.wso2v1/uddi-tck-base-3.1.5.wso2v1.jar
+7f17787c4000-7f17787cb000 r-xs 00043000 08:01 11587173                   /home/sanjaya/.m2/repository/org/apache/juddi/uddi-ws/3.1.5.wso2v1/uddi-ws-3.1.5.wso2v1.jar
+7f17787cb000-7f17787d1000 r-xs 00066000 08:01 11587174                   /home/sanjaya/.m2/repository/org/apache/juddi/juddi-core/3.1.5.wso2v1/juddi-core-3.1.5.wso2v1.jar
+7f17787d1000-7f17787d7000 r-xs 0002b000 08:01 14815324                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.uddi/4.2.0/org.wso2.carbon.registry.uddi-4.2.0.jar
+7f17787d7000-7f17787d8000 r-xs 00001000 08:01 14815323                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.servlet/4.2.0/org.wso2.carbon.registry.servlet-4.2.0.jar
+7f17787d8000-7f17787dd000 r-xs 0003d000 08:01 14815322                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.extensions/4.2.0/org.wso2.carbon.registry.extensions-4.2.0.jar
+7f17787dd000-7f17787e1000 r-xs 0001c000 08:01 5048                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.repository/2.1.0.v20110601/org.eclipse.equinox.p2.repository-2.1.0.v20110601.jar
+7f17787e1000-7f17787e8000 r-xs 0004c000 08:01 5051                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.metadata/2.1.0.v20110510/org.eclipse.equinox.p2.metadata-2.1.0.v20110510.jar
+7f17787e8000-7f17787ec000 r-xs 0002a000 08:01 5370                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.engine/2.1.0.v20110511/org.eclipse.equinox.p2.engine-2.1.0.v20110511.jar
+7f17787ec000-7f177881f000 r-xs 00246000 08:01 13117975                   /home/sanjaya/.m2/repository/org/apache/qpid/wso2/qpid-client/0.12.wso2v1/qpid-client-0.12.wso2v1.jar
+7f177881f000-7f177887b000 r-xs 00501000 08:01 11313924                   /home/sanjaya/.m2/repository/opensaml/wso2/opensaml2/2.4.1.wso2v1/opensaml2-2.4.1.wso2v1.jar
+7f177887b000-7f177887f000 r-xs 00028000 08:01 23728387                   /home/sanjaya/.m2/repository/commons-validator/commons-validator/1.4.0/commons-validator-1.4.0.jar
+7f177887f000-7f1778882000 r-xs 00018000 08:01 5356                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.common/3.6.100.v20120522-1841/org.eclipse.equinox.common-3.6.100.v20120522-1841.jar
+7f1778882000-7f1778885000 r-xs 0000f000 08:01 5053                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.core/2.1.0.v20110502-1955/org.eclipse.equinox.p2.core-2.1.0.v20110502-1955.jar
+7f1778885000-7f1778886000 r-xs 00009000 08:01 5371                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.simpleconfigurator/1.0.301.v20120828-033635/org.eclipse.equinox.simpleconfigurator-1.0.301.v20120828-033635.jar
+7f1778886000-7f1778889000 r-xs 0001a000 08:01 5062                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.metadata.repository/1.2.0.v20110511-1359/org.eclipse.equinox.p2.metadata.repository-1.2.0.v20110511-1359.jar
+7f1778889000-7f177888c000 r-xs 00015000 08:01 5038                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.director/2.1.0.v20110504-1715/org.eclipse.equinox.p2.director-2.1.0.v20110504-1715.jar
+7f177888c000-7f177888f000 r-xs 0001e000 08:01 5369                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.p2.artifact.repository/1.1.100.v20110519/org.eclipse.equinox.p2.artifact.repository-1.1.100.v20110519.jar
+7f177888f000-7f1778891000 r-xs 00009000 08:01 14814818                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.feature.mgt.core/4.2.0/org.wso2.carbon.feature.mgt.core-4.2.0.jar
+7f1778891000-7f1778895000 r-xs 00067000 08:01 11587172                   /home/sanjaya/.m2/repository/commons-beanutils/wso2/commons-beanutils/1.8.0.wso2v1/commons-beanutils-1.8.0.wso2v1.jar
+7f1778895000-7f1778898000 r-xs 0000a000 08:01 14815307                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.common/4.2.0/org.wso2.carbon.registry.common-4.2.0.jar
+7f1778898000-7f177889b000 r-xs 00003000 08:01 14815308                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.admin.api/4.2.0/org.wso2.carbon.registry.admin.api-4.2.0.jar
+7f177889b000-7f177889e000 r-xs 00014000 08:01 24516924                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.resource/4.2.0/org.wso2.carbon.registry.resource-4.2.0.jar
+7f177889e000-7f177889f000 r-xs 00005000 08:01 15993530                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-repository-builder/1.0-alpha-2/maven-repository-builder-1.0-alpha-2.jar
+7f177889f000-7f17788a2000 r-xs 0000a000 08:01 15861221                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-io/1.0.1/plexus-io-1.0.1.jar
+7f17788a2000-7f17788a4000 r-xs 00009000 08:01 15860198                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-filtering/1.0/maven-filtering-1.0.jar
+7f17788a4000-7f17788a6000 r-xs 00008000 08:01 16385227                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-shared-io/1.1/maven-shared-io-1.1.jar
+7f17788a6000-7f17788a8000 r-xs 00006000 08:01 16386203                   /home/sanjaya/.m2/repository/org/apache/maven/shared/file-management/1.1/file-management-1.1.jar
+7f17788a8000-7f17788ac000 r-xs 00029000 08:01 15862493                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/1.1/plexus-archiver-1.1.jar
+7f17788ac000-7f17788b0000 r-xs 00032000 08:01 23464197                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-assembly-plugin/2.2.1/maven-assembly-plugin-2.2.1.jar
+7f17788b0000-7f17788b2000 r-xs 00008000 08:01 14814877                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.feature.mgt.services/4.2.0/org.wso2.carbon.feature.mgt.services-4.2.0.jar
+7f17788b2000-7f17788ba000 r-xs 0004b000 08:01 15863237                   /home/sanjaya/.m2/repository/backport-util-concurrent/wso2/backport-util-concurrent/3.1.0.wso2v1/backport-util-concurrent-3.1.0.wso2v1.jar
+7f17788ba000-7f17788bd000 r-xs 00110000 08:01 27267244                   /home/sanjaya/.m2/repository/org/wso2/xkms/wso2/xkms/2.4.0.wso2v1/xkms-2.4.0.wso2v1.jar
+7f17788bd000-7f17788bf000 r-xs 0001f000 08:01 7618                       /home/sanjaya/.m2/repository/org/apache/rampart/wso2/rampart-trust/1.6.1.wso2v10/rampart-trust-1.6.1.wso2v10.jar
+7f17788bf000-7f17788c2000 r-xs 00026000 08:01 7644                       /home/sanjaya/.m2/repository/org/apache/rampart/wso2/rampart-policy/1.6.1.wso2v10/rampart-policy-1.6.1.wso2v10.jar
+7f17788c2000-7f17788c5000 r-xs 00028000 08:01 11586910                   /home/sanjaya/.m2/repository/org/apache/rampart/wso2/rampart-core/1.6.1.wso2v10/rampart-core-1.6.1.wso2v10.jar
+7f17788c5000-7f17788c8000 r-xs 00023000 08:01 27267243                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.security.mgt/4.2.0/org.wso2.carbon.security.mgt-4.2.0.jar
+7f17788c8000-7f17788ca000 r-xs 0000d000 08:01 15863449                   /home/sanjaya/.m2/repository/commons-codec/commons-codec/1.4/commons-codec-1.4.jar
+7f17788ca000-7f17788cc000 r-xs 0000b000 08:01 15863255                   /home/sanjaya/.m2/repository/commons-codec/wso2/commons-codec/1.4.0.wso2v1/commons-codec-1.4.0.wso2v1.jar
+7f17788cc000-7f17788ce000 r-xs 0000e000 08:01 15863116                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/1.0/commons-lang-1.0.jar
+7f17788ce000-7f17788d2000 r-xs 0002c000 08:01 12852515                   /home/sanjaya/.m2/repository/wsdl4j/wso2/wsdl4j/1.6.2.wso2v2/wsdl4j-1.6.2.wso2v2.jar
+7f17788d2000-7f17788d3000 r-xs 00006000 08:01 4981997                    /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.status.monitor.core/target/org.apache.stratos.status.monitor.core-4.1.0-SNAPSHOT.jar
+7f17788d3000-7f17788d5000 r-xs 0000a000 08:01 4980829                    /home/sanjaya/Desktop/Stratos/stratos/service-stubs/org.apache.stratos.redirector.servlet.stub/target/org.apache.stratos.redirector.servlet.stub-4.1.0-SNAPSHOT.jar
+7f17788d5000-7f17788d7000 r-xs 00005000 08:01 19271236                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.activation/target/org.apache.stratos.activation-4.1.0-SNAPSHOT.jar
+7f17788d7000-7f17788e6000 r-xs 00194000 08:01 17959013                   /home/sanjaya/.m2/repository/org/apache/ws/security/wso2/wss4j/1.5.11.wso2v1/wss4j-1.5.11.wso2v1.jar
+7f17788e6000-7f17788e8000 r-xs 00007000 08:01 28709852                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.identity.authenticator.saml2.sso.stub/4.2.0/org.wso2.carbon.identity.authenticator.saml2.sso.stub-4.2.0.jar
+7f17788e8000-7f17788ea000 r-xs 0000d000 08:01 28447116                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.identity.authenticator.saml2.sso.common/4.2.0/org.wso2.carbon.identity.authenticator.saml2.sso.common-4.2.0.jar
+7f17788ea000-7f17788f3000 r-xs 00062000 08:01 16385661                   /home/sanjaya/.m2/repository/javax/servlet/jsp/jstl/wso2/jstl/1.2.1.wso2v2/jstl-1.2.1.wso2v2.jar
+7f17788f3000-7f17788f6000 r-xs 00023000 08:01 14814731                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.core.commons.stub/4.2.0/org.wso2.carbon.core.commons.stub-4.2.0.jar
+7f17788f6000-7f17788f9000 r-xs 00018000 08:01 27789182                   /home/sanjaya/.m2/repository/org/eclipse/equinox/javax.servlet.jsp/2.2.0.v201112011158/javax.servlet.jsp-2.2.0.v201112011158.jar
+7f17788f9000-7f177890e000 r-xs 00231000 08:01 27003182                   /home/sanjaya/.m2/repository/org/eclipse/equinox/org.apache.jasper.glassfish/2.2.2.v201205150955/org.apache.jasper.glassfish-2.2.2.v201205150955.jar
+7f177890e000-7f1778910000 r-xs 0000a000 08:01 5362                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.http.servlet/1.1.300.v20120522-1841/org.eclipse.equinox.http.servlet-1.1.300.v20120522-1841.jar
+7f1778910000-7f1778915000 r-xs 00117000 08:01 25953863                   /home/sanjaya/.m2/repository/org/apache/tiles/wso2/tiles-jsp/2.0.5.wso2v2/tiles-jsp-2.0.5.wso2v2.jar
+7f1778915000-7f177892c000 r-xs 00312000 08:01 14814849                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.ui/4.2.0/org.wso2.carbon.ui-4.2.0.jar
+7f177892c000-7f177892e000 r-xs 00005000 08:01 22156442                   /home/sanjaya/.m2/repository/javax/xml/jaxrpc-api/1.1/jaxrpc-api-1.1.jar
+7f177892e000-7f1778931000 r-xs 0001c000 08:01 13117962                   /home/sanjaya/.m2/repository/axis/axis-wsdl4j/1.5.1/axis-wsdl4j-1.5.1.jar
+7f1778931000-7f1778932000 r-xs 00004000 08:01 13117961                   /home/sanjaya/.m2/repository/axis/axis-saaj/1.3/axis-saaj-1.3.jar
+7f1778932000-7f1778934000 r-xs 00006000 08:01 13117960                   /home/sanjaya/.m2/repository/axis/axis-jaxrpc/1.3/axis-jaxrpc-1.3.jar
+7f1778934000-7f1778937000 r-xs 0000f000 08:01 11556027                   /home/sanjaya/.m2/repository/commons-discovery/commons-discovery/0.2/commons-discovery-0.2.jar
+7f1778937000-7f177893a000 r-xs 0001c000 08:01 22026232                   /home/sanjaya/.m2/repository/wsdl4j/wsdl4j/1.5.1/wsdl4j-1.5.1.jar
+7f177893a000-7f177894e000 r-xs 0017b000 08:01 13117959                   /home/sanjaya/.m2/repository/axis/axis/1.3/axis-1.3.jar
+7f177894e000-7f1778951000 r-xs 00023000 08:01 20190873                   /home/sanjaya/.m2/repository/com/atlassian/jira/plugins/jira-soapclient/4.1.1-1/jira-soapclient-4.1.1-1.jar
+7f1778951000-7f1778956000 r-xs 00029000 08:01 19535565                   /home/sanjaya/.m2/repository/org/wso2/carbon/atlassian-jira/1.0.0.wso2v1/atlassian-jira-1.0.0.wso2v1.jar
+7f1778956000-7f1778959000 r-xs 00028000 08:01 5898                       /home/sanjaya/.m2/repository/org/apache/rampart/wso2/rampart-core/1.6.1.wso2v9/rampart-core-1.6.1.wso2v9.jar
+7f1778959000-7f1778968000 r-xs 00194000 08:01 17959010                   /home/sanjaya/.m2/repository/org/apache/ws/security/wso2/wss4j/1.5.11.wso2v3/wss4j-1.5.11.wso2v3.jar
+7f1778968000-7f177896b000 r-xs 00026000 08:01 5900                       /home/sanjaya/.m2/repository/org/apache/rampart/wso2/rampart-policy/1.6.1.wso2v9/rampart-policy-1.6.1.wso2v9.jar
+7f177896b000-7f177896c000 r-xs 00005000 08:01 15604256                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.admin.mgt/4.2.0/org.wso2.carbon.admin.mgt-4.2.0.jar
+7f177896c000-7f1778973000 r-xs 00065000 08:01 12982531                   /home/sanjaya/.m2/repository/kaptcha/wso2/kaptcha/2.3.0.wso2v1/kaptcha-2.3.0.wso2v1.jar
+7f1778973000-7f1778975000 r-xs 00002000 08:01 15343207                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.captcha.mgt/4.2.0/org.wso2.carbon.captcha.mgt-4.2.0.jar
+7f1778975000-7f1778980000 r-xs 000ec000 08:01 14815326                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.um.ws.api.stub/4.2.0/org.wso2.carbon.um.ws.api.stub-4.2.0.jar
+7f1778980000-7f1778983000 r-xs 0001f000 08:01 28838101                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.authenticator.stub/4.2.0/org.wso2.carbon.authenticator.stub-4.2.0.jar
+7f1778983000-7f1778984000 r-xs 00001000 08:01 17041385                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.authenticator.proxy/4.2.0/org.wso2.carbon.authenticator.proxy-4.2.0.jar
+7f1778984000-7f177898f000 r-xs 000f3000 08:01 15085072                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.um.ws.api/4.2.0/org.wso2.carbon.um.ws.api-4.2.0.jar
+7f177898f000-7f1778991000 r-xs 00004000 08:01 20320966                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.tenant.mgt.core/target/org.apache.stratos.tenant.mgt.core-4.1.0-SNAPSHOT.jar
+7f1778991000-7f1778993000 r-xs 0000b000 08:01 20981880                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.tenant.mgt/target/org.apache.stratos.tenant.mgt-4.1.0-SNAPSHOT.jar
+7f1778993000-7f1778995000 r-xs 00002000 08:01 14814865                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.cluster.mgt.core/4.2.0/org.wso2.carbon.cluster.mgt.core-4.2.0.jar
+7f1778995000-7f1778996000 r-xs 00005000 08:01 17960914                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.email.sender/target/org.apache.stratos.email.sender-4.1.0-SNAPSHOT.jar
+7f1778996000-7f1778997000 r-xs 00004000 08:01 15343208                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.email.verification/4.2.0/org.wso2.carbon.email.verification-4.2.0.jar
+7f1778997000-7f177899a000 r-xs 00019000 08:01 11314214                   /home/sanjaya/.m2/repository/commons-pool/commons-pool/1.6/commons-pool-1.6.jar
+7f177899a000-7f177899c000 r-xs 00004000 08:01 19535616                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.load.balancer.common/target/org.apache.stratos.load.balancer.common-4.1.0-SNAPSHOT.jar
+7f177899c000-7f17789aa000 r-xs 000fe000 08:01 14289947                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-kernel/1.6.1-wso2v9/axis2-kernel-1.6.1-wso2v9.jar
+7f17789aa000-7f17789ac000 r-xs 00001000 08:01 12590579                   /home/sanjaya/.m2/repository/org/wso2/eventing/wso2eventing-api/2.1/wso2eventing-api-2.1.jar
+7f17789ac000-7f17789b0000 r-xs 00020000 08:01 12590578                   /home/sanjaya/.m2/repository/org/wso2/caching/wso2caching-core/4.0.2/wso2caching-core-4.0.2.jar
+7f17789b0000-7f17789b2000 r-xs 0001d000 08:01 15861867                   /home/sanjaya/.m2/repository/net/sf/saxon/saxon-xqj/8.9/saxon-xqj-8.9.jar
+7f17789b2000-7f17789b3000 r-xs 00015000 08:01 15861868                   /home/sanjaya/.m2/repository/net/sf/saxon/saxon-dom/8.9/saxon-dom-8.9.jar
+7f17789b3000-7f17789c9000 r-xs 00379000 08:01 15861865                   /home/sanjaya/.m2/repository/net/sf/saxon/saxon/8.9/saxon-8.9.jar
+7f17789c9000-7f17789cb000 r-xs 0000c000 08:01 11313972                   /home/sanjaya/.m2/repository/JLex/JLex/0.0/JLex-0.0.jar
+7f17789cb000-7f17789cd000 r-xs 0000e000 08:01 11313971                   /home/sanjaya/.m2/repository/java-cup/java-cup/0.0/java-cup-0.0.jar
+7f17789cd000-7f17789ce000 r-xs 00006000 08:01 11313871                   /home/sanjaya/.m2/repository/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar
+7f17789ce000-7f17789d8000 r-xs 00079000 08:01 11586409                   /home/sanjaya/.m2/repository/org/apache/bcel/bcel/5.2/bcel-5.2.jar
+7f17789d8000-7f17789da000 r-xs 0001c000 08:01 11313969                   /home/sanjaya/.m2/repository/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar
+7f17789da000-7f17789e2000 r-xs 000a6000 08:01 11586905                   /home/sanjaya/.m2/repository/rhino/js/1.6R5/js-1.6R5.jar
+7f17789e2000-7f17789ea000 r-xs 00028000 08:01 11313968                   /home/sanjaya/.m2/repository/xml-apis/xml-apis/1.3.03/xml-apis-1.3.03.jar
+7f17789ea000-7f1778a01000 r-xs 00112000 08:01 11586904                   /home/sanjaya/.m2/repository/xerces/xercesImpl/2.8.1/xercesImpl-2.8.1.jar
+7f1778a01000-7f1778a04000 r-xs 00041000 08:01 11586534                   /home/sanjaya/.m2/repository/xalan/serializer/2.7.1/serializer-2.7.1.jar
+7f1778a04000-7f1778a29000 r-xs 002e3000 08:01 11586533                   /home/sanjaya/.m2/repository/xalan/xalan/2.7.1/xalan-2.7.1.jar
+7f1778a29000-7f1778a2a000 r-xs 00002000 08:01 15994064                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-log4j12/1.5.6/slf4j-log4j12-1.5.6.jar
+7f1778a2a000-7f1778a2f000 r-xs 0003a000 08:01 11586992                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-codegen/1.6.1-wso2v1/axis2-codegen-1.6.1-wso2v1.jar
+7f1778a2f000-7f1778a35000 r-xs 00057000 08:01 11586902                   /home/sanjaya/.m2/repository/org/apache/sandesha2/sandesha2-core/1.6.1-wso2v1/sandesha2-core-1.6.1-wso2v1.jar
+7f1778a35000-7f1778a3b000 r-xs 00079000 08:01 5471                       /home/sanjaya/.m2/repository/org/codehaus/woodstox/wstx-asl/3.2.4/wstx-asl-3.2.4.jar
+7f1778a3b000-7f1778a3d000 r-xs 00007000 08:01 16387094                   /home/sanjaya/.m2/repository/org/apache/neethi/neethi/2.0.4-wso2v2/neethi-2.0.4-wso2v2.jar
+7f1778a3d000-7f1778a3f000 r-xs 00002000 08:01 11586901                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-mtompolicy/1.6.1-wso2v8/axis2-mtompolicy-1.6.1-wso2v8.jar
+7f1778a3f000-7f1778a41000 r-xs 00007000 08:01 11555599                   /home/sanjaya/.m2/repository/org/apache/tomcat/embed/tomcat-embed-logging-juli/7.0.8/tomcat-embed-logging-juli-7.0.8.jar
+7f1778a41000-7f1778a43000 r-xs 00007000 08:01 11555600                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-juli/7.0.8/tomcat-juli-7.0.8.jar
+7f1778a43000-7f1778a48000 r-xs 00039000 08:01 11555601                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-tribes/7.0.8/tomcat-tribes-7.0.8.jar
+7f1778a48000-7f1778a4b000 r-xs 00019000 08:01 11586900                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-clustering/1.6.1-wso2v8/axis2-clustering-1.6.1-wso2v8.jar
+7f1778a4b000-7f1778a54000 r-xs 000a9000 08:01 11586899                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-adb/1.6.1-wso2v8/axis2-adb-1.6.1-wso2v8.jar
+7f1778a54000-7f1778a56000 r-xs 00003000 08:01 26741621                   /home/sanjaya/.m2/repository/org/wso2/uri/template/wso2-uri-templates/1.6.2/wso2-uri-templates-1.6.2.jar
+7f1778a56000-7f1778a59000 r-xs 00024000 08:01 12324557                   /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/axiom-dom/1.2.11-wso2v2/axiom-dom-1.2.11-wso2v2.jar
+7f1778a59000-7f1778a5b000 r-xs 00015000 08:01 11586898                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-saaj/1.6.1-wso2v8/axis2-saaj-1.6.1-wso2v8.jar
+7f1778a5b000-7f1778a5f000 r-xs 00025000 08:01 11313966                   /home/sanjaya/.m2/repository/org/antlr/antlr-runtime/3.4/antlr-runtime-3.4.jar
+7f1778a5f000-7f1778a87000 r-xs 001a3000 08:01 11586897                   /home/sanjaya/.m2/repository/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar
+7f1778a87000-7f1778a8a000 r-xs 00024000 08:01 11588233                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-transport-http/1.6.1-wso2v8/axis2-transport-http-1.6.1-wso2v8.jar
+7f1778a8a000-7f1778a90000 r-xs 00041000 08:01 11586893                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpcore-nio/4.2.3/httpcore-nio-4.2.3.jar
+7f1778a90000-7f1778abe000 r-xs 001ef000 08:01 26874891                   /home/sanjaya/.m2/repository/org/apache/synapse/synapse-nhttp-transport/2.1.1-wso2v4/synapse-nhttp-transport-2.1.1-wso2v4.jar
+7f1778abe000-7f1778ac0000 r-xs 00007000 08:01 28971694                   /home/sanjaya/.m2/repository/org/apache/synapse/synapse-tasks/2.1.1-wso2v4/synapse-tasks-2.1.1-wso2v4.jar
+7f1778ac0000-7f1778ac6000 r-xs 00063000 08:01 11313975                   /home/sanjaya/.m2/repository/org/snmp4j/snmp4j/2.0.3/snmp4j-2.0.3.jar
+7f1778ac6000-7f1778ad1000 r-xs 00078000 08:01 11313976                   /home/sanjaya/.m2/repository/org/snmp4j/snmp4j-agent/2.0.5/snmp4j-agent-2.0.5.jar
+7f1778ad1000-7f1778ad4000 r-xs 00015000 08:01 11586908                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-transport-base/1.1.0-wso2v4/axis2-transport-base-1.1.0-wso2v4.jar
+7f1778ad4000-7f1778ad6000 r-xs 0000e000 08:01 16385102                   /home/sanjaya/.m2/repository/javax/activation/activation/1.1/activation-1.1.jar
+7f1778ad6000-7f1778adb000 r-xs 00027000 08:01 26741622                   /home/sanjaya/.m2/repository/org/apache/synapse/synapse-commons/2.1.1-wso2v4/synapse-commons-2.1.1-wso2v4.jar
+7f1778adb000-7f1778b02000 r-xs 0092f000 08:01 26874878                   /home/sanjaya/.m2/repository/net/sf/saxon/Saxon-HE/9.4/Saxon-HE-9.4.jar
+7f1778b02000-7f1778b3a000 r-xs 00433000 08:01 5932                       /home/sanjaya/.m2/repository/org/apache/openjpa/openjpa/2.2.0-wso2v1/openjpa-2.2.0-wso2v1.jar
+7f1778b3a000-7f1778b4c000 r-xs 00122000 08:01 26741620                   /home/sanjaya/.m2/repository/org/apache/synapse/synapse-core/2.1.1-wso2v4/synapse-core-2.1.1-wso2v4.jar
+7f1778b4c000-7f1778b4d000 r-xs 00003000 08:01 27267240                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.mediator.router.impl/4.2.0/org.wso2.carbon.mediator.router.impl-4.2.0.jar
+7f1778b4d000-7f1778b4f000 r-xs 00013000 08:01 11555650                   /home/sanjaya/.m2/repository/xml-resolver/xml-resolver/1.2/xml-resolver-1.2.jar
+7f1778b4f000-7f1778b52000 r-xs 00023000 08:01 26874879                   /home/sanjaya/.m2/repository/org/jdom/jdom/1.1/jdom-1.1.jar
+7f1778b52000-7f1778b5a000 r-xs 00048000 08:01 15863798                   /home/sanjaya/.m2/repository/backport-util-concurrent/backport-util-concurrent/2.2/backport-util-concurrent-2.2.jar
+7f1778b5a000-7f1778b5c000 r-xs 00008000 08:01 26874880                   /home/sanjaya/.m2/repository/org/wso2/throttle/wso2throttle-core/3.2.0/wso2throttle-core-3.2.0.jar
+7f1778b5c000-7f1778b7f000 r-xs 00250000 08:01 11314049                   /home/sanjaya/.m2/repository/groovy/groovy-all/1.1-rc-1/groovy-all-1.1-rc-1.jar
+7f1778b7f000-7f1778b85000 r-xs 0006b000 08:01 26874877                   /home/sanjaya/.m2/repository/org/apache/bsf/bsf-all/3.0/bsf-all-3.0.jar
+7f1778b85000-7f1778bc2000 r-xs 0024e000 08:01 26874876                   /home/sanjaya/.m2/repository/xmlbeans/xbean/2.2.0/xbean-2.2.0.jar
+7f1778bc2000-7f1778bc7000 r-xs 00022000 08:01 26741607                   /home/sanjaya/.m2/repository/org/springframework/spring-aop/1.2.8/spring-aop-1.2.8.jar
+7f1778bc7000-7f1778bca000 r-xs 00018000 08:01 26741608                   /home/sanjaya/.m2/repository/org/springframework/spring-context/1.2.8/spring-context-1.2.8.jar
+7f1778bca000-7f1778bcf000 r-xs 00034000 08:01 26741609                   /home/sanjaya/.m2/repository/org/springframework/spring-beans/1.2.8/spring-beans-1.2.8.jar
+7f1778bcf000-7f1778bd2000 r-xs 0001b000 08:01 11586909                   /home/sanjaya/.m2/repository/org/springframework/spring-core/1.2.8/spring-core-1.2.8.jar
+7f1778bd2000-7f1778bd4000 r-xs 00012000 08:01 27267250                   /home/sanjaya/.m2/repository/org/apache/synapse/synapse-extensions/2.1.1-wso2v8/synapse-extensions-2.1.1-wso2v8.jar
+7f1778bd4000-7f1778bd6000 r-xs 00009000 08:01 27267239                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.mediation.dependency.mgt/4.2.0/org.wso2.carbon.mediation.dependency.mgt-4.2.0.jar
+7f1778bd6000-7f1778bdd000 r-xs 00076000 08:01 14815421                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.event.client.stub/4.2.0/org.wso2.carbon.event.client.stub-4.2.0.jar
+7f1778bdd000-7f1778bdf000 r-xs 00015000 08:01 22154412                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.qpid.stub/4.2.0/org.wso2.carbon.qpid.stub-4.2.0.jar
+7f1778bdf000-7f1778be2000 r-xs 00012000 08:01 15340850                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.event.core/4.2.0/org.wso2.carbon.event.core-4.2.0.jar
+7f1778be2000-7f1778be5000 r-xs 00013000 08:01 11586906                   /home/sanjaya/.m2/repository/xmlunit/xmlunit/1.1/xmlunit-1.1.jar
+7f1778be5000-7f1778be7000 r-xs 00006000 08:01 15472318                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-saaj_1.3_spec/1.0.0/geronimo-saaj_1.3_spec-1.0.0.jar
+7f1778be7000-7f1778beb000 r-xs 00023000 08:01 14947943                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.caching.core/4.2.0/org.wso2.carbon.caching.core-4.2.0.jar
+7f1778beb000-7f1778bec000 r-xs 00002000 08:01 14814825                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.roles.mgt/4.2.0/org.wso2.carbon.roles.mgt-4.2.0.jar
+7f1778bec000-7f1778bef000 r-xs 0000e000 08:01 14814829                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.application.deployer/4.2.0/org.wso2.carbon.application.deployer-4.2.0.jar
+7f1778bef000-7f1778bf1000 r-xs 00001000 08:01 27267238                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.task.services/4.2.0/org.wso2.carbon.task.services-4.2.0.jar
+7f1778bf1000-7f1778bf3000 r-xs 00006000 08:01 26874884                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.datasource/4.2.0/org.wso2.carbon.datasource-4.2.0.jar
+7f1778bf3000-7f1778bf5000 r-xs 00008000 08:01 26874883                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.mediation.registry/4.2.0/org.wso2.carbon.mediation.registry-4.2.0.jar
+7f1778bf5000-7f1778bf8000 r-xs 00024000 08:01 26874882                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.mediation.initializer/4.2.0/org.wso2.carbon.mediation.initializer-4.2.0.jar
+7f1778bf8000-7f1778bfb000 r-xs 00015000 08:01 11314071                   /home/sanjaya/.m2/repository/commons-pool/commons-pool/1.5/commons-pool-1.5.jar
+7f1778bfb000-7f1778c01000 r-xs 00032000 08:01 11588075                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpcore/4.2.4/httpcore-4.2.4.jar
+7f1778c01000-7f1778c07000 r-xs 00033000 08:01 15861392                   /home/sanjaya/.m2/repository/commons-codec/commons-codec/1.6/commons-codec-1.6.jar
+7f1778c07000-7f1778c10000 r-xs 00061000 08:01 11588074                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpclient/4.2.5/httpclient-4.2.5.jar
+7f1778c10000-7f1778c11000 r-xs 00005000 08:01 18127631                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar
+7f1778c11000-7f1778c16000 r-xs 00030000 08:01 28186562                   /home/sanjaya/.m2/repository/org/apache/thrift/libthrift/0.9.1/libthrift-0.9.1.jar
+7f1778c16000-7f1778c18000 r-xs 00006000 08:01 15863378                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-invoker/2.0.11/maven-invoker-2.0.11.jar
+7f1778c18000-7f1778c1a000 r-xs 0000c000 08:01 26741574                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-dependency-tree/2.0/maven-dependency-tree-2.0.jar
+7f1778c1a000-7f1778c1b000 r-xs 0000a000 08:01 11315743                   /home/sanjaya/.m2/repository/asm/asm/3.3.1/asm-3.3.1.jar
+7f1778c1b000-7f1778c1d000 r-xs 00005000 08:01 15994087                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-dependency-analyzer/1.4/maven-dependency-analyzer-1.4.jar
+7f1778c1d000-7f1778c20000 r-xs 0000c000 08:01 28578074                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-io/2.0.6/plexus-io-2.0.6.jar
+7f1778c20000-7f1778c22000 r-xs 00008000 08:01 16385226                   /home/sanjaya/.m2/repository/org/apache/maven/shared/file-management/1.2.1/file-management-1.2.1.jar
+7f1778c22000-7f1778c26000 r-xs 00035000 08:01 13112591                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.9/plexus-utils-3.0.9.jar
+7f1778c26000-7f1778c2a000 r-xs 0002a000 08:01 15863777                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/2.3/plexus-archiver-2.3.jar
+7f1778c2a000-7f1778c2c000 r-xs 00004000 08:01 16384991                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.0/doxia-module-xhtml-1.0.jar
+7f1778c2c000-7f1778c2d000 r-xs 00006000 08:01 16384988                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.0/doxia-module-xdoc-1.0.jar
+7f1778c2d000-7f1778c2e000 r-xs 00004000 08:01 16384987                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.0/doxia-module-fml-1.0.jar
+7f1778c2e000-7f1778c30000 r-xs 0000a000 08:01 16384971                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.0/doxia-module-apt-1.0.jar
+7f1778c30000-7f1778c31000 r-xs 0000b000 08:01 16384969                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.0/doxia-decoration-model-1.0.jar
+7f1778c31000-7f1778c33000 r-xs 0000a000 08:01 16384959                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.0/doxia-site-renderer-1.0.jar
+7f1778c33000-7f1778c38000 r-xs 00016000 08:01 11297056                   /home/sanjaya/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar
+7f1778c38000-7f1778c3c000 r-xs 00026000 08:01 11555471                   /home/sanjaya/.m2/repository/commons-digester/commons-digester/1.6/commons-digester-1.6.jar
+7f1778c3c000-7f1778c3f000 r-xs 00014000 08:01 11555469                   /home/sanjaya/.m2/repository/commons-validator/commons-validator/1.2.0/commons-validator-1.2.0.jar
+7f1778c3f000-7f1778c42000 r-xs 0000b000 08:01 16384961                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-core/1.0/doxia-core-1.0.jar
+7f1778c42000-7f1778c4d000 r-xs 00085000 08:01 15343212                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpclient/4.3.3/httpclient-4.3.3.jar
+7f1778c4d000-7f1778c58000 r-xs 0008a000 08:01 11313974                   /home/sanjaya/.m2/repository/c3p0/c3p0/0.9.1.1/c3p0-0.9.1.1.jar
+7f1778c58000-7f1778c61000 r-xs 0007f000 08:01 11313973                   /home/sanjaya/.m2/repository/org/quartz-scheduler/quartz/2.1.1/quartz-2.1.1.jar
+7f1778c61000-7f1778c6a000 r-xs 00080000 08:01 11314041                   /home/sanjaya/.m2/repository/org/quartz-scheduler/wso2/quartz/2.1.1.wso2v1/quartz-2.1.1.wso2v1.jar
+7f1778c6a000-7f1778c6e000 r-xs 0002b000 08:01 14815311                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.remote-tasks.stub/4.2.0/org.wso2.carbon.remote-tasks.stub-4.2.0.jar
+7f1778c6e000-7f1778c6f000 r-xs 00001000 08:01 14815310                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.ntask.common/4.2.0/org.wso2.carbon.ntask.common-4.2.0.jar
+7f1778c6f000-7f1778c72000 r-xs 00014000 08:01 14815309                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.ntask.core/4.2.0/org.wso2.carbon.ntask.core-4.2.0.jar
+7f1778c72000-7f1778c75000 r-xs 00014000 08:01 11314067                   /home/sanjaya/.m2/repository/commons-pool/wso2/commons-pool/1.5.0.wso2v1/commons-pool-1.5.0.wso2v1.jar
+7f1778c75000-7f1778c7c000 r-xs 000b4000 08:01 14028095                   /home/sanjaya/.m2/repository/rhino/wso2/js/1.7.0.R1-wso2v3/js-1.7.0.R1-wso2v3.jar
+7f1778c7c000-7f1778c7f000 r-xs 00023000 08:01 11535623                   /home/sanjaya/.m2/repository/commons-io/wso2/commons-io/2.0.0.wso2v1/commons-io-2.0.0.wso2v1.jar
+7f1778c7f000-7f1778c80000 r-xs 0000a000 08:01 15863818                   /home/sanjaya/.m2/repository/net/oauth/core/oauth/20100527/oauth-20100527.jar
+7f1778c80000-7f1778c8a000 r-xs 00067000 08:01 20851077                   /home/sanjaya/.m2/repository/com/sun/jersey/jersey-core/1.12/jersey-core-1.12.jar
+7f1778c8a000-7f1778c8c000 r-xs 00007000 08:01 19010722                   /home/sanjaya/.m2/repository/com/google/guice/assistedinject/wso2/guice-assistedinject/3.0.wso2v1/guice-assistedinject-3.0.wso2v1.jar
+7f1778c8c000-7f1778c8e000 r-xs 00007000 08:01 27399866                   /home/sanjaya/.m2/repository/com/google/inject/extensions/guice-multibindings/3.0/guice-multibindings-3.0.jar
+7f1778c8e000-7f1778c9e000 r-xs 000a9000 08:01 16913498                   /home/sanjaya/.m2/repository/com/google/guice/wso2/guice/3.0.wso2v1/guice-3.0.wso2v1.jar
+7f1778c9e000-7f1778ca3000 r-xs 0002a000 08:01 15863387                   /home/sanjaya/.m2/repository/com/google/code/gson/gson/2.2/gson-2.2.jar
+7f1778ca3000-7f1778ca4000 r-xs 00004000 08:01 20582857                   /home/sanjaya/.m2/repository/com/jamesmurty/utils/wso2/java-xmlbuilder/0.4.wso2v1/java-xmlbuilder-0.4.wso2v1.jar
+7f1778ca4000-7f1778cad000 r-xs 00054000 08:01 23464390                   /home/sanjaya/Desktop/Stratos/stratos/dependencies/jclouds/apis/vcloud/1.8.0-stratos/target/vcloud-1.8.0-stratos.jar
+7f1778cad000-7f1778cb2000 r-xs 00026000 08:01 26741601                   /home/sanjaya/.m2/repository/org/apache/jclouds/jclouds-scriptbuilder/1.8.0/jclouds-scriptbuilder-1.8.0.jar
+7f1778cb2000-7f1778cb9000 r-xs 0002b000 08:01 27267234                   /home/sanjaya/.m2/repository/org/apache/jclouds/api/openstack-keystone/1.8.0/openstack-keystone-1.8.0.jar
+7f1778cb9000-7f1778cc4000 r-xs 00052000 08:01 23073339                   /home/sanjaya/Desktop/Stratos/stratos/dependencies/jclouds/apis/openstack-nova/1.8.0-stratos/target/openstack-nova-1.8.0-stratos.jar
+7f1778cc4000-7f1778cc9000 r-xs 0002c000 08:01 17044184                   /home/sanjaya/Desktop/Stratos/stratos/dependencies/jclouds/provider/aws-ec2/1.8.0-stratos/target/aws-ec2-1.8.0-stratos.jar
+7f1778cc9000-7f1778ccb000 r-xs 0000e000 08:01 1835377                    /home/sanjaya/.m2/repository/org/apache/jclouds/api/sts/1.8.0/sts-1.8.0.jar
+7f1778ccb000-7f1778cd4000 r-xs 0005b000 08:01 20321104                   /home/sanjaya/Desktop/Stratos/stratos/dependencies/jclouds/apis/ec2/1.8.0-stratos/target/ec2-1.8.0-stratos.jar
+7f1778cd4000-7f1778cea000 r-xs 000fe000 08:01 26874874                   /home/sanjaya/.m2/repository/io/netty/netty/3.5.9.Final/netty-3.5.9.Final.jar
+7f1778cea000-7f1778ceb000 r-xs 00002000 08:01 26874875                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-netty/1.8.0/jclouds-netty-1.8.0.jar
+7f1778ceb000-7f1778cfb000 r-xs 0007c000 08:01 26874873                   /home/sanjaya/.m2/repository/joda-time/joda-time/2.1/joda-time-2.1.jar
+7f1778cfb000-7f1778cfc000 r-xs 00002000 08:01 26874871                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-joda/1.8.0/jclouds-joda-1.8.0.jar
+7f1778cfc000-7f1778cfd000 r-xs 00002000 08:01 26874872                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-enterprise/1.8.0/jclouds-enterprise-1.8.0.jar
+7f1778cfd000-7f1778cfe000 r-xs 00002000 08:01 26874870                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-log4j/1.8.0/jclouds-log4j-1.8.0.jar
+7f1778cfe000-7f1778cff000 r-xs 00000000 08:01 26741599                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.sshj/0.0.7/jsch.agentproxy.sshj-0.0.7.jar
+7f1778cff000-7f1778d0f000 r-xs 0008a000 08:01 26741598                   /home/sanjaya/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.49/bcpkix-jdk15on-1.49.jar
+7f1778d0f000-7f1778d17000 r-xs 0004e000 08:01 26741600                   /home/sanjaya/.m2/repository/net/schmizz/sshj/0.8.1/sshj-0.8.1.jar
+7f1778d17000-7f1778d18000 r-xs 00002000 08:01 26741596                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-slf4j/1.8.0/jclouds-slf4j-1.8.0.jar
+7f1778d18000-7f1778d1a000 r-xs 00008000 08:01 26741597                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-sshj/1.8.0/jclouds-sshj-1.8.0.jar
+7f1778d1a000-7f1778d53000 r-xs 00237000 08:01 26741595                   /home/sanjaya/.m2/repository/org/bouncycastle/bcprov-ext-jdk15on/1.49/bcprov-ext-jdk15on-1.49.jar
+7f1778d53000-7f1778d54000 r-xs 00002000 08:01 26741594                   /home/sanjaya/.m2/repository/org/apache/jclouds/driver/jclouds-bouncycastle/1.8.0/jclouds-bouncycastle-1.8.0.jar
+7f1778d54000-7f1778d60000 r-xs 00071000 08:01 26741593                   /home/sanjaya/.m2/repository/org/apache/jclouds/jclouds-compute/1.8.0/jclouds-compute-1.8.0.jar
+7f1778d60000-7f1778d61000 r-xs 00001000 08:01 26741592                   /home/sanjaya/.m2/repository/javax/annotation/jsr250-api/1.0/jsr250-api-1.0.jar
+7f1778d61000-7f1778d62000 r-xs 00000000 08:01 16387100                   /home/sanjaya/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar
+7f1778d62000-7f1778d64000 r-xs 0000a000 08:01 26481243                   /home/sanjaya/.m2/repository/org/99soft/guice/rocoto/6.2/rocoto-6.2.jar
+7f1778d64000-7f1778d66000 r-xs 00000000 08:01 11535791                   /home/sanjaya/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar
+7f1778d66000-7f1778d75000 r-xs 0009f000 08:01 26481242                   /home/sanjaya/.m2/repository/com/google/inject/guice/3.0/guice-3.0.jar
+7f1778d75000-7f1778d77000 r-xs 00008000 08:01 26481241                   /home/sanjaya/.m2/repository/com/google/inject/extensions/guice-assistedinject/3.0/guice-assistedinject-3.0.jar
+7f1778d77000-7f1778d79000 r-xs 0000a000 08:01 16385733                   /home/sanjaya/.m2/repository/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar
+7f1778d79000-7f1778d8c000 r-xs 000aa000 08:01 26481240                   /home/sanjaya/.m2/repository/org/apache/jclouds/jclouds-core/1.8.0/jclouds-core-1.8.0.jar
+7f1778d8c000-7f1778d8f000 r-xs 00022000 08:01 27925235                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.analytics.hive.stub/4.2.0/org.wso2.carbon.analytics.hive.stub-4.2.0.jar
+7f1778d8f000-7f1778d92000 r-xs 00005000 08:01 15470470                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/wso2/geronimo-jms_1.1_spec/1.1.0.wso2v1/geronimo-jms_1.1_spec-1.1.0.wso2v1.jar
+7f1778d92000-7f1778dbd000 r-xs 001e0000 08:01 18483379                   /home/sanjaya/.m2/repository/org/wso2/andes/wso2/andes-client/0.13.wso2v3/andes-client-0.13.wso2v3.jar
+7f1778dbd000-7f1778dbf000 r-xs 00005000 08:01 25691935                   /home/sanjaya/.m2/repository/com/ecyrd/speed4j/speed4j/0.9/speed4j-0.9.jar
+7f1778dbf000-7f1778dc1000 r-xs 00002000 08:01 24643194                   /home/sanjaya/.m2/repository/com/github/stephenc/eaio-uuid/uuid/3.2.0/uuid-3.2.0.jar
+7f1778dc1000-7f1778dcb000 r-xs 000da000 08:01 19669318                   /home/sanjaya/.m2/repository/org/apache/cassandra/cassandra-thrift/1.1.0/cassandra-thrift-1.1.0.jar
+7f1778dcb000-7f1778dd3000 r-xs 00040000 08:01 11587420                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar
+7f1778dd3000-7f1778dd9000 r-xs 00044000 08:01 11535841                   /home/sanjaya/.m2/repository/org/apache/thrift/libthrift/0.7.0/libthrift-0.7.0.jar
+7f1778dd9000-7f1778ddc000 r-xs 00011000 08:01 17697134                   /home/sanjaya/.m2/repository/com/yammer/metrics/metrics-core/2.0.3/metrics-core-2.0.3.jar
+7f1778ddc000-7f1778dde000 r-xs 0000c000 08:01 16911187                   /home/sanjaya/.m2/repository/edu/stanford/ppl/snaptree/0.1/snaptree-0.1.jar
+7f1778dde000-7f1778de4000 r-xs 00033000 08:01 18222128                   /home/sanjaya/.m2/repository/org/yaml/snakeyaml/1.6/snakeyaml-1.6.jar
+7f1778de4000-7f1778de7000 r-xs 00015000 08:01 15863592                   /home/sanjaya/.m2/repository/com/github/stephenc/high-scale-lib/high-scale-lib/1.1.2/high-scale-lib-1.1.2.jar
+7f1778de7000-7f1778de8000 r-xs 00003000 08:01 15863589                   /home/sanjaya/.m2/repository/com/googlecode/json-simple/json-simple/1.1/json-simple-1.1.jar
+7f1778de8000-7f1778df0000 r-xs 00057000 08:01 12979996                   /home/sanjaya/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.4.0/jackson-mapper-asl-1.4.0.jar
+7f1778df0000-7f1778df3000 r-xs 00022000 08:01 12979995                   /home/sanjaya/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.4.0/jackson-core-asl-1.4.0.jar
+7f1778df3000-7f1778df7000 r-xs 00028000 08:01 11587570                   /home/sanjaya/.m2/repository/org/mortbay/jetty/jetty-util/6.1.22/jetty-util-6.1.22.jar
+7f1778df7000-7f1778dfe000 r-xs 0007d000 08:01 11587569                   /home/sanjaya/.m2/repository/org/mortbay/jetty/jetty/6.1.22/jetty-6.1.22.jar
+7f1778dfe000-7f1778e08000 r-xs 00088000 08:01 11587409                   /home/sanjaya/.m2/repository/org/apache/cassandra/deps/avro/1.4.0-cassandra-1/avro-1.4.0-cassandra-1.jar
+7f1778e08000-7f1778e0b000 r-xs 00027000 08:01 11314098                   /home/sanjaya/.m2/repository/org/antlr/stringtemplate/3.2/stringtemplate-3.2.jar
+7f1778e0b000-7f1778e0f000 r-xs 00022000 08:01 11314097                   /home/sanjaya/.m2/repository/org/antlr/antlr-runtime/3.2/antlr-runtime-3.2.jar
+7f1778e0f000-7f1778e17000 r-xs 000d3000 08:01 11314096                   /home/sanjaya/.m2/repository/org/antlr/antlr/3.2/antlr-3.2.jar
+7f1778e17000-7f1778e19000 r-xs 0000b000 08:01 15863639                   /home/sanjaya/.m2/repository/com/googlecode/concurrentlinkedhashmap/concurrentlinkedhashmap-lru/1.2/concurrentlinkedhashmap-lru-1.2.jar
+7f1778e19000-7f1778e1b000 r-xs 00005000 08:01 16128693                   /home/sanjaya/.m2/repository/com/ning/compress-lzf/0.8.4/compress-lzf-0.8.4.jar
+7f1778e1b000-7f1778e1d000 r-xs 000f2000 08:01 11314126                   /home/sanjaya/.m2/repository/org/xerial/snappy/snappy-java/1.0.4.1/snappy-java-1.0.4.1.jar
+7f1778e1d000-7f1778e3b000 r-xs 001e7000 08:01 11587514                   /home/sanjaya/.m2/repository/org/apache/cassandra/cassandra-all/1.1.0/cassandra-all-1.1.0.jar
+7f1778e3b000-7f1778e3e000 r-xs 00015000 08:01 11314099                   /home/sanjaya/.m2/repository/commons-pool/commons-pool/1.5.3/commons-pool-1.5.3.jar
+7f1778e3e000-7f1778e4a000 r-xs 00079000 08:01 11314100                   /home/sanjaya/.m2/repository/org/hectorclient/hector-core/1.1-0/hector-core-1.1-0.jar
+7f1778e4a000-7f1778e56000 r-xs 00079000 08:01 11314196                   /home/sanjaya/.m2/repository/org/hectorclient/wso2/hector-core/1.1.0.wso2v1/hector-core-1.1.0.wso2v1.jar
+7f1778e56000-7f1778e5f000 r-xs 00098000 08:01 26481239                   /home/sanjaya/.m2/repository/org/javassist/javassist/3.16.1-GA/javassist-3.16.1-GA.jar
+7f1778e5f000-7f1778e62000 r-xs 0001b000 08:01 26350717                   /home/sanjaya/.m2/repository/org/reflections/reflections/0.9.9-RC1/reflections-0.9.9-RC1.jar
+7f1778e62000-7f1778e63000 r-xs 00001000 08:01 26350716                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.pageant/0.0.7/jsch.agentproxy.pageant-0.0.7.jar
+7f1778e63000-7f1778e65000 r-xs 00000000 08:01 26350715                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.sshagent/0.0.7/jsch.agentproxy.sshagent-0.0.7.jar
+7f1778e65000-7f1778e66000 r-xs 00001000 08:01 24251462                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.usocket-nc/0.0.7/jsch.agentproxy.usocket-nc-0.0.7.jar
+7f1778e66000-7f1778e71000 r-xs 000d5000 08:01 5914                       /home/sanjaya/.m2/repository/net/java/dev/jna/platform/3.4.0/platform-3.4.0.jar
+7f1778e71000-7f1778e75000 r-xs 000f3000 08:01 5913                       /home/sanjaya/.m2/repository/net/java/dev/jna/jna/3.4.0/jna-3.4.0.jar
+7f1778e75000-7f1778e76000 r-xs 00001000 08:01 23993368                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.usocket-jna/0.0.7/jsch.agentproxy.usocket-jna-0.0.7.jar
+7f1778e76000-7f1778e77000 r-xs 00002000 08:01 23207175                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.connector-factory/0.0.7/jsch.agentproxy.connector-factory-0.0.7.jar
+7f1778e77000-7f1778e79000 r-xs 00001000 08:01 22940965                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.core/0.0.7/jsch.agentproxy.core-0.0.7.jar
+7f1778e79000-7f1778e7c000 r-xs 00035000 08:01 22682839                   /home/sanjaya/.m2/repository/com/jcraft/jsch/0.1.49/jsch-0.1.49.jar
+7f1778e7c000-7f1778e7e000 r-xs 00000000 08:01 22026241                   /home/sanjaya/.m2/repository/com/jcraft/jsch.agentproxy.jsch/0.0.7/jsch.agentproxy.jsch-0.0.7.jar
+7f1778e7e000-7f1778ea9000 r-xs 001f9000 08:01 21369171                   /home/sanjaya/.m2/repository/com/google/guava/guava/17.0/guava-17.0.jar
+7f1778ea9000-7f1778eb4000 r-xs 00076000 08:01 12982721                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/wso2/httpclient/4.1.1.wso2v1/httpclient-4.1.1.wso2v1.jar
+7f1778eb4000-7f1778eb6000 r-xs 00007000 08:01 19139661                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.kubernetes.client/target/org.apache.stratos.kubernetes.client-4.1.0-SNAPSHOT.jar
+7f1778eb6000-7f1778eb9000 r-xs 0002f000 08:01 13111433                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.9/plexus-utils-1.4.9.jar
+7f1778eb9000-7f1778ec2000 r-xs 000a9000 08:01 11555364                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-adb/1.6.1-wso2v10/axis2-adb-1.6.1-wso2v10.jar
+7f1778ec2000-7f1778ec3000 r-xs 00004000 08:01 11555370                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-transport-local/1.6.1-wso2v10/axis2-transport-local-1.6.1-wso2v10.jar
+7f1778ec3000-7f1778ec9000 r-xs 00032000 08:01 11555383                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpcore/4.2.3/httpcore-4.2.3.jar
+7f1778ec9000-7f1778ecc000 r-xs 00025000 08:01 11555386                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-transport-http/1.6.1-wso2v10/axis2-transport-http-1.6.1-wso2v10.jar
+7f1778ecc000-7f1778ed3000 r-xs 00059000 08:01 17564747                   /home/sanjaya/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15.jar
+7f1778ed3000-7f1778ed6000 r-xs 00011000 08:01 12587702                   /home/sanjaya/.m2/repository/org/wso2/securevault/org.wso2.securevault/1.0.0/org.wso2.securevault-1.0.0.jar
+7f1778ed6000-7f1778ed8000 r-xs 00009000 08:01 16384477                   /home/sanjaya/.m2/repository/javax/ws/rs/jsr311-api/1.0/jsr311-api-1.0.jar
+7f1778ed8000-7f1778edc000 r-xs 0002a000 08:01 16384471                   /home/sanjaya/.m2/repository/org/apache/woden/woden-impl-commons/1.0M9/woden-impl-commons-1.0M9.jar
+7f1778edc000-7f1778edd000 r-xs 0000b000 08:01 16384475                   /home/sanjaya/.m2/repository/org/apache/woden/woden-impl-dom/1.0M9/woden-impl-dom-1.0M9.jar
+7f1778edd000-7f1778ee2000 r-xs 00020000 08:01 16384487                   /home/sanjaya/.m2/repository/org/apache/woden/woden-api/1.0M9/woden-api-1.0M9.jar
+7f1778ee2000-7f1778ee4000 r-xs 00007000 08:01 16386057                   /home/sanjaya/.m2/repository/org/apache/neethi/neethi/2.0.4/neethi-2.0.4.jar
+7f1778ee4000-7f1778ee7000 r-xs 00011000 08:01 16384497                   /home/sanjaya/.m2/repository/javax/servlet/servlet-api/2.3/servlet-api-2.3.jar
+7f1778ee7000-7f1778ee8000 r-xs 00003000 08:01 16384464                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-jta_1.1_spec/1.1/geronimo-jta_1.1_spec-1.1.jar
+7f1778ee8000-7f1778ee9000 r-xs 00003000 08:01 16384492                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-ws-metadata_2.0_spec/1.1.2/geronimo-ws-metadata_2.0_spec-1.1.2.jar
+7f1778ee9000-7f1778eec000 r-xs 0001c000 08:01 16386055                   /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/axiom-impl/1.2.11-wso2v4/axiom-impl-1.2.11-wso2v4.jar
+7f1778eec000-7f1778ef6000 r-xs 00062000 08:01 15340088                   /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/axiom-api/1.2.11-wso2v4/axiom-api-1.2.11-wso2v4.jar
+7f1778ef6000-7f1778f03000 r-xs 000ff000 08:01 14290303                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-kernel/1.6.1-wso2v10/axis2-kernel-1.6.1-wso2v10.jar
+7f1778f03000-7f1778f04000 r-xs 00007000 08:01 11555500                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-java2wsdl/1.6.1-wso2v10/axis2-java2wsdl-1.6.1-wso2v10.jar
+7f1778f04000-7f1778f06000 r-xs 00002000 08:01 11555858                   /home/sanjaya/.m2/repository/org/apache/axis2/axis2-java2wsdl-maven-plugin/1.6.1-wso2v10/axis2-java2wsdl-maven-plugin-1.6.1-wso2v10.jar
+7f1778f06000-7f1778f08000 r-xs 0000a000 08:01 15863120                   /home/sanjaya/.m2/repository/commons-codec/wso2/commons-codec/1.3.0.wso2v1/commons-codec-1.3.0.wso2v1.jar
+7f1778f08000-7f1778f10000 r-xs 00050000 08:01 16387014                   /home/sanjaya/.m2/repository/org/apache/woden/wso2/woden/1.0.0.M8-wso2v1/woden-1.0.0.M8-wso2v1.jar
+7f1778f10000-7f1778f12000 r-xs 0000d000 08:01 11586251                   /home/sanjaya/.m2/repository/org/apache/axis2/wso2/axis2-json/1.6.1.wso2v10/axis2-json-1.6.1.wso2v10.jar
+7f1778f12000-7f1778f19000 r-xs 00081000 08:01 15470462                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/wso2/geronimo-stax-api_1.0_spec/1.0.1.wso2v1/geronimo-stax-api_1.0_spec-1.0.1.wso2v1.jar
+7f1778f19000-7f1778f5c000 r-xs 00406000 08:01 10753247                   /home/sanjaya/.m2/repository/org/apache/axis2/wso2/axis2-client/1.6.1.wso2v10/axis2-client-1.6.1.wso2v10.jar
+7f1778f5c000-7f1778f5e000 r-xs 00006000 08:01 4981318                    /home/sanjaya/Desktop/Stratos/stratos/service-stubs/org.apache.stratos.manager.cleanup.notification.stub/target/org.apache.stratos.manager.cleanup.notification.stub-4.1.0-SNAPSHOT.jar
+7f1778f5e000-7f1778f63000 r-xs 00020000 08:01 16384474                   /home/sanjaya/.m2/repository/wsdl4j/wsdl4j/1.6.2/wsdl4j-1.6.2.jar
+7f1778f63000-7f1778f65000 r-xs 00007000 08:01 16384527                   /home/sanjaya/.m2/repository/org/apache/neethi/neethi/2.0.4-wso2v4/neethi-2.0.4-wso2v4.jar
+7f1778f65000-7f1778f6a000 r-xs 00061000 08:01 29757743                   /home/sanjaya/Desktop/Stratos/stratos/service-stubs/org.apache.stratos.cloud.controller.service.stub/target/org.apache.stratos.cloud.controller.service.stub-4.1.0-SNAPSHOT.jar
+7f1778f6a000-7f1778f6c000 r-xs 0000f000 08:01 17960908                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.common/target/org.apache.stratos.common-4.1.0-SNAPSHOT.jar
+7f1778f6c000-7f1778f75000 r-xs 00030000 08:01 19139610                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.messaging/target/org.apache.stratos.messaging-4.1.0-SNAPSHOT.jar
+7f1778f75000-7f1778f77000 r-xs 00002000 08:01 27529257                   /home/sanjaya/.m2/repository/jsr94/jsr94/1.1/jsr94-1.1.jar
+7f1778f77000-7f1778f98000 r-xs 0015a000 08:01 12324575                   /home/sanjaya/.m2/repository/bouncycastle/bcprov-jdk14/138/bcprov-jdk14-138.jar
+7f1778f98000-7f1778f9c000 r-xs 0002b000 08:01 12324576                   /home/sanjaya/.m2/repository/bouncycastle/bcmail-jdk14/138/bcmail-jdk14-138.jar
+7f1778f9c000-7f1778fa7000 r-xs 000f9000 08:01 929605                     /home/sanjaya/.m2/repository/com/lowagie/itext/2.1.2/itext-2.1.2.jar
+7f1778fa7000-7f1778fa9000 r-xs 00005000 08:01 15860740                   /home/sanjaya/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar
+7f1778fa9000-7f1778fb7000 r-xs 0018b000 08:01 29886875                   /home/sanjaya/.m2/repository/org/eclipse/jdt/core/compiler/ecj/3.5.1/ecj-3.5.1.jar
+7f1778fb7000-7f1778fb9000 r-xs 0000c000 08:01 7641                       /home/sanjaya/.m2/repository/org/drools/drools-templates/5.5.0.Final/drools-templates-5.5.0.Final.jar
+7f1778fb9000-7f1778fcc000 r-xs 000d2000 08:01 929604                     /home/sanjaya/.m2/repository/com/google/guava/guava/r06/guava-r06.jar
+7f1778fcc000-7f1778fd2000 r-xs 0002e000 08:01 929603                     /home/sanjaya/.m2/repository/org/drools/drools-verifier/5.5.0.Final/drools-verifier-5.5.0.Final.jar
+7f1778fd2000-7f1778fde000 r-xs 000a9000 08:01 29757670                   /home/sanjaya/.m2/repository/org/mvel/mvel2/2.1.3.Final/mvel2-2.1.3.Final.jar
+7f1778fde000-7f1778fe7000 r-xs 00025000 08:01 29757672                   /home/sanjaya/.m2/repository/org/drools/knowledge-api/5.5.0.Final/knowledge-api-5.5.0.Final.jar
+7f1778fe7000-7f1778fe9000 r-xs 00001000 08:01 29757671                   /home/sanjaya/.m2/repository/org/drools/knowledge-internal-api/5.5.0.Final/knowledge-internal-api-5.5.0.Final.jar
+7f1778fe9000-7f1778feb000 r-xs 00006000 08:01 929606                     /home/sanjaya/.m2/repository/org/drools/drools-jsr94/5.5.0.Final/drools-jsr94-5.5.0.Final.jar
+7f1778feb000-7f1778fee000 r-xs 00022000 08:01 11313967                   /home/sanjaya/.m2/repository/org/antlr/stringtemplate/3.2.1/stringtemplate-3.2.1.jar
+7f1778fee000-7f1778ff1000 r-xs 00025000 08:01 29886874                   /home/sanjaya/.m2/repository/org/antlr/antlr-runtime/3.3/antlr-runtime-3.3.jar
+7f1778ff1000-7f1778ffd000 r-xs 000aa000 08:01 929602                     /home/sanjaya/.m2/repository/net/sourceforge/jexcelapi/jxl/2.6.10/jxl-2.6.10.jar
+7f1778ffd000-7f1778fff000 r-xs 0000d000 08:01 7639                       /home/sanjaya/.m2/repository/org/drools/drools-decisiontables/5.5.0.Final/drools-decisiontables-5.5.0.Final.jar
+7f1778fff000-7f1779008000 r-xs 000d3000 08:01 29886872                   /home/sanjaya/.m2/repository/org/antlr/antlr/3.3/antlr-3.3.jar
+7f1779008000-7f177900f000 r-xs 00051000 08:01 7640                       /home/sanjaya/.m2/repository/commons-configuration/commons-configuration/1.9/commons-configuration-1.9.jar
+7f177900f000-7f177901c000 r-xs 0006d000 08:01 29886876                   /home/sanjaya/.m2/repository/com/thoughtworks/xstream/xstream/1.4.1/xstream-1.4.1.jar
+7f177901c000-7f1779021000 r-xs 00068000 08:01 11555886                   /home/sanjaya/.m2/repository/antlr/antlr/2.7.7/antlr-2.7.7.jar
+7f1779021000-7f1779034000 r-xs 00111000 08:01 29886873                   /home/sanjaya/.m2/repository/org/drools/drools-compiler/5.5.0.Final/drools-compiler-5.5.0.Final.jar
+7f1779034000-7f1779036000 r-xs 00005000 08:01 18745841                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.6.4/slf4j-api-1.6.4.jar
+7f1779036000-7f1779063000 r-xs 00282000 08:01 29366836                   /home/sanjaya/.m2/repository/org/drools/drools-core/5.5.0.Final/drools-core-5.5.0.Final.jar
+7f1779063000-7f1779065000 r-xs 00003000 08:01 15470481                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-j2ee-management_1.1_spec/1.0.1/geronimo-j2ee-management_1.1_spec-1.0.1.jar
+7f1779065000-7f1779067000 r-xs 0000b000 08:01 17959263                   /home/sanjaya/.m2/repository/org/fusesource/hawtbuf/hawtbuf/1.9/hawtbuf-1.9.jar
+7f1779067000-7f1779069000 r-xs 00005000 08:01 15863844                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar
+7f1779069000-7f177907e000 r-xs 0010a000 08:01 1835009                    /home/sanjaya/.m2/repository/org/apache/activemq/activemq-client/5.9.1/activemq-client-5.9.1.jar
+7f177907e000-7f1779087000 r-xs 00048000 08:01 15863043                   /home/sanjaya/.m2/repository/backport-util-concurrent/backport-util-concurrent/2.1/backport-util-concurrent-2.1.jar
+7f1779087000-7f177909a000 r-xs 000bc000 08:01 11587185                   /home/sanjaya/.m2/repository/org/apache/camel/camel-core/1.5.0/camel-core-1.5.0.jar
+7f177909a000-7f17790c1000 r-xs 0020f000 08:01 11587184                   /home/sanjaya/.m2/repository/org/apache/activemq/activemq-core/5.2.0/activemq-core-5.2.0.jar
+7f17790c1000-7f17790d7000 r-xp 00000000 08:01 22544476                   /lib/x86_64-linux-gnu/libresolv-2.17.so
+7f17790d7000-7f17792d7000 ---p 00016000 08:01 22544476                   /lib/x86_64-linux-gnu/libresolv-2.17.so
+7f17792d7000-7f17792d8000 r-xp 00016000 08:01 22544476                   /lib/x86_64-linux-gnu/libresolv-2.17.so
+7f17792d8000-7f17792d9000 rwxp 00017000 08:01 22544476                   /lib/x86_64-linux-gnu/libresolv-2.17.so
+7f17792d9000-7f17792db000 rwxp 00000000 00:00 0 
+7f17792db000-7f17792e1000 r-xp 00000000 08:01 22544485                   /lib/x86_64-linux-gnu/libnss_dns-2.17.so
+7f17792e1000-7f17794e0000 ---p 00006000 08:01 22544485                   /lib/x86_64-linux-gnu/libnss_dns-2.17.so
+7f17794e0000-7f17794e1000 r-xp 00005000 08:01 22544485                   /lib/x86_64-linux-gnu/libnss_dns-2.17.so
+7f17794e1000-7f17794e2000 rwxp 00006000 08:01 22544485                   /lib/x86_64-linux-gnu/libnss_dns-2.17.so
+7f17794e2000-7f17794e4000 r-xp 00000000 08:01 22544421                   /lib/libnss_mdns4_minimal.so.2
+7f17794e4000-7f17796e3000 ---p 00002000 08:01 22544421                   /lib/libnss_mdns4_minimal.so.2
+7f17796e3000-7f17796e4000 r-xp 00001000 08:01 22544421                   /lib/libnss_mdns4_minimal.so.2
+7f17796e4000-7f17796e5000 rwxp 00002000 08:01 22544421                   /lib/libnss_mdns4_minimal.so.2
+7f17796e5000-7f17796e7000 r-xs 00002000 08:01 15470454                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-j2ee-management_1.0_spec/1.0/geronimo-j2ee-management_1.0_spec-1.0.jar
+7f17796e7000-7f17796ea000 r-xs 00017000 08:01 11586195                   /home/sanjaya/.m2/repository/org/apache/activemq/activeio-core/3.1.0/activeio-core-3.1.0.jar
+7f17796ea000-7f17796ed000 r-xs 00021000 08:01 17828036                   /home/sanjaya/.m2/repository/org/eclipse/paho/mqtt-client/0.4.0/mqtt-client-0.4.0.jar
+7f17796ed000-7f17796ef000 r-xs 00003000 08:01 18618864                   /home/sanjaya/.m2/repository/net/iharder/base64/2.3.8/base64-2.3.8.jar
+7f17796ef000-7f17796f0000 r-xs 00002000 08:01 20320922                   /home/sanjaya/.m2/repository/com/jamesmurty/utils/java-xmlbuilder/0.6/java-xmlbuilder-0.6.jar
+7f17796f0000-7f17796f2000 r-xs 00008000 08:01 16386119                   /home/sanjaya/.m2/repository/commons-logging/commons-logging/1.0.4/commons-logging-1.0.4.jar
+7f17796f2000-7f17796f7000 r-xs 0002a000 08:01 15863638                   /home/sanjaya/.m2/repository/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar
+7f17796f7000-7f17796f9000 r-xs 00006000 08:01 15470455                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1/geronimo-jms_1.1_spec-1.1.jar
+7f17796f9000-7f17796fc000 r-xs 00013000 08:01 19669310                   /usr/local/java6/jdk1.6.0_45/jre/lib/jce.jar
+7f17796fc000-7f17796ff000 r-xs 00027000 08:01 25431364                   /usr/local/java6/jdk1.6.0_45/jre/lib/ext/sunjce_provider.jar
+7f17796ff000-7f1779706000 r-xs 00096000 08:01 19669193                   /usr/local/java6/jdk1.6.0_45/jre/lib/jsse.jar
+7f1779706000-7f1779711000 r-xs 00076000 08:01 11587229                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/wso2/httpclient/4.1.1-wso2v1/httpclient-4.1.1-wso2v1.jar
+7f1779711000-7f1779712000 r-xs 00007000 08:01 21497831                   /home/sanjaya/.m2/repository/slf4j/wso2/slf4j/1.5.10.wso2v1/slf4j-1.5.10.wso2v1.jar
+7f1779712000-7f1779716000 r-xs 00026000 08:01 11314066                   /home/sanjaya/.m2/repository/libthrift/wso2/libthrift/0.7.wso2v1/libthrift-0.7.wso2v1.jar
+7f1779716000-7f177971c000 r-xs 00045000 08:01 14815444                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.databridge.commons.thrift/4.2.0/org.wso2.carbon.databridge.commons.thrift-4.2.0.jar
+7f177971c000-7f177971f000 r-xs 00012000 08:01 14815443                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.databridge.agent.thrift/4.2.0/org.wso2.carbon.databridge.agent.thrift-4.2.0.jar
+7f177971f000-7f1779724000 r-xs 00040000 08:01 15863257                   /home/sanjaya/.m2/repository/commons-lang/wso2/commons-lang/2.6.0.wso2v1/commons-lang-2.6.0.wso2v1.jar
+7f1779724000-7f1779725000 r-xs 0000b000 08:01 6085                       /home/sanjaya/.m2/repository/org/json/wso2/json/2.0.0.wso2v1/json-2.0.0.wso2v1.jar
+7f1779725000-7f1779729000 r-xs 00028000 08:01 15862452                   /home/sanjaya/.m2/repository/com/google/code/gson/gson/2.1/gson-2.1.jar
+7f1779729000-7f177972b000 r-xs 00005000 08:01 14815445                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.databridge.commons/4.2.0/org.wso2.carbon.databridge.commons-4.2.0.jar
+7f177972b000-7f177972d000 r-xs 00005000 08:01 11296724                   /home/sanjaya/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar
+7f177972d000-7f177976a000 r-xs 0024f000 08:01 11436881                   /home/sanjaya/.m2/repository/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar
+7f177976a000-7f17797fe000 r-xs 00401000 08:01 11436880                   /home/sanjaya/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.9/poi-ooxml-schemas-3.9.jar
+7f17797fe000-7f177980a000 r-xs 000d9000 08:01 11436879                   /home/sanjaya/.m2/repository/org/apache/poi/poi-ooxml/3.9/poi-ooxml-3.9.jar
+7f177980a000-7f1779835000 r-xs 00283000 08:01 11436884                   /home/sanjaya/.m2/repository/org/apache/poi/wso2/poi-ooxml/3.9.0.wso2v1/poi-ooxml-3.9.0.wso2v1.jar
+7f1779835000-7f1779837000 r-xs 00005000 08:01 11313922                   /home/sanjaya/.m2/repository/au/com/bytecode/opencsv/wso2/opencsv/1.8.wso2v1/opencsv-1.8.wso2v1.jar
+7f1779837000-7f1779838000 r-xs 00002000 08:01 16779483                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.user.mgt.common/4.2.0/org.wso2.carbon.user.mgt.common-4.2.0.jar
+7f1779838000-7f177983a000 r-xs 00010000 08:01 14814978                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.user.mgt/4.2.0/org.wso2.carbon.user.mgt-4.2.0.jar
+7f177983a000-7f1779843000 r-xs 0006f000 08:01 25691942                   /home/sanjaya/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar
+7f1779843000-7f1779845000 r-xs 00002000 08:01 11587427                   /home/sanjaya/.m2/repository/org/apache/ant/ant-launcher/1.8.1/ant-launcher-1.8.1.jar
+7f1779845000-7f177985c000 r-xs 0015b000 08:01 11587426                   /home/sanjaya/.m2/repository/org/apache/ant/ant/1.8.1/ant-1.8.1.jar
+7f177985c000-7f1779863000 r-xs 0005d000 08:01 11587437                   /home/sanjaya/.m2/repository/org/apache/ant/ant-nodeps/1.8.1/ant-nodeps-1.8.1.jar
+7f1779863000-7f1779865000 r-xs 00007000 08:01 15862381                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.1/plexus-interpolation-1.1.jar
+7f1779865000-7f1779867000 r-xs 00006000 08:01 16128554                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-antrun-plugin/1.6/maven-antrun-plugin-1.6.jar
+7f1779867000-7f1779868000 r-xs 00007000 08:01 21236594                   /home/sanjaya/.m2/repository/org/codehaus/mojo/build-helper-maven-plugin/1.7/build-helper-maven-plugin-1.7.jar
+7f1779868000-7f177986a000 r-xs 00002000 08:01 11587235                   /home/sanjaya/.m2/repository/org/apache/maven/plugin-tools/maven-plugin-annotations/3.1/maven-plugin-annotations-3.1.jar
+7f177986a000-7f177986c000 r-xs 00006000 08:01 15861297                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.3/maven-common-artifact-filters-1.3.jar
+7f177986c000-7f1779871000 r-xs 0003c000 08:01 15863487                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/maven-surefire-common/2.12.4/maven-surefire-common-2.12.4.jar
+7f1779871000-7f1779875000 r-xs 00019000 08:01 15863485                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/surefire-api/2.12.4/surefire-api-2.12.4.jar
+7f1779875000-7f1779877000 r-xs 00007000 08:01 15863486                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/surefire-booter/2.12.4/surefire-booter-2.12.4.jar
+7f1779877000-7f1779878000 r-xs 00007000 08:01 18745044                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-surefire-plugin/2.12.4/maven-surefire-plugin-2.12.4.jar
+7f1779878000-7f177987c000 r-xs 0002e000 08:01 12322639                   /home/sanjaya/.m2/repository/org/eclipse/equinox/javax.servlet/3.0.0.v201112011016/javax.servlet-3.0.0.v201112011016.jar
+7f177987c000-7f177987e000 r-xs 00009000 08:01 15993370                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-doxia-tools/1.0.2/maven-doxia-tools-1.0.2.jar
+7f177987e000-7f1779880000 r-xs 00004000 08:01 15863107                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-impl/2.0.5/maven-reporting-impl-2.0.5.jar
+7f1779880000-7f1779883000 r-xs 00022000 08:01 26481202                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-dependency-plugin/2.7/maven-dependency-plugin-2.7.jar
+7f1779883000-7f1779889000 r-xs 0005e000 08:01 133584                     /home/sanjaya/Desktop/Stratos/stratos/service-stubs/org.apache.stratos.manager.stub/target/org.apache.stratos.manager.stub-4.1.0-SNAPSHOT.jar
+7f1779889000-7f177988f000 r-xs 00031000 08:01 11535726                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/wso2/httpcore/4.3.0.wso2v1/httpcore-4.3.0.wso2v1.jar
+7f177988f000-7f1779892000 r-xs 00030000 08:01 14947939                   /home/sanjaya/.m2/repository/jline/jline/2.11/jline-2.11.jar
+7f1779892000-7f1779897000 r-xs 00040000 08:01 17565282                   /home/sanjaya/.m2/repository/commons-httpclient/commons-httpclient/3.0.1/commons-httpclient-3.0.1.jar
+7f1779897000-7f1779898000 r-xs 00002000 08:01 16384957                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0/doxia-sink-api-1.0.jar
+7f1779898000-7f177989c000 r-xs 0002c000 08:01 19271111                   /home/sanjaya/Desktop/Stratos/stratos/components/org.apache.stratos.cli/target/archive-tmp/org.apache.stratos.cli-4.1.0-SNAPSHOT.jar
+7f177989c000-7f17798a2000 r-xs 0003f000 08:01 15604260                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpcore/4.3.2/httpcore-4.3.2.jar
+7f17798a2000-7f1779900000 r-xs 007fc000 08:01 10753248                   /home/sanjaya/.m2/repository/org/apache/axis2/wso2/axis2/1.6.1.wso2v10/axis2-1.6.1.wso2v10.jar
+7f1779900000-7f1779903000 r-xs 00016000 08:01 11313898                   /home/sanjaya/.m2/repository/commons-pool/commons-pool/1.5.6/commons-pool-1.5.6.jar
+7f1779903000-7f1779906000 r-xs 00015000 08:01 11313897                   /home/sanjaya/.m2/repository/commons-pool/wso2/commons-pool/1.5.6.wso2v1/commons-pool-1.5.6.wso2v1.jar
+7f1779906000-7f1779926000 r-xs 001a9000 08:01 11436858                   /home/sanjaya/.m2/repository/org/apache/poi/poi/3.9/poi-3.9.jar
+7f1779926000-7f1779937000 r-xs 0011b000 08:01 11436892                   /home/sanjaya/.m2/repository/org/apache/poi/poi-scratchpad/3.9/poi-scratchpad-3.9.jar
+7f1779937000-7f1779967000 r-xs 002c6000 08:01 11535694                   /home/sanjaya/.m2/repository/org/apache/poi/wso2/poi-scratchpad/3.9.0.wso2v1/poi-scratchpad-3.9.0.wso2v1.jar
+7f1779967000-7f177996a000 r-xs 0001c000 08:01 11586487                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-jdbc/7.0.34/tomcat-jdbc-7.0.34.jar
+7f177996a000-7f177996d000 r-xs 00023000 08:01 11586486                   /home/sanjaya/.m2/repository/org/apache/tomcat/wso2/jdbc-pool/7.0.34.wso2v1/jdbc-pool-7.0.34.wso2v1.jar
+7f177996d000-7f177996e000 r-xs 00001000 08:01 14814786                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.ndatasource.common/4.2.0/org.wso2.carbon.ndatasource.common-4.2.0.jar
+7f177996e000-7f1779970000 r-xs 00004000 08:01 14814790                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.ndatasource.rdbms/4.2.0/org.wso2.carbon.ndatasource.rdbms-4.2.0.jar
+7f1779970000-7f177997d000 r-xs 00102000 08:01 11586493                   /home/sanjaya/.m2/repository/org/apache/abdera/wso2/abdera/1.0.0.wso2v3/abdera-1.0.0.wso2v3.jar
+7f177997d000-7f17799bd000 r-xs 00534000 08:01 11313914                   /home/sanjaya/.m2/repository/org/compass-project/wso2/compass/2.0.1.wso2v2/compass-2.0.1.wso2v2.jar
+7f17799bd000-7f17799bf000 r-xs 00006000 08:01 16384482                   /home/sanjaya/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar
+7f17799bf000-7f17799c2000 r-xs 00024000 08:01 11586048                   /home/sanjaya/.m2/repository/commons-io/commons-io/2.0/commons-io-2.0.jar
+7f17799c2000-7f17799c4000 r-xs 00014000 08:01 11555291                   /home/sanjaya/.m2/repository/jline/jline/0.9.94/jline-0.9.94.jar
+7f17799c4000-7f17799cb000 r-xs 0005e000 08:01 16781301                   /home/sanjaya/.m2/repository/org/apache/commons/commons-lang3/3.3.1/commons-lang3-3.3.1.jar
+7f17799cb000-7f17799d1000 r-xs 0007a000 08:01 16384489                   /home/sanjaya/.m2/repository/org/codehaus/woodstox/wstx-asl/3.2.9/wstx-asl-3.2.9.jar
+7f17799d1000-7f17799d4000 r-xs 0001b000 08:01 16387015                   /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/axiom-impl/1.2.11/axiom-impl-1.2.11.jar
+7f17799d4000-7f17799d6000 r-xs 00006000 08:01 15861597                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-stax-api_1.0_spec/1.0.1/geronimo-stax-api_1.0_spec-1.0.1.jar
+7f17799d6000-7f17799db000 r-xs 0002e000 08:01 15731319                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-javamail_1.4_spec/1.6/geronimo-javamail_1.4_spec-1.6.jar
+7f17799db000-7f17799dd000 r-xs 00007000 08:01 15469723                   /home/sanjaya/.m2/repository/org/apache/geronimo/specs/geronimo-activation_1.1_spec/1.0.2/geronimo-activation_1.1_spec-1.0.2.jar
+7f17799dd000-7f17799e7000 r-xs 0005f000 08:01 5338                       /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/axiom-api/1.2.11/axiom-api-1.2.11.jar
+7f17799e7000-7f17799ea000 r-xs 00011000 08:01 12590522                   /home/sanjaya/.m2/repository/org/wso2/securevault/org.wso2.securevault/1.0.0-wso2v2/org.wso2.securevault-1.0.0-wso2v2.jar
+7f17799ea000-7f17799eb000 r-xs 00000000 08:01 14814782                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.xboot/4.2.0/org.wso2.carbon.registry.xboot-4.2.0.jar
+7f17799eb000-7f17799ef000 r-xs 00021000 08:01 16386056                   /home/sanjaya/.m2/repository/org/apache/ws/commons/schema/XmlSchema/1.4.7-wso2v2/XmlSchema-1.4.7-wso2v2.jar
+7f17799ef000-7f17799f3000 r-xs 0001f000 08:01 16387013                   /home/sanjaya/.m2/repository/org/apache/ws/commons/schema/wso2/XmlSchema/1.4.7.wso2v2/XmlSchema-1.4.7.wso2v2.jar
+7f17799f3000-7f17799f4000 r-xs 00002000 08:01 15863240                   /home/sanjaya/.m2/repository/net/sourceforge/findbugs/annotations/1.3.2/annotations-1.3.2.jar
+7f17799f4000-7f17799f7000 r-xs 00023000 08:01 11586492                   /home/sanjaya/.m2/repository/commons-io/wso2/commons-io/2.0.0.wso2v2/commons-io-2.0.0.wso2v2.jar
+7f17799f7000-7f1779a00000 r-xs 000b0000 08:01 14814798                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.core/4.2.0/org.wso2.carbon.registry.core-4.2.0.jar
+7f1779a00000-7f1779a02000 r-xs 00002000 08:01 14814762                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.registry.api/4.2.0/org.wso2.carbon.registry.api-4.2.0.jar
+7f1779a02000-7f1779a07000 r-xs 0003b000 08:01 15862524                   /home/sanjaya/.m2/repository/org/apache/commons/ssl/not-yet-commons-ssl/0.3.9/not-yet-commons-ssl-0.3.9.jar
+7f1779a07000-7f1779a0d000 r-xs 00045000 08:01 16384470                   /home/sanjaya/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar
+7f1779a0d000-7f1779a16000 r-xs 00082000 08:01 14024865                   /home/sanjaya/.m2/repository/commons-httpclient/wso2/commons-httpclient/3.1.0.wso2v2/commons-httpclient-3.1.0.wso2v2.jar
+7f1779a16000-7f1779a17000 r-xs 00002000 08:01 11555427                   /home/sanjaya/.m2/repository/org/apache/ant/ant-launcher/1.7.0/ant-launcher-1.7.0.jar
+7f1779a17000-7f1779a2a000 r-xs 00128000 08:01 11555428                   /home/sanjaya/.m2/repository/org/apache/ant/ant/1.7.0/ant-1.7.0.jar
+7f1779a2a000-7f1779a3d000 r-xs 0012c000 08:01 11586469                   /home/sanjaya/.m2/repository/org/apache/ant/wso2/ant/1.7.0.wso2v1/ant-1.7.0.wso2v1.jar
+7f1779a3d000-7f1779a3f000 r-xs 0000b000 08:01 16384495                   /home/sanjaya/.m2/repository/commons-fileupload/commons-fileupload/1.2/commons-fileupload-1.2.jar
+7f1779a3f000-7f1779a41000 r-xs 0000a000 08:01 16387016                   /home/sanjaya/.m2/repository/commons-fileupload/wso2/commons-fileupload/1.2.0.wso2v1/commons-fileupload-1.2.0.wso2v1.jar
+7f1779a41000-7f1779a53000 r-xs 00245000 08:01 15862556                   /home/sanjaya/.m2/repository/com/ibm/icu/icu4j/2.6.1/icu4j-2.6.1.jar
+7f1779a53000-7f1779a78000 r-xs 002dc000 08:01 11556103                   /home/sanjaya/.m2/repository/xalan/xalan/2.6.0/xalan-2.6.0.jar
+7f1779a78000-7f1779a7e000 r-xs 00019000 08:01 11556105                   /home/sanjaya/.m2/repository/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar
+7f1779a7e000-7f1779a81000 r-xs 00018000 08:01 11556101                   /home/sanjaya/.m2/repository/xom/xom/1.0/xom-1.0.jar
+7f1779a81000-7f1779a95000 r-xs 000e3000 08:01 11556100                   /home/sanjaya/.m2/repository/xerces/xercesImpl/2.6.2/xercesImpl-2.6.2.jar
+7f1779a95000-7f1779a9d000 r-xs 00028000 08:01 11586468                   /home/sanjaya/.m2/repository/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar
+7f1779a9d000-7f1779aa0000 r-xs 00023000 08:01 11556099                   /home/sanjaya/.m2/repository/jdom/jdom/1.0/jdom-1.0.jar
+7f1779aa0000-7f1779aa5000 r-xs 00048000 08:01 11296736                   /home/sanjaya/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
+7f1779aa5000-7f1779aab000 r-xs 00032000 08:01 15862307                   /home/sanjaya/.m2/repository/jaxen/jaxen/1.1.1/jaxen-1.1.1.jar
+7f1779aab000-7f1779ab5000 r-xs 0006c000 08:01 11313887                   /home/sanjaya/.m2/repository/org/igniterealtime/smack/wso2/smackx/3.0.4.wso2v1/smackx-3.0.4.wso2v1.jar
+7f1779ab5000-7f1779abb000 r-xs 0003d000 08:01 11313888                   /home/sanjaya/.m2/repository/org/igniterealtime/smack/wso2/smack/3.0.4.wso2v1/smack-3.0.4.wso2v1.jar
+7f1779abb000-7f1779abc000 r-xs 00003000 08:01 17041375                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.securevault/4.2.0/org.wso2.carbon.securevault-4.2.0.jar
+7f1779abc000-7f1779abd000 r-xs 00006000 08:01 21111278                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.base/4.2.0/org.wso2.carbon.base-4.2.0.jar
+7f1779abd000-7f1779abe000 r-xs 00001000 08:01 14814758                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.queuing/4.2.0/org.wso2.carbon.queuing-4.2.0.jar
+7f1779abe000-7f1779abf000 r-xs 00004000 08:01 25560550                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.user.api/4.2.0/org.wso2.carbon.user.api-4.2.0.jar
+7f1779abf000-7f1779ac5000 r-xs 00035000 08:01 16778204                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.utils/4.2.0/org.wso2.carbon.utils-4.2.0.jar
+7f1779ac5000-7f1779ac8000 r-xs 00012000 08:01 11313852                   /home/sanjaya/.m2/repository/wrapper/wrapper/3.2.3/wrapper-3.2.3.jar
+7f1779ac8000-7f1779aca000 r-xs 00002000 08:01 14814750                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.bootstrap/4.2.0/org.wso2.carbon.bootstrap-4.2.0.jar
+7f1779aca000-7f1779ad1000 r-xs 00053000 08:01 5346                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.apache.log4j/1.2.13.v200706111418/org.apache.log4j-1.2.13.v200706111418.jar
+7f1779ad1000-7f1779ada000 r-xs 0005e000 08:01 14814754                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.logging/4.2.0/org.wso2.carbon.logging-4.2.0.jar
+7f1779ada000-7f1779adb000 r-xs 00001000 08:01 14814845                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.core.common/4.2.0/org.wso2.carbon.core.common-4.2.0.jar
+7f1779adb000-7f1779add000 r-xs 00001000 08:01 20981554                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-log4j12/1.7.6/slf4j-log4j12-1.7.6.jar
+7f1779add000-7f1779adf000 r-xs 00006000 08:01 20582853                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.7.6/slf4j-api-1.7.6.jar
+7f1779adf000-7f1779ae4000 r-xs 0002b000 08:01 13767810                   /home/sanjaya/.m2/repository/wsdl4j/wso2/wsdl4j/1.6.2.wso2v4/wsdl4j-1.6.2.wso2v4.jar
+7f1779ae4000-7f1779ae5000 r-xs 00005000 08:01 11586515                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-util/7.0.34/tomcat-util-7.0.34.jar
+7f1779ae5000-7f1779ae6000 r-xs 00001000 08:01 11586514                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-api/7.0.34/tomcat-api-7.0.34.jar
+7f1779ae6000-7f1779ae7000 r-xs 00003000 08:01 11586513                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-annotations-api/7.0.34/tomcat-annotations-api-7.0.34.jar
+7f1779ae7000-7f1779af9000 r-xs 0016b000 08:01 11586509                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-catalina/7.0.34/tomcat-catalina-7.0.34.jar
+7f1779af9000-7f1779afe000 r-xs 0003a000 08:01 11436838                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-tribes/7.0.34/tomcat-tribes-7.0.34.jar
+7f1779afe000-7f1779b00000 r-xs 00008000 08:01 11436839                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-juli/7.0.34/tomcat-juli-7.0.34.jar
+7f1779b00000-7f1779b03000 r-xs 0001e000 08:01 11586512                   /home/sanjaya/.m2/repository/org/apache/tomcat/tomcat-catalina-ha/7.0.34/tomcat-catalina-ha-7.0.34.jar
+7f1779b03000-7f1779b06000 r-xs 0001e000 08:01 11586511                   /home/sanjaya/.m2/repository/org/apache/tomcat/ha/wso2/tomcat-ha/7.0.34.wso2v1/tomcat-ha-7.0.34.wso2v1.jar
+7f1779b06000-7f1779b0b000 r-xs 00027000 08:01 11586510                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/wso2/httpcore/4.1.0-wso2v1/httpcore-4.1.0-wso2v1.jar
+7f1779b0b000-7f1779b0c000 r-xs 00006000 08:01 16387006                   /home/sanjaya/.m2/repository/org/apache/neethi/wso2/neethi/2.0.4.wso2v4/neethi-2.0.4.wso2v4.jar
+7f1779b0c000-7f1779b19000 r-xs 00080000 08:01 11313900                   /home/sanjaya/.m2/repository/commons-collections/wso2/commons-collections/3.2.0.wso2v1/commons-collections-3.2.0.wso2v1.jar
+7f1779b19000-7f1779b1c000 r-xs 00023000 08:01 11313899                   /home/sanjaya/.m2/repository/commons-dbcp/wso2/commons-dbcp/1.4.0.wso2v1/commons-dbcp-1.4.0.wso2v1.jar
+7f1779b1c000-7f1779b21000 r-xs 0005a000 08:01 14814794                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.user.core/4.2.0/org.wso2.carbon.user.core-4.2.0.jar
+7f1779b21000-7f1779b22000 r-xs 00002000 08:01 19795875                   /home/sanjaya/.m2/repository/org/jboss/spec/javax/transaction/jboss-transaction-api_1.1_spec/1.0.0.Final/jboss-transaction-api_1.1_spec-1.0.0.Final.jar
+7f1779b22000-7f1779b26000 r-xs 00010000 08:01 14814772                   /home/sanjaya/.m2/repository/org/wso2/carbon/javax.cache.wso2/4.2.0/javax.cache.wso2-4.2.0.jar
+7f1779b26000-7f1779b3e000 r-xs 000ed000 08:01 15340730                   /home/sanjaya/.m2/repository/bouncycastle/bcprov-jdk15/132/bcprov-jdk15-132.jar
+7f1779b3e000-7f1779b3f000 r-xs 00005000 08:01 5359                       /home/sanjaya/.m2/repository/org/eclipse/equinox/org.eclipse.equinox.http.helper/1.1.0.wso2v1/org.eclipse.equinox.http.helper-1.1.0.wso2v1.jar
+7f1779b3f000-7f1779b6d000 r-xs 00216000 08:01 15861774                   /home/sanjaya/.m2/repository/com/hazelcast/hazelcast/3.0.1/hazelcast-3.0.1.jar
+7f1779b6d000-7f1779b9b000 r-xs 0021e000 08:01 15861778                   /home/sanjaya/.m2/repository/com/hazelcast/wso2/hazelcast/3.0.1.wso2v1/hazelcast-3.0.1.wso2v1.jar
+7f1779b9b000-7f1779ba3000 r-xs 001bf000 08:01 14814803                   /home/sanjaya/.m2/repository/org/wso2/carbon/org.wso2.carbon.core/4.2.0/org.wso2.carbon.core-4.2.0.jar
+7f1779ba3000-7f1779ba8000 r-xs 00034000 08:01 11587171                   /home/sanjaya/.m2/repository/commons-beanutils/commons-beanutils/1.8.3/commons-beanutils-1.8.3.jar
+7f1779ba8000-7f1779bc4000 r-xs 00172000 08:01 13636426                   /home/sanjaya/.m2/repository/org/apache/ws/commons/axiom/wso2/axiom/1.2.11.wso2v4/axiom-1.2.11.wso2v4.jar
+7f1779bc4000-7f1779bc7000 r-xs 00012000 08:01 5350                       /home/sanjaya/.m2/repository/org/eclipse/osgi/org.eclipse.osgi.services/3.3.100.v20120522-1822/org.eclipse.osgi.services-3.3.100.v20120522-1822.jar
+7f1779bc7000-7f1779bdb000 r-xs 00141000 08:01 5347                       /home/sanjaya/.m2/repository/org/eclipse/osgi/org.eclipse.osgi/3.8.1.v20120830-144521/org.eclipse.osgi-3.8.1.v20120830-144521.jar
+7f1779bdb000-7f1779bdf000 r-xs 0002d000 08:01 11313848                   /home/sanjaya/.m2/repository/asm/asm-all/3.1/asm-all-3.1.jar
+7f1779bdf000-7f1779be3000 r-xs 00028000 08:01 15863143                   /home/sanjaya/.m2/repository/com/thoughtworks/qdox/qdox/1.12/qdox-1.12.jar
+7f1779be3000-7f1779be6000 r-xs 00018000 08:01 15863574                   /home/sanjaya/.m2/repository/org/apache/felix/org.apache.felix.scr.generator/1.1.2/org.apache.felix.scr.generator-1.1.2.jar
+7f1779be6000-7f1779be8000 r-xs 00026000 08:01 15862209                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.0.4/plexus-utils-1.0.4.jar
+7f1779be8000-7f1779bea000 r-xs 00003000 08:01 20187124                   /home/sanjaya/.m2/repository/org/apache/felix/maven-scr-plugin/1.7.2/maven-scr-plugin-1.7.2.jar
+7f1779bea000-7f1779c49000 r-xs 00bac000 08:01 12852725                   /usr/local/java6/jdk1.6.0_45/lib/tools.jar
+7f1779c49000-7f1779c4a000 r-xs 00003000 08:01 12455053                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-javac/1.9.1/plexus-compiler-javac-1.9.1.jar
+7f1779c4a000-7f1779c4c000 r-xs 00000000 08:01 12062115                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/1.9.1/plexus-compiler-manager-1.9.1.jar
+7f1779c4c000-7f1779c4e000 r-xs 00004000 08:01 15863467                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.9.1/plexus-compiler-api-1.9.1.jar
+7f1779c4e000-7f1779c4f000 r-xs 00007000 08:01 12721789                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/2.5.1/maven-compiler-plugin-2.5.1.jar
+7f1779c4f000-7f1779c50000 r-xs 00005000 08:01 12720602                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-install-plugin/2.3.1/maven-install-plugin-2.3.1.jar
+7f1779c50000-7f1779c53000 r-xs 0000c000 08:01 15863606                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-io/2.0.4/plexus-io-2.0.4.jar
+7f1779c53000-7f1779c58000 r-xs 00029000 08:01 15860736                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/2.2/plexus-archiver-2.2.jar
+7f1779c58000-7f1779c5a000 r-xs 00006000 08:01 958                        /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-source-plugin/2.2.1/maven-source-plugin-2.2.1.jar
+7f1779c5a000-7f1779c5d000 r-xs 0000b000 08:01 22814470                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.3/doxia-site-renderer-1.3.jar
+7f1779c5d000-7f1779c5f000 r-xs 0000d000 08:01 22682834                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.3/doxia-decoration-model-1.3.jar
+7f1779c5f000-7f1779c61000 r-xs 00008000 08:01 22026233                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.3/doxia-module-fml-1.3.jar
+7f1779c61000-7f1779c62000 r-xs 00008000 08:01 21893959                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.3/doxia-module-xdoc-1.3.jar
+7f1779c62000-7f1779c64000 r-xs 0000b000 08:01 21893960                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.3/doxia-module-apt-1.3.jar
+7f1779c64000-7f1779c65000 r-xs 00003000 08:01 21632945                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.3/doxia-module-xhtml-1.3.jar
+7f1779c65000-7f1779c68000 r-xs 00024000 08:01 21369162                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-core/1.3/doxia-core-1.3.jar
+7f1779c68000-7f1779c69000 r-xs 00002000 08:01 21369161                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.3/doxia-logging-api-1.3.jar
+7f1779c69000-7f1779c6a000 r-xs 00002000 08:01 21239907                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.3/doxia-sink-api-1.3.jar
+7f1779c6a000-7f1779c72000 r-xs 00058000 08:01 11556042                   /home/sanjaya/.m2/repository/velocity/velocity/1.5/velocity-1.5.jar
+7f1779c72000-7f1779c74000 r-xs 00004000 08:01 20981549                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-exec/1.0.2/maven-reporting-exec-1.0.2.jar
+7f1779c74000-7f1779c77000 r-xs 0001b000 08:01 13117951                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-site-plugin/3.2/maven-site-plugin-3.2.jar
+7f1779c77000-7f1779c84000 r-xs 0007c000 08:01 11556041                   /home/sanjaya/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar
+7f1779c84000-7f1779c89000 r-xs 00040000 08:01 13111453                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.12/plexus-utils-1.5.12.jar
+7f1779c89000-7f1779c8b000 r-xs 00004000 08:01 13111454                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-resources/1.0-alpha-5/plexus-resources-1.0-alpha-5.jar
+7f1779c8b000-7f1779c8d000 r-xs 00005000 08:01 15993282                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.0/maven-common-artifact-filters-1.0.jar
+7f1779c8d000-7f1779c8f000 r-xs 0000f000 08:01 13117946                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-remote-resources-plugin/1.4/maven-remote-resources-plugin-1.4.jar
+7f1779c8f000-7f1779c92000 r-xs 00027000 08:01 16385910                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.1/plexus-utils-1.1.jar
+7f1779c92000-7f1779c93000 r-xs 00003000 08:01 11535809                   /home/sanjaya/.m2/repository/org/jvnet/maven/incrementalbuild/incremental-build-plugin/1.3/incremental-build-plugin-1.3.jar
+7f1779c93000-7f1779c96000 r-xs 0000c000 08:01 16122120                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-dependency-tree/2.1/maven-dependency-tree-2.1.jar
+7f1779c96000-7f1779c99000 r-xs 00013000 08:01 12982528                   /home/sanjaya/.m2/repository/org/apache/maven/enforcer/enforcer-rules/1.3.1/enforcer-rules-1.3.1.jar
+7f1779c99000-7f1779c9a000 r-xs 00002000 08:01 12982527                   /home/sanjaya/.m2/repository/org/apache/maven/enforcer/enforcer-api/1.3.1/enforcer-api-1.3.1.jar
+7f1779c9a000-7f1779c9c000 r-xs 00005000 08:01 12982511                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-enforcer-plugin/1.3.1/maven-enforcer-plugin-1.3.1.jar
+7f1779c9c000-7f1779c9d000 r-xs 00004000 08:01 15860027                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-api/1.8.1/plexus-compiler-api-1.8.1.jar
+7f1779c9d000-7f1779ca0000 r-xs 00013000 08:01 1835438                    /home/sanjaya/.m2/repository/commons-io/commons-io/1.3.2/commons-io-1.3.2.jar
+7f1779ca0000-7f1779ca3000 r-xs 0000a000 08:01 1835437                    /home/sanjaya/.m2/repository/org/apache/commons/commons-exec/1.0.1/commons-exec-1.0.1.jar
+7f1779ca3000-7f1779ca4000 r-xs 0000a000 08:01 1835403                    /home/sanjaya/.m2/repository/com/theoryinpractise/clojure-maven-plugin/1.3.10/clojure-maven-plugin-1.3.10.jar
+7f1779ca4000-7f1779ca5000 r-xs 00002000 08:01 13241438                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-digest/1.0/plexus-digest-1.0.jar
+7f1779ca5000-7f1779ca9000 r-xs 00035000 08:01 13112436                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.5/plexus-utils-3.0.5.jar
+7f1779ca9000-7f1779caa000 r-xs 00006000 08:01 20190881                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-install-plugin/2.4/maven-install-plugin-2.4.jar
+7f1779caa000-7f1779cab000 r-xs 00000000 08:01 1835241                    /home/sanjaya/.m2/repository/com/pyx4j/maven-plugin-log4j/1.0.1/maven-plugin-log4j-1.0.1.jar
+7f1779cab000-7f1779cad000 r-xs 00005000 08:01 18352415                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar
+7f1779cad000-7f1779cae000 r-xs 00002000 08:01 16123739                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar
+7f1779cae000-7f1779cb7000 r-xs 0006d000 08:01 17564621                   /home/sanjaya/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar
+7f1779cb7000-7f1779cb9000 r-xs 00010000 08:01 15861880                   /home/sanjaya/.m2/repository/commons-codec/commons-codec/1.5/commons-codec-1.5.jar
+7f1779cb9000-7f1779cba000 r-xs 00005000 08:01 1835199                    /home/sanjaya/.m2/repository/com/ning/maven/plugins/maven-duplicate-finder-plugin/1.0.5/maven-duplicate-finder-plugin-1.0.5.jar
+7f1779cba000-7f1779cbd000 ---p 00000000 00:00 0 
+7f1779cbd000-7f1779dbb000 rwxp 00000000 00:00 0 
+7f1779dbb000-7f1779dbe000 ---p 00000000 00:00 0 
+7f1779dbe000-7f1779ebc000 rwxp 00000000 00:00 0 
+7f1779ebc000-7f1779ebf000 ---p 00000000 00:00 0 
+7f1779ebf000-7f1779fbd000 rwxp 00000000 00:00 0 
+7f1779fbd000-7f1779fc0000 ---p 00000000 00:00 0 
+7f1779fc0000-7f177a0be000 rwxp 00000000 00:00 0 
+7f177a0be000-7f177a0c1000 ---p 00000000 00:00 0 
+7f177a0c1000-7f177a1bf000 rwxp 00000000 00:00 0 
+7f177a1bf000-7f177a1c2000 ---p 00000000 00:00 0 
+7f177a1c2000-7f177a2c0000 rwxp 00000000 00:00 0 
+7f177a2c0000-7f177a2c4000 r-xs 0002f000 08:01 15860143                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/2.1/commons-lang-2.1.jar
+7f177a2c4000-7f177a2c7000 r-xs 0000c000 08:01 15861524                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-io/2.0.2/plexus-io-2.0.2.jar
+7f177a2c7000-7f177a2cc000 r-xs 00029000 08:01 15861523                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/2.1/plexus-archiver-2.1.jar
+7f177a2cc000-7f177a2ce000 r-xs 0000d000 08:01 15860737                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.15/plexus-interpolation-1.15.jar
+7f177a2ce000-7f177a2d0000 r-xs 00004000 08:01 15860734                   /home/sanjaya/.m2/repository/org/apache/maven/maven-archiver/2.5/maven-archiver-2.5.jar
+7f177a2d0000-7f177a2d2000 r-xs 00007000 08:01 12721761                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-jar-plugin/2.4/maven-jar-plugin-2.4.jar
+7f177a2d2000-7f177a2d5000 ---p 00000000 00:00 0 
+7f177a2d5000-7f177a3d3000 rwxp 00000000 00:00 0 
+7f177a3d3000-7f177a3d7000 r-xs 00035000 08:01 15860741                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.8/plexus-utils-3.0.8.jar
+7f177a3d7000-7f177a3d8000 r-xs 00007000 08:01 15993284                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-plugin-testing-harness/1.1/maven-plugin-testing-harness-1.1.jar
+7f177a3d8000-7f177a3d9000 r-xs 00001000 08:01 16384967                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.7/plexus-velocity-1.1.7.jar
+7f177a3d9000-7f177a3db000 r-xs 00008000 08:01 16387000                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.2/doxia-module-fml-1.2.jar
+7f177a3db000-7f177a3dc000 r-xs 00003000 08:01 16385546                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.2/doxia-module-xhtml-1.2.jar
+7f177a3dc000-7f177a3de000 r-xs 0000b000 08:01 16385490                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.2/doxia-site-renderer-1.2.jar
+7f177a3de000-7f177a3df000 r-xs 00002000 08:01 15863102                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.2/doxia-sink-api-1.2.jar
+7f177a3df000-7f177a3e1000 r-xs 0000d000 08:01 16385491                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.2/doxia-decoration-model-1.2.jar
+7f177a3e1000-7f177a3e2000 r-xs 00002000 08:01 15863103                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.2/doxia-logging-api-1.2.jar
+7f177a3e2000-7f177a3e6000 r-xs 00022000 08:01 16385489                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-core/1.2/doxia-core-1.2.jar
+7f177a3e6000-7f177a3e8000 r-xs 0000b000 08:01 15863594                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar
+7f177a3e8000-7f177a3ed000 r-xs 0003a000 08:01 1835165                    /home/sanjaya/.m2/repository/org/apache/commons/commons-compress/1.5/commons-compress-1.5.jar
+7f177a3ed000-7f177a3f1000 r-xs 00027000 08:01 11587439                   /home/sanjaya/.m2/repository/commons-io/commons-io/2.2/commons-io-2.2.jar
+7f177a3f1000-7f177a3f6000 r-xs 00041000 08:01 15863379                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar
+7f177a3f6000-7f177a3fa000 r-xs 00019000 08:01 1835178                    /home/sanjaya/.m2/repository/org/apache/rat/apache-rat-core/0.10/apache-rat-core-0.10.jar
+7f177a3fa000-7f177a3fc000 r-xs 00009000 08:01 1835150                    /home/sanjaya/.m2/repository/org/apache/rat/apache-rat-plugin/0.10/apache-rat-plugin-0.10.jar
+7f177a3fc000-7f177a3ff000 r-xs 00018000 08:01 11555289                   /home/sanjaya/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar
+7f177a3ff000-7f177a404000 r-xs 00040000 08:01 16778201                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/2.5/commons-lang-2.5.jar
+7f177a404000-7f177a408000 r-xs 00028000 08:01 11586296                   /home/sanjaya/.m2/repository/org/mortbay/jetty/jetty-util/6.1.25/jetty-util-6.1.25.jar
+7f177a408000-7f177a40a000 r-xs 0001f000 08:01 11586295                   /home/sanjaya/.m2/repository/org/mortbay/jetty/servlet-api/2.5-20081211/servlet-api-2.5-20081211.jar
+7f177a40a000-7f177a411000 r-xs 0007d000 08:01 11586294                   /home/sanjaya/.m2/repository/org/mortbay/jetty/jetty/6.1.25/jetty-6.1.25.jar
+7f177a411000-7f177a416000 r-xs 00040000 08:01 13112290                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.10/plexus-utils-1.5.10.jar
+7f177a416000-7f177a417000 r-xs 00001000 08:01 16387036                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-velocity/1.1.8/plexus-velocity-1.1.8.jar
+7f177a417000-7f177a419000 r-xs 0000e000 08:01 11404123                   /home/sanjaya/.m2/repository/oro/oro/2.0.8/oro-2.0.8.jar
+7f177a419000-7f177a421000 r-xs 00058000 08:01 11404122                   /home/sanjaya/.m2/repository/org/apache/velocity/velocity/1.5/velocity-1.5.jar
+7f177a421000-7f177a422000 r-xs 00002000 08:01 16384963                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-7/plexus-i18n-1.0-beta-7.jar
+7f177a422000-7f177a424000 r-xs 0000a000 08:01 26350685                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-integration-tools/1.5/doxia-integration-tools-1.5.jar
+7f177a424000-7f177a427000 r-xs 0001b000 08:01 26087903                   /home/sanjaya/.m2/repository/org/apache/struts/struts-tiles/1.3.8/struts-tiles-1.3.8.jar
+7f177a427000-7f177a42c000 r-xs 00039000 08:01 26087904                   /home/sanjaya/.m2/repository/org/apache/struts/struts-taglib/1.3.8/struts-taglib-1.3.8.jar
+7f177a42c000-7f177a434000 r-xs 00115000 08:01 19669240                   /usr/local/java6/jdk1.6.0_45/jre/lib/resources.jar
+7f177a434000-7f177a439000 r-xs 00053000 08:01 26087902                   /home/sanjaya/.m2/repository/antlr/antlr/2.7.2/antlr-2.7.2.jar
+7f177a439000-7f177a43f000 r-xs 0004b000 08:01 24905897                   /home/sanjaya/.m2/repository/org/apache/struts/struts-core/1.3.8/struts-core-1.3.8.jar
+7f177a43f000-7f177a441000 r-xs 00005000 08:01 24251457                   /home/sanjaya/.m2/repository/sslext/sslext/1.2-0/sslext-1.2-0.jar
+7f177a441000-7f177a449000 r-xs 00068000 08:01 23860782                   /home/sanjaya/.m2/repository/dom4j/dom4j/1.1/dom4j-1.1.jar
+7f177a449000-7f177a44c000 r-xs 0001f000 08:01 23728382                   /home/sanjaya/.m2/repository/commons-validator/commons-validator/1.3.1/commons-validator-1.3.1.jar
+7f177a44c000-7f177a44e000 r-xs 00014000 08:01 23464191                   /home/sanjaya/.m2/repository/commons-chain/commons-chain/1.1/commons-chain-1.1.jar
+7f177a44e000-7f177a452000 r-xs 00020000 08:01 11587243                   /home/sanjaya/.m2/repository/commons-digester/commons-digester/1.8/commons-digester-1.8.jar
+7f177a452000-7f177a457000 r-xs 0002a000 08:01 11555470                   /home/sanjaya/.m2/repository/commons-beanutils/commons-beanutils/1.7.0/commons-beanutils-1.7.0.jar
+7f177a457000-7f177a45d000 r-xs 0004f000 08:01 13117976                   /home/sanjaya/.m2/repository/org/apache/velocity/velocity-tools/2.0/velocity-tools-2.0.jar
+7f177a45d000-7f177a45f000 r-xs 0000b000 08:01 24646967                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-site-renderer/1.4/doxia-site-renderer-1.4.jar
+7f177a45f000-7f177a460000 r-xs 0000e000 08:01 24128258                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-decoration-model/1.4/doxia-decoration-model-1.4.jar
+7f177a460000-7f177a462000 r-xs 00018000 08:01 16385630                   /home/sanjaya/.m2/repository/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar
+7f177a462000-7f177a464000 r-xs 00008000 08:01 29366815                   /home/sanjaya/.m2/repository/org/ow2/asm/asm-util/4.1/asm-util-4.1.jar
+7f177a464000-7f177a465000 r-xs 00004000 08:01 29232749                   /home/sanjaya/.m2/repository/org/ow2/asm/asm-analysis/4.1/asm-analysis-4.1.jar
+7f177a465000-7f177a467000 r-xs 00004000 08:01 29232747                   /home/sanjaya/.m2/repository/org/ow2/asm/asm-tree/4.1/asm-tree-4.1.jar
+7f177a467000-7f177a468000 r-xs 0000b000 08:01 29232748                   /home/sanjaya/.m2/repository/org/ow2/asm/asm/4.1/asm-4.1.jar
+7f177a468000-7f177a46e000 r-xs 00028000 08:01 28971688                   /home/sanjaya/.m2/repository/org/parboiled/parboiled-core/1.1.4/parboiled-core-1.1.4.jar
+7f177a46e000-7f177a470000 r-xs 00010000 08:01 28971686                   /home/sanjaya/.m2/repository/org/parboiled/parboiled-java/1.1.4/parboiled-java-1.1.4.jar
+7f177a470000-7f177a472000 r-xs 0000d000 08:01 28971685                   /home/sanjaya/.m2/repository/org/pegdown/pegdown/1.2.1/pegdown-1.2.1.jar
+7f177a472000-7f177a473000 r-xs 00002000 08:01 26481251                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-markdown/1.4/doxia-module-markdown-1.4.jar
+7f177a473000-7f177a475000 r-xs 00008000 08:01 23993377                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-fml/1.4/doxia-module-fml-1.4.jar
+7f177a475000-7f177a476000 r-xs 00008000 08:01 23464204                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xdoc/1.4/doxia-module-xdoc-1.4.jar
+7f177a476000-7f177a478000 r-xs 0000b000 08:01 23073076                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-apt/1.4/doxia-module-apt-1.4.jar
+7f177a478000-7f177a479000 r-xs 00003000 08:01 22814478                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-module-xhtml/1.4/doxia-module-xhtml-1.4.jar
+7f177a479000-7f177a47e000 r-xs 00026000 08:01 11586242                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar
+7f177a47e000-7f177a480000 r-xs 0000a000 08:01 15862176                   /home/sanjaya/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar
+7f177a480000-7f177a482000 r-xs 0000d000 08:01 15861574                   /home/sanjaya/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
+7f177a482000-7f177a489000 r-xs 00041000 08:01 11586241                   /home/sanjaya/.m2/repository/org/apache/httpcomponents/httpclient/4.0.2/httpclient-4.0.2.jar
+7f177a489000-7f177a491000 r-xs 00028000 08:01 11556031                   /home/sanjaya/.m2/repository/xml-apis/xml-apis/1.3.04/xml-apis-1.3.04.jar
+7f177a491000-7f177a4a9000 r-xs 00115000 08:01 11556030                   /home/sanjaya/.m2/repository/xerces/xercesImpl/2.9.1/xercesImpl-2.9.1.jar
+7f177a4a9000-7f177a4ad000 r-xs 00025000 08:01 22682845                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-core/1.4/doxia-core-1.4.jar
+7f177a4ad000-7f177a4ae000 r-xs 00002000 08:01 22554444                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.4/doxia-logging-api-1.4.jar
+7f177a4ae000-7f177a4af000 r-xs 00002000 08:01 22026246                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.4/doxia-sink-api-1.4.jar
+7f177a4af000-7f177a4b0000 r-xs 00004000 08:01 15860139                   /home/sanjaya/.m2/repository/org/apache/maven/maven-archiver/2.4.2/maven-archiver-2.4.2.jar
+7f177a4b0000-7f177a4b2000 r-xs 0000d000 08:01 15994030                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.14/plexus-interpolation-1.14.jar
+7f177a4b2000-7f177a4bd000 r-xs 00069000 08:01 15994024                   /home/sanjaya/.m2/repository/org/sonatype/sisu/sisu-guice/2.1.7/sisu-guice-2.1.7-noaop.jar
+7f177a4bd000-7f177a4c2000 r-xs 00021000 08:01 15994023                   /home/sanjaya/.m2/repository/org/sonatype/sisu/sisu-inject-bean/1.4.2/sisu-inject-bean-1.4.2.jar
+7f177a4c2000-7f177a4c6000 r-xs 0001d000 08:01 16122121                   /home/sanjaya/.m2/repository/org/eclipse/aether/aether-util/0.9.0.M2/aether-util-0.9.0.M2.jar
+7f177a4c6000-7f177a4ca000 r-xs 00017000 08:01 15994028                   /home/sanjaya/.m2/repository/org/sonatype/aether/aether-util/1.7/aether-util-1.7.jar
+7f177a4ca000-7f177a4cd000 r-xs 00023000 08:01 21893861                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-shared-utils/0.3/maven-shared-utils-0.3.jar
+7f177a4cd000-7f177a4ce000 r-xs 00002000 08:01 15863108                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-api/3.0/maven-reporting-api-3.0.jar
+7f177a4ce000-7f177a4d0000 r-xs 00005000 08:01 21893981                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-exec/1.1/maven-reporting-exec-1.1.jar
+7f177a4d0000-7f177a4d2000 r-xs 00008000 08:01 21632957                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-git-commons/1.5/maven-scm-provider-git-commons-1.5.jar
+7f177a4d2000-7f177a4d4000 r-xs 00005000 08:01 11586410                   /home/sanjaya/.m2/repository/regexp/regexp/1.3/regexp-1.3.jar
+7f177a4d4000-7f177a4d6000 r-xs 0000c000 08:01 15604268                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-provider-gitexe/1.5/maven-scm-provider-gitexe-1.5.jar
+7f177a4d6000-7f177a4d7000 r-xs 00002000 08:01 15343222                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-manager-plexus/1.5/maven-scm-manager-plexus-1.5.jar
+7f177a4d7000-7f177a4da000 r-xs 00015000 08:01 14947948                   /home/sanjaya/.m2/repository/org/apache/maven/scm/maven-scm-api/1.5/maven-scm-api-1.5.jar
+7f177a4da000-7f177a4db000 r-xs 00004000 08:01 20851082                   /home/sanjaya/.m2/repository/com/github/stephenc/wagon/wagon-gitsite/0.4.1/wagon-gitsite-0.4.1.jar
+7f177a4db000-7f177a4de000 r-xs 0001c000 08:01 15990801                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-site-plugin/3.3/maven-site-plugin-3.3.jar
+7f177a4de000-7f177a4df000 r-xs 00003000 08:01 11666835                   /home/sanjaya/.m2/repository/org/apache/maven/plugin-tools/maven-plugin-annotations/3.2/maven-plugin-annotations-3.2.jar
+7f177a4df000-7f177a4e3000 r-xs 00020000 08:01 15861370                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/surefire-api/2.17/surefire-api-2.17.jar
+7f177a4e3000-7f177a4e9000 r-xs 00048000 08:01 15861369                   /home/sanjaya/.m2/repository/org/apache/commons/commons-lang3/3.1/commons-lang3-3.1.jar
+7f177a4e9000-7f177a4eb000 r-xs 00008000 08:01 15861368                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/surefire-booter/2.17/surefire-booter-2.17.jar
+7f177a4eb000-7f177a4f0000 r-xs 0003c000 08:01 15861367                   /home/sanjaya/.m2/repository/org/apache/maven/surefire/maven-surefire-common/2.17/maven-surefire-common-2.17.jar
+7f177a4f0000-7f177a4f2000 r-xs 00007000 08:01 12978591                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-surefire-plugin/2.17/maven-surefire-plugin-2.17.jar
+7f177a4f2000-7f177a551000 r-xs 00bac000 08:01 12852725                   /usr/local/java6/jdk1.6.0_45/lib/tools.jar
+7f177a551000-7f177a554000 r-xs 0001b000 08:01 15860601                   /home/sanjaya/.m2/repository/junit/junit/3.8.2/junit-3.8.2.jar
+7f177a554000-7f177a562000 r-xs 0008f000 08:01 15860600                   /home/sanjaya/.m2/repository/com/google/collections/google-collections/1.0/google-collections-1.0.jar
+7f177a562000-7f177a563000 r-xs 0000a000 08:01 15860599                   /home/sanjaya/.m2/repository/commons-logging/commons-logging-api/1.1/commons-logging-api-1.1.jar
+7f177a563000-7f177a56a000 r-xs 00051000 08:01 15860598                   /home/sanjaya/.m2/repository/log4j/log4j/1.2.12/log4j-1.2.12.jar
+7f177a56a000-7f177a56e000 r-xs 0001d000 08:01 15860597                   /home/sanjaya/.m2/repository/org/apache/xbean/xbean-reflect/3.4/xbean-reflect-3.4.jar
+7f177a56e000-7f177a56f000 r-xs 00004000 08:01 15860596                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-javac/2.2/plexus-compiler-javac-2.2.jar
+7f177a56f000-7f177a571000 r-xs 00000000 08:01 15860595                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-manager/2.2/plexus-compiler-manager-2.2.jar
+7f177a571000-7f177a573000 r-xs 00005000 08:01 15860594                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-compiler-api/2.2/plexus-compiler-api-2.2.jar
+7f177a573000-7f177a575000 r-xs 00000000 08:01 15860593                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-component-annotations/1.5.5/plexus-component-annotations-1.5.5.jar
+7f177a575000-7f177a577000 r-xs 00002000 08:01 15860592                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-shared-incremental/1.1/maven-shared-incremental-1.1.jar
+7f177a577000-7f177a579000 r-xs 00006000 08:01 15860591                   /home/sanjaya/.m2/repository/com/google/code/findbugs/jsr305/2.0.1/jsr305-2.0.1.jar
+7f177a579000-7f177a57c000 r-xs 00023000 08:01 15860590                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-shared-utils/0.1/maven-shared-utils-0.1.jar
+7f177a57c000-7f177a580000 r-xs 00030000 08:01 15860589                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.1/plexus-utils-1.5.1.jar
+7f177a580000-7f177a582000 r-xs 00009000 08:01 15860243                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-compiler-plugin/3.1/maven-compiler-plugin-3.1.jar
+7f177a582000-7f177a586000 r-xs 00033000 08:01 15860026                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/2.0.5/plexus-utils-2.0.5.jar
+7f177a586000-7f177a587000 r-xs 00002000 08:01 15860194                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.6/maven-reporting-api-2.0.6.jar
+7f177a587000-7f177a589000 r-xs 00006000 08:01 12851525                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-resources-plugin/2.6/maven-resources-plugin-2.6.jar
+7f177a589000-7f177a58b000 r-xs 00002000 08:01 11555265                   /home/sanjaya/.m2/repository/org/apache/apache-jar-resource-bundle/1.4/apache-jar-resource-bundle-1.4.jar
+7f177a58b000-7f177a58e000 ---p 00000000 00:00 0 
+7f177a58e000-7f177a68c000 rwxp 00000000 00:00 0                          [stack:20365]
+7f177a68c000-7f177a68f000 ---p 00000000 00:00 0 
+7f177a68f000-7f177a78d000 rwxp 00000000 00:00 0                          [stack:20364]
+7f177a78d000-7f177a790000 ---p 00000000 00:00 0 
+7f177a790000-7f177a88e000 rwxp 00000000 00:00 0                          [stack:20363]
+7f177a88e000-7f177a891000 ---p 00000000 00:00 0 
+7f177a891000-7f177a98f000 rwxp 00000000 00:00 0                          [stack:20362]
+7f177a98f000-7f177a993000 r-xs 0003c000 08:01 15992945                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4.jar
+7f177a993000-7f177a9a1000 r-xs 0007f000 08:01 11313841                   /home/sanjaya/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar
+7f177a9a1000-7f177a9a9000 r-xs 00066000 08:01 11587823                   /home/sanjaya/.m2/repository/org/apache/velocity/velocity/1.7/velocity-1.7.jar
+7f177a9a9000-7f177a9ad000 r-xs 00034000 08:01 15862293                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.15/plexus-utils-1.5.15.jar
+7f177a9ad000-7f177a9af000 r-xs 0000d000 08:01 15862285                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.12/plexus-interpolation-1.12.jar
+7f177a9af000-7f177a9b1000 r-xs 00004000 08:01 13111486                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-resources/1.0-alpha-7/plexus-resources-1.0-alpha-7.jar
+7f177a9b1000-7f177a9b2000 r-xs 00001000 08:01 15860199                   /home/sanjaya/.m2/repository/org/sonatype/plexus/plexus-build-api/0.0.4/plexus-build-api-0.0.4.jar
+7f177a9b2000-7f177a9b4000 r-xs 00009000 08:01 15861342                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-filtering/1.1/maven-filtering-1.1.jar
+7f177a9b4000-7f177a9b6000 r-xs 00006000 08:01 27789193                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.4/maven-common-artifact-filters-1.4.jar
+7f177a9b6000-7f177a9b8000 r-xs 00002000 08:01 15862281                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-artifact-resolver/1.0/maven-artifact-resolver-1.0.jar
+7f177a9b8000-7f177a9ba000 r-xs 00002000 08:01 15862492                   /home/sanjaya/.m2/repository/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.jar
+7f177a9ba000-7f177a9bb000 r-xs 00006000 08:01 15862491                   /home/sanjaya/.m2/repository/org/sonatype/plexus/plexus-sec-dispatcher/1.3/plexus-sec-dispatcher-1.3.jar
+7f177a9bb000-7f177a9c3000 r-xs 00049000 08:01 15862490                   /home/sanjaya/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1.jar
+7f177a9c3000-7f177a9c5000 r-xs 00009000 08:01 15993361                   /home/sanjaya/.m2/repository/commons-cli/commons-cli/1.2/commons-cli-1.2.jar
+7f177a9c5000-7f177a9c6000 r-xs 00002000 08:01 15862486                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-logging-api/1.1/doxia-logging-api-1.1.jar
+7f177a9c6000-7f177a9c8000 r-xs 00002000 08:01 15993526                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.1/doxia-sink-api-1.1.jar
+7f177a9c8000-7f177a9c9000 r-xs 00002000 08:01 15993527                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.2.1/maven-reporting-api-2.2.1.jar
+7f177a9c9000-7f177a9cb000 r-xs 00003000 08:01 15862485                   /home/sanjaya/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.6/jcl-over-slf4j-1.5.6.jar
+7f177a9cb000-7f177a9cd000 r-xs 00004000 08:01 15862483                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-api/1.5.6/slf4j-api-1.5.6.jar
+7f177a9cd000-7f177a9cf000 r-xs 00001000 08:01 15862482                   /home/sanjaya/.m2/repository/org/slf4j/slf4j-jdk14/1.5.6/slf4j-jdk14-1.5.6.jar
+7f177a9cf000-7f177a9d0000 r-xs 00010000 08:01 14028100                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-remote-resources-plugin/1.5/maven-remote-resources-plugin-1.5.jar
+7f177a9d0000-7f177a9d1000 r-xs 00002000 08:01 16386209                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-i18n/1.0-beta-6/plexus-i18n-1.0-beta-6.jar
+7f177a9d1000-7f177a9d6000 r-xs 00040000 08:01 12322897                   /home/sanjaya/.m2/repository/org/beanshell/bsh/2.0b4/bsh-2.0b4.jar
+7f177a9d6000-7f177a9d8000 r-xs 00006000 08:01 15993409                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-common-artifact-filters/1.2/maven-common-artifact-filters-1.2.jar
+7f177a9d8000-7f177a9da000 r-xs 0000f000 08:01 14947954                   /home/sanjaya/.m2/repository/org/apache/maven/enforcer/enforcer-rules/1.1.1/enforcer-rules-1.1.1.jar
+7f177a9da000-7f177a9db000 r-xs 00002000 08:01 14028106                   /home/sanjaya/.m2/repository/org/apache/maven/enforcer/enforcer-api/1.1.1/enforcer-api-1.1.1.jar
+7f177a9db000-7f177a9df000 r-xs 00038000 08:01 15862918                   /home/sanjaya/.m2/repository/commons-lang/commons-lang/2.3/commons-lang-2.3.jar
+7f177a9df000-7f177a9e4000 r-xs 0003d000 08:01 15859894                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.5.8/plexus-utils-1.5.8.jar
+7f177a9e4000-7f177a9e5000 r-xs 00002000 08:01 15862386                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-10/doxia-sink-api-1.0-alpha-10.jar
+7f177a9e5000-7f177a9e6000 r-xs 00002000 08:01 15861299                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.9/maven-reporting-api-2.0.9.jar
+7f177a9e6000-7f177a9e8000 r-xs 00004000 08:01 12982547                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-enforcer-plugin/1.1.1/maven-enforcer-plugin-1.1.1.jar
+7f177a9e8000-7f177a9ea000 r-xs 00005000 08:01 15085079                   /home/sanjaya/.m2/repository/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.jar
+7f177a9ea000-7f177a9ed000 r-xs 0002f000 08:01 15860982                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/1.4.7/plexus-utils-1.4.7.jar
+7f177a9ed000-7f177a9f0000 r-xs 00020000 08:01 15860981                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/1.0-alpha-7/plexus-archiver-1.0-alpha-7.jar
+7f177a9f0000-7f177a9f2000 r-xs 00002000 08:01 15860980                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-osgi/0.2.0/maven-osgi-0.2.0.jar
+7f177a9f2000-7f177a9f9000 r-xp 00000000 08:01 19668954                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnio.so
+7f177a9f9000-7f177aaf8000 ---p 00007000 08:01 19668954                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnio.so
+7f177aaf8000-7f177aafa000 rwxp 00006000 08:01 19668954                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnio.so
+7f177aafa000-7f177ab0d000 r-xp 00000000 08:01 19668953                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnet.so
+7f177ab0d000-7f177ac0e000 ---p 00013000 08:01 19668953                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnet.so
+7f177ac0e000-7f177ac11000 rwxp 00014000 08:01 19668953                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libnet.so
+7f177ac11000-7f177ac14000 ---p 00000000 00:00 0 
+7f177ac14000-7f177ad12000 rwxp 00000000 00:00 0                          [stack:20361]
+7f177ad12000-7f177ad13000 ---p 00000000 00:00 0 
+7f177ad13000-7f177ae13000 rwxp 00000000 00:00 0                          [stack:19991]
+7f177ae13000-7f177ae16000 ---p 00000000 00:00 0 
+7f177ae16000-7f177af14000 rwxp 00000000 00:00 0                          [stack:19990]
+7f177af14000-7f177af17000 ---p 00000000 00:00 0 
+7f177af17000-7f177b015000 rwxp 00000000 00:00 0                          [stack:19989]
+7f177b015000-7f177b018000 ---p 00000000 00:00 0 
+7f177b018000-7f177b116000 rwxp 00000000 00:00 0                          [stack:19988]
+7f177b116000-7f177b119000 ---p 00000000 00:00 0 
+7f177b119000-7f177b217000 rwxp 00000000 00:00 0                          [stack:19987]
+7f177b217000-7f177b8f9000 r-xp 00000000 08:01 9181125                    /usr/lib/locale/locale-archive
+7f177b8f9000-7f177b8fc000 ---p 00000000 00:00 0 
+7f177b8fc000-7f177b9fa000 rwxp 00000000 00:00 0                          [stack:19986]
+7f177b9fa000-7f177b9fd000 ---p 00000000 00:00 0 
+7f177b9fd000-7f177bafb000 rwxp 00000000 00:00 0                          [stack:19985]
+7f177bafb000-7f177bafc000 ---p 00000000 00:00 0 
+7f177bafc000-7f177c000000 rwxp 00000000 00:00 0                          [stack:19984]
+7f177c000000-7f177c022000 rwxp 00000000 00:00 0 
+7f177c022000-7f1780000000 ---p 00000000 00:00 0 
+7f1780000000-7f1780029000 rwxp 00000000 00:00 0 
+7f1780029000-7f1784000000 ---p 00000000 00:00 0 
+7f1784000000-7f1784023000 rwxp 00000000 00:00 0 
+7f1784023000-7f1788000000 ---p 00000000 00:00 0 
+7f1788000000-7f1788002000 r-xs 00007000 08:01 15860979                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-dependency-tree/1.1/maven-dependency-tree-1.1.jar
+7f1788002000-7f1788003000 r-xs 00002000 08:01 15860978                   /home/sanjaya/.m2/repository/org/apache/maven/maven-archiver/2.2/maven-archiver-2.2.jar
+7f1788003000-7f1788004000 r-xs 00002000 08:01 15860977                   /home/sanjaya/.m2/repository/org/apache/felix/org.osgi.service.obr/1.0.1/org.osgi.service.obr-1.0.1.jar
+7f1788004000-7f1788006000 r-xs 0000d000 08:01 15860976                   /home/sanjaya/.m2/repository/org/apache/felix/org.osgi.core/1.0.0/org.osgi.core-1.0.0.jar
+7f1788006000-7f1788007000 r-xs 00001000 08:01 15860739                   /home/sanjaya/.m2/repository/xmlpull/xmlpull/1.1.3.1/xmlpull-1.1.3.1.jar
+7f1788007000-7f1788008000 r-xs 0000a000 08:01 15860975                   /home/sanjaya/.m2/repository/net/sf/kxml/kxml2/2.2.2/kxml2-2.2.2.jar
+7f1788008000-7f178800a000 r-xs 00025000 08:01 15860974                   /home/sanjaya/.m2/repository/biz/aQute/bndlib/0.0.238/bndlib-0.0.238.jar
+7f178800a000-7f178800d000 r-xs 0001f000 08:01 15860973                   /home/sanjaya/.m2/repository/org/apache/felix/maven-bundle-plugin/1.4.0/maven-bundle-plugin-1.4.0.jar
+7f178800d000-7f1788016000 r-xs 0009d000 08:01 15861741                   /home/sanjaya/.m2/repository/biz/aQute/bndlib/1.43.0/bndlib-1.43.0.jar
+7f1788016000-7f1788018000 r-xs 0001c000 08:01 15861740                   /home/sanjaya/.m2/repository/org/apache/felix/maven-bundle-plugin/2.3.5/maven-bundle-plugin-2.3.5.jar
+7f1788018000-7f178801b000 r-xs 00034000 08:01 15861298                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/2.1/plexus-utils-2.1.jar
+7f178801b000-7f178801d000 r-xs 00007000 08:01 15861562                   /home/sanjaya/.m2/repository/org/apache/maven/shared/maven-dependency-tree/1.2/maven-dependency-tree-1.2.jar
+7f178801d000-7f178801f000 r-xs 0000d000 08:01 15860140                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interpolation/1.13/plexus-interpolation-1.13.jar
+7f178801f000-7f1788022000 r-xs 0000a000 08:01 15861710                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-io/1.0/plexus-io-1.0.jar
+7f1788022000-7f1788026000 r-xs 00028000 08:01 15861709                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-archiver/1.0/plexus-archiver-1.0.jar
+7f1788026000-7f1788027000 r-xs 00004000 08:01 15861219                   /home/sanjaya/.m2/repository/org/apache/maven/maven-archiver/2.4.1/maven-archiver-2.4.1.jar
+7f1788027000-7f1788029000 r-xs 00002000 08:01 15860197                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-4/plexus-interactivity-api-1.0-alpha-4.jar
+7f1788029000-7f178802b000 r-xs 00006000 08:01 15860196                   /home/sanjaya/.m2/repository/commons-cli/commons-cli/1.0/commons-cli-1.0.jar
+7f178802b000-7f178802e000 r-xs 0001b000 08:01 15860035                   /home/sanjaya/.m2/repository/junit/junit/3.8.1/junit-3.8.1.jar
+7f178802e000-7f178802f000 r-xs 00001000 08:01 15860195                   /home/sanjaya/.m2/repository/org/apache/maven/doxia/doxia-sink-api/1.0-alpha-7/doxia-sink-api-1.0-alpha-7.jar
+7f178802f000-7f1788030000 r-xs 00002000 08:01 16122119                   /home/sanjaya/.m2/repository/org/apache/maven/reporting/maven-reporting-api/2.0.7/maven-reporting-api-2.0.7.jar
+7f1788030000-7f1788032000 r-xs 00012000 08:01 16122118                   /home/sanjaya/.m2/repository/org/easymock/easymock/2.4/easymock-2.4.jar
+7f1788032000-7f1788036000 r-xs 00024000 08:01 16122457                   /home/sanjaya/.m2/repository/org/osgi/org.osgi.core/4.1.0/org.osgi.core-4.1.0.jar
+7f1788036000-7f178803a000 r-xs 00026000 08:01 16122117                   /home/sanjaya/.m2/repository/org/apache/felix/org.apache.felix.bundlerepository/1.6.6/org.apache.felix.bundlerepository-1.6.6.jar
+7f178803a000-7f1788049000 r-xs 000d2000 08:01 15861711                   /home/sanjaya/.m2/repository/biz/aQute/bndlib/1.50.0/bndlib-1.50.0.jar
+7f1788049000-7f178804c000 r-xs 0001c000 08:01 15861708                   /home/sanjaya/.m2/repository/org/apache/felix/maven-bundle-plugin/2.3.7/maven-bundle-plugin-2.3.7.jar
+7f178804c000-7f178804d000 r-xs 00002000 08:01 15861697                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-interactivity-api/1.0-alpha-6/plexus-interactivity-api-1.0-alpha-6.jar
+7f178804d000-7f178804f000 r-xs 00005000 08:01 11436821                   /home/sanjaya/.m2/repository/org/apache/maven/wagon/wagon-ssh-common/2.1/wagon-ssh-common-2.1.jar
+7f178804f000-7f1788053000 r-xs 00034000 08:01 15860144                   /home/sanjaya/.m2/repository/org/codehaus/plexus/plexus-utils/3.0/plexus-utils-3.0.jar
+7f1788053000-7f1788057000 r-xs 00031000 08:01 15861696                   /home/sanjaya/.m2/repository/com/jcraft/jsch/0.1.44-1/jsch-0.1.44-1.jar
+7f1788057000-7f1788059000 r-xs 00006000 08:01 11436820                   /home/sanjaya/.m2/repository/org/apache/maven/wagon/wagon-ssh/2.1/wagon-ssh-2.1.jar
+7f1788059000-7f178805a000 r-xp 00000000 00:00 0 
+7f178805a000-7f1788072000 r-xs 000d6000 08:01 9574909                    /usr/share/java/wagon-http-shaded-2.x.jar
+7f1788072000-7f1788078000 r-xs 0003e000 08:01 9183936                    /usr/share/maven/lib/maven-compat-3.0.4.jar
+7f1788078000-7f178807a000 r-xs 00007000 08:01 9183937                    /usr/share/maven/lib/maven-settings-builder-3.0.4.jar
+7f178807a000-7f178807d000 r-xs 0001d000 08:01 16128672                   /usr/share/maven-repo/org/sonatype/aether/aether-impl/1.13.1/aether-impl-1.13.1.jar
+7f178807d000-7f178807f000 r-xs 00009000 08:01 9183934                    /usr/share/maven/lib/maven-settings-3.0.4.jar
+7f178807f000-7f1788081000 r-xs 0000b000 08:01 16123328                   /usr/share/maven-repo/org/codehaus/plexus/plexus-interpolation/1.11/plexus-interpolation-1.11.jar
+7f1788081000-7f178808d000 r-xs 00082000 08:01 9574810                    /usr/share/java/sisu-guice.jar
+7f178808d000-7f178808f000 r-xs 0000a000 08:01 9183932                    /usr/share/maven/lib/maven-artifact-3.0.4.jar
+7f178808f000-7f1788090000 r-xs 00006000 08:01 9574634                    /usr/share/java/plexus-sec-dispatcher.jar
+7f1788090000-7f1788094000 r-xs 00033000 08:01 9574790                    /usr/share/java/plexus-utils2-2.0.5.jar
+7f1788094000-7f1788096000 r-xs 0000b000 08:01 9183933                    /usr/share/maven/lib/maven-aether-provider-3.0.4.jar
+7f1788096000-7f1788097000 r-xs 00001000 08:01 9574907                    /usr/share/java/wagon-file-2.x.jar
+7f1788097000-7f1788099000 r-xs 00007000 08:01 9574491                    /usr/share/java/commons-cli-1.2.jar
+7f1788099000-7f178809b000 r-xs 00008000 08:01 9183930                    /usr/share/maven/lib/maven-embedder-3.0.4.jar
+7f178809b000-7f178809f000 r-xs 00020000 08:01 9183928                    /usr/share/maven/lib/maven-model-builder-3.0.4.jar
+7f178809f000-7f17880a3000 r-xs 0001c000 08:01 16128658                   /usr/share/maven-repo/org/sonatype/aether/aether-util/1.13.1/aether-util-1.13.1.jar
+7f17880a3000-7f17880c3000 r-xs 00140000 08:01 9574808                    /usr/share/java/guava-11.0.2.jar
+7f17880c3000-7f17881f8000 rwxp 00000000 00:00 0 
+7f17881f8000-7f1788391000 r-xs 03087000 08:01 19669314                   /usr/local/java6/jdk1.6.0_45/jre/lib/rt.jar
+7f1788391000-7f1788392000 ---p 00000000 00:00 0 
+7f1788392000-7f1788492000 rwxp 00000000 00:00 0                          [stack:19983]
+7f1788492000-7f1788493000 ---p 00000000 00:00 0 
+7f1788493000-7f1788593000 rwxp 00000000 00:00 0                          [stack:19982]
+7f1788593000-7f1788594000 ---p 00000000 00:00 0 
+7f1788594000-7f1788694000 rwxp 00000000 00:00 0                          [stack:19981]
+7f1788694000-7f1788695000 ---p 00000000 00:00 0 
+7f1788695000-7f17887ea000 rwxp 00000000 00:00 0                          [stack:19980]
+7f17887ea000-7f1788995000 rwxp 00000000 00:00 0 
+7f1788995000-7f1788a40000 rwxp 00000000 00:00 0 
+7f1788a40000-7f1788aeb000 rwxp 00000000 00:00 0 
+7f1788aeb000-7f1788b40000 rwxp 00000000 00:00 0 
+7f1788b40000-7f1788ceb000 rwxp 00000000 00:00 0 
+7f1788ceb000-7f1788d96000 rwxp 00000000 00:00 0 
+7f1788d96000-7f1788e40000 rwxp 00000000 00:00 0 
+7f1788e40000-7f1788eeb000 rwxp 00000000 00:00 0 
+7f1788eeb000-7f178a65c000 rwxp 00000000 00:00 0 
+7f178a65c000-7f178beec000 rwxp 00000000 00:00 0 
+7f178beec000-7f178befa000 r-xp 00000000 08:01 19668964                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libzip.so
+7f178befa000-7f178bffc000 ---p 0000e000 08:01 19668964                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libzip.so
+7f178bffc000-7f178bfff000 rwxp 00010000 08:01 19668964                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libzip.so
+7f178bfff000-7f178c000000 rwxp 00000000 00:00 0 
+7f178c000000-7f178fffe000 rwxp 00000000 00:00 0 
+7f178fffe000-7f1790000000 ---p 00000000 00:00 0 
+7f1790000000-7f1790002000 r-xs 0000a000 08:01 9574908                    /usr/share/java/wagon-provider-api-2.x.jar
+7f1790002000-7f1790004000 r-xs 00025000 08:01 9183935                    /usr/share/maven/lib/maven-model-3.0.4.jar
+7f1790004000-7f1790006000 r-xs 00000000 08:01 9574754                    /usr/share/java/plexus-component-annotations-1.5-1.5.5.jar
+7f1790006000-7f1790012000 r-xs 0007c000 08:01 9183931                    /usr/share/maven/lib/maven-core-3.0.4.jar
+7f1790012000-7f1790018000 r-xs 0002c000 08:01 9574793                    /usr/share/java/sisu-inject-plexus.jar
+7f1790018000-7f1790040000 rwxp 00000000 00:00 0 
+7f1790040000-7f179004c000 r-xp 00000000 08:01 22544484                   /lib/x86_64-linux-gnu/libnss_files-2.17.so
+7f179004c000-7f179024b000 ---p 0000c000 08:01 22544484                   /lib/x86_64-linux-gnu/libnss_files-2.17.so
+7f179024b000-7f179024c000 r-xp 0000b000 08:01 22544484                   /lib/x86_64-linux-gnu/libnss_files-2.17.so
+7f179024c000-7f179024d000 rwxp 0000c000 08:01 22544484                   /lib/x86_64-linux-gnu/libnss_files-2.17.so
+7f179024d000-7f1790258000 r-xp 00000000 08:01 22544491                   /lib/x86_64-linux-gnu/libnss_nis-2.17.so
+7f1790258000-7f1790457000 ---p 0000b000 08:01 22544491                   /lib/x86_64-linux-gnu/libnss_nis-2.17.so
+7f1790457000-7f1790458000 r-xp 0000a000 08:01 22544491                   /lib/x86_64-linux-gnu/libnss_nis-2.17.so
+7f1790458000-7f1790459000 rwxp 0000b000 08:01 22544491                   /lib/x86_64-linux-gnu/libnss_nis-2.17.so
+7f1790459000-7f1790461000 r-xp 00000000 08:01 22548040                   /lib/x86_64-linux-gnu/libnss_compat-2.17.so
+7f1790461000-7f1790660000 ---p 00008000 08:01 22548040                   /lib/x86_64-linux-gnu/libnss_compat-2.17.so
+7f1790660000-7f1790661000 r-xp 00007000 08:01 22548040                   /lib/x86_64-linux-gnu/libnss_compat-2.17.so
+7f1790661000-7f1790662000 rwxp 00008000 08:01 22548040                   /lib/x86_64-linux-gnu/libnss_compat-2.17.so
+7f1790662000-7f1790679000 r-xp 00000000 08:01 22544480                   /lib/x86_64-linux-gnu/libnsl-2.17.so
+7f1790679000-7f1790878000 ---p 00017000 08:01 22544480                   /lib/x86_64-linux-gnu/libnsl-2.17.so
+7f1790878000-7f1790879000 r-xp 00016000 08:01 22544480                   /lib/x86_64-linux-gnu/libnsl-2.17.so
+7f1790879000-7f179087a000 rwxp 00017000 08:01 22544480                   /lib/x86_64-linux-gnu/libnsl-2.17.so
+7f179087a000-7f179087c000 rwxp 00000000 00:00 0 
+7f179087c000-7f17908a5000 r-xp 00000000 08:01 19668975                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libjava.so
+7f17908a5000-7f17909a4000 ---p 00029000 08:01 19668975                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libjava.so
+7f17909a4000-7f17909ab000 rwxp 00028000 08:01 19668975                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libjava.so
+7f17909ab000-7f17909b8000 r-xp 00000000 08:01 19668959                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libverify.so
+7f17909b8000-7f1790ab7000 ---p 0000d000 08:01 19668959                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libverify.so
+7f1790ab7000-7f1790aba000 rwxp 0000c000 08:01 19668959                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/libverify.so
+7f1790aba000-7f1790ac1000 r-xp 00000000 08:01 22544487                   /lib/x86_64-linux-gnu/librt-2.17.so
+7f1790ac1000-7f1790cc0000 ---p 00007000 08:01 22544487                   /lib/x86_64-linux-gnu/librt-2.17.so
+7f1790cc0000-7f1790cc1000 r-xp 00006000 08:01 22544487                   /lib/x86_64-linux-gnu/librt-2.17.so
+7f1790cc1000-7f1790cc2000 rwxp 00007000 08:01 22544487                   /lib/x86_64-linux-gnu/librt-2.17.so
+7f1790cc2000-7f1790cc5000 ---p 00000000 00:00 0 
+7f1790cc5000-7f1790dc3000 rwxp 00000000 00:00 0                          [stack:19979]
+7f1790dc3000-7f1790ec6000 r-xp 00000000 08:01 22548000                   /lib/x86_64-linux-gnu/libm-2.17.so
+7f1790ec6000-7f17910c6000 ---p 00103000 08:01 22548000                   /lib/x86_64-linux-gnu/libm-2.17.so
+7f17910c6000-7f17910c7000 r-xp 00103000 08:01 22548000                   /lib/x86_64-linux-gnu/libm-2.17.so
+7f17910c7000-7f17910c8000 rwxp 00104000 08:01 22548000                   /lib/x86_64-linux-gnu/libm-2.17.so
+7f17910c8000-7f17919e6000 r-xp 00000000 08:01 19668981                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/server/libjvm.so
+7f17919e6000-7f1791ae8000 ---p 0091e000 08:01 19668981                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/server/libjvm.so
+7f1791ae8000-7f1791c9e000 rwxp 00920000 08:01 19668981                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/server/libjvm.so
+7f1791c9e000-7f1791cd8000 rwxp 00000000 00:00 0 
+7f1791cd8000-7f1791e97000 r-xp 00000000 08:01 22548322                   /lib/x86_64-linux-gnu/libc-2.17.so
+7f1791e97000-7f1792096000 ---p 001bf000 08:01 22548322                   /lib/x86_64-linux-gnu/libc-2.17.so
+7f1792096000-7f179209a000 r-xp 001be000 08:01 22548322                   /lib/x86_64-linux-gnu/libc-2.17.so
+7f179209a000-7f179209c000 rwxp 001c2000 08:01 22548322                   /lib/x86_64-linux-gnu/libc-2.17.so
+7f179209c000-7f17920a1000 rwxp 00000000 00:00 0 
+7f17920a1000-7f17920a4000 r-xp 00000000 08:01 22544483                   /lib/x86_64-linux-gnu/libdl-2.17.so
+7f17920a4000-7f17922a3000 ---p 00003000 08:01 22544483                   /lib/x86_64-linux-gnu/libdl-2.17.so
+7f17922a3000-7f17922a4000 r-xp 00002000 08:01 22544483                   /lib/x86_64-linux-gnu/libdl-2.17.so
+7f17922a4000-7f17922a5000 rwxp 00003000 08:01 22544483                   /lib/x86_64-linux-gnu/libdl-2.17.so
+7f17922a5000-7f17922bd000 r-xp 00000000 08:01 22544481                   /lib/x86_64-linux-gnu/libpthread-2.17.so
+7f17922bd000-7f17924bc000 ---p 00018000 08:01 22544481                   /lib/x86_64-linux-gnu/libpthread-2.17.so
+7f17924bc000-7f17924bd000 r-xp 00017000 08:01 22544481                   /lib/x86_64-linux-gnu/libpthread-2.17.so
+7f17924bd000-7f17924be000 rwxp 00018000 08:01 22544481                   /lib/x86_64-linux-gnu/libpthread-2.17.so
+7f17924be000-7f17924c2000 rwxp 00000000 00:00 0 
+7f17924c2000-7f17924e5000 r-xp 00000000 08:01 22544397                   /lib/x86_64-linux-gnu/ld-2.17.so
+7f17924e5000-7f17924e7000 r-xs 00009000 08:01 9183927                    /usr/share/maven/lib/maven-plugin-api-3.0.4.jar
+7f17924e7000-7f17924e9000 r-xs 00003000 08:01 9574493                    /usr/share/java/jsr305-0.1~+svn49.jar
+7f17924e9000-7f17924eb000 r-xs 00006000 08:01 16128675                   /usr/share/maven-repo/org/sonatype/aether/aether-connector-wagon/1.13.1/aether-connector-wagon-1.13.1.jar
+7f17924eb000-7f17924ed000 r-xs 00005000 08:01 9183929                    /usr/share/maven/lib/maven-repository-metadata-3.0.4.jar
+7f17924ed000-7f17924ef000 r-xs 00002000 08:01 9574632                    /usr/share/java/plexus-cipher.jar
+7f17924ef000-7f17924f2000 r-xs 00013000 08:01 16128666                   /usr/share/maven-repo/org/sonatype/aether/aether-api/1.13.1/aether-api-1.13.1.jar
+7f17924f2000-7f17924f4000 r-xs 0000c000 08:01 9574212                    /usr/share/java/commons-logging-1.1.1.jar
+7f17924f4000-7f17924fa000 r-xs 00046000 08:01 9574642                    /usr/share/java/commons-httpclient-3.1.jar
+7f17924fa000-7f1792558000 rwxp 00000000 00:00 0 
+7f1792558000-7f17925ba000 rwxp 00000000 00:00 0 
+7f17925ba000-7f17925bd000 rwxp 00000000 00:00 0 
+7f17925bd000-7f17925c4000 r-xp 00000000 08:01 19668950                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/jli/libjli.so
+7f17925c4000-7f17926c5000 ---p 00007000 08:01 19668950                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/jli/libjli.so
+7f17926c5000-7f17926c7000 rwxp 00008000 08:01 19668950                   /usr/local/java6/jdk1.6.0_45/jre/lib/amd64/jli/libjli.so
+7f17926c7000-7f17926c8000 rwxp 00000000 00:00 0 
+7f17926c8000-7f17926c9000 r-xs 00003000 08:01 16128664                   /usr/share/maven-repo/org/sonatype/aether/aether-spi/1.13.1/aether-spi-1.13.1.jar
+7f17926c9000-7f17926d0000 r-xs 00040000 08:01 9574781                    /usr/share/java/sisu-inject-bean.jar
+7f17926d0000-7f17926d6000 r-xs 00034000 08:01 9574220                    /usr/share/java/commons-codec-1.6.jar
+7f17926d6000-7f17926d8000 r-xs 0000a000 08:01 9574487                    /usr/share/java/plexus-classworlds2-2.4.jar
+7f17926d8000-7f17926e0000 rwxs 00000000 08:01 929622                     /tmp/hsperfdata_sanjaya/19968
+7f17926e0000-7f17926e1000 rwxp 00000000 00:00 0 
+7f17926e1000-7f17926e2000 ---p 00000000 00:00 0 
+7f17926e2000-7f17926e4000 rwxp 00000000 00:00 0 
+7f17926e4000-7f17926e5000 r-xp 00022000 08:01 22544397                   /lib/x86_64-linux-gnu/ld-2.17.so
+7f17926e5000-7f17926e7000 rwxp 00023000 08:01 22544397                   /lib/x86_64-linux-gnu/ld-2.17.so
+7fffc4a53000-7fffc4a74000 rwxp 00000000 00:00 0                          [stack]
+7fffc4ba4000-7fffc4ba6000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -Xms512m -Xmx1024m -XX:MaxPermSize=1024m -Dclassworlds.conf=/usr/share/maven/bin/m2.conf -Dmaven.home=/usr/share/maven 
+java_command: org.codehaus.plexus.classworlds.launcher.Launcher clean install -DskipTests=true
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr/local/java6/jdk1.6.0_45
+PATH=/usr/local/java6/jdk1.6.0_45/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/sanjaya/bin:/usr/local/java6/jdk1.6.0_45/bin
+LD_LIBRARY_PATH=/usr/local/java6/jdk1.6.0_45/jre/lib/amd64/server:/usr/local/java6/jdk1.6.0_45/jre/lib/amd64:/usr/local/java6/jdk1.6.0_45/jre/../lib/amd64
+SHELL=/bin/bash
+DISPLAY=:0.0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x862a30], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x862a30], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x7106f0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x7106f0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x7106f0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x7106f0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x713520], sa_mask[0]=0x00000000, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x713120], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x713120], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x713120], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x713120], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+
+
+---------------  S Y S T E M  ---------------
+
+OS:wheezy/sid
+
+uname:Linux 3.8.0-35-generic #50-Ubuntu SMP Tue Dec 3 01:24:59 UTC 2013 x86_64
+libc:glibc 2.17 NPTL 2.17 
+rlimit: STACK 8192k, CORE 0k, NPROC 61583, NOFILE 4096, AS infinity
+load average:2.37 3.00 2.18
+
+/proc/meminfo:
+MemTotal:        7901848 kB
+MemFree:          330736 kB
+Buffers:           84180 kB
+Cached:          1654136 kB
+SwapCached:         4312 kB
+Active:          5186480 kB
+Inactive:        1848364 kB
+Active(anon):    4465496 kB
+Inactive(anon):  1181216 kB
+Active(file):     720984 kB
+Inactive(file):   667148 kB
+Unevictable:          64 kB
+Mlocked:              64 kB
+SwapTotal:       8109052 kB
+SwapFree:        8074144 kB
+Dirty:             28340 kB
+Writeback:             0 kB
+AnonPages:       5292372 kB
+Mapped:           249780 kB
+Shmem:            349944 kB
+Slab:             380260 kB
+SReclaimable:     333024 kB
+SUnreclaim:        47236 kB
+KernelStack:        8352 kB
+PageTables:        65376 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    12059976 kB
+Committed_AS:   10322136 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      553264 kB
+VmallocChunk:   34359181276 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       90944 kB
+DirectMap2M:     8019968 kB
+
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 37 stepping 2, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, ht
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 37
+model name	: Intel(R) Core(TM) i5 CPU       M 520  @ 2.40GHz
+stepping	: 2
+microcode	: 0xc
+cpu MHz		: 1466.000
+cache size	: 3072 KB
+physical id	: 0
+siblings	: 4
+core id		: 0
+cpu cores	: 2
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 11
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes lahf_lm ida arat dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips	: 4787.76
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 37
+model name	: Intel(R) Core(TM) i5 CPU       M 520  @ 2.40GHz
+stepping	: 2
+microcode	: 0xc
+cpu MHz		: 2400.000
+cache size	: 3072 KB
+physical id	: 0
+siblings	: 4
+core id		: 0
+cpu cores	: 2
+apicid		: 1
+initial apicid	: 1
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 11
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes lahf_lm ida arat dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips	: 4787.76
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 2
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 37
+model name	: Intel(R) Core(TM) i5 CPU       M 520  @ 2.40GHz
+stepping	: 2
+microcode	: 0xc
+cpu MHz		: 1599.000
+cache size	: 3072 KB
+physical id	: 0
+siblings	: 4
+core id		: 2
+cpu cores	: 2
+apicid		: 4
+initial apicid	: 4
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 11
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes lahf_lm ida arat dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips	: 4787.76
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 3
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 37
+model name	: Intel(R) Core(TM) i5 CPU       M 520  @ 2.40GHz
+stepping	: 2
+microcode	: 0xc
+cpu MHz		: 2400.000
+cache size	: 3072 KB
+physical id	: 0
+siblings	: 4
+core id		: 2
+cpu cores	: 2
+apicid		: 5
+initial apicid	: 5
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 11
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes lahf_lm ida arat dtherm tpr_shadow vnmi flexpriority ept vpid
+bogomips	: 4787.76
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 7901848k(330736k free), swap 8109052k(8074144k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (20.45-b01) for linux-amd64 JRE (1.6.0_45-b06), built on Mar 26 2013 14:07:02 by "java_re" with gcc 3.2.2 (SuSE Linux)
+
+time: Mon Oct  6 10:56:12 2014
+elapsed time: 552 seconds
+

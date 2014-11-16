@@ -113,7 +113,7 @@ public abstract class Iaas {
      * @return whether the zone is valid in the given region or not.
      * @throws InvalidZoneException if the zone is invalid in a given region.
      */
-    public abstract boolean isValidZone(String region, String zone) throws InvalidZoneException;
+    public abstract boolean isValidZone(String region, String zone) throws InvalidZoneException, InvalidRegionException;
     
     /**
      * Validate a given host id against a particular zone in an IaaS.

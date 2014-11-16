@@ -19,11 +19,13 @@
 
 package org.apache.stratos.messaging.message.receiver.topology;
 
+import org.apache.stratos.messaging.domain.Message;
+
 import javax.jms.TextMessage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Implements a blocking queue for managing topology event messages.
  */
-class TopologyEventMessageQueue extends LinkedBlockingQueue<TextMessage> {
+class TopologyEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

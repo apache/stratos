@@ -109,7 +109,7 @@ public class TopologyEventPublisher {
     public static void sendApplicationClustersCreated(String appId, List<Cluster> clusters) {
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application Clusters registered event for Application: " + appId);
+            log.info("Publishing Application Clusters Created event for Application: " + appId);
         }
 
         publishEvent(new ApplicationClustersCreatedEvent(clusters, appId));

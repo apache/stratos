@@ -116,8 +116,8 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
             return false;
         }
         if (service.clusterExists(clusterId)) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster already exists in service: [service] %s " +
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster already exists in service: [service] %s " +
                                 "[cluster] %s",serviceName ,
                         clusterId));
             }

@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
-import java.io.File;
-
 import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
 
 public final class CloudControllerConstants {
 
@@ -96,6 +96,12 @@ public final class CloudControllerConstants {
 	public static final String CLOUD_CONTROLLER_EVENT_STREAM = "org.apache.stratos.cloud.controller";
 	public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM
 			.replaceAll("[/.]", "_");
+
+    //cloudstack specific
+    public static final String USER_NAME = "username";
+    public static final String DOMAIN_ID = "domainId";
+    public static final String DISK_OFFERING = "diskOffering";
+    public static final String NETWORK_IDS= "networkIds";
 
 	/**
 	 * column names
@@ -275,4 +281,5 @@ public final class CloudControllerConstants {
 	public static final String NETWORK_FIXED_IP = "fixedIp";
 	public static final String NETWORK_PORT = "portUuid";
 	public static final String NETWORK_UUID = "networkUuid";
+
 }

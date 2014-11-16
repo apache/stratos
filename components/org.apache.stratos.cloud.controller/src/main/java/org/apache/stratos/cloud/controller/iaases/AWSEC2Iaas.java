@@ -74,7 +74,6 @@ public class AWSEC2Iaas extends Iaas {
 
 		// builds and sets Compute Service
 		ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
-
 		// builds and sets Template
 		buildTemplate();
 

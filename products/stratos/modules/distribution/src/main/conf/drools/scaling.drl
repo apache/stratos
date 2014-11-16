@@ -82,18 +82,12 @@ dialect "mvel"
         mcUpperLimit : Float() from  $loadThresholds.getMemoryConsumption().getUpperLimit()
         mcLowerLimit : Float() from  $loadThresholds.getMemoryConsumption().getLowerLimit()
 
-        memoryConsumptionAverage : Float() from  $networkPartitionContext.getAverageMemoryConsumption()
-        memoryConsumptionGradient : Float() from  $networkPartitionContext.getMemoryConsumptionGradient()
-        memoryConsumptionSecondDerivative : Float() from  $networkPartitionContext.getMemoryConsumptionSecondDerivative()
-	    mcPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(memoryConsumptionAverage, memoryConsumptionGradient, memoryConsumptionSecondDerivative, 1)
+        mcPredictedValue : Double() from $delegator.getMemoryConsumptionPredictedValue($networkPartitionContext)
 
         laUpperLimit : Float() from  $loadThresholds.getLoadAverage().getUpperLimit()
         laLowerLimit : Float() from  $loadThresholds.getLoadAverage().getLowerLimit()
 
-        loadAverageAverage : Float() from  $networkPartitionContext.getAverageLoadAverage()
-        loadAverageGradient : Float() from  $networkPartitionContext.getLoadAverageGradient()
-        loadAverageSecondDerivative : Float() from  $networkPartitionContext.getLoadAverageSecondDerivative()
-	    laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
+        laPredictedValue : Double() from $delegator.getLoadAveragePredictedValue($networkPartitionContext)
 
         activeInstancesCount : Integer() from $delegator.getMemberCount(clusterId , 0)
         instancesCount : Integer() from $delegator.getMemberCount(clusterId , 1)

@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.grouping.manager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
@@ -35,22 +33,27 @@ public class ServiceGroupingManager {
     //private static Log log = LogFactory.getLog(ServiceGroupingManager.class);
     private ServiceGroupDeployer serviceGroupDeployer;
 
-    public ServiceGroupingManager () {
+    public ServiceGroupingManager() {
         serviceGroupDeployer = new DefaultServiceGroupDeployer();
     }
 
-    public void deployServiceGroupDefinition (ServiceGroupDefinition serviceGroupDefinition) throws InvalidServiceGroupException,
+    public void deployServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws InvalidServiceGroupException,
             CloudControllerServiceUnregisteredCartridgeExceptionException, ServiceGroupDefinitioException, ADCException {
 
         serviceGroupDeployer.deployServiceGroupDefinition(serviceGroupDefinition);
     }
 
-    public ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
+    public ServiceGroupDefinition getServiceGroupDefinition(String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
         return serviceGroupDeployer.getServiceGroupDefinition(serviceGroupDefinitionName);
     }
 
-    public void undeployServiceGroupDefinition (String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
+    public ServiceGroupDefinition[] getServiceGroupDefinitions() throws ADCException, ServiceGroupDefinitioException {
+
+        return serviceGroupDeployer.getServiceGroupDefinitions();
+    }
+
+    public void undeployServiceGroupDefinition(String serviceGroupDefinitionName) throws ADCException, ServiceGroupDefinitioException {
 
         serviceGroupDeployer.undeployServiceGroupDefinition(serviceGroupDefinitionName);
     }

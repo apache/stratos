@@ -149,8 +149,8 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
         }
 
         if (member.getStatus() == MemberStatus.Activated) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId()));

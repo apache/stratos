@@ -43,7 +43,8 @@ public enum GroupStatus implements LifeCycleState {
     Inactive(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Terminating));
+            return new HashSet<LifeCycleState>(Arrays.asList(GroupStatus.Inactive, GroupStatus.Active,
+                    GroupStatus.Terminating));
         }
     },
     Terminating(3) {

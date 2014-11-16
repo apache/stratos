@@ -84,8 +84,8 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
 
         // Validate event against the existing topology
         if (topology.serviceExists(event.getServiceName())) {
-            if (log.isWarnEnabled()) {
-                log.warn(String.format("Service already created: [service] %s", event.getServiceName()));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Service already created: [service] %s", event.getServiceName()));
             }
         } else {
 

@@ -25,10 +25,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
@@ -43,6 +43,7 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -274,7 +275,6 @@ public class RegistryManager {
     private Object retrieve(String resourcePath) {
         try {
             Resource resource = registryService.get(resourcePath);
-
             return resource.getContent();
 
         } catch (ResourceNotFoundException ignore) {
@@ -440,26 +440,61 @@ public class RegistryManager {
         return group;
     }
 
-    public ServiceGroup removeServiceGroup(String name) throws Exception {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.SERVICE_GROUP + "/" + name;
-        Object serializedObj = registryManager.retrieve(resourcePath);
-        ServiceGroup group = null;
-        if (serializedObj != null) {
-            Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-            if (dataObj instanceof ServiceGroup) {
-                group = (ServiceGroup) dataObj;
-                if (log.isDebugEnabled()) {
-                    log.debug(group.toString());
+    public ServiceGroup[] getServiceGroups() {
+        Object serializedObj;
+        List<ServiceGroup> serviceGroupList = new ArrayList<ServiceGroup>();
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP;
+        if (registryManager.resourceExist(resourcePath)) {
+            serializedObj = registryManager.retrieve(resourcePath);
+        } else {
+            return null;
+        }
+
+        String[] groupPathList = (String[]) serializedObj;
+
+        if (groupPathList != null) {
+            ServiceGroup serviceGroup;
+            for (String groupPath : groupPathList) {
+                serializedObj = registryManager.retrieve(groupPath);
+                if (serializedObj != null) {
+                    Object dataObj = null;
+                    try {
+                        dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                        if (dataObj instanceof ServiceGroup) {
+                            serviceGroup = (ServiceGroup) dataObj;
+                            serviceGroupList.add(serviceGroup);
+                        }
+                    } catch (IOException e) {
+                        throw new AutoScalerException("Error occurred while retrieving service group from Registry");
+                    } catch (ClassNotFoundException e) {
+                        throw new AutoScalerException("Error occurred while retrieving service group from Registry");
+                    }
+
                 }
-            } else {
-                return null;
             }
         }
 
-        return group;
+        ServiceGroup[] groupArr = new ServiceGroup[serviceGroupList.size()];
+        groupArr = serviceGroupList.toArray(groupArr);
+        return groupArr;
     }
 
+    public void removeServiceGroup(String name) throws RegistryException {
+        if (StringUtils.isEmpty(name)) {
+            throw new IllegalArgumentException("Name of the service group can not be empty");
+        }
+
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
+                AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        if (registryService.resourceExists(resourcePath)) {
+            registryService.delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Service group %s is removed from registry", name));
+            }
+        } else {
+            throw new AutoScalerException("No service group is found with name" + name);
+        }
+    }
 
     public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();

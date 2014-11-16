@@ -16,23 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.applications.dependency.context;
+
+package org.apache.stratos.messaging.broker.connect;
 
 /**
- * ClusterContext to keep cluster level context information
+ * Topic connector factory.
  */
-public class ClusterContext extends ApplicationContext {
-    private String serviceName;
-
-    public ClusterContext(String id, boolean killDependent) {
-        super(id ,killDependent);
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+public class TopicConnectorFactory {
+    /**
+     * Create topic connector instance.
+     * @return
+     */
+    public static TopicConnector createConnector() {
+        return new MqttTopicConnector();
     }
 }

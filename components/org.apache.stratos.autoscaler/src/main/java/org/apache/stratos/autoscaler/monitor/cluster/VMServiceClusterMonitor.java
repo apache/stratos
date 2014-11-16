@@ -65,7 +65,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         while (!isDestroyed()) {
             try {
                 if  (((getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
-                        (getStatus() == ClusterStatus.Inactive && !hasDependent)) && !this.hasFaultyMember
+                        (getStatus() == ClusterStatus.Inactive && !hasStartupDependents)) && !this.hasFaultyMember
                         && !stop) {
                     if (log.isDebugEnabled()) {
                         log.debug("Cluster monitor is running.. " + this.toString());
@@ -210,6 +210,10 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing Cluster terminating event for [application]: " + appId +
+                        " [cluster]: " + this.getClusterId());
+            }
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId());
         }
     }

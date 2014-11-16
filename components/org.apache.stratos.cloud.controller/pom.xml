@@ -155,6 +155,8 @@
             <artifactId>reflections</artifactId>
             <version>0.9.9-RC1</version>
         </dependency>
+
+
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.securevault</artifactId>
@@ -170,6 +172,7 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
+
         </dependency>
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
@@ -239,6 +242,11 @@
             <groupId>org.apache.stratos</groupId>
             <artifactId>openstack-nova</artifactId>
             <version>1.8.0-stratos</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>cloudstack</artifactId>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>

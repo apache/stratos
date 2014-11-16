@@ -22,53 +22,36 @@ package org.apache.stratos.messaging.broker.publish;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.MQTTConnector;
+import org.apache.stratos.messaging.broker.connect.TopicConnector;
+import org.apache.stratos.messaging.broker.connect.TopicConnectorFactory;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
- * Any instance who needs to publish data to a topic, should communicate with
- * this
- * object. This Topic publisher is responsible to convert the POJO to be
- * published
- * to JSON format, before publishing.
- * 
- * 
- * 
+ * A topic publisher for publishing messages to a message broker topic.
+ * Messages will be published in JSON format.
  */
 public class TopicPublisher {
 
     private static final Log log = LogFactory.getLog(TopicPublisher.class);
 
-    /**
-     * Quality of Service for message delivery:
-     * Setting it to 2 to make sure that message is guaranteed to deliver once
-     * using two-phase acknowledgement across the network.
-     */
-	private static final int QOS = 2;
     private static final int PUBLISH_RETRY_INTERVAL = 60000;
 
 	private final String topicName;
-	private final MqttClient mqttClient;
+	private final TopicConnector topicConnector;
 
-	/**
+    /**
 	 * @param topicName topic name of this publisher instance.
 	 */
 	TopicPublisher(String topicName) {
 		this.topicName = topicName;
-        this.mqttClient = MQTTConnector.getMqttClient();
+        this.topicConnector = TopicConnectorFactory.createConnector();
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic publisher created: [topic] %s", topicName));
 		}
 	}
 
 	/**
-	 * Publishes to a topic. If for some reason the connection to the topic got
-	 * lost, this will perform re-subscription periodically, until a connection
-	 * obtained.
+	 * Convert the object to its JSON representation and publish to the given topic.
 	 */
 
 	public void publish(Object messageObj, boolean retry) {
@@ -78,18 +61,9 @@ public class TopicPublisher {
             boolean published = false;
 
             while (!published) {
-                MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-                // Set quality of service
-                mqttMessage.setQos(QOS);
-
                 try {
-                    MqttConnectOptions connectOptions = new MqttConnectOptions();
-                    // Do not maintain a session between the client and the server since it is nearly impossible to
-                    // generate unique client ids for each subscriber & publisher with the distributed nature of stratos.
-                    // Reliable message delivery is managed by topic subscriber and publisher.
-                    connectOptions.setCleanSession(true);
-                    mqttClient.connect(connectOptions);
-                    mqttClient.publish(topicName, mqttMessage);
+                    topicConnector.connect();
+                    topicConnector.publish(topicName, message);
                     published = true;
                 } catch (Exception e) {
                     if (!retry) {
@@ -108,8 +82,8 @@ public class TopicPublisher {
                     }
                 } finally {
                     try {
-                        mqttClient.disconnect();
-                    } catch (MqttException ignore) {
+                        topicConnector.disconnect();
+                    } catch (MessagingException ignore) {
                     }
                 }
             }

@@ -23,10 +23,7 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
@@ -412,5 +409,63 @@ public class RuleTasksDelegator {
         }
         float predictedValue = ((minReplicas / statUpperLimit) * statPredictedValue);
         return (int) Math.ceil(predictedValue);
+    }
+
+    public double getLoadAveragePredictedValue (NetworkPartitionContext networkPartitionContext) {
+        double loadAveragePredicted = 0.0d;
+        int totalMemberCount = 0;
+
+        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
+
+                float memberAverageLoadAverage = memberStatsContext.getLoadAverage().getAverage();
+                float memberGredientLoadAverage = memberStatsContext.getLoadAverage().getGradient();
+                float memberSecondDerivativeLoadAverage = memberStatsContext.getLoadAverage().getSecondDerivative();
+
+                double memberPredictedLoadAverage = getPredictedValueForNextMinute(memberAverageLoadAverage, memberGredientLoadAverage, memberSecondDerivativeLoadAverage, 1);
+
+                log.debug("Member ID : " + memberStatsContext.getMemberId() + " : Predicted Load Average : " + memberPredictedLoadAverage);
+
+                loadAveragePredicted += memberPredictedLoadAverage;
+                ++totalMemberCount;
+            }
+        }
+
+        if (totalMemberCount > 0) {
+            log.debug("Predicted load average : " + loadAveragePredicted / totalMemberCount);
+            return loadAveragePredicted / totalMemberCount;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    public double getMemoryConsumptionPredictedValue(NetworkPartitionContext networkPartitionContext) {
+        double memoryConsumptionPredicted = 0.0d;
+        int totalMemberCount = 0;
+
+        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
+
+                float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
+                float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();
+                float memberMemoryConsumptionSecondDerivative= memberStatsContext.getMemoryConsumption().getSecondDerivative();
+
+                double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage, memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
+
+                log.debug("Member ID : " + memberStatsContext.getMemberId() + " : Predicted Memory Consumption : " + memberPredictedMemoryConsumption);
+
+                memoryConsumptionPredicted += memberPredictedMemoryConsumption;
+                ++totalMemberCount;
+            }
+        }
+
+        if (totalMemberCount > 0) {
+            log.debug("Predicted memory consumption : " + memoryConsumptionPredicted / totalMemberCount);
+            return memoryConsumptionPredicted / totalMemberCount;
+        }
+        else {
+            return 0;
+        }
     }
 }

@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Event publisher instance pool.
+ * Event publisher instance pool will make sure that only one publisher
+ * instance is created for each topic.
  */
 public class EventPublisherPool {
     private static final Log log = LogFactory.getLog(EventPublisherPool.class);
