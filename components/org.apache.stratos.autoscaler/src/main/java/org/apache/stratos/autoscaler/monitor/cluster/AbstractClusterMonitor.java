@@ -343,4 +343,10 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public String getServiceId() {
         return clusterContext.getServiceId();
     }
+
+    protected int getRoundedInstanceCount(float requiredInstances, float fraction){
+
+        return (requiredInstances - Math.floor(requiredInstances) > fraction) ? (int)Math.ceil(requiredInstances)
+                : (int)Math.floor(requiredInstances);
+    }
 }
