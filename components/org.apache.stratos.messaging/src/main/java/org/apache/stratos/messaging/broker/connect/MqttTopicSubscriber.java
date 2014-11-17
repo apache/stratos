@@ -70,6 +70,9 @@ public class MqttTopicSubscriber extends TopicSubscriber {
             // generate a unique client id for each subscriber & publisher with the distributed nature of stratos.
             // Reliable message delivery is managed by topic subscriber and publisher.
             connectOptions.setCleanSession(true);
+            // TODO: test this
+            // set the keep alive interval less than MB's inactive connection detection time
+            //connectOptions.setKeepAliveInterval(15);
             mqttClient.connect(connectOptions);
         } catch (Exception e) {
             String message = "Could not connect to message broker";
