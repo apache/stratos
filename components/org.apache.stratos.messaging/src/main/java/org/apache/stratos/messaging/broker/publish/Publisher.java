@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.broker.publish;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.MqttTopicPublisher;
+import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicPublisher;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 

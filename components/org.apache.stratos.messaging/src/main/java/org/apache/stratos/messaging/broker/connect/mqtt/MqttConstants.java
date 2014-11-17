@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.broker.connect;
+package org.apache.stratos.messaging.broker.connect.mqtt;
 
 import org.apache.stratos.messaging.util.Util;
 

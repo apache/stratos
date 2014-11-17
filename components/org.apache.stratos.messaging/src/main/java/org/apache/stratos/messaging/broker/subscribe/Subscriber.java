@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.MqttTopicSubscriber;
+import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicSubscriber;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
 import org.apache.stratos.messaging.util.Util;

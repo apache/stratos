@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.broker.connect;
+package org.apache.stratos.messaging.broker.connect.mqtt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
