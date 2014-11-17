@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.event.Event;
  * A message header will be used to send the event class name to be used by the
  * subscriber to identify the event.
  */
-public class EventPublisher extends TopicPublisher {
+public class EventPublisher extends Publisher {
 
 	/**
 	 * @param topicName topic name of this publisher instance.

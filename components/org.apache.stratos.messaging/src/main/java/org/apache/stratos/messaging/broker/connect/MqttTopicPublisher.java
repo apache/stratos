@@ -21,38 +21,24 @@ package org.apache.stratos.messaging.broker.connect;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.MessageListener;
-import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.io.File;
-import java.util.Properties;
 
 /**
  * Mqtt topic connector implementation.
  */
-public class MqttTopicConnector implements TopicConnector {
+public class MqttTopicPublisher implements TopicPublisher {
 
-    public static final String MQTT_URL_DEFAULT = "defaultValue";
+    protected static final Log log = LogFactory.getLog(MqttTopicPublisher.class);
 
-    /**
-     * Quality of Service for message delivery:
-     * Setting it to 2 to make sure that message is guaranteed to deliver once
-     * using two-phase acknowledgement across the network.
-     */
-    private static final int QOS = 2;
-    private static final Log log = LogFactory.getLog(MqttTopicConnector.class);
-    private static String configFileLocation = System.getProperty("jndi.properties.dir");
-    private static Properties mqttProperties = Util.getProperties(configFileLocation
-            + File.separator + "mqtttopic.properties");
     private final MqttClient mqttClient;
 
-    public MqttTopicConnector() {
+    public MqttTopicPublisher() {
         try {
-            String mqttUrl = mqttProperties.getProperty("mqtturl", MQTT_URL_DEFAULT);
+            String mqttUrl = MqttConstants.MQTT_PROPERTIES.getProperty("mqtturl", MqttConstants.MQTT_URL_DEFAULT);
             MemoryPersistence memoryPersistence = new MemoryPersistence();
             String clientId = Util.getRandomString(23);
             mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
@@ -64,6 +50,10 @@ public class MqttTopicConnector implements TopicConnector {
             log.error(message, e);
             throw new MessagingException(message, e);
         }
+    }
+
+    public void create() {
+
     }
 
     @Override
@@ -90,58 +80,26 @@ public class MqttTopicConnector implements TopicConnector {
     @Override
     public void disconnect() {
         try {
-            mqttClient.disconnect();
+            synchronized (mqttClient) {
+                if (mqttClient.isConnected()) {
+                    mqttClient.disconnect();
+                }
+            }
         } catch (Exception e) {
             String message = "Could not disconnect from message broker";
             log.error(message, e);
-            throw new MessagingException(message, e);
         }
     }
 
-    @Override
     public void publish(String topicName, String message) {
         try {
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-            mqttMessage.setQos(QOS);
+            mqttMessage.setQos(MqttConstants.QOS);
             mqttClient.publish(topicName, mqttMessage);
         } catch (Exception e) {
             String errorMessage = "Could not publish message: " + message;
             log.error(errorMessage, e);
             throw new MessagingException(errorMessage, e);
-        }
-    }
-
-    @Override
-    public void subscribe(final String topicName, final MessageListener messageListener) {
-        try {
-            mqttClient.subscribe(topicName);
-            mqttClient.setCallback(new MqttCallback() {
-                @Override
-                public void connectionLost(Throwable cause) {
-                    log.warn("Connection to the message broker is lost");
-                }
-
-                @Override
-                public void messageArrived(String topic, MqttMessage message) throws Exception {
-                    String messageText = new String(message.getPayload());
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Message received: %s", messageText));
-                    }
-                    messageListener.messageReceived(new Message(topic, messageText));
-                }
-
-                @Override
-                public void deliveryComplete(IMqttDeliveryToken token) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Message delivery complete: [message-id] %d",
-                                token.getMessageId()));
-                    }
-                }
-            });
-        } catch (Exception e) {
-            String message = "Could not subscribe to topic";
-            log.error(message, e);
-            throw new MessagingException(message, e);
         }
     }
 }

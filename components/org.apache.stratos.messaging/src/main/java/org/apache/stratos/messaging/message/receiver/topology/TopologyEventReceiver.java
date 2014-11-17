@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -33,7 +33,7 @@ public class TopologyEventReceiver implements Runnable {
     private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
     private TopologyEventMessageDelegator messageDelegator;
     private TopologyEventMessageListener messageListener;
-    private TopicSubscriber topicSubscriber;
+    private Subscriber subscriber;
     private boolean terminated;
 
     public TopologyEventReceiver() {
@@ -50,9 +50,9 @@ public class TopologyEventReceiver implements Runnable {
     public void run() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topicSubscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(topicSubscriber);
+            subscriber = new Subscriber(Constants.TOPOLOGY_TOPIC, messageListener);
+//            subscriber.setMessageListener(messageListener);
+            Thread subscriberThread = new Thread(subscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message receiver thread started");
@@ -80,7 +80,7 @@ public class TopologyEventReceiver implements Runnable {
     }
 
     public void terminate() {
-        topicSubscriber.terminate();
+        subscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }

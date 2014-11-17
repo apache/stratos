@@ -19,29 +19,20 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
-/**
- * Message broker topic connector interface.
- */
-public interface TopicConnector {
+import org.apache.stratos.messaging.broker.subscribe.MessageListener;
+
+public abstract class TopicSubscriber implements TopicConnector {
+
+    protected final MessageListener messageListener;
+    protected String topicName;
+
+    public TopicSubscriber (MessageListener messageListener, String topicName) {
+        this.messageListener = messageListener;
+        this.topicName = topicName;
+    }
 
     /**
-     * Create the connector client
+     * Subscribe to a topic with a message listener.
      */
-    public abstract void create ();
-
-    /**
-     * Return service URI
-     * @return
-     */
-    public abstract String getServerURI();
-
-    /**
-     * Establish a connection to the message broker.
-     */
-    public abstract void connect();
-
-    /**
-     * Disconnect from the message broker.
-     */
-    public abstract void disconnect();
+    public abstract void subscribe();
 }

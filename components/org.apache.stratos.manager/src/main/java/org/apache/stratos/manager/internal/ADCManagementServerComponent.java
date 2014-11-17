@@ -29,7 +29,7 @@ import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyEventR
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -89,8 +89,7 @@ public class ADCManagementServerComponent {
             if(log.isDebugEnabled()) {
                 log.debug("Starting instance status topic subscriber...");
             }
-            TopicSubscriber subscriber = new TopicSubscriber(Constants.INSTANCE_STATUS_TOPIC);
-            subscriber.setMessageListener(new InstanceStatusListener());
+            Subscriber subscriber = new Subscriber(Constants.INSTANCE_STATUS_TOPIC, new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
 

@@ -19,15 +19,12 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
-/**
- * Topic connector factory.
- */
-public class TopicConnectorFactory {
+public interface TopicPublisher extends TopicConnector {
+
     /**
-     * Create topic connector instance.
-     * @return
+     * Publish a message to a topic in the message broker.
+     * @param topicName
+     * @param message
      */
-    public static TopicConnector createConnector() {
-        return new MqttTopicConnector();
-    }
+    public abstract void publish(String topicName, String message);
 }

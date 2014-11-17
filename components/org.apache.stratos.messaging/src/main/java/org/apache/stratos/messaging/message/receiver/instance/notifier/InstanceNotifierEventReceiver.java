@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Constants;
 
@@ -32,7 +32,7 @@ public class InstanceNotifierEventReceiver implements Runnable {
 	private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
 	private final InstanceNotifierEventMessageDelegator messageDelegator;
 	private final InstanceNotifierEventMessageListener messageListener;
-	private TopicSubscriber topicSubscriber;
+	private Subscriber subscriber;
 	private boolean terminated;
 
 	public InstanceNotifierEventReceiver() {
@@ -49,9 +49,9 @@ public class InstanceNotifierEventReceiver implements Runnable {
 	public void run() {
 		try {
 			// Start topic subscriber thread
-			topicSubscriber = new TopicSubscriber(Constants.INSTANCE_NOTIFIER_TOPIC);
-			topicSubscriber.setMessageListener(messageListener);
-			Thread subscriberThread = new Thread(topicSubscriber);
+			subscriber = new Subscriber(Constants.INSTANCE_NOTIFIER_TOPIC, messageListener);
+//			subscriber.setMessageListener(messageListener);
+			Thread subscriberThread = new Thread(subscriber);
 			subscriberThread.start();
 			if (log.isDebugEnabled()) {
 				log.debug("InstanceNotifier event message receiver thread started");
@@ -79,11 +79,11 @@ public class InstanceNotifierEventReceiver implements Runnable {
 	}
 
 	public boolean isSubscribed() {
-		return ((topicSubscriber != null) && (topicSubscriber.isSubscribed()));
+		return ((subscriber != null) && (subscriber.isSubscribed()));
 	}
 
 	public void terminate() {
-		topicSubscriber.terminate();
+		subscriber.terminate();
 		messageDelegator.terminate();
 		terminated = true;
 	}

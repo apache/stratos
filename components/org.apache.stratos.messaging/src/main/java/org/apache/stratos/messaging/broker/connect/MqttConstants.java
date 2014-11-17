@@ -19,29 +19,22 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
-/**
- * Message broker topic connector interface.
- */
-public interface TopicConnector {
+import org.apache.stratos.messaging.util.Util;
+
+import java.io.File;
+import java.util.Properties;
+
+public class MqttConstants {
+
+    public static final String MQTT_URL_DEFAULT = "defaultValue";
 
     /**
-     * Create the connector client
+     * Quality of Service for message delivery:
+     * Setting it to 2 to make sure that message is guaranteed to deliver once
+     * using two-phase acknowledgement across the network.
      */
-    public abstract void create ();
-
-    /**
-     * Return service URI
-     * @return
-     */
-    public abstract String getServerURI();
-
-    /**
-     * Establish a connection to the message broker.
-     */
-    public abstract void connect();
-
-    /**
-     * Disconnect from the message broker.
-     */
-    public abstract void disconnect();
+    public static final int QOS = 2;
+    public static String CONFIG_FILE_LOCATION = System.getProperty("jndi.properties.dir");
+    public static Properties MQTT_PROPERTIES = Util.getProperties(CONFIG_FILE_LOCATION
+            + File.separator + "mqtttopic.properties");
 }

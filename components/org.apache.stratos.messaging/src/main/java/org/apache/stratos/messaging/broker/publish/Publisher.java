@@ -22,29 +22,29 @@ package org.apache.stratos.messaging.broker.publish;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.TopicConnector;
-import org.apache.stratos.messaging.broker.connect.TopicConnectorFactory;
+import org.apache.stratos.messaging.broker.connect.MqttTopicPublisher;
+import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 
 /**
  * A topic publisher for publishing messages to a message broker topic.
  * Messages will be published in JSON format.
  */
-public class TopicPublisher {
+public class Publisher {
 
-    private static final Log log = LogFactory.getLog(TopicPublisher.class);
+    private static final Log log = LogFactory.getLog(Publisher.class);
 
     private static final int PUBLISH_RETRY_INTERVAL = 60000;
 
 	private final String topicName;
-	private final TopicConnector topicConnector;
+	private final TopicPublisher topicPublisher;
 
     /**
 	 * @param topicName topic name of this publisher instance.
 	 */
-	TopicPublisher(String topicName) {
+	Publisher(String topicName) {
 		this.topicName = topicName;
-        this.topicConnector = TopicConnectorFactory.createConnector();
+        this.topicPublisher = new MqttTopicPublisher();
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic publisher created: [topic] %s", topicName));
 		}
@@ -55,15 +55,15 @@ public class TopicPublisher {
 	 */
 
 	public void publish(Object messageObj, boolean retry) {
-		synchronized (TopicPublisher.class) {
+		synchronized (Publisher.class) {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
             boolean published = false;
 
             while (!published) {
                 try {
-                    topicConnector.connect();
-                    topicConnector.publish(topicName, message);
+                    topicPublisher.connect();
+                    topicPublisher.publish(topicName, message);
                     published = true;
                 } catch (Exception e) {
                     if (!retry) {
@@ -82,7 +82,7 @@ public class TopicPublisher {
                     }
                 } finally {
                     try {
-                        topicConnector.disconnect();
+                        topicPublisher.disconnect();
                     } catch (MessagingException ignore) {
                     }
                 }

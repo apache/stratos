@@ -21,8 +21,8 @@ package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.TopicConnector;
-import org.apache.stratos.messaging.broker.connect.TopicConnectorFactory;
+import org.apache.stratos.messaging.broker.connect.MqttTopicSubscriber;
+import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -35,25 +35,24 @@ import javax.jms.JMSException;
  *
  * @author nirmal
  */
-public class TopicSubscriber implements Runnable {
+public class Subscriber implements Runnable {
 
-    private static final Log log = LogFactory.getLog(TopicSubscriber.class);
-    private final TopicConnector topicConnector;
+    private static final Log log = LogFactory.getLog(Subscriber.class);
+    private final TopicSubscriber topicSubscriber;
 
     private boolean terminated = false;
-	private MessageListener messageListener;
 	private final String topicName;
 
 	private TopicHealthChecker healthChecker;
-	private final javax.jms.TopicSubscriber topicSubscriber = null;
+	private final javax.jms.TopicSubscriber jmsTopicSubscriber = null;
 	private boolean subscribed;
 
 	/**
 	 * @param topicName topic name of this subscriber instance.
 	 */
-	public TopicSubscriber(String topicName) {
+	public Subscriber(String topicName, MessageListener messageListener) {
 		this.topicName = topicName;
-        this.topicConnector = TopicConnectorFactory.createConnector();
+        this.topicSubscriber = new MqttTopicSubscriber(messageListener, topicName);
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic subscriber created: [topic] %s", topicName));
@@ -64,14 +63,14 @@ public class TopicSubscriber implements Runnable {
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
-                    topicName, topicConnector.getServerURI()));
+                    topicName, topicSubscriber.getServerURI()));
 		}
 
 		/* Subscribing to specific topic */
         while(true) {
             try {
-                topicConnector.connect();
-                topicConnector.subscribe(topicName, messageListener);
+                topicSubscriber.connect();
+                topicSubscriber.subscribe();
                 subscribed = true;
                 // Continue waiting for messages
                 while (true) {
@@ -81,19 +80,19 @@ public class TopicSubscriber implements Runnable {
                     }
                 }
             } finally {
-                topicConnector.disconnect();
+                topicSubscriber.disconnect();
             }
         }
 		
 	}
 
-	/**
-	 * @param messageListener this MessageListener will get triggered each time this
-	 *                        subscription receives a message.
-	 */
-	public void setMessageListener(MessageListener messageListener) {
-		this.messageListener = messageListener;
-	}
+//	/**
+//	 * @param messageListener this MessageListener will get triggered each time this
+//	 *                        subscription receives a message.
+//	 */
+//	public void setMessageListener(MessageListener messageListener) {
+//		this.messageListener = messageListener;
+//	}
 
 	/**
 	 * Subscribes to a topic. If for some reason the connection to the topic got
@@ -134,8 +133,8 @@ public class TopicSubscriber implements Runnable {
 				}
 				// closes all sessions/connections
 				try {
-					if (topicSubscriber != null) {
-						topicSubscriber.close();
+					if (jmsTopicSubscriber != null) {
+						jmsTopicSubscriber.close();
 						if (log.isDebugEnabled()) {
 							log.debug(String.format("Topic subscriber closed: [topic] %s",
 							                        topicName));
