@@ -113,6 +113,8 @@ public class MqttTopicSubscriber extends TopicSubscriber {
             String errorMsg = "Error in disconnecting from Message Broker";
             log.error(errorMsg, e);
         }
+
+        closeConnection();
     }
 
     private void closeConnection () {
@@ -135,8 +137,12 @@ public class MqttTopicSubscriber extends TopicSubscriber {
         public synchronized void connectionLost(Throwable cause) {
 
             log.warn("MQTT Connection is lost, topic: " + topicName, cause);
-            disconnect();
-            closeConnection();
+            if (mqttClient.isConnected()) {
+                if(log.isDebugEnabled()){
+                    log.debug("MQTT client already re-connected");
+                }
+                return;
+            }
             log.info("Reconnection initiated for topic " + topicName);
             create();
             connect();

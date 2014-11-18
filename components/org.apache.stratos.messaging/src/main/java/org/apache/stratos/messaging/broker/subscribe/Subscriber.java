@@ -152,6 +152,7 @@ public class Subscriber implements Runnable {
 	public void terminate() {
 		healthChecker.terminate();
 		terminated = true;
+        topicSubscriber.disconnect();
 	}
 
 	public boolean isSubscribed() {
