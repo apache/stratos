@@ -44,7 +44,7 @@ public class NetworkPartitionContext implements Serializable{
     private float requestsServedPerInstance;
 
     private int minInstanceCount = 0, maxInstanceCount = 0;
-    private float  requiredInstanceCount;
+    private int requiredInstanceCount;
 
 
     private final String partitionAlgorithm;
