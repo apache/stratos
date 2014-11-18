@@ -31,6 +31,9 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.InstanceNotificationClient;
 import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
+import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMServiceClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -176,8 +179,6 @@ public class RuleTasksDelegator {
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
                 }
-                //Notify parent for checking scaling dependencies
-
 
             } else if(log.isDebugEnabled()){
                 log.debug("Returned member context is null, did not add to pending members");
@@ -188,6 +189,20 @@ public class RuleTasksDelegator {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
+    }
+
+
+    public void delegateScalingDependencyNotification(String clusterId, float factor) {
+
+
+        //Notify parent for checking scaling dependencies
+        AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        if(clusterMonitor instanceof VMServiceClusterMonitor) {
+
+            VMServiceClusterMonitor vmServiceClusterMonitor = (VMServiceClusterMonitor) clusterMonitor;
+            vmServiceClusterMonitor.sendClusterScalingEvent(factor);
+        }
+
     }
 
     // Original method. Assume this is invoked from mincheck.drl

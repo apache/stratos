@@ -23,8 +23,17 @@ package org.apache.stratos.autoscaler.monitor.events;
  */
 public abstract class MonitorScalingEvent extends MonitorEvent {
 
+    private float factor;
+
     public  MonitorScalingEvent(String id) {
         super(id);
     }
 
+    public float getFactor() {
+        return factor;
+    }
+
+    public void setFactor(float factor) {
+        this.factor = factor;
+    }
 }
