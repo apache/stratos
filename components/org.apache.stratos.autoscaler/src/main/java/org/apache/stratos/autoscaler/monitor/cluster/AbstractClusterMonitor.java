@@ -299,7 +299,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onParentEvent(MonitorStatusEvent statusEvent) {
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
         // send the ClusterTerminating event
 //        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
 //                ApplicationStatus.Terminating) {
@@ -308,7 +308,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onChildEvent(MonitorStatusEvent statusEvent) {
+    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
 
     }
 

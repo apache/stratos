@@ -23,8 +23,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.VMClusterContext;
 import org.apache.stratos.autoscaler.VMServiceClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
+import org.apache.stratos.autoscaler.monitor.events.ClusterScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -50,6 +54,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     private static final Log log = LogFactory.getLog(VMServiceClusterMonitor.class);
     private String lbReferenceType;
     private boolean hasPrimary;
+    private float scalingFactorBasedOnDependencies = 1.0f;
 
     public VMServiceClusterMonitor(String clusterId, VMServiceClusterContext vmServiceClusterContext) {
         super(clusterId, new AutoscalerRuleEvaluator(
@@ -151,6 +156,41 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
 
             }
+        	boolean rifReset = networkPartitionContext.isRifReset();
+            boolean memoryConsumptionReset = networkPartitionContext.isMemoryConsumptionReset();
+            boolean loadAverageReset = networkPartitionContext.isLoadAverageReset();
+
+            if (log.isDebugEnabled()) {
+                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
+                        + " flag of loadAverageReset" + loadAverageReset);
+            }
+            if (rifReset || memoryConsumptionReset || loadAverageReset) {
+
+                VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+                getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
+                getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+                getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+                getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+                getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                    log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
+                }
+
+                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
+                        , scaleCheckFactHandle, networkPartitionContext);
+
+                networkPartitionContext.setRifReset(false);
+                networkPartitionContext.setMemoryConsumptionReset(false);
+                networkPartitionContext.setLoadAverageReset(false);
+            } else if (log.isDebugEnabled()) {
+                log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
+                        "cycle for network partition %s", networkPartitionContext.getId()));
+            }
 
         }
     }
@@ -201,12 +241,12 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     }
 
     @Override
-    public void onChildEvent(MonitorStatusEvent statusEvent) {
+    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
 
     }
 
     @Override
-    public void onParentEvent(MonitorStatusEvent statusEvent) {
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
@@ -216,5 +256,28 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
             }
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId());
         }
+    }
+
+    @Override
+    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
+    @Override
+    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+        this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
+
+        for(NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()){
+
+            float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
+            int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount, 0);
+            networkPartitionContext.setRequiredInstanceCount(roundedRequiredInstanceCount);
+            //TODO get instance count rounding fraction(0) as a part of Autoscaling policy
+        }
+    }
+
+    public void sendClusterScalingEvent(float factor) {
+
+        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, factor, this.id);
     }
 }

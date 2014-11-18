@@ -20,10 +20,7 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -49,13 +46,29 @@ public class MonitorStatusEventBuilder {
         notifyParent(parent, applicationStatusEvent);
     }
 
+    public static void handleClusterScalingEvent(ParentComponentMonitor parent, float factor, String appId) {
+
+        //Send notifications to parent of the cluster monitor
+    }
+
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
-        parent.onChildEvent(statusEvent);
+        parent.onChildStatusEvent(statusEvent);
     }
 
     public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent) {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
-            activeChildMonitor.onParentEvent(statusEvent);
+            activeChildMonitor.onParentStatusEvent(statusEvent);
         }
     }
+
+    private static void notifyParent(ParentComponentMonitor parent, MonitorScalingEvent scalingEvent) {
+        parent.onChildScalingEvent(scalingEvent);
+    }
+
+    public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorScalingEvent scalingEvent) {
+        for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
+            activeChildMonitor.onParentScalingEvent(scalingEvent);
+        }
+    }
+
 }

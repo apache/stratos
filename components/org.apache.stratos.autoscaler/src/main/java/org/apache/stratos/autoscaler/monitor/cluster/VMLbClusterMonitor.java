@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.VMClusterContext;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -172,4 +173,13 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
         return "VMLbClusterMonitor [clusterId=" + getClusterId() + "]";
     }
 
+    @Override
+    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
+    @Override
+    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+
+    }
 }

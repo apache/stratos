@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
+import org.apache.stratos.autoscaler.monitor.events.ClusterScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
@@ -210,5 +212,15 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             }
             
         }
+    }
+
+    @Override
+    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+
+    }
+
+    @Override
+    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+
     }
 }
