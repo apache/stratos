@@ -28,7 +28,7 @@ import java.util.Stack;
  * This is to keep track of the group/cluster status and their dependencies
  */
 public abstract class ApplicationChildContext {
-    private List<ApplicationChildContext> applicationContextList;
+    private List<ApplicationChildContext> applicationChildContextList;
 
     private String id;
     protected boolean started;
@@ -43,22 +43,22 @@ public abstract class ApplicationChildContext {
     protected boolean hasScalingDependents;
 
     public ApplicationChildContext(String id, boolean killDependent) {
-        applicationContextList = new ArrayList<ApplicationChildContext>();
+        applicationChildContextList = new ArrayList<ApplicationChildContext>();
         statusLifeCycle = new Stack<ClusterStatus>();
         this.setHasStartupDependents(killDependent);
         this.id = id;
     }
 
-    public List<ApplicationChildContext> getApplicationContextList() {
-        return applicationContextList;
+    public List<ApplicationChildContext> getApplicationChildContextList() {
+        return applicationChildContextList;
     }
 
-    public void setApplicationContextList(List<ApplicationChildContext> applicationContextList) {
-        this.applicationContextList = applicationContextList;
+    public void setApplicationChildContextList(List<ApplicationChildContext> applicationChildContextList) {
+        this.applicationChildContextList = applicationChildContextList;
     }
 
     public void addApplicationContext(ApplicationChildContext applicationContext) {
-        applicationContextList.add(applicationContext);
+        applicationChildContextList.add(applicationContext);
 
     }
 
@@ -88,7 +88,7 @@ public abstract class ApplicationChildContext {
 
     public boolean hasChild() {
         boolean hasChild;
-        if(this.applicationContextList.isEmpty()) {
+        if(this.applicationChildContextList.isEmpty()) {
             hasChild = false;
         } else {
             hasChild = true;

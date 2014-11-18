@@ -109,7 +109,7 @@ public class DependencyTree {
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : contexts) {
-            return findApplicationContextWithId(id, context.getApplicationContextList());
+            return findApplicationContextWithId(id, context.getApplicationChildContextList());
         }
         return null;
     }
@@ -143,7 +143,7 @@ public class DependencyTree {
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : this.primaryApplicationContextList) {
-            return findParentContextWithId(context, id, context.getApplicationContextList());
+            return findParentContextWithId(context, id, context.getApplicationChildContextList());
         }
         return null;
     }
@@ -159,7 +159,7 @@ public class DependencyTree {
         //finding the application context which received the activated event and
         // returning it's immediate children as the dependencies.
         ApplicationChildContext context = findApplicationContextWithIdInPrimaryTree(id);
-        return context.getApplicationContextList();
+        return context.getApplicationChildContextList();
     }
 
     /**
@@ -186,7 +186,7 @@ public class DependencyTree {
         }
 
         for(ApplicationChildContext context : contexts) {
-            return traverseGraphByLevel(context.getApplicationContextList());
+            return traverseGraphByLevel(context.getApplicationChildContextList());
         }
         return null;
     }
@@ -208,7 +208,7 @@ public class DependencyTree {
         if (getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
-            findAllChildrenOfAppContext(applicationContext.getApplicationContextList(),
+            findAllChildrenOfAppContext(applicationContext.getApplicationChildContextList(),
                     allChildrenOfAppContext);
             return allChildrenOfAppContext;
         } else if (getTerminationBehavior() == TerminationBehavior.TERMINATE_ALL) {
@@ -221,6 +221,9 @@ public class DependencyTree {
         return allChildrenOfAppContext;
     }
 
+    public List<ApplicationChildContext> getScalingDependencies(String id) {
+        return null;
+    }
     /**
      * This will help to find out all the children of a particular node
      *
@@ -232,7 +235,7 @@ public class DependencyTree {
                                                                 List<ApplicationChildContext> childContexts) {
         for (ApplicationChildContext context : applicationContexts) {
             childContexts.add(context);
-            findAllChildrenOfAppContext(context.getApplicationContextList(), childContexts);
+            findAllChildrenOfAppContext(context.getApplicationChildContextList(), childContexts);
         }
         return childContexts;
     }
