@@ -225,8 +225,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         return clusterStateManager.getCurrentState();
     }
 
-    public void setStatus(ClusterStatus newStatus) {
-        clusterStateManager.changeState(newStatus);
+    public boolean setStatus(ClusterStatus newStatus) {
+        return clusterStateManager.changeState(newStatus);
     }
 
     public boolean equals(Object other) {

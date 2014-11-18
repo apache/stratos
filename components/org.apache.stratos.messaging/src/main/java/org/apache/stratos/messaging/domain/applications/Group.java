@@ -92,8 +92,8 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     }
 
     @Override
-    public void setStatus(GroupStatus newState) {
-        this.groupStateManager.changeState(newState);
+    public boolean setStatus(GroupStatus newState) {
+        return this.groupStateManager.changeState(newState);
     }
 
     public boolean equals(Object other) {

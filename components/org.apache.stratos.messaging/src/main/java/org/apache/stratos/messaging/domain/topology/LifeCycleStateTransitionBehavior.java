@@ -31,5 +31,5 @@ public interface LifeCycleStateTransitionBehavior<T extends LifeCycleState> {
 
     public T getStatus();
 
-    public void setStatus(T newState);
+    public boolean setStatus(T newState);
 }

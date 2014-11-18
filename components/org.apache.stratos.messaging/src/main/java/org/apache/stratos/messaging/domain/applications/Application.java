@@ -101,8 +101,8 @@ public class Application extends ParentComponent implements LifeCycleStateTransi
     }
 
     @Override
-    public void setStatus(ApplicationStatus newState) {
-        this.applicationStateManager.changeState(newState);
+    public boolean setStatus(ApplicationStatus newState) {
+        return this.applicationStateManager.changeState(newState);
     }
 
     public boolean equals(Object other) {

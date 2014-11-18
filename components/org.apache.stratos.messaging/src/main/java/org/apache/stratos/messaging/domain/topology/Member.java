@@ -96,8 +96,8 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     }
 
     @Override
-    public void setStatus(MemberStatus newState) {
-        this.memberStateManager.changeState(newState);
+    public boolean setStatus(MemberStatus newState) {
+        return this.memberStateManager.changeState(newState);
     }
 
     public boolean isActive () {
