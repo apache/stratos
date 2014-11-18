@@ -44,7 +44,8 @@ public class NetworkPartitionContext implements Serializable{
     private float requestsServedPerInstance;
 
     private int minInstanceCount = 0, maxInstanceCount = 0;
-    private int requiredInstanceCount;
+    private int requiredInstanceCountBasedOnStats;
+    private int requiredInstanceCountBasedOnDependencies;
 
 
     private final String partitionAlgorithm;
@@ -91,7 +92,8 @@ public class NetworkPartitionContext implements Serializable{
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
         }
-        requiredInstanceCount = minInstanceCount;
+        requiredInstanceCountBasedOnStats = minInstanceCount;
+        requiredInstanceCountBasedOnDependencies = minInstanceCount;
 
     }
 
@@ -402,11 +404,19 @@ public class NetworkPartitionContext implements Serializable{
         this.scaleDownRequestsCount += 1;
     }
 
-    public float getRequiredInstanceCount() {
-        return requiredInstanceCount;
+    public float getRequiredInstanceCountBasedOnStats() {
+        return requiredInstanceCountBasedOnStats;
     }
 
-    public void setRequiredInstanceCount(int requiredInstanceCount) {
-        this.requiredInstanceCount = requiredInstanceCount;
+    public void setRequiredInstanceCountBasedOnStats(int requiredInstanceCountBasedOnStats) {
+        this.requiredInstanceCountBasedOnStats = requiredInstanceCountBasedOnStats;
+    }
+
+    public int getRequiredInstanceCountBasedOnDependencies() {
+        return requiredInstanceCountBasedOnDependencies;
+    }
+
+    public void setRequiredInstanceCountBasedOnDependencies(int requiredInstanceCountBasedOnDependencies) {
+        this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
     }
 }

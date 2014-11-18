@@ -27,7 +27,6 @@ import org.apache.stratos.autoscaler.VMClusterContext;
 import org.apache.stratos.autoscaler.VMServiceClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.monitor.events.ClusterScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -271,7 +270,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
             float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
             int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount, 0);
-            networkPartitionContext.setRequiredInstanceCount(roundedRequiredInstanceCount);
+            networkPartitionContext.setRequiredInstanceCountBasedOnStats(roundedRequiredInstanceCount);
             //TODO get instance count rounding fraction(0) as a part of Autoscaling policy
         }
     }
