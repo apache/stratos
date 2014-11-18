@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.autoscaler.monitor.events.ClusterScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;

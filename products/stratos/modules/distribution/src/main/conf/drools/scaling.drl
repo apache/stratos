@@ -131,7 +131,7 @@ dialect "mvel"
 
             //Calculating the factor scaling
             float factor = numberOfRequiredInstances / $networkPartitionContext.getMinInstanceCount();
-            $delegator.delegateScalingDependencyNotification(clusterId, factor);
+            $delegator.delegateScalingDependencyNotification(clusterId, $networkPartitionContext.getId(), factor);
 
             while(count != additionalInstances){
             Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId);
@@ -145,7 +145,7 @@ dialect "mvel"
         } else if(scaleDown){
 
             float factor = numberOfRequiredInstances / $networkPartitionContext.getMinInstanceCount();
-            $delegator.delegateScalingDependencyNotification(clusterId, factor);
+            $delegator.delegateScalingDependencyNotification(clusterId, $networkPartitionContext.getId(), factor);
 
             log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
             if($networkPartitionContext.getScaleDownRequestsCount() > 5 ){
