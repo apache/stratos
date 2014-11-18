@@ -275,8 +275,8 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         }
     }
 
-    public void sendClusterScalingEvent(float factor) {
+    public void sendClusterScalingEvent(String networkPartitionId, float factor) {
 
-        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, factor, this.id);
+        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, factor, this.id);
     }
 }
