@@ -361,7 +361,7 @@ public class PartitionContext implements Serializable{
     }
 
     public int getNonTerminatedMemberCount() {
-        return activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+        return activeMembers.size() + pendingMembers.size();
     }
     
     public List<MemberContext> getActiveMembers() {

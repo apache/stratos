@@ -157,13 +157,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
             this.markMonitorAsTerminating(id);
-            if (this.status != ApplicationStatus.Terminating) {
-                //notification coming from the child, so that have to act upon it and decide other
-                //children status
-                //TODO onChildInactiveEvent(id);
-                //StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
-            }
-
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
             if (this.terminatingMonitorsList.contains(id)) {
@@ -175,19 +168,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             } else {
                 onChildTerminatedEvent(id);
             }
+
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if(this.inactiveMonitorsList.contains(id)) {
-                this.inactiveMonitorsList.remove(id);
+            if (this.terminatingMonitorsList.contains(id)) {
+                this.terminatingMonitorsList.remove(id);
+                this.aliasToActiveMonitorsMap.remove(id);
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-
-            if (this.getStatus() == ApplicationStatus.Terminating || this.getStatus() == ApplicationStatus.Terminated) {
+            if (this.status == ApplicationStatus.Terminating || this.status == ApplicationStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
-            } else {
-                onChildTerminatedEvent(id);
             }
         }
     }
