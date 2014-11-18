@@ -348,13 +348,13 @@ public class StatusChecker {
                 //send the terminated event
                 if (parent instanceof Application) {
                     //validating the life cycle
-                    if (application.getStatus().equals(ApplicationStatus.Terminated)) {
+                    //if (application.getStatus() != ApplicationStatus.Terminated) {
                         log.info("sending app terminated: " + appId);
                         ApplicationBuilder.handleApplicationTerminatedEvent(appId);
-                    } else {
-                        log.info("[Application] " + appId + " is in the [status] " +
-                                application.getStatus().toString() + ". Hence not sending terminated event");
-                    }
+//                    } else {
+//                        log.info("[Application] " + appId + " is in the [status] " +
+//                                application.getStatus().toString() + ". Hence not sending terminated event");
+//                    }
                     //StatusEventPublisher.sendApp(appId);
                 } else if (parent instanceof Group) {
                     //send activation to the parent
