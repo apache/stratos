@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.stratos.autoscaler.monitor.events.ClusterScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
@@ -27,18 +28,32 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
  */
 public interface EventHandler {
     /**
-     * Triggered when an event is received from a child.
+     * Triggered when a status event is received from a child.
      *
      * @param statusEvent
      */
-    public abstract void onChildEvent(MonitorStatusEvent statusEvent);
+    public abstract void onChildStatusEvent(MonitorStatusEvent statusEvent);
 
     /**
-     * Triggered when an event is received from the parent.
+     * Triggered when a status event is received from the parent.
      *
      * @param statusEvent
      */
-    public abstract void onParentEvent(MonitorStatusEvent statusEvent);
+    public abstract void onParentStatusEvent(MonitorStatusEvent statusEvent);
+
+    /**
+     * Triggered when a scaling event is received from a child.
+     *
+     * @param scalingEvent
+     */
+    public abstract void onChildScalingEvent(MonitorScalingEvent scalingEvent);
+
+    /**
+     * Triggered when a scaling event is received from the parent.
+     *
+     * @param scalingEvent
+     */
+    public abstract void onParentScalingEvent(MonitorScalingEvent scalingEvent);
 
     /**
      * Triggered when termination decision is made.

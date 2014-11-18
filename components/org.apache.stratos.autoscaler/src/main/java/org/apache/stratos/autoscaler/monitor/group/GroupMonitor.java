@@ -21,16 +21,15 @@ package org.apache.stratos.autoscaler.monitor.group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
-import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
+import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -63,7 +62,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
-    public void onChildEvent(MonitorStatusEvent statusEvent) {
+    public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
@@ -115,12 +114,31 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
-    public void onParentEvent(MonitorStatusEvent statusEvent) {
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
             ApplicationBuilder.handleGroupTerminatingEvent(appId, id);
         }
+    }
+
+    @Override
+    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+
+        GroupChildContext groupChildContext=
+                (GroupChildContext) scalingDependencyTree.findApplicationContextWithIdInScalingDependencyTree(id);
+        if (groupChildContext.hasScalingDependents()){
+
+            for (ApplicationChildContext applicationChildContext : groupChildContext.getApplicationChildContextList()){
+
+            }
+        }
+    }
+
+    @Override
+    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+
+        //
     }
 
     @Override
