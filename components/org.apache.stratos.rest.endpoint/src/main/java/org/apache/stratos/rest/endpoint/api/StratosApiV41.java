@@ -131,6 +131,66 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @POST
+    @Path("/cartridges")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
+    public Response deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
+            throws RestAPIException {
+        StratosApiV41Utils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
+                getTenantDomain());
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.type).build();
+        return Response.created(url).build();
+
+    }
+
+    @GET
+    @Path("/cartridges")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/cartridge")
+    public Response  getCartridges() throws RestAPIException {
+        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
+        ResponseBuilder rb = Response.ok();
+        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
+        return rb.build();
+    }
+
+    @DELETE
+    @Path("/cartridges/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
+    public Response unDeployCartridgeDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+        StratosApiV41Utils.undeployCartridge(cartridgeType);
+        return Response.noContent().build();
+    }
+
+    @GET
+    @Path("/cartridges/singleTenant")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/cartridge")
+    public Response getSingleTenantCartridges() throws RestAPIException {
+        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, false, getConfigContext());
+        ResponseBuilder rb = Response.ok();
+        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
+        return rb.build();
+    }
+
+    @GET
+    @Path("/cartridges/multiTenant")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/cartridge")
+    public Response getMultiTenantCartridges() throws RestAPIException {
+        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, true, getConfigContext());
+        ResponseBuilder rb = Response.ok();
+        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
+        return rb.build();
+    }
+
+    @POST
     @Path("/application/definition/")
     @Produces("application/json")
     @Consumes("application/json")
@@ -161,29 +221,9 @@ public class StratosApiV41 extends AbstractApi {
     }
 
 
-    @POST
-    @Path("/cartridge/definition/")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
-    public Response deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
-            throws RestAPIException {
-        StratosApiV41Utils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
-                getTenantDomain());
-        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.type).build();
-        return Response.created(url).build();
 
-    }
 
-    @DELETE
-    @Path("/cartridge/definition/{cartridgeType}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
-    public Response unDeployCartridgeDefinition(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        StratosApiV41Utils.undeployCartridge(cartridgeType);
-        return Response.noContent().build();
-    }
+
 
     @POST
     @Path("/group/definition/")
@@ -247,46 +287,14 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
-    @POST
-    @Path("/policy/deployment/partition")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/partition")
-    public Response deployPartition(Partition partition)
-            throws RestAPIException {
 
-        StratosApiV41Utils.deployPartition(partition);
-        URI url = uriInfo.getAbsolutePathBuilder().path(partition.id).build();
-        return Response.created(url).build();
-    }
+
+
+
+
 
     @POST
-    @Path("/policy/autoscale")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response deployAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
-            throws RestAPIException {
-
-        StratosApiV41Utils.deployAutoscalingPolicy(autoscalePolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
-        return Response.created(url).build();
-    }
-
-    @PUT
-    @Path("/policy/autoscale")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response updateAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
-            throws RestAPIException {
-
-        StratosApiV41Utils.updateAutoscalingPolicy(autoscalePolicy);
-        return Response.ok().build();
-    }
-
-    @POST
-    @Path("/policy/deployment")
+    @Path("/deploymentPolicies")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
@@ -299,7 +307,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @PUT
-    @Path("/policy/deployment")
+    @Path("/deploymentPolicies")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
@@ -311,7 +319,26 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/partition")
+    @Path("/deploymentPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
+    public Response getDeploymentPolicies() throws RestAPIException {
+        return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicies()).build();
+    }
+
+    @GET
+    @Path("/deploymentPolicies/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
+    public Response getDeploymentPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
+            throws RestAPIException {
+        return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicy(deploymentPolicyId)).build();
+    }
+
+    @GET
+    @Path("/partitions")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -319,8 +346,21 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(StratosApiV41Utils.getAvailablePartitions()).build();
     }
 
+    @POST
+    @Path("/partitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/partition")
+    public Response deployPartition(Partition partition)
+            throws RestAPIException {
+
+        StratosApiV41Utils.deployPartition(partition);
+        URI url = uriInfo.getAbsolutePathBuilder().path(partition.id).build();
+        return Response.created(url).build();
+    }
+
     @GET
-    @Path("/partition/{partitionId}")
+    @Path("/partitions/{partitionId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -329,7 +369,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/partition/group/{deploymentPolicyId}")
+    @Path("/deploymentPolicies/{deploymentPolicyId}/partitionGroup")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -339,17 +379,17 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/partition/{deploymentPolicyId}/{partitionGroupId}")
+    @Path("/deploymentPolicies/{deploymentPolicyId}/partitionGroup/{partitionGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartitions(@PathParam("deploymentPolicyId") String deploymentPolicyId,
+    public Response getPartitionGroup(@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                   @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId)).build();
     }
 
     @GET
-    @Path("/partition/{deploymentPolicyId}")
+    @Path("/deploymentPolicies/{deploymentPolicyId}/partition")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -360,64 +400,64 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/policy/autoscale")
+    @Path("/autoscalePolicies")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/autoscalingPolicy")
-    public Response getAutoscalePolicies() throws RestAPIException {
+    public Response getAutoscalingPolicies() throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getAutoScalePolicies()).build();
     }
 
+    @POST
+    @Path("/autoscalePolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
+    public Response deployAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+
+        StratosApiV41Utils.deployAutoscalingPolicy(autoscalePolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
+        return Response.created(url).build();
+    }
+
+    @PUT
+    @Path("/autoscalePolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
+    public Response updateAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
+            throws RestAPIException {
+
+        StratosApiV41Utils.updateAutoscalingPolicy(autoscalePolicy);
+        return Response.ok().build();
+    }
+
     @GET
-    @Path("/policy/autoscale/{autoscalePolicyId}")
+    @Path("/autoscalePolicies/{autoscalePolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/autoscalingPolicy")
-    public Response getAutoscalePolicies(@PathParam("autoscalePolicyId") String autoscalePolicyId)
+    public Response getAutoscalingPolicy(@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId)).build();
     }
 
-    @GET
-    @Path("/policy/deployment")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
-    public Response getDeploymentPolicies() throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicies()).build();
-    }
+
+
+
 
     @GET
-    @Path("/policy/deployment/{deploymentPolicyId}")
+    @Path("/cartridges/{cartridgeType}/deploymentPolicy")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
-    public Response getDeploymentPolicies(@PathParam("deploymentPolicyId") String deploymentPolicyId)
-            throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicy(deploymentPolicyId)).build();
-    }
-
-    @GET
-    @Path("{cartridgeType}/policy/deployment")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
-    public Response getValidDeploymentPolicies(@PathParam("cartridgeType") String cartridgeType)
+    public Response getValidDeploymentPoliciesOfCartridge(@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicies(cartridgeType)).build();
     }
 
-    @GET
-    @Path("/cartridge/tenanted/list")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getAvailableMultiTenantCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, true, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
-        return rb.build();
-    }
+
 
 
     @GET
@@ -469,29 +509,10 @@ public class StratosApiV41 extends AbstractApi {
         }
     }
 
-    @GET
-    @Path("/cartridge/list")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getAvailableSingleTenantCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, false, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
-        return rb.build();
-    }
 
-    @GET
-    @Path("/cartridge/available/list")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getAvailableCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
-        return rb.build();
-    }
+    /**
+
+    Commenting this API since it is no longer valid.
 
     @GET
     @Path("/cartridge/list/subscribed")
@@ -506,12 +527,14 @@ public class StratosApiV41 extends AbstractApi {
         return rb.build();
     }
 
+     */
+
     @GET
-    @Path("/cartridge/list/subscribed/group/{serviceGroup}")
+    @Path("/subscriptions/cartridges/groups/{serviceGroup}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
+    public Response getSubscribedCartridgesOfServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
         List<Cartridge> cartridgeList = StratosApiV41Utils.getSubscriptions(null, serviceGroup, getConfigContext());
         // Following is very important when working with axis2
         ResponseBuilder rb = Response.ok();
@@ -520,22 +543,22 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cartridge/info/{subscriptionAlias}")
+    @Path("/subscriptions/{subscriptionAlias}/cartridges")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+    public Response getSubscribedCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         ResponseBuilder rb = Response.ok();
         rb.entity(StratosApiV41Utils.getSubscription(subscriptionAlias, getConfigContext()));
         return rb.build();
     }
 
     @GET
-    @Path("/cartridge/available/info/{cartridgeType}")
+    @Path("/cartridges/{cartridgeType}/singleTenant")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
+    public Response getAvailableSingleTenantCartridge(@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
         ResponseBuilder rb = Response.ok();
         rb.entity(StratosApiV41Utils.getAvailableCartridgeInfo(cartridgeType, null, getConfigContext()));
@@ -543,7 +566,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cartridge/lb")
+    @Path("/cartridges/loadBalancer")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
@@ -553,11 +576,11 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cartridge/active/{cartridgeType}/{subscriptionAlias}")
+    @Path("/subscriptions/{subscriptionAlias}/cartridges/{cartridgeType}/active")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/instance")
-    public Response getActiveInstances(@PathParam("cartridgeType") String cartridgeType,
+    public Response getActiveMembersCountOfSubscription(@PathParam("cartridgeType") String cartridgeType,
                                        @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         ResponseBuilder rb = Response.ok();
         rb.entity(StratosApiV41Utils.getActiveInstances(cartridgeType, subscriptionAlias, getConfigContext()));
@@ -579,26 +602,28 @@ public class StratosApiV41 extends AbstractApi {
 //    }
 
     @GET
-    @Path("/cluster/")
+    @Path("/clusters")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cluster")
-    public Response getClustersForTenant() throws RestAPIException {
+    public Response getClustersOfTenant() throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getClustersForTenant(getConfigContext())).build();
     }
 
     @GET
-    @Path("/cluster/{cartridgeType}/")
+    @Path("/clusters/{cartridgeType}/")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cluster")
-    public Response getClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public Response getClustersOfCartridge(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         ResponseBuilder rb = Response.ok();
         rb.entity(StratosApiV41Utils.getClustersForTenantAndCartridgeType(getConfigContext(), cartridgeType));
         return rb.build();
     }
 
+    // /clusters/{cartridgeType} seems to do the same
+    @Deprecated
     @GET
     @Path("/cluster/service/{cartridgeType}/")
     @Produces("application/json")
@@ -611,19 +636,19 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cluster/{cartridgeType}/{subscriptionAlias}")
+    @Path("/clusters/{subscriptionAlias}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cluster")
-    public Response getCluster(@PathParam("cartridgeType") String cartridgeType,
-                               @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
+    public Response getClusterOfSubscription(@PathParam("cartridgeType") String cartridgeType,
+                               @PathParam("subscriptionAlias") String subscriptionAlias) throws  RestAPIException {
         ResponseBuilder rb = Response.ok();
         rb.entity(StratosApiV41Utils.getCluster(cartridgeType, subscriptionAlias, getConfigContext()));
         return rb.build();
     }
 
     @GET
-    @Path("/cluster/clusterId/{clusterId}")
+    @Path("/clusters/{clusterId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cluster")
@@ -646,6 +671,27 @@ public class StratosApiV41 extends AbstractApi {
             }
         }
         return Response.ok().entity(cluster).build();
+    }
+
+
+    @GET
+    @Path("/clusters/{subscriptionAlias}/loadBalancer")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/cluster")
+    public Response getLoadBalancerCluster(@PathParam("cartridgeType") String cartridgeType,
+                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("GET /cartridge/%s/subscription/%s/load-balancer-cluster", cartridgeType, subscriptionAlias));
+        }
+        Cartridge subscription = StratosApiV41Utils.getSubscription(subscriptionAlias, getConfigContext());
+        String lbClusterId = subscription.getLbClusterId();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Load balancer cluster-id found: %s", lbClusterId));
+        }
+        if (StringUtils.isNotBlank(lbClusterId)) {
+            Response.fromResponse(getCluster(lbClusterId));
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @PUT
@@ -985,7 +1031,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/tenant/list")
+    @Path("/tenants")
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
@@ -1002,7 +1048,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("tenant/search/{tenantDomain}")
+    @Path("tenants/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -1056,6 +1102,7 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
+    @Deprecated
     @POST
     @Path("tenant/availability/{tenantDomain}")
     @Consumes("application/json")
@@ -1113,7 +1160,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @POST
-    @Path("/service/definition")
+    @Path("/services")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/service")
@@ -1133,7 +1180,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/service")
+    @Path("/services")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/service")
@@ -1144,7 +1191,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/service/{serviceType}")
+    @Path("/services/{serviceType}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/service")
@@ -1251,7 +1298,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @POST
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
+    @Path("/subscriptions/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/domain")
     public Response addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
@@ -1263,7 +1310,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains")
+    @Path("/subscriptions/{subscriptionAlias}/domains")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/domain")
     public Response getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType, @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
@@ -1278,7 +1325,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
+    @Path("/subscriptions/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/domain")
     public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType, @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
@@ -1292,7 +1339,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @DELETE
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
+    @Path("/subscriptions/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/domain")
     public Response removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
@@ -1306,25 +1353,6 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
-    @GET
-    @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/load-balancer-cluster")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/cluster")
-    public Response getLoadBalancerCluster(@PathParam("cartridgeType") String cartridgeType,
-                                           @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("GET /cartridge/%s/subscription/%s/load-balancer-cluster", cartridgeType, subscriptionAlias));
-        }
-        Cartridge subscription = StratosApiV41Utils.getSubscription(subscriptionAlias, getConfigContext());
-        String lbClusterId = subscription.getLbClusterId();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Load balancer cluster-id found: %s", lbClusterId));
-        }
-        if (StringUtils.isNotBlank(lbClusterId)) {
-            Response.fromResponse(getCluster(lbClusterId));
-        }
-        return Response.status(Response.Status.NOT_FOUND).build();
-    }
 
     @POST
     @Path("/user")
