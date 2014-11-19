@@ -83,7 +83,6 @@ public class DependencyBuilder {
 
             if (startupOrders != null) {
                 for (StartupOrder startupOrder : startupOrders) {
-                    foundContext = null;
                     parentContext = null;
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
@@ -109,7 +108,7 @@ public class DependencyBuilder {
                                     parentContext = applicationContext;
                                 }
                             } else {
-                                if (foundContext == null) {
+                                if (parentContext == null) {
                                     //if existing context found, add it to child of existing context and
                                     //set the existing context as the next parent
                                     existingApplicationContext.addApplicationContext(applicationContext);
