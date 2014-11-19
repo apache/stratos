@@ -266,13 +266,13 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
 
-        for(NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()){
+        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(scalingEvent.getNetworkPartitionId());
 
-            float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
-            int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount, 0);
-            networkPartitionContext.setRequiredInstanceCountBasedOnStats(roundedRequiredInstanceCount);
-            //TODO get instance count rounding fraction(0) as a part of Autoscaling policy
-        }
+        float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
+        int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount, 0);
+        networkPartitionContext.setRequiredInstanceCountBasedOnStats(roundedRequiredInstanceCount);
+        //TODO get instance count rounding fraction(0) as a part of Autoscaling policy
+
     }
 
     public void sendClusterScalingEvent(String networkPartitionId, float factor) {

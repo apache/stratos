@@ -49,6 +49,8 @@ public class MonitorStatusEventBuilder {
     public static void handleClusterScalingEvent(ParentComponentMonitor parent, String networkPartitionId, float factor, String appId) {
 
         //Send notifications to parent of the cluster monitor
+        MonitorScalingEvent monitorScalingEvent = new MonitorScalingEvent(appId, networkPartitionId, factor) ;
+        notifyParent(parent, monitorScalingEvent);
     }
 
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {

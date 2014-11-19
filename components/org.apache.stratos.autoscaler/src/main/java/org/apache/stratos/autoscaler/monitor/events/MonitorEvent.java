@@ -25,4 +25,8 @@ public abstract class MonitorEvent {
         this.id = id;
     }
 
+    public String getId(){
+        return id;
+    }
+
 }
