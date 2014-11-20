@@ -152,7 +152,7 @@ body{ background: url('../images/stratos_background.png')  no-repeat; background
 .form-error{color: red;margin-bottom: .5em;}
 
 .no-item{margin-bottom: 5em;}
-.no-item h2{margin-bottom: 2em;}
+.no-item h2, .no-item h3{margin-bottom: 2em;}
 
 h2.truncate {
     width: 11em;

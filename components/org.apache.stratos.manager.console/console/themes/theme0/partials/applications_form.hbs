@@ -96,6 +96,17 @@
                         <div class="toggle-menu-description">{{description}} </div>
                     </a>
                 {{/each}}
+                {{#each content_body.sections.serviceGroup}}
+                    <a href="#"
+                       class="block col-md-4 grid-group-item border-right">
+                        <div class="toggle-menu-icon">
+                            <i class="fa fa-th-large"></i>
+                        </div>
+                        <h2 class="truncate">{{name}} </h2>
+
+                        <div class="toggle-menu-description">{{description}} </div>
+                    </a>
+                {{/each}}
             </div>
         </div>
     </div>

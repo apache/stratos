@@ -27,6 +27,8 @@ public class ServiceGroup implements Serializable {
 
     private String name;
 
+    private boolean isGroupscalingEnabled;
+
     private String [] subGroups;
 
     private String [] cartridges;
@@ -63,5 +65,13 @@ public class ServiceGroup implements Serializable {
 
     public void setDependencies(Dependencies dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public boolean isGroupscalingEnabled() {
+        return isGroupscalingEnabled;
+    }
+
+    public void setGroupscalingEnabled(boolean isGroupscalingEnabled) {
+        this.isGroupscalingEnabled = isGroupscalingEnabled;
     }
 }

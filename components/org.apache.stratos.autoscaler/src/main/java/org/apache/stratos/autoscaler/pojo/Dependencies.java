@@ -34,8 +34,8 @@ public class Dependencies implements Serializable {
         return terminationBehaviour;
     }
 
-    public void setTerminationBehaviour(String killBehaviour) {
-        this.terminationBehaviour = killBehaviour;
+    public void setTerminationBehaviour(String terminationBehaviour) {
+        this.terminationBehaviour = terminationBehaviour;
     }
 
     public String[] getStartupOrders() {

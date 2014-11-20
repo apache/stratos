@@ -166,7 +166,7 @@ public class DependencyBuilder {
 
                                     if (parentContext != null) {
 
-                                        parentContext.setHasScalingDependents(true);
+                                        parentContext.setGroupScalingEnabled(true);
                                         //appending the scaling order to already added parent group/cluster
                                         parentContext.addApplicationContext(applicationContext);
                                         parentContext = applicationContext;

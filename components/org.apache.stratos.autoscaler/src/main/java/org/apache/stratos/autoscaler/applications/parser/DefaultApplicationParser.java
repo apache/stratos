@@ -468,6 +468,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
 
+        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName()));
         group.setAutoscalingPolicy(groupCtxt.getAutoscalingPolicy());
         group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
         DependencyOrder dependencyOrder = new DependencyOrder();
@@ -517,15 +518,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private String [] getStartupOrderForGroup(GroupContext groupContext) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup;
-        try {
-            serviceGroup = RegistryManager.getInstance().getServiceGroup(groupContext.getName());
-        } catch (Exception e) {
-            String errorMsg = "Error in getting Service Group Definition for [ " + groupContext.getName() +
-                    " ] from Registry";
-            log.error(errorMsg, e);
-            throw new ApplicationDefinitionException(errorMsg, e);
-        }
+        ServiceGroup serviceGroup = getServiceGroup(groupContext.getName());
 
         if (serviceGroup == null) {
             handleError("Service Group Definition not found for name " + groupContext.getName());
@@ -563,15 +556,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private String getKillbehaviour (String serviceGroupName) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup;
-        try {
-            serviceGroup = RegistryManager.getInstance().getServiceGroup(serviceGroupName);
-        } catch (Exception e) {
-            String errorMsg = "Error in getting Service Group Definition for [ " + serviceGroupName +
-                    " ] from Registry";
-            log.error(errorMsg, e);
-            throw new ApplicationDefinitionException(errorMsg, e);
-        }
+        ServiceGroup serviceGroup = getServiceGroup(serviceGroupName);
 
         if (serviceGroup == null) {
             handleError("Service Group Definition not found for name " + serviceGroupName);
@@ -584,6 +569,43 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         return null;
 
+    }
+
+    /**
+     * Checks if group scaling is enabled for Service Group with name serviceGroupName
+     *
+     * @param serviceGroupName name of the Service Group
+     * @return true if group scaling is enabled, else false
+     * @throws ApplicationDefinitionException if no Service Group found for the given serviceGroupName
+     */
+    private boolean isGroupScalingEnabled (String serviceGroupName) throws ApplicationDefinitionException {
+
+        ServiceGroup serviceGroup = getServiceGroup(serviceGroupName);
+
+        if (serviceGroup == null) {
+            handleError("Service Group Definition not found for name " + serviceGroupName);
+        }
+
+        return serviceGroup.isGroupscalingEnabled();
+    }
+
+    /**
+     * Retrieves deployed Service Group instance
+     *
+     * @param serviceGroupName name of the Service Group
+     * @return ServiceGroup instance if exists
+     * @throws ApplicationDefinitionException if no Service Group found for the given serviceGroupName
+     */
+    private ServiceGroup getServiceGroup (String serviceGroupName) throws ApplicationDefinitionException {
+
+        try {
+            return RegistryManager.getInstance().getServiceGroup(serviceGroupName);
+        } catch (Exception e) {
+            String errorMsg = "Error in getting Service Group Definition for [ " + serviceGroupName +
+                    " ] from Registry";
+            log.error(errorMsg, e);
+            throw new ApplicationDefinitionException(errorMsg, e);
+        }
     }
 
     /**
@@ -715,11 +737,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     public static String encryptPassword(String repoUserPassword, String secKey) {
         String encryptPassword = "";
-        String secret = secKey; // secret key length must be 16
         SecretKey key;
         Cipher cipher;
         Base64 coder;
-        key = new SecretKeySpec(secret.getBytes(), "AES");
+        key = new SecretKeySpec(secKey.getBytes(), "AES");
         try {
             cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
             coder = new Base64();
