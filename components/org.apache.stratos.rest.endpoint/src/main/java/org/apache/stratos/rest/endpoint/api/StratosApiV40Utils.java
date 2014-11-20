@@ -981,7 +981,7 @@ public class StratosApiV40Utils {
         if(cluster == null) {
             throw new RestAPIException("No matching cluster found for [cartridge type]: "+cartridgeType+ " [alias] "+subscriptionAlias);
         } else{
-            return PojoConverter.populateClusterPojos(cluster);
+            return PojoConverter.populateClusterPojos(cluster, null);
         }
     }
 
@@ -992,7 +992,7 @@ public class StratosApiV40Utils {
         ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
                 new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
@@ -1009,7 +1009,7 @@ public class StratosApiV40Utils {
         List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
                 new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
@@ -1025,7 +1025,7 @@ public class StratosApiV40Utils {
                 .getClusters(cartridgeType);
         List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters = new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster = new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters
                 .size()];

@@ -417,9 +417,10 @@ public class PojoConverter {
         return partitionGroups;
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster populateClusterPojos(Cluster cluster) {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster populateClusterPojos(Cluster cluster, String alias) {
         org.apache.stratos.rest.endpoint.bean.topology.Cluster cluster1 = new
                 org.apache.stratos.rest.endpoint.bean.topology.Cluster();
+        cluster1.alias = alias;
         cluster1.serviceName = cluster.getServiceName();
         cluster1.clusterId = cluster.getClusterId();
         cluster1.isLbCluster = cluster.isLbCluster();
@@ -427,6 +428,7 @@ public class PojoConverter {
         cluster1.property = getPropertyBeans(cluster.getProperties());
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
+        cluster1.status = cluster.getStatus().toString();
 
         for (org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
             Member member = new Member();
@@ -1053,6 +1055,7 @@ public class PojoConverter {
         }
 
         GroupBean groupBean = new GroupBean();
+        groupBean.setStatus(group.getStatus().toString());
         groupBean.setAlias(group.getUniqueIdentifier());
         groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());

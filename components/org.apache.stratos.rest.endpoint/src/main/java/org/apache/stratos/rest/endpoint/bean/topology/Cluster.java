@@ -26,6 +26,8 @@ import java.util.List;
 @XmlRootElement(name="clusters")
 public class Cluster {
 
+    public String alias;
+
 	public String serviceName;
 
     public String clusterId;
@@ -37,6 +39,8 @@ public class Cluster {
     public List<String> hostNames;
 
     public boolean isLbCluster;
+
+    public String status;
     
     public List<PropertyBean> property;
 

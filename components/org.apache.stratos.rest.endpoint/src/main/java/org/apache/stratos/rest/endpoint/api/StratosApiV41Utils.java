@@ -1184,7 +1184,7 @@ public class StratosApiV41Utils {
         if (cluster == null) {
             throw new RestAPIException("No matching cluster found for [cartridge type]: " + cartridgeType + " [alias] " + subscriptionAlias);
         } else {
-            return PojoConverter.populateClusterPojos(cluster);
+            return PojoConverter.populateClusterPojos(cluster, null);
         }
     }
 
@@ -1195,7 +1195,7 @@ public class StratosApiV41Utils {
         ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
                 new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
@@ -1212,7 +1212,7 @@ public class StratosApiV41Utils {
         List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
                 new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
@@ -1228,7 +1228,7 @@ public class StratosApiV41Utils {
                 .getClusters(cartridgeType);
         List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters = new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(PojoConverter.populateClusterPojos(cluster));
+            clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
         org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster = new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters
                 .size()];
@@ -1561,7 +1561,7 @@ public class StratosApiV41Utils {
             } finally {
                 TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
             }
-            applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster));
+            applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster, entry.getKey()));
         }
     }
 
@@ -1582,7 +1582,7 @@ public class StratosApiV41Utils {
             String alias = x.getKey();
             ClusterDataHolder clusterHolder = x.getValue();
             Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterHolder.getServiceType()).getCluster(clusterHolder.getClusterId());
-            groupBean.addCluster(PojoConverter.populateClusterPojos(topLevelCluster));
+            groupBean.addCluster(PojoConverter.populateClusterPojos(topLevelCluster, null));
         }
     }
 

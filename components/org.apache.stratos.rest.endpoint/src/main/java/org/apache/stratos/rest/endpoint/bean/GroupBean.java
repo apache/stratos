@@ -29,6 +29,7 @@ public class GroupBean {
     private List<GroupBean> subGroups = null;
     private List<Cluster> clusters = null;
     private String alias;
+    private String status;
     private String deploymentPolicy;
     private String autoScalingPolicy;
 
@@ -82,5 +83,13 @@ public class GroupBean {
 
     public String getAutoScalingPolicy() {
         return autoScalingPolicy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
