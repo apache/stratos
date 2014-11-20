@@ -22,6 +22,8 @@ package org.apache.stratos.messaging.domain.applications;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 /**
@@ -43,6 +45,8 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     private String applicationId;
     // Life cycle state manager
     protected LifeCycleStateManager<GroupStatus> groupStateManager;
+    // Group Instance map, key = group instance Id
+    private Map<String, GroupInstanceContext> groupInstanceIdToGroupInstanceContextMap;
 
     public Group (String applicationId, String name, String alias) {
         super();
@@ -94,6 +98,29 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     @Override
     public boolean setStatus(GroupStatus newState) {
         return this.groupStateManager.changeState(newState);
+    }
+
+    public void addGroupInstanceContext (GroupInstanceContext groupInstanceContext) {
+        // the map will be created upon the first attempt to insert a GroupInstanceContext object.
+        if (groupInstanceIdToGroupInstanceContextMap == null) {
+            synchronized (this) {
+                if (groupInstanceIdToGroupInstanceContextMap == null) {
+                    groupInstanceIdToGroupInstanceContextMap = new HashMap<String, GroupInstanceContext>();
+                }
+            }
+        }
+
+        groupInstanceIdToGroupInstanceContextMap.put(groupInstanceContext.getGroupInstanceId(),
+                groupInstanceContext);
+    }
+
+    public GroupInstanceContext getGroupInstanceContext (String groupInstanceId) {
+        // if the map is not created yet, return null
+        if (groupInstanceIdToGroupInstanceContextMap == null) {
+            return null;
+        }
+
+        return groupInstanceIdToGroupInstanceContextMap.get(groupInstanceId);
     }
 
     public boolean equals(Object other) {

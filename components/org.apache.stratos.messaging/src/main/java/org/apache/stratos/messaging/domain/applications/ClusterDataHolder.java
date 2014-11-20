@@ -20,6 +20,8 @@
 package org.apache.stratos.messaging.domain.applications;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Data Holder for a Cluster.
@@ -32,6 +34,8 @@ public class ClusterDataHolder implements Serializable {
     private String serviceType;
     // Cluster id
     private String clusterId;
+    // Group Instance map, key = group instance Id
+    private Map<String, GroupInstanceContext> groupInstanceIdToGroupInstanceContextMap;
 
     public ClusterDataHolder (String serviceType, String clusterId) {
 
@@ -39,12 +43,35 @@ public class ClusterDataHolder implements Serializable {
         this.clusterId = clusterId;
     }
 
-
     public String getServiceType() {
         return serviceType;
     }
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public void addGroupInstanceContext (GroupInstanceContext groupInstanceContext) {
+        // the map will be created upon the first attempt to insert a GroupInstanceContext object.
+        if (groupInstanceIdToGroupInstanceContextMap == null) {
+            synchronized (this) {
+                if (groupInstanceIdToGroupInstanceContextMap == null) {
+                    groupInstanceIdToGroupInstanceContextMap =
+                            new HashMap<String, GroupInstanceContext>();
+                }
+            }
+        }
+
+        groupInstanceIdToGroupInstanceContextMap.put(groupInstanceContext.getGroupInstanceId(),
+                groupInstanceContext);
+    }
+
+    public GroupInstanceContext getGroupInstanceContext (String groupInstanceId) {
+        // if the map is not created yet, return null
+        if (groupInstanceIdToGroupInstanceContextMap == null) {
+            return null;
+        }
+
+        return groupInstanceIdToGroupInstanceContextMap.get(groupInstanceId);
     }
 }
