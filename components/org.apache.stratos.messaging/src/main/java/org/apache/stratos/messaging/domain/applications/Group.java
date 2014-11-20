@@ -43,6 +43,8 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     private String autoscalingPolicy;
     // application id
     private String applicationId;
+    // flag for Group level scaling
+    private boolean isGroupScalingEnabled;
     // Life cycle state manager
     protected LifeCycleStateManager<GroupStatus> groupStateManager;
     // Group Instance map, key = group instance Id
@@ -53,6 +55,7 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
         this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
+        this.isGroupScalingEnabled = false;
         this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
 
@@ -142,5 +145,13 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
 
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }
