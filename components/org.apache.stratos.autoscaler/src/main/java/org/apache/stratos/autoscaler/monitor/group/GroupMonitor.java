@@ -20,10 +20,8 @@ package org.apache.stratos.autoscaler.monitor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.AbstractClusterContext;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -33,13 +31,11 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -130,7 +126,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 (GroupChildContext) scalingDependencyTree.findApplicationContextWithIdInScalingDependencyTree(id);
 
         //Notifying children, if this group has scaling dependencies
-        if (currentChildContextInScalingTree.hasScalingDependents()){
+        if (currentChildContextInScalingTree.isGroupScalingEnabled()){
             for (ApplicationChildContext applicationChildContext : currentChildContextInScalingTree.getApplicationChildContextList()){
 
                 //Get group monitor so that it can notify it's children

@@ -44,7 +44,7 @@ public abstract class Monitor implements EventHandler {
 
     protected boolean hasStartupDependents;
 
-    protected boolean hasScalingDependents;
+    protected boolean isGroupScalingEnabled;
 
     public String getId() {
         return id;
@@ -96,16 +96,16 @@ public abstract class Monitor implements EventHandler {
         return hasStartupDependents;
     }
 
-    public boolean hasScalingDependents() {
-        return hasScalingDependents;
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
     }
 
     public void setHasStartupDependents(boolean hasDependent) {
         this.hasStartupDependents = hasDependent;
     }
 
-    public void setHasScalingDependents(boolean hasDependent) {
-        this.hasScalingDependents = hasDependent;
+    public void setGroupScalingEnabled(boolean hasDependent) {
+        this.isGroupScalingEnabled = hasDependent;
     }
 
     public boolean hasIndependentChild() {

@@ -204,10 +204,10 @@ public class ApplicationMonitorFactory {
             }
 
             //setting the scaling dependent behaviour of the cluster monitor
-            if(parentMonitor.hasScalingDependents() || (context.hasScalingDependents())) {
-                clusterMonitor.setHasScalingDependents(true);
+            if(parentMonitor.isGroupScalingEnabled() || (context.isGroupScalingEnabled())) {
+                clusterMonitor.setGroupScalingEnabled(true);
             } else {
-                clusterMonitor.setHasScalingDependents(false);
+                clusterMonitor.setGroupScalingEnabled(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
             if (cluster.getStatus() != clusterMonitor.getStatus()) {
