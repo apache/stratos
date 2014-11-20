@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Abstract class for the monitoring functionality in autoscaler.
  */
@@ -31,107 +28,99 @@ public abstract class Monitor implements EventHandler {
     protected String appId;
     //Parent monitor of this monitor, for appMonitor parent will be none.
     protected ParentComponentMonitor parent;
-    //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
-    protected Map<String, Monitor> aliasToActiveMonitorsMap;
-    //monitors map, stopped monitors
-    protected List<String> inactiveMonitorsList;
-
-    protected List<String> terminatingMonitorsList;
-
-    //flag will get set to true in MonitorTerminateAllEvent when termination of
-    // this monitor decided by its parent
-    protected boolean terminateChildren = false;
-
+    //has startup dependents
     protected boolean hasStartupDependents;
-
+    //has scaling dependents
     protected boolean hasScalingDependents;
 
+    /**
+     * Return the id of the monitor
+     *
+     * @return id
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Set the id of the monitor
+     *
+     * @param id
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * To get the appId of the monitor
+     *
+     * @return app id
+     */
     public String getAppId() {
         return appId;
     }
 
+    /**
+     * To set the app id of the monitor
+     *
+     * @param appId
+     */
     public void setAppId(String appId) {
         this.appId = appId;
     }
 
-    public Map<String, Monitor> getAliasToActiveMonitorsMap() {
-        return aliasToActiveMonitorsMap;
-    }
-
-    public void setAliasToActiveMonitorsMap(Map<String, Monitor> aliasToActiveMonitorsMap) {
-        this.aliasToActiveMonitorsMap = aliasToActiveMonitorsMap;
-    }
-
+    /**
+     * To get the parent of the monitor
+     *
+     * @return the parent
+     */
     public ParentComponentMonitor getParent() {
         return parent;
     }
 
+    /**
+     * To set the parent of the monitor
+     *
+     * @param parent
+     */
     public void setParent(ParentComponentMonitor parent) {
         this.parent = parent;
         this.appId = parent.getAppId();
     }
 
-    public boolean hasActiveMonitors() {
-        boolean hasMonitor = false;
-        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty())) {
-            hasMonitor = true;
-        }
-        return hasMonitor;
-    }
-
-    public boolean hasMonitors() {
-
-        return this.aliasToActiveMonitorsMap != null;
-    }
-
+    /**
+     * Return whether this monitor has startup dependencies
+     *
+     * @return hasStartupDependents
+     */
     public boolean hasStartupDependents() {
         return hasStartupDependents;
     }
 
+    /**
+     * Return whether this monitor has scaling dependencies
+     *
+     * @return startup dependencies exist or not
+     */
     public boolean hasScalingDependents() {
         return hasScalingDependents;
     }
 
+    /**
+     * To set whether monitor has any startup dependencies
+     *
+     * @param hasDependent
+     */
     public void setHasStartupDependents(boolean hasDependent) {
         this.hasStartupDependents = hasDependent;
     }
 
+    /**
+     * To set whether monitor has any scaling dependencies
+     *
+     * @param hasDependent
+     */
     public void setHasScalingDependents(boolean hasDependent) {
         this.hasScalingDependents = hasDependent;
-    }
-
-    public boolean hasIndependentChild() {
-        boolean hasInDepChild = false;
-        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
-            if (!monitor.hasStartupDependents()) {
-                hasInDepChild = true;
-                break;
-            }
-        }
-        return hasInDepChild;
-    }
-
-    public List<String> getAliasToInActiveMonitorsMap() {
-        return this.inactiveMonitorsList;
-    }
-
-    public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
-        this.inactiveMonitorsList = inactiveMonitorsList;
-    }
-
-    public List<String> getTerminatingMonitorsList() {
-        return terminatingMonitorsList;
-    }
-
-    public void setTerminatingMonitorsList(List<String> terminatingMonitorsList) {
-        this.terminatingMonitorsList = terminatingMonitorsList;
     }
 }

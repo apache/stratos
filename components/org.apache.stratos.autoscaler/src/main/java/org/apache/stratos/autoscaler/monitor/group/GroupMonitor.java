@@ -67,6 +67,28 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         startDependency();
     }
 
+    /**
+     * Will set the status of the monitor based on Topology Group status/child status like scaling
+     *
+     * @param status status of the group
+     */
+    public void setStatus(GroupStatus status) {
+
+        //if(this.status != status) {
+        this.status = status;
+        //notifying the parent
+        if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
+            log.info("[Group] " + this.id + "is not notifying the parent, " +
+                    "since it is identified as the independent unit");
+        } else {
+            // notify parent
+            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
+            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+        }
+        //notify the children about the state change
+        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId()));
+    }
+
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
@@ -151,63 +173,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
-    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
-        this.terminateChildren = true;
-
-    }
-
-    @Override
     public void onEvent(MonitorScalingEvent scalingEvent) {
 
-    }
-
-    public ParentComponentMonitor getParent() {
-        return parent;
-    }
-
-    public void setParent(ParentComponentMonitor parent) {
-        this.parent = parent;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    private boolean isParent(String id) {
-        if (this.parent.getId().equals(id)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public GroupStatus getStatus() {
         return status;
     }
 
-    /**
-     * Will set the status of the monitor based on Topology Group status/child status like scaling
-     *
-     * @param status
-     */
-    public void setStatus(GroupStatus status) {
-
-        //if(this.status != status) {
-        this.status = status;
-        //notifying the parent
-        if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
-            log.info("[Group] " + this.id + "is not notifying the parent, " +
-                    "since it is identified as the independent unit");
-        } else {
-            // notify parent
-            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
-            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
-        }
-        //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId()));
-    }
 }

@@ -35,10 +35,6 @@ public class DependencyTree {
 
     private List<ApplicationChildContext> scalingDependencyApplicationContextList;
 
-    private boolean started;
-
-    private boolean terminated;
-
     private TerminationBehavior terminationBehavior;
 
     private boolean startupOder;
@@ -274,22 +270,6 @@ public class DependencyTree {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public boolean isStartupOder() {
-        return startupOder;
-    }
-
-    public void setStartupOder(boolean startupOder) {
-        this.startupOder = startupOder;
-    }
-
-    public boolean isReverseStartupOrder() {
-        return reverseStartupOrder;
-    }
-
-    public void setReverseStartupOrder(boolean reverseStartupOrder) {
-        this.reverseStartupOrder = reverseStartupOrder;
     }
 
 }

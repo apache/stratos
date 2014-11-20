@@ -123,8 +123,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 return monitor;
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor.getAliasToActiveMonitorsMap() != null) {
-                    return findGroupMonitor(id, monitor.getAliasToActiveMonitorsMap().values());
+                if (monitor instanceof ParentComponentMonitor) {
+                    return findGroupMonitor(id, ((ParentComponentMonitor)monitor).
+                                                            getAliasToActiveMonitorsMap().values());
                 }
             }
         }
@@ -196,11 +197,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     @Override
     public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
-
-    }
-
-    @Override
-    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
 
     }
 
