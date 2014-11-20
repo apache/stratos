@@ -229,7 +229,11 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
             throw new ADCException(e);
-        }
+        } catch (AutoScalerServiceAutoScalerExceptionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
     }
 
 
