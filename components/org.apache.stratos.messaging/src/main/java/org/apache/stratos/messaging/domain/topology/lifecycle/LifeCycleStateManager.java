@@ -41,7 +41,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
         this.identifier = identifier;
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        log.info("Life Cycle State Manager started for Topology element [ " + identifier +
+        log.info("Life Cycle State Manager started for Element [ " + identifier +
                 " ], initial state: " + initialState.toString());
     }
 
@@ -83,16 +83,16 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
         if (getCurrentState() != nextState) {
             stateStack.push(nextState);
             stateChanged = true;
-            log.info("Topology element [ " + identifier + " ]'s life Cycle State changed from [ " +
+            log.info("Element [ " + identifier + " ]'s life Cycle State changed from [ " +
                     getPreviousState() + " ] to [ " + getCurrentState() + " ]");
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Topology element [ " + identifier +" ]'s life Cycle State has been " +
+                log.debug("Element [ " + identifier +" ]'s life Cycle State has been " +
                         "already updated to [ " + nextState + " ]");
             }
         }
         if (log.isDebugEnabled()) {
-            printStateTransitions(stateStack);
+            printStateTransitions(stateStack, identifier);
         }
 
         return stateChanged;
@@ -128,10 +128,10 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     /**
      * Print utility to print transitioned states
      */
-    private static <T extends LifeCycleState> void printStateTransitions (Stack<T> stateStack) {
+    private static <T extends LifeCycleState> void printStateTransitions (Stack<T> stateStack, String id) {
 
         // print all transitions till now
-        StringBuilder stateTransitions = new StringBuilder("Transitioned States:  [ START --> ");
+        StringBuilder stateTransitions = new StringBuilder("Transitioned States for " + id + ":  [ START --> ");
         for (T aStateStack : stateStack) {
             stateTransitions.append(aStateStack).append(" --> ");
         }
