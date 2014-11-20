@@ -94,12 +94,13 @@ switch (formtype) {
 
     case "deployments":
         list_data = util.RESTCalls.getPolicyDeployment();
-
-        if(list_data == 'null') {
+        if(list_data == null) {
             list_data = util.RESTCalls.getPartitions()
             if(list_data.partition && list_data.partition.length === 0){
                 list_data = null;
                 dependancy = 'partitions';
+            }else{
+                list_data = null;
             }
         }
         break;
