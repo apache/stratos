@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
@@ -34,7 +35,7 @@ import java.util.*;
  * Key: serviceName, clusterId
  */
 @XmlRootElement
-public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<ClusterStatus> {
+public class Cluster implements Serializable {
 
     private static final long serialVersionUID = -361960242360176077L;
 
@@ -58,7 +59,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
-    private LifeCycleStateManager<ClusterStatus> clusterStateManager;
+    protected Map<String, ClusterInstanceContext> instanceIdToInstanceContextMap;
+    //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
@@ -69,7 +71,8 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
-        this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
+        this.instanceIdToInstanceContextMap = new HashMap<String, ClusterInstanceContext>();
+        //this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
         // temporary; should be removed
         //this.status = ClusterStatus.Created;
     }
@@ -210,23 +213,45 @@ public class Cluster implements Serializable, LifeCycleStateTransitionBehavior<C
         return partitionIds.keySet();
     }
 
-    @Override
-    public boolean isStateTransitionValid(ClusterStatus newState) {
-        return clusterStateManager.isStateTransitionValid(newState);
+    public boolean isStateTransitionValid(ClusterStatus newState, String clusterInstanceId) {
+        return instanceIdToInstanceContextMap.get(clusterInstanceId).isStateTransitionValid(newState);
     }
 
-    @Override
-    public Stack<ClusterStatus> getTransitionedStates() {
-        return clusterStateManager.getStateStack();
+    public Stack<ClusterStatus> getTransitionedStates(String clusterInstanceId) {
+        return instanceIdToInstanceContextMap.get(clusterInstanceId).getTransitionedStates();
     }
 
-    public ClusterStatus getStatus() {
+    public ClusterStatus getStatus(String applicationInstanceId) {
         //return status;
-        return clusterStateManager.getCurrentState();
+        return instanceIdToInstanceContextMap.get(applicationInstanceId).getStatus();
     }
 
-    public boolean setStatus(ClusterStatus newStatus) {
-        return clusterStateManager.changeState(newStatus);
+    public boolean setStatus(ClusterStatus newStatus, String applicationInstanceId) {
+        return instanceIdToInstanceContextMap.get(applicationInstanceId).setStatus(newStatus);
+    }
+
+    public void addInstanceContext (String instanceId, ClusterInstanceContext instanceContext) {
+
+        instanceIdToInstanceContextMap.put(instanceId, instanceContext);
+    }
+
+    public ClusterInstanceContext getInstanceContexts (String instanceId) {
+        // if map is empty, return null
+        if (instanceIdToInstanceContextMap.isEmpty()) {
+            return null;
+        }
+
+        // if instanceId is null, just get the first InstanceContext
+        if (instanceId == null) {
+            return instanceIdToInstanceContextMap.entrySet().iterator().next().getValue();
+        }
+
+        return instanceIdToInstanceContextMap.get(instanceId);
+    }
+
+    public int getInstanceContextCount () {
+
+        return instanceIdToInstanceContextMap.keySet().size();
     }
 
     public boolean equals(Object other) {

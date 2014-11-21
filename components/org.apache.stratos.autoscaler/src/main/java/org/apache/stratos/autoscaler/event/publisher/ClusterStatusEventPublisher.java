@@ -28,7 +28,6 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
 /**
@@ -44,7 +43,7 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Created)) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Created, null)) {
                     if (log.isInfoEnabled()) {
                         log.info("Publishing Cluster created event for [application]: " + appId +
                                 " [cluster]: " + clusterId);
@@ -68,8 +67,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Created) &&
-                        cluster.getStatus() != ClusterStatus.Created) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Created, null) &&
+                        cluster.getStatus(null) != ClusterStatus.Created) {
                     ClusterStatusClusterResetEvent clusterCreatedEvent =
                             new ClusterStatusClusterResetEvent(appId, serviceName, clusterId);
 
@@ -89,8 +88,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Active) &&
-                        cluster.getStatus() != ClusterStatus.Active) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Active, null) &&
+                        cluster.getStatus(null) != ClusterStatus.Active) {
                     ClusterStatusClusterActivatedEvent clusterActivatedEvent =
                             new ClusterStatusClusterActivatedEvent(appId, serviceName, clusterId);
 
@@ -110,8 +109,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Inactive) &&
-                                                cluster.getStatus() != ClusterStatus.Inactive) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Inactive, null) &&
+                                                cluster.getStatus(null) != ClusterStatus.Inactive) {
                     ClusterStatusClusterInactivateEvent clusterInActivateEvent =
                             new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId);
 
@@ -133,8 +132,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Terminating) &&
-                        cluster.getStatus() != ClusterStatus.Terminating) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Terminating, null) &&
+                        cluster.getStatus(null) != ClusterStatus.Terminating) {
                     ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
                             new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId);
 
@@ -156,8 +155,8 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Terminated) &&
-                        cluster.getStatus() != ClusterStatus.Terminated) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Terminated, null) &&
+                        cluster.getStatus(null) != ClusterStatus.Terminated) {
                     ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
                             new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId);
 

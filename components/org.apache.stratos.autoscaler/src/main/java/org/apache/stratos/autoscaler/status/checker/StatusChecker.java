@@ -113,7 +113,7 @@ public class StatusChecker {
                                 Application application = ApplicationHolder.getApplications().getApplication(appId);
                                 //if all members removed from the cluster and cluster is in terminating,
                                 // either it has to be terminated or Reset
-                                if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
+                                if (!clusterMonitorHasMembers && cluster.getStatus(null) == ClusterStatus.Terminating) {
                                     if (application.getStatus(null) == ApplicationStatus.Terminating) {
                                         if (log.isInfoEnabled()) {
                                             log.info("Publishing Cluster terminated event for [application]: " + appId +
@@ -132,7 +132,7 @@ public class StatusChecker {
 
                                 } else {
                                     //if the cluster is not active and, if it is in Active state
-                                    if (!clusterActive && cluster.getStatus() == ClusterStatus.Active) {
+                                    if (!clusterActive && cluster.getStatus(null) == ClusterStatus.Active) {
                                         if (log.isInfoEnabled()) {
                                             log.info("Publishing Cluster in-activate event for [application]: "
                                                     + monitor.getAppId() + " [cluster]: " + clusterId);
@@ -141,7 +141,7 @@ public class StatusChecker {
                                                 monitor.getServiceId(), clusterId);
                                     } else {
                                         log.info("Cluster has non terminated [members] and in the [status] "
-                                                + cluster.getStatus().toString());
+                                                + cluster.getStatus(null).toString());
                                     }
                                 }
                             } finally {
@@ -434,7 +434,7 @@ public class StatusChecker {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
-            if (cluster.getStatus() == ClusterStatus.Inactive) {
+            if (cluster.getStatus(null) == ClusterStatus.Inactive) {
                 clusterStat = true;
                 return clusterStat;
             } else {
@@ -462,7 +462,7 @@ public class StatusChecker {
             try {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.getStatus() == status) {
+                if (cluster.getStatus(null) == status) {
                     clusterStat = true;
                 } else {
                     clusterStat = false;

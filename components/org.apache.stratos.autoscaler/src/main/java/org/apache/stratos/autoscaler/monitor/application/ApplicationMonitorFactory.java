@@ -222,9 +222,9 @@ public class ApplicationMonitorFactory {
                 clusterMonitor.setHasGroupScalingDependent(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
-            if (cluster.getStatus() != clusterMonitor.getStatus()) {
+            if (cluster.getStatus(null) != clusterMonitor.getStatus()) {
                 //updating the status, so that it will notify the parent
-                clusterMonitor.setStatus(cluster.getStatus());
+                clusterMonitor.setStatus(cluster.getStatus(null));
             } else {
                 if(!cluster.hasMembers()) {
                     StatusChecker.getInstance().onMemberStatusChange(clusterId);

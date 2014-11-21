@@ -118,10 +118,10 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Terminating);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating, null)) {
+                log.error("Invalid State Transition from " + cluster.getStatus(null) + " to " + ClusterStatus.Terminating);
             }
-            cluster.setStatus(ClusterStatus.Terminating);
+            cluster.setStatus(ClusterStatus.Terminating, null);
 
         }
 

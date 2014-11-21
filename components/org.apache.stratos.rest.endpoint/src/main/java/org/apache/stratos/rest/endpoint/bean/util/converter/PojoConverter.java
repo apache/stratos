@@ -428,7 +428,7 @@ public class PojoConverter {
         cluster1.property = getPropertyBeans(cluster.getProperties());
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
-        cluster1.status = cluster.getStatus().toString();
+        cluster1.status = cluster.getStatus(null).toString();
 
         for (org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
             Member member = new Member();

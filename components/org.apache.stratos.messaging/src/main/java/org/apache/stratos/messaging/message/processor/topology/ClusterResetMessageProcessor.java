@@ -24,8 +24,6 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 import org.apache.stratos.messaging.event.topology.ClusterResetEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -117,10 +115,10 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Created)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Created);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Created, null)) {
+                log.error("Invalid State Transition from " + cluster.getStatus(null) + " to " + ClusterStatus.Created);
             }
-            cluster.setStatus(ClusterStatus.Created);
+            cluster.setStatus(ClusterStatus.Created, null);
 
         }
         // Notify event listeners

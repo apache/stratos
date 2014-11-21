@@ -30,10 +30,10 @@ public class ClusterInstanceContext extends InstanceContext implements LifeCycle
     // Life cycle state manager
     protected LifeCycleStateManager<ClusterStatus> lifeCycleStateManager;
 
-    public ClusterInstanceContext(String alias, String instanceId) {
+    public ClusterInstanceContext(String alias, String clusterId, String instanceId) {
         super(alias, instanceId);
         this.lifeCycleStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created,
-                alias + "_" + instanceId);
+                clusterId + "_" + instanceId);
     }
 
     @Override

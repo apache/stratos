@@ -117,10 +117,10 @@ public class ClusterInActivateProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive)) {
-                log.error("Invalid State Transition from " + cluster.getStatus() + " to " + ClusterStatus.Inactive);
+            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive, null)) {
+                log.error("Invalid State Transition from " + cluster.getStatus(null) + " to " + ClusterStatus.Inactive);
             }
-            cluster.setStatus(ClusterStatus.Inactive);
+            cluster.setStatus(ClusterStatus.Inactive, null);
 
         }
 

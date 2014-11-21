@@ -25,12 +25,10 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.List;
@@ -121,7 +119,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
 
                     // Apply changes to the topology
                     service.addCluster(cluster);
-                    cluster.setStatus(ClusterStatus.Created);
+                    cluster.setStatus(ClusterStatus.Created, null);
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Cluster created: %s",
                                 cluster.toString()));

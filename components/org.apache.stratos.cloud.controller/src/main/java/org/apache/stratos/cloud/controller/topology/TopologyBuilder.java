@@ -140,7 +140,7 @@ public class TopologyBuilder {
                 //cluster.setStatus(Status.Created);
                 cluster.setHostNames(event.getHostNames());
                 cluster.setTenantRange(event.getTenantRange());
-                cluster.setStatus(ClusterStatus.Created);
+                cluster.setStatus(ClusterStatus.Created, null);
                 service.addCluster(cluster);
                 TopologyManager.updateTopology(topology);
             }
@@ -253,12 +253,12 @@ public class TopologyBuilder {
             }
 
             // update the cluster status to Created
-            if (!cluster.isStateTransitionValid(ClusterStatus.Created)) {
-                log.error("Invalid state transition from " + cluster.getStatus() + " to " +
+            if (!cluster.isStateTransitionValid(ClusterStatus.Created, null)) {
+                log.error("Invalid state transition from " + cluster.getStatus(null) + " to " +
                         ClusterStatus.Created + " for cluster id " + event.getClusterId());
             }
             // forcefully update the status
-            cluster.setStatus(ClusterStatus.Created);
+            cluster.setStatus(ClusterStatus.Created, null);
             TopologyManager.updateTopology(topology);
 
         } finally {
@@ -725,7 +725,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             //cluster.setStatus(Status.Activated);
-            cluster.setStatus(ClusterStatus.Active);
+            cluster.setStatus(ClusterStatus.Active, null);
 
             log.info("Cluster activated adding status started for" + cluster.getClusterId());
 
@@ -763,7 +763,7 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             //cluster.setStatus(Status.Activated);
-            cluster.setStatus(ClusterStatus.Inactive);
+            cluster.setStatus(ClusterStatus.Inactive, null);
 
             log.info("Cluster in-active adding status started for " + cluster.getClusterId());
 
@@ -794,12 +794,12 @@ public class TopologyBuilder {
             Cluster cluster = topology.getService(event.getServiceName()).
                     getCluster(event.getClusterId());
 
-            if (!cluster.isStateTransitionValid(ClusterStatus.Terminated)) {
-                log.error("Invalid state transfer from " + cluster.getStatus() + " to " +
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminated, null)) {
+                log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
                         ClusterStatus.Terminated);
             }
             // forcefully update status
-            cluster.setStatus(ClusterStatus.Terminated);
+            cluster.setStatus(ClusterStatus.Terminated, null);
 
             TopologyManager.updateTopology(topology);
         } finally {
@@ -821,12 +821,12 @@ public class TopologyBuilder {
             Cluster cluster = topology.getService(event.getServiceName()).
                     getCluster(event.getClusterId());
 
-            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating)) {
-                log.error("Invalid state transfer from " + cluster.getStatus() + " to " +
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating, null)) {
+                log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
                         ClusterStatus.Terminating);
             }
             // forcefully update status
-            cluster.setStatus(ClusterStatus.Terminating);
+            cluster.setStatus(ClusterStatus.Terminating, null);
 
             TopologyManager.updateTopology(topology);
         } finally {

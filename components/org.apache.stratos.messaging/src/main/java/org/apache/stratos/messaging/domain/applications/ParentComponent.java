@@ -33,7 +33,6 @@ import java.util.*;
 
 public abstract class ParentComponent<T extends InstanceContext> implements Serializable {
 
-    private static final Log log = LogFactory.getLog(ParentComponent.class);
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
@@ -213,15 +212,7 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      */
     public void addInstanceContext (String instanceId, T instanceContext) {
 
-        synchronized (instanceIdToInstanceContextMap) {
-            if (instanceIdToInstanceContextMap.get(instanceId) != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("InstanceContext for instance id " + instanceId + " already exists");
-                }
-            } else {
-                instanceIdToInstanceContextMap.put(instanceId, instanceContext);
-            }
-        }
+        instanceIdToInstanceContextMap.put(instanceId, instanceContext);
     }
 
     /**
