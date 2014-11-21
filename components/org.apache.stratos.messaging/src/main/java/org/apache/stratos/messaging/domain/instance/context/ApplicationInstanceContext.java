@@ -29,6 +29,8 @@ public class ApplicationInstanceContext extends InstanceContext<ApplicationStatu
 
     public ApplicationInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);
+        this.lifeCycleStateManager = new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created,
+                alias + "_" + instanceId);
     }
 
     @Override
