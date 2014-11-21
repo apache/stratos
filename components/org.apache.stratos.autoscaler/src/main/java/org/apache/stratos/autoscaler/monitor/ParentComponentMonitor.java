@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -57,8 +56,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected DependencyTree scalingDependencyTree;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
-    //instances, key=instance id and value=instanceContext
-    protected Map<String, InstanceContext> instanceIdToInstanceContextMap;
     //monitors map, stopped monitors
     protected List<String> inactiveMonitorsList;
     //terminating monitors list
@@ -68,7 +65,6 @@ public abstract class ParentComponentMonitor extends Monitor {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         inactiveMonitorsList = new ArrayList<String>();
         terminatingMonitorsList = new ArrayList<String>();
-        setInstanceIdToInstanceContextMap(new HashMap<String, InstanceContext>());
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
@@ -148,12 +144,12 @@ public abstract class ParentComponentMonitor extends Monitor {
                 context.setTerminated(false);
                 startMonitor(this, context, instanceId);
             } else {
-                if(!this.instanceIdToInstanceContextMap.containsKey(instanceId)) {
+                /*if(!this.instanceIdToInstanceContextMap.containsKey(instanceId)) {
                     Monitor monitor = this.aliasToActiveMonitorsMap.get(context.getId());
                     //monitor.onParentStatusEvent();
                     //ask to start the next snapshot for the monitor
                     //TODO notify the relevant children
-                }
+                }*/
             }
         }
 
@@ -223,7 +219,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 ApplicationBuilder.handleGroupTerminatingEvent(this.appId, eventId, instanceId);
             } else {
                 //if it is an application, send terminating event individually for children
-                sendTerminatingEventOnNotification(terminationList, eventId, true ,instanceId);
+                sendTerminatingEventOnNotification(terminationList, eventId, true, instanceId);
             }
             log.info("The group" + eventId + " has been marked as terminating " +
                     "due to all the children are to be terminated");
@@ -277,7 +273,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         boolean allDependentTerminated = false;
 
         ApplicationChildContext context = this.startupDependencyTree.
-                                                findApplicationContextWithIdInPrimaryTree(eventId);
+                findApplicationContextWithIdInPrimaryTree(eventId);
         context.setTerminated(true);
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
         //Make sure that all the dependents have been terminated properly to start the recovery
@@ -286,7 +282,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
 
         List<ApplicationChildContext> parentContexts = this.startupDependencyTree.
-                                                            findAllParentContextWithId(eventId);
+                findAllParentContextWithId(eventId);
         boolean parentsTerminated = false;
         boolean allParentsActive = false;
         //make sure all the parent contexts got terminated or whether all of them are active
@@ -433,12 +429,52 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
-        return instanceIdToInstanceContextMap;
+    public Map<String, Monitor> getAliasToActiveMonitorsMap() {
+        return aliasToActiveMonitorsMap;
     }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
-        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    public void setAliasToActiveMonitorsMap(Map<String, Monitor> aliasToActiveMonitorsMap) {
+        this.aliasToActiveMonitorsMap = aliasToActiveMonitorsMap;
+    }
+
+    public boolean hasActiveMonitors() {
+        boolean hasMonitor = false;
+        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty())) {
+            hasMonitor = true;
+        }
+        return hasMonitor;
+    }
+
+    public boolean hasMonitors() {
+
+        return this.aliasToActiveMonitorsMap != null;
+    }
+
+    public boolean hasIndependentChild() {
+        boolean hasInDepChild = false;
+        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+            if (!monitor.hasStartupDependents()) {
+                hasInDepChild = true;
+                break;
+            }
+        }
+        return hasInDepChild;
+    }
+
+    public List<String> getAliasToInActiveMonitorsMap() {
+        return this.inactiveMonitorsList;
+    }
+
+    public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
+        this.inactiveMonitorsList = inactiveMonitorsList;
+    }
+
+    public List<String> getTerminatingMonitorsList() {
+        return terminatingMonitorsList;
+    }
+
+    public void setTerminatingMonitorsList(List<String> terminatingMonitorsList) {
+        this.terminatingMonitorsList = terminatingMonitorsList;
     }
 
     private class MonitorAdder implements Runnable {
@@ -448,7 +484,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         private String instanceId;
 
         public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
-                                                            String instanceId, String appId) {
+                            String instanceId, String appId) {
             this.parent = parent;
             this.context = context;
             this.appId = appId;
@@ -508,54 +544,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                         context.getId()));
             }
         }
-    }
-
-    public Map<String, Monitor> getAliasToActiveMonitorsMap() {
-        return aliasToActiveMonitorsMap;
-    }
-
-    public void setAliasToActiveMonitorsMap(Map<String, Monitor> aliasToActiveMonitorsMap) {
-        this.aliasToActiveMonitorsMap = aliasToActiveMonitorsMap;
-    }
-
-    public boolean hasActiveMonitors() {
-        boolean hasMonitor = false;
-        if ((this.aliasToActiveMonitorsMap != null && !this.aliasToActiveMonitorsMap.isEmpty())) {
-            hasMonitor = true;
-        }
-        return hasMonitor;
-    }
-
-    public boolean hasMonitors() {
-
-        return this.aliasToActiveMonitorsMap != null;
-    }
-
-    public boolean hasIndependentChild() {
-        boolean hasInDepChild = false;
-        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
-            if (!monitor.hasStartupDependents()) {
-                hasInDepChild = true;
-                break;
-            }
-        }
-        return hasInDepChild;
-    }
-
-    public List<String> getAliasToInActiveMonitorsMap() {
-        return this.inactiveMonitorsList;
-    }
-
-    public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
-        this.inactiveMonitorsList = inactiveMonitorsList;
-    }
-
-    public List<String> getTerminatingMonitorsList() {
-        return terminatingMonitorsList;
-    }
-
-    public void setTerminatingMonitorsList(List<String> terminatingMonitorsList) {
-        this.terminatingMonitorsList = terminatingMonitorsList;
     }
 
 
