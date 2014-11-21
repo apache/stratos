@@ -25,11 +25,18 @@ import java.util.Properties;
 
 public abstract class InstanceContext {
 
+    // current state
     private LifeCycleState state;
+    // group/cluster level alias
+    private String alias;
+
+    private String instanceId;
 
     private Properties instanceProperties;
 
-    public InstanceContext () {
+    public InstanceContext (String alias, String instanceId) {
+        this.alias = alias;
+        this.instanceId = instanceId;
         this.instanceProperties = new Properties();
     }
 
@@ -47,5 +54,13 @@ public abstract class InstanceContext {
 
     public String getProperty (String name) {
         return instanceProperties.getProperty(name);
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }
