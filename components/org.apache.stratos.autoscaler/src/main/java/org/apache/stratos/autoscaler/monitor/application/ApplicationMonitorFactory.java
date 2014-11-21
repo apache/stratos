@@ -57,15 +57,16 @@ public class ApplicationMonitorFactory {
      * @throws PolicyValidationException     throws while validating the policy associated with cluster
      * @throws PartitionValidationException  throws while validating the partition used in a cluster
      */
-    public static Monitor getMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
+    public static Monitor getMonitor(ParentComponentMonitor parentMonitor,
+                                     ApplicationChildContext context, String appId, String instanceId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
     	
         Monitor monitor;
         if (context instanceof GroupChildContext) {
-            monitor = getGroupMonitor(parentMonitor, context, appId);
+            monitor = getGroupMonitor(parentMonitor, context, appId, instanceId);
         } else if (context instanceof ClusterChildContext) {
-            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, appId);
+            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, appId, instanceId);
             if (monitor != null) {
             	((AbstractClusterMonitor)monitor).startScheduler();
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
@@ -86,7 +87,8 @@ public class ApplicationMonitorFactory {
      * @throws DependencyBuilderException    throws while building dependency for app monitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
-    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor, ApplicationChildContext context, String appId)
+    public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor,
+                                          ApplicationChildContext context, String appId, String instanceId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
@@ -95,7 +97,7 @@ public class ApplicationMonitorFactory {
         try {
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
-            groupMonitor = new GroupMonitor(group, appId);
+            groupMonitor = new GroupMonitor(group, appId, instanceId);
             groupMonitor.setAppId(appId);
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
@@ -105,13 +107,22 @@ public class ApplicationMonitorFactory {
                 } else {
                     groupMonitor.setHasStartupDependents(false);
                 }
-                //TODO make sure when it is async
 
-                if (group.getStatus(null) != groupMonitor.getStatus()) {
+                if(group.isGroupScalingEnabled()) {
+                    groupMonitor.setGroupScalingEnabled(true);
+                } else if(parentMonitor instanceof GroupMonitor) {
+                    if(((GroupMonitor)parentMonitor).isGroupScalingEnabled() ||
+                            parentMonitor.isHasGroupScalingDependent()) {
+                        groupMonitor.setHasGroupScalingDependent(true);
+                    }
+                }
+                //TODO*********** make it sync with the topology
+
+                /*if (group.getStatus() != groupMonitor.getStatus()) {
                     //updating the status, if the group is not in created state when creating group Monitor
                     //so that groupMonitor will notify the parent (useful when restarting stratos)
-                    groupMonitor.setStatus(group.getStatus(null));
-                }
+                    groupMonitor.setStatus(group.getStatus());
+                }*/
             }
 
         } finally {
@@ -165,7 +176,8 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
     public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                     ClusterChildContext context, String appId)
+                                                            ClusterChildContext context,
+                                                            String appId, String instanceId)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
@@ -204,10 +216,10 @@ public class ApplicationMonitorFactory {
             }
 
             //setting the scaling dependent behaviour of the cluster monitor
-            if(parentMonitor.isGroupScalingEnabled() || (context.isGroupScalingEnabled())) {
-                clusterMonitor.setGroupScalingEnabled(true);
+            if(parentMonitor.isHasGroupScalingDependent() || (context.isGroupScalingEnabled())) {
+                clusterMonitor.setHasGroupScalingDependent(true);
             } else {
-                clusterMonitor.setGroupScalingEnabled(false);
+                clusterMonitor.setHasGroupScalingDependent(false);
             }
             //setting the status of the cluster, if it doesn't match with Topology cluster status.
             if (cluster.getStatus() != clusterMonitor.getStatus()) {

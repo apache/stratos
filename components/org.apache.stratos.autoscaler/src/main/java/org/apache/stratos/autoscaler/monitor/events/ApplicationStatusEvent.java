@@ -27,8 +27,8 @@ public class ApplicationStatusEvent extends MonitorStatusEvent {
 
     private ApplicationStatus status;
 
-    public ApplicationStatusEvent(ApplicationStatus status, String id) {
-        super(id);
+    public ApplicationStatusEvent(ApplicationStatus status, String id, String instanceId) {
+        super(id, instanceId);
         this.status = status;
     }
 

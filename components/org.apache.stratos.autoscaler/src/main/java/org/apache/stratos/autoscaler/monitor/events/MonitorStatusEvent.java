@@ -25,8 +25,8 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
  */
 public abstract class MonitorStatusEvent extends MonitorEvent {
 
-    public MonitorStatusEvent(String id) {
-        super(id);
+    public MonitorStatusEvent(String id, String instanceId) {
+        super(id , instanceId);
     }
 
     public String getId() {

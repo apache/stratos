@@ -21,8 +21,11 @@ package org.apache.stratos.autoscaler.monitor.events;
 public abstract class MonitorEvent {
     protected String id;
 
-    public MonitorEvent(String id) {
+    protected String instanceId;
+
+    public MonitorEvent(String id , String instanceId) {
         this.id = id;
+        this.instanceId = instanceId;
     }
 
     public String getId(){

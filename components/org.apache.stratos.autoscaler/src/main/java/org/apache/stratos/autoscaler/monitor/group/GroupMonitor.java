@@ -36,8 +36,12 @@ import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+
+import java.util.Map;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -45,8 +49,8 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
  */
 public class GroupMonitor extends ParentComponentMonitor implements EventHandler {
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
-    //status of the monitor whether it is running/in_maintainable/terminated
-    private GroupStatus status;
+    //whether groupScaling enabled or not
+    private boolean groupScalingEnabled;
 
     /**
      * Constructor of GroupMonitor
@@ -55,12 +59,21 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      * @throws DependencyBuilderException    throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
-    public GroupMonitor(Group group, String appId) throws DependencyBuilderException,
+    public GroupMonitor(Group group, String appId, String instanceId) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        this.status = group.getStatus(null);
-        startDependency();
+        if(group.getInstanceContextCount() > 0) {
+            this.startDependency(group);
+        } else {
+            String instanceId1 = instanceId;
+            if (group.isGroupScalingEnabled()) {
+                instanceId1 = this.generateInstanceId(group);
+            }
+            this.startDependency(group, instanceId1);
+            ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(), instanceId1);
+
+        }
     }
 
     /**
@@ -68,10 +81,10 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      *
      * @param status status of the group
      */
-    public void setStatus(GroupStatus status) {
+    public void setStatus(GroupStatus status, String instanceId) {
 
         //if(this.status != status) {
-        this.status = status;
+        //this.status = status;
         //notifying the parent
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
@@ -79,10 +92,10 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         } else {
             // notify parent
             log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
-            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, this.status, this.id);
+            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, status, this.id);
         }
         //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId()));
+        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId(), null));
     }
 
     @Override
@@ -106,11 +119,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 }
             }
             //If cluster monitor, need to terminate the existing one
-            if (this.status == GroupStatus.Terminating) {
+            //TODO block
+            /*if (this.status == GroupStatus.Terminating) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
             } else {
                 onChildTerminatedEvent(id);
-            }
+            }*/
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
@@ -124,19 +138,23 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            if (this.status == GroupStatus.Terminating || this.status == GroupStatus.Terminated) {
+            //TODO block
+            /*if (this.status == GroupStatus.Terminating || this.status == GroupStatus.Terminated) {
                 StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
                 log.info("Executing the un-subscription request for the [monitor] " + id);
-            }
+            }*/
         }
     }
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
         // send the ClusterTerminating event
-        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-                ApplicationStatus.Terminating) {
+        if (statusEvent.getStatus() == GroupStatus.Terminating ||
+                statusEvent.getStatus() == ApplicationStatus.Terminating) {
             ApplicationBuilder.handleGroupTerminatingEvent(appId, id);
+        } if(statusEvent.getStatus() == ClusterStatus.Created ||
+                                            statusEvent.getStatus() == GroupStatus.Created) {
+            ApplicationBuilder.handleGroupInstanceCreatedEvent(this.appId, this.id,null );
         }
     }
 
@@ -173,8 +191,11 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     }
 
-    public GroupStatus getStatus() {
-        return status;
+    public boolean isGroupScalingEnabled() {
+        return groupScalingEnabled;
     }
 
+    public void setGroupScalingEnabled(boolean groupScalingEnabled) {
+        this.groupScalingEnabled = groupScalingEnabled;
+    }
 }

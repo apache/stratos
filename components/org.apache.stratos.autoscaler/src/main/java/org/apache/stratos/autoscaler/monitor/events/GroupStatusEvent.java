@@ -26,8 +26,8 @@ import org.apache.stratos.messaging.domain.applications.GroupStatus;
 public class GroupStatusEvent extends MonitorStatusEvent {
     private GroupStatus status;
 
-    public GroupStatusEvent(GroupStatus status, String id) {
-        super(id);
+    public GroupStatusEvent(GroupStatus status, String id, String instanceId) {
+        super(id, instanceId);
         this.status = status;
     }
 

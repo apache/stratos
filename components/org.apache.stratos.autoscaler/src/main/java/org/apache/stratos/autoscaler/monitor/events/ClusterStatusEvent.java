@@ -27,8 +27,8 @@ public class ClusterStatusEvent extends MonitorStatusEvent {
 
     private ClusterStatus status;
 
-    public ClusterStatusEvent(ClusterStatus status, String id) {
-        super(id);
+    public ClusterStatusEvent(ClusterStatus status, String id, String instanceId) {
+        super(id , instanceId);
         this.status = status;
     }
 

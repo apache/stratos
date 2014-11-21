@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -204,7 +205,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                monitor.setStatus(ClusterStatus.Active);
+
             }
         });
 
@@ -472,7 +473,6 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 appId);
                     }
                     applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
-
                     long end = System.currentTimeMillis();
                     log.info("Time taken to start app monitor: " + (end - start) / 1000);
                     success = true;

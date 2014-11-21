@@ -31,7 +31,7 @@ public abstract class Monitor implements EventHandler {
     //has startup dependents
     protected boolean hasStartupDependents;
     //has scaling dependents
-    protected boolean isGroupScalingEnabled;
+    protected boolean hasGroupScalingDependent;
 
     /**
      * Return the id of the monitor
@@ -102,8 +102,8 @@ public abstract class Monitor implements EventHandler {
      *
      * @return startup dependencies exist or not
      */
-    public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
+    public boolean isHasGroupScalingDependent() {
+        return hasGroupScalingDependent;
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class Monitor implements EventHandler {
      *
      * @param hasDependent
      */
-    public void setGroupScalingEnabled(boolean hasDependent) {
-        this.isGroupScalingEnabled = hasDependent;
+    public void setHasGroupScalingDependent(boolean hasDependent) {
+        this.hasGroupScalingDependent = hasDependent;
     }
 }

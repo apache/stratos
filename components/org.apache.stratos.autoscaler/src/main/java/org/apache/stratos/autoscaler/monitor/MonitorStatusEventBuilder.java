@@ -32,24 +32,24 @@ public class MonitorStatusEventBuilder {
     private static final Log log = LogFactory.getLog(MonitorStatusEventBuilder.class);
 
     public static void handleClusterStatusEvent(ParentComponentMonitor parent, ClusterStatus status, String clusterId) {
-        ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId);
+        ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId, null);
         notifyParent(parent, clusterStatusEvent);
     }
 
     public static void handleGroupStatusEvent(ParentComponentMonitor parent, GroupStatus status, String groupId) {
-        GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId);
+        GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId, null);
         notifyParent(parent, groupStatusEvent);
     }
 
     public static void handleApplicationStatusEvent(ParentComponentMonitor parent, ApplicationStatus status, String appId) {
-        ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId);
+        ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId, null);
         notifyParent(parent, applicationStatusEvent);
     }
 
     public static void handleClusterScalingEvent(ParentComponentMonitor parent, String networkPartitionId, float factor, String appId) {
 
         //Send notifications to parent of the cluster monitor
-        MonitorScalingEvent monitorScalingEvent = new MonitorScalingEvent(appId, networkPartitionId, factor) ;
+        MonitorScalingEvent monitorScalingEvent = new MonitorScalingEvent(appId, networkPartitionId, null,factor) ;
         notifyParent(parent, monitorScalingEvent);
     }
 

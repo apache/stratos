@@ -26,8 +26,8 @@ public class MonitorScalingEvent extends MonitorEvent {
     private float factor;
     private String networkPartitionId;
 
-    public  MonitorScalingEvent(String id, String networkPartitionId, float factor) {
-        super(id);
+    public  MonitorScalingEvent(String id, String networkPartitionId, String instanceId, float factor) {
+        super(id, instanceId);
         this.factor = factor;
         this.networkPartitionId = networkPartitionId;
     }

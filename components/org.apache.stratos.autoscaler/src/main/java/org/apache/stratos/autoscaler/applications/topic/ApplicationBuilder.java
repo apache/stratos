@@ -74,6 +74,35 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
+    public static void handleApplicationInstanceCreatedEvent(String appId, String instanceId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application activation event: [application-id] " + appId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        Application application = applications.getApplication(appId);
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application does not exist: [application-id] %s",
+                    appId));
+            return;
+        }
+
+        ApplicationStatus status = ApplicationStatus.Active;
+
+        //TODO create new instanceConext***************
+        if (application.isStateTransitionValid(status)) {
+            //setting the status, persist and publish
+            application.setStatus(status);
+            updateApplicationMonitor(appId, status);
+            ApplicationHolder.persistApplication(application);
+            ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+        } else {
+            log.warn(String.format("Application state transition is not valid: [application-id] %s " +
+                    " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
+        }
+    }
+
     public static void handleApplicationActivatedEvent(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application activation event: [application-id] " + appId);
@@ -317,6 +346,43 @@ public class ApplicationBuilder {
         }
     }
 
+    public static void handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling Group creation for the [group]: " + groupId +
+                    " in the [application] " + appId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        Application application = applications.getApplication(appId);
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application %s does not exist",
+                    appId));
+            return;
+        }
+
+        Group group = application.getGroupRecursively(groupId);
+        if (group == null) {
+            log.warn(String.format("Group %s does not exist",
+                    groupId));
+            return;
+        }
+
+        GroupStatus status = GroupStatus.Created;
+        group.getInstanceContexts(instanceId);
+        if (group.isStateTransitionValid(status)) {
+            //setting the status, persist and publish
+            group.setStatus(status);
+            updateGroupMonitor(appId, groupId, status);
+            ApplicationHolder.persistApplication(application);
+            ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+        } else {
+            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
+                    + "[requested-state] " + status);
+        }
+    }
+
+
     public static void handleGroupInActivateEvent(String appId, String groupId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group in-active event: [group]: " + groupId +
@@ -412,9 +478,7 @@ public class ApplicationBuilder {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
-            if(applicationMonitor.getStatus() != status) {
-                applicationMonitor.setStatus(status);
-            }
+            applicationMonitor.setStatus(status, null);
         } else {
             log.warn("Application monitor cannot be found: [application-id] " + appId);
         }
@@ -427,9 +491,7 @@ public class ApplicationBuilder {
         if (applicationMonitor != null) {
             GroupMonitor monitor = (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
             if (monitor != null ) {
-                if(monitor.getStatus() != status) {
-                    monitor.setStatus(status);
-                }
+                monitor.setStatus(status, null);
             } else {
                 log.warn("Group monitor cannot be found: [group-id] " + groupId +
                         " [application-id] " + appId);
