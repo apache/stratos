@@ -21,4 +21,7 @@ package org.apache.stratos.messaging.domain.applications.scaling.instance.contex
 
 public class GroupInstanceContext extends InstanceContext {
 
+    public GroupInstanceContext(String alias, String instanceId) {
+        super(alias, instanceId);
+    }
 }

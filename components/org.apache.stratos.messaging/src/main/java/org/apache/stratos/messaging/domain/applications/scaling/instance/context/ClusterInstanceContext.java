@@ -21,4 +21,7 @@ package org.apache.stratos.messaging.domain.applications.scaling.instance.contex
 
 public class ClusterInstanceContext extends InstanceContext {
 
+    public ClusterInstanceContext(String alias, String instanceId) {
+        super(alias, instanceId);
+    }
 }

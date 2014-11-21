@@ -204,22 +204,13 @@ public abstract class ParentComponent implements Serializable {
     }
 
     /**
-     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap,
-     * after initializing the map if not already done.
+     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap.
      *
      * @param alias alias of child
      * @param instanceId instance id of child
      * @param instanceContext InstanceContext object
      */
     public void addInstanceContext (String alias, String instanceId, InstanceContext instanceContext) {
-
-        if (aliasAndInstanceIdToInstanceContextMap == null) {
-            synchronized (this) {
-                if (aliasAndInstanceIdToInstanceContextMap == null) {
-                    aliasAndInstanceIdToInstanceContextMap = new HashMap<AliasAndInstanceId, InstanceContext>();
-                }
-            }
-        }
 
         aliasAndInstanceIdToInstanceContextMap.put(new AliasAndInstanceId(alias, instanceId), instanceContext);
     }
@@ -232,11 +223,6 @@ public abstract class ParentComponent implements Serializable {
      * @return InstanceContext obj if exists, else null
      */
     public InstanceContext getInstanceContext (String alias, String instanceId) {
-
-        // if the map is not initialized, return null
-        if (aliasAndInstanceIdToInstanceContextMap == null) {
-            return null;
-        }
 
         return aliasAndInstanceIdToInstanceContextMap.get(new AliasAndInstanceId(alias, instanceId));
     }
