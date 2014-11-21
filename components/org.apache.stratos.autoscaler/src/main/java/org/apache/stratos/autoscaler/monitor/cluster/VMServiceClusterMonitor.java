@@ -246,6 +246,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+        String instanceId = statusEvent.getInstanceId();
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
@@ -253,7 +254,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 log.info("Publishing Cluster terminating event for [application]: " + appId +
                         " [cluster]: " + this.getClusterId());
             }
-            ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId());
+            ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
         }
     }
 

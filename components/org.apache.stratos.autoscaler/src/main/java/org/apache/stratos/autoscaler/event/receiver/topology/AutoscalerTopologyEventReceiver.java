@@ -309,7 +309,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     // if the cluster monitor is null, assume that its termianted
                     ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId());
                     if (appMonitor != null)  {
-                        appMonitor.onChildStatusEvent(new ClusterStatusEvent(ClusterStatus.Terminated, clusterId));
+                        appMonitor.onChildStatusEvent(new ClusterStatusEvent(ClusterStatus.Terminated, clusterId, null));
                     }
                     return;
                 }

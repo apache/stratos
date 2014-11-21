@@ -32,16 +32,11 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.applications.ParentComponent;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-
-import java.util.Map;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -101,14 +96,15 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
+        String instanceId = statusEvent.getInstanceId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(id);
+            onChildActivatedEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             this.markMonitorAsInactive(id);
-            onChildInactiveEvent(id);
+            onChildInactiveEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
             if (this.terminatingMonitorsList.contains(id)) {
@@ -148,13 +144,15 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+        String instanceId = statusEvent.getInstanceId();
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
-            ApplicationBuilder.handleGroupTerminatingEvent(appId, id);
+            ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
         } if(statusEvent.getStatus() == ClusterStatus.Created ||
                                             statusEvent.getStatus() == GroupStatus.Created) {
-            ApplicationBuilder.handleGroupInstanceCreatedEvent(this.appId, this.id,null );
+            ApplicationBuilder.handleGroupInstanceCreatedEvent(this.appId, this.id, instanceId);
+            //TODO start dependencies*******
         }
     }
 

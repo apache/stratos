@@ -28,6 +28,8 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.GroupInstanceContext;
 
 import java.util.Collection;
 import java.util.Set;
@@ -88,18 +90,20 @@ public class ApplicationBuilder {
             return;
         }
 
-        ApplicationStatus status = ApplicationStatus.Active;
+        ApplicationStatus status = ApplicationStatus.Created;
 
-        //TODO create new instanceConext***************
-        if (application.isStateTransitionValid(status)) {
+
+        if (!application.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            application.setStatus(status);
-            updateApplicationMonitor(appId, status);
+            ApplicationInstanceContext context = new ApplicationInstanceContext(appId, instanceId);
+            context.setStatus(status);
+            application.addInstanceContext(instanceId, context);
+            //updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+            //ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
         } else {
-            log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                    " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
+            log.warn(String.format("Application Instance Context already exists" +
+                    " [appId] %s [ApplicationInstanceId] %s", appId, instanceId));
         }
     }
 
@@ -170,7 +174,8 @@ public class ApplicationBuilder {
         for (ClusterDataHolder aClusterData : clusterData){
             if (AutoscalerContext.getInstance().getClusterMonitor(aClusterData.getClusterId()) == null) {
                 ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, aClusterData.getServiceType(),
-                        aClusterData.getClusterId());
+                        aClusterData.getClusterId(), null);
+                                                        //TODO add instanceID******
             }
         }
     }
@@ -240,7 +245,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupTerminatedEvent(String appId, String groupId) {
+    public static void handleGroupTerminatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group terminated event: [group-id] " + groupId +
                     " [application-id] " + appId);
@@ -276,7 +281,7 @@ public class ApplicationBuilder {
 
     }
 
-    public static void handleGroupActivatedEvent(String appId, String groupId) {
+    public static void handleGroupActivatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group activation for the [group-id]: " + groupId +
                     " in the [application-id] " + appId);
@@ -311,7 +316,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupCreatedEvent(String appId, String groupId) {
+    public static void handleGroupCreatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling Group creation for the [group]: " + groupId +
                     " in the [application] " + appId);
@@ -369,21 +374,23 @@ public class ApplicationBuilder {
         }
 
         GroupStatus status = GroupStatus.Created;
-        group.getInstanceContexts(instanceId);
-        if (group.isStateTransitionValid(status)) {
+
+        if (!group.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            group.setStatus(status);
-            updateGroupMonitor(appId, groupId, status);
+            GroupInstanceContext context = new GroupInstanceContext(groupId, instanceId);
+            context.setStatus(status);
+            group.addInstanceContext(instanceId, context);
+            //updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+            //ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
         } else {
-            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
-                    + "[requested-state] " + status);
+            log.warn("Group Instance Context already exists: [group-id] " + groupId +
+                                    " [Group-Instance-Id] " + instanceId);
         }
     }
 
 
-    public static void handleGroupInActivateEvent(String appId, String groupId) {
+    public static void handleGroupInActivateEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group in-active event: [group]: " + groupId +
                     " [application-id] " + appId);
@@ -418,7 +425,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupTerminatingEvent(String appId, String groupId) {
+    public static void handleGroupTerminatingEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group terminating: [group-id] " + groupId +
                     " [application-id] " + appId);

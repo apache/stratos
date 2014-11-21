@@ -278,7 +278,7 @@ public class StatusChecker {
      * @param idOfComponent id of the component to which calculate the status
      * @param idOfChild     children of the component as groups
      */
-    public void onChildStatusChange(String idOfChild, String idOfComponent, String appId) {
+    public void onChildStatusChange(String idOfChild, String idOfComponent, String appId, String instanceId) {
         ParentComponent component;
         Map<String, Group> groups;
         Map<String, ClusterDataHolder> clusterData;
@@ -317,7 +317,7 @@ public class StatusChecker {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Active) {
                         log.info("sending group activate: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
                     }
                 }
             } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated) ||
@@ -332,7 +332,7 @@ public class StatusChecker {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
                         log.info("sending group terminated : " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
                     }
                 }
             } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Created) ||
@@ -346,7 +346,7 @@ public class StatusChecker {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Created) {
                         log.info("sending group created : " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupCreatedEvent(appId, component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupCreatedEvent(appId, component.getUniqueIdentifier(), instanceId);
                     }
                 }
             } else if (groups.isEmpty() && getAllClusterInactive(clusterData) ||
@@ -361,7 +361,7 @@ public class StatusChecker {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
                     }
                 }
             } else {
@@ -373,7 +373,7 @@ public class StatusChecker {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), "test*****");
                     }
                 }
             }

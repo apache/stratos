@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorTerminateAllEvent;
 
 /**
  * Event Handler to notify the observer/to receive notification

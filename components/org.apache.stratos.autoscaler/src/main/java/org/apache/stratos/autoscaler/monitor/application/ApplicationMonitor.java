@@ -109,14 +109,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
         String id = statusEvent.getId();
+        String instanceId = statusEvent.getInstanceId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(id);
+            onChildActivatedEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             this.markMonitorAsInactive(id);
-            onChildInactiveEvent(id);
+            onChildInactiveEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map

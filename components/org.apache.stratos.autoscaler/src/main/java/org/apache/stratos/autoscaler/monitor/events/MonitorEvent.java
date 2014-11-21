@@ -32,4 +32,7 @@ public abstract class MonitorEvent {
         return id;
     }
 
+    public String getInstanceId() {
+        return instanceId;
+    }
 }

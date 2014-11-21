@@ -34,7 +34,6 @@ import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFacto
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -107,10 +106,10 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param id alias/clusterId of which receive the activated event
      */
-    public boolean startDependency(String id) throws TopologyInConsistentException {
+    public boolean startDependency(String id, String instanceId) throws TopologyInConsistentException {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
                 .getStarAbleDependencies(id);
-        return startDependency(applicationContexts, null);
+        return startDependency(applicationContexts, instanceId);
     }
 
     /**
@@ -173,7 +172,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param eventId parent id of the event which received
      */
-    protected void onChildActivatedEvent(String eventId) {
+    protected void onChildActivatedEvent(String eventId, String instanceId) {
         try {
             //if the activated monitor is in in_active map move it to active map
             if (this.inactiveMonitorsList.contains(eventId)) {
@@ -184,13 +183,13 @@ public abstract class ParentComponentMonitor extends Monitor {
                 this.terminatingMonitorsList.remove(eventId);
             }
 
-            boolean startDep = startDependency(eventId);
+            boolean startDep = startDependency(eventId, instanceId);
             if (log.isDebugEnabled()) {
                 log.debug("started a child: " + startDep + " by the group/cluster: " + eventId);
 
             }
             if (!startDep) {
-                StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
+                StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
             }
         } catch (TopologyInConsistentException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
@@ -202,13 +201,13 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * @param eventId
      */
-    protected void onChildInactiveEvent(String eventId) {
+    protected void onChildInactiveEvent(String eventId, String instanceId) {
         List<ApplicationChildContext> terminationList;
         Monitor monitor;
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
         //Need to notify the parent about the status  change from Active-->InActive
         if (this.parent != null) {
-            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
         }
         //TODO checking whether terminating them in reverse order,
         // TODO if so can handle it in the parent event.
@@ -221,20 +220,20 @@ public abstract class ParentComponentMonitor extends Monitor {
             //handling the killall scenario
             if (this.parent != null) {
                 //send terminating to the parent. So that it will push terminating to its children
-                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, eventId);
+                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, eventId, instanceId);
             } else {
                 //if it is an application, send terminating event individually for children
-                sendTerminatingEventOnNotification(terminationList, eventId, true);
+                sendTerminatingEventOnNotification(terminationList, eventId, true ,instanceId);
             }
             log.info("The group" + eventId + " has been marked as terminating " +
                     "due to all the children are to be terminated");
         } else {
-            sendTerminatingEventOnNotification(terminationList, eventId, false);
+            sendTerminatingEventOnNotification(terminationList, eventId, false, instanceId);
         }
     }
 
     private void sendTerminatingEventOnNotification(List<ApplicationChildContext> terminationList,
-                                                    String notifier, boolean terminateAll) {
+                                                    String notifier, boolean terminateAll, String instanceId) {
         Monitor monitor;
         //Checking the termination dependents status
         for (ApplicationChildContext terminationContext : terminationList) {
@@ -248,7 +247,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                     //it will be handled by the terminating case of its children
                     if (terminateAll || !notifier.equals(monitor.getId())) {
                         ApplicationBuilder.handleGroupTerminatingEvent(this.appId,
-                                terminationContext.getId());
+                                terminationContext.getId(), instanceId);
                     }
                 } else {
                     if (log.isInfoEnabled()) {
@@ -257,7 +256,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                     }
                     ClusterStatusEventPublisher.sendClusterTerminatingEvent(this.appId,
                             ((AbstractClusterMonitor) monitor).getServiceId(),
-                            terminationContext.getId());
+                            terminationContext.getId(), instanceId);
                 }
             } else {
                 log.warn("The relevant [monitor] " + terminationContext.getId() +
@@ -273,7 +272,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param eventId id of the notifier
      */
 
-    protected void onChildTerminatedEvent(String eventId) {
+    protected void onChildTerminatedEvent(String eventId, String instanceId) {
         List<ApplicationChildContext> terminationList;
         boolean allDependentTerminated = false;
 
@@ -306,7 +305,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.error("Error while starting the monitor upon termination" + e);
             }
         } else {
-            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId);
+            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
             log.info("Checking the status of group/application as no dependent found...");
         }
 

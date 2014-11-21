@@ -126,7 +126,7 @@ public class ClusterStatusEventPublisher {
         }
     }
 
-    public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId) {
+    public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId, String instanceId) {
 
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
