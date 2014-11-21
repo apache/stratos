@@ -34,17 +34,16 @@ public abstract class ParentComponent implements Serializable {
     // Dependency Order
     private DependencyOrder dependencyOrder;
     // Group Map, key = Group.alias
-    private Map<String, Group> aliasToGroupMap;
+    private final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
-    private Map<String, ClusterDataHolder> aliasToClusterDataMap;
-    // Group/Cluster Instance Context map
-    private Map<AliasAndInstanceId, InstanceContext> aliasAndInstanceIdToInstanceContextMap;
+    private final Map<String, ClusterDataHolder> aliasToClusterDataMap;
+    // Group/Cluster Instance Context map, key = instance id
+    private final Map<String, Set<InstanceContext>> instanceIdToInstanceContextMap;
 
     public ParentComponent () {
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
-        aliasAndInstanceIdToInstanceContextMap =
-                new HashMap<AliasAndInstanceId, InstanceContext>();
+        instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
     }
 
     /**
@@ -204,27 +203,46 @@ public abstract class ParentComponent implements Serializable {
     }
 
     /**
-     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap.
+     * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
      *
-     * @param alias alias of child
      * @param instanceId instance id of child
      * @param instanceContext InstanceContext object
      */
-    public void addInstanceContext (String alias, String instanceId, InstanceContext instanceContext) {
+    public void addInstanceContext (String instanceId, InstanceContext instanceContext) {
 
-        aliasAndInstanceIdToInstanceContextMap.put(new AliasAndInstanceId(alias, instanceId), instanceContext);
+        // check if there is an existing entry of the instance id
+        synchronized (instanceIdToInstanceContextMap) {
+            Set<InstanceContext> instanceContexts = instanceIdToInstanceContextMap.get(instanceId);
+            if (instanceContexts == null) {
+                // create a new HashSet which includes the given InstanceContext element
+                instanceIdToInstanceContextMap.put(instanceId,
+                        new HashSet<InstanceContext>(Arrays.asList(instanceContext)));
+            } else {
+                // entry exists, update
+                instanceContexts.add(instanceContext);
+            }
+        }
     }
 
     /**
-     * Retrieves InstanceContext obj. for the given alias and instance id
+     * Retrieves InstanceContext set for the given instance id
      *
-     * @param alias alias
      * @param instanceId instance id
-     * @return InstanceContext obj if exists, else null
+     * @return Set of InstanceContext objects if exists, else null
      */
-    public InstanceContext getInstanceContext (String alias, String instanceId) {
+    public Set<InstanceContext> getInstanceContexts (String instanceId) {
 
-        return aliasAndInstanceIdToInstanceContextMap.get(new AliasAndInstanceId(alias, instanceId));
+        return instanceIdToInstanceContextMap.get(instanceId);
+    }
+
+    /**
+     * Retrieves the current number of instance contexts which are kept track in this node
+     *
+     * @return number of instance contexts
+     */
+    public int getInstanceContextCount () {
+
+        return instanceIdToInstanceContextMap.keySet().size();
     }
 
     private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
@@ -236,52 +254,6 @@ public abstract class ParentComponent implements Serializable {
                     getClusterData(clusterData, group.getGroups());
                 }
             }
-        }
-    }
-
-    private class AliasAndInstanceId {
-
-        private String alias;
-        private String instanceId;
-
-        public AliasAndInstanceId(String alias, String instanceId) {
-            this.alias = alias;
-            this.instanceId = instanceId;
-        }
-
-
-        public String getAlias() {
-            return alias;
-        }
-
-        public void setAlias(String alias) {
-            this.alias = alias;
-        }
-
-        public String getInstanceId() {
-            return instanceId;
-        }
-
-        public void setInstanceId(String instanceId) {
-            this.instanceId = instanceId;
-        }
-
-        public boolean equals(Object other) {
-            if(other == null || !(other instanceof AliasAndInstanceId)) {
-                return false;
-            }
-
-            if(this == other) {
-                return true;
-            }
-
-            AliasAndInstanceId that = (AliasAndInstanceId)other;
-            return this.alias.equals(that.alias) &&
-                    this.instanceId.equals(that.instanceId);
-        }
-
-        public int hashCode () {
-            return alias.hashCode() + instanceId.hashCode();
         }
     }
 }

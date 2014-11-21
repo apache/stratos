@@ -64,4 +64,23 @@ public abstract class InstanceContext implements Serializable {
     public String getInstanceId() {
         return instanceId;
     }
+
+    public boolean equals(Object other) {
+        if(other == null || !(other instanceof InstanceContext)) {
+            return false;
+        }
+
+        if(this == other) {
+            return true;
+        }
+
+        InstanceContext that = (InstanceContext)other;
+        return this.alias.equals(that.alias) &&
+                this.instanceId.equals(that.instanceId);
+    }
+
+    public int hashCode () {
+        return alias.hashCode() + instanceId.hashCode();
+    }
 }
+
