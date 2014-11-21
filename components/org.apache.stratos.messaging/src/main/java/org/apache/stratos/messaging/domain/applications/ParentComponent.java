@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.GroupInstanceContext;
 import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 
 import java.io.Serializable;
@@ -39,13 +38,13 @@ public abstract class ParentComponent implements Serializable {
     // Cluster Id map, key = subscription alias for the cartridge type
     private Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group/Cluster Instance Context map
-    private Map<AliasAndGroupInstanceId, InstanceContext> aliasAndGroupInstanceIdInstanceContextMap;
+    private Map<AliasAndInstanceId, InstanceContext> aliasAndInstanceIdToInstanceContextMap;
 
     public ParentComponent () {
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
-        aliasAndGroupInstanceIdInstanceContextMap =
-                new HashMap<AliasAndGroupInstanceId, InstanceContext>();
+        aliasAndInstanceIdToInstanceContextMap =
+                new HashMap<AliasAndInstanceId, InstanceContext>();
     }
 
     /**
@@ -204,6 +203,43 @@ public abstract class ParentComponent implements Serializable {
         return appClusterData;
     }
 
+    /**
+     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap.
+     *
+     * @param alias alias of child
+     * @param instanceId instance id of child
+     * @param instanceContext InstanceContext object
+     */
+    public void addInstanceContext (String alias, String instanceId, InstanceContext instanceContext) {
+
+        if (aliasAndInstanceIdToInstanceContextMap == null) {
+            synchronized (this) {
+                if (aliasAndInstanceIdToInstanceContextMap == null) {
+                    aliasAndInstanceIdToInstanceContextMap = new HashMap<AliasAndInstanceId, InstanceContext>();
+                }
+            }
+        }
+
+        aliasAndInstanceIdToInstanceContextMap.put(new AliasAndInstanceId(alias, instanceId), instanceContext);
+    }
+
+    /**
+     * Retrieves InstanceContext obj. for the given alias and instance id
+     *
+     * @param alias alias
+     * @param instanceId instance id
+     * @return InstanceContext obj if exists, else null
+     */
+    public InstanceContext getInstanceContext (String alias, String instanceId) {
+
+        // if the map is not initialized, return null
+        if (aliasAndInstanceIdToInstanceContextMap == null) {
+            return null;
+        }
+
+        return aliasAndInstanceIdToInstanceContextMap.get(new AliasAndInstanceId(alias, instanceId));
+    }
+
     private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
 
         for (Group group : groups) {
@@ -216,35 +252,35 @@ public abstract class ParentComponent implements Serializable {
         }
     }
 
-    private class AliasAndGroupInstanceId {
+    private class AliasAndInstanceId {
 
-        private String groupAlias;
-        private String groupInstanceId;
+        private String alias;
+        private String instanceId;
 
-        public AliasAndGroupInstanceId (String groupAlias, String groupInstanceId) {
-            this.groupAlias = groupAlias;
-            this.groupInstanceId = groupInstanceId;
+        public AliasAndInstanceId(String alias, String instanceId) {
+            this.alias = alias;
+            this.instanceId = instanceId;
         }
 
 
-        public String getGroupAlias() {
-            return groupAlias;
+        public String getAlias() {
+            return alias;
         }
 
-        public void setGroupAlias(String groupAlias) {
-            this.groupAlias = groupAlias;
+        public void setAlias(String alias) {
+            this.alias = alias;
         }
 
-        public String getGroupInstanceId() {
-            return groupInstanceId;
+        public String getInstanceId() {
+            return instanceId;
         }
 
-        public void setGroupInstanceId(String groupInstanceId) {
-            this.groupInstanceId = groupInstanceId;
+        public void setInstanceId(String instanceId) {
+            this.instanceId = instanceId;
         }
 
         public boolean equals(Object other) {
-            if(other == null || !(other instanceof AliasAndGroupInstanceId)) {
+            if(other == null || !(other instanceof AliasAndInstanceId)) {
                 return false;
             }
 
@@ -252,13 +288,13 @@ public abstract class ParentComponent implements Serializable {
                 return true;
             }
 
-            AliasAndGroupInstanceId that = (AliasAndGroupInstanceId)other;
-            return this.groupAlias.equals(that.groupAlias) &&
-                    this.groupInstanceId.equals(that.groupInstanceId);
+            AliasAndInstanceId that = (AliasAndInstanceId)other;
+            return this.alias.equals(that.alias) &&
+                    this.instanceId.equals(that.instanceId);
         }
 
         public int hashCode () {
-            return groupAlias.hashCode() + groupInstanceId.hashCode();
+            return alias.hashCode() + instanceId.hashCode();
         }
     }
 }
