@@ -25,10 +25,8 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 
 import java.util.Stack;
 
-public class ClusterInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ClusterStatus> {
+public class ClusterInstanceContext extends InstanceContext<ClusterStatus> implements LifeCycleStateTransitionBehavior<ClusterStatus> {
 
-    // Life cycle state manager
-    protected LifeCycleStateManager<ClusterStatus> lifeCycleStateManager;
 
     public ClusterInstanceContext(String alias, String clusterId, String instanceId) {
         super(alias, instanceId);

@@ -25,10 +25,7 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 
 import java.util.Stack;
 
-public class GroupInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<GroupStatus> {
-
-    // Life cycle state manager
-    protected LifeCycleStateManager<GroupStatus> lifeCycleStateManager;
+public class GroupInstanceContext extends InstanceContext<GroupStatus> implements LifeCycleStateTransitionBehavior<GroupStatus> {
 
     public GroupInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);

@@ -28,8 +28,8 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.ApplicationInstanceContext;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
 
 import java.util.Collection;
 import java.util.Set;

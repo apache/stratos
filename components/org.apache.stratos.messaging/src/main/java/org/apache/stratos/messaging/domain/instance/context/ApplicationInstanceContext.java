@@ -25,10 +25,7 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 
 import java.util.Stack;
 
-public class ApplicationInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
-
-    // Life cycle state manager
-    protected LifeCycleStateManager<ApplicationStatus> lifeCycleStateManager;
+public class ApplicationInstanceContext extends InstanceContext<ApplicationStatus> implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
 
     public ApplicationInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);
