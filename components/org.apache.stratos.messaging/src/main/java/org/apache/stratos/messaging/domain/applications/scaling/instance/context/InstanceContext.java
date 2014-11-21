@@ -19,34 +19,22 @@
 
 package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
 
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
-
 import java.io.Serializable;
 import java.util.Properties;
 
 public abstract class InstanceContext implements Serializable {
 
-    // current state
-    private LifeCycleState state;
     // group/cluster level alias
-    private String alias;
+    protected String alias;
+    // instance id
+    protected String instanceId;
 
-    private String instanceId;
-
-    private Properties instanceProperties;
+    protected Properties instanceProperties;
 
     public InstanceContext (String alias, String instanceId) {
         this.alias = alias;
         this.instanceId = instanceId;
         this.instanceProperties = new Properties();
-    }
-
-    public LifeCycleState getState() {
-        return state;
-    }
-
-    public void setState(LifeCycleState state) {
-        this.state = state;
     }
 
     public void addProperty (String name, String value) {

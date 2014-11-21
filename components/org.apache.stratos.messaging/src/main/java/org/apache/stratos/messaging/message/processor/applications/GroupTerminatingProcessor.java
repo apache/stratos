@@ -93,10 +93,10 @@ public class GroupTerminatingProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the applications
-            if (!group.isStateTransitionValid(GroupStatus.Terminating)) {
-                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Active);
+            if (!group.isStateTransitionValid(GroupStatus.Terminating, null)) {
+                log.error("Invalid State Transition from " + group.getStatus(null) + " to " + GroupStatus.Active);
             }
-            group.setStatus(GroupStatus.Terminating);
+            group.setStatus(GroupStatus.Terminating, null);
 
         }
 

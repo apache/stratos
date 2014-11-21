@@ -19,40 +19,38 @@
 
 package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
 
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 
 import java.util.Stack;
 
-public class GroupInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<GroupStatus> {
+public class ApplicationInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
 
     // Life cycle state manager
-    protected LifeCycleStateManager<GroupStatus> lifeCycleStateManager;
+    protected LifeCycleStateManager<ApplicationStatus> lifeCycleStateManager;
 
-    public GroupInstanceContext(String alias, String instanceId) {
+    public ApplicationInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);
-        this.lifeCycleStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created,
-                alias + "_" + instanceId);
     }
 
     @Override
-    public boolean isStateTransitionValid(GroupStatus newState) {
+    public boolean isStateTransitionValid(ApplicationStatus newState) {
         return lifeCycleStateManager.isStateTransitionValid(newState);
     }
 
     @Override
-    public Stack<GroupStatus> getTransitionedStates() {
+    public Stack<ApplicationStatus> getTransitionedStates() {
         return lifeCycleStateManager.getStateStack();
     }
 
     @Override
-    public GroupStatus getStatus() {
+    public ApplicationStatus getStatus() {
         return lifeCycleStateManager.getCurrentState();
     }
 
     @Override
-    public boolean setStatus(GroupStatus newState) {
+    public boolean setStatus(ApplicationStatus newState) {
         return this.lifeCycleStateManager.changeState(newState);
     }
 }

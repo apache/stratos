@@ -92,7 +92,7 @@ public class GroupInActivateProcessor extends MessageProcessor {
                         event.getGroupId()));
             }
         } else {
-            group.setStatus(GroupStatus.Inactive);
+            group.setStatus(GroupStatus.Inactive, null);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Group updated as in-activated : %s",
                         group.getUniqueIdentifier()));

@@ -114,7 +114,7 @@ public class StatusChecker {
                                 //if all members removed from the cluster and cluster is in terminating,
                                 // either it has to be terminated or Reset
                                 if (!clusterMonitorHasMembers && cluster.getStatus() == ClusterStatus.Terminating) {
-                                    if (application.getStatus() == ApplicationStatus.Terminating) {
+                                    if (application.getStatus(null) == ApplicationStatus.Terminating) {
                                         if (log.isInfoEnabled()) {
                                             log.info("Publishing Cluster terminated event for [application]: " + appId +
                                                     " [cluster]: " + clusterId);
@@ -309,13 +309,13 @@ public class StatusChecker {
                 //send activation event
                 if (component instanceof Application) {
                     //send application activated event
-                    if (((Application) component).getStatus() != ApplicationStatus.Active) {
+                    if (((Application) component).getStatus(null) != ApplicationStatus.Active) {
                         log.info("sending app activate: " + appId);
                         ApplicationBuilder.handleApplicationActivatedEvent(appId);
                     }
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus() != GroupStatus.Active) {
+                    if (((Group) component).getStatus(null) != GroupStatus.Active) {
                         log.info("sending group activate: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier());
                     }
@@ -330,7 +330,7 @@ public class StatusChecker {
                     ApplicationBuilder.handleApplicationTerminatedEvent(appId);
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus() != GroupStatus.Terminated) {
+                    if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
                         log.info("sending group terminated : " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier());
                     }
@@ -341,10 +341,10 @@ public class StatusChecker {
                             getAllGroupInSameState(groups, GroupStatus.Created)) {
                 if (component instanceof Application) {
                     log.info("[Application] " + appId + "couldn't change to Created, since it is" +
-                            "already in " + ((Application) component).getStatus().toString());
+                            "already in " + ((Application) component).getStatus(null).toString());
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus() != GroupStatus.Created) {
+                    if (((Group) component).getStatus(null) != GroupStatus.Created) {
                         log.info("sending group created : " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupCreatedEvent(appId, component.getUniqueIdentifier());
                     }
@@ -359,7 +359,7 @@ public class StatusChecker {
                     //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus() != GroupStatus.Inactive) {
+                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier());
                     }
@@ -371,7 +371,7 @@ public class StatusChecker {
                     //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus() != GroupStatus.Inactive) {
+                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier());
                     }
@@ -392,7 +392,7 @@ public class StatusChecker {
     private boolean getAllGroupInActive(Map<String, Group> groups) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            if (group.getStatus() == GroupStatus.Inactive) {
+            if (group.getStatus(null) == GroupStatus.Inactive) {
                 groupStat = true;
                 return groupStat;
             } else {
@@ -412,7 +412,7 @@ public class StatusChecker {
     private boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            if (group.getStatus() == status) {
+            if (group.getStatus(null) == status) {
                 groupStat = true;
             } else {
                 groupStat = false;

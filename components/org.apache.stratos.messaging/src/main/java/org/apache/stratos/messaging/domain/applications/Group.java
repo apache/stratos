@@ -19,18 +19,16 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.GroupInstanceContext;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Represents a Group/nested Group in an Application/Group
  */
 
-public class Group extends ParentComponent implements LifeCycleStateTransitionBehavior<GroupStatus> {
+public class Group extends ParentComponent<GroupInstanceContext> {
 
     private static final long serialVersionUID = 8347096598203655846L;
     // Name of the Group, specified in Group Definition
@@ -45,8 +43,10 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     private String applicationId;
     // flag for Group level scaling
     private boolean isGroupScalingEnabled;
+    // Group/Cluster Instance Context map, key = instance id
+//    private final Map<String, Set<InstanceContext>> instanceIdToInstanceContextMap;
     // Life cycle state manager
-    protected LifeCycleStateManager<GroupStatus> groupStateManager;
+    //protected LifeCycleStateManager<GroupStatus> groupStateManager;
 
     public Group (String applicationId, String name, String alias) {
         super();
@@ -54,7 +54,9 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
         this.name = name;
         this.alias = alias;
         this.isGroupScalingEnabled = false;
-        this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
+        this.instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
+        //instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
+        //this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
 
     public String getUniqueIdentifier() {
@@ -81,24 +83,20 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
         this.autoscalingPolicy = autoscalingPolicy;
     }
 
-    @Override
-    public boolean isStateTransitionValid(GroupStatus newState) {
-        return groupStateManager.isStateTransitionValid(newState);
+    public boolean isStateTransitionValid(GroupStatus newState, String groupInstanceId) {
+        return instanceIdToInstanceContextMap.get(groupInstanceId).isStateTransitionValid(newState);
     }
 
-    @Override
-    public Stack<GroupStatus> getTransitionedStates() {
-        return groupStateManager.getStateStack();
+    public Stack<GroupStatus> getTransitionedStates(String groupInstanceId) {
+        return instanceIdToInstanceContextMap.get(groupInstanceId).getTransitionedStates();
     }
 
-    @Override
-    public GroupStatus getStatus() {
-        return groupStateManager.getCurrentState();
+    public GroupStatus getStatus(String groupInstanceId) {
+        return instanceIdToInstanceContextMap.get(groupInstanceId).getStatus();
     }
 
-    @Override
-    public boolean setStatus(GroupStatus newState) {
-        return this.groupStateManager.changeState(newState);
+    public boolean setStatus(GroupStatus newState, String groupInstanceId) {
+        return this.instanceIdToInstanceContextMap.get(groupInstanceId).setStatus(newState);
     }
 
     public boolean equals(Object other) {
@@ -129,4 +127,5 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
         this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
+
 }

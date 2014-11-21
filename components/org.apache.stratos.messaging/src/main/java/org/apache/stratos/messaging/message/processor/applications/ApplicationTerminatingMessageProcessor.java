@@ -88,11 +88,11 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the applications
-            if (!application.isStateTransitionValid(ApplicationStatus.Terminating)) {
-                log.error("Invalid State transfer from [ " + application.getStatus() +
+            if (!application.isStateTransitionValid(ApplicationStatus.Terminating, null)) {
+                log.error("Invalid State transfer from [ " + application.getStatus(null) +
                         " ] to [ " + ApplicationStatus.Terminating + " ]");
             }
-            application.setStatus(ApplicationStatus.Terminating);
+            application.setStatus(ApplicationStatus.Terminating, null);
 
         }
 

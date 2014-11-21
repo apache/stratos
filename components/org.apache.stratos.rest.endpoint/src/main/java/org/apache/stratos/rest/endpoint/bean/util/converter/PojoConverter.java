@@ -1055,7 +1055,7 @@ public class PojoConverter {
         }
 
         GroupBean groupBean = new GroupBean();
-        groupBean.setStatus(group.getStatus().toString());
+        groupBean.setStatus(group.getStatus(null).toString());
         groupBean.setAlias(group.getUniqueIdentifier());
         groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());

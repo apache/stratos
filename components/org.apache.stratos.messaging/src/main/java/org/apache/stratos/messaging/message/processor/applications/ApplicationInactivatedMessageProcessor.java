@@ -88,11 +88,11 @@ public class ApplicationInactivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the applications
-            if (!application.isStateTransitionValid(ApplicationStatus.Inactive)) {
-                log.error("Invalid State transfer from [ " + application.getStatus() +
+            if (!application.isStateTransitionValid(ApplicationStatus.Inactive, null)) {
+                log.error("Invalid State transfer from [ " + application.getStatus(null) +
                         " ] to [ " + ApplicationStatus.Inactive + " ]");
             }
-            application.setStatus(ApplicationStatus.Inactive);
+            application.setStatus(ApplicationStatus.Inactive, null);
 
         }
 

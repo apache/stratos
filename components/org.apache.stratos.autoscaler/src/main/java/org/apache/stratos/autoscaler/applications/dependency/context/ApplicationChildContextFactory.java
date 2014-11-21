@@ -53,7 +53,7 @@ public class ApplicationChildContextFactory {
             //getting the cluster alias
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
-            ClusterDataHolder clusterDataHolder = component.getClusterDataMap().get(id);
+            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
             applicationContext = getClusterChildContext(clusterDataHolder, hasDependents);
 
         } else {

@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.messaging.domain.applications.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -197,13 +198,15 @@ public class DependencyBuilder {
 
         //adding the rest of the children who are independent to the top level
         // as they can start in parallel.
-        for (Group group1 : component.getAliasToGroupMap().values()) {
+        Collection<Group> groups = component.getAliasToGroupMap().values();
+        for (Group group1 : groups) {
             if (dependencyTree.findApplicationContextWithIdInPrimaryTree(group1.getAlias()) == null) {
                 ApplicationChildContext context = ApplicationChildContextFactory.getGroupChildContext(group1.getAlias(), dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
             }
         }
-        for (ClusterDataHolder dataHolder : component.getClusterDataMap().values()) {
+        Collection<ClusterDataHolder> clusterData = component.getClusterDataMap().values();
+        for (ClusterDataHolder dataHolder : clusterData) {
             if (dependencyTree.findApplicationContextWithIdInPrimaryTree(dataHolder.getClusterId()) == null) {
                 ApplicationChildContext context = ApplicationChildContextFactory.getClusterChildContext(dataHolder,
                         dependencyTree.isTerminateDependent());

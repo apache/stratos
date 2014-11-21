@@ -49,7 +49,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         super(application);
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
-        this.status = application.getStatus();
+        this.status = application.getStatus(null);
         //starting the first set of dependencies from its children
         startDependency();
 

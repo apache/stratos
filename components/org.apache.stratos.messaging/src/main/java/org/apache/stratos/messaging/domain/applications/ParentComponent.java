@@ -19,6 +19,8 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 
 import java.io.Serializable;
@@ -29,7 +31,9 @@ import java.util.*;
  * in an Application within the Topology
  */
 
-public abstract class ParentComponent implements Serializable {
+public abstract class ParentComponent<T extends InstanceContext> implements Serializable {
+
+    private static final Log log = LogFactory.getLog(ParentComponent.class);
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
@@ -38,12 +42,11 @@ public abstract class ParentComponent implements Serializable {
     // Cluster Id map, key = subscription alias for the cartridge type
     private final Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group/Cluster Instance Context map, key = instance id
-    private final Map<String, Set<InstanceContext>> instanceIdToInstanceContextMap;
+    protected Map<String, T> instanceIdToInstanceContextMap;
 
     public ParentComponent () {
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
-        instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
     }
 
     /**
@@ -208,29 +211,35 @@ public abstract class ParentComponent implements Serializable {
      * @param instanceId instance id of child
      * @param instanceContext InstanceContext object
      */
-    public void addInstanceContext (String instanceId, InstanceContext instanceContext) {
+    public void addInstanceContext (String instanceId, T instanceContext) {
 
-        // check if there is an existing entry of the instance id
         synchronized (instanceIdToInstanceContextMap) {
-            Set<InstanceContext> instanceContexts = instanceIdToInstanceContextMap.get(instanceId);
-            if (instanceContexts == null) {
-                // create a new HashSet which includes the given InstanceContext element
-                instanceIdToInstanceContextMap.put(instanceId,
-                        new HashSet<InstanceContext>(Arrays.asList(instanceContext)));
+            if (instanceIdToInstanceContextMap.get(instanceId) != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("InstanceContext for instance id " + instanceId + " already exists");
+                }
             } else {
-                // entry exists, update
-                instanceContexts.add(instanceContext);
+                instanceIdToInstanceContextMap.put(instanceId, instanceContext);
             }
         }
     }
 
     /**
-     * Retrieves InstanceContext set for the given instance id
+     * Retrieves InstanceContext obj. for the given instance id
      *
      * @param instanceId instance id
-     * @return Set of InstanceContext objects if exists, else null
+     * @return InstanceContext obj. if exists, else null
      */
-    public Set<InstanceContext> getInstanceContexts (String instanceId) {
+    public T getInstanceContexts (String instanceId) {
+        // if map is empty, return null
+        if (instanceIdToInstanceContextMap.isEmpty()) {
+            return null;
+        }
+
+        // if instanceId is null, just get the first InstanceContext
+        if (instanceId == null) {
+            return instanceIdToInstanceContextMap.entrySet().iterator().next().getValue();
+        }
 
         return instanceIdToInstanceContextMap.get(instanceId);
     }

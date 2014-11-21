@@ -107,10 +107,10 @@ public class ApplicationMonitorFactory {
                 }
                 //TODO make sure when it is async
 
-                if (group.getStatus() != groupMonitor.getStatus()) {
+                if (group.getStatus(null) != groupMonitor.getStatus()) {
                     //updating the status, if the group is not in created state when creating group Monitor
                     //so that groupMonitor will notify the parent (useful when restarting stratos)
-                    groupMonitor.setStatus(group.getStatus());
+                    groupMonitor.setStatus(group.getStatus(null));
                 }
             }
 

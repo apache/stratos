@@ -19,9 +19,40 @@
 
 package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
 
-public class ClusterInstanceContext extends InstanceContext {
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+
+import java.util.Stack;
+
+public class ClusterInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ClusterStatus> {
+
+    // Life cycle state manager
+    protected LifeCycleStateManager<ClusterStatus> lifeCycleStateManager;
 
     public ClusterInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);
+        this.lifeCycleStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created,
+                alias + "_" + instanceId);
+    }
+
+    @Override
+    public boolean isStateTransitionValid(ClusterStatus newState) {
+        return lifeCycleStateManager.isStateTransitionValid(newState);
+    }
+
+    @Override
+    public Stack<ClusterStatus> getTransitionedStates() {
+        return lifeCycleStateManager.getStateStack();
+    }
+
+    @Override
+    public ClusterStatus getStatus() {
+        return lifeCycleStateManager.getCurrentState();
+    }
+
+    @Override
+    public boolean setStatus(ClusterStatus newState) {
+        return this.lifeCycleStateManager.changeState(newState);
     }
 }

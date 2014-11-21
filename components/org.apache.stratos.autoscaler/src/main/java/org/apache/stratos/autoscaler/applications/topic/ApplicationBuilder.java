@@ -28,7 +28,6 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.topology.Cluster;
 
 import java.util.Collection;
 import java.util.Set;
@@ -90,15 +89,15 @@ public class ApplicationBuilder {
         }
 
         ApplicationStatus status = ApplicationStatus.Active;
-        if (application.isStateTransitionValid(status)) {
+        if (application.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            application.setStatus(status);
+            application.setStatus(status, null);
             updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                    " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
+                    " [current-status] %s [status-requested] %s", appId, application.getStatus(null), status));
         }
     }
 
@@ -121,16 +120,16 @@ public class ApplicationBuilder {
         try {
             ApplicationHolder.acquireWriteLock();
             ApplicationStatus status = ApplicationStatus.Terminating;
-            if (application.isStateTransitionValid(status)) {
+            if (application.isStateTransitionValid(status, null)) {
                 //setting the status, persist and publish
-                application.setStatus(status);
+                application.setStatus(status, null);
                 updateApplicationMonitor(appId, status);
 
                 ApplicationHolder.persistApplication(application);
                 //ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                        " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
+                        " [current-status] %s [status-requested] %s", appId, application.getStatus(null), status));
             }
         } finally {
             ApplicationHolder.releaseWriteLock();
@@ -161,9 +160,9 @@ public class ApplicationBuilder {
             Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
 
             ApplicationStatus status = ApplicationStatus.Terminated;
-            if (application.isStateTransitionValid(status)) {
+            if (application.isStateTransitionValid(status, null)) {
                 //setting the status, persist and publish
-                application.setStatus(status);
+                application.setStatus(status, null);
                 updateApplicationMonitor(appId, status);
                 //removing the monitor
                 AutoscalerContext.getInstance().removeAppMonitor(appId);
@@ -174,7 +173,7 @@ public class ApplicationBuilder {
                 ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                        " [current-status] %s [status-requested] %s", appId, application.getStatus(), status));
+                        " [current-status] %s [status-requested] %s", appId, application.getStatus(null), status));
             }
         }
     }
@@ -196,16 +195,16 @@ public class ApplicationBuilder {
             Application application = applications.getApplication(applicationId);
             // check and update application status to 'Terminating'
             ApplicationStatus status = ApplicationStatus.Terminating;
-            if (application.isStateTransitionValid(status)) {
+            if (application.isStateTransitionValid(status, null)) {
                 // for now anyway update the status forcefully
                 //setting the status, persist and publish
-                application.setStatus(status);
+                application.setStatus(status, null);
                 updateApplicationMonitor(applicationId, status);
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendApplicationTerminatingEvent(applicationId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                        " [current-status] %s [status-requested] %s", applicationId, application.getStatus(), status));
+                        " [current-status] %s [status-requested] %s", applicationId, application.getStatus(null), status));
             }
         } finally {
             ApplicationHolder.releaseWriteLock();
@@ -235,15 +234,15 @@ public class ApplicationBuilder {
         }
 
         GroupStatus status = GroupStatus.Terminated;
-        if (group.isStateTransitionValid(status)) {
+        if (group.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            group.setStatus(status);
+            group.setStatus(status, null);
             updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId);
         } else {
             log.warn(String.format("Group state transition is not valid: [group-id] %s [current-status] %s " +
-                    " [requested-status] %s", groupId, group.getStatus(), status));
+                    " [requested-status] %s", groupId, group.getStatus(null), status));
         }
 
     }
@@ -271,15 +270,15 @@ public class ApplicationBuilder {
         }
 
         GroupStatus status = GroupStatus.Active;
-        if (group.isStateTransitionValid(status)) {
+        if (group.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            group.setStatus(status);
+            group.setStatus(status, null);
             updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupActivatedEvent(appId, groupId);
         } else {
             log.warn(String.format("Group state transition is not valid: [group-id] %s [current-status] %s " +
-                    " [requested-status] %s", groupId, group.getStatus(), status));
+                    " [requested-status] %s", groupId, group.getStatus(null), status));
         }
     }
 
@@ -306,14 +305,14 @@ public class ApplicationBuilder {
         }
 
         GroupStatus status = GroupStatus.Created;
-        if (group.isStateTransitionValid(status)) {
+        if (group.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            group.setStatus(status);
+            group.setStatus(status, null);
             updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
         } else {
-            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
+            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus(null)
                     + "[requested-state] " + status);
         }
     }
@@ -341,14 +340,14 @@ public class ApplicationBuilder {
         }
 
         GroupStatus status = GroupStatus.Inactive;
-        if (group.isStateTransitionValid(status)) {
+        if (group.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            group.setStatus(status);
+            group.setStatus(status, null);
             updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId);
         } else {
-            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
+            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus(null)
                     + "[requested-state] " + status);
         }
     }
@@ -378,14 +377,14 @@ public class ApplicationBuilder {
         try {
             ApplicationHolder.acquireWriteLock();
             GroupStatus status = GroupStatus.Terminating;
-            if (group.isStateTransitionValid(status)) {
+            if (group.isStateTransitionValid(status, null)) {
                 //setting the status, persist and publish
-                group.setStatus(status);
+                group.setStatus(status, null);
                 updateGroupMonitor(appId, groupId, status);
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId);
             } else {
-                log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus()
+                log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus(null)
                         + "[requested-state] " + status);
             }
         } finally {
@@ -396,11 +395,11 @@ public class ApplicationBuilder {
     private static void updateGroupStatusesRecursively(GroupStatus groupStatus, Collection<Group> groups) {
 
         for (Group group : groups) {
-            if (!group.isStateTransitionValid(groupStatus)) {
-                log.error("Invalid state transfer from " + group.getStatus() + " to " + groupStatus);
+            if (!group.isStateTransitionValid(groupStatus, null)) {
+                log.error("Invalid state transfer from " + group.getStatus(null) + " to " + groupStatus);
             }
             // force update for now
-            group.setStatus(groupStatus);
+            group.setStatus(groupStatus, null);
 
             // go recursively and update
             if (group.getGroups() != null) {

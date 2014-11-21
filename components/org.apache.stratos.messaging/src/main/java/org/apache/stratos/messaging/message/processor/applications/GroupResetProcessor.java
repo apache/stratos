@@ -93,11 +93,11 @@ public class GroupResetProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the applications
-            if (!group.isStateTransitionValid(GroupStatus.Created)) {
-                log.error("Invalid State Transition from " + group.getStatus() + " to " + GroupStatus.Created + " " +
+            if (!group.isStateTransitionValid(GroupStatus.Created, null)) {
+                log.error("Invalid State Transition from " + group.getStatus(null) + " to " + GroupStatus.Created + " " +
                         "for Group " + group.getAlias());
             }
-            group.setStatus(GroupStatus.Created);
+            group.setStatus(GroupStatus.Created, null);
 
         }
 

@@ -19,9 +19,10 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
+import org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ import java.util.*;
  * Represents an Application in the Topology
  */
 
-public class Application extends ParentComponent implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
+public class Application extends ParentComponent<ApplicationInstanceContext> {
 
     private static final long serialVersionUID = -5092959597171649688L;
     // Unique id for the Application, defined in Application Definition
@@ -43,14 +44,15 @@ public class Application extends ParentComponent implements LifeCycleStateTransi
     // tenant admin user
     private String tenantAdminUserName;
     // Life cycle state manager
-    protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
+    //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
 
     public Application (String id) {
         super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
-        this.applicationStateManager =
-                new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
+        this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstanceContext>();
+        //this.applicationStateManager =
+                //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
     public String getUniqueIdentifier() {
@@ -85,24 +87,20 @@ public class Application extends ParentComponent implements LifeCycleStateTransi
         this.tenantAdminUserName = tenantAdminUserName;
     }
 
-    @Override
-    public boolean isStateTransitionValid(ApplicationStatus newState) {
-        return this.applicationStateManager.isStateTransitionValid(newState);
+    public boolean isStateTransitionValid(ApplicationStatus newState, String applicationInstancetId) {
+        return this.instanceIdToInstanceContextMap.get(applicationInstancetId).isStateTransitionValid(newState);
     }
 
-    @Override
-    public Stack<ApplicationStatus> getTransitionedStates() {
-        return this.applicationStateManager.getStateStack();
+    public Stack<ApplicationStatus> getTransitionedStates(String applicationInstancetId) {
+        return this.instanceIdToInstanceContextMap.get(applicationInstancetId).getTransitionedStates();
     }
 
-    @Override
-    public ApplicationStatus getStatus() {
-        return this.applicationStateManager.getCurrentState();
+    public ApplicationStatus getStatus(String applicationInstanceId) {
+        return this.instanceIdToInstanceContextMap.get(applicationInstanceId).getStatus();
     }
 
-    @Override
-    public boolean setStatus(ApplicationStatus newState) {
-        return this.applicationStateManager.changeState(newState);
+    public boolean setStatus(ApplicationStatus newState, String applicationInstanceId) {
+        return this.instanceIdToInstanceContextMap.get(applicationInstanceId).setStatus(newState);
     }
 
     public boolean equals(Object other) {
