@@ -204,7 +204,8 @@ public abstract class ParentComponent implements Serializable {
     }
 
     /**
-     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap.
+     * Adds InstanceContext of a child to the aliasAndInstanceIdToInstanceContextMap,
+     * after initializing the map if not already done.
      *
      * @param alias alias of child
      * @param instanceId instance id of child

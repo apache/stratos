@@ -51,6 +51,8 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String lbClusterId;
+    // instance id to use if snapshot wise group scaling is enabled
+    private String instanceId;
     private LifeCycleStateManager<MemberStatus> memberStateManager;
 
     public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, long initTime) {
@@ -181,5 +183,12 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
                 + ", properties=" + properties + ", lbClusterId=" + lbClusterId + "]";
     }
 
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 }
 
