@@ -225,6 +225,16 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
     }
 
     /**
+     * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
+     *
+     * @param instanceId instance id of child
+     */
+    public boolean containsInstanceContext (String instanceId) {
+        return instanceIdToInstanceContextMap.containsKey(instanceId);
+    }
+
+
+    /**
      * Retrieves InstanceContext obj. for the given instance id
      *
      * @param instanceId instance id
