@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 
 import java.io.Serializable;
 import java.util.*;

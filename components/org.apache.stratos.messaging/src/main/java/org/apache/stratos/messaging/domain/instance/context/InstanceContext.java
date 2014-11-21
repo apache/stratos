@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
+package org.apache.stratos.messaging.domain.instance.context;
 
 import java.io.Serializable;
 import java.util.Properties;

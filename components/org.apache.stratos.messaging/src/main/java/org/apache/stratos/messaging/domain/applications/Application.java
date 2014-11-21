@@ -19,10 +19,8 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.axis2.extensions.spring.receivers.ApplicationContextHolder;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.ApplicationInstanceContext;
-import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
 
 import java.util.*;
 

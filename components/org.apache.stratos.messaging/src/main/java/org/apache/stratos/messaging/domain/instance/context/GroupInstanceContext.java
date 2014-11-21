@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
+package org.apache.stratos.messaging.domain.instance.context;
 
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;

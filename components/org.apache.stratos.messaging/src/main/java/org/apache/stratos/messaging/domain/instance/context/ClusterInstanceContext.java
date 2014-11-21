@@ -17,40 +17,42 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
+package org.apache.stratos.messaging.domain.instance.context;
 
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 
 import java.util.Stack;
 
-public class ApplicationInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
+public class ClusterInstanceContext extends InstanceContext implements LifeCycleStateTransitionBehavior<ClusterStatus> {
 
     // Life cycle state manager
-    protected LifeCycleStateManager<ApplicationStatus> lifeCycleStateManager;
+    protected LifeCycleStateManager<ClusterStatus> lifeCycleStateManager;
 
-    public ApplicationInstanceContext(String alias, String instanceId) {
+    public ClusterInstanceContext(String alias, String instanceId) {
         super(alias, instanceId);
+        this.lifeCycleStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created,
+                alias + "_" + instanceId);
     }
 
     @Override
-    public boolean isStateTransitionValid(ApplicationStatus newState) {
+    public boolean isStateTransitionValid(ClusterStatus newState) {
         return lifeCycleStateManager.isStateTransitionValid(newState);
     }
 
     @Override
-    public Stack<ApplicationStatus> getTransitionedStates() {
+    public Stack<ClusterStatus> getTransitionedStates() {
         return lifeCycleStateManager.getStateStack();
     }
 
     @Override
-    public ApplicationStatus getStatus() {
+    public ClusterStatus getStatus() {
         return lifeCycleStateManager.getCurrentState();
     }
 
     @Override
-    public boolean setStatus(ApplicationStatus newState) {
+    public boolean setStatus(ClusterStatus newState) {
         return this.lifeCycleStateManager.changeState(newState);
     }
 }
