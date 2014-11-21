@@ -158,6 +158,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/cartridge/lb",{});
     };
 
+    this.getGroups = function(){
+        return this.sendReceive("GET","/groups",{});
+    };
+
     this.getApplications = function(){
         return this.sendReceive("GET","/application",{});
     };

@@ -40,7 +40,7 @@ public abstract class ApplicationChildContext {
 
     protected boolean hasStartupDependents;
     
-    protected boolean hasScalingDependents;
+    protected boolean isGroupScalingEnabled;
 
     public ApplicationChildContext(String id, boolean killDependent) {
         applicationChildContextList = new ArrayList<ApplicationChildContext>();
@@ -113,11 +113,11 @@ public abstract class ApplicationChildContext {
         this.hasStartupDependents = isDependent;
     }
 
-    public boolean hasScalingDependents() {
-        return hasScalingDependents;
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
     }
 
-    public void setHasScalingDependents(boolean isDependent) {
-        this.hasScalingDependents = isDependent;
+    public void setGroupScalingEnabled(boolean isDependent) {
+        this.isGroupScalingEnabled = isDependent;
     }
 }

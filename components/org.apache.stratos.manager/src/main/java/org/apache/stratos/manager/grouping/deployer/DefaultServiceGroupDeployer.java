@@ -229,7 +229,11 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             throw new ADCException(axisFault);
         } catch (RemoteException e) {
             throw new ADCException(e);
-        }
+        } catch (AutoScalerServiceAutoScalerExceptionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
     }
 
 
@@ -262,7 +266,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         ServiceGroup servicegroup = new ServiceGroup();
 
         // implement conversion (mostly List -> Array)
-        servicegroup.setName(serviceGroupDefinition.getName());
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
         List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 

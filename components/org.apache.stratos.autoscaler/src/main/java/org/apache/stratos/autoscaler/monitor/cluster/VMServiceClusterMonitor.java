@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Is responsible for monitoring a service cluster. This runs periodically
+ * Is responsible for monitoring a service cluster which is based on VMs. This runs periodically
  * and perform minimum instance check and scaling check using the underlying
  * rules engine.
  */

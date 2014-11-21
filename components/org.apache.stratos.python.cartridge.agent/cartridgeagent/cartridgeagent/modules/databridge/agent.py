@@ -18,6 +18,7 @@
 from thrift.publisher import *
 from thrift.gen.Exception.ttypes import ThriftSessionExpiredException
 from ..util.log import *
+from ..exception.thriftreceiverofflineexception import ThriftReceiverOfflineException
 import time
 
 
@@ -161,14 +162,15 @@ class ThriftPublisher:
 
         try:
             self.__publisher.publish(event_bundle)
+            self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
         except ThriftSessionExpiredException as ex:
             self.log.debug("ThriftSession expired. Reconnecting")
             self.__publisher.connect(self.username, self.password)
             self.log.debug("connected! stream ID: %r" % self.stream_id)
 
             self.publish(event)
-
-        self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
+        except Exception as ex:
+            raise ThriftReceiverOfflineException(ex)
 
     def create_event_bundle(self, event):
         """

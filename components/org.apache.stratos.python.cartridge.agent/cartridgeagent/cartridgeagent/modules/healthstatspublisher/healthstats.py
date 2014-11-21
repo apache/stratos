@@ -25,6 +25,7 @@ from abstracthealthstatisticspublisher import *
 from ..databridge.agent import *
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ..util import cartridgeagentutils, cartridgeagentconstants
+from ..exception.thriftreceiverofflineexception import ThriftReceiverOfflineException
 
 
 class HealthStatisticsPublisherManager(Thread):
@@ -62,12 +63,19 @@ class HealthStatisticsPublisherManager(Thread):
         while not self.terminated:
             time.sleep(self.publish_interval)
 
-            cartridge_stats = self.stats_reader.stat_cartridge_health()
-            self.log.debug("Publishing memory consumption: %r" % cartridge_stats.memory_usage)
-            self.publisher.publish_memory_usage(cartridge_stats.memory_usage)
+            try:
+                cartridge_stats = self.stats_reader.stat_cartridge_health()
+                self.log.debug("Publishing memory consumption: %r" % cartridge_stats.memory_usage)
+                self.publisher.publish_memory_usage(cartridge_stats.memory_usage)
 
-            self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
-            self.publisher.publish_load_average(cartridge_stats.load_avg)
+                self.log.debug("Publishing load average: %r" % cartridge_stats.load_avg)
+                self.publisher.publish_load_average(cartridge_stats.load_avg)
+            except ThriftReceiverOfflineException:
+                self.log.error("Couldn't publish health statistics to CEP. Thrift Receiver offline. Reconnecting...")
+                try:
+                    self.publisher = HealthStatisticsPublisher()
+                except:
+                    self.log.error("Couldn't connect. CEP Offline.")
 
         self.publisher.publisher.disconnect()
 

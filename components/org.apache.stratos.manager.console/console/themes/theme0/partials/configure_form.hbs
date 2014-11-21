@@ -79,7 +79,13 @@
                 <div class="row no-item row-overide">
                     <div class="row title">
                         <h2>No {{formTitle}} found..</h2>
-                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formTitle}}</a>
+                        {{#if dependancy}}
+                            <h3>You need to add <i>{{dependancy}}</i> before {{formTitle}}</h3>
+                            <a type="button" class="btn btn-primary btn-lg" href="../{{dependancy}}/new/">Add New {{dependancy}}</a>
+                            {{else}}
+                            <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formTitle}}</a>
+                        {{/if}}
+
                     </div>
                 </div>
             {{/if}}

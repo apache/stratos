@@ -62,7 +62,10 @@ var formtype = elements.formtype;
 
 switch (formtype) {
     case "groups":
-        //TODO need to get group list endpoint
+        list_data = util.RESTCalls.getGroups();
+        if (list_data.serviceGroup && list_data.serviceGroup.length === 0) {
+            list_data = null;
+        }
         break;
     case "applications":
         list_data = util.RESTCalls.getApplications();

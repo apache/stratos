@@ -55,13 +55,6 @@ public interface EventHandler {
     public abstract void onParentScalingEvent(MonitorScalingEvent scalingEvent);
 
     /**
-     * Triggered when termination decision is made.
-     *
-     * @param terminateAllEvent
-     */
-    public abstract void onEvent(MonitorTerminateAllEvent terminateAllEvent);
-
-    /**
      * Triggered when scaling decision is made.
      *
      * @param scalingEvent

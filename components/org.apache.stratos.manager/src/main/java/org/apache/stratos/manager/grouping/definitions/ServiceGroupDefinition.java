@@ -32,6 +32,8 @@ public class ServiceGroupDefinition implements Serializable {
 
     private List<String> cartridges;
 
+    private boolean isGroupScalingEnabled;
+
     private DependencyDefinitions dependencies;
 
     public String getName() {
@@ -64,5 +66,13 @@ public class ServiceGroupDefinition implements Serializable {
 
     public void setDependencies(DependencyDefinitions dependencies) {
         this.dependencies = dependencies;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }

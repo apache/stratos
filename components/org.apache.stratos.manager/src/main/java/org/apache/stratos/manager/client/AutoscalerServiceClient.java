@@ -231,7 +231,7 @@ public class AutoscalerServiceClient {
         return stub.getServiceGroup(serviceGroupDefinitionName);
     }
 
-    public ServiceGroup[] getServiceGroups() throws RemoteException {
+    public ServiceGroup[] getServiceGroups() throws RemoteException, AutoScalerServiceAutoScalerExceptionException {
         return stub.getServiceGroups();
     }
 

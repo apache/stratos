@@ -33,6 +33,7 @@ class CartridgeAgentConfiguration:
 
             self.payload_params = {}
             self.properties = None
+            """ :type : ConfigParser.SafeConfigParser """
 
             self.service_group = None
             """ :type : str  """
@@ -265,6 +266,13 @@ class CartridgeAgentConfiguration:
             self.log.debug("Config file path : %r" % conf_file_path)
             self.properties = ConfigParser.SafeConfigParser()
             self.properties.read(conf_file_path)
+
+            #set calculated values
+            param_file = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "payload/launch-params"
+            self.properties.set("agent", cartridgeagentconstants.PARAM_FILE_PATH, param_file)
+
+            extensions_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "extensions"
+            self.properties.set("agent", cartridgeagentconstants.EXTENSIONS_DIR, extensions_dir)
 
         def __read_parameter_file(self):
             """

@@ -119,6 +119,8 @@
                 <value>kubernetesHost</value>
                 <value>cartridges</value>
                 <value>subGroups</value>
+                <value>groups</value>
+                <value>clusters</value>
                 <value>startupOrders</value>
             </list>
         </property>

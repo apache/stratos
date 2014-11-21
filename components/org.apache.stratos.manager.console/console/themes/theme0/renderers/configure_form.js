@@ -73,6 +73,7 @@ var render = function (theme, data, meta, require) {
                         formDataRaw: data.formDataRaw,
                         formTitle: data.formTitle,
                         buttonText: data.buttonText,
+                        dependancy:data.dependancy,
                         isForm: data.isForm,
                         isEdit:data.isEdit,
                         formDataEdit:data.formDataEdit,

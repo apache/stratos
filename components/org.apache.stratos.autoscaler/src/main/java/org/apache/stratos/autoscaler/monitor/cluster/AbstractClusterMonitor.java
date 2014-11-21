@@ -313,11 +313,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onEvent(MonitorTerminateAllEvent terminateAllEvent) {
-
-    }
-
-    @Override
     public void onEvent(MonitorScalingEvent scalingEvent) {
 
     }

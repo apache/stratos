@@ -17,35 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.applications;
+package org.apache.stratos.messaging.domain.applications.scaling.instance.context;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+public class ClusterInstanceContext extends InstanceContext {
 
-/**
- * Data Holder for a Cluster.
- * Will hold the Service Type and Cluster Id.
- */
-
-public class ClusterDataHolder implements Serializable {
-
-    // Service/Cartridge type
-    private String serviceType;
-    // Cluster id
-    private String clusterId;
-
-    public ClusterDataHolder (String serviceType, String clusterId) {
-
-        this.serviceType = serviceType;
-        this.clusterId = clusterId;
-    }
-
-    public String getServiceType() {
-        return serviceType;
-    }
-
-    public String getClusterId() {
-        return clusterId;
+    public ClusterInstanceContext(String alias, String instanceId) {
+        super(alias, instanceId);
     }
 }

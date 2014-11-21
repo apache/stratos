@@ -43,16 +43,17 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
     private String autoscalingPolicy;
     // application id
     private String applicationId;
+    // flag for Group level scaling
+    private boolean isGroupScalingEnabled;
     // Life cycle state manager
     protected LifeCycleStateManager<GroupStatus> groupStateManager;
-    // Group Instance map, key = group instance Id
-    private Map<String, GroupInstanceContext> groupInstanceIdToGroupInstanceContextMap;
 
     public Group (String applicationId, String name, String alias) {
         super();
         this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
+        this.isGroupScalingEnabled = false;
         this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
 
@@ -100,29 +101,6 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
         return this.groupStateManager.changeState(newState);
     }
 
-    public void addGroupInstanceContext (GroupInstanceContext groupInstanceContext) {
-        // the map will be created upon the first attempt to insert a GroupInstanceContext object.
-        if (groupInstanceIdToGroupInstanceContextMap == null) {
-            synchronized (this) {
-                if (groupInstanceIdToGroupInstanceContextMap == null) {
-                    groupInstanceIdToGroupInstanceContextMap = new HashMap<String, GroupInstanceContext>();
-                }
-            }
-        }
-
-        groupInstanceIdToGroupInstanceContextMap.put(groupInstanceContext.getGroupInstanceId(),
-                groupInstanceContext);
-    }
-
-    public GroupInstanceContext getGroupInstanceContext (String groupInstanceId) {
-        // if the map is not created yet, return null
-        if (groupInstanceIdToGroupInstanceContextMap == null) {
-            return null;
-        }
-
-        return groupInstanceIdToGroupInstanceContextMap.get(groupInstanceId);
-    }
-
     public boolean equals(Object other) {
         if(other == null || !(other instanceof Group)) {
             return false;
@@ -142,5 +120,13 @@ public class Group extends ParentComponent implements LifeCycleStateTransitionBe
 
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }
