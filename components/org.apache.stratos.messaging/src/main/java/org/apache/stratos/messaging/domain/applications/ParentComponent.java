@@ -19,8 +19,6 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 
 import java.io.Serializable;
@@ -32,7 +30,6 @@ import java.util.*;
  */
 
 public abstract class ParentComponent<T extends InstanceContext> implements Serializable {
-
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
