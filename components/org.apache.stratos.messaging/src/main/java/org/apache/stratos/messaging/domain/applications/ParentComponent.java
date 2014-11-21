@@ -19,6 +19,9 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.applications.scaling.instance.context.InstanceContext;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -35,11 +38,14 @@ public abstract class ParentComponent implements Serializable {
     private Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
     private Map<String, ClusterDataHolder> aliasToClusterDataMap;
-    // Application status
+    // Group/Cluster Instance Context map
+    private Map<AliasAndGroupInstanceId, InstanceContext> aliasAndGroupInstanceIdInstanceContextMap;
 
     public ParentComponent () {
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
+        aliasAndGroupInstanceIdInstanceContextMap =
+                new HashMap<AliasAndGroupInstanceId, InstanceContext>();
     }
 
     /**
@@ -207,6 +213,52 @@ public abstract class ParentComponent implements Serializable {
                     getClusterData(clusterData, group.getGroups());
                 }
             }
+        }
+    }
+
+    private class AliasAndGroupInstanceId {
+
+        private String groupAlias;
+        private String groupInstanceId;
+
+        public AliasAndGroupInstanceId (String groupAlias, String groupInstanceId) {
+            this.groupAlias = groupAlias;
+            this.groupInstanceId = groupInstanceId;
+        }
+
+
+        public String getGroupAlias() {
+            return groupAlias;
+        }
+
+        public void setGroupAlias(String groupAlias) {
+            this.groupAlias = groupAlias;
+        }
+
+        public String getGroupInstanceId() {
+            return groupInstanceId;
+        }
+
+        public void setGroupInstanceId(String groupInstanceId) {
+            this.groupInstanceId = groupInstanceId;
+        }
+
+        public boolean equals(Object other) {
+            if(other == null || !(other instanceof AliasAndGroupInstanceId)) {
+                return false;
+            }
+
+            if(this == other) {
+                return true;
+            }
+
+            AliasAndGroupInstanceId that = (AliasAndGroupInstanceId)other;
+            return this.groupAlias.equals(that.groupAlias) &&
+                    this.groupInstanceId.equals(that.groupInstanceId);
+        }
+
+        public int hashCode () {
+            return groupAlias.hashCode() + groupInstanceId.hashCode();
         }
     }
 }
