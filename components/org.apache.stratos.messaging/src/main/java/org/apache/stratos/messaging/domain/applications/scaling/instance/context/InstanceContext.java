@@ -21,9 +21,10 @@ package org.apache.stratos.messaging.domain.applications.scaling.instance.contex
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
+import java.io.Serializable;
 import java.util.Properties;
 
-public abstract class InstanceContext {
+public abstract class InstanceContext implements Serializable {
 
     // current state
     private LifeCycleState state;
