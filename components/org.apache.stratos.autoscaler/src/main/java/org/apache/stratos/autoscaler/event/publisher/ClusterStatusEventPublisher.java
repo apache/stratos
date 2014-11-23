@@ -61,7 +61,8 @@ public class ClusterStatusEventPublisher {
         }
     }
 
-    public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
+    public static void sendClusterResetEvent(String appId, String serviceName,
+                                             String clusterId, String instanceId) {
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -70,7 +71,7 @@ public class ClusterStatusEventPublisher {
                 if (cluster.isStateTransitionValid(ClusterStatus.Created, null) &&
                         cluster.getStatus(null) != ClusterStatus.Created) {
                     ClusterStatusClusterResetEvent clusterCreatedEvent =
-                            new ClusterStatusClusterResetEvent(appId, serviceName, clusterId);
+                            new ClusterStatusClusterResetEvent(appId, serviceName, clusterId, instanceId);
 
                     publishEvent(clusterCreatedEvent);
                 } else {
@@ -91,7 +92,7 @@ public class ClusterStatusEventPublisher {
                 if (cluster.isStateTransitionValid(ClusterStatus.Active, null) &&
                         cluster.getStatus(null) != ClusterStatus.Active) {
                     ClusterStatusClusterActivatedEvent clusterActivatedEvent =
-                            new ClusterStatusClusterActivatedEvent(appId, serviceName, clusterId);
+                            new ClusterStatusClusterActivatedEvent(appId, serviceName, clusterId, "test***");
 
                     publishEvent(clusterActivatedEvent);
                 } else {
@@ -103,7 +104,8 @@ public class ClusterStatusEventPublisher {
         }
     }
 
-    public static void sendClusterInActivateEvent(String appId, String serviceName, String clusterId) {
+    public static void sendClusterInActivateEvent(String appId, String serviceName,
+                                                  String clusterId, String instanceId) {
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -112,7 +114,7 @@ public class ClusterStatusEventPublisher {
                 if (cluster.isStateTransitionValid(ClusterStatus.Inactive, null) &&
                                                 cluster.getStatus(null) != ClusterStatus.Inactive) {
                     ClusterStatusClusterInactivateEvent clusterInActivateEvent =
-                            new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId);
+                            new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
 
                     publishEvent(clusterInActivateEvent);
                 } else {
@@ -125,7 +127,8 @@ public class ClusterStatusEventPublisher {
         }
     }
 
-    public static void sendClusterTerminatingEvent(String appId, String serviceName, String clusterId, String instanceId) {
+    public static void sendClusterTerminatingEvent(String appId, String serviceName,
+                                                   String clusterId, String instanceId) {
 
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
@@ -135,7 +138,7 @@ public class ClusterStatusEventPublisher {
                 if (cluster.isStateTransitionValid(ClusterStatus.Terminating, null) &&
                         cluster.getStatus(null) != ClusterStatus.Terminating) {
                     ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
-                            new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId);
+                            new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId, instanceId);
 
                     publishEvent(appStatusClusterTerminatingEvent);
                 } else {
@@ -149,7 +152,8 @@ public class ClusterStatusEventPublisher {
 
     }
 
-    public static void sendClusterTerminatedEvent(String appId, String serviceName, String clusterId) {
+    public static void sendClusterTerminatedEvent(String appId, String serviceName,
+                                                  String clusterId, String instanceId) {
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -158,7 +162,7 @@ public class ClusterStatusEventPublisher {
                 if (cluster.isStateTransitionValid(ClusterStatus.Terminated, null) &&
                         cluster.getStatus(null) != ClusterStatus.Terminated) {
                     ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
-                            new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId);
+                            new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId, instanceId);
 
                     publishEvent(appStatusClusterTerminatedEvent);
                 } else {

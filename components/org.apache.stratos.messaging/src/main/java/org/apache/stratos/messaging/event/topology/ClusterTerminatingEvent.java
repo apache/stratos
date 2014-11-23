@@ -28,11 +28,13 @@ public class ClusterTerminatingEvent extends Event {
     private final String serviceName;
     private final String clusterId;
     private String appId;
+    private String instanceId;
 
-    public ClusterTerminatingEvent(String appId, String serviceName, String clusterId) {
+    public ClusterTerminatingEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;
+        this.instanceId = instanceId;
     }
 
     public String getServiceName() {
@@ -53,4 +55,7 @@ public class ClusterTerminatingEvent extends Event {
         return appId;
     }
 
+    public String getInstanceId() {
+        return instanceId;
+    }
 }

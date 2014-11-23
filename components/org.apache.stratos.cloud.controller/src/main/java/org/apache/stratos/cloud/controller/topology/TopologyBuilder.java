@@ -502,7 +502,9 @@ public class TopologyBuilder {
         }
 
         MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent(instanceActivatedEvent.getServiceName(),
-                        instanceActivatedEvent.getClusterId(), instanceActivatedEvent.getNetworkPartitionId(), instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId());
+                        instanceActivatedEvent.getClusterId(),
+                instanceActivatedEvent.getNetworkPartitionId(),
+                instanceActivatedEvent.getPartitionId(), instanceActivatedEvent.getMemberId(), null);
 
         // grouping - set grouid
         //TODO
@@ -577,7 +579,7 @@ public class TopologyBuilder {
                                                                 instanceReadyToShutdownEvent.getClusterId(),
                                                                 instanceReadyToShutdownEvent.getNetworkPartitionId(),
                                                                 instanceReadyToShutdownEvent.getPartitionId(),
-                                                                instanceReadyToShutdownEvent.getMemberId());
+                                                                instanceReadyToShutdownEvent.getMemberId(), null);
         try {
             TopologyManager.acquireWriteLock();
 
@@ -634,7 +636,7 @@ public class TopologyBuilder {
                                                                 instanceMaintenanceModeEvent.getClusterId(),
                                                                 instanceMaintenanceModeEvent.getNetworkPartitionId(),
                                                                 instanceMaintenanceModeEvent.getPartitionId(),
-                                                                instanceMaintenanceModeEvent.getMemberId());
+                                                                instanceMaintenanceModeEvent.getMemberId(), null);
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
@@ -759,7 +761,7 @@ public class TopologyBuilder {
                 new ClusterInactivateEvent(
                         clusterInActivateEvent.getAppId(),
                         clusterInActivateEvent.getServiceName(),
-                        clusterInActivateEvent.getClusterId());
+                        clusterInActivateEvent.getClusterId(), null);
         try {
             TopologyManager.acquireWriteLock();
             //cluster.setStatus(Status.Activated);
@@ -807,7 +809,7 @@ public class TopologyBuilder {
         }
 
         ClusterTerminatedEvent clusterTerminatedEvent = new ClusterTerminatedEvent(event.getAppId(),
-                event.getServiceName(), event.getClusterId());
+                event.getServiceName(), event.getClusterId(), null);
 
         TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
     }
@@ -834,7 +836,7 @@ public class TopologyBuilder {
         }
 
         ClusterTerminatingEvent clusterTerminaingEvent = new ClusterTerminatingEvent(event.getAppId(),
-                event.getServiceName(), event.getClusterId());
+                event.getServiceName(), event.getClusterId(), null);
 
         TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
     }

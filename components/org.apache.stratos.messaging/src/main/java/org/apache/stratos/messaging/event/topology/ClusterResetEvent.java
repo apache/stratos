@@ -28,11 +28,15 @@ public class ClusterResetEvent extends Event {
     private final String serviceName;
     private final String clusterId;
     private String appId;
+    private String instanceId;
 
-    public ClusterResetEvent(String appId, String serviceName, String clusterId) {
+
+    public ClusterResetEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.appId = appId;
+        this.instanceId = instanceId;
+
     }
 
     public String getServiceName() {
@@ -51,6 +55,10 @@ public class ClusterResetEvent extends Event {
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 
 }

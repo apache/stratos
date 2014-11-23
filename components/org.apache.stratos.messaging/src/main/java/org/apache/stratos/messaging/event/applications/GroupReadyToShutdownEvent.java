@@ -26,19 +26,27 @@ import java.io.Serializable;
  * This event is fired by autoscaler before actually terminate a group.
  */
 public class GroupReadyToShutdownEvent extends Event implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
+
     private String groupId;
     private String appId;
+    private String instanceId;
 
-    public GroupReadyToShutdownEvent(String appId, String groupId) {
+    public GroupReadyToShutdownEvent(String appId, String groupId, String instanceId) {
         this.appId = appId;
         this.groupId = groupId;
+        this.instanceId = instanceId;
     }
 
-    public String getGroupId(String groupId) {
+    public String getGroupId() {
         return this.groupId;
     }
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

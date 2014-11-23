@@ -26,20 +26,28 @@ import java.io.Serializable;
  * This event will be fired upon the instability of group detection by autoscaler.
  */
 public class GroupMaintenanceModeEvent extends Event implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
+
     private String groupId;
     private String appId;
+    private String instanceId;
 
-    public GroupMaintenanceModeEvent(String appId, String groupId) {
+    public GroupMaintenanceModeEvent(String appId, String groupId, String instanceId) {
         this.appId = appId;
         this.groupId = groupId;
+        this.instanceId = instanceId;
     }
 
-    public String getGroupId(String groupId) {
+    public String getGroupId() {
         return this.groupId;
     }
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 
 }

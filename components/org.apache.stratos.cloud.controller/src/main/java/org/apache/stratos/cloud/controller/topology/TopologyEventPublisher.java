@@ -89,7 +89,7 @@ public class TopologyEventPublisher {
     }
 
     public static void sendClusterResetEvent(String appId, String serviceName, String clusterId) {
-        ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId, serviceName, clusterId);
+        ClusterResetEvent clusterResetEvent = new ClusterResetEvent(appId, serviceName, clusterId, null);
 
         if (log.isInfoEnabled()) {
             log.info("Publishing cluster reset event: " + clusterId);
@@ -154,7 +154,7 @@ public class TopologyEventPublisher {
         long initTime = context.getInitTime();
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(
                 serviceName, clusterId, networkPartitionId, partitionId,
-                memberId, initTime);
+                memberId, initTime, null);
         instanceSpawnedEvent.setLbClusterId(lbClusterId);
         instanceSpawnedEvent.setMemberIp(privateIp);
         instanceSpawnedEvent.setMemberPublicIp(publicIp);
@@ -166,7 +166,8 @@ public class TopologyEventPublisher {
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
         MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
-                instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId());
+                instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(),
+                instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId(), null);
         if (log.isInfoEnabled()) {
             log.info(String
                     .format("Publishing member started event: [service] %s [cluster] %s [network-partition] %s [partition] %s [member] %s",
@@ -241,7 +242,8 @@ public class TopologyEventPublisher {
 
     public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId,
                                                  String partitionId, String memberId, Properties properties, String groupId) {
-        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId, networkPartitionId, partitionId, memberId);
+        MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId,
+                networkPartitionId, partitionId, memberId, null);
         memberTerminatedEvent.setProperties(properties);
         memberTerminatedEvent.setGroupId(groupId);
 

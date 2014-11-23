@@ -93,7 +93,7 @@ public class StatusChecker {
      *
      * @param clusterId id of the cluster
      */
-    public void onMemberTermination(final String clusterId) {
+    public void onMemberTermination(final String clusterId, final String instanceId) {
         Runnable group = new Runnable() {
             public void run() {
                 VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
@@ -120,14 +120,14 @@ public class StatusChecker {
                                                     " [cluster]: " + clusterId);
                                         }
                                         ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
-                                                monitor.getClusterId());
+                                                monitor.getClusterId(), instanceId);
                                     } else {
                                         if (log.isInfoEnabled()) {
                                             log.info("Publishing Cluster created event for [application]: " + appId +
                                                     " [cluster]: " + clusterId);
                                         }
                                         ClusterStatusEventPublisher.sendClusterResetEvent(appId, monitor.getServiceId(),
-                                                monitor.getClusterId());
+                                                monitor.getClusterId(), instanceId);
                                     }
 
                                 } else {
@@ -138,7 +138,7 @@ public class StatusChecker {
                                                     + monitor.getAppId() + " [cluster]: " + clusterId);
                                         }
                                         ClusterStatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
-                                                monitor.getServiceId(), clusterId);
+                                                monitor.getServiceId(), clusterId, instanceId);
                                     } else {
                                         log.info("Cluster has non terminated [members] and in the [status] "
                                                 + cluster.getStatus(null).toString());
@@ -213,7 +213,7 @@ public class StatusChecker {
      * @param clusterId   id of the cluster
      * @param partitionId is to decide in which partition has less members while others have active members
      */
-    public void onMemberFaultEvent(final String clusterId, final String partitionId) {
+    public void onMemberFaultEvent(final String clusterId, final String partitionId, final String instanceId) {
         Runnable group = new Runnable() {
             public void run() {
                 VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
@@ -229,7 +229,8 @@ public class StatusChecker {
                                 + monitor.getAppId() + " [cluster]: " + clusterId);
                     }
                     //send cluster In-Active event to cluster status topic
-                    ClusterStatusEventPublisher.sendClusterInActivateEvent(appId, monitor.getServiceId(), clusterId);
+                    ClusterStatusEventPublisher.sendClusterInActivateEvent(appId,
+                            monitor.getServiceId(), clusterId, instanceId);
 
                 } else {
                     boolean clusterActive = clusterActive(monitor);
@@ -311,7 +312,7 @@ public class StatusChecker {
                     //send application activated event
                     if (((Application) component).getStatus(null) != ApplicationStatus.Active) {
                         log.info("sending app activate: " + appId);
-                        ApplicationBuilder.handleApplicationActivatedEvent(appId);
+                        ApplicationBuilder.handleApplicationActivatedEvent(appId, instanceId);
                     }
                 } else if (component instanceof Group) {
                     //send activation to the parent

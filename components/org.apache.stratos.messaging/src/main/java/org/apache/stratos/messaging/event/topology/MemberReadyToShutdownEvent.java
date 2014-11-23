@@ -32,14 +32,22 @@ public class MemberReadyToShutdownEvent extends TopologyEvent implements Seriali
     private MemberStatus status;
     private Properties properties;
     private String groupId;
+    private String instanceId;
 
     public MemberReadyToShutdownEvent(String serviceName, String clusterId,
-                                      String networkPartitionId, String partitionId, String memberId) {
+                                      String networkPartitionId, String partitionId,
+                                      String memberId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
+        this.instanceId = instanceId;
+
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 
      public String getServiceName() {
