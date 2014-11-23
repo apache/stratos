@@ -124,7 +124,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
             }
 
             if(log.isInfoEnabled()) {
-                log.info("Re-connected and subscribed to the topic " + topicName);
+                log.info("Re-connected and subscribed to topic " + topicName);
             }
         }
 
