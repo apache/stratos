@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
@@ -32,9 +33,42 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  */
 public abstract class MqttTopicConnector implements TopicConnector {
 
-    protected static final Log log = LogFactory.getLog(MqttTopicConnector.class);
+    private static final Log log = LogFactory.getLog(MqttTopicConnector.class);
 
     protected MqttClient mqttClient;
+
+    /**
+     * Connect to message broker using MQTT client object created.
+     */
+    @Override
+    public void connect() {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Connecting to message broker");
+            }
+
+            if(mqttClient == null) {
+                if(log.isDebugEnabled()) {
+                    log.debug("MQTT client initialization has failed previously, trying again");
+                }
+                create();
+            }
+
+            MqttConnectOptions connectOptions = new MqttConnectOptions();
+            // Do not maintain a session between the client and the server since it is nearly impossible to
+            // generate a unique client id for each subscriber & publisher with the distributed nature of stratos.
+            // Reliable message delivery is managed by topic subscriber and publisher.
+            connectOptions.setCleanSession(true);
+            // TODO: test this
+            // set the keep alive interval less than MB's inactive connection detection time
+            //connectOptions.setKeepAliveInterval(15);
+            mqttClient.connect(connectOptions);
+        } catch (Exception e) {
+            String message = "Could not connect to message broker";
+            log.error(message, e);
+            throw new MessagingException(message, e);
+        }
+    }
 
     /**
      * Create MQTT client object with required configuration.
@@ -55,5 +89,69 @@ public abstract class MqttTopicConnector implements TopicConnector {
             log.error(message, e);
             throw new MessagingException(message, e);
         }
+    }
+
+    /**
+     * Disconnect from message broker and close the connection.
+     */
+    @Override
+    public void disconnect() {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Disconnecting from message broker");
+            }
+
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not disconnect from message broker, MQTT client has not been initialized");
+                }
+                return;
+            }
+
+            synchronized (mqttClient) {
+                if (mqttClient.isConnected()) {
+                    mqttClient.disconnect();
+                }
+                closeConnection();
+            }
+        } catch (Exception e) {
+            String errorMsg = "Error in disconnecting from Message Broker";
+            log.error(errorMsg, e);
+        }
+    }
+
+    private void closeConnection () {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Closing connection to message broker");
+            }
+
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not close connection, MQTT client has not been initialized");
+                }
+                return;
+            }
+
+            mqttClient.close();
+        } catch (Exception e) {
+            String message = "Could not close MQTT client";
+            log.error(message, e);
+        } finally {
+            mqttClient = null;
+        }
+    }
+
+    /**
+     * Return server URI.
+     * @return
+     */
+    @Override
+    public String getServerURI() {
+        if(mqttClient == null) {
+            return null;
+        }
+
+        return mqttClient.getServerURI();
     }
 }
