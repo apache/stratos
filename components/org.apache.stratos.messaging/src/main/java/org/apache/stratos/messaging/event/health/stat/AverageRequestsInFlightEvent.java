@@ -27,13 +27,15 @@ import org.apache.stratos.messaging.event.Event;
 public class AverageRequestsInFlightEvent extends Event {
     private final String networkPartitionId;
     private final String clusterId;
+    private final String instanceId;
     private final float value;
     private final float servedCount;
     private final float activeInstances;
 
-    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId,float activeInstances, float value, float servedCount ) {
+    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId, String instanceId, float activeInstances, float value, float servedCount ) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
+        this.instanceId = instanceId;
         this.value = value;
         this.servedCount = servedCount;
         this.activeInstances = activeInstances;
@@ -56,4 +58,7 @@ public class AverageRequestsInFlightEvent extends Event {
 
     public float getActiveInstances() { return activeInstances;}
 
+    public String getInstanceId() {
+        return instanceId;
+    }
 }

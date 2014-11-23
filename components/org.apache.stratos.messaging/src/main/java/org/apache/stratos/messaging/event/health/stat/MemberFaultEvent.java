@@ -35,9 +35,9 @@ public class MemberFaultEvent extends Event {
     public MemberFaultEvent(String clusterId, String memberId, String partitionId,
                             String instanceId, float value) {
         this.clusterId = clusterId;
+        this.instanceId = instanceId;
         this.memberId = memberId;
         this.partitionId = partitionId;
-        this.instanceId = instanceId;
         this.value = value;
     }
 

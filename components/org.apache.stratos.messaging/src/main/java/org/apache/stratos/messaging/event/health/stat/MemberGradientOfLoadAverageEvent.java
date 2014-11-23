@@ -25,11 +25,12 @@ import org.apache.stratos.messaging.event.Event;
  * This event is fired by Event processing engine to send gradient of Load average
  */
 public class MemberGradientOfLoadAverageEvent extends Event {
-
+    private final String instanceId;
     private final String memberId;
     private final float value;
 
-    public MemberGradientOfLoadAverageEvent(String memberId, float value) {
+    public MemberGradientOfLoadAverageEvent(String instanceId, String memberId, float value) {
+        this.instanceId = instanceId;
         this.memberId = memberId;
         this.value = value;
     }
@@ -41,5 +42,9 @@ public class MemberGradientOfLoadAverageEvent extends Event {
 
     public float getValue() {
         return value;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

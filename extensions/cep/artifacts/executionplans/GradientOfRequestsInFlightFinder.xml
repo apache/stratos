@@ -32,13 +32,13 @@
   </importedStreams>
   <queryExpressions><![CDATA[
 	from gradient_rif_processor 
-                select cluster_id, network_partition_id, in_flight_request_count, 
+                select cluster_id, instance_id, network_partition_id, in_flight_request_count,
                 stratos:concat(cluster_id, '-' , network_partition_id) as request_grad_cluster_network 
                 insert into gradient_rif_concatinator;
         define partition request_grad_cluster_partition  by gradient_rif_concatinator.request_grad_cluster_network;
         from gradient_rif_concatinator
                 #window.stratos:gradient(1 min, in_flight_request_count)
-                select cluster_id,network_partition_id,in_flight_request_count as count  
+                select cluster_id, instance_id, network_partition_id,in_flight_request_count as count
                 insert into gradient_in_flight_requests 
                 partition by request_grad_cluster_partition;
 ]]></queryExpressions>

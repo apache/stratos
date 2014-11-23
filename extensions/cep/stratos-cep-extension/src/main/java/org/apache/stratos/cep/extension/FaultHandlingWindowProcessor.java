@@ -213,9 +213,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         }
         log.info("Publishing member fault event for [member-id] " + memberId);
 
-        //TODO pass proper value for instance id
-        MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getMemberId(),
-                member.getPartitionId(), null, 0);
+        MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getInstanceId(), member.getMemberId(),
+                member.getPartitionId(), 0);
+
         memberFaultEventMessageMap.put("message", memberFaultEvent);
         healthStatPublisher.publish(MemberFaultEventMap, true);
     }

@@ -27,11 +27,13 @@ import org.apache.stratos.messaging.event.Event;
 public class GradientOfMemoryConsumptionEvent extends Event {
     private final String networkPartitionId;
     private final String clusterId;
+    private final String instanceId;
     private final float value;
 
-    public GradientOfMemoryConsumptionEvent(String networkPartitionId, String clusterId, float value) {
+    public GradientOfMemoryConsumptionEvent(String networkPartitionId, String clusterId, String instanceId, float value) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
+        this.instanceId = instanceId;
         this.value = value;
     }
 
@@ -46,5 +48,9 @@ public class GradientOfMemoryConsumptionEvent extends Event {
 
     public String getNetworkPartitionId() {
         return networkPartitionId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

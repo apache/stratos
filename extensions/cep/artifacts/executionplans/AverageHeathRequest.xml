@@ -32,27 +32,27 @@
   </importedStreams>
   <queryExpressions><![CDATA[
  	from health_avg_processsor [health_description == 'ports_not_open'] 
-		select cluster_id, network_partition_id, member_id, partition_id insert into fault_message;
+		select cluster_id, instance_id, network_partition_id, member_id, partition_id insert into fault_message;
 	from health_avg_processsor
-  		select cluster_id, network_partition_id, member_id, partition_id, health_description, value, 
+  		select cluster_id, instance_id, network_partition_id, member_id, partition_id, health_description, value,
 		stratos:concat(cluster_id, '-' , network_partition_id) as health_grad_cluster_network 
   		insert into health_avg_concatinator;
   	define partition health_avg_cluster_partition by   health_avg_concatinator.health_grad_cluster_network;
   	define partition member_health_avg_cluster_partition by  health_avg_processsor.member_id;
   	from health_avg_concatinator [health_description == 'load_average'] 
-		#window.timeBatch(1 min) select cluster_id, network_partition_id, avg(value) as average_load_average   
+		#window.timeBatch(1 min) select cluster_id, instance_id, network_partition_id, avg(value) as average_load_average
 		insert into average_load_average_stats 
 		partition by health_avg_cluster_partition;
   	from health_avg_processsor [health_description == 'load_average'] 
-		#window.timeBatch(1 min) select member_id, cluster_id, network_partition_id, avg(value) as member_average_load_average 
+		#window.timeBatch(1 min) select member_id, cluster_id, instance_id, network_partition_id, avg(value) as member_average_load_average
 		insert into member_average_load_average_stats 
 		partition by member_health_avg_cluster_partition;
   	from health_avg_processsor [health_description == 'memory_consumption'] 
-		#window.timeBatch(1 min) select member_id, cluster_id, network_partition_id, avg(value) as member_average_memory_consumption 
+		#window.timeBatch(1 min) select member_id, cluster_id, instance_id, network_partition_id, avg(value) as member_average_memory_consumption
 		insert into member_average_memory_consumption_stats 
 		partition by member_health_avg_cluster_partition;
   	from health_avg_concatinator [health_description == 'memory_consumption'] 
-		#window.timeBatch(1 min) select cluster_id, network_partition_id, avg(value) as average_memory_consumption 
+		#window.timeBatch(1 min) select cluster_id, instance_id, network_partition_id, avg(value) as average_memory_consumption
 		insert into average_memory_consumption_stats 
 		partition by health_avg_cluster_partition;
   ]]></queryExpressions>

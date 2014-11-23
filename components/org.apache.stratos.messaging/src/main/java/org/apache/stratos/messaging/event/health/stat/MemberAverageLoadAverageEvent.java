@@ -26,9 +26,11 @@ import org.apache.stratos.messaging.event.Event;
  */
 public class MemberAverageLoadAverageEvent extends Event {
     private final String memberId;
+    private final String instanceId;
     private final float value;
 
-    public MemberAverageLoadAverageEvent(String memberId, float value) {
+    public MemberAverageLoadAverageEvent(String instanceId, String memberId, float value) {
+        this.instanceId = instanceId;
         this.memberId = memberId;
         this.value = value;
     }
@@ -42,4 +44,7 @@ public class MemberAverageLoadAverageEvent extends Event {
         return value;
     }
 
+    public String getInstanceId() {
+        return instanceId;
+    }
 }

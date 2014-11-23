@@ -32,27 +32,27 @@
   </importedStreams>
   <queryExpressions><![CDATA[ 
 	 from health_second_der_request
-		select member_id, cluster_id, network_partition_id, health_description, value, 
+		select member_id, cluster_id, instance_id, network_partition_id, health_description, value,
 		stratos:concat(cluster_id, '-' ,network_partition_id) as health_second_der_cluster_network
 		insert into health_second_der_concat;
 	define partition health_second_der_cluster_partition  by health_second_der_concat.health_second_der_cluster_network;
 	from health_second_der_concat [health_description == 'memory_consumption'] 
-		#window.stratos:secondDerivative(1 min, value) select cluster_id, network_partition_id, value as second_derivative_memory_consumption 
+		#window.stratos:secondDerivative(1 min, value) select cluster_id, instance_id, network_partition_id, value as second_derivative_memory_consumption
 		insert into second_derivative_memory_consumption_stats 
 		partition by health_second_der_cluster_partition;
 	from health_second_der_concat [health_description == 'load_average'] 
-		#window.stratos:secondDerivative(1 min, value) select cluster_id, network_partition_id, value as second_derivative_load_average 
+		#window.stratos:secondDerivative(1 min, value) select cluster_id, instance_id, network_partition_id, value as second_derivative_load_average
 		insert into second_derivative_load_average_stats 
 		partition by health_second_der_cluster_partition;
 	define partition health_second_der_member_partition by health_second_der_request.member_id;
 	from health_second_der_request [health_description == 'memory_consumption'] 
 		#window.stratos:secondDerivative(1 min, value) 
-		select member_id, cluster_id, network_partition_id, value as member_second_derivative_memory_consumption 
+		select member_id, cluster_id, instance_id, network_partition_id, value as member_second_derivative_memory_consumption
 		insert into member_second_derivative_memory_consumption_stats 
 		partition by health_second_der_member_partition;
 	from health_second_der_request [health_description == 'load_average'] 
 		#window.stratos:secondDerivative(1 min, value)
-		select member_id, cluster_id, network_partition_id, value as member_second_derivative_load_average
+		select member_id, cluster_id, instance_id, network_partition_id, value as member_second_derivative_load_average
 		 insert into member_second_derivative_load_average_stats 
 		partition by health_second_der_member_partition;]]></queryExpressions>
   <exportedStreams>
