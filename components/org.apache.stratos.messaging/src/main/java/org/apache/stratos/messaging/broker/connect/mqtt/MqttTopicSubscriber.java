@@ -40,6 +40,9 @@ public class MqttTopicSubscriber extends TopicSubscriber {
         create();
     }
 
+    /**
+     * Create MQTT client object with required configuration.
+     */
     @Override
     public void create() {
 
@@ -58,14 +61,28 @@ public class MqttTopicSubscriber extends TopicSubscriber {
         }
     }
 
+    /**
+     * Return server URI.
+     * @return
+     */
     @Override
     public String getServerURI() {
         return mqttClient.getServerURI();
     }
 
+    /**
+     * Connect to message broker using MQTT client object created.
+     */
     @Override
     public void connect() {
         try {
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not connect to message broker, MQTT client has not been initialized");
+                }
+                return;
+            }
+
             MqttConnectOptions connectOptions = new MqttConnectOptions();
             // Do not maintain a session between the client and the server since it is nearly impossible to
             // generate a unique client id for each subscriber & publisher with the distributed nature of stratos.
@@ -82,10 +99,19 @@ public class MqttTopicSubscriber extends TopicSubscriber {
         }
     }
 
+    /**
+     * Subscribe to topic.
+     */
     @Override
     public void subscribe() {
-
         try {
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not subscribe to topic, MQTT client has not been initialized");
+                }
+                return;
+            }
+
             if (log.isDebugEnabled()) {
                 log.debug("Connecting to topic " + topicName);
             }
@@ -95,35 +121,48 @@ public class MqttTopicSubscriber extends TopicSubscriber {
                 log.debug("Subscribed to topic " + topicName);
             }
 
-        } catch (MqttException e) {
+        } catch (Exception e) {
             String errorMsg = "Error in subscribing to topic "  + topicName;
             log.error(errorMsg, e);
         }
     }
 
+    /**
+     * Disconnect from message broker and close the connection.
+     */
     @Override
     public void disconnect() {
         try {
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not disconnect from message broker, MQTT client has not been initialized");
+                }
+                return;
+            }
+
             synchronized (mqttClient) {
                 if (mqttClient.isConnected()) {
                     mqttClient.disconnect();
                 }
+                closeConnection();
             }
-        } catch (MqttException e) {
+        } catch (Exception e) {
             String errorMsg = "Error in disconnecting from Message Broker";
             log.error(errorMsg, e);
         }
-
-        closeConnection();
     }
 
     private void closeConnection () {
         try {
-            if (mqttClient != null) {
-                mqttClient.close();
+            if(mqttClient == null) {
+                if(log.isWarnEnabled()) {
+                    log.warn("Could not close connection, MQTT client has not been initialized");
+                }
+                return;
             }
 
-        } catch (MqttException e) {
+            mqttClient.close();
+        } catch (Exception e) {
             String message = "Could not close MQTT client";
             log.error(message, e);
         } finally {
@@ -135,19 +174,26 @@ public class MqttTopicSubscriber extends TopicSubscriber {
 
         @Override
         public synchronized void connectionLost(Throwable cause) {
-
-            log.warn("MQTT Connection is lost, topic: " + topicName, cause);
+            if(log.isWarnEnabled()) {
+                log.warn("MQTT Connection is lost, topic: " + topicName, cause);
+            }
             if (mqttClient.isConnected()) {
                 if(log.isDebugEnabled()){
-                    log.debug("MQTT client already re-connected");
+                    log.debug("MQTT client is already re-connected");
                 }
                 return;
             }
-            log.info("Reconnection initiated for topic " + topicName);
+            if(log.isInfoEnabled()) {
+                log.info("Reconnection initiated for topic " + topicName);
+            }
+
             create();
             connect();
             subscribe();
-            log.info("Re-connected and subscribed to the topic " + topicName);
+
+            if(log.isInfoEnabled()) {
+                log.info("Re-connected and subscribed to the topic " + topicName);
+            }
         }
 
         @Override
