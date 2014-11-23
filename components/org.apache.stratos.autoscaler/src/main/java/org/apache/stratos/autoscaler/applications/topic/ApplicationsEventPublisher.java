@@ -29,65 +29,65 @@ public class ApplicationsEventPublisher {
         publishEvent(new ApplicationCreatedEvent(application));
     }
 
-    public static void sendGroupCreatedEvent(String appId, String groupId) {
+    public static void sendGroupCreatedEvent(String appId, String groupId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Group created event for [application]: " + appId +
                     " [group]: " + groupId);
         }
         GroupResetEvent groupCreatedEvent =
-                new GroupResetEvent(appId, groupId);
+                new GroupResetEvent(appId, groupId, instanceId);
 
         publishEvent(groupCreatedEvent);
     }
 
-    public static void sendGroupActivatedEvent(String appId, String groupId) {
+    public static void sendGroupActivatedEvent(String appId, String groupId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Group activated event for [application]: " + appId +
                     " [group]: " + groupId);
         }
         GroupActivatedEvent groupActivatedEvent =
-                new GroupActivatedEvent(appId, groupId);
+                new GroupActivatedEvent(appId, groupId, instanceId);
 
         publishEvent(groupActivatedEvent);
     }
 
-    public static void sendGroupInActivateEvent(String appId, String groupId) {
+    public static void sendGroupInActivateEvent(String appId, String groupId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Group in-activate event for [application]: " + appId +
                     " [group]: " + groupId);
         }
-        GroupInactivatedEvent groupInactivateEvent = new GroupInactivatedEvent(appId, groupId);
+        GroupInactivatedEvent groupInactivateEvent = new GroupInactivatedEvent(appId, groupId, instanceId);
 
         publishEvent(groupInactivateEvent);
     }
 
-    public static void sendGroupTerminatingEvent(String appId, String groupId) {
+    public static void sendGroupTerminatingEvent(String appId, String groupId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Group terminating event for [application]: " + appId +
                     " [group]: " + groupId);
         }
         GroupTerminatingEvent groupInTerminatingEvent =
-                new GroupTerminatingEvent(appId, groupId);
+                new GroupTerminatingEvent(appId, groupId, instanceId);
         publishEvent(groupInTerminatingEvent);
     }
 
-    public static void sendGroupTerminatedEvent(String appId, String groupId) {
+    public static void sendGroupTerminatedEvent(String appId, String groupId, String instanceId) {
 
         if (log.isInfoEnabled()) {
             log.info("Publishing Group terminated event for [application]: " + appId +
                     " [group]: " + groupId);
         }
         GroupTerminatedEvent groupInTerminatedEvent =
-                new GroupTerminatedEvent(appId, groupId);
+                new GroupTerminatedEvent(appId, groupId, instanceId);
         publishEvent(groupInTerminatedEvent);
     }
 
-    public static void sendApplicationActivatedEvent(String appId) {
+    public static void sendApplicationActivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application activated event for [application]: " + appId);
         }
         ApplicationActivatedEvent applicationActivatedEvent =
-                new ApplicationActivatedEvent(appId);
+                new ApplicationActivatedEvent(appId, instanceId);
 
         publishEvent(applicationActivatedEvent);
     }
@@ -102,7 +102,7 @@ public class ApplicationsEventPublisher {
 
     }
 
-    public static void sendApplicationTerminatingEvent(String appId) {
+    public static void sendApplicationTerminatingEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application terminating event for [application]: " + appId);
         }

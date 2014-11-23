@@ -25,19 +25,27 @@ import java.io.Serializable;
 
 public class GroupInactivatedEvent extends Event implements Serializable {
 
-    private String appId;
-    private String groupId;
+    private static final long serialVersionUID = 2625412714611885089L;
 
-    public GroupInactivatedEvent (String appId, String groupId) {
+    private String groupId;
+    private String appId;
+    private String instanceId;
+
+    public GroupInactivatedEvent(String appId, String groupId, String instanceId) {
         this.appId = appId;
         this.groupId = groupId;
+        this.instanceId = instanceId;
+    }
+
+    public String getGroupId() {
+        return this.groupId;
     }
 
     public String getAppId() {
         return appId;
     }
 
-    public String getGroupId() {
-        return groupId;
+    public String getInstanceId() {
+        return instanceId;
     }
 }

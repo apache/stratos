@@ -33,13 +33,16 @@ public class MemberSuspendedEvent extends TopologyEvent implements Serializable 
     private final String partitionId;
     private final String memberId;
     private String groupId;
+    private String instanceId;
 
-    public MemberSuspendedEvent(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId) {
+    public MemberSuspendedEvent(String serviceName, String clusterId, String networkPartitionId,
+                                String partitionId, String memberId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
+        this.instanceId = instanceId;
     }
 
     public String getServiceName() {
@@ -69,4 +72,8 @@ public class MemberSuspendedEvent extends TopologyEvent implements Serializable 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+    public String getInstanceId() {
+        return instanceId;
+    }
 }

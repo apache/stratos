@@ -86,19 +86,19 @@ public class Application extends ParentComponent<ApplicationInstanceContext> {
     }
 
     public boolean isStateTransitionValid(ApplicationStatus newState, String applicationInstancetId) {
-        return this.instanceIdToInstanceContextMap.get(applicationInstancetId).isStateTransitionValid(newState);
+        return this.getInstanceIdToInstanceContextMap().get(applicationInstancetId).isStateTransitionValid(newState);
     }
 
     public Stack<ApplicationStatus> getTransitionedStates(String applicationInstancetId) {
-        return this.instanceIdToInstanceContextMap.get(applicationInstancetId).getTransitionedStates();
+        return this.getInstanceIdToInstanceContextMap().get(applicationInstancetId).getTransitionedStates();
     }
 
     public ApplicationStatus getStatus(String applicationInstanceId) {
-        return this.instanceIdToInstanceContextMap.get(applicationInstanceId).getStatus();
+        return this.getInstanceIdToInstanceContextMap().get(applicationInstanceId).getStatus();
     }
 
     public boolean setStatus(ApplicationStatus newState, String applicationInstanceId) {
-        return this.instanceIdToInstanceContextMap.get(applicationInstanceId).setStatus(newState);
+        return this.getInstanceIdToInstanceContextMap().get(applicationInstanceId).setStatus(newState);
     }
 
     public boolean equals(Object other) {

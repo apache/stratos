@@ -400,6 +400,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
         String memberId = memberFaultEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
+        String instanceId = memberFaultEvent.getInstanceId();
         if (null == member) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
@@ -441,7 +442,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                                    + "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
         }
 
-        StatusChecker.getInstance().onMemberFaultEvent(memberFaultEvent.getClusterId(), partitionId);
+        StatusChecker.getInstance().onMemberFaultEvent(memberFaultEvent.getClusterId(),
+                                                        partitionId, instanceId);
     }
 
     @Override
@@ -521,6 +523,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String networkPartitionId = memberTerminatedEvent.getNetworkPartitionId();
         String memberId = memberTerminatedEvent.getMemberId();
         String clusterId = memberTerminatedEvent.getClusterId();
+        String instanceId = memberTerminatedEvent.getInstanceId();
         String partitionId = memberTerminatedEvent.getPartitionId();
         NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(networkPartitionId);
         PartitionContext partitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
@@ -552,7 +555,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                                    + "[member] %s", memberId));
         }
         //Checking whether the cluster state can be changed either from in_active to created/terminating to terminated
-		StatusChecker.getInstance().onMemberTermination(clusterId);
+		StatusChecker.getInstance().onMemberTermination(clusterId, instanceId);
     }
 
     @Override

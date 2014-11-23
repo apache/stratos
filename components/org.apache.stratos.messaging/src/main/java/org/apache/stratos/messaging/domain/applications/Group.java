@@ -83,19 +83,19 @@ public class Group extends ParentComponent<GroupInstanceContext> {
     }
 
     public boolean isStateTransitionValid(GroupStatus newState, String groupInstanceId) {
-        return instanceIdToInstanceContextMap.get(groupInstanceId).isStateTransitionValid(newState);
+        return getInstanceIdToInstanceContextMap().get(groupInstanceId).isStateTransitionValid(newState);
     }
 
     public Stack<GroupStatus> getTransitionedStates(String groupInstanceId) {
-        return instanceIdToInstanceContextMap.get(groupInstanceId).getTransitionedStates();
+        return getInstanceIdToInstanceContextMap().get(groupInstanceId).getTransitionedStates();
     }
 
     public GroupStatus getStatus(String groupInstanceId) {
-        return instanceIdToInstanceContextMap.get(groupInstanceId).getStatus();
+        return getInstanceIdToInstanceContextMap().get(groupInstanceId).getStatus();
     }
 
     public boolean setStatus(GroupStatus newState, String groupInstanceId) {
-        return this.instanceIdToInstanceContextMap.get(groupInstanceId).setStatus(newState);
+        return this.getInstanceIdToInstanceContextMap().get(groupInstanceId).setStatus(newState);
     }
 
     public boolean equals(Object other) {

@@ -208,7 +208,6 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      * @param instanceContext InstanceContext object
      */
     public void addInstanceContext (String instanceId, T instanceContext) {
-
         instanceIdToInstanceContextMap.put(instanceId, instanceContext);
     }
 
@@ -218,7 +217,7 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      * @param instanceId instance id of child
      */
     public boolean containsInstanceContext (String instanceId) {
-        return instanceIdToInstanceContextMap.containsKey(instanceId);
+        return getInstanceIdToInstanceContextMap().containsKey(instanceId);
     }
 
 
@@ -230,16 +229,16 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      */
     public T getInstanceContexts (String instanceId) {
         // if map is empty, return null
-        if (instanceIdToInstanceContextMap.isEmpty()) {
+        if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
         }
 
         // if instanceId is null, just get the first InstanceContext
         if (instanceId == null) {
-            return instanceIdToInstanceContextMap.entrySet().iterator().next().getValue();
+            return getInstanceIdToInstanceContextMap().entrySet().iterator().next().getValue();
         }
 
-        return instanceIdToInstanceContextMap.get(instanceId);
+        return getInstanceIdToInstanceContextMap().get(instanceId);
     }
 
     /**
@@ -249,7 +248,7 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      */
     public int getInstanceContextCount () {
 
-        return instanceIdToInstanceContextMap.keySet().size();
+        return getInstanceIdToInstanceContextMap().keySet().size();
     }
 
     private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
@@ -262,5 +261,9 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
                 }
             }
         }
+    }
+
+    public Map<String, T> getInstanceIdToInstanceContextMap() {
+        return instanceIdToInstanceContextMap;
     }
 }

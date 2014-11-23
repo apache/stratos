@@ -32,10 +32,12 @@ public class GroupResetEvent extends Event implements Serializable {
 
     private String groupId;
     private String appId;
+    private String instanceId;
 
-    public GroupResetEvent(String appId, String groupId) {
+    public GroupResetEvent(String appId, String groupId, String instanceId) {
         this.appId = appId;
         this.groupId = groupId;
+        this.instanceId = instanceId;
     }
 
     public String getGroupId() {
@@ -44,5 +46,9 @@ public class GroupResetEvent extends Event implements Serializable {
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }
