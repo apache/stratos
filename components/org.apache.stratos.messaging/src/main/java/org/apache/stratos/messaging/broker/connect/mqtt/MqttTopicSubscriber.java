@@ -58,6 +58,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
     @Override
     public void connect() {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Connecting to message broker");
+            }
+
             if(mqttClient == null) {
                 if(log.isWarnEnabled()) {
                     log.warn("Could not connect to message broker, MQTT client has not been initialized");
@@ -87,6 +91,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
     @Override
     public void subscribe() {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Subscribing to topic " + topicName);
+            }
+
             if(mqttClient == null) {
                 if(log.isWarnEnabled()) {
                     log.warn("Could not subscribe to topic, MQTT client has not been initialized");
@@ -94,9 +102,6 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 return;
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("Connecting to topic " + topicName);
-            }
             mqttClient.setCallback(new MQTTSubscriberCallback());
             mqttClient.subscribe(topicName, MqttConstants.QOS);
             if (log.isDebugEnabled()) {
@@ -115,6 +120,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
     @Override
     public void disconnect() {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Disconnecting from message broker");
+            }
+
             if(mqttClient == null) {
                 if(log.isWarnEnabled()) {
                     log.warn("Could not disconnect from message broker, MQTT client has not been initialized");
@@ -136,6 +145,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
 
     private void closeConnection () {
         try {
+            if (log.isDebugEnabled()) {
+                log.debug("Closing connection to message broker");
+            }
+
             if(mqttClient == null) {
                 if(log.isWarnEnabled()) {
                     log.warn("Could not close connection, MQTT client has not been initialized");
