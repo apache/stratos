@@ -43,6 +43,14 @@ public class MqttTopicPublisher extends MqttTopicConnector implements TopicPubli
 
     public void publish(String topicName, String message) {
         try {
+            if(mqttClient == null) {
+                String error = "Could not publish message to topic, MQTT client has not been initialized";
+                if(log.isErrorEnabled()) {
+                    log.error(error);
+                }
+                throw new MessagingException(error);
+            }
+
             MqttMessage mqttMessage = new MqttMessage(message.getBytes());
             mqttMessage.setQos(MqttConstants.QOS);
             mqttClient.publish(topicName, mqttMessage);

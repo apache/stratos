@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
+import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -57,10 +58,11 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
             }
 
             if(mqttClient == null) {
-                if(log.isWarnEnabled()) {
-                    log.warn("Could not subscribe to topic, MQTT client has not been initialized");
+                String error = "Could not subscribe to topic, MQTT client has not been initialized";
+                if(log.isErrorEnabled()) {
+                    log.error(error);
                 }
-                return;
+                throw new MessagingException(error);
             }
 
             mqttClient.setCallback(new MQTTSubscriberCallback());

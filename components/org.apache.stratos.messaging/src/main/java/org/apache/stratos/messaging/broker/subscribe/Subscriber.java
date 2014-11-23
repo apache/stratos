@@ -59,40 +59,16 @@ public class Subscriber implements Runnable {
 		}
 	}
 
-	private void doSubscribe() throws MqttException {
-
-		if (log.isDebugEnabled()) {
-			log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
+    private void doSubscribe() throws MqttException {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Subscribing to topic: [topic] %s [server] %s",
                     topicName, topicSubscriber.getServerURI()));
-		}
-
-		/* Subscribing to specific topic */
-        while(true) {
-            try {
-                topicSubscriber.connect();
-                topicSubscriber.subscribe();
-                subscribed = true;
-                // Continue waiting for messages
-                while (true) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {
-                    }
-                }
-            } finally {
-                topicSubscriber.disconnect();
-            }
         }
-		
-	}
 
-//	/**
-//	 * @param messageListener this MessageListener will get triggered each time this
-//	 *                        subscription receives a message.
-//	 */
-//	public void setMessageListener(MessageListener messageListener) {
-//		this.messageListener = messageListener;
-//	}
+        topicSubscriber.connect();
+        topicSubscriber.subscribe();
+        subscribed = true;
+    }
 
 	/**
 	 * Subscribes to a topic. If for some reason the connection to the topic got
@@ -150,10 +126,14 @@ public class Subscriber implements Runnable {
 	 * Terminate topic subscriber.
 	 */
 	public void terminate() {
-		healthChecker.terminate();
-		terminated = true;
-        topicSubscriber.disconnect();
-	}
+        terminated = true;
+        if(healthChecker != null) {
+            healthChecker.terminate();
+        }
+        if(topicSubscriber != null) {
+            topicSubscriber.disconnect();
+        }
+    }
 
 	public boolean isSubscribed() {
 		return subscribed;
