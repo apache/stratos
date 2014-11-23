@@ -26,13 +26,10 @@ public class Constants {
 	public static final String INSTANCE_NOTIFIER_TOPIC = "instance/notifier/#";
     public static final String APPLICATIONS_TOPIC = "applications/#";
     public static final String CLUSTER_STATUS_TOPIC = "cluster/status/#";
-
-    public static final String PING_TOPIC = "ping";
 	public static final String TENANT_TOPIC = "tenant/#";
-	public static final String TENANT_RANGE_ALL = "*";
 
+	public static final String TENANT_RANGE_ALL = "*";
 	public static final String TENANT_RANGE_DELIMITER = "-";
-	public static final String EVENT_CLASS_NAME = "event-class-name";
 
 	/* Topology filter constants */
 	public static final String FILTER_VALUE_ASSIGN_OPERATOR = "=";
@@ -48,8 +45,6 @@ public class Constants {
 	public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
 	public static final String TOPOLOGY_MEMBER_FILTER_LB_CLUSTER_ID = "lb-cluster-id";
 
-	public static final String REQUEST_BASE_CONTEXT = "org.wso2.carbon.context.RequestBaseContext";
-
 	// to identify a lb cluster
 	public static final String IS_LOAD_BALANCER = "load.balancer";
 	public static final String LOAD_BALANCER_REF = "load.balancer.ref";
@@ -59,25 +54,13 @@ public class Constants {
 	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
 	public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
 
-	// volume
-	public static final String IS_VOLUME_REQUIRED = "volume.required";
-	public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
-	public static final String VOLUME_SIZE = "volume.size.gb";
-	public static final String VOLUME_ID = "volume.id";
-	public static final String DEVICE_NAME = "volume.device.name";
-	public static final String GRACEFUL_SHUTDOWN_TIMEOUT = "graceful.shutdown.timeout";
-
 	public static final String IS_PRIMARY = "PRIMARY";
 
 	// System Properties
-	public static final String AVERAGE_PING_INTERVAL_PROPERTY =
-	                                                            "stratos.messaging.averagePingInterval";
-	public static final String FAILOVER_PING_INTERVAL_PROPERTY =
-	                                                             "stratos.messaging.failoverPingInterval";
+	public static final String AVERAGE_PING_INTERVAL_PROPERTY = "stratos.messaging.averagePingInterval";
+	public static final String FAILOVER_PING_INTERVAL_PROPERTY = "stratos.messaging.failoverPingInterval";
 
 	// Default values
 	public static final int DEFAULT_AVERAGE_PING_INTERVAL = 1000;
 	public static final int DEFAULT_FAILOVER_PING_INTERVAL = 30000;
-
-    public static final int CLIENT_ID_MAX_LENGTH = 23;
 }

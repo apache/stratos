@@ -29,8 +29,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
  * object.
- *
- * @author nirmal
  */
 public class Subscriber implements Runnable {
 
