@@ -75,6 +75,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
         } catch (Exception e) {
             String errorMsg = "Error in subscribing to topic "  + topicName;
             log.error(errorMsg, e);
+            throw new MessagingException(errorMsg, e);
         }
     }
 
@@ -114,6 +115,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                     create();
                     connect();
                     subscribe();
+                    reconnected = true;
                 } catch (Exception e) {
                     if(log.isErrorEnabled()) {
                         log.error("Could not reconnect", e);
