@@ -19,6 +19,9 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
+/**
+ * Topic publisher interface to be implemented by a transport specific topic publisher.
+ */
 public interface TopicPublisher extends TopicConnector {
 
     /**

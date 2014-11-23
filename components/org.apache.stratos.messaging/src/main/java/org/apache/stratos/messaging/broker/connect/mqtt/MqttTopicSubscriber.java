@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.broker.connect.mqtt;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
@@ -29,36 +30,17 @@ import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class MqttTopicSubscriber extends TopicSubscriber {
+public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubscriber {
 
     protected static final Log log = LogFactory.getLog(MqttTopicSubscriber.class);
 
-    private MqttClient mqttClient;
+    private final MessageListener messageListener;
+    private String topicName;
 
     public MqttTopicSubscriber(MessageListener messageListener, String topicName) {
-        super(messageListener, topicName);
+        this.messageListener = messageListener;
+        this.topicName = topicName;
         create();
-    }
-
-    /**
-     * Create MQTT client object with required configuration.
-     */
-    @Override
-    public void create() {
-
-        try {
-            String mqttUrl = MqttConstants.MQTT_PROPERTIES.getProperty("mqtturl", MqttConstants.MQTT_URL_DEFAULT);
-            MemoryPersistence memoryPersistence = new MemoryPersistence();
-            String clientId = Util.getRandomString(23);
-            mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
-            if (log.isDebugEnabled()) {
-                log.debug("MQTT client created: [client-id] " + clientId);
-            }
-        } catch (Exception e) {
-            String message = "Could not create MQTT client";
-            log.error(message, e);
-            throw new MessagingException(message, e);
-        }
     }
 
     /**

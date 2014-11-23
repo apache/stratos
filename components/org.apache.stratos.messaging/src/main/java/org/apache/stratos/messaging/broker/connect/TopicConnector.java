@@ -20,7 +20,7 @@
 package org.apache.stratos.messaging.broker.connect;
 
 /**
- * Message broker topic connector interface.
+ * Message broker topic connector interface to be implemented by a transport specific topic connector.
  */
 public interface TopicConnector {
 

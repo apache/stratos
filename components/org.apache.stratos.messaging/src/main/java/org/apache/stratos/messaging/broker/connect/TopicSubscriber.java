@@ -19,17 +19,10 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
-import org.apache.stratos.messaging.broker.subscribe.MessageListener;
-
-public abstract class TopicSubscriber implements TopicConnector {
-
-    protected final MessageListener messageListener;
-    protected String topicName;
-
-    public TopicSubscriber (MessageListener messageListener, String topicName) {
-        this.messageListener = messageListener;
-        this.topicName = topicName;
-    }
+/**
+ * Topic subscriber interface to be implemented by a transport specific topic subscriber.
+ */
+public interface TopicSubscriber extends TopicConnector {
 
     /**
      * Subscribe to a topic with a message listener.
