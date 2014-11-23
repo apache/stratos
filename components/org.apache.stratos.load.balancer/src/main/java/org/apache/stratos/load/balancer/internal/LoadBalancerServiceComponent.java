@@ -44,6 +44,7 @@ import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.deployers.SynapseArtifactDeploymentStore;
 import org.apache.synapse.endpoints.Endpoint;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.caching.impl.DistributedMapProvider;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.mediation.initializer.ServiceBusConstants;
 import org.wso2.carbon.mediation.initializer.ServiceBusUtils;
@@ -62,38 +63,22 @@ import java.util.Set;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
- * @scr.reference name="configuration.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="1..1" policy="dynamic"
- * bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
- * @scr.reference name="synapse.config.service" interface=
- * "org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
- * cardinality="1..1" policy="dynamic"
- * bind="setSynapseConfigurationService"
- * unbind="unsetSynapseConfigurationService"
- * @scr.reference name="synapse.env.service" interface=
- * "org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService"
- * cardinality="1..n" policy="dynamic"
- * bind="setSynapseEnvironmentService"
- * unbind="unsetSynapseEnvironmentService"
- * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService"
- * unbind="unsetRegistryService"
- * @scr.reference name="dependency.mgt.service" interface=
- * "org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService"
- * cardinality="0..1" policy="dynamic"
- * bind="setDependencyManager" unbind="unsetDependencyManager"
- * @scr.reference name="synapse.registrations.service" interface=
- * "org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService"
- * cardinality="1..n" policy="dynamic"
- * bind="setSynapseRegistrationsService"
- * unbind="unsetSynapseRegistrationsService"
- * @scr.reference name="user.realmservice.default"
- * interface="org.wso2.carbon.user.core.service.RealmService"
- * cardinality="1..1" policy="dynamic" bind="setRealmService"
- * unbind="unsetRealmService"
+ * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
+ * cardinality="0..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ * @scr.reference name="configuration.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+ * @scr.reference name="synapse.config.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
+ * cardinality="1..1" policy="dynamic" bind="setSynapseConfigurationService" unbind="unsetSynapseConfigurationService"
+ * @scr.reference name="synapse.env.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService"
+ * cardinality="1..n" policy="dynamic" bind="setSynapseEnvironmentService" unbind="unsetSynapseEnvironmentService"
+ * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="dependency.mgt.service" interface="org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService"
+ * cardinality="0..1" policy="dynamic" bind="setDependencyManager" unbind="unsetDependencyManager"
+ * @scr.reference name="synapse.registrations.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseRegistrationsService"
+ * cardinality="1..n" policy="dynamic" bind="setSynapseRegistrationsService" unbind="unsetSynapseRegistrationsService"
+ * @scr.reference name="user.realmservice.default" interface="org.wso2.carbon.user.core.service.RealmService"
+ * cardinality="1..1" policy="dynamic" bind="setRealmService" unbind="unsetRealmService"
  */
 @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
 public class LoadBalancerServiceComponent {
@@ -411,5 +396,13 @@ public class LoadBalancerServiceComponent {
 
     protected void unsetRealmService(RealmService realmService) {
         LoadBalancerContext.getInstance().setRealmService(null);
+    }
+
+    protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
+        LoadBalancerContext.getInstance().setDistributedMapProvider(mapProvider);
+    }
+
+    protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
+        LoadBalancerContext.getInstance().setDistributedMapProvider(null);
     }
 }

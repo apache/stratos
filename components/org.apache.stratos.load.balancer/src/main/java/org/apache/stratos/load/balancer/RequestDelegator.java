@@ -21,7 +21,7 @@ package org.apache.stratos.load.balancer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.algorithm.AlgorithmContext;
+import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;

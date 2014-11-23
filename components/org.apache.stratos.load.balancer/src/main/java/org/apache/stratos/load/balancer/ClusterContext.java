@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer;
 
-import org.apache.stratos.load.balancer.algorithm.AlgorithmContext;
+import org.apache.stratos.load.balancer.context.AlgorithmContext;
 
 import java.util.Properties;
 

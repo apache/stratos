@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.context.map.*;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.wso2.carbon.caching.impl.DistributedMapProvider;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -70,6 +71,7 @@ public class LoadBalancerContext {
     // Map<MemberIp, Hostname>
     // Keep track of cluster hostnames of of all members  against their ip addresses
     private MemberIpHostnameMap memberIpHostnameMap;
+    private DistributedMapProvider distributedMapProvider;
 
     private LoadBalancerContext() {
         tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
@@ -199,5 +201,13 @@ public class LoadBalancerContext {
 
     public MemberIpHostnameMap getMemberIpHostnameMap() {
         return memberIpHostnameMap;
+    }
+
+    public void setDistributedMapProvider(DistributedMapProvider distributedMapProvider) {
+        this.distributedMapProvider = distributedMapProvider;
+    }
+
+    public DistributedMapProvider getDistributedMapProvider() {
+        return distributedMapProvider;
     }
 }

@@ -21,6 +21,7 @@ package org.apache.stratos.load.balancer.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.List;
