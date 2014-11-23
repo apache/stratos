@@ -21,13 +21,10 @@ package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicSubscriber;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
-import org.apache.stratos.messaging.broker.heartbeat.TopicHealthChecker;
+import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicSubscriber;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttException;
-
-import javax.jms.JMSException;
 
 /**
  * Any instance who needs to subscribe to a topic, should communicate with this
@@ -40,11 +37,7 @@ public class Subscriber implements Runnable {
     private static final Log log = LogFactory.getLog(Subscriber.class);
     private final TopicSubscriber topicSubscriber;
 
-    private boolean terminated = false;
 	private final String topicName;
-
-	private TopicHealthChecker healthChecker;
-	private final javax.jms.TopicSubscriber jmsTopicSubscriber = null;
 	private boolean subscribed;
 
 	/**
@@ -77,59 +70,32 @@ public class Subscriber implements Runnable {
 	 */
 	@Override
 	public void run() {
-
 		// Keep the thread live until terminated
-		while (!terminated) {
-			try {
-				doSubscribe();
-			} catch (Exception e) {
-				subscribed = false;
-				log.error("Error while subscribing to the topic: " + topicName, e);
-			} finally {
-				if (subscribed) {
-					// start the health checker if subscribed
-					healthChecker = new TopicHealthChecker(topicName);
-					Thread healthCheckerThread = new Thread(healthChecker);
-					healthCheckerThread.start();
-					try {
-						// waits till the thread finishes.
-						healthCheckerThread.join();
-					} catch (InterruptedException ignore) {
-					}
-				} else {
-					// subscription failed
-					if (log.isInfoEnabled()) {
-						log.info("Will try to subscribe again in " +
-						         Util.getFailoverPingInterval() / 1000 + " sec");
-					}
-					try {
-						Thread.sleep(Util.getFailoverPingInterval());
-					} catch (InterruptedException ignore) {
-					}
-				}
-				// closes all sessions/connections
-				try {
-					if (jmsTopicSubscriber != null) {
-						jmsTopicSubscriber.close();
-						if (log.isDebugEnabled()) {
-							log.debug(String.format("Topic subscriber closed: [topic] %s",
-							                        topicName));
-						}
-					}
-				} catch (JMSException ignore) {
-				}
-			}
-		}
-	}
+        while (!subscribed) {
+            try {
+                doSubscribe();
+            } catch (Exception e) {
+                subscribed = false;
+                if(log.isErrorEnabled()) {
+                    log.error("Error while subscribing to topic: " + topicName, e);
+                }
+
+                if (log.isInfoEnabled()) {
+                    log.info("Will try to subscribe again in " +
+                            Util.getFailoverPingInterval() / 1000 + " sec");
+                }
+                try {
+                    Thread.sleep(Util.getFailoverPingInterval());
+                } catch (InterruptedException ignore) {
+                }
+            }
+        }
+    }
 
 	/**
 	 * Terminate topic subscriber.
 	 */
 	public void terminate() {
-        terminated = true;
-        if(healthChecker != null) {
-            healthChecker.terminate();
-        }
         if(topicSubscriber != null) {
             topicSubscriber.disconnect();
         }

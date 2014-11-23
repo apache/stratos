@@ -25,6 +25,7 @@ import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
+import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -90,13 +91,35 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 }
                 return;
             }
-            if(log.isInfoEnabled()) {
-                log.info("Reconnection initiated for topic " + topicName);
-            }
 
-            create();
-            connect();
-            subscribe();
+            reconnect();
+        }
+
+        private void reconnect() {
+            boolean reconnected = false;
+            while(!reconnected) {
+                try {
+                    if (log.isInfoEnabled()) {
+                        log.info("Will try to subscribe again in " +
+                                Util.getFailoverPingInterval() / 1000 + " sec");
+                    }
+                    try {
+                        Thread.sleep(Util.getFailoverPingInterval());
+                    } catch (InterruptedException ignore) {
+                    }
+
+                    if (log.isInfoEnabled()) {
+                        log.info("Reconnection initiated for topic " + topicName);
+                    }
+                    create();
+                    connect();
+                    subscribe();
+                } catch (Exception e) {
+                    if(log.isErrorEnabled()) {
+                        log.error("Could not reconnect", e);
+                    }
+                }
+            }
 
             if(log.isInfoEnabled()) {
                 log.info("Re-connected and subscribed to the topic " + topicName);
