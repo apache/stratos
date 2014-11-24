@@ -24,9 +24,6 @@
          http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
     <display-name>S2 Admin Endpoint</display-name>
- 	<listener>  
-          <listener-class>org.apache.stratos.metadataservice.listener.TopologyListener</listener-class>  
-    </listener>  
     <servlet>
         <servlet-name>StratosAdminEndpoint</servlet-name>
         <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
