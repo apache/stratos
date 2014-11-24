@@ -132,7 +132,7 @@ public class IaasProviderConfigParser {
     }
 
     private static void loadCredentials(final String fileName, final OMElement elt, final IaasProvider iaas, final OMElement iaasElt,
-                                 final String xpath) {
+                                        final String xpath) {
 
         Iterator<?> it =
                 iaasElt.getChildrenWithName(new QName(
@@ -143,16 +143,15 @@ public class IaasProviderConfigParser {
 
             // retrieve the value using secure vault
             SecretResolver secretResolver = SecretResolverFactory.create(elt, false);
-            String alias =
-                    credentialElt.getAttributeValue(new QName(
-                            CloudControllerConstants.ALIAS_ATTRIBUTE));
+            String alias = credentialElt.getAttributeValue(new QName(
+                    CloudControllerConstants.ALIAS_NAMESPACE,
+                    CloudControllerConstants.ALIAS_ATTRIBUTE,
+                    CloudControllerConstants.ALIAS_ATTRIBUTE_PREFIX));
 
             // retrieve the secured password
             if (secretResolver != null && secretResolver.isInitialized() &&
                     secretResolver.isTokenProtected(alias)) {
-
                 iaas.setCredential(secretResolver.resolve(alias));
-
             }
 
             // if we still cannot find a value, we try to assign the value which
@@ -181,7 +180,7 @@ public class IaasProviderConfigParser {
 
     }
 
-    
+
     private static void loadIdentity(final String fileName, final OMElement elt, final IaasProvider iaas, final OMElement iaasElt) {
 
         Iterator<?> it =
@@ -192,16 +191,15 @@ public class IaasProviderConfigParser {
 
             // retrieve the value using secure vault
             SecretResolver secretResolver = SecretResolverFactory.create(elt, false);
-            String alias =
-                    identityElt.getAttributeValue(new QName(
-                            CloudControllerConstants.ALIAS_ATTRIBUTE));
+            String alias = identityElt.getAttributeValue(new QName(
+                    CloudControllerConstants.ALIAS_NAMESPACE,
+                    CloudControllerConstants.ALIAS_ATTRIBUTE,
+                    CloudControllerConstants.ALIAS_ATTRIBUTE_PREFIX));
 
             // retrieve the secured password
             if (secretResolver != null && secretResolver.isInitialized() &&
                     secretResolver.isTokenProtected(alias)) {
-
                 iaas.setIdentity(secretResolver.resolve(alias));
-
             }
 
             // if we still cannot find a value, we try to assign the value which

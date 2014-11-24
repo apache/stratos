@@ -246,19 +246,16 @@ public class AxiomXpathParserUtil {
         // retrieve the value using secure vault
         SecretResolver secretResolver = SecretResolverFactory.create(docElt, false);
 
-        String alias = elt.getAttributeValue(new QName(CloudControllerConstants.ALIAS_ATTRIBUTE));
+        String alias = elt.getAttributeValue(new QName(
+                CloudControllerConstants.ALIAS_NAMESPACE,
+                CloudControllerConstants.ALIAS_ATTRIBUTE,
+                CloudControllerConstants.ALIAS_ATTRIBUTE_PREFIX));
 
         // retrieve the secured password
         if (secretResolver != null && secretResolver.isInitialized() &&
-            secretResolver.isTokenProtected(alias)) {
-
+                secretResolver.isTokenProtected(alias)) {
             return secretResolver.resolve(alias);
-
         }
-
         return null;
     }
-    
-    
-
 }

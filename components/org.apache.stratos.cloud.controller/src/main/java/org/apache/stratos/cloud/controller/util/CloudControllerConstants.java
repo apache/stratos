@@ -215,7 +215,9 @@ public final class CloudControllerConstants {
 	/**
 	 * Secret Manager related aliases.
 	 */
-	public static final String ALIAS_ATTRIBUTE = "svns:secretAlias";
+    public static final String ALIAS_ATTRIBUTE = "secretAlias";
+    public static final String ALIAS_ATTRIBUTE_PREFIX = "svns";
+    public static final String ALIAS_NAMESPACE = "http://org.wso2.securevault/configuration";
 
 	/**
 	 * Payload related constants
