@@ -21,6 +21,9 @@ package org.apache.stratos.load.balancer.context.map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.wso2.carbon.caching.impl.DistributedMapProvider;
+import org.wso2.carbon.caching.impl.MapEntryListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,12 +35,41 @@ import java.util.Map;
 public class AlgorithmContextMap {
     @SuppressWarnings("unused")
 	private static final Log log = LogFactory.getLog(AlgorithmContextMap.class);
+    private static final String LOAD_BALANCER_ALGORITHM_CONTEXT_MAP = "LOAD_BALANCER_ALGORITHM_CONTEXT_MAP";
     private static AlgorithmContextMap instance;
 
     private final Map<String, Integer> clusterMemberIndexMap;
 
     private AlgorithmContextMap() {
-        clusterMemberIndexMap = new HashMap<String, Integer>();
+        DistributedMapProvider distributedMapProvider = LoadBalancerContext.getInstance().getDistributedMapProvider();
+        if(distributedMapProvider != null) {
+            clusterMemberIndexMap = distributedMapProvider.getMap(LOAD_BALANCER_ALGORITHM_CONTEXT_MAP,
+                    new MapEntryListener() {
+                        @Override
+                        public <X> void entryAdded(X x) {
+                        }
+
+                        @Override
+                        public <X> void entryRemoved(X x) {
+                        }
+
+                        @Override
+                        public <X> void entryUpdated(X x) {
+                        }
+                    });
+            if(clusterMemberIndexMap != null) {
+                if(log.isInfoEnabled()) {
+                    log.info("Load balancer context map initiated in distributed mode");
+                }
+            } else {
+                log.error("Could not initialize algorithm context map from distributed map provider");
+            }
+        } else {
+            clusterMemberIndexMap = new HashMap<String, Integer>();
+            if(log.isInfoEnabled()) {
+                log.info("Load balancer context map initiated locally");
+            }
+        }
     }
 
     public static AlgorithmContextMap getInstance() {

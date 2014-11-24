@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
+import org.apache.stratos.load.balancer.context.map.AlgorithmContextMap;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
@@ -266,7 +267,13 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                         clusterRemovedEvent.getClusterId());
 
                 try {
-                    //TopologyManager.acquireReadLock();
+                    AlgorithmContextMap.getInstance().removeCluster(clusterRemovedEvent.getServiceName(),
+                            clusterRemovedEvent.getClusterId());
+                } catch (Exception e) {
+                    log.error("Could not remove cluster from load balancer algorithm context map", e);
+                }
+
+                try {
                     Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(clusterRemovedEvent.getClusterId());
                     if (cluster != null) {
                         for (Member member : cluster.getMembers()) {
@@ -282,7 +289,6 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
                 } catch (Exception e) {
                     log.error("Error processing event", e);
                 } finally {
-                    //TopologyManager.releaseReadLock();
                     TopologyManager.releaseReadLockForCluster(clusterRemovedEvent.getServiceName(),
                             clusterRemovedEvent.getClusterId());
                 }
