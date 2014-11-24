@@ -51,6 +51,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
     private ClusterTerminatingProcessor clusterTerminatingProcessor;
     private ClusterTerminatedProcessor clusterTerminatedProcessor;
+    private ClusterInstanceCreatedMessageProcessor clusterInstanceCreatedMessageProcessor;
 
     public void initialize() {
         // Add topology event processors
@@ -83,6 +84,9 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
 
         clusterTerminatedProcessor = new ClusterTerminatedProcessor();
         add(clusterTerminatedProcessor);
+
+        clusterInstanceCreatedMessageProcessor = new ClusterInstanceCreatedMessageProcessor();
+        add(clusterInstanceCreatedMessageProcessor);
 
         clusterResetMessageProcessor = new ClusterResetMessageProcessor();
         add(clusterResetMessageProcessor);
@@ -131,6 +135,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterInActivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceCreatedEventListener) {
+            clusterInstanceCreatedMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ClusterTerminatedEventListener){
             clusterTerminatedProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ClusterResetEventListener){

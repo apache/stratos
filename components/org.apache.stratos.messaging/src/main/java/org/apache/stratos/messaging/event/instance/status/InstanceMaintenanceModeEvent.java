@@ -22,47 +22,55 @@ import java.io.Serializable;
 
 public class InstanceMaintenanceModeEvent extends InstanceStatusEvent implements Serializable {
     private final String serviceName;
-        private final String clusterId;
-        private final String networkPartitionId;
-        private final String partitionId;
-        private final String memberId;
-        private String groupId;
+    private final String clusterId;
+    private final String networkPartitionId;
+    private final String partitionId;
+    private final String memberId;
+    private String groupId;
+    private String instanceId;
 
-        public InstanceMaintenanceModeEvent(String serviceName, String clusterId,
-                                            String networkPartitionId, String partitionId, String memberId) {
-            this.serviceName = serviceName;
-            this.clusterId = clusterId;
-            this.networkPartitionId = networkPartitionId;
-            this.partitionId = partitionId;
-            this.memberId = memberId;
-        }
+    public InstanceMaintenanceModeEvent(String serviceName, String clusterId,
+                                        String networkPartitionId, String partitionId,
+                                        String memberId, String instanceId) {
+        this.serviceName = serviceName;
+        this.clusterId = clusterId;
+        this.networkPartitionId = networkPartitionId;
+        this.partitionId = partitionId;
+        this.memberId = memberId;
+        this.instanceId = instanceId;
+    }
 
-        public String getServiceName() {
-            return serviceName;
-        }
+    public String getServiceName() {
+        return serviceName;
+    }
 
-        public String getClusterId() {
-            return clusterId;
-        }
+    public String getClusterId() {
+        return clusterId;
+    }
 
-        public String getPartitionId() {
-            return partitionId;
-        }
+    public String getPartitionId() {
+        return partitionId;
+    }
 
-        public String getMemberId() {
-            return memberId;
-        }
+    public String getMemberId() {
+        return memberId;
+    }
 
-        public String getNetworkPartitionId() {
-            return networkPartitionId;
-        }
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
 
-		public String getGroupId() {
-			return groupId;
-		}
+    public String getGroupId() {
+        return groupId;
+    }
 
-		public void setGroupId(String groupId) {
-			this.groupId = groupId;
-		}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getInstanceId() {
+    return instanceId;
+}
+
 
 }

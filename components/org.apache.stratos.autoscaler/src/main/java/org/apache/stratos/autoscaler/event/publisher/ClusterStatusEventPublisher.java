@@ -83,6 +83,33 @@ public class ClusterStatusEventPublisher {
         }
     }
 
+    public static void sendClusterInstanceCreatedEvent(String alias, String serviceName,
+                                                       String clusterId, String instanceId) {
+        try {
+            TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
+            Service service = TopologyManager.getTopology().getService(serviceName);
+            if (service != null) {
+                Cluster cluster = service.getCluster(clusterId);
+                if(cluster.getInstanceContexts(instanceId) == null) {
+                   log.warn("The Instance context for the cluster already exists for [cluster] " +
+                   clusterId + " [instance-id] " + instanceId);
+                    return;
+                }
+                ClusterStatusClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
+                        new ClusterStatusClusterInstanceCreatedEvent(alias, serviceName,
+                                                                    clusterId, instanceId);
+
+                publishEvent(clusterInstanceCreatedEvent);
+            } else {
+                log.warn("Created is not in the possible state list of [cluster] " + clusterId);
+            }
+
+        } finally {
+            TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
+        }
+    }
+
+
     public static void sendClusterActivatedEvent(String appId, String serviceName, String clusterId) {
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
@@ -112,7 +139,7 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 if (cluster.isStateTransitionValid(ClusterStatus.Inactive, null) &&
-                                                cluster.getStatus(null) != ClusterStatus.Inactive) {
+                        cluster.getStatus(null) != ClusterStatus.Inactive) {
                     ClusterStatusClusterInactivateEvent clusterInActivateEvent =
                             new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
 

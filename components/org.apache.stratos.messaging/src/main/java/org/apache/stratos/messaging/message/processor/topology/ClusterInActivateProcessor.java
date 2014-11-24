@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -117,10 +118,17 @@ public class ClusterInActivateProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Inactive, null)) {
-                log.error("Invalid State Transition from " + cluster.getStatus(null) + " to " + ClusterStatus.Inactive);
+            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            if(context == null) {
+                log.warn("Cluster Instance Context is not found for [cluster] " +
+                        event.getClusterId() + " [instance-id] " +
+                        event.getInstanceId());
             }
-            cluster.setStatus(ClusterStatus.Inactive, null);
+            ClusterStatus status = ClusterStatus.Inactive;
+            if (!context.isStateTransitionValid(status)) {
+                log.error("Invalid State Transition from " + context.getStatus() + " to " + status);
+            }
+            context.setStatus(status);
 
         }
 

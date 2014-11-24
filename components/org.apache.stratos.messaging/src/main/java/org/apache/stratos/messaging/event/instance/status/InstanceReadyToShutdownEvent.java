@@ -31,14 +31,17 @@ public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements
     private final String partitionId;
     private final String memberId;
     private String groupId;
+    private String instanceId;
 
     public InstanceReadyToShutdownEvent(String serviceName, String clusterId,
-                                        String networkPartitionId, String partitionId, String memberId) {
+                                        String networkPartitionId, String partitionId,
+                                        String memberId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
+        this.instanceId = instanceId;
     }
 
     public String getServiceName() {
@@ -68,6 +71,11 @@ public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
 
 
 }

@@ -37,6 +37,8 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
     private ClusterStatusClusterInactivateMessageProcessor clusterInactivateMessageProcessor;
     private ClusterStatusClusterTerminatedMessageProcessor clusterTerminatedMessageProcessor;
     private ClusterStatusClusterTerminatingMessageProcessor clusterTerminatingMessageProcessor;
+    private ClusterStatusClusterInstanceCreatedMessageProcessor clusterInstanceCreatedMessageProcessor;
+
     @Override
     protected void initialize() {
         clusterCreatedMessageProcessor = new ClusterStatusClusterCreatedMessageProcessor();
@@ -57,6 +59,9 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
         clusterTerminatingMessageProcessor = new ClusterStatusClusterTerminatingMessageProcessor();
         add(clusterTerminatingMessageProcessor);
 
+        clusterInstanceCreatedMessageProcessor = new ClusterStatusClusterInstanceCreatedMessageProcessor();
+        add(clusterInstanceCreatedMessageProcessor);
+
         if (log.isDebugEnabled()) {
             log.debug("Cluster status  message processor chain initialized");
         }
@@ -76,6 +81,8 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
             clusterTerminatingMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterTerminatedEventListener) {
             clusterTerminatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ClusterStatusClusterInstanceCreatedEventListener) {
+            clusterInstanceCreatedMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener " + eventListener.toString());
         }

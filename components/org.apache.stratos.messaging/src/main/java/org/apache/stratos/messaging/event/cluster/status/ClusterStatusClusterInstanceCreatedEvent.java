@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,48 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+package org.apache.stratos.messaging.event.cluster.status;
+
 import org.apache.stratos.messaging.event.Event;
 
 /**
- * Cluster activated event will be sent by Autoscaler
+ * This event is fired by cartridge agent when it has started the server and
+ * applications are ready to serve the incoming requests.
  */
-public class ClusterActivatedEvent extends Event {
+public class ClusterStatusClusterInstanceCreatedEvent extends Event {
+    private static final long serialVersionUID = 2625412714611885089L;
 
-    private final String serviceName;
     private final String clusterId;
-    private String appId;
     private String instanceId;
+    private String alias;
+    private String serviceName;
 
-    public ClusterActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
-        this.serviceName = serviceName;
+    public ClusterStatusClusterInstanceCreatedEvent(String alias, String serviceName,
+                                                    String clusterId, String instanceId) {
         this.clusterId = clusterId;
-        this.appId = appId;
         this.instanceId = instanceId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    @Override
-    public String toString() {
-        return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
-                "]";
+        this.alias = alias;
+        this.serviceName = serviceName;
     }
 
     public String getClusterId() {
         return clusterId;
     }
 
-    public String getAppId() {
-        return appId;
-    }
-
     public String getInstanceId() {
         return instanceId;
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getServiceName() {
+        return serviceName;
+    }
 }

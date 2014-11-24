@@ -18,24 +18,25 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.Event;
 
 /**
  * Cluster activated event will be sent by Autoscaler
  */
-public class ClusterActivatedEvent extends Event {
+public class ClusterInstanceCreatedEvent extends Event {
 
     private final String serviceName;
     private final String clusterId;
-    private String appId;
     private String instanceId;
+    private String alias;
 
-    public ClusterActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
+
+    public ClusterInstanceCreatedEvent(String alias, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.appId = appId;
         this.instanceId = instanceId;
+        this.alias = alias;
+
     }
 
     public String getServiceName() {
@@ -44,7 +45,7 @@ public class ClusterActivatedEvent extends Event {
 
     @Override
     public String toString() {
-        return "ClusterActivatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
+        return "ClusterInstanceCreatedEvent [serviceName=" + serviceName + ", clusterStatus=" +
                 "]";
     }
 
@@ -52,12 +53,12 @@ public class ClusterActivatedEvent extends Event {
         return clusterId;
     }
 
-    public String getAppId() {
-        return appId;
-    }
-
     public String getInstanceId() {
         return instanceId;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
 }

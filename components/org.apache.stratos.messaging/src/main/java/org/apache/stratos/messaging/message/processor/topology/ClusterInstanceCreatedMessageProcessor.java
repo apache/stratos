@@ -1,18 +1,18 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
+ * with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -25,18 +25,17 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
-import org.apache.stratos.messaging.event.topology.ClusterTerminatingEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterResetEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
-/**
- * This processor will act upon the cluster activated event
- */
-public class ClusterTerminatingProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterTerminatingProcessor.class);
+public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
+
+    private static final Log log = LogFactory.getLog(ClusterInstanceCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -48,23 +47,22 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
 
         Topology topology = (Topology) object;
-
-        if (ClusterTerminatingEvent.class.getName().equals(type)) {
+        if (ClusterInstanceCreatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized()) {
                 return false;
             }
 
             // Parse complete message and build event
-            ClusterTerminatingEvent event = (ClusterTerminatingEvent) Util.
-                    jsonToObject(message, ClusterTerminatingEvent.class);
+            ClusterInstanceCreatedEvent event = (ClusterInstanceCreatedEvent) Util.
+                    jsonToObject(message, ClusterInstanceCreatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
+            TopologyUpdater.acquireWriteLockForService(event.getServiceName());
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
+                TopologyUpdater.releaseWriteLockForService(event.getServiceName());
             }
 
         } else {
@@ -77,7 +75,7 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ClusterTerminatingEvent event, Topology topology) {
+    private boolean doProcess (ClusterInstanceCreatedEvent event,Topology topology) {
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -119,23 +117,14 @@ public class ClusterTerminatingProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
-                log.warn("Cluster Instance Context is not found for [cluster] " +
-                        event.getClusterId() + " [instance-id] " +
-                        event.getInstanceId());
-            }
-            ClusterStatus status = ClusterStatus.Terminating;
-            if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid State Transition from " + context.getStatus() + " to " + status);
-            }
-            context.setStatus(status);
-
+            ClusterInstanceContext context = new ClusterInstanceContext(event.getAlias(),
+                                                                        event.getClusterId(),
+                                                                        event.getInstanceId());
+            context.setStatus(ClusterStatus.Created);
+            cluster.addInstanceContext(event.getInstanceId(), context);
         }
-
         // Notify event listeners
         notifyEventListeners(event);
         return true;
     }
-
 }
