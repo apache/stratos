@@ -26,7 +26,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 /**
  * Helper class to keep the state of the consequence of a rule.
- * @author nirmal
+ *
  *
  */
 public class TestDelegator {

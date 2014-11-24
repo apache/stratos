@@ -21,7 +21,7 @@
 package org.apache.stratos.kubernetes.client.model;
 
 /**
- * @author nirmal
+ *
  *
  */
 public class Selector {

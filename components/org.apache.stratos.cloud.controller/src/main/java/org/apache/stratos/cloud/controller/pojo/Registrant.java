@@ -22,7 +22,7 @@ import org.apache.stratos.common.Properties;
 
 /**
  * Upon a new subscription, Stratos Manager would send this POJO.
- * @author nirmal
+ *
  *
  */
 public class Registrant {

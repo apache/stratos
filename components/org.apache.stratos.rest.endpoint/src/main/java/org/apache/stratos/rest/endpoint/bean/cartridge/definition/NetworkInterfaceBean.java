@@ -19,10 +19,6 @@
 
 package org.apache.stratos.rest.endpoint.bean.cartridge.definition;
 
-/**
- * @author Jeffrey Nguyen
- *
- */
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement (name = "networkInterfaces")

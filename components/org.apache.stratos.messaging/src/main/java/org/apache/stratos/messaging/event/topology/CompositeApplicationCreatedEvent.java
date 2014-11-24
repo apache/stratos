@@ -26,8 +26,7 @@ import org.apache.stratos.messaging.domain.topology.ConfigCompositeApplication;
 
 
 /**
- * 
- * @author netiq
+ *
  * event is fired when application is created
  */
 public class CompositeApplicationCreatedEvent extends TopologyEvent implements Serializable{

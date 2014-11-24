@@ -25,7 +25,7 @@ import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 
 /**
  * All the Partition Validators should implement this interface.
- * @author nirmal
+ *
  *
  */
 public interface PartitionValidator {

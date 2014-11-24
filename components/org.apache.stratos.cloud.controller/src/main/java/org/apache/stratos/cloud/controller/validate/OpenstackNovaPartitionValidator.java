@@ -34,7 +34,7 @@ import java.util.Properties;
 
 /**
  * The Openstack Nova {@link PartitionValidator} implementation.
- * @author nirmal
+ *
  *
  */
 public class OpenstackNovaPartitionValidator implements PartitionValidator {

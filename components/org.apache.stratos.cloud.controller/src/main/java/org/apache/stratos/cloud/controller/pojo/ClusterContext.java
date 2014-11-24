@@ -25,7 +25,7 @@ import org.apache.stratos.common.Properties;
 
 /**
  * Holds runtime data of a Cluster.
- * @author nirmal
+ *
  *
  */
 public class ClusterContext implements Serializable{

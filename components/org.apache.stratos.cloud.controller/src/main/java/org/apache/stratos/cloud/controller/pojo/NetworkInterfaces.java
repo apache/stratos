@@ -23,8 +23,6 @@ import java.util.Arrays;
 /**
  * Had to wrap {@link NetworkInterface} array using a class, since there's a bug in current 
  * stub generation.
- * 
- * @author Jeffrey Nguyen
  *
  */
 public class NetworkInterfaces implements Serializable {

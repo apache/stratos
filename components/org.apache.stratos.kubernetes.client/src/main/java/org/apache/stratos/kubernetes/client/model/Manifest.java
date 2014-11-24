@@ -26,7 +26,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/manifest-schema.json
- * @author nirmal
+ *
  *
  */
 public class Manifest {

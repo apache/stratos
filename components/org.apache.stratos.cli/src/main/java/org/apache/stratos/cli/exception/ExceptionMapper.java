@@ -21,7 +21,7 @@ package org.apache.stratos.cli.exception;
 
 /**
  * To map RestApiException of back-end.
- * @author nirmal
+ *
  *
  */
 public class ExceptionMapper {

@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.exception;
 
 /**
  * Throws when a {@link IaasProvider} is evaluated to be invalid.
- * @author nirmal
+ *
  *
  */
 public class InvalidIaasProviderException extends Exception {

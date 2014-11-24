@@ -23,7 +23,7 @@ package org.apache.stratos.kubernetes.client.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author nirmal
+ *
  *
  */
 @XmlRootElement

@@ -23,7 +23,7 @@ import java.io.Serializable;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 
 /**
- * @author nirmal
+ *
  *
  */
 public class DataPublisherConfig implements Serializable{

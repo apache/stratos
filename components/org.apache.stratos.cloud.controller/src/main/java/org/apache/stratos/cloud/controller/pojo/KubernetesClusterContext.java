@@ -28,7 +28,7 @@ import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 
 /**
  * Holds information about a Kubernetes Cluster.
- * @author nirmal
+ *
  *
  */
 public class KubernetesClusterContext implements Serializable {

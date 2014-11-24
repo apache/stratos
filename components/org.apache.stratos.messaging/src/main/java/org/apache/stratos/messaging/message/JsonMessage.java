@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 
 /**
  * Represents a message that would traverse through Stratos
- * @author nirmal
+ *
  *
  */
 public class JsonMessage {

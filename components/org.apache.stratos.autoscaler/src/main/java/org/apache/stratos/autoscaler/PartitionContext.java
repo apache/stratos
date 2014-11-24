@@ -49,7 +49,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 /**
  * This is an object that inserted to the rules engine.
  * Holds information about a partition.
- * @author nirmal
+ *
  *
  */
 

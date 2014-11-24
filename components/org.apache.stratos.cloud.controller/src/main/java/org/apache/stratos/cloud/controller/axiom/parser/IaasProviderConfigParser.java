@@ -36,7 +36,7 @@ import org.wso2.securevault.SecretResolverFactory;
 
 /**
  * Parse the iaas providers.
- * @author nirmal
+ *
  *
  */
 public class IaasProviderConfigParser {

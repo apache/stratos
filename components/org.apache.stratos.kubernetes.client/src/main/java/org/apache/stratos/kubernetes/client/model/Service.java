@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/service-schema.json
- * @author nirmal
+ *
  *
  */
 @XmlRootElement

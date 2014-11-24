@@ -36,7 +36,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 
 /**
  * Parse the cloud-controller.xml
- * @author nirmal
+ *
  *
  */
 public class CloudControllerConfigParser {

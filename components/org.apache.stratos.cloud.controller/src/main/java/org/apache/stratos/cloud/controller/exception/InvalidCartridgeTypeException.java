@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.exception;
 
 /**
  * Throws when a {@link Partition} is evaluated to be invalid.
- * @author nirmal
+ *
  *
  */
 public class InvalidCartridgeTypeException extends Exception {

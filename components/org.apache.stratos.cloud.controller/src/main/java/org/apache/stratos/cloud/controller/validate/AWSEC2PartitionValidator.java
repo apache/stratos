@@ -34,7 +34,7 @@ import java.util.Properties;
 
 /**
  * AWS-EC2 {@link PartitionValidator} implementation.
- * @author nirmal
+ *
  *
  */
 public class AWSEC2PartitionValidator implements PartitionValidator {

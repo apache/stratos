@@ -20,10 +20,6 @@ package org.apache.stratos.cloud.controller.pojo;
 
 import java.io.Serializable;
 
-/**
- * @author Jeffrey Nguyen
- *
- */
 public class NetworkInterface implements Serializable {
 
 	/**
