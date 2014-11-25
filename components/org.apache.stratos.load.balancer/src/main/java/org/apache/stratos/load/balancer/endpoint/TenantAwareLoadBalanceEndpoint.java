@@ -106,7 +106,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 sessionInformation = dispatcher.getSession(synCtx);
                 if (sessionInformation != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Existing session found: %s", sessionInformation.getId()));
+                        log.debug(String.format("Existing session found: %s for request: %s", sessionInformation.getId(),
+                                synCtx.getMessageID()));
                     }
 
                     currentMember = sessionInformation.getMember();
@@ -225,6 +226,9 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private org.apache.axis2.clustering.Member findNextMember(MessageContext synCtx) {
         String targetHost = extractTargetHost(synCtx);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Request %s for host %s", synCtx.getMessageID(), targetHost));
+        }
         if (!requestDelegator.isTargetHostValid(targetHost)) {
             throwSynapseException(synCtx, 404, String.format("Unknown host name %s", targetHost));
         }
@@ -240,7 +244,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
             if(tenantId == -1) {
                // If there is no tenant involves in the URL, Find next member from host name
-               member = requestDelegator.findNextMemberFromHostName(targetHost);
+                member = requestDelegator.findNextMemberFromHostName(targetHost, synCtx.getMessageID());
             } else if (tenantExists(tenantId)) {
                 // Tenant found, find member from hostname and tenant id
                 member = requestDelegator.findNextMemberFromTenantId(targetHost, tenantId);
@@ -714,7 +718,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Sending request to endpoint: %s", to.getAddress()));
+                log.debug(String.format("Sending request %s to endpoint: %s", synCtx.getMessageID(), to.getAddress()));
             }
             endpoint.send(synCtx);
 
