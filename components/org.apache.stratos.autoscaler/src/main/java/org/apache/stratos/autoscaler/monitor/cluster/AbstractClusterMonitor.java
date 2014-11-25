@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AbstractClusterContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -204,27 +203,24 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public void setStatus(ClusterStatus status) {
-
-        //if(this.status != status) {
-            this.status = status;
-            /**
-             * notifying the parent monitor about the state change
-             * If the cluster in_active and if it is a in_dependent cluster,
-             * then won't send the notification to parent.
-             */
-            if (status == ClusterStatus.Inactive && !this.hasStartupDependents) {
-                log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
-                        "since it is identified as the independent unit");
+        /**
+         * notifying the parent monitor about the state change
+         * If the cluster in_active and if it is a in_dependent cluster,
+         * then won't send the notification to parent.
+         */
+        if (status == ClusterStatus.Inactive && !this.hasStartupDependents) {
+            log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
+                    "since it is identified as the independent unit");
 
             /*} else if (status == ClusterStatus.Terminating) {
                 // notify parent
                 log.info("[Cluster] " + clusterId + " is not notifying the parent, " +
                         "since it is in Terminating State");
 */
-            } else {
-                MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, this.status, this.clusterId);
-            }
-        //}
+        } else {
+            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId);
+        }
+
 
     }
 
@@ -309,10 +305,13 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, this.getServiceId(),
-                                                                clusterId, statusEvent.getInstanceId());
-        } else if(statusEvent.getStatus() == ClusterStatus.Created ||
+                    clusterId, statusEvent.getInstanceId());
+        } else if (statusEvent.getStatus() == ClusterStatus.Created ||
                 statusEvent.getStatus() == GroupStatus.Created) {
-           //TODO create new cluster instance
+            Application application = ApplicationHolder.getApplications().getApplication(this.appId);
+            Group group = application.getGroupRecursively(statusEvent.getId());
+            //TODO*****starting a new instance of this monitor
+            //createGroupInstance(group, statusEvent.getInstanceId());
         }
         // send the ClusterTerminating event
 //        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
@@ -353,9 +352,9 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         return clusterContext.getServiceId();
     }
 
-    protected int getRoundedInstanceCount(float requiredInstances, float fraction){
+    protected int getRoundedInstanceCount(float requiredInstances, float fraction) {
 
-        return (requiredInstances - Math.floor(requiredInstances) > fraction) ? (int)Math.ceil(requiredInstances)
-                : (int)Math.floor(requiredInstances);
+        return (requiredInstances - Math.floor(requiredInstances) > fraction) ? (int) Math.ceil(requiredInstances)
+                : (int) Math.floor(requiredInstances);
     }
 }

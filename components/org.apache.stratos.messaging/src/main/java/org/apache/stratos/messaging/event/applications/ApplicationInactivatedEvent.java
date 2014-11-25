@@ -29,12 +29,18 @@ public class ApplicationInactivatedEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
+    private String instanceId;
 
-    public ApplicationInactivatedEvent(String appId) {
+    public ApplicationInactivatedEvent(String appId, String instanceId) {
         this.appId = appId;
+        this.instanceId = instanceId;
     }
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

@@ -1941,7 +1941,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
             newCluster.setLbCluster(false);
             newCluster.setTenantRange(appClusterCtxt.getTenantRange());
-            newCluster.setStatus(ClusterStatus.Created, null);
+            //newCluster.setStatus(ClusterStatus.Created, null);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
             Cartridge cartridge = dataHolder.getCartridge(appClusterCtxt.getCartridgeType());
             if(cartridge.getDeployerType() != null &&

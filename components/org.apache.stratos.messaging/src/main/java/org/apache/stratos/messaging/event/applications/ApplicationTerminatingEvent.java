@@ -29,12 +29,20 @@ public class ApplicationTerminatingEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
+    private String instanceId;
 
-    public ApplicationTerminatingEvent(String appId) {
+
+    public ApplicationTerminatingEvent(String appId, String instanceId) {
         this.appId = appId;
+        this.instanceId = instanceId;
+
     }
 
     public String getAppId() {
         return appId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

@@ -470,7 +470,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName()));
         group.setAutoscalingPolicy(groupCtxt.getAutoscalingPolicy());
-        group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
+        //TODO *****group.setDeploymentPolicy(groupCtxt.getDeploymentPolicy());
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
         String []  startupOrders = getStartupOrderForGroup(groupCtxt);

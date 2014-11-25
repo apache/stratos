@@ -141,7 +141,6 @@ public class TopologyBuilder {
                 //cluster.setStatus(Status.Created);
                 cluster.setHostNames(event.getHostNames());
                 cluster.setTenantRange(event.getTenantRange());
-                cluster.setStatus(ClusterStatus.Created, null);
                 service.addCluster(cluster);
                 TopologyManager.updateTopology(topology);
             }

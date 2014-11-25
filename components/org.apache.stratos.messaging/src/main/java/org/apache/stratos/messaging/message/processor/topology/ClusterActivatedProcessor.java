@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -115,13 +116,22 @@ public class ClusterActivatedProcessor extends MessageProcessor {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
                         event.getClusterId()));
+                return false;
             }
         } else {
             // Apply changes to the topology
-            if (!cluster.isStateTransitionValid(ClusterStatus.Active, null)) {
-                log.error("Invalid State Transition from " + cluster.getStatus(null) + " to " + ClusterStatus.Active);
+            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            if(context == null) {
+                log.warn("Cluster Instance Context is not found for [cluster] " +
+                        event.getClusterId() + " [instance-id] " +
+                        event.getInstanceId());
+                return false;
             }
-            cluster.setStatus(ClusterStatus.Active, null);
+            ClusterStatus status = ClusterStatus.Active;
+            if (!context.isStateTransitionValid(status)) {
+                log.error("Invalid State Transition from " + context.getStatus() + " to " + status);
+            }
+            context.setStatus(status);
 
         }
 

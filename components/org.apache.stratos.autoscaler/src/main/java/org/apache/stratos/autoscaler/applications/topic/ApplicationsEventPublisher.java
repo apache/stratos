@@ -92,12 +92,12 @@ public class ApplicationsEventPublisher {
         publishEvent(applicationActivatedEvent);
     }
 
-    public static void sendApplicationInactivatedEvent(String appId) {
+    public static void sendApplicationInactivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application In-activated event for [application]: " + appId);
         }
         ApplicationInactivatedEvent applicationInActivatedEvent =
-                new ApplicationInactivatedEvent(appId);
+                new ApplicationInactivatedEvent(appId, instanceId);
         publishEvent(applicationInActivatedEvent);
 
     }
@@ -107,7 +107,7 @@ public class ApplicationsEventPublisher {
             log.info("Publishing Application terminating event for [application]: " + appId);
         }
         ApplicationTerminatingEvent applicationTerminatingEvent =
-                new ApplicationTerminatingEvent(appId);
+                new ApplicationTerminatingEvent(appId, instanceId);
         publishEvent(applicationTerminatingEvent);
     }
 

@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
 import org.apache.stratos.messaging.event.applications.GroupInactivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -90,13 +91,26 @@ public class GroupInActivateProcessor extends MessageProcessor {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("Group not exists in service: [AppId] %s [groupId] %s", event.getAppId(),
                         event.getGroupId()));
+                return false;
             }
         } else {
-            group.setStatus(GroupStatus.Inactive, null);
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Group updated as in-activated : %s",
-                        group.getUniqueIdentifier()));
+            GroupInstanceContext context = group.getInstanceContexts(event.getInstanceId());
+            if(context == null) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Group Instance not exists in Group: [AppId] %s [groupId] %s " +
+                                    "[instanceId] %s", event.getAppId(), event.getGroupId(),
+                            event.getInstanceId()));
+                    return false;
+                }
             }
+            // Apply changes to the topology
+            GroupStatus status = GroupStatus.Inactive;
+            if (!context.isStateTransitionValid(status)) {
+                log.error("Invalid State Transition from " + context.getStatus() + " to " +
+                        status);
+                return false;
+            }
+            context.setStatus(status);
         }
 
         // Notify event listeners
