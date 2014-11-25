@@ -281,35 +281,38 @@ public class TopologyBuilder {
 
     }
 
-    public static void handleClusterInstanceCreated(ClusterStatusClusterInstanceCreatedEvent event) {
+    public static void handleClusterInstanceCreated(String serviceType, String clusterId, String alias, String instanceId) {
 
         TopologyManager.acquireWriteLock();
 
         try {
             Topology topology = TopologyManager.getTopology();
-            Service service = topology.getService(event.getServiceName());
+            Service service = topology.getService(serviceType);
             if (service == null) {
-                log.error("Service " + event.getServiceName() +
+                log.error("Service " + serviceType +
                         " not found in Topology, unable to update the cluster status to Created");
                 return;
             }
 
-            Cluster cluster = service.getCluster(event.getClusterId());
+            Cluster cluster = service.getCluster(clusterId);
             if (cluster == null) {
-                log.error("Cluster " + event.getClusterId() + " not found in Topology, unable to update " +
+                log.error("Cluster " + clusterId + " not found in Topology, unable to update " +
                         "status to Created");
                 return;
             }
 
-            if(cluster.getInstanceContexts(event.getInstanceId()) == null) {
+            if(cluster.getInstanceContexts(instanceId) != null) {
                 log.warn("The Instance context for the cluster already exists for [cluster] " +
-                        event.getClusterId() + " [instance-id] " + event.getInstanceId());
+                        clusterId + " [instance-id] " + instanceId);
                 return;
             }
 
+            //context.setStatus(ClusterStatus.Created);
+            cluster.addInstanceContext(instanceId, new ClusterInstanceContext(alias, clusterId, instanceId));
+            TopologyManager.updateTopology(topology);
+
             ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
-                    new ClusterInstanceCreatedEvent(event.getAlias(), event.getServiceName(),
-                                                     event.getClusterId(), event.getInstanceId());
+                    new ClusterInstanceCreatedEvent(alias, serviceType, clusterId, instanceId);
             TopologyEventPublisher.sendClusterInstanceCreatedEvent(clusterInstanceCreatedEvent);
 
         } finally {

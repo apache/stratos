@@ -55,12 +55,11 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
-    public VMServiceClusterMonitor(String clusterId, VMServiceClusterContext vmServiceClusterContext) {
-        super(clusterId, new AutoscalerRuleEvaluator(
+    public VMServiceClusterMonitor(String serviceType, String clusterId, VMServiceClusterContext vmServiceClusterContext) {
+        super(serviceType, clusterId, new AutoscalerRuleEvaluator(
                         StratosConstants.VM_MIN_CHECK_DROOL_FILE,
                         StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE,
-                        StratosConstants.VM_SCALE_CHECK_DROOL_FILE), vmServiceClusterContext
-        );
+                        StratosConstants.VM_SCALE_CHECK_DROOL_FILE));
         readConfigurations();
     }
 

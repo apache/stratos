@@ -210,11 +210,12 @@ public interface CloudControllerService {
     /**
      * Creates a cluster instance with the given information
      *
-     * @param alias alias provided in the subscription parameters
+     * @param serviceType serviceType
      * @param clusterId cluster id
+     * @param alias alias provided in the subscription parameters
      * @param instanceId instance id
      * @throws ClusterInstanceCreationException if an y error occurs in cluster instance creation
      */
-    public void createClusterInstance (String alias, String clusterId, String instanceId) throws
+    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) throws
             ClusterInstanceCreationException;
 }

@@ -45,13 +45,12 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     private String lbReferenceType;
 
-    public KubernetesServiceClusterMonitor(String clusterId, KubernetesClusterContext kubernetesClusterCtxt) {
-        super(clusterId,
+    public KubernetesServiceClusterMonitor(String serviceType, String clusterId) {
+        super(serviceType, clusterId,
         		new AutoscalerRuleEvaluator(
                       StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
                       StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE,
-                      StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE),
-              kubernetesClusterCtxt);
+                      StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE));
         readConfigurations();
     }
 

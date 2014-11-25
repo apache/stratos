@@ -68,7 +68,7 @@ public class ClusterStatusTopicReceiver implements Runnable{
         statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
+                //TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
             }
         });
 

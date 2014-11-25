@@ -49,10 +49,9 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMLbClusterMonitor.class);
 
-    public VMLbClusterMonitor(String clusterId, String serviceId, VMClusterContext vmClusterContext) {
-        super(clusterId, new AutoscalerRuleEvaluator( StratosConstants.VM_MIN_CHECK_DROOL_FILE,
-                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE, StratosConstants.VM_SCALE_CHECK_DROOL_FILE),
-                vmClusterContext);
+    public VMLbClusterMonitor(String serviceType, String clusterId) {
+        super(serviceType, clusterId, new AutoscalerRuleEvaluator( StratosConstants.VM_MIN_CHECK_DROOL_FILE,
+                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE, StratosConstants.VM_SCALE_CHECK_DROOL_FILE));
         readConfigurations();
     }
 

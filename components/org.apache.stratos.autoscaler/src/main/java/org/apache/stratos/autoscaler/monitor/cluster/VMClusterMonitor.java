@@ -53,9 +53,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMClusterMonitor.class);
 
-    protected VMClusterMonitor(String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                               VMClusterContext vmClusterContext) {
-        super(clusterId, autoscalerRuleEvaluator, vmClusterContext);
+    protected VMClusterMonitor(String serviceType, String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+        super(serviceType, clusterId, autoscalerRuleEvaluator);
+
     }
 
     @Override

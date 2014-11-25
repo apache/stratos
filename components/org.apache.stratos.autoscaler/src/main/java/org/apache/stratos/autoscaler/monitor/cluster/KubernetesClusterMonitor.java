@@ -63,12 +63,11 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
     private KubernetesClusterContext kubernetesClusterCtxt;
 
-    protected KubernetesClusterMonitor(String clusterId,
-                                       AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                                       KubernetesClusterContext kubernetesClusterContext) {
+    protected KubernetesClusterMonitor(String serviceType, String clusterId,
+                                       AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
 
-        super(clusterId, autoscalerRuleEvaluator, kubernetesClusterContext);
-        this.kubernetesClusterCtxt = kubernetesClusterContext;
+        super(serviceType, clusterId, autoscalerRuleEvaluator);
+        //this.kubernetesClusterCtxt = kubernetesClusterContext;
     }
 
     @Override

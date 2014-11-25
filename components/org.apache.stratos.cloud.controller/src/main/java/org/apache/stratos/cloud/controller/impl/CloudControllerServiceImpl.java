@@ -2086,10 +2086,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public void createClusterInstance (String alias, String clusterId, String instanceId) throws
+    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) throws
             ClusterInstanceCreationException {
 
-
+        TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias, instanceId);
     }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {

@@ -40,6 +40,8 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +58,8 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle scaleCheckFactHandle;
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
-    protected AbstractClusterContext clusterContext;
+    //protected AbstractClusterContext clusterContext;
+    protected final Map<String, AbstractClusterContext> instanceIdToClusterContextMap;
     private String clusterId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
@@ -65,14 +68,16 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private StatefulKnowledgeSession scaleCheckKnowledgeSession;
     private boolean isDestroyed;
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected String serviceType;
 
-    protected AbstractClusterMonitor(String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator,
-                                     AbstractClusterContext abstractClusterContext) {
+    protected AbstractClusterMonitor(String serviceType, String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
 
         super();
+        this.serviceType = serviceType;
         this.clusterId = clusterId;
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
-        this.clusterContext = abstractClusterContext;
+        //this.clusterContext = abstractClusterContext;
+        this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
@@ -338,6 +343,30 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.hasFaultyMember = hasFaultyMember;
     }
 
+    public void addClusterContextForInstance (String instanceId, AbstractClusterContext clusterContext) {
+
+        if (instanceIdToClusterContextMap.get(instanceId) == null) {
+            synchronized (instanceIdToClusterContextMap) {
+                if (instanceIdToClusterContextMap.get(instanceId) == null) {
+                    instanceIdToClusterContextMap.put(instanceId, clusterContext);
+                } else {
+                    log.warn("ClusterContext for already exists for cluster instance id: " + instanceId +
+                            ", service type: " + serviceType + ", cluster id: " + clusterId);
+                }
+            }
+        } else {
+            log.warn("ClusterContext for already exists for cluster instance id: " + instanceId +
+                    ", service type: " + serviceType + ", cluster id: " + clusterId);
+        }
+    }
+
+    public AbstractClusterContext getClusterContext (String instanceId) {
+
+        // if instanceId is null, assume that map contains only one element and return that
+
+        return instanceIdToClusterContextMap.get(instanceId);
+    }
+
     public abstract void terminateAllMembers();
 
     public boolean isStop() {
@@ -349,7 +378,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public String getServiceId() {
-        return clusterContext.getServiceId();
+        return serviceType;
     }
 
     protected int getRoundedInstanceCount(float requiredInstances, float fraction) {
