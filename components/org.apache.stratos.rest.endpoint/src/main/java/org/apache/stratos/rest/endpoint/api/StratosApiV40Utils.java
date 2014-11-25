@@ -750,8 +750,8 @@ public class StratosApiV40Utils {
                     if (cartridge == null) {
                         continue;
                     }
-                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                            ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                            cartridge.getCartridgeAlias());
                     String cartridgeStatus = "Inactive";
                     int activeMemberCount = 0;
                     if (cluster != null) {
@@ -812,8 +812,8 @@ public class StratosApiV40Utils {
             log.error(message);
             throw new RestAPIException(Response.Status.NOT_FOUND, message);
         }
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                ,cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                cartridge.getCartridgeAlias());
         String cartridgeStatus = "Inactive";
         int activeMemberCount = 0;
 
@@ -838,8 +838,8 @@ public class StratosApiV40Utils {
 
     static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
         int noOfActiveInstances = 0;
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                ,cartridgeType , cartridgeAlias);
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                cartridgeAlias);
 
         if(cluster == null) {
             String message = "No Cluster found for cartridge [type] "+cartridgeType+", [alias] "+cartridgeAlias;
@@ -976,8 +976,8 @@ public class StratosApiV40Utils {
 
     public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
 
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                ,cartridgeType , subscriptionAlias);
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                subscriptionAlias);
         if(cluster == null) {
             throw new RestAPIException("No matching cluster found for [cartridge type]: "+cartridgeType+ " [alias] "+subscriptionAlias);
         } else{
