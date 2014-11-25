@@ -29,10 +29,7 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -50,14 +47,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         //starting the first set of dependencies from its children
-        if(application.getInstanceContextCount() > 0) {
-            startDependency(application);
-        } else {
-            String instanceId = this.generateInstanceId(application);
-            startDependency(application, instanceId);
-            ApplicationBuilder.handleApplicationInstanceCreatedEvent(appId, instanceId);
+        startMinimumDependencies(application);
 
-        }
     }
 
     /**
@@ -170,4 +161,46 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void onEvent(MonitorScalingEvent scalingEvent) {
 
     }
+
+    private void startMinimumDependencies(Application application)
+                                                            throws TopologyInConsistentException {
+        DeploymentPolicy policy = application.getComponentDeploymentPolicy();
+        int min = policy.getMin();
+        if(application.getInstanceContextCount() >= min) {
+            startDependency(application);
+        } else {
+            if(application.getInstanceContextCount() > 0) {
+                startDependency(application);
+                int remainingInstancesToBeStarted = min - application.getInstanceContextCount();
+                while (remainingInstancesToBeStarted > 0) {
+                    createInstanceAndStartDependency(application);
+                    remainingInstancesToBeStarted--;
+                }
+
+            } else {
+                //No available instances in the Applications. Need to start them all
+                int instancesToBeStarted = min;
+                while(instancesToBeStarted > 0) {
+                    createInstanceAndStartDependency(application);
+                    instancesToBeStarted--;
+
+                }
+            }
+
+
+        }
+    }
+
+    private void createInstanceAndStartDependency(Application application)
+                                                            throws TopologyInConsistentException {
+        String instanceId  = createApplicationInstance(application);
+        startDependency(application, instanceId);
+    }
+
+    private String createApplicationInstance(Application application) {
+        String instanceId = this.generateInstanceId(application);
+        ApplicationBuilder.handleApplicationInstanceCreatedEvent(appId, instanceId);
+        return instanceId;
+    }
+
 }

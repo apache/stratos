@@ -230,6 +230,9 @@ public class ApplicationMonitorFactory {
                     StatusChecker.getInstance().onMemberStatusChange(clusterId);
                 }
             }
+            if(cluster.getInstanceContextCount() > 0) {
+                //Starting the cluster monitor as existing instances are found
+            }
             return clusterMonitor;
 
         } finally {

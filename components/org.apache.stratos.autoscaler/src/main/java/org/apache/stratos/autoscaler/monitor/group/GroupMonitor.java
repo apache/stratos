@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.monitor.group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
@@ -32,9 +33,8 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -54,21 +54,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      * @throws DependencyBuilderException    throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
-    public GroupMonitor(Group group, String appId, String instanceId) throws DependencyBuilderException,
+    public GroupMonitor(Group group, String appId, String parentInstanceId) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
-        if(group.getInstanceContextCount() > 0) {
-            this.startDependency(group);
-        } else {
-            String instanceId1 = instanceId;
-            if (group.isGroupScalingEnabled()) {
-                instanceId1 = this.generateInstanceId(group);
-            }
-            this.startDependency(group, instanceId1);
-            ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(), instanceId1);
-
-        }
+        //starting the minimum start able dependencies
+        startMinimumDependencies(group, parentInstanceId);
     }
 
     /**
@@ -78,16 +69,33 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      */
     public void setStatus(GroupStatus status, String instanceId) {
 
-        //if(this.status != status) {
-        //this.status = status;
-        //notifying the parent
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");
         } else {
             // notify parent
             log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
-            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent, status, this.id);
+            if(this.isGroupScalingEnabled()) {
+                ApplicationHolder.acquireReadLock();
+                try {
+                    Application application = ApplicationHolder.getApplications().
+                                                                    getApplication(this.appId);
+                    if(application != null) {
+                        Group group = application.getGroupRecursively(this.id);
+                        if(group != null) {
+                            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+                            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
+                                    status, this.id, context.getParentId());
+
+                        }
+                    }
+                } finally {
+                    ApplicationHolder.releaseReadLock();
+                }
+            } else {
+                MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
+                        status, this.id, instanceId);
+            }
         }
         //notify the children about the state change
         MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId(), null));
@@ -149,10 +157,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
             ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
-        } if(statusEvent.getStatus() == ClusterStatus.Created ||
+        } else if(statusEvent.getStatus() == ClusterStatus.Created ||
                                             statusEvent.getStatus() == GroupStatus.Created) {
-            ApplicationBuilder.handleGroupInstanceCreatedEvent(this.appId, this.id, instanceId);
-            //TODO start dependencies*******
+            Application application = ApplicationHolder.getApplications().getApplication(this.appId);
+            Group group = application.getGroupRecursively(statusEvent.getId());
+            //starting a new instance of this monitor
+            createGroupInstance(group, statusEvent.getInstanceId());
         }
     }
 
@@ -195,5 +205,49 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     public void setGroupScalingEnabled(boolean groupScalingEnabled) {
         this.groupScalingEnabled = groupScalingEnabled;
+    }
+
+    private void startMinimumDependencies(Group group, String parentInstanceId)
+            throws TopologyInConsistentException {
+        DeploymentPolicy policy = group.getComponentDeploymentPolicy();
+        int min = policy.getMin();
+        if(group.getInstanceContextCount() >= min) {
+            startDependency(group);
+        } else {
+            if(group.getInstanceContextCount() > 0) {
+                startDependency(group);
+                int remainingInstancesToBeStarted = min - group.getInstanceContextCount();
+                while (remainingInstancesToBeStarted > 0) {
+                    createInstanceAndStartDependency(group, parentInstanceId);
+                    remainingInstancesToBeStarted--;
+                }
+
+            } else {
+                //No available instances in the Applications. Need to start them all
+                int instancesToBeStarted = min;
+                while(instancesToBeStarted > 0) {
+                    createInstanceAndStartDependency(group, parentInstanceId);
+                    instancesToBeStarted--;
+
+                }
+            }
+        }
+    }
+
+    private void createInstanceAndStartDependency(Group group, String parentInstanceId)
+            throws TopologyInConsistentException {
+        String instanceId  = createGroupInstance(group, parentInstanceId);
+        startDependency(group, instanceId);
+    }
+
+    private String createGroupInstance(Group group, String parentInstanceId) {
+        String instanceId = parentInstanceId;
+        if (group.isGroupScalingEnabled()) {
+            this.groupScalingEnabled = true;
+            instanceId = this.generateInstanceId(group);
+        }
+        ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(),
+                                                            instanceId, parentInstanceId);
+        return instanceId;
     }
 }

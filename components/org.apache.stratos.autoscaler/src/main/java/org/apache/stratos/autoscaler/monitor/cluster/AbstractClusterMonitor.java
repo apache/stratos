@@ -21,6 +21,9 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AbstractClusterContext;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
@@ -28,6 +31,10 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
@@ -299,10 +306,18 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+        if (statusEvent.getStatus() == GroupStatus.Terminating ||
+                statusEvent.getStatus() == ApplicationStatus.Terminating) {
+            ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, this.getServiceId(),
+                                                                clusterId, statusEvent.getInstanceId());
+        } else if(statusEvent.getStatus() == ClusterStatus.Created ||
+                statusEvent.getStatus() == GroupStatus.Created) {
+           //TODO create new cluster instance
+        }
         // send the ClusterTerminating event
 //        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
 //                ApplicationStatus.Terminating) {
-//            StatusEventPublisher.sendClusterTerminatingEvent(appId, serviceId, clusterId);
+//
 //        }
     }
 

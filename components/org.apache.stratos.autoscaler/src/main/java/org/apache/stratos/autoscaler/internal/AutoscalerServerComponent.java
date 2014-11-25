@@ -31,6 +31,8 @@ import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.status.checker.cluster.ClusterStatusProcessorChain;
+import org.apache.stratos.autoscaler.status.checker.group.GroupStatusProcessorChain;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
@@ -117,6 +119,13 @@ public class AutoscalerServerComponent {
                 KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
                 KubernetesManager.getInstance().addNewKubernetesGroup(kubernetesGroup);
             }
+
+            //starting the processor chain
+            ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
+            ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
+
+            GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
+            ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
 
             if (log.isInfoEnabled()) {
                 log.info("Scheduling tasks to publish applications");

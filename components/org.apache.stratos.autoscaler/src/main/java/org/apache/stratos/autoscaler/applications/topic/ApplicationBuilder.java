@@ -354,7 +354,8 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId,
+                                                       String parentId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling Group creation for the [group]: " + groupId +
                     " in the [application] " + appId);

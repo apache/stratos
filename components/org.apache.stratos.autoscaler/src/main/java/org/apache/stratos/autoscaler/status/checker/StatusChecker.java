@@ -28,9 +28,13 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
@@ -299,89 +303,118 @@ public class StatusChecker {
                 component = ApplicationHolder.getApplications().
                         getApplication(appId).getGroupRecursively(idOfComponent);
             }
-            clusterData = component.getClusterDataMap();
             groups = component.getAliasToGroupMap();
+            clusterData = component.getClusterDataMap();
 
-
-            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active) ||
-                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active) ||
-                    getAllClusterInSameState(clusterData, ClusterStatus.Active) &&
-                            getAllGroupInSameState(groups, GroupStatus.Active)) {
-                //send activation event
-                if (component instanceof Application) {
-                    //send application activated event
-                    if (((Application) component).getStatus(null) != ApplicationStatus.Active) {
-                        log.info("sending app activate: " + appId);
-                        ApplicationBuilder.handleApplicationActivatedEvent(appId, instanceId);
-                    }
-                } else if (component instanceof Group) {
-                    //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Active) {
-                        log.info("sending group activate: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
-                    }
-                }
-            } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated) ||
-                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminated) ||
-                    getAllClusterInSameState(clusterData, ClusterStatus.Terminated) &&
-                            getAllGroupInSameState(groups, GroupStatus.Terminated)) {
-                //send the terminated event
-                if (component instanceof Application) {
-                    log.info("sending app terminated: " + appId);
-                    ApplicationBuilder.handleApplicationTerminatedEvent(appId);
-                } else if (component instanceof Group) {
-                    //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
-                        log.info("sending group terminated : " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
-                    }
-                }
-            } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Created) ||
-                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Created) ||
-                    getAllClusterInSameState(clusterData, ClusterStatus.Created) &&
-                            getAllGroupInSameState(groups, GroupStatus.Created)) {
-                if (component instanceof Application) {
-                    log.info("[Application] " + appId + "couldn't change to Created, since it is" +
-                            "already in " + ((Application) component).getStatus(null).toString());
-                } else if (component instanceof Group) {
-                    //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Created) {
-                        log.info("sending group created : " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupCreatedEvent(appId, component.getUniqueIdentifier(), instanceId);
-                    }
-                }
-            } else if (groups.isEmpty() && getAllClusterInactive(clusterData) ||
-                    clusterData.isEmpty() && getAllGroupInActive(groups) ||
-                    getAllClusterInactive(clusterData) || getAllGroupInActive(groups)) {
-                //send the in activation event
-                if (component instanceof Application) {
-                    //send application activated event
-                    log.warn("Application can't be in in-active : " + appId);
-                    //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
-                } else if (component instanceof Group) {
-                    //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
-                        log.info("sending group in-active: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
-                    }
-                }
+            if(component.isGroupScalingEnabled()) {
+                //TODO
+                handleStateWithGroupScalingEnabled();
             } else {
-                if (component instanceof Application) {
-                    //send application activated event
-                    log.warn("Application can't be in in-active : " + appId);
-                    //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
-                } else if (component instanceof Group) {
-                    //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
-                        log.info("sending group in-active: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), "test*****");
-                    }
-                }
+                handleStateChangeGroupScalingDisabled(component, appId, instanceId, groups, clusterData);
             }
         } finally {
             ApplicationHolder.releaseWriteLock();
 
         }
+
+    }
+
+    private void handleStateWithGroupScalingEnabled() {
+
+    }
+
+    private void handleStateChangeGroupScalingDisabled(ParentComponent component, String appId,
+                                                       String instanceId,
+                                                       Map<String, Group> groups,
+                                                       Map<String, ClusterDataHolder> clusterData) {
+        if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
+                clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
+                getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) &&
+                        getAllGroupInSameState(groups, GroupStatus.Active, instanceId)) {
+            //send activation event
+            if (component instanceof Application) {
+                //send application activated event
+                if (((Application) component).getStatus(null) != ApplicationStatus.Active) {
+                    log.info("sending app activate: " + appId);
+                    ApplicationBuilder.handleApplicationActivatedEvent(appId, instanceId);
+                }
+            } else if (component instanceof Group) {
+                //send activation to the parent
+                if (((Group) component).getStatus(null) != GroupStatus.Active) {
+                    log.info("sending group activate: " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                }
+            }
+        } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) ||
+                clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId) ||
+                getAllClusterInSameState(clusterData, ClusterStatus.Terminated, instanceId) &&
+                        getAllGroupInSameState(groups, GroupStatus.Terminated, instanceId)) {
+            //send the terminated event
+            if (component instanceof Application) {
+                log.info("sending app terminated: " + appId);
+                ApplicationBuilder.handleApplicationTerminatedEvent(appId);
+            } else if (component instanceof Group) {
+                //send activation to the parent
+                if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
+                    log.info("sending group terminated : " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                }
+            }
+        } else if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Created, instanceId) ||
+                clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Created, instanceId) ||
+                getAllClusterInSameState(clusterData, ClusterStatus.Created, instanceId) &&
+                        getAllGroupInSameState(groups, GroupStatus.Created, instanceId)) {
+            if (component instanceof Application) {
+                log.info("[Application] " + appId + "couldn't change to Created, since it is" +
+                        "already in " + ((Application) component).getStatus(null).toString());
+            } else if (component instanceof Group) {
+                //send activation to the parent
+                if (((Group) component).getStatus(null) != GroupStatus.Created) {
+                    log.info("sending group created : " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupCreatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                }
+            }
+        } else if (groups.isEmpty() && getAllClusterInactive(clusterData) ||
+                clusterData.isEmpty() && getAllGroupInActive(groups) ||
+                getAllClusterInactive(clusterData) || getAllGroupInActive(groups)) {
+            //send the in activation event
+            if (component instanceof Application) {
+                //send application activated event
+                log.warn("Application can't be in in-active : " + appId);
+                //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
+            } else if (component instanceof Group) {
+                //send activation to the parent
+                if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
+                    log.info("sending group in-active: " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
+                }
+            }
+        } else {
+            if (component instanceof Application) {
+                //send application activated event
+                log.warn("Application can't be in in-active : " + appId);
+                //StatusEventPublisher.sendApplicationInactivatedEvent(appId);
+            } else if (component instanceof Group) {
+                //send activation to the parent
+                if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
+                    log.info("sending group in-active: " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), "test*****");
+                }
+            }
+        }
+    }
+
+    private boolean getAllInstancesOfGroupActive(Group group) {
+        int activeGroupInstances = 0;
+        for(GroupInstanceContext context : group.getInstanceIdToInstanceContextMap().values()) {
+            if(context.getStatus() == GroupStatus.Active) {
+                activeGroupInstances++;
+            }
+        }
+        if(activeGroupInstances >= group.getComponentDeploymentPolicy().getMin()) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -410,11 +443,17 @@ public class StatusChecker {
      * @param status the state to check in all groups
      * @return whether groups in the given state or not
      */
-    private boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status) {
+    private boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status, String instanceId) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            if (group.getStatus(null) == status) {
-                groupStat = true;
+            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            if(context != null) {
+                if(context.getStatus() == status) {
+                    groupStat = true;
+                } else {
+                    groupStat = false;
+                    return groupStat;
+                }
             } else {
                 groupStat = false;
                 return groupStat;
@@ -454,7 +493,7 @@ public class StatusChecker {
      * @return whether all groups in the same state or not
      */
     private boolean getAllClusterInSameState(Map<String, ClusterDataHolder> clusterData,
-                                             ClusterStatus status) {
+                                             ClusterStatus status, String instanceId) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             String serviceName = clusterDataHolderEntry.getValue().getServiceType();
@@ -463,7 +502,8 @@ public class StatusChecker {
             try {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.getStatus(null) == status) {
+                ClusterInstanceContext context = cluster.getInstanceContexts(instanceId);
+                if (context.getStatus() == status) {
                     clusterStat = true;
                 } else {
                     clusterStat = false;

@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.util;
 */
 
 
+import org.apache.stratos.autoscaler.status.checker.cluster.ClusterStatusProcessorChain;
+import org.apache.stratos.autoscaler.status.checker.group.GroupStatusProcessorChain;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -30,6 +32,8 @@ public class ServiceReferenceHolder {
 	private static ServiceReferenceHolder instance;
 	private Registry registry;
     private TaskService taskService;
+    private ClusterStatusProcessorChain clusterStatusProcessorChain;
+    private GroupStatusProcessorChain groupStatusProcessorChain;
 
 	private ServiceReferenceHolder() {
 	}
@@ -55,5 +59,21 @@ public class ServiceReferenceHolder {
 
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
+    }
+
+    public ClusterStatusProcessorChain getClusterStatusProcessorChain() {
+        return clusterStatusProcessorChain;
+    }
+
+    public void setClusterStatusProcessorChain(ClusterStatusProcessorChain clusterStatusProcessorChain) {
+        this.clusterStatusProcessorChain = clusterStatusProcessorChain;
+    }
+
+    public GroupStatusProcessorChain getGroupStatusProcessorChain() {
+        return groupStatusProcessorChain;
+    }
+
+    public void setGroupStatusProcessorChain(GroupStatusProcessorChain groupStatusProcessorChain) {
+        this.groupStatusProcessorChain = groupStatusProcessorChain;
     }
 }

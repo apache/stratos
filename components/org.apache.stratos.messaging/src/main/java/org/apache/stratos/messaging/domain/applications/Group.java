@@ -40,8 +40,7 @@ public class Group extends ParentComponent<GroupInstanceContext> {
     private String autoscalingPolicy;
     // application id
     private String applicationId;
-    // flag for Group level scaling
-    private boolean isGroupScalingEnabled;
+
     // Group/Cluster Instance Context map, key = instance id
 //    private final Map<String, Set<InstanceContext>> instanceIdToInstanceContextMap;
     // Life cycle state manager
@@ -52,7 +51,6 @@ public class Group extends ParentComponent<GroupInstanceContext> {
         this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
-        this.isGroupScalingEnabled = false;
         this.instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
         //instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
         //this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
@@ -119,12 +117,6 @@ public class Group extends ParentComponent<GroupInstanceContext> {
         return applicationId;
     }
 
-    public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
-    }
 
-    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.isGroupScalingEnabled = isGroupScalingEnabled;
-    }
 
 }

@@ -35,6 +35,8 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
     protected Properties instanceProperties;
     // Life cycle state manager
     protected LifeCycleStateManager<T> lifeCycleStateManager;
+    //Parent instance id
+    private String parentId;
 
     public InstanceContext (String alias, String instanceId) {
         this.alias = alias;
@@ -74,6 +76,14 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
 
     public int hashCode () {
         return alias.hashCode() + instanceId.hashCode();
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }
 

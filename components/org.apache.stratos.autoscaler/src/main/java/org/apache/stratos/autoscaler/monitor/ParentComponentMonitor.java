@@ -24,6 +24,8 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -34,14 +36,14 @@ import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFacto
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Monitor is to monitor it's child monitors and
@@ -93,7 +95,11 @@ public abstract class ParentComponentMonitor extends Monitor {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
-        startDependency(applicationContexts, null);
+        Collection<InstanceContext> contexts = component.getInstanceIdToInstanceContextMap().values();
+        //traversing through all the Instance context and start them
+        for(InstanceContext context : contexts) {
+            startDependency(applicationContexts, context.getInstanceId());
+        }
 
     }
 
@@ -106,6 +112,12 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
                 .getStarAbleDependencies(id);
         return startDependency(applicationContexts, instanceId);
+    }
+
+    public boolean startAllChildrenDependency(ParentComponent component, String instanceId) throws TopologyInConsistentException {
+        /*List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
+                .findAllChildrenOfAppContext(id);*/
+        return false;//startDependency(applicationContexts, instanceId);
     }
 
     /**
@@ -141,15 +153,15 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
             if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 //to avoid if it is already started
-                context.setTerminated(false);
                 startMonitor(this, context, instanceId);
             } else {
-                /*if(!this.instanceIdToInstanceContextMap.containsKey(instanceId)) {
-                    Monitor monitor = this.aliasToActiveMonitorsMap.get(context.getId());
-                    //monitor.onParentStatusEvent();
-                    //ask to start the next snapshot for the monitor
-                    //TODO notify the relevant children
-                }*/
+                //starting a new instance of the child
+                Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
+                if(context instanceof ClusterChildContext) {
+                    MonitorStatusEventBuilder.notifyChildCluster(monitor, ClusterStatus.Created, instanceId);
+                } else if(context instanceof GroupChildContext) {
+                    MonitorStatusEventBuilder.notifyChildGroup(monitor, GroupStatus.Created, instanceId);
+                }
             }
         }
 

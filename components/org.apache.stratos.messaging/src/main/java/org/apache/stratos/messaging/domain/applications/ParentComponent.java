@@ -33,14 +33,20 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
+    //Deployment policy group/application
+    private DeploymentPolicy deploymentPolicy;
     // Group Map, key = Group.alias
     private final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
     private final Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group/Cluster Instance Context map, key = instance id
     protected Map<String, T> instanceIdToInstanceContextMap;
+    // flag for Group level scaling
+    private boolean isGroupScalingEnabled;
+
 
     public ParentComponent () {
+        this.isGroupScalingEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
@@ -242,6 +248,31 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
     }
 
     /**
+     * Retrieves InstanceContext obj. for the given instance id
+     *
+     * @param parentInstanceId parent instance id
+     * @return InstanceContext obj. if exists, else null
+     */
+    public List<InstanceContext> getInstanceContextsWithParentId (String parentInstanceId) {
+        // if map is empty, return null
+        if (getInstanceIdToInstanceContextMap().isEmpty()) {
+            return null;
+        }
+        List<InstanceContext> contexts = new ArrayList<InstanceContext>();
+
+        // if instanceId is null, just get the first InstanceContext
+        if (parentInstanceId == null) {
+            for(InstanceContext context : instanceIdToInstanceContextMap.values()) {
+                if(parentInstanceId.equals(context.getParentId())) {
+                    contexts.add(context);
+                }
+            }
+        }
+
+        return contexts;
+    }
+
+    /**
      * Retrieves the current number of instance contexts which are kept track in this node
      *
      * @return number of instance contexts
@@ -265,5 +296,21 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
 
     public Map<String, T> getInstanceIdToInstanceContextMap() {
         return instanceIdToInstanceContextMap;
+    }
+
+    public DeploymentPolicy getComponentDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }

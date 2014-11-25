@@ -20,10 +20,13 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
+import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 /**
  * This will build the necessary monitor status events to be sent to the parent/child  monitor
@@ -36,17 +39,20 @@ public class MonitorStatusEventBuilder {
         notifyParent(parent, clusterStatusEvent);
     }
 
-    public static void handleGroupStatusEvent(ParentComponentMonitor parent, GroupStatus status, String groupId) {
-        GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId, null);
+    public static void handleGroupStatusEvent(ParentComponentMonitor parent, GroupStatus status,
+                                              String groupId, String instanceId) {
+        GroupStatusEvent groupStatusEvent = new GroupStatusEvent(status, groupId, instanceId);
         notifyParent(parent, groupStatusEvent);
     }
 
-    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, ApplicationStatus status, String appId) {
-        ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId, null);
+    public static void handleApplicationStatusEvent(ParentComponentMonitor parent, ApplicationStatus status,
+                                                    String appId, String instanceId) {
+        ApplicationStatusEvent applicationStatusEvent = new ApplicationStatusEvent(status, appId, instanceId);
         notifyParent(parent, applicationStatusEvent);
     }
 
-    public static void handleClusterScalingEvent(ParentComponentMonitor parent, String networkPartitionId, float factor, String appId) {
+    public static void handleClusterScalingEvent(ParentComponentMonitor parent,
+                                                 String networkPartitionId, float factor, String appId) {
 
         //Send notifications to parent of the cluster monitor
         MonitorScalingEvent monitorScalingEvent = new MonitorScalingEvent(appId, networkPartitionId, null,factor) ;
@@ -61,6 +67,16 @@ public class MonitorStatusEventBuilder {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
             activeChildMonitor.onParentStatusEvent(statusEvent);
         }
+    }
+
+    public static void notifyChildGroup(Monitor child, GroupStatus state, String instanceId) {
+        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceId);
+        child.onParentStatusEvent(statusEvent);
+    }
+
+    public static void notifyChildCluster(Monitor child, ClusterStatus state, String instanceId) {
+        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, child.getId(), instanceId);
+        child.onParentStatusEvent(statusEvent);
     }
 
     private static void notifyParent(ParentComponentMonitor parent, MonitorScalingEvent scalingEvent) {
