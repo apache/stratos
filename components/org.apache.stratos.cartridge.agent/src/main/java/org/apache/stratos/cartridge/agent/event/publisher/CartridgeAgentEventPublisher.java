@@ -54,7 +54,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId());
+					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
@@ -81,7 +81,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId());
+					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
 
 			// Event publisher connection will
 			String topic = Util.getMessageTopicName(event);
@@ -118,7 +118,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId());
+					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
@@ -144,7 +144,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId());
+					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);

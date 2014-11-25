@@ -382,6 +382,7 @@ public class ApplicationBuilder {
         if (!group.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
             GroupInstanceContext context = new GroupInstanceContext(groupId, instanceId);
+            context.setParentId(parentId);
             context.setStatus(status);
             group.addInstanceContext(instanceId, context);
             //updateGroupMonitor(appId, groupId, status);
