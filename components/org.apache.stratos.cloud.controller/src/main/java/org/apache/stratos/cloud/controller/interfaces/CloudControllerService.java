@@ -206,4 +206,15 @@ public interface CloudControllerService {
      */
     public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts) throws
             ApplicationClusterRegistrationException;
+
+    /**
+     * Creates a cluster instance with the given information
+     *
+     * @param alias alias provided in the subscription parameters
+     * @param clusterId cluster id
+     * @param instanceId instance id
+     * @throws ClusterInstanceCreationException if an y error occurs in cluster instance creation
+     */
+    public void createClusterInstance (String alias, String clusterId, String instanceId) throws
+            ClusterInstanceCreationException;
 }

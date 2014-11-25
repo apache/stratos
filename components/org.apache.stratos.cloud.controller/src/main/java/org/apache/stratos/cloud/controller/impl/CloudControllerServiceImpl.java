@@ -2086,6 +2086,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
+    public void createClusterInstance (String alias, String clusterId, String instanceId) throws
+            ClusterInstanceCreationException {
+
+
+    }
+
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
 //
 //        ApplicationParser applicationParser = new DefaultApplicationParser();
