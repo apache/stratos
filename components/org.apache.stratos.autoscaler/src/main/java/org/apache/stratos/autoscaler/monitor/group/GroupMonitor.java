@@ -81,6 +81,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     Application application = ApplicationHolder.getApplications().
                                                                     getApplication(this.appId);
                     if(application != null) {
+                        //Notifying the parent using parent's instance Id,
+                        // as it has group scaling enabled.
                         Group group = application.getGroupRecursively(this.id);
                         if(group != null) {
                             GroupInstanceContext context = group.getInstanceContexts(instanceId);
@@ -210,7 +212,10 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     private void startMinimumDependencies(Group group, String parentInstanceId)
             throws TopologyInConsistentException {
         DeploymentPolicy policy = group.getComponentDeploymentPolicy();
-        int min = policy.getMin();
+        int min = 1;
+        if(policy != null) {
+            min = policy.getMin();
+        }
         if(group.getInstanceContextCount() >= min) {
             startDependency(group);
         } else {

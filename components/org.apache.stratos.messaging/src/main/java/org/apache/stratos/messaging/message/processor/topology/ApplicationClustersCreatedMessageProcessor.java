@@ -119,7 +119,6 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
 
                     // Apply changes to the topology
                     service.addCluster(cluster);
-                    cluster.setStatus(ClusterStatus.Created, null);
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Cluster created: %s",
                                 cluster.toString()));

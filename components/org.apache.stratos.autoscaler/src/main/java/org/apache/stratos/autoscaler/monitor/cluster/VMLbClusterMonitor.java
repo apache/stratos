@@ -64,14 +64,14 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
                 log.debug("Cluster monitor is running.. " + this.toString());
             }
             try {
-                if (!ClusterStatus.Inactive.equals(getStatus())) {
+                //TODO ******** if (!ClusterStatus.Inactive.equals(getStatus())) {
                     monitor();
-                } else {
+                /*} else {
                     if (log.isDebugEnabled()) {
                         log.debug("LB Cluster monitor is suspended as the cluster is in " +
                                 ClusterStatus.Inactive + " mode......");
                     }
-                }
+                }*/
             } catch (Exception e) {
                 log.error("Cluster monitor: Monitor failed. " + this.toString(), e);
             }

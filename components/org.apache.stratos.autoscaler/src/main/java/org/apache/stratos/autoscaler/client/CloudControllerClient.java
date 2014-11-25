@@ -141,10 +141,17 @@ public class CloudControllerClient {
                         clusterId, partition.getId(), lbClusterId, networkPartitionId));
             }
 
+            XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+            long expiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
+            if (log.isDebugEnabled()) {
+                log.debug("Member Obsolete Expiry Time is set to: " + expiryTime);
+            }
+
             MemberContext member = new MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
             member.setLbClusterId(lbClusterId);
+            member.setObsoleteExpiryTime(expiryTime);
             member.setInitTime(System.currentTimeMillis());
             member.setNetworkPartitionId(networkPartitionId);
             Properties memberContextProps = new Properties();

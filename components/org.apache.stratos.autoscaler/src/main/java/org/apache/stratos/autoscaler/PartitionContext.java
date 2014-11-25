@@ -239,6 +239,84 @@ public class PartitionContext implements Serializable{
             }
         }
     }
+
+    /**
+     * Check the member lists for the provided member ID and move the member to the obsolete list
+     *
+     * @param memberId The member ID of the member to search
+     */
+    public void moveMemberToObsoleteList(String memberId) {
+        if (memberId == null) {
+            return;
+        }
+
+        // check active member list
+        Iterator<MemberContext> activeMemberIterator = activeMembers.listIterator();
+        MemberContext removedMember = this.removeMemberFrom(activeMemberIterator, memberId);
+        if (removedMember != null) {
+            this.addObsoleteMember(removedMember);
+            removedMember.setObsoleteInitTime(System.currentTimeMillis());
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Active member is removed and added to the " +
+                        "obsolete member list. [Member Id] %s", memberId));
+            }
+
+            return;
+        }
+
+        // check pending member list
+        Iterator<MemberContext> pendingMemberIterator = pendingMembers.listIterator();
+        removedMember = this.removeMemberFrom(pendingMemberIterator, memberId);
+        if (removedMember != null) {
+            this.addObsoleteMember(removedMember);
+            removedMember.setObsoleteInitTime(System.currentTimeMillis());
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Pending member is removed and added to the " +
+                        "obsolete member list. [Member Id] %s", memberId));
+            }
+
+            return;
+        }
+
+        // check termination pending member list
+        Iterator<MemberContext> terminationPendingMembersIterator = terminationPendingMembers.listIterator();
+        removedMember = this.removeMemberFrom(terminationPendingMembersIterator, memberId);
+        if (removedMember != null) {
+            this.addObsoleteMember(removedMember);
+            removedMember.setObsoleteInitTime(System.currentTimeMillis());
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Termination Pending member is removed and added to the " +
+                        "obsolete member list. [Member Id] %s", memberId));
+            }
+        }
+    }
+
+    /**
+     * Removes the {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext} object mapping
+     * to the specified member id from the specified MemberContext collection
+     *
+     * @param iterator The {@link java.util.Iterator} for the collection containing {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext}
+     *                 objects
+     * @param memberId Member Id {@link String} for the {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext}
+     *                 to be removed
+     * @return {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext} object if
+     * object found and removed, null if otherwise.
+     */
+    private MemberContext removeMemberFrom(Iterator<MemberContext> iterator, String memberId) {
+        while (iterator.hasNext()) {
+            MemberContext activeMember = iterator.next();
+            if (activeMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if (memberId.equals(activeMember.getMemberId())) {
+                iterator.remove();
+                return activeMember;
+            }
+        }
+
+        return null;
+    }
     
     public void addActiveMember(MemberContext ctxt) {
         this.activeMembers.add(ctxt);

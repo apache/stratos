@@ -34,8 +34,6 @@ public class Group extends ParentComponent<GroupInstanceContext> {
     private String name;
     // Group alias
     private String alias;
-    // Group deployment policy
-    private String deploymentPolicy;
     // Group level autoscaling policy
     private String autoscalingPolicy;
     // application id
@@ -62,14 +60,6 @@ public class Group extends ParentComponent<GroupInstanceContext> {
 
     public String getAlias() {
         return alias;
-    }
-
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
     }
 
     public String getAutoscalingPolicy() {

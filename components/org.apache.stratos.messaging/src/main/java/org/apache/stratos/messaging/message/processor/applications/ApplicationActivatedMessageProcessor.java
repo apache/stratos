@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
 import org.apache.stratos.messaging.event.applications.ApplicationActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -88,11 +89,20 @@ public class ApplicationActivatedMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the applications
-            if (!application.isStateTransitionValid(ApplicationStatus.Active, null)) {
-                log.error("Invalid State transfer from [ " + application.getStatus(null) +
-                        " ] to [ " + ApplicationStatus.Active + " ]");
+            ApplicationInstanceContext context = application.getInstanceContexts(event.getInstanceId());
+            if(context == null) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +
+                                    "[instanceId] %s", event.getAppId(), event.getInstanceId()));
+                    return false;
+                }
             }
-            application.setStatus(ApplicationStatus.Active, null);
+            ApplicationStatus status = ApplicationStatus.Active;
+            if (!context.isStateTransitionValid(status)) {
+                log.error("Invalid State transfer from [ " + context.getStatus() +
+                        " ] to [ " + status + " ]");
+            }
+            context.setStatus(status);
 
         }
 

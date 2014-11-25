@@ -344,7 +344,6 @@ public class ApplicationBuilder {
         GroupStatus status = GroupStatus.Created;
         if (group.isStateTransitionValid(status, null)) {
             //setting the status, persist and publish
-            group.setStatus(status, null);
             updateGroupMonitor(appId, groupId, status, instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId, instanceId);
@@ -491,7 +490,7 @@ public class ApplicationBuilder {
                 log.error("Invalid state transfer from " + group.getStatus(null) + " to " + groupStatus);
             }
             // force update for now
-            group.setStatus(groupStatus, null);
+            //group.setStatus(groupStatus, null);
 
             // go recursively and update
             if (group.getGroups() != null) {

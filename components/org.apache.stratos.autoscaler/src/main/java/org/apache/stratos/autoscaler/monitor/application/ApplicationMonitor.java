@@ -165,7 +165,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     private void startMinimumDependencies(Application application)
                                                             throws TopologyInConsistentException {
         DeploymentPolicy policy = application.getComponentDeploymentPolicy();
-        int min = policy.getMin();
+        int min = 1;
+        if(policy != null) {
+           min = policy.getMin();
+        }
         if(application.getInstanceContextCount() >= min) {
             startDependency(application);
         } else {

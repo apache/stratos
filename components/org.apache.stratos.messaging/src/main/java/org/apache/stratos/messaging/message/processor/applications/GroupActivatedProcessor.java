@@ -24,6 +24,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
 import org.apache.stratos.messaging.event.applications.GroupActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -90,14 +91,26 @@ public class GroupActivatedProcessor extends MessageProcessor {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("Group not exists in service: [AppId] %s [groupId] %s", event.getAppId(),
                         event.getGroupId()));
+                return false;
             }
         } else {
-            // Apply changes to the topology
-            if (!group.isStateTransitionValid(GroupStatus.Active, null)) {
-                log.error("Invalid State Transition from " + group.getStatus(null) + " to " + GroupStatus.Active);
+            GroupInstanceContext context = group.getInstanceContexts(event.getInstanceId());
+            if(context == null) {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Group Instance not exists in Group: [AppId] %s [groupId] %s " +
+                                    "[instanceId] %s", event.getAppId(), event.getGroupId(),
+                            event.getInstanceId()));
+                    return false;
+                }
             }
-            group.setStatus(GroupStatus.Active, null);
-
+            // Apply changes to the topology
+            GroupStatus status = GroupStatus.Active;
+            if (!context.isStateTransitionValid(status)) {
+                log.error("Invalid State Transition from " + context.getStatus() + " to " +
+                        status);
+                return false;
+            }
+            context.setStatus(status);
         }
 
         // Notify event listeners

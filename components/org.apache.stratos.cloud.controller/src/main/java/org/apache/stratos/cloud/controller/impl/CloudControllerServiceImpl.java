@@ -36,10 +36,13 @@ import org.apache.stratos.cloud.controller.interfaces.CloudControllerService;
 import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.persist.Deserializer;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.cloud.controller.pojo.Cartridge;
+import org.apache.stratos.cloud.controller.pojo.Dependencies;
 import org.apache.stratos.cloud.controller.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.topology.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
@@ -53,10 +56,8 @@ import org.apache.stratos.kubernetes.client.model.Label;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -617,10 +618,134 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new InvalidMemberException(msg);
         }
 
+        if (ctxt.getNodeId() == null && ctxt.getInstanceId() == null) {
+            // sending member terminated since this instance isn't reachable.
+            if (LOG.isInfoEnabled()){
+                LOG.info(String.format(
+                        "Member cannot be terminated because it is not reachable. [member] %s [nodeId] %s [instanceId] %s. Removing member from topology.",
+                        ctxt.getMemberId(),
+                        ctxt.getNodeId(),
+                        ctxt.getInstanceId()));
+            }
+
+            logTermination(ctxt);
+        }
+
+        // check if status == active, if true, then this is a termination on member faulty
+        Topology topology;
+        try {
+            TopologyManager.acquireReadLock();
+            topology = TopologyManager.getTopology();
+        } finally {
+            TopologyManager.releaseReadLock();
+        }
+
+        org.apache.stratos.messaging.domain.topology.Service service = topology.getService(ctxt.getCartridgeType());
+
+        if (service != null) {
+            Cluster cluster = service.getCluster(ctxt.getClusterId());
+
+            if (cluster != null) {
+                Member member = cluster.getMember(memberId);
+
+                if (member != null) {
+                    // change member status if termination on a faulty member
+                    if(fixMemberStatus(member, topology)){
+                        // set the time this member was added to ReadyToShutdown status
+                        ctxt.setObsoleteInitTime(System.currentTimeMillis());
+                    }
+
+                    // check if ready to shutdown member is expired and send
+                    // member terminated if it is.
+                    if (isMemberExpired(member, ctxt.getObsoleteInitTime(), ctxt.getObsoleteExpiryTime())) {
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info(String.format(
+                                    "Member pending termination in ReadyToShutdown state exceeded expiry time. This member has to be manually deleted: %s",
+                                    ctxt.getMemberId()));
+                        }
+
+                        logTermination(ctxt);
+                        return;
+                    }
+                }
+            }
+        }
+
         ThreadExecutor exec = ThreadExecutor.getInstance();
         exec.execute(new InstanceTerminator(ctxt));
 
     }
+
+    /**
+     * Check if a member has been in the ReadyToShutdown status for a specified expiry time
+     *
+     * @param member
+     * @param initTime
+     * @param expiryTime
+     * @return
+     */
+    private boolean isMemberExpired(Member member, long initTime, long expiryTime) {
+        if (member.getStatus() == MemberStatus.ReadyToShutDown) {
+            if (initTime == 0){
+                // obsolete init time hasn't been set, i.e. not a member detected faulty.
+                // this is a graceful shutdown
+                return false;
+            }
+
+            // member detected faulty, calculate ready to shutdown waiting period
+            long timeInReadyToShutdownStatus = System.currentTimeMillis() - initTime;
+            return timeInReadyToShutdownStatus >= expiryTime;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Corrects the member status upon termination call if the member is in an Active state
+     *
+     * @param member The {@link org.apache.stratos.messaging.domain.topology.Member} object that is being
+     *               checked for status
+     * @param topology The {@link org.apache.stratos.messaging.domain.topology.Topology} object to update
+     *                 the topology if needed.
+     *
+     */
+    private boolean fixMemberStatus(Member member, Topology topology) {
+        if (member.getStatus() == MemberStatus.Activated) {
+            MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
+                    member.getServiceName(),
+                    member.getClusterId(),
+                    member.getNetworkPartitionId(),
+                    member.getPartitionId(),
+                    member.getMemberId(),
+                    member.getInstanceId());
+
+            try {
+                TopologyManager.acquireWriteLock();
+                member.setStatus(MemberStatus.ReadyToShutDown);
+                LOG.info("Member Ready to shut down event adding status started");
+
+                TopologyManager.updateTopology(topology);
+            } finally {
+                TopologyManager.releaseWriteLock();
+            }
+
+            TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
+            //publishing data
+            CartridgeInstanceDataPublisher.publish(member.getMemberId(),
+                    member.getPartitionId(),
+                    member.getNetworkPartitionId(),
+                    member.getClusterId(),
+                    member.getServiceName(),
+                    MemberStatus.ReadyToShutDown.toString(),
+                    null);
+
+            return true;
+        }
+
+        return false;
+    }
+
 
     private class InstanceTerminator implements Runnable {
 
@@ -1941,7 +2066,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
             newCluster.setLbCluster(false);
             newCluster.setTenantRange(appClusterCtxt.getTenantRange());
-            newCluster.setStatus(ClusterStatus.Created, null);
+            //newCluster.setStatus(ClusterStatus.Created, null);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
             Cartridge cartridge = dataHolder.getCartridge(appClusterCtxt.getCartridgeType());
             if(cartridge.getDeployerType() != null &&
