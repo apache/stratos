@@ -378,21 +378,14 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
             }
             return;
         }
-        // terminate the faulty member
-        CloudControllerClient ccClient = CloudControllerClient.getInstance();
-        try {
-            ccClient.terminateContainer(memberId);
-            // remove from active member list
-            getKubernetesClusterCtxt().removeActiveMemberById(memberId);
-            if (log.isInfoEnabled()) {
-                String clusterId = memberFaultEvent.getClusterId();
-                String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
-				log.info(String.format("Faulty member is terminated and removed from the active members list: "
-                                       + "[member] %s [kub-cluster] %s [cluster] %s ", memberId, kubernetesClusterID, clusterId));
-            }
-        } catch (TerminationException e) {
-            String msg = "Cannot delete a container " + e.getLocalizedMessage();
-            log.error(msg, e);
+
+        // move member to obsolete list
+        getKubernetesClusterCtxt().moveMemberToObsoleteList(memberId);
+        if (log.isInfoEnabled()) {
+            String clusterId = memberFaultEvent.getClusterId();
+            String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+            log.info(String.format("Faulty member is moved to obsolete list and removed from the active members list: "
+                    + "[member] %s [kub-cluster] %s [cluster] %s ", memberId, kubernetesClusterID, clusterId));
         }
     }
 
@@ -452,13 +445,13 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
             }
         } else if (getKubernetesClusterCtxt().removeActiveMemberById(memberId)) {
             log.warn(String.format("Member is in the wrong list and it is removed from "
-                                   + "active members list", memberId));
+                                   + "active members list: %s", memberId));
         } else if (getKubernetesClusterCtxt().removeObsoleteMember(memberId)) {
-            log.warn(String.format("Member's obsolated timeout has been expired and "
-                                   + "it is removed from obsolated members list", memberId));
+            log.warn(String.format("Obsolete member has either been terminated or its obsolete time out has expired and"
+                                   + " it is removed from obsolete members list: %s", memberId));
         } else {
             log.warn(String.format("Member is not available in any of the list active, "
-                                   + "pending and termination pending", memberId));
+                                   + "pending and termination pending: %s", memberId));
         }
 
         if (log.isInfoEnabled()) {

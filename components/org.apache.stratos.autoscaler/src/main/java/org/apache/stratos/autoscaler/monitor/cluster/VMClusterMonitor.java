@@ -426,19 +426,14 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             }
             return;
         }
-        // terminate the faulty member
-        CloudControllerClient ccClient = CloudControllerClient.getInstance();
-        try {
-            ccClient.terminate(memberId);
-        } catch (TerminationException e) {
-            String msg = "TerminationException " + e.getLocalizedMessage();
-            log.error(msg, e);
+
+        // move member to obsolete list
+        synchronized (this) {
+            partitionCtxt.moveMemberToObsoleteList(memberId);
         }
-        // remove from active member list
-        partitionCtxt.moveActiveMemberToTerminationPendingMembers(memberId);
         if (log.isInfoEnabled()) {
             String clusterId = memberFaultEvent.getClusterId();
-            log.info(String.format("Faulty member is terminated and removed from the active members list: "
+            log.info(String.format("Faulty member is added to obsolete list and removed from the active members list: "
                                    + "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
         }
 
@@ -541,13 +536,13 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             }
         } else if (partitionContext.removeActiveMemberById(memberId)) {
             log.warn(String.format("Member is in the wrong list and it is removed from "
-                                   + "active members list", memberId));
+                                   + "active members list: %s", memberId));
         } else if (partitionContext.removeObsoleteMember(memberId)) {
-            log.warn(String.format("Member's obsolated timeout has been expired and "
-                                   + "it is removed from obsolated members list", memberId));
+            log.warn(String.format("Obsolete member has either been terminated or its obsolete time out has expired and"
+                                   + " it is removed from obsolete members list: %s", memberId));
         } else {
             log.warn(String.format("Member is not available in any of the list active, "
-                                   + "pending and termination pending", memberId));
+                                   + "pending and termination pending: %s", memberId));
         }
 
         if (log.isInfoEnabled()) {
