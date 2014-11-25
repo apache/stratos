@@ -265,15 +265,21 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     @Override
     public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
-        this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
 
+        if(log.isDebugEnabled()){
+            log.debug("Parent scaling event received to [cluster]: " + this.getClusterId()
+                    + ", [network partition]: "  + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+        }
+
+        this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
+        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
         NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(scalingEvent.getNetworkPartitionId());
 
         float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
-        int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount, 0);
+        int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
+                vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
         networkPartitionContext.setRequiredInstanceCountBasedOnStats(roundedRequiredInstanceCount);
-        //TODO get instance count rounding fraction(0) as a part of Autoscaling policy
-
     }
 
     public void sendClusterScalingEvent(String networkPartitionId, float factor) {

@@ -171,6 +171,13 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
+
+        if(log.isDebugEnabled()){
+            log.debug("Child scaling event received to [group]: " + this.getId()
+                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+        }
+
         //find the child context of this group, from scaling dependency tree
         GroupChildContext currentChildContextInScalingTree =
                 (GroupChildContext) scalingDependencyTree.findApplicationContextWithIdInScalingDependencyTree(id);
