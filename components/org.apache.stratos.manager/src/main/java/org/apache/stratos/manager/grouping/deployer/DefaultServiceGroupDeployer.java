@@ -270,7 +270,8 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 
-
+        servicegroup.setName(serviceGroupDefinition.getName());
+        
         if (subGroupsDef == null) {
             subGroupsDef = new ArrayList<String>(0);
         }
