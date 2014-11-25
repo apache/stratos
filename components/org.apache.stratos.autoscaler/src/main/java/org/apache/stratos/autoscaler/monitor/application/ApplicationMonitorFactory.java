@@ -32,7 +32,6 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -112,7 +111,7 @@ public class ApplicationMonitorFactory {
                     groupMonitor.setGroupScalingEnabled(true);
                 } else if(parentMonitor instanceof GroupMonitor) {
                     if(((GroupMonitor)parentMonitor).isGroupScalingEnabled() ||
-                            parentMonitor.isHasGroupScalingDependent()) {
+                            parentMonitor.hasGroupScalingDependent()) {
                         groupMonitor.setHasGroupScalingDependent(true);
                     }
                 }
@@ -216,7 +215,7 @@ public class ApplicationMonitorFactory {
             }
 
             //setting the scaling dependent behaviour of the cluster monitor
-            if(parentMonitor.isHasGroupScalingDependent() || (context.isGroupScalingEnabled())) {
+            if(parentMonitor.hasGroupScalingDependent() || (context.isGroupScalingEnabled())) {
                 clusterMonitor.setHasGroupScalingDependent(true);
             } else {
                 clusterMonitor.setHasGroupScalingDependent(false);

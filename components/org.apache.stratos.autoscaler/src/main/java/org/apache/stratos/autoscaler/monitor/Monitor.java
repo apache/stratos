@@ -102,7 +102,7 @@ public abstract class Monitor implements EventHandler {
      *
      * @return startup dependencies exist or not
      */
-    public boolean isHasGroupScalingDependent() {
+    public boolean hasGroupScalingDependent() {
         return hasGroupScalingDependent;
     }
 

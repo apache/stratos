@@ -171,6 +171,11 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
+        if(hasGroupScalingDependent){
+
+            //notify parent
+            parent.onChildScalingEvent(scalingEvent);
+        }
 
         if(log.isDebugEnabled()){
             log.debug("Child scaling event received to [group]: " + this.getId()
