@@ -25,38 +25,65 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.internal.DataHolder;
 import org.wso2.carbon.utils.CarbonUtils;
+import org.wso2.securevault.SecretResolver;
+import org.wso2.securevault.SecretResolverFactory;
 
 public class CartridgeConfigFileReader {
 
-	private static String carbonHome = CarbonUtils.getCarbonHome();
+    private static String carbonHome = CarbonUtils.getCarbonHome();
 
-	private static final Log log = LogFactory.getLog(CartridgeConfigFileReader.class);
+    private static final Log log = LogFactory.getLog(CartridgeConfigFileReader.class);
 
-	/**
-	 * 
-	 * Reads cartridge-config.properties file and assign properties to system
-	 * properties
-	 * 
-	 */
-	public static void readProperties() {
+    /**
+     * Reads cartridge-config.properties file and assign properties to system
+     * properties
+     */
+    public static void readProperties() {
 
-		Properties properties = new Properties();
-		try {
-			properties.load(new FileInputStream(carbonHome + File.separator + "repository" +
-			                                    File.separator + "conf" + File.separator +
-			                                    "cartridge-config.properties"));
-		} catch (Exception e) {
-			log.error("Exception is occurred in reading properties file. Reason:" + e.getMessage());
-		}
-		if (log.isInfoEnabled()) {
-			log.info("Setting config properties into System properties");
-		}
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(carbonHome + File.separator + "repository" +
+                    File.separator + "conf" + File.separator +
+                    "cartridge-config.properties"));
+        } catch (Exception e) {
+            log.error("Exception is occurred in reading properties file. Reason:" + e.getMessage());
+        }
+        if (log.isInfoEnabled()) {
+            log.info("Setting config properties into System properties");
+        }
 
-		for (String name : properties.stringPropertyNames()) {
-			String value = properties.getProperty(name);
-			System.setProperty(name, value);
-		}
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("Start reading properties and set it as system properties");
+        }
+        SecretResolver secretResolver = SecretResolverFactory.create(properties);
+        for (String name : properties.stringPropertyNames()) {
+            String value = properties.getProperty(name);
+            if (log.isDebugEnabled()) {
+                log.debug(" >>> Property Name :" + name + " Property Value :" + value);
+            }
+            if (value.equalsIgnoreCase("secretAlias:" + name)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Secret Alias Found : " + name);
+                }
+                if (secretResolver != null && secretResolver.isInitialized()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("SecretResolver is initialized ");
+                    }
+                    if (secretResolver.isTokenProtected(name)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("SecretResolver [" + name + "] is token protected");
+                        }
+                        value = secretResolver.resolve(name);
+                        if (log.isDebugEnabled()) {
+                            log.debug("SecretResolver [" + name + "] is decrypted properly");
+                        }
+                    }
+                }
+            }
 
+            System.setProperty(name, value);
+        }
+    }
 }
