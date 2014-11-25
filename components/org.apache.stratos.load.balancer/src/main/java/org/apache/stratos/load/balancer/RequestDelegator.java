@@ -43,7 +43,7 @@ public class RequestDelegator {
         this.algorithm = algorithm;
     }
 
-    public Member findNextMemberFromHostName(String hostName) {
+    public Member findNextMemberFromHostName(String hostName, String messageId) {
         if (hostName == null)
             return null;
 
@@ -51,11 +51,15 @@ public class RequestDelegator {
 
         Cluster cluster = LoadBalancerContext.getInstance().getHostNameClusterMap().getCluster(hostName);
         if (cluster != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Cluster %s identified for request %s", cluster.getClusterId(), messageId));
+            }
             Member member = findNextMemberInCluster(cluster);
             if (member != null) {
                 if (log.isDebugEnabled()) {
                     long endTime = System.currentTimeMillis();
-                    log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s", (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId()));
+                    log.debug(String.format("Next member identified in %dms: [service] %s [cluster] %s [member] %s [request-id] %s",
+                            (endTime - startTime), member.getServiceName(), member.getClusterId(), member.getMemberId(), messageId));
                 }
             }
             return member;
