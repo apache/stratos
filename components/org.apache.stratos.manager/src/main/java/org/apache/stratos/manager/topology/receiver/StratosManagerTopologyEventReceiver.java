@@ -216,6 +216,32 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
             }
         });
 
+        // MemberReadyToShutdown
+        topologyEventReceiver.addEventListener(new MemberReadyToShutdownEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                log.info("[MemberReadyToShutdownEventListener] Received: " + event.getClass());
+
+                MemberReadyToShutdownEvent memberReadyToShutdowEvent = (MemberReadyToShutdownEvent) event;
+
+                String clusterDomain = memberReadyToShutdowEvent.getClusterId();
+
+                String serviceType = memberReadyToShutdowEvent.getServiceName();
+                //acquire read lock
+                TopologyManager.acquireReadLock();
+
+                try {
+                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
+                    TopologyClusterInformationModel.getInstance().addCluster(cluster);
+
+                } finally {
+                    //release read lock
+                    TopologyManager.releaseReadLock();
+                }
+            }
+        });
+
+
         //Member Suspended event listner
         topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
             @Override

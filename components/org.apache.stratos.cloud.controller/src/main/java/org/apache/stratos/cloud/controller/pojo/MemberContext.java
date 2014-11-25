@@ -55,6 +55,10 @@ public class MemberContext implements Serializable {
     private String lbClusterId;
     //network partition id
     private String networkPartitionId;
+    //member expiry period on the topology
+    private long obsoleteExpiryTime;
+    //member obsolete init time
+    private long obsoleteInitTime;
 
     private Properties properties;
     
@@ -201,6 +205,22 @@ public class MemberContext implements Serializable {
 	public void setInstanceId(String instanceId) {
 		this.instanceId = instanceId;
 	}
+
+    public long getObsoleteExpiryTime() {
+        return obsoleteExpiryTime;
+    }
+
+    public void setObsoleteExpiryTime(long obsoleteExpiryTime) {
+        this.obsoleteExpiryTime = obsoleteExpiryTime;
+    }
+
+    public long getObsoleteInitTime() {
+        return obsoleteInitTime;
+    }
+
+    public void setObsoleteInitTime(long obsoleteInitTime) {
+        this.obsoleteInitTime = obsoleteInitTime;
+    }
 
     public Properties getProperties() {
         return properties;
