@@ -336,6 +336,7 @@ public class PojoConverter {
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
         autoscalePolicy.setIsPublic(autoscalePolicyBean.getIsPublic());
         autoscalePolicy.setDisplayName(autoscalePolicyBean.getDisplayName());
+        autoscalePolicy.setInstanceRoundingFactor(autoscalePolicyBean.getInstanceRoundingFactor());
 
         if (autoscalePolicyBean.getLoadThresholds() != null) {
 
@@ -603,6 +604,7 @@ public class PojoConverter {
         autoscalePolicyBean.setIsPublic(autoscalePolicy.getIsPublic());
         autoscalePolicyBean.setDisplayName(autoscalePolicy.getDisplayName());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
+        autoscalePolicyBean.setInstanceRoundingFactor(autoscalePolicy.getInstanceRoundingFactor());
         if (autoscalePolicy.getLoadThresholds() != null) {
             autoscalePolicyBean.setLoadThresholds(populateLoadThresholds(autoscalePolicy.getLoadThresholds()));
         }

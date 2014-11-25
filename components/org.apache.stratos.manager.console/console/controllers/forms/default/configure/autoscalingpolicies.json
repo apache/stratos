@@ -2,6 +2,7 @@
     "id": "economy",
     "description":"autoscale policy description",
     "isPublic":false,
+    "instanceRoundingFactor": 0.2,
     "loadThresholds": {
         "requestsInFlight": {
             "upperLimit": 30,

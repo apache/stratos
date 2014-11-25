@@ -33,6 +33,7 @@ public class AutoscalePolicy implements Serializable {
 	private String description;
 	private boolean isPublic;
 	private int tenantId;
+    private float instanceRoundingFactor;
 
     /**
      * Gets the value of the loadThresholds property.
@@ -175,5 +176,12 @@ public class AutoscalePolicy implements Serializable {
 		return "ASPolicy [id=" + id + ", displayName=" + displayName
 				+ ", description=" + description + ", isPublic=" + isPublic + "]";
 	}
-	
+
+    public float getInstanceRoundingFactor() {
+        return instanceRoundingFactor;
+    }
+
+    public void setInstanceRoundingFactor(float instanceRoundingFactor) {
+        this.instanceRoundingFactor = instanceRoundingFactor;
+    }
 }

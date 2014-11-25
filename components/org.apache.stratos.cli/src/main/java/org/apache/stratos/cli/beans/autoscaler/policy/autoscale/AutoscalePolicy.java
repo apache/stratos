@@ -29,7 +29,9 @@ public class AutoscalePolicy {
     private boolean isPublic;
 
     private LoadThresholds loadThresholds;
-    
+
+    private float instanceRoundingFactor;
+
     public String getId() {
         return id;
     }
@@ -68,5 +70,13 @@ public class AutoscalePolicy {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public float getInstanceRoundingFactor() {
+        return instanceRoundingFactor;
+    }
+
+    public void setInstanceRoundingFactor(float instanceRoundingFactor) {
+        this.instanceRoundingFactor = instanceRoundingFactor;
     }
 }
