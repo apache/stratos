@@ -143,6 +143,8 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                             getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
 
+                            getMinCheckKnowledgeSession().setGlobal("instanceId", "instanceId");
+                            //TODO pass correct instance id
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for partition %s ", partitionContext.getPartitionId()));
@@ -168,7 +170,11 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                         }
                         if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
+
                             VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterCtxtEntry.getValue();
+
+                            getScaleCheckKnowledgeSession().setGlobal("instanceId", "instanceId");
+                            //TODO pass correct instance id
                             getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                             getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
                             getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);

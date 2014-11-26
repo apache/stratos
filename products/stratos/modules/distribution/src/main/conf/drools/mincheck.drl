@@ -47,6 +47,7 @@ global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
 global org.apache.stratos.messaging.domain.topology.Topology $topology;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
+global java.lang.String instanceId;
 global java.lang.String lbRef;
 global java.lang.Boolean isPrimary;
 global Integer primaryMemberCount;
@@ -65,5 +66,5 @@ dialect "mvel"
            } else{
               log.debug("[min-check] true  [primary] false");
            }
-	       $delegator.delegateSpawn($ctxt, clusterId, lbRef, isPrimary);
+	       $delegator.delegateSpawn($ctxt, clusterId, instanceId, lbRef, isPrimary);
 end
