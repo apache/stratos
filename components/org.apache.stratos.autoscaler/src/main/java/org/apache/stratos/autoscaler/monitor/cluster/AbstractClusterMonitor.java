@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /*
  * Every cluster monitor, which are monitoring a cluster, should extend this class.
@@ -58,6 +59,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle scaleCheckFactHandle;
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
+    private AtomicBoolean monitoringStarted;
     //protected AbstractClusterContext clusterContext;
     protected final Map<String, AbstractClusterContext> instanceIdToClusterContextMap;
     private String clusterId;
@@ -76,6 +78,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.serviceType = serviceType;
         this.clusterId = clusterId;
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+        this.monitoringStarted = new AtomicBoolean(false);
         //this.clusterContext = abstractClusterContext;
         this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
@@ -385,5 +388,13 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
         return (requiredInstances - Math.floor(requiredInstances) > fraction) ? (int) Math.ceil(requiredInstances)
                 : (int) Math.floor(requiredInstances);
+    }
+
+    public AtomicBoolean hasMonitoringStarted() {
+        return monitoringStarted;
+    }
+
+    public void setMonitoringStarted(boolean monitoringStarted) {
+        this.monitoringStarted.set(monitoringStarted);
     }
 }

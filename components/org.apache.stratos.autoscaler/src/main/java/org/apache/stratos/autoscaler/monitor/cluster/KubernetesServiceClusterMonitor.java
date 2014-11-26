@@ -20,10 +20,13 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.AbstractClusterContext;
 import org.apache.stratos.autoscaler.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
@@ -77,12 +80,23 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     protected void monitor() {
-    	obsoleteCheck();
-        minCheck();
-        scaleCheck();
+
+        Set<Map.Entry<String, AbstractClusterContext>> instanceIdToClusterCtxtEntries = instanceIdToClusterContextMap.entrySet();
+        for (final Map.Entry<String, AbstractClusterContext> instanceIdToClusterCtxtEntry : instanceIdToClusterCtxtEntries) {
+            Runnable monitoringRunnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    obsoleteCheck();
+                    minCheck();
+                    scaleCheck(instanceIdToClusterCtxtEntry.getKey());
+                }
+            };
+            monitoringRunnable.run();
+        }
     }
 
-    private void scaleCheck() {
+    private void scaleCheck(String instanceId) {
         boolean rifReset = getKubernetesClusterCtxt().isRifReset();
         boolean memoryConsumptionReset = getKubernetesClusterCtxt().isMemoryConsumptionReset();
         boolean loadAverageReset = getKubernetesClusterCtxt().isLoadAverageReset();
@@ -96,7 +110,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         String clusterId = getClusterId();
         if (rifReset || memoryConsumptionReset || loadAverageReset) {
             getScaleCheckKnowledgeSession().setGlobal("clusterId", clusterId);
-            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", getAutoscalePolicy());
+            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", getAutoscalePolicy(instanceId));
             getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
             getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
             getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
@@ -115,8 +129,8 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         }
     }
 
-    private AutoscalePolicy getAutoscalePolicy() {
-        KubernetesClusterContext kubernetesClusterContext = (KubernetesClusterContext) clusterContext;
+    private AutoscalePolicy getAutoscalePolicy(String instanceId) {
+        KubernetesClusterContext kubernetesClusterContext = (KubernetesClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return kubernetesClusterContext.getAutoscalePolicy();
     }
 

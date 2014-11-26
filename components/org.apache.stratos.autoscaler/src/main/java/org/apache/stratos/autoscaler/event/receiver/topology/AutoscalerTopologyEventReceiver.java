@@ -22,11 +22,13 @@ package org.apache.stratos.autoscaler.event.receiver.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterContextFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
@@ -36,6 +38,7 @@ import org.apache.stratos.autoscaler.status.checker.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -422,6 +425,74 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 } catch (Exception e) {
                     String msg = "Error processing event " + e.getLocalizedMessage();
                     log.error(msg, e);
+                }
+            }
+        });
+
+        topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+
+                ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
+                        (ClusterInstanceCreatedEvent) event;
+                AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+                        getClusterMonitor(clusterInstanceCreatedEvent.getClusterId());
+
+                if (clusterMonitor != null) {
+                    TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                            clusterInstanceCreatedEvent.getClusterId());
+
+                    try {
+                        Service service = TopologyManager.getTopology().
+                                getService(clusterInstanceCreatedEvent.getServiceName());
+
+                        if (service != null) {
+                            Cluster cluster = service.getCluster(clusterInstanceCreatedEvent.getClusterId());
+                            if (cluster != null) {
+                                // create and add Cluster Context
+                                try {
+                                    if (cluster.isKubernetesCluster()) {
+                                        clusterMonitor.addClusterContextForInstance(clusterInstanceCreatedEvent.getInstanceId(),
+                                                ClusterContextFactory.getKubernetesClusterContext(cluster));
+                                    } else if (cluster.isLbCluster()) {
+                                        clusterMonitor.addClusterContextForInstance(clusterInstanceCreatedEvent.getInstanceId(),
+                                                ClusterContextFactory.getVMLBClusterContext(cluster));
+                                    } else {
+                                        clusterMonitor.addClusterContextForInstance(clusterInstanceCreatedEvent.getInstanceId(),
+                                                ClusterContextFactory.getVMServiceClusterContext(cluster));
+                                    }
+
+                                    if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {
+                                        clusterMonitor.startScheduler();
+                                        log.info("Monitoring task for Cluster Monitor with cluster id " +
+                                                clusterInstanceCreatedEvent.getClusterId() + " started successfully");
+                                    }
+
+                                } catch (PolicyValidationException e) {
+                                    log.error(e.getMessage(), e);
+                                } catch (PartitionValidationException e) {
+                                    log.error(e.getMessage(), e);
+                                }
+
+                            } else {
+                                log.error("Cluster not found for " + clusterInstanceCreatedEvent.getClusterId() +
+                                        ", no cluster instance added to ClusterMonitor " +
+                                        clusterInstanceCreatedEvent.getClusterId());
+                            }
+                        } else {
+                            log.error("Service " + clusterInstanceCreatedEvent.getServiceName() +
+                                    " not found, no cluster instance added to ClusterMonitor " +
+                            clusterInstanceCreatedEvent.getClusterId());
+                        }
+
+                    } finally {
+                        TopologyManager.releaseReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                                clusterInstanceCreatedEvent.getClusterId());
+                    }
+
+                } else {
+                    log.error("No Cluster Monitor found for cluster id " +
+                            clusterInstanceCreatedEvent.getClusterId());
                 }
             }
         });

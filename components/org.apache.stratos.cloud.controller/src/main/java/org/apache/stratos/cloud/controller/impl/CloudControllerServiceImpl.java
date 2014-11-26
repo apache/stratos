@@ -2090,6 +2090,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             ClusterInstanceCreationException {
 
         TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias, instanceId);
+
+        persist();
     }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {

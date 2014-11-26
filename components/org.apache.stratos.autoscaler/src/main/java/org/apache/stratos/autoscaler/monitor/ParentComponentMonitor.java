@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -549,6 +550,9 @@ public abstract class ParentComponentMonitor extends Monitor {
                 //TODO parent.notify();
                 throw new RuntimeException(msg);
             }
+
+             createClusterInstance();
+
             aliasToActiveMonitorsMap.put(context.getId(), monitor);
             // ApplicationBuilder.
             if (log.isInfoEnabled()) {
@@ -558,5 +562,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-
+    private void createClusterInstance () {
+        // TODO: create cluster instance
+    }
 }

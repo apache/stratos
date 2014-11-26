@@ -651,21 +651,21 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         memberTerminator.start();
     }
 
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts() {
+    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts(String instanceId) {
 
-        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxts();
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(String id) {
+    protected NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, String id) {
 
-        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);;
         return vmClusterContext.getNetworkPartitionCtxt(id);
     }
 
-    protected NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
+    protected NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, Member member) {
 
-        VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+        VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxt(member);
     }
 

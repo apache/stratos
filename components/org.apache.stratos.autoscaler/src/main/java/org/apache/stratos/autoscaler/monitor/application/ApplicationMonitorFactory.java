@@ -65,9 +65,9 @@ public class ApplicationMonitorFactory {
         if (context instanceof GroupChildContext) {
             monitor = getGroupMonitor(parentMonitor, context, appId, instanceId);
         } else if (context instanceof ClusterChildContext) {
-            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context, appId, instanceId);
+            monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context);
             if (monitor != null) {
-            	((AbstractClusterMonitor)monitor).startScheduler();
+            	//((AbstractClusterMonitor)monitor).startScheduler();
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
 			}
         } else {
@@ -175,8 +175,7 @@ public class ApplicationMonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
      */
     public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                            ClusterChildContext context,
-                                                            String appId, String instanceId)
+                                                            ClusterChildContext context)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
