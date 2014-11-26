@@ -139,7 +139,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             env.put("STRATOS_ARTIFACT_UPDATED_STATUS", artifactUpdatedEvent.getStatus());
             ExtensionUtils.executeArtifactsUpdatedExtension(env);
 
-            if (!cloneExists) {
+            if (!cloneExists && !isMultitenant) {
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
             }
@@ -168,7 +168,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 log.info("Artifact updating task enabled, update interval: " + artifactUpdateInterval + "s");
                 if (autoCommit) {
                     log.info("Auto Commit is turned on ");
-                }  else {
+                } else {
                     log.info("Auto Commit is turned off ");
                 }
 
@@ -279,40 +279,40 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             ExtensionUtils.addProperties(service.getProperties(), env, "MEMBER_ACTIVATED_SERVICE_PROPERTY");
             ExtensionUtils.addProperties(cluster.getProperties(), env, "MEMBER_ACTIVATED_CLUSTER_PROPERTY");
             ExtensionUtils.addProperties(member.getProperties(), env, "MEMBER_ACTIVATED_MEMBER_PROPERTY");
-            
+
             // if clustering is enabled check activated member is WK member
             String flagClustering = CartridgeAgentConfiguration.getInstance().getIsClustered();
 
             // if WK member is re-spawned, update axis2.xml
             if (member.getProperties() != null && "true".equals(member.getProperties().getProperty(CartridgeAgentConstants.CLUSTERING_PRIMARY_KEY)) &&
-                    flagClustering != null && "true".equals(flagClustering.toLowerCase())){
-            	if(log.isDebugEnabled()) {
-            		log.debug(" If WK member is re-spawned, update axis2.xml ");
-            	}
+                    flagClustering != null && "true".equals(flagClustering.toLowerCase())) {
+                if (log.isDebugEnabled()) {
+                    log.debug(" If WK member is re-spawned, update axis2.xml ");
+                }
                 boolean hasWKIpChanged = true;
-                for (Member m : this.wkMembers){
-                    if (m.getMemberIp().equals(memberActivatedEvent.getMemberIp())){
+                for (Member m : this.wkMembers) {
+                    if (m.getMemberIp().equals(memberActivatedEvent.getMemberIp())) {
                         hasWKIpChanged = false;
                     }
                 }
-                if(log.isDebugEnabled()) {
-                	log.debug(" hasWKIpChanged " + hasWKIpChanged);
+                if (log.isDebugEnabled()) {
+                    log.debug(" hasWKIpChanged " + hasWKIpChanged);
                 }
-                int minCount = Integer.parseInt(CartridgeAgentConfiguration.getInstance().getMinCount());                
+                int minCount = Integer.parseInt(CartridgeAgentConfiguration.getInstance().getMinCount());
                 boolean isWKMemberGroupReady = isWKMemberGroupReady(env, minCount);
-                if(log.isDebugEnabled()) {
-                	log.debug("minCount " + minCount);
-                	log.debug("isWKMemberGroupReady " + isWKMemberGroupReady);
+                if (log.isDebugEnabled()) {
+                    log.debug("minCount " + minCount);
+                    log.debug("isWKMemberGroupReady " + isWKMemberGroupReady);
                 }
-                if (hasWKIpChanged && isWKMemberGroupReady){
-                	if(log.isDebugEnabled()) {
-                		log.debug("Setting env var STRATOS_UPDATE_WK_IP to true");
-                	}
+                if (hasWKIpChanged && isWKMemberGroupReady) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Setting env var STRATOS_UPDATE_WK_IP to true");
+                    }
                     env.put("STRATOS_UPDATE_WK_IP", "true");
                 }
-            }      
-            if(log.isDebugEnabled()) {
-            	log.debug("Setting env var STRATOS_CLUSTERING to " + flagClustering);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("Setting env var STRATOS_CLUSTERING to " + flagClustering);
             }
             env.put("STRATOS_CLUSTERING", flagClustering);
             env.put("STRATOS_WK_MEMBER_COUNT", CartridgeAgentConfiguration.getInstance().getMinCount());
@@ -335,15 +335,15 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
         String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
 
-        
+
         boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
         if (!isConsistent) {
-        	// if this member isn't there in the complete topology
-        	return;
+            // if this member isn't there in the complete topology
+            return;
         } else {
-        	CartridgeAgentConfiguration.getInstance().setInitialized(true);
+            CartridgeAgentConfiguration.getInstance().setInitialized(true);
         }
-        
+
         Topology topology = completeTopologyEvent.getTopology();
         Service service = topology.getService(serviceNameInPayload);
         Cluster cluster = service.getCluster(clusterIdInPayload);
@@ -353,26 +353,26 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         env.put("STRATOS_MEMBER_LIST_JSON", gson.toJson(cluster.getMembers(), memberType));
         ExtensionUtils.executeCompleteTopologyExtension(env);
     }
-    
-    
+
+
     @Override
-    
+
     public void onInstanceSpawnedEvent(InstanceSpawnedEvent instanceSpawnedEvent) {
-    
-    	// listen to this just to get updated faster about the member initialization
-    	if (log.isDebugEnabled()) {
-    		log.debug("Instance Spawned event received");
-    	}
-    	String serviceNameInPayload = CartridgeAgentConfiguration.getInstance().getServiceName();
-    	String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
-    	String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
-    	boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
-    	if (!isConsistent) {
-    		// if this event is not relevant to this member
-    		return;
-    	} else {
-    		CartridgeAgentConfiguration.getInstance().setInitialized(true);
-    	}
+
+        // listen to this just to get updated faster about the member initialization
+        if (log.isDebugEnabled()) {
+            log.debug("Instance Spawned event received");
+        }
+        String serviceNameInPayload = CartridgeAgentConfiguration.getInstance().getServiceName();
+        String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+        String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
+        boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
+        if (!isConsistent) {
+            // if this event is not relevant to this member
+            return;
+        } else {
+            CartridgeAgentConfiguration.getInstance().setInitialized(true);
+        }
     }
 
     @Override
@@ -688,19 +688,19 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     }
 
     // generic worker manager separated clustering logic
-    private boolean isManagerWorkerWKAGroupReady (Map<String, String> envParameters) {
+    private boolean isManagerWorkerWKAGroupReady(Map<String, String> envParameters) {
 
         // for this, we need both manager cluster service name and worker cluster service name
-        String managerServiceName =  CartridgeAgentConfiguration.getInstance().getManagerServiceName();
-        String workerServiceName =  CartridgeAgentConfiguration.getInstance().getWorkerServiceName();
+        String managerServiceName = CartridgeAgentConfiguration.getInstance().getManagerServiceName();
+        String workerServiceName = CartridgeAgentConfiguration.getInstance().getWorkerServiceName();
 
         // managerServiceName and workerServiceName both should not be null /empty
         if (managerServiceName == null || managerServiceName.isEmpty()) {
-            log.error("Manager service name [ "+ managerServiceName +" ] is invalid");
+            log.error("Manager service name [ " + managerServiceName + " ] is invalid");
             return false;
         }
         if (workerServiceName == null || workerServiceName.isEmpty()) {
-            log.error("Worker service name [ "+ workerServiceName +" ] is invalid");
+            log.error("Worker service name [ " + workerServiceName + " ] is invalid");
             return false;
         }
 
@@ -714,19 +714,19 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             Service workerService = TopologyManager.getTopology().getService(workerServiceName);
 
             if (managerService == null) {
-                log.warn("Service [ "+managerServiceName+" ] is not found");
+                log.warn("Service [ " + managerServiceName + " ] is not found");
                 return false;
             }
 
             if (workerService == null) {
-                log.warn("Service [ "+workerServiceName+" ] is not found");
+                log.warn("Service [ " + workerServiceName + " ] is not found");
                 return false;
             }
 
             // manager clusters
             Collection<Cluster> managerClusters = managerService.getClusters();
             if (managerClusters == null || managerClusters.isEmpty()) {
-                log.warn("No clusters found for service [ "+ managerServiceName + " ]");
+                log.warn("No clusters found for service [ " + managerServiceName + " ]");
                 return false;
             }
 
@@ -737,12 +737,12 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             for (Member member : managerClusters.iterator().next().getMembers()) {
 
                 if (member.getProperties() != null && member.getProperties().containsKey("PRIMARY") &&
-                            member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
-                            (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))) {
+                        member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
+                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))) {
 
                     managerWkaMembers.add(member);
                     this.wkMembers.add(member);
-                    
+
                     // get the min instance count
                     if (!managerMinInstanceCountFound) {
                         managerMinInstanceCount = getMinInstanceCountFromMemberProperties(member);
@@ -758,7 +758,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 int idx = 0;
                 for (Member member : managerWkaMembers) {
                     envParameters.put("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP", member.getMemberIp());
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP: " + member.getMemberIp());
                     }
                     idx++;
@@ -766,37 +766,37 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
                 envParameters.put("STRATOS_WK_MANAGER_MEMBER_COUNT", Integer.toString(managerMinInstanceCount));
             }
-            
+
             // If all the manager members are non primary and is greate than or equal to mincount, 
             // minManagerInstancesAvailable should be true
             boolean allManagersNonPrimary = true;
             for (Member member : managerClusters.iterator().next().getMembers()) {
-            	
-            	// get the min instance count
+
+                // get the min instance count
                 if (!managerMinInstanceCountFound) {
                     managerMinInstanceCount = getMinInstanceCountFromMemberProperties(member);
                     managerMinInstanceCountFound = true;
                     log.info("Manager min instance count when allManagersNonPrimary true : " + managerMinInstanceCount);
                 }
-                
+
                 if (member.getProperties() != null && member.getProperties().containsKey("PRIMARY") &&
-                            member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") ) {
-                	allManagersNonPrimary = false;
-                	break;
+                        member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true")) {
+                    allManagersNonPrimary = false;
+                    break;
                 }
             }
-            if(log.isDebugEnabled()){
-            	log.debug(" allManagerNonPrimary & managerMinInstanceCount [" 
-            		 + allManagersNonPrimary + "], [" + managerMinInstanceCount+"] ");
+            if (log.isDebugEnabled()) {
+                log.debug(" allManagerNonPrimary & managerMinInstanceCount ["
+                        + allManagersNonPrimary + "], [" + managerMinInstanceCount + "] ");
             }
-			if (allManagersNonPrimary &&  managerClusters.size() >= managerMinInstanceCount) {
-				minManagerInstancesAvailable = true;
-			}
+            if (allManagersNonPrimary && managerClusters.size() >= managerMinInstanceCount) {
+                minManagerInstancesAvailable = true;
+            }
 
             // worker cluster
             Collection<Cluster> workerClusters = workerService.getClusters();
             if (workerClusters == null || workerClusters.isEmpty()) {
-                log.warn("No clusters found for service [ "+ workerServiceName + " ]");
+                log.warn("No clusters found for service [ " + workerServiceName + " ]");
                 return false;
             }
 
@@ -805,16 +805,16 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
             List<Member> workerWkaMembers = new ArrayList<Member>();
             for (Member member : workerClusters.iterator().next().getMembers()) {
-            	if (log.isDebugEnabled()) {
-            		log.debug("Checking member : " + member.getMemberId());
-            	}
+                if (log.isDebugEnabled()) {
+                    log.debug("Checking member : " + member.getMemberId());
+                }
                 if (member.getProperties() != null &&
                         member.getProperties().containsKey("PRIMARY") &&
                         member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
                         (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))) {
-                	if (log.isDebugEnabled()) {
-                		log.debug("Added worker member " + member.getMemberId());
-                	}
+                    if (log.isDebugEnabled()) {
+                        log.debug("Added worker member " + member.getMemberId());
+                    }
                     workerWkaMembers.add(member);
                     this.wkMembers.add(member);
 
@@ -848,19 +848,19 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         }
 
         if (log.isDebugEnabled()) {
-        	log.debug(" Returnning values minManagerInstancesAvailable && minWorkerInstancesAvailable [" +
-        		minManagerInstancesAvailable + "],  ["+ minWorkerInstancesAvailable+"] ");
+            log.debug(" Returnning values minManagerInstancesAvailable && minWorkerInstancesAvailable [" +
+                    minManagerInstancesAvailable + "],  [" + minWorkerInstancesAvailable + "] ");
         }
         return (minManagerInstancesAvailable && minWorkerInstancesAvailable);
     }
 
 
-    private int getMinInstanceCountFromMemberProperties (Member member) {
+    private int getMinInstanceCountFromMemberProperties(Member member) {
 
         // default value is 1
         int minInstanceCount = 1;
 
-        if(member.getProperties().containsKey("MIN_COUNT")) {
+        if (member.getProperties().containsKey("MIN_COUNT")) {
             minInstanceCount = Integer.parseInt(member.getProperties().getProperty("MIN_COUNT"));
         }
 

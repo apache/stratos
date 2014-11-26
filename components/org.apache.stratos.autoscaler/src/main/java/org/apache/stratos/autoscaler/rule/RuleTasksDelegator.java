@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.rule;
  *
 */
 
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
@@ -29,10 +28,9 @@ import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.InstanceNotificationClient;
-import org.apache.stratos.autoscaler.exception.SpawningException;
 import org.apache.stratos.autoscaler.exception.TerminationException;
-import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMServiceClusterMonitor;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
@@ -41,6 +39,7 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.autoscaler.AutoscalerContext;
 
 /**
  * This will have utility methods that need to be executed from rule file...
@@ -53,10 +52,10 @@ public class RuleTasksDelegator {
 
     private static final Log log = LogFactory.getLog(RuleTasksDelegator.class);
 
-    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval){
+    public double getPredictedValueForNextMinute(float average, float gradient, float secondDerivative, int timeInterval) {
         double predictedValue;
 //        s = u * t + 0.5 * a * t * t
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Predicting the value, [average]: %s , [gradient]: %s , [second derivative]" +
                     ": %s , [time intervals]: %s ", average, gradient, secondDerivative, timeInterval));
         }
@@ -66,91 +65,91 @@ public class RuleTasksDelegator {
     }
 
 
-    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue , float requestsServedPerInstance , float averageRequestsServedPerInstance , boolean arspiReset){
+    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float requestsServedPerInstance, float averageRequestsServedPerInstance, boolean arspiReset) {
 
         float requestsInstanceCanHandle = requestsServedPerInstance;
 
-        if(arspiReset && averageRequestsServedPerInstance != 0){
+        if (arspiReset && averageRequestsServedPerInstance != 0) {
             requestsInstanceCanHandle = averageRequestsServedPerInstance;
-           
+
         }
         float numberOfInstances = 0;
-        if(requestsInstanceCanHandle!=0) {
+        if (requestsInstanceCanHandle != 0) {
             numberOfInstances = rifPredictedValue / requestsInstanceCanHandle;
             arspiReset = true;
 
-        }else{
+        } else {
             arspiReset = false;
         }
-        return (int)Math.ceil(numberOfInstances);
+        return (int) Math.ceil(numberOfInstances);
     }
 
-    public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit , float lowerLimit ,double predictedValue , int activeMemberCount ){
+    public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit, float lowerLimit, double predictedValue, int activeMemberCount) {
 
-        double numberOfInstances = (activeMemberCount*predictedValue)/upperLimit;
+        double numberOfInstances = (activeMemberCount * predictedValue) / upperLimit;
 
-        return (int)Math.ceil(numberOfInstances);
+        return (int) Math.ceil(numberOfInstances);
     }
 
-    public int getMaxNumberOfInstancesRequired(int numberOfInstancesReuquiredBasedOnRif , int numberOfInstancesReuquiredBasedOnMemoryConsumption , boolean mcReset , int numberOfInstancesReuquiredBasedOnLoadAverage , boolean laReset){
-        int  numberOfInstances = 0;
+    public int getMaxNumberOfInstancesRequired(int numberOfInstancesReuquiredBasedOnRif, int numberOfInstancesReuquiredBasedOnMemoryConsumption, boolean mcReset, int numberOfInstancesReuquiredBasedOnLoadAverage, boolean laReset) {
+        int numberOfInstances = 0;
 
         int rifBasedRequiredInstances = 0;
-        int mcBasedRequiredInstances  = 0;
-        int laBasedRequiredInstances  = 0;
-        if(arspiIsSet){
+        int mcBasedRequiredInstances = 0;
+        int laBasedRequiredInstances = 0;
+        if (arspiIsSet) {
             rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnRif;
         }
-        if(mcReset){
+        if (mcReset) {
             rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnMemoryConsumption;
         }
-        if(laReset){
+        if (laReset) {
             rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
         }
-        numberOfInstances = Math.max(Math.max(numberOfInstancesReuquiredBasedOnMemoryConsumption,numberOfInstancesReuquiredBasedOnLoadAverage),numberOfInstancesReuquiredBasedOnRif);
-        return  numberOfInstances;
+        numberOfInstances = Math.max(Math.max(numberOfInstancesReuquiredBasedOnMemoryConsumption, numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesReuquiredBasedOnRif);
+        return numberOfInstances;
     }
 
-    public int getMemberCount(String clusterId , int scalingPara ){
+    public int getMemberCount(String clusterId, int scalingPara) {
 
         int activeMemberCount = 0;
         int memberCount = 0;
-       for( Service service : TopologyManager.getTopology().getServices()) {
-           if(service.clusterExists(clusterId)) {
-               Cluster cluster = service.getCluster(clusterId);
+        for (Service service : TopologyManager.getTopology().getServices()) {
+            if (service.clusterExists(clusterId)) {
+                Cluster cluster = service.getCluster(clusterId);
 
-               for (Member member : cluster.getMembers()) {
-                   if (member.isActive() || member.getStatus() == MemberStatus.Created || member.getStatus() == MemberStatus.Starting  ) {
-                       memberCount++;
-                       if(member.isActive()) {
-                           activeMemberCount++;
-                       }
-                   }
-               }
-           }
-       }
-        if(scalingPara == 1){
+                for (Member member : cluster.getMembers()) {
+                    if (member.isActive() || member.getStatus() == MemberStatus.Created || member.getStatus() == MemberStatus.Starting) {
+                        memberCount++;
+                        if (member.isActive()) {
+                            activeMemberCount++;
+                        }
+                    }
+                }
+            }
+        }
+        if (scalingPara == 1) {
             return memberCount;
-        }else{
+        } else {
             return activeMemberCount;
         }
 
 
     }
 
-    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm){
+    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
         AutoscaleAlgorithm autoscaleAlgorithm = null;
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
-        if(Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)){
+        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new RoundRobin();
-        } else if(Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)){
+        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new OneAfterAnother();
         } else {
-            if(log.isErrorEnabled()){
+            if (log.isErrorEnabled()) {
                 log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
             }
         }
@@ -168,31 +167,39 @@ public class RuleTasksDelegator {
             log.error("Cannot terminate instance", e);
         }
     }
-    
+
     public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType, boolean isPrimary) {
-    	
+
         try {
 
             String nwPartitionId = partitionContext.getNetworkPartitionId();
             NetworkPartitionLbHolder lbHolder =
-                                          PartitionManager.getInstance()
-                                                          .getNetworkPartitionLbHolder(nwPartitionId);
+                    PartitionManager.getInstance()
+                            .getNetworkPartitionLbHolder(nwPartitionId);
             String lbClusterId = getLbClusterId(lbRefType, partitionContext, lbHolder);
+            //Calculate accumulation of minimum counts of all the partition of current network partition
+            int minimumCountOfNetworkPartition = 0;
+            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+            for (PartitionContext partitionContextOfCurrentNetworkPartition : vmClusterMonitor.getNetworkPartitionCtxt(nwPartitionId).
+                    getPartitionCtxts().values()) {
+
+                minimumCountOfNetworkPartition += partitionContextOfCurrentNetworkPartition.getMinimumMemberCount();
+            }
             MemberContext memberContext =
-                                         CloudControllerClient.getInstance()
-                                                              .spawnAnInstance(partitionContext.getPartition(),
-                                                                      clusterId,
-                                                                      lbClusterId, partitionContext.getNetworkPartitionId(),
-                                                                      isPrimary,
-                                                                      partitionContext.getMinimumMemberCount());
+                    CloudControllerClient.getInstance()
+                            .spawnAnInstance(partitionContext.getPartition(),
+                                    clusterId,
+                                    lbClusterId, partitionContext.getNetworkPartitionId(),
+                                    isPrimary,
+                                    minimumCountOfNetworkPartition);
             if (memberContext != null) {
                 partitionContext.addPendingMember(memberContext);
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
                 }
 
-            } else if(log.isDebugEnabled()){
+            } else if (log.isDebugEnabled()) {
                 log.debug("Returned member context is null, did not add to pending members");
             }
 
@@ -208,7 +215,7 @@ public class RuleTasksDelegator {
 
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        if(clusterMonitor instanceof VMServiceClusterMonitor) {
+        if (clusterMonitor instanceof VMServiceClusterMonitor) {
 
             VMServiceClusterMonitor vmServiceClusterMonitor = (VMServiceClusterMonitor) clusterMonitor;
             vmServiceClusterMonitor.sendClusterScalingEvent(networkPartitionId, factor);
@@ -253,11 +260,10 @@ public class RuleTasksDelegator {
    	}*/
 
 
+    public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt,
+                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
 
-    public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt, 
-        NetworkPartitionLbHolder networkPartitionLbHolder) {
-
-       String lbClusterId = null;
+        String lbClusterId = null;
 
         if (lbRefType != null) {
             if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
@@ -268,15 +274,15 @@ public class RuleTasksDelegator {
                 lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
 //                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
             } else {
-                log.warn("Invalid LB reference type defined: [value] "+lbRefType);
+                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
             }
         }
-        if (log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
-                    " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
+                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
                     networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
         }
-       return lbClusterId;
+        return lbClusterId;
     }
 
     public void delegateTerminate(PartitionContext partitionContext, String memberId) {
@@ -300,9 +306,9 @@ public class RuleTasksDelegator {
     public void delegateTerminateDependency(PartitionContext partitionContext, String memberId) {
         try {
             //calling SM to send the instance notification event.
-        	if (log.isDebugEnabled()) {
-        		log.debug("delegateTerminateDependency:memberId:" + memberId);
-        	}
+            if (log.isDebugEnabled()) {
+                log.debug("delegateTerminateDependency:memberId:" + memberId);
+            }
             //InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
             //partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
             //CloudControllerClient.getInstance().terminate(memberId);
@@ -320,19 +326,19 @@ public class RuleTasksDelegator {
     }
 
     //Grouping
-   	public void delegateTerminateAll(String clusterId) {
-           try {
-        	   if (log.isDebugEnabled()) {
-           		log.debug("delegateTerminateAll - begin");
-        	   }
-               CloudControllerClient.getInstance().terminateAllInstances(clusterId);
-               if (log.isDebugEnabled()) {
-              		log.debug("delegateTerminateAll - done");
-           	   }
-           } catch (Throwable e) {
-               log.error("Cannot terminate instance", e);
-           }
-       }
+    public void delegateTerminateAll(String clusterId) {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("delegateTerminateAll - begin");
+            }
+            CloudControllerClient.getInstance().terminateAllInstances(clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("delegateTerminateAll - done");
+            }
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
 
     public void delegateStartContainers(KubernetesClusterContext kubernetesClusterContext) {
         try {
@@ -367,7 +373,7 @@ public class RuleTasksDelegator {
     }
 
     public void delegateScaleUpContainers(KubernetesClusterContext kubernetesClusterContext,
-                                         int newReplicasCount) {
+                                          int newReplicasCount) {
         String clusterId = kubernetesClusterContext.getClusterId();
         try {
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
@@ -398,37 +404,37 @@ public class RuleTasksDelegator {
             log.error("Scaling up failed, couldn't update kubernetes controller ", e);
         }
     }
-    
-    public void delegateScaleDownContainers(KubernetesClusterContext kubernetesClusterContext, 
-    										int newReplicasCount) {
-    	String clusterId = kubernetesClusterContext.getClusterId();
-    	try {
-    		CloudControllerClient ccClient = CloudControllerClient.getInstance();
-    		// getting terminated pods's member contexts
-    		MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
-    		if (null != memberContexts) {
-				for (MemberContext memberContext : memberContexts) {
-					if (null != memberContext) {
-						// we are not removing from active/pending list, it will be handled in AS event receiver
-						if (log.isDebugEnabled()) {
-							log.debug(String.format("Scaling down, terminated the member with id %s in cluster %s", 
-									memberContext.getMemberId(), memberContext.getClusterId()));
-						}
-					}
-				}
-			}
-     	} catch (Exception e) {
-    		log.error("Scaling down failed, couldn't update kubernetes controller ", e);
-    	}
+
+    public void delegateScaleDownContainers(KubernetesClusterContext kubernetesClusterContext,
+                                            int newReplicasCount) {
+        String clusterId = kubernetesClusterContext.getClusterId();
+        try {
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            // getting terminated pods's member contexts
+            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        // we are not removing from active/pending list, it will be handled in AS event receiver
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Scaling down, terminated the member with id %s in cluster %s",
+                                    memberContext.getMemberId(), memberContext.getClusterId()));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Scaling down failed, couldn't update kubernetes controller ", e);
+        }
     }
-    
+
     public void delegateTerminateContainer(KubernetesClusterContext kubernetesClusterContext, String memberId) {
-    	try {
-    		CloudControllerClient ccClient = CloudControllerClient.getInstance();
-    		ccClient.terminateContainer(memberId);
-    	} catch (TerminationException e) {
-    		log.error("Cannot delete container ", e);
-		}
+        try {
+            CloudControllerClient ccClient = CloudControllerClient.getInstance();
+            ccClient.terminateContainer(memberId);
+        } catch (TerminationException e) {
+            log.error("Cannot delete container ", e);
+        }
     }
 
     public int getPredictedReplicasForStat(int minReplicas, float statUpperLimit, float statPredictedValue) {
@@ -439,7 +445,7 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(predictedValue);
     }
 
-    public double getLoadAveragePredictedValue (NetworkPartitionContext networkPartitionContext) {
+    public double getLoadAveragePredictedValue(NetworkPartitionContext networkPartitionContext) {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
 
@@ -462,8 +468,7 @@ public class RuleTasksDelegator {
         if (totalMemberCount > 0) {
             log.debug("Predicted load average : " + loadAveragePredicted / totalMemberCount);
             return loadAveragePredicted / totalMemberCount;
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -477,7 +482,7 @@ public class RuleTasksDelegator {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();
-                float memberMemoryConsumptionSecondDerivative= memberStatsContext.getMemoryConsumption().getSecondDerivative();
+                float memberMemoryConsumptionSecondDerivative = memberStatsContext.getMemoryConsumption().getSecondDerivative();
 
                 double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage, memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
 
@@ -491,8 +496,7 @@ public class RuleTasksDelegator {
         if (totalMemberCount > 0) {
             log.debug("Predicted memory consumption : " + memoryConsumptionPredicted / totalMemberCount);
             return memoryConsumptionPredicted / totalMemberCount;
-        }
-        else {
+        } else {
             return 0;
         }
     }
