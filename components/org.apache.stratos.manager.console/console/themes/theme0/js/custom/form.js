@@ -41,14 +41,16 @@ var currentJson;
 
 $(document).ready(function() {
     $('#list').click(function(event){
-        event.preventDefault();
+       // event.preventDefault();
         $('.general-table .block').addClass('list-group-item');
         $('.general-table .block').removeClass('grid-group-item');
+        $('.general-table .block .list-button').css("display","block");
     });
     $('#grid').click(function(event){
-        event.preventDefault();
+        //event.preventDefault();
         $('.general-table .block').removeClass('list-group-item');
         $('.general-table .block').addClass('grid-group-item');
+        $('.general-table .block .list-button').css({"display":"none"});
     });
 
 });
