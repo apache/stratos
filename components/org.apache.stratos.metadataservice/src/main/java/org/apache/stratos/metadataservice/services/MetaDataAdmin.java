@@ -43,8 +43,7 @@ public class MetaDataAdmin {
     UriInfo uriInfo;
 
     private static Log log = LogFactory.getLog(MetaDataAdmin.class);
-    @Context
-    HttpServletRequest httpServletRequest;
+
 
 
     private DataStore registry;
@@ -56,7 +55,7 @@ public class MetaDataAdmin {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         String DEFAULT_REG_TYPE = "carbon";
         String registryType =  conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
-        registry = DataRegistryFactory.getDataRegistryFactory(registryType);
+        registry = DataRegistryFactory.getDataStore(registryType);
     }
 
     @GET

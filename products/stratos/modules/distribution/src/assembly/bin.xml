@@ -924,6 +924,16 @@
             <fileMode>644</fileMode>
         </file>
         <!-- End of REST endpoint webapp -->
+
+        <!-- Meta data service webapp -->
+        <file>
+            <source>
+                ../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/stratosmetadataservice.war
+            </source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <!-- End of Meta data service webapp -->
         <file>
             <source>../../conf/data-bridge/data-bridge-config.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/data-bridge/</outputDirectory>

@@ -18,28 +18,35 @@
  */
 package org.apache.stratos.messaging.util;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.JsonMessage;
-
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Random;
+import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.message.JsonMessage;
-
+/**
+ *  Messaging module utility class
+ */
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
 	public static final int BEGIN_INDEX = 35;
+	// Time interval between each ping message sent to topic.
+	private static int averagePingInterval;
+	// Time interval between each ping message after an error had occurred.
+	private static int failoverPingInterval;
 
+	/**
+	 * Properties of the given file
+	 * @param filePath path of the property file
+	 * @return Properties of the given file
+	 */
 	public static Properties getProperties(String filePath) {
 		Properties props = new Properties();
 		InputStream is = null;
@@ -63,12 +70,12 @@ public class Util {
 		return props;
 	}
 
+
 	/**
 	 * Validate tenant range.
 	 * Valid formats: Integer-Integer, Integer-*
 	 * Examples: 1-100, 101-200, 201-*
-	 * 
-	 * @param tenantRange
+	 * @param tenantRange Tenant range
 	 */
 	public static void validateTenantRange(String tenantRange) {
 		boolean valid = false;
@@ -94,12 +101,17 @@ public class Util {
 			throw new RuntimeException(String.format("Tenant range %s is not valid", tenantRange));
 	}
 
-    public static boolean isNumber(String s) {
+	/**
+	 * Check given string is a number
+	 * @param inputStr String to be checked
+	 * @return Boolean of given string is a number
+	 */
+    public static boolean isNumber(String inputStr) {
         try {
-            Integer.parseInt(s);
+            Integer.parseInt(inputStr);
             return true;
         }
-        catch (NumberFormatException e) {
+        catch (NumberFormatException ignore) {
             // Not a valid number
         }
         return false;
@@ -107,30 +119,29 @@ public class Util {
     
     /**
      * Transform json into an object of given type.
-     * @param json
-     * @param type
-     * @return
+     * @param json json string
+     * @param type type of the class
+     * @return Object of the json String
      */
     public static Object jsonToObject(String json, Class type) {
         return (new JsonMessage(json, type)).getObject();
     }
-    
+
+	/**
+	 * Create a JSON string
+	 * @param obj object
+	 * @return JSON string
+	 */
     public static String ObjectToJson(Object obj) {
     	Gson gson = new Gson();
     	String result = gson.toJson(obj);
     	return result;
     }
 
-	// Time interval between each ping message sent to topic.
-	private static int averagePingInterval;
-
-	// Time interval between each ping message after an error had occurred.
-	private static int failoverPingInterval;
 
 	/**
-	 * fetch value from system param
-	 * 
-	 * @return
+	 * Fetch value from system param
+	 * @return Average ping interval
 	 */
 	public static int getAveragePingInterval() {
 		if (averagePingInterval <= 0) {
@@ -142,9 +153,8 @@ public class Util {
 	}
 
 	/**
-	 * fetch value from system param
-	 * 
-	 * @return
+	 * Fetch value from system param
+	 * @return Fail over ping interval
 	 */
 	public static int getFailoverPingInterval() {
 		if (failoverPingInterval <= 0) {
@@ -157,9 +167,9 @@ public class Util {
 
 	/**
 	 * Method to safely access numeric system properties
-	 * 
-	 * @param defaultValue
-	 * @return
+	 * @param defaultValue default value of the property
+	 * @param propertyKey property key
+	 * @return Numeric system properties
 	 */
 	public static Integer getNumericSystemProperty(Integer defaultValue, String propertyKey) {
 		try {
@@ -169,20 +179,31 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Get the Message topic name for event
+	 * @param event event name
+	 * @return String topic name of the event
+	 */
 	public static String getMessageTopicName(Event event) {
 		return event.getClass().getName().substring(BEGIN_INDEX).replace(".", "/");
 	}
 
-	public static String getEventNameForTopic(String arg0) {
-		return "org.apache.stratos.messaging.event.".concat(arg0.replace("/", "."));
+	/**
+	 * Get the event name for topic
+	 * @param topic topic Name
+	 * @return String Event name for topic
+	 */
+	public static String getEventNameForTopic(String topic) {
+		return "org.apache.stratos.messaging.event.".concat(topic.replace("/", "."));
 	}
 
+	/**
+	 * Get the random string with UUID
+	 * @param len length of the String
+	 * @return Random String
+	 */
+
 	public static String getRandomString(int len) {
-		String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		Random rnd = new Random();
-		StringBuilder sb = new StringBuilder(len);
-		for (int i = 0; i < len; i++)
-			sb.append(AB.charAt(rnd.nextInt(AB.length())));
-		return sb.toString();
+		return UUID.randomUUID().toString().replace("-","").substring(0,len);
 	}
 }
