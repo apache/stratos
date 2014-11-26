@@ -39,7 +39,6 @@ public class Util {
 	public static final int BEGIN_INDEX = 35;
 	// Time interval between each ping message sent to topic.
 	private static int averagePingInterval;
-
 	// Time interval between each ping message after an error had occurred.
 	private static int failoverPingInterval;
 
