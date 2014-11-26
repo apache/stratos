@@ -174,7 +174,7 @@ public class StatusChecker {
      */
     private boolean clusterActive(VMClusterMonitor monitor) {
         boolean clusterActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+        for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                 if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
@@ -198,7 +198,7 @@ public class StatusChecker {
      */
     private boolean clusterMonitorHasMembers(VMClusterMonitor monitor) {
         boolean hasMember = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+        for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                 if (partitionContext.getNonTerminatedMemberCount() > 0) {
@@ -263,7 +263,7 @@ public class StatusChecker {
      */
     private boolean getClusterInactive(VMClusterMonitor monitor, String partitionId) {
         boolean clusterInActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+        for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
                 if (partitionId.equals(partition.getPartitionId()) &&
                         partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {

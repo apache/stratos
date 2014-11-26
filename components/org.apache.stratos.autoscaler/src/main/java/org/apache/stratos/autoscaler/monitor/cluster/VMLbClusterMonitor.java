@@ -19,15 +19,14 @@
 package org.apache.stratos.autoscaler.monitor.cluster;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
-import org.apache.stratos.autoscaler.VMClusterContext;
+import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -83,35 +82,46 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
 
     @Override
     protected void monitor() {
-        // TODO make this concurrent
-        for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts().values()) {
 
-            // minimum check per partition
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
-                    .values()) {
+        Set<Map.Entry<String, AbstractClusterContext>> instanceIdToClusterCtxtEntries = instanceIdToClusterContextMap.entrySet();
+        for (final Map.Entry<String, AbstractClusterContext> instanceIdToClusterCtxtEntry : instanceIdToClusterCtxtEntries) {
+            Runnable monitoringRunnable = new Runnable() {
 
-                if (partitionContext != null) {
-                    getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                    getMinCheckKnowledgeSession().setGlobal("isPrimary", false);
+                @Override
+                public void run() {
+                    for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts(instanceIdToClusterCtxtEntry.getKey()).values()) {
 
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Running minimum check for partition %s ",
-                                                partitionContext.getPartitionId()));
+                        // minimum check per partition
+                        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
+                                .values()) {
+
+                            if (partitionContext != null) {
+                                getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                getMinCheckKnowledgeSession().setGlobal("isPrimary", false);
+
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Running minimum check for partition %s ",
+                                            partitionContext.getPartitionId()));
+                                }
+
+                                minCheckFactHandle =
+                                        AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
+                                                minCheckFactHandle,
+                                                partitionContext);
+                                obsoleteCheckFactHandle =
+                                        AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
+                                                obsoleteCheckFactHandle, partitionContext);
+                                // start only in the first partition context
+                                break;
+                            }
+
+                        }
+
                     }
-
-                    minCheckFactHandle =
-                            AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
-                                                                     minCheckFactHandle,
-                                                                     partitionContext);
-                    obsoleteCheckFactHandle = 
-                    		AutoscalerRuleEvaluator.evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(), 
-                    				obsoleteCheckFactHandle, partitionContext);
-                    // start only in the first partition context
-                    break;
                 }
+            };
 
-            }
-
+            monitoringRunnable.run();
         }
     }
 

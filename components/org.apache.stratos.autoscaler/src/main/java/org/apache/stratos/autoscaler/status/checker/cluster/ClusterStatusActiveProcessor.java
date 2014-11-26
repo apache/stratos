@@ -65,7 +65,7 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
                                     getClusterMonitor(clusterId);
         boolean clusterActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts().values()) {
+        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts(instanceId).values()) {
             //minimum check per partition
             for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                 if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {

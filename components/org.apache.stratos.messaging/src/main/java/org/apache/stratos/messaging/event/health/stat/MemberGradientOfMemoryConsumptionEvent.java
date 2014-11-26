@@ -26,10 +26,12 @@ import org.apache.stratos.messaging.event.Event;
  */
 public class MemberGradientOfMemoryConsumptionEvent extends Event {
 
+    private final String instanceId;
     private final String memberId;
     private final float value;
 
-    public MemberGradientOfMemoryConsumptionEvent(String memberId, float value) {
+    public MemberGradientOfMemoryConsumptionEvent(String instanceId, String memberId, float value) {
+        this.instanceId = instanceId;
         this.memberId = memberId;
         this.value = value;
     }
@@ -41,5 +43,9 @@ public class MemberGradientOfMemoryConsumptionEvent extends Event {
 
     public float getValue() {
         return value;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }

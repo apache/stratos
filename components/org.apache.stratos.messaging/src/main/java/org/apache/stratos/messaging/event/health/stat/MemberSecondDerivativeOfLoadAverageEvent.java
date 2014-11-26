@@ -26,11 +26,13 @@ import org.apache.stratos.messaging.event.Event;
  */
 public class MemberSecondDerivativeOfLoadAverageEvent extends Event {
     private final String clusterId;
+    private final String instanceId;
     private final String memberId;
     private final float value;
 
-    public MemberSecondDerivativeOfLoadAverageEvent(String clusterId, String memberId, float value) {
+    public MemberSecondDerivativeOfLoadAverageEvent(String clusterId, String instanceId, String memberId, float value) {
         this.clusterId = clusterId;
+        this.instanceId = instanceId;
         this.memberId = memberId;
         this.value = value;
     }
@@ -46,5 +48,9 @@ public class MemberSecondDerivativeOfLoadAverageEvent extends Event {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
     }
 }
