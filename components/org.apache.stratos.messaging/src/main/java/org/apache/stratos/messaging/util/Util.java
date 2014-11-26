@@ -31,6 +31,9 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.UUID;
 
+/**
+ *  Messaging module utility class
+ */
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
 	public static final int BEGIN_INDEX = 35;
@@ -40,6 +43,11 @@ public class Util {
 	// Time interval between each ping message after an error had occurred.
 	private static int failoverPingInterval;
 
+	/**
+	 * Properties of the given file
+	 * @param filePath path of the property file
+	 * @return Properties of the given file
+	 */
 	public static Properties getProperties(String filePath) {
 		Properties props = new Properties();
 		InputStream is = null;
@@ -63,12 +71,12 @@ public class Util {
 		return props;
 	}
 
+
 	/**
 	 * Validate tenant range.
 	 * Valid formats: Integer-Integer, Integer-*
 	 * Examples: 1-100, 101-200, 201-*
-	 * 
-	 * @param tenantRange
+	 * @param tenantRange Tenant range
 	 */
 	public static void validateTenantRange(String tenantRange) {
 		boolean valid = false;
@@ -94,12 +102,17 @@ public class Util {
 			throw new RuntimeException(String.format("Tenant range %s is not valid", tenantRange));
 	}
 
-    public static boolean isNumber(String s) {
+	/**
+	 * Check given string is a number
+	 * @param inputStr String to be checked
+	 * @return Boolean of given string is a number
+	 */
+    public static boolean isNumber(String inputStr) {
         try {
-            Integer.parseInt(s);
+            Integer.parseInt(inputStr);
             return true;
         }
-        catch (NumberFormatException e) {
+        catch (NumberFormatException ignore) {
             // Not a valid number
         }
         return false;
@@ -107,9 +120,9 @@ public class Util {
     
     /**
      * Transform json into an object of given type.
-     * @param json
-     * @param type
-     * @return
+     * @param json json string
+     * @param type type of the class
+     * @return Object of the json String
      */
     public static Object jsonToObject(String json, Class type) {
         return (new JsonMessage(json, type)).getObject();
@@ -118,7 +131,7 @@ public class Util {
 	/**
 	 * Create a JSON string
 	 * @param obj object
-	 * @return
+	 * @return JSON string
 	 */
     public static String ObjectToJson(Object obj) {
     	Gson gson = new Gson();
@@ -128,9 +141,8 @@ public class Util {
 
 
 	/**
-	 * fetch value from system param
-	 * 
-	 * @return
+	 * Fetch value from system param
+	 * @return Average ping interval
 	 */
 	public static int getAveragePingInterval() {
 		if (averagePingInterval <= 0) {
@@ -142,9 +154,8 @@ public class Util {
 	}
 
 	/**
-	 * fetch value from system param
-	 * 
-	 * @return
+	 * Fetch value from system param
+	 * @return Fail over ping interval
 	 */
 	public static int getFailoverPingInterval() {
 		if (failoverPingInterval <= 0) {
@@ -157,9 +168,9 @@ public class Util {
 
 	/**
 	 * Method to safely access numeric system properties
-	 * 
-	 * @param defaultValue
-	 * @return
+	 * @param defaultValue default value of the property
+	 * @param propertyKey property key
+	 * @return Numeric system properties
 	 */
 	public static Integer getNumericSystemProperty(Integer defaultValue, String propertyKey) {
 		try {
@@ -172,7 +183,7 @@ public class Util {
 	/**
 	 * Get the Message topic name for event
 	 * @param event event name
-	 * @return
+	 * @return String topic name of the event
 	 */
 	public static String getMessageTopicName(Event event) {
 		return event.getClass().getName().substring(BEGIN_INDEX).replace(".", "/");
@@ -181,7 +192,7 @@ public class Util {
 	/**
 	 * Get the event name for topic
 	 * @param topic topic Name
-	 * @return
+	 * @return String Event name for topic
 	 */
 	public static String getEventNameForTopic(String topic) {
 		return "org.apache.stratos.messaging.event.".concat(topic.replace("/", "."));
@@ -190,7 +201,7 @@ public class Util {
 	/**
 	 * Get the random string with UUID
 	 * @param len length of the String
-	 * @return
+	 * @return Random String
 	 */
 
 	public static String getRandomString(int len) {
