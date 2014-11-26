@@ -168,7 +168,7 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType, boolean isPrimary) {
+    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String instanceId, String lbRefType, boolean isPrimary) {
 
         try {
 
@@ -180,7 +180,7 @@ public class RuleTasksDelegator {
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            for (PartitionContext partitionContextOfCurrentNetworkPartition : vmClusterMonitor.getNetworkPartitionCtxt(nwPartitionId).
+            for (PartitionContext partitionContextOfCurrentNetworkPartition : vmClusterMonitor.getNetworkPartitionCtxt(instanceId, nwPartitionId).
                     getPartitionCtxts().values()) {
 
                 minimumCountOfNetworkPartition += partitionContextOfCurrentNetworkPartition.getMinimumMemberCount();

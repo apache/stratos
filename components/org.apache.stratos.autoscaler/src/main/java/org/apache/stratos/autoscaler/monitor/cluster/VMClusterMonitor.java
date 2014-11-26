@@ -697,7 +697,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         return nwPartitionIdToNwPartitionMap;
     }
 
-    protected NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, String id) {
+    public NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, String id) {
 
         VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxt(id);

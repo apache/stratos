@@ -23,6 +23,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -68,12 +69,20 @@ public class ApplicationMonitorFactory {
             monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context);
             if (monitor != null) {
             	//((AbstractClusterMonitor)monitor).startScheduler();
+                ClusterChildContext clusterChildCtxt = (ClusterChildContext) context;
+                AbstractClusterMonitor clusterMonitor = (AbstractClusterMonitor)monitor;
+                // FIXME: passing null as alias for cluster instance temporarily. should be removed.
+                createClusterInstance(clusterChildCtxt.getServiceName(), clusterMonitor.getClusterId(), null, instanceId);
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
 			}
         } else {
             monitor = getApplicationMonitor(appId);
         }
         return monitor;
+    }
+
+    private static void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) {
+        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias, instanceId);
     }
 
     /**

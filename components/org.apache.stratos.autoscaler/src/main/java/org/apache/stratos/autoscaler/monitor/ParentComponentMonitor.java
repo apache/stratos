@@ -551,8 +551,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                 throw new RuntimeException(msg);
             }
 
-             createClusterInstance();
-
             aliasToActiveMonitorsMap.put(context.getId(), monitor);
             // ApplicationBuilder.
             if (log.isInfoEnabled()) {
@@ -562,7 +560,4 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
     }
 
-    private void createClusterInstance () {
-        // TODO: create cluster instance
-    }
 }

@@ -248,6 +248,21 @@ public class CloudControllerClient {
 
     }
 
+    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId){
+        try {
+            stub.createClusterInstance(serviceType, clusterId, alias, instanceId);
+
+        } catch (RemoteException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        } catch (CloudControllerServiceClusterInstanceCreationExceptionException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
+    }
+
     public synchronized void terminate(String memberId) throws TerminationException {
         try {
             if (log.isInfoEnabled()) {
