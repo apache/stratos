@@ -486,30 +486,35 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void handleMemberReadyToShutdownEvent(
             MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
-
-        NetworkPartitionContext nwPartitionCtxt;
-        String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
-        nwPartitionCtxt = getNetworkPartitionCtxt(networkPartitionId);
-
-        // start a new member in the same Partition
-        String memberId = memberReadyToShutdownEvent.getMemberId();
-        String partitionId = getPartitionOfMember(memberId);
-        PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
-        // terminate the shutdown ready member
-        CloudControllerClient ccClient = CloudControllerClient.getInstance();
         try {
-            ccClient.terminate(memberId);
-            // remove from active member list
-            partitionCtxt.removeActiveMemberById(memberId);
+            NetworkPartitionContext nwPartitionCtxt;
+            String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
+            nwPartitionCtxt = getNetworkPartitionCtxt(networkPartitionId);
 
+            // start a new member in the same Partition
+            String memberId = memberReadyToShutdownEvent.getMemberId();
             String clusterId = memberReadyToShutdownEvent.getClusterId();
-            log.info(String.format("Member is terminated and removed from the active members list: "
-                                   + "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
-        } catch (TerminationException e) {
-            String msg = "TerminationException" + e.getLocalizedMessage();
+            String partitionId = getPartitionOfMember(memberId);
+            PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+
+            //move member to pending termination list
+            if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
+                partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
+            } else if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
+                // add member to obsolete list since the member is shutdown ready member
+                partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
+            }
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
+                        memberId, partitionId, clusterId));
+            }
+        } catch (Exception e) {
+            String msg = "Error processing event " + e.getLocalizedMessage();
             log.error(msg, e);
         }
     }
+
 
     @Override
     public void handleMemberTerminatedEvent(

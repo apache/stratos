@@ -155,6 +155,8 @@ public class ClusterMonitorFactory {
                             partitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
+                        } else if (MemberStatus.ReadyToShutDown.equals((member.getStatus()))) {
+                            partitionContext.addObsoleteMember(memberContext);
                         } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                            partitionContext.addFaultyMember(memberId);
                         }

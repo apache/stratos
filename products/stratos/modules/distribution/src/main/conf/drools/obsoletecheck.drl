@@ -64,3 +64,16 @@ dialect "mvel"
            $delegator.terminateObsoleteInstance(memberId);
 end
 
+rule "Cleanup Instances which are pending termination"
+dialect "mvel"
+        when
+            $ctxt : PartitionContext ()
+            eval(log.debug("Running instances cleanup event sender rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
+            eval(log.debug("[instance-cleanup-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Pending termination member count: " + $ctxt.getTerminationPendingMembers().size()))
+            eval($ctxt.getTerminationPendingMembers().size() > 0)
+            memberId : String() from $ctxt.getTerminationPendingMembers()
+            eval(log.debug("[instance-cleanup-check ] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
+        then
+           $delegator.delegateInstanceCleanup(memberId);
+end
+

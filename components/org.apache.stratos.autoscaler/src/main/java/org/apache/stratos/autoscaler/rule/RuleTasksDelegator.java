@@ -156,6 +156,18 @@ public class RuleTasksDelegator {
         }
         return autoscaleAlgorithm;
     }
+
+    public void delegateInstanceCleanup(String memberId) {
+
+        try {
+
+            //calling SM to send the instance notification event.
+            InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
+            log.info("Instance clean up event sent for [member] " + memberId);
+        } catch (Throwable e) {
+            log.error("Cannot terminate instance", e);
+        }
+    }
     
     public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType, boolean isPrimary) {
     	
@@ -274,10 +286,12 @@ public class RuleTasksDelegator {
                 partitionContext.getNetworkPartitionId() + " ]");
 
         try {
-            //calling SM to send the instance notification event.
-            InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
-            partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-            //CloudControllerClient.getInstance().terminate(memberId);
+            //Moving member to pending termination list
+            if (partitionContext.activeMemberAvailable(memberId)) {
+                partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+            } else if (partitionContext.pendingMemberAvailable(memberId)) {
+                partitionContext.movePendingMemberToObsoleteMembers(memberId);
+            }
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
         }

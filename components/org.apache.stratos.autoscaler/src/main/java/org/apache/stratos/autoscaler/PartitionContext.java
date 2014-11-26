@@ -26,24 +26,9 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.commons.configuration.XMLConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
 
 /**
@@ -76,6 +61,9 @@ public class PartitionContext implements Serializable{
     // 1 day as default
     private long obsoltedMemberExpiryTime = 1*24*60*60*1000;
 
+    // 30 mints as default
+    private long terminationPendingMemberExpiryTime = 1800000;
+
     // members to be terminated
     private Map<String, MemberContext> obsoletedMembers;
     
@@ -84,6 +72,9 @@ public class PartitionContext implements Serializable{
 
     // termination pending members, member is added to this when Autoscaler send grace fully shut down event
     private List<MemberContext> terminationPendingMembers;
+
+    //member id: time that member is moved to termination pending status
+    private Map<String, Long> terminationPendingStartedTime;
 
     //Keep statistics come from CEP
     private Map<String, MemberStatsContext> memberStatsContexts;
@@ -106,6 +97,7 @@ public class PartitionContext implements Serializable{
         this.obsoletedMembers = new ConcurrentHashMap<String, MemberContext>();
         memberStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
 
+        terminationPendingStartedTime = new HashMap<String, Long>();
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
@@ -119,6 +111,12 @@ public class PartitionContext implements Serializable{
         th.start();
         Thread th2 = new Thread(new ObsoletedMemberWatcher(this));
         th2.start();
+        Thread th3 = new Thread(new TerminationPendingMemberWatcher(this));
+        th3.start();
+    }
+
+    public long getTerminationPendingStartedTimeOfMember(String memberId) {
+        return terminationPendingStartedTime.get(memberId);
     }
     
     public List<MemberContext> getPendingMembers() {
@@ -211,6 +209,24 @@ public class PartitionContext implements Serializable{
         }
     }
 
+    public boolean activeMemberAvailable(String memberId) {
+        for (MemberContext activeMember : activeMembers) {
+            if (memberId.equals(activeMember.getMemberId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean pendingMemberAvailable(String memberId) {
+
+        for (MemberContext pendingMember : pendingMembers) {
+            if (memberId.equals(pendingMember.getMemberId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void moveActiveMemberToTerminationPendingMembers(String memberId) {
         if (memberId == null) {
@@ -507,6 +523,79 @@ public class PartitionContext implements Serializable{
     	
     	return results;
     }
+
+    public void movePendingTerminationMemberToObsoleteMembers(String memberId) {
+
+        log.info("Starting the moving of termination pending to obsolete for [member] " + memberId);
+        if (memberId == null) {
+            return;
+        }
+        Iterator<MemberContext> iterator = terminationPendingMembers.listIterator();
+        while (iterator.hasNext()) {
+            MemberContext terminationPendingMember = iterator.next();
+            if (terminationPendingMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if (memberId.equals(terminationPendingMember.getMemberId())) {
+
+                log.info("Found termination pending member and trying to move [member] " + memberId + " to obsolete list");
+                // member is pending termination
+                // remove from pending termination list
+                iterator.remove();
+                // add to the obsolete list
+                this.obsoletedMembers.put(memberId, terminationPendingMember);
+
+                terminationPendingStartedTime.put(memberId, System.currentTimeMillis());
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Termination pending member is removed and added to the " +
+                            "obsolete member list. [Member Id] %s", memberId));
+                }
+                break;
+            }
+        }
+    }
+
+    public MemberContext getPendingTerminationMember(String memberId) {
+        for (MemberContext memberContext : terminationPendingMembers) {
+            if (memberId.equals(memberContext.getMemberId())) {
+                return memberContext;
+            }
+        }
+        return null;
+    }
+
+    public long getTerminationPendingMemberExpiryTime() {
+        return terminationPendingMemberExpiryTime;
+    }
+
+    public void movePendingMemberToObsoleteMembers(String memberId) {
+        if (memberId == null) {
+            return;
+        }
+        Iterator<MemberContext> iterator = pendingMembers.listIterator();
+        while (iterator.hasNext()) {
+            MemberContext pendingMember = iterator.next();
+            if (pendingMember == null) {
+                iterator.remove();
+                continue;
+            }
+            if (memberId.equals(pendingMember.getMemberId())) {
+
+                // remove from pending list
+                iterator.remove();
+                // add to the obsolete list
+                this.obsoletedMembers.put(memberId, pendingMember);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Pending member is removed and added to the " +
+                            "obsolete member list. [Member Id] %s", memberId));
+                }
+                break;
+            }
+        }
+
+    }
     
     private class PendingMemberWatcher implements Runnable {
         private PartitionContext ctxt;
@@ -559,37 +648,75 @@ public class PartitionContext implements Serializable{
     } 
     
     private class ObsoletedMemberWatcher implements Runnable {
-    	private PartitionContext ctxt;
+        private PartitionContext ctxt;
 
-    	public ObsoletedMemberWatcher(PartitionContext ctxt) {
-    		this.ctxt = ctxt;
-    	}
-        
-    	@Override
-    	public void run() {
-    		while (true) {
-    			
-    			long obsoltedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
-    			Map<String, MemberContext> obsoletedMembers = ctxt.getObsoletedMembers();
-    			Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
-    			
-    			while (iterator.hasNext()) {
-    				Map.Entry<String, MemberContext> pairs = iterator.next();
-    				MemberContext obsoleteMember = (MemberContext) pairs.getValue();
-    				if (obsoleteMember == null){
-    					continue;
-    				}
-    				long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
-    				if (obsoleteTime >= obsoltedMemberExpiryTime) {
-    					iterator.remove();
-    				}
-    			}
-    			try {
-    				// TODO find a constant
-    				Thread.sleep(15000);
-    			} catch (InterruptedException ignore) {
-    			}
-    		}
-    	}
-    } 
+        public ObsoletedMemberWatcher(PartitionContext ctxt) {
+            this.ctxt = ctxt;
+        }
+
+        @Override
+        public void run() {
+            while (true) {
+                long obsoltedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
+                Map<String, MemberContext> obsoletedMembers = ctxt.getObsoletedMembers();
+
+                Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, MemberContext> pairs = iterator.next();
+                    MemberContext obsoleteMember = (MemberContext) pairs.getValue();
+                    if (obsoleteMember == null) {
+                        continue;
+                    }
+                    long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
+                    if (obsoleteTime >= obsoltedMemberExpiryTime) {
+                        iterator.remove();
+                    }
+                }
+                try {
+                    // TODO find a constant
+                    Thread.sleep(15000);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        }
+    }
+
+    /**
+     * This thread is responsible for moving member to obsolete list if pending termination timeout happens
+     */
+    private class TerminationPendingMemberWatcher implements Runnable {
+        private PartitionContext ctxt;
+
+        public TerminationPendingMemberWatcher(PartitionContext ctxt) {
+            this.ctxt = ctxt;
+        }
+
+        @Override
+        public void run() {
+
+            while (true) {
+                long terminationPendingMemberExpiryTime = ctxt.getTerminationPendingMemberExpiryTime();
+
+                Iterator<MemberContext> iterator = ctxt.getTerminationPendingMembers().listIterator();
+                while (iterator.hasNext()) {
+
+                    MemberContext terminationPendingMember = iterator.next();
+                    if (terminationPendingMember == null){
+                        continue;
+                    }
+                    long terminationPendingTime = System.currentTimeMillis()
+                            - ctxt.getTerminationPendingStartedTimeOfMember(terminationPendingMember.getMemberId());
+                    if (terminationPendingTime >= terminationPendingMemberExpiryTime) {
+                        log.info("Moving [member] " + terminationPendingMember.getMemberId() + partitionId);
+                        iterator.remove();
+                        obsoletedMembers.put(terminationPendingMember.getMemberId(), terminationPendingMember);
+                    }
+                }
+                try {
+                    // TODO find a constant
+                    Thread.sleep(15000);
+                } catch (InterruptedException ignore) {}
+            }
+        }
+    }
 }
