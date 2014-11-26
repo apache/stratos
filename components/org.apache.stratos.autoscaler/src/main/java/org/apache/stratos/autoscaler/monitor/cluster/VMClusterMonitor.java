@@ -212,13 +212,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                     clusterId, networkPartitionId, floatValue));
         }
 
-<<<<<<< HEAD
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(networkPartitionId);
-        if (null != networkPartitionContext) {
-=======
         NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(null, networkPartitionId);
         if(null != networkPartitionContext){
->>>>>>> getting ClusterInstanceContext using the instance id in the MonitorHierarchy
             networkPartitionContext.setAverageRequestsServedPerInstance(floatValue);
 
         } else {
@@ -507,10 +502,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void handleMemberReadyToShutdownEvent(
-            MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
-<<<<<<< HEAD
-=======
+    public void handleMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
 
         NetworkPartitionContext nwPartitionCtxt;
         String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
@@ -522,18 +514,18 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String partitionId = getPartitionOfMember(memberId);
         PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
         // terminate the shutdown ready member
-        CloudControllerClient ccClient = CloudControllerClient.getInstance();
->>>>>>> getting ClusterInstanceContext using the instance id in the MonitorHierarchy
+        //CloudControllerClient ccClient = CloudControllerClient.getInstance();
+
         try {
-            NetworkPartitionContext nwPartitionCtxt;
-            String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
-            nwPartitionCtxt = getNetworkPartitionCtxt(networkPartitionId);
+            //NetworkPartitionContext nwPartitionCtxt;
+            //String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
+            //nwPartitionCtxt = getNetworkPartitionCtxt(networkPartitionId);
 
             // start a new member in the same Partition
-            String memberId = memberReadyToShutdownEvent.getMemberId();
+            //String memberId = memberReadyToShutdownEvent.getMemberId();
             String clusterId = memberReadyToShutdownEvent.getClusterId();
-            String partitionId = getPartitionOfMember(memberId);
-            PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
+            //String partitionId = getPartitionOfMember(memberId);
+            //PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
 
             //move member to pending termination list
             if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
