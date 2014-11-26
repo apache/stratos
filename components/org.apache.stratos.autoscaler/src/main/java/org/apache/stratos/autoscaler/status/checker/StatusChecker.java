@@ -411,9 +411,7 @@ public class StatusChecker {
                 activeGroupInstances++;
             }
         }
-        if(activeGroupInstances >= group.getComponentDeploymentPolicy().getMin()) {
-            return true;
-        }
+
         return false;
     }
 

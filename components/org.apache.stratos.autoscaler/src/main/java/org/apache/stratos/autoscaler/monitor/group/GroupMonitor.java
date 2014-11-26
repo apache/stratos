@@ -223,11 +223,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     private void startMinimumDependencies(Group group, String parentInstanceId)
             throws TopologyInConsistentException {
-        DeploymentPolicy policy = group.getComponentDeploymentPolicy();
-        int min = 1;
-        if(policy != null) {
-            min = policy.getMin();
-        }
+        int min = group.getGroupMinInstances();
         if(group.getInstanceContextCount() >= min) {
             startDependency(group);
         } else {

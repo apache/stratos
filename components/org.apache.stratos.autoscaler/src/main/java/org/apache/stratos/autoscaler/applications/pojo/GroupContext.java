@@ -29,7 +29,13 @@ public class GroupContext implements Serializable{
 
     private String alias;
 
-    private String deploymentPolicy;
+    private int groupMinInstances;
+
+    private int groupMaxInstances;
+
+    private boolean isGroupInstanceMonitoringEnabled;
+
+    private boolean isGroupScalingEnabled;
 
     private String autoscalingPolicy;
 
@@ -54,14 +60,6 @@ public class GroupContext implements Serializable{
         this.alias = alias;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
-
     public String getAutoscalingPolicy() {
         return autoscalingPolicy;
     }
@@ -84,5 +82,37 @@ public class GroupContext implements Serializable{
 
     public void setGroupContexts(GroupContext[] groupContexts) {
         this.groupContexts = groupContexts;
+    }
+
+    public int getGroupMinInstances() {
+        return groupMinInstances;
+    }
+
+    public void setGroupMinInstances(int groupMinInstances) {
+        this.groupMinInstances = groupMinInstances;
+    }
+
+    public int getGroupMaxInstances() {
+        return groupMaxInstances;
+    }
+
+    public void setGroupMaxInstances(int groupMaxInstances) {
+        this.groupMaxInstances = groupMaxInstances;
+    }
+
+    public boolean isGroupInstanceMonitoringEnabled() {
+        return isGroupInstanceMonitoringEnabled;
+    }
+
+    public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
+        this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }

@@ -68,7 +68,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
             } else {
                 //Checking the minimum of the group instances to be satisfied
                 List<InstanceContext> contexts = group.getInstanceContextsWithParentId(instanceId);
-                int minGroupInstances = group.getComponentDeploymentPolicy().getMin();
+                int minGroupInstances = group.getGroupMinInstances();
                 int sameStateInstances = 0;
                 for(InstanceContext context1 : contexts) {
                    if(((GroupInstanceContext)context1).getStatus().equals(status)) {

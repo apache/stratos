@@ -29,7 +29,13 @@ public class GroupDefinition {
 
     private String alias;
 
-    private String deploymentPolicy;
+    private int groupMinInstances;
+
+    private int groupMaxInstances;
+
+    private boolean isGroupScalingEnabled;
+
+    private boolean isGroupInstanceMonitoringEnabled;
 
     private String autoscalingPolicy;
 
@@ -51,14 +57,6 @@ public class GroupDefinition {
 
     public void setAlias(String alias) {
         this.alias = alias;
-    }
-
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
     }
 
     public String getAutoscalingPolicy() {
@@ -83,5 +81,37 @@ public class GroupDefinition {
 
     public void setSubGroups(List<GroupDefinition> subGroups) {
         this.subGroups = subGroups;
+    }
+
+    public int getGroupMinInstances() {
+        return groupMinInstances;
+    }
+
+    public void setGroupMinInstances(int groupMinInstances) {
+        this.groupMinInstances = groupMinInstances;
+    }
+
+    public int getGroupMaxInstances() {
+        return groupMaxInstances;
+    }
+
+    public void setGroupMaxInstances(int groupMaxInstances) {
+        this.groupMaxInstances = groupMaxInstances;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
+    }
+
+    public boolean isGroupInstanceMonitoringEnabled() {
+        return isGroupInstanceMonitoringEnabled;
+    }
+
+    public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
+        this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
     }
 }

@@ -33,8 +33,6 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
-    //Deployment policy group/application
-    private DeploymentPolicy deploymentPolicy;
     // Group Map, key = Group.alias
     private final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
@@ -43,10 +41,12 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
     protected Map<String, T> instanceIdToInstanceContextMap;
     // flag for Group level scaling
     private boolean isGroupScalingEnabled;
-
+    //flag for group instance level monitoring
+    private boolean isGroupInstanceMonitoringEnabled;
 
     public ParentComponent () {
         this.isGroupScalingEnabled = false;
+        this.isGroupInstanceMonitoringEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
     }
@@ -298,19 +298,19 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
         return instanceIdToInstanceContextMap;
     }
 
-    public DeploymentPolicy getComponentDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
-
     public boolean isGroupScalingEnabled() {
         return isGroupScalingEnabled;
     }
 
     public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
         this.isGroupScalingEnabled = isGroupScalingEnabled;
+    }
+
+    public boolean isGroupInstanceMonitoringEnabled() {
+        return isGroupInstanceMonitoringEnabled;
+    }
+
+    public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
+        this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
     }
 }

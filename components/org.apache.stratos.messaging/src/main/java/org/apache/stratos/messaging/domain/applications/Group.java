@@ -34,6 +34,10 @@ public class Group extends ParentComponent<GroupInstanceContext> {
     private String name;
     // Group alias
     private String alias;
+    //minimum group instances
+    private int groupMinInstances;
+    //maximum group instances
+    private int groupMaxInstances;
     // Group level autoscaling policy
     private String autoscalingPolicy;
     // application id
@@ -108,5 +112,19 @@ public class Group extends ParentComponent<GroupInstanceContext> {
     }
 
 
+    public int getGroupMinInstances() {
+        return groupMinInstances;
+    }
 
+    public void setGroupMinInstances(int groupMinInstances) {
+        this.groupMinInstances = groupMinInstances;
+    }
+
+    public int getGroupMaxInstances() {
+        return groupMaxInstances;
+    }
+
+    public void setGroupMaxInstances(int groupMaxInstances) {
+        this.groupMaxInstances = groupMaxInstances;
+    }
 }

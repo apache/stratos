@@ -115,7 +115,7 @@ public class ApplicationMonitorFactory {
                         groupMonitor.setHasGroupScalingDependent(true);
                     }
                 }
-                //TODO*********** make it sync with the topology
+                //TODO*********** make it sync with the topology in the restart
 
                 /*if (group.getStatus() != groupMonitor.getStatus()) {
                     //updating the status, if the group is not in created state when creating group Monitor

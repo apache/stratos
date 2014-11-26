@@ -26,10 +26,12 @@ import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
-import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -79,8 +81,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             } else {
                 // check if this Group has nested sub Groups. If so, traverse them as well
                 if (monitor instanceof ParentComponentMonitor) {
-                    return findGroupMonitor(id, ((ParentComponentMonitor)monitor).
-                                                            getAliasToActiveMonitorsMap().values());
+                    return findGroupMonitor(id, ((ParentComponentMonitor) monitor).
+                            getAliasToActiveMonitorsMap().values());
                 }
             }
         }
@@ -163,40 +165,19 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     private void startMinimumDependencies(Application application)
-                                                            throws TopologyInConsistentException {
-        DeploymentPolicy policy = application.getComponentDeploymentPolicy();
-        int min = 1;
-        if(policy != null) {
-           min = policy.getMin();
-        }
-        if(application.getInstanceContextCount() >= min) {
+            throws TopologyInConsistentException {
+        //There will be one application instance
+        if (application.getInstanceContextCount() > 0) {
             startDependency(application);
         } else {
-            if(application.getInstanceContextCount() > 0) {
-                startDependency(application);
-                int remainingInstancesToBeStarted = min - application.getInstanceContextCount();
-                while (remainingInstancesToBeStarted > 0) {
-                    createInstanceAndStartDependency(application);
-                    remainingInstancesToBeStarted--;
-                }
-
-            } else {
-                //No available instances in the Applications. Need to start them all
-                int instancesToBeStarted = min;
-                while(instancesToBeStarted > 0) {
-                    createInstanceAndStartDependency(application);
-                    instancesToBeStarted--;
-
-                }
-            }
-
-
+            //No available instances in the Applications. Need to start them all
+            createInstanceAndStartDependency(application);
         }
     }
 
     private void createInstanceAndStartDependency(Application application)
-                                                            throws TopologyInConsistentException {
-        String instanceId  = createApplicationInstance(application);
+            throws TopologyInConsistentException {
+        String instanceId = createApplicationInstance(application);
         startDependency(application, instanceId);
     }
 
