@@ -1,0 +1,8 @@
+*The provided service daemon template can be used to register Stratos/CEP/MB/.. as Linux services
+
+1. Set USER, PRODUCT_CODE, CARBON_HOME, CMD and JAVA_HOME in daemon_service file
+2. Rename the file to <SERVICE_NAME>
+3. Copy the <SERVICE_NAME> file to /etc/init.d/ of the host instance where the service needs to be registered
+4. Set '0755' permission to the file (chmod +x <SERVICE_NAME>)	
+5. Run '/usr/sbin/update-rc.d <SERVICE_NAME> defaults'
+
