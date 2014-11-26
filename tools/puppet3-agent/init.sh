@@ -1,6 +1,7 @@
 #!/bin/bash
 # --------------------------------------------------------------
 #
+# Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
 # regarding copyright ownership.  The ASF licenses this file
@@ -35,13 +36,24 @@ SLEEP=`which sleep`
 TR=`which tr`
 HEAD=`which head`
 WGET=`which wget`
+PUPPETD=`which puppet`
+AGENT="agent"
+PUPPETAGENT="${PUPPETD} ${AGENT}"
+OS=$(lsb_release -si)
+PUPPET_DNS_AVAILABLE=false
 
+COMMAND="${PUPPETAGENT} -vt"
 IP=`${IFCONFIG} eth0 | ${GREP} -e "inet addr" | ${AWK} '{print $2}' | ${CUT} -d ':' -f 2`
 LOG=/tmp/puppet-init.log
 
 HOSTSFILE=/etc/hosts
 HOSTNAMEFILE=/etc/hostname
 PUPPETCONF=/etc/puppet/puppet.conf
+
+read_master() {
+	${COMMAND}
+}
+
 
 is_public_ip_assigned() {
 
@@ -98,8 +110,13 @@ if [ ! -d /tmp/payload ]; then
 	INSTANCE_HOSTNAME=`sed 's/,/\n/g' launch-params | grep HOSTNAME | cut -d "=" -f 2`
 	PUPPET_IP=`sed 's/,/\n/g' launch-params | grep PUPPET_IP | cut -d "=" -f 2`
 	PUPPET_HOSTNAME=`sed 's/,/\n/g' launch-params | grep PUPPET_HOSTNAME | cut -d "=" -f 2`
-	PUPPET_DNS_AVAILABLE=`sed 's/,/\n/g' launch-params | grep PUPPET_DNS_AVAILABLE | cut -d "=" -f 2`
 	PUPPET_ENV=`sed 's/,/\n/g' launch-params | grep PUPPET_ENV | cut -d "=" -f 2`
+	PUPPET_DNS_AVAILABLE=`sed 's/,/\n/g' launch-params | grep PUPPET_DNS_AVAILABLE | cut -d "=" -f 2`
+	
+	#If this property is not set, then set it as false
+	if [  -z $PUPPET_DNS_AVAILABLE ];then
+		PUPPET_DNS_AVAILABLE=false
+	fi
 	NODEID="${RANDOMNUMBER}.${DEPLOYMENT}.${SERVICE_NAME}"
 	#essential to have PUPPET_HOSTNAME at the end in order to auto-sign the certs
 	DOMAIN="${PUPPET_HOSTNAME}"
@@ -115,7 +132,20 @@ if [ ! -d /tmp/payload ]; then
 		${ECHO} "${PUPPET_IP}  ${PUPPET_HOSTNAME}" >> ${HOSTSFILE} 
 	fi
 	${ECHO} "127.0.0.1 ${HOST}" >> ${HOSTSFILE}
-	/etc/init.d/hostname start
+
+	if [ "$OS" = "CentOS" ]; then
+		#CentOS hostname change
+		${ECHO} "CentOS : Changing host name in /etc/sysconfig/network"
+		CENTOSHOSTNAME="/etc/sysconfig/network"
+		${ECHO} "NETWORKING=yes" > ${CENTOSHOSTNAME}
+		${ECHO} "HOSTNAME=${HOST}" >> ${CENTOSHOSTNAME}
+		${ECHO} "Network restarting..."
+		/etc/init.d/network restart
+		${SLEEP} 4	
+	else
+		#Ubuntu hostname change
+		/etc/init.d/hostname start
+	fi
 
 	PUPPET=`which puppet`
         PUPPETAGENT="${PUPPET} agent"
@@ -133,4 +163,3 @@ if [ ! -d /tmp/payload ]; then
 fi
 
 # END
-
