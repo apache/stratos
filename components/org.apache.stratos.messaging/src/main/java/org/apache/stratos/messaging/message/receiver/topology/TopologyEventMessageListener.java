@@ -46,7 +46,7 @@ class TopologyEventMessageListener implements MessageListener {
             messageQueue.add(message);
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("Adding the received message to the internal message queue got failed", e);
         }
     }
 }

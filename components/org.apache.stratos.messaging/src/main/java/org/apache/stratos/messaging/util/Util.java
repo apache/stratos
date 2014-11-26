@@ -18,27 +18,27 @@
  */
 package org.apache.stratos.messaging.util;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.JsonMessage;
-
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.Random;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.message.JsonMessage;
+import java.util.UUID;
 
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
 	public static final int BEGIN_INDEX = 35;
+	// Time interval between each ping message sent to topic.
+	private static int averagePingInterval;
+
+	// Time interval between each ping message after an error had occurred.
+	private static int failoverPingInterval;
 
 	public static Properties getProperties(String filePath) {
 		Properties props = new Properties();
@@ -114,18 +114,18 @@ public class Util {
     public static Object jsonToObject(String json, Class type) {
         return (new JsonMessage(json, type)).getObject();
     }
-    
+
+	/**
+	 * Create a JSON string
+	 * @param obj object
+	 * @return
+	 */
     public static String ObjectToJson(Object obj) {
     	Gson gson = new Gson();
     	String result = gson.toJson(obj);
     	return result;
     }
 
-	// Time interval between each ping message sent to topic.
-	private static int averagePingInterval;
-
-	// Time interval between each ping message after an error had occurred.
-	private static int failoverPingInterval;
 
 	/**
 	 * fetch value from system param
@@ -169,20 +169,31 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Get the Message topic name for event
+	 * @param event event name
+	 * @return
+	 */
 	public static String getMessageTopicName(Event event) {
 		return event.getClass().getName().substring(BEGIN_INDEX).replace(".", "/");
 	}
 
-	public static String getEventNameForTopic(String arg0) {
-		return "org.apache.stratos.messaging.event.".concat(arg0.replace("/", "."));
+	/**
+	 * Get the event name for topic
+	 * @param topic topic Name
+	 * @return
+	 */
+	public static String getEventNameForTopic(String topic) {
+		return "org.apache.stratos.messaging.event.".concat(topic.replace("/", "."));
 	}
 
+	/**
+	 * Get the random string with UUID
+	 * @param len length of the String
+	 * @return
+	 */
+
 	public static String getRandomString(int len) {
-		String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		Random rnd = new Random();
-		StringBuilder sb = new StringBuilder(len);
-		for (int i = 0; i < len; i++)
-			sb.append(AB.charAt(rnd.nextInt(AB.length())));
-		return sb.toString();
+		return UUID.randomUUID().toString().replace("-","").substring(0,len);
 	}
 }
