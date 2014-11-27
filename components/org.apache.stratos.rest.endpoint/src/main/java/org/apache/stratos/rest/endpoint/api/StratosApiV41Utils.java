@@ -899,8 +899,8 @@ public class StratosApiV41Utils {
                     if (cartridge == null) {
                         continue;
                     }
-                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                            , cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+                    Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                            cartridge.getCartridgeAlias());
                     String cartridgeStatus = "Inactive";
                     int activeMemberCount = 0;
                     if (cluster != null) {
@@ -963,8 +963,8 @@ public class StratosApiV41Utils {
             log.error(message);
             throw new RestAPIException(Response.Status.NOT_FOUND, message);
         }
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                , cartridge.getCartridgeType(), cartridge.getCartridgeAlias());
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                cartridge.getCartridgeAlias());
         String cartridgeStatus = "Inactive";
         int activeMemberCount = 0;
 
@@ -989,8 +989,8 @@ public class StratosApiV41Utils {
 
     static int getActiveInstances(String cartridgeType, String cartridgeAlias, ConfigurationContext configurationContext) throws RestAPIException {
         int noOfActiveInstances = 0;
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                , cartridgeType, cartridgeAlias);
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                cartridgeAlias);
 
         if (cluster == null) {
             String message = "No Cluster found for cartridge [type] " + cartridgeType + ", [alias] " + cartridgeAlias;
@@ -1177,12 +1177,12 @@ public class StratosApiV41Utils {
         return subscriptionInfo;
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster(String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
+    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster(String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
 
-        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext)
-                , cartridgeType, subscriptionAlias);
+        Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
+                subscriptionAlias);
         if (cluster == null) {
-            throw new RestAPIException("No matching cluster found for [cartridge type]: " + cartridgeType + " [alias] " + subscriptionAlias);
+            throw new RestAPIException("No matching cluster found for [alias] " + subscriptionAlias);
         } else {
             return PojoConverter.populateClusterPojos(cluster, null);
         }
@@ -1357,7 +1357,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
+    public static void addSubscriptionDomains(ConfigurationContext configurationContext,
                                               String subscriptionAlias,
                                               SubscriptionDomainRequest request)
             throws RestAPIException {
@@ -1365,7 +1365,7 @@ public class StratosApiV41Utils {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
 
             for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.domains) {
-                boolean isDomainExists = isSubscriptionDomainExists(configurationContext, cartridgeType, subscriptionAlias, subscriptionDomain.domainName);
+                boolean isDomainExists = isSubscriptionDomainExists(configurationContext, subscriptionAlias, subscriptionDomain.domainName);
                 if (isDomainExists) {
                     String message = "Subscription domain " + subscriptionDomain.domainName + " exists";
                     throw new RestAPIException(Status.INTERNAL_SERVER_ERROR, message);
@@ -1383,7 +1383,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static boolean isSubscriptionDomainExists(ConfigurationContext configurationContext, String cartridgeType,
+    public static boolean isSubscriptionDomainExists(ConfigurationContext configurationContext,
                                                      String subscriptionAlias, String domain) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
@@ -1402,7 +1402,7 @@ public class StratosApiV41Utils {
 
     }
 
-    public static List<SubscriptionDomainBean> getSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
+    public static List<SubscriptionDomainBean> getSubscriptionDomains(ConfigurationContext configurationContext,
                                                                       String subscriptionAlias) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
@@ -1413,7 +1413,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static SubscriptionDomainBean getSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+    public static SubscriptionDomainBean getSubscriptionDomain(ConfigurationContext configurationContext,
                                                                String subscriptionAlias, String domain) throws RestAPIException {
         try {
             int tenantId = ApplicationManagementUtil
@@ -1422,8 +1422,7 @@ public class StratosApiV41Utils {
                     subscriptionAlias, domain));
 
             if (subscriptionDomain == null) {
-                String message = "Could not find a subscription [domain] " + domain + " for Cartridge [type] "
-                        + cartridgeType + " and [alias] " + subscriptionAlias;
+                String message = "Could not find a subscription for [domain] " + domain + " and [alias] " + subscriptionAlias;
                 log.error(message);
                 throw new RestAPIException(Status.NOT_FOUND, message);
             }
@@ -1436,7 +1435,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void removeSubscriptionDomain(ConfigurationContext configurationContext, String cartridgeType,
+    public static void removeSubscriptionDomain(ConfigurationContext configurationContext,
                                                 String subscriptionAlias, String domain) throws RestAPIException, DomainMappingExistsException {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);

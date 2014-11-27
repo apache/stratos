@@ -41,9 +41,12 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
 
     public UpdateKubernetesMasterCommand() {
         options = new Options();
-        Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
+        Option resourcePathOption = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
                 "Kubernetes master resource path");
-        options.addOption(option);
+        Option clusterIdOption = new Option(CliConstants.CLUSTER_ID_OPTION, CliConstants.CLUSTER_ID_LONG_OPTION, true,
+                "Kubernetes cluster id");
+        options.addOption(clusterIdOption);
+        options.addOption(resourcePathOption);
     }
     @Override
     public String getName() {
@@ -57,7 +60,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
 
     @Override
     public String getArgumentSyntax() {
-        return null;
+    	return null;
     }
 
     @Override
@@ -70,7 +73,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
         if (logger.isDebugEnabled()) {
             logger.debug("Executing command: ", getName());
         }
-
+        
         if ((args == null) || (args.length <= 0)) {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
@@ -79,19 +82,30 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
         try {
             CommandLineParser parser = new GnuParser();
             CommandLine commandLine = parser.parse(options, args);
-            if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+            if((commandLine.hasOption(CliConstants.RESOURCE_PATH)) && (commandLine.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
+            	               
+                // get cluster id arg value
+            	String clusterId = commandLine.getOptionValue(CliConstants.CLUSTER_ID_OPTION);
+                if (clusterId == null) {
+                    context.getStratosApplication().printUsage(getName());
+                    return CliConstants.COMMAND_FAILED;
+                }
+                
+                // get resource path arg value
+            	String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
                 if (resourcePath == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().updateKubernetesMaster(resourceFileContent);
+                
+                RestCommandLineService.getInstance().updateKubernetesMaster(resourceFileContent, clusterId);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 context.getStratosApplication().printUsage(getName());
                 return CliConstants.COMMAND_FAILED;
             }
+            
         } catch (ParseException e) {
             logger.error("Error parsing arguments", e);
             System.out.println(e.getMessage());

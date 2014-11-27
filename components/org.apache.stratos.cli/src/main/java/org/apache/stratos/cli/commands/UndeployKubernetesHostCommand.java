@@ -50,7 +50,7 @@ public class UndeployKubernetesHostCommand implements Command<StratosCommandCont
 
     @Override
     public String getArgumentSyntax() {
-        return "[host-id]";
+        return "[cluster-id] [host-id]";
     }
 
     @Override
@@ -69,8 +69,9 @@ public class UndeployKubernetesHostCommand implements Command<StratosCommandCont
             return CliConstants.COMMAND_FAILED;
         }
 
-        String hostId = args[0];
-        RestCommandLineService.getInstance().undeployKubernetesHost(hostId);
+        String clusterId = args[0];
+        String hostId = args[1];
+        RestCommandLineService.getInstance().undeployKubernetesHost(clusterId, hostId);
         return CliConstants.COMMAND_SUCCESSFULL;
     }
 }

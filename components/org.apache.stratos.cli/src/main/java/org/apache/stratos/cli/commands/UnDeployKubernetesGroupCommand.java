@@ -50,7 +50,7 @@ public class UnDeployKubernetesGroupCommand implements Command<StratosCommandCon
 
     @Override
     public String getArgumentSyntax() {
-        return "[group-id]";
+        return "[cluster-id]";
     }
 
     @Override
@@ -69,8 +69,8 @@ public class UnDeployKubernetesGroupCommand implements Command<StratosCommandCon
             return CliConstants.COMMAND_FAILED;
         }
 
-        String groupId = args[0];
-        RestCommandLineService.getInstance().undeployKubernetesGroup(groupId);
+        String clusterId = args[0];
+        RestCommandLineService.getInstance().undeployKubernetesCluster(clusterId);
         return CliConstants.COMMAND_SUCCESSFULL;
     }
 }

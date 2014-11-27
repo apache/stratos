@@ -44,7 +44,7 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
 	}
 
 	public String getArgumentSyntax() {
-		return "[group-id]";
+		return "[cluster-id]";
 	}
 
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
@@ -55,8 +55,8 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
             context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
 		} else {
-            String groupId = args[0];
-            RestCommandLineService.getInstance().listKubernetesHosts(groupId);
+            String clusterId = args[0];
+            RestCommandLineService.getInstance().listKubernetesHosts(clusterId);
             return CliConstants.COMMAND_SUCCESSFULL;
 		}
 	}
