@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.monitor.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
@@ -185,6 +186,32 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     private void createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
         List<String> instanceIds = new ArrayList<String>();
+        DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
+        String instanceId;
+        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+            instanceId = createApplicationInstance(application, partitionGroup.getId());
+            ParentComponentLevelNetworkPartitionContext context = new ParentComponentLevelNetworkPartitionContext(partitionGroup.getId(),
+                    partitionGroup.getPartitionAlgo(),
+                    partitionGroup.getPartitions());
+            context.addInstanceContext(application.getInstanceContexts(instanceId));
+            this.addNetworkPartitionContext(context);
+
+            instanceIds.add(instanceId);
+        }
+        startDependency(application, instanceIds);
+
+
+    }
+
+    public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException {
+        //TODO get lock
+        Application application = ApplicationHolder.getApplications().getApplication(appId);
+        if(application == null) {
+            String msg = "Application cannot be found in the Topology.";
+        }
+    }
+
+    private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
         String deploymentPolicyName = application.getDeploymentPolicy();
         if (deploymentPolicyName == null) {
             String msg = "Deployment Policy is not specified to the [Application]:" + appId;
@@ -202,20 +229,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 throw new PolicyValidationException(msg);
             }
         }
-        String instanceId;
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            instanceId = createApplicationInstance(application, partitionGroup.getId());
-            ParentComponentLevelNetworkPartitionContext context = new ParentComponentLevelNetworkPartitionContext(partitionGroup.getId(),
-                    partitionGroup.getPartitionAlgo(),
-                    partitionGroup.getPartitions());
-            context.addInstanceContext(application.getInstanceContexts(instanceId));
-            this.addNetworkPartitionContext(context);
 
-            instanceIds.add(instanceId);
-        }
-        startDependency(application, instanceIds);
-
-
+        return deploymentPolicy;
     }
 
     private String createApplicationInstance(Application application, String networkPartitionId) {

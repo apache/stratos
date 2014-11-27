@@ -56,7 +56,7 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
     private int currentPartitionIndex;
 
     //partitions of this network partition
-    private final Map<String, PartitionContext> partitionCtxts;
+    private final Map<String, ClusterLevelPartitionContext> partitionCtxts;
 
     public ParentComponentLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
 
@@ -68,7 +68,7 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new HashMap<String, PartitionContext>();
+        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         for (Partition partition : partitions) {
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
@@ -144,15 +144,15 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         return id;
     }
 
-    public Map<String, PartitionContext> getPartitionCtxts() {
+    public Map<String, ClusterLevelPartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
 
-    public PartitionContext getPartitionCtxt(String partitionId) {
+    public ClusterLevelPartitionContext getPartitionCtxt(String partitionId) {
         return partitionCtxts.get(partitionId);
     }
 
-    public void addPartitionContext(PartitionContext partitionContext) {
+    public void addPartitionContext(ClusterLevelPartitionContext partitionContext) {
         partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
     }
 
