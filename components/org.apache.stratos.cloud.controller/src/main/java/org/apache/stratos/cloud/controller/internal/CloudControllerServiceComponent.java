@@ -46,22 +46,18 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
  * @scr.reference name="ntask.component"
- * interface="org.wso2.carbon.ntask.core.service.TaskService"
- * cardinality="1..1" policy="dynamic" bind="setTaskService"
- * unbind="unsetTaskService"
- * @scr.reference name="registry.service" interface=
- * "org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService"
- * unbind="unsetRegistryService"
+ *                interface="org.wso2.carbon.ntask.core.service.TaskService"
+ *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ * @scr.reference name="registry.service"
+ *                interface="org.wso2.carbon.registry.core.service.RegistryService"
+ *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="config.context.service"
- * interface="org.wso2.carbon.utils.ConfigurationContextService"
- * cardinality="1..1" policy="dynamic"
- * bind="setConfigurationContextService"
- * unbind="unsetConfigurationContextService"
+ *                interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
-public class CloudControllerDSComponent {
+public class CloudControllerServiceComponent {
 
-    private static final Log log = LogFactory.getLog(CloudControllerDSComponent.class);
+    private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
     private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
     private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
     private ApplicationTopicReceiver applicationTopicReceiver;
