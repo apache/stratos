@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.endpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
