@@ -332,6 +332,9 @@
                         $('textarea#jsoneditor').val(JSON.stringify(editor.getValue(), null, '\t'));
                     }
 
+                }else if(rawEditValidate){
+                    editor.setValue(rawEditValidate);
+                    editor.onChange();
                 }
 
             });

@@ -118,6 +118,7 @@ switch (formtype) {
                 }
 
             }
+            //TODO need to add listing with corrected JSON
         }
         break;
 
@@ -152,7 +153,7 @@ switch (formtype) {
             if(list_data.cartridge.length == 0 ){
                 list_data = null;
             }
-
+        //TODO need to add listing with corrected JSON
         }
         break;
 
