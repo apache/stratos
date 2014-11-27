@@ -99,7 +99,18 @@
                         <h2 class="truncate">{{groupId}} </h2>
 
                         <div class="toggle-menu-description">{{description}}</div>
-
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
+                            </button>
+                        </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                        data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 {{/each}}
                 {{#each content_body.sections.serviceDefinitionBean}}
@@ -118,10 +129,23 @@
                         <div class="toggle-menu-icon">
                             <i class="fa icon-{{cartridgeType}} fa-inbox "></i>
                         </div>
-                        <h2 class="truncate">{{displayName}} </h2>
+                        <h2 class="truncate">{{cartridgeType}} </h2>
 
                         <div class="toggle-menu-description">{{description}}</div>
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-url="{{url ""}}/configure/{{../formtype}}/{{cartridgeType}}/" > Details
+                            </button>
+                        </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_"
+                                        data-url="{{url ""}}/configure/{{../formtype}}/{{cartridgeType}}/" > Details
+                                </button>
 
+
+                            </div>
+                        </div>
                     </div>
                 {{/each}}
                 {{#each content_body.sections.deploymentPolicy}}
@@ -132,6 +156,18 @@
                         <h2 class="truncate">{{id}} </h2>
 
                         <div class="toggle-menu-description">{{description}}</div>
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-url="{{url ""}}/configure/deployments/{{id}}/" > Details
+                            </button>
+                        </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                        data-url="{{url ""}}/configure/deployments/{{id}}/" > Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 {{/each}}
                 {{#each content_body.sections.autoscalePolicy}}
@@ -142,21 +178,41 @@
                         <h2 class="truncate">{{id}} </h2>
 
                         <div class="toggle-menu-description">{{description}}</div>
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
+                            </button>
+                        </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                        data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 {{/each}}
                 {{#each content_body.sections.partition}}
-                    <a href="{{url ""}}/configure/partitions/{{id}}/"
-                       class="block col-md-4 grid-group-item border-right">
+                    <div class="block col-md-4 grid-group-item border-right">
                         <div class="toggle-menu-icon">
                             <i class="fa fa-th-large"></i>
                         </div>
                         <h2 class="truncate">{{id}} </h2>
 
                         <div class="toggle-menu-description">{{description}} </div>
-                        <!--<div class="toggle-menu-button">
-                            <button type="button" class="btn btn-primary" >Remove</button>
-                        </div>-->
-                    </a>
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
+                            </button>
+                        </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                        data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 {{/each}}
             </div>
         </div>
@@ -276,11 +332,30 @@
                         $('textarea#jsoneditor').val(JSON.stringify(editor.getValue(), null, '\t'));
                     }
 
+                }else if(rawEditValidate){
+                    editor.setValue(rawEditValidate);
+                    editor.onChange();
                 }
 
             });
 
+        {{else}}
+            $('.general-table .grid-group-item').hover(function () {
+                if($(this).hasClass('grid-group-item')) {
+                    $(this).find('.bottom-bar').stop().animate({bottom: '37px'}, 'slow');
+                }
+            }, function () {
+                if($(this).hasClass('grid-group-item')) {
+                    $(this).find('.bottom-bar').stop().animate({bottom: '-32px'}, 'slow');
+                }
+            });
+
+            $('.general-table').on('click', '.hover-details', function (event) {
+                window.location = $(this).attr("data-url");
+            });
         {{/if}}
+
+
 
         $('#deploy').click(function () {
 

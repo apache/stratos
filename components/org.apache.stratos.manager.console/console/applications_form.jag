@@ -32,8 +32,8 @@ var log = new Log("apachestratos.applications_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
-        isEdit = false,
-        isForm = false;
+        formDataEdit = '',
+        isEdit = applicationView = isForm = false,
         userPermissions = session.get('PERMISSIONS');
 
 //create left menu
@@ -43,8 +43,11 @@ if (!elements) {
     elements = uriMatcher.match('/{context}/applications/{formtype}/{action}/');
     isForm = true;
 
+
     if (elements.action != 'new') {
         isEdit = true;
+    }else  if(elements.formtype == 'applications' && elements.action != 'new'){
+        applicationView = true;
     }
 }
 
@@ -65,6 +68,14 @@ switch (formtype) {
         list_data = util.RESTCalls.getGroups();
         if (list_data.serviceGroup && list_data.serviceGroup.length === 0) {
             list_data = null;
+        }else{
+            formDataEdit = list_data.serviceGroup;
+            for (specNumber in list_data.serviceGroup) {
+                if (list_data.serviceGroup[specNumber].name == elements.action) {
+                    formDataEdit = list_data.serviceGroup[specNumber];
+                }
+
+            }
         }
         break;
     case "applications":
@@ -82,9 +93,11 @@ var caramelData = {
     breadcrumbPathLevelTwo: elements.formtype,
     left_menu: leftMenu,
     isForm: isForm,
+    isEdit: isEdit,
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
+    formDataEdit: JSON.stringify(formDataEdit),
     formData: JSON.stringify(formData),
     list_data: list_data,
     error: error

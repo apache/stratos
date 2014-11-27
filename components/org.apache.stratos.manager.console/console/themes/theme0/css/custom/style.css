@@ -114,6 +114,13 @@
 {
     background: #428bca;
     cursor: pointer;
+    color: #fff;
+}
+
+.list-button{
+    position: relative;
+    z-index: 802;
+    float: right;
 }
 
 .list-group-item.border-right{
