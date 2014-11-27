@@ -46,7 +46,7 @@ import org.apache.stratos.autoscaler.policy.model.LoadAverage
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
@@ -55,52 +55,52 @@ global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;
 global java.lang.Boolean laReset;
 global java.lang.Boolean isPrimary;
-global java.util.List primaryMembers;
+
 global java.lang.Boolean arspiReset;
 
 rule "Scaling Rule"
 dialect "mvel"
 	when
-        $networkPartitionContext : NetworkPartitionContext ()
+        networkPartitionContext : NetworkPartitionContext ()
 
-        $loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
-	    algorithmName : String() from $networkPartitionContext.getPartitionAlgorithm();
-        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm(algorithmName)
+        loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
+	    algorithmName : String() from networkPartitionContext.getPartitionAlgorithm();
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
 
-        eval(log.debug("Running scale up rule: [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId))
-        eval(log.debug("[scaling] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
-        eval(log.debug("[scaling] [network-partition] " + $networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
+        eval(log.debug("Running scale up rule: [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId))
+        eval(log.debug("[scaling] [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
+        eval(log.debug("[scaling] [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
 	
-        rifUpperLimit : Float() from  $loadThresholds.getRequestsInFlight().getUpperLimit()
-        rifLowerLimit : Float() from  $loadThresholds.getRequestsInFlight().getLowerLimit()
+        rifUpperLimit : Float() from  loadThresholds.getRequestsInFlight().getUpperLimit()
+        rifLowerLimit : Float() from  loadThresholds.getRequestsInFlight().getLowerLimit()
 
-        rifAverage : Float() from  $networkPartitionContext.getAverageRequestsInFlight()
-        rifGradient : Float() from  $networkPartitionContext.getRequestsInFlightGradient()
-        rifSecondDerivative : Float() from  $networkPartitionContext.getRequestsInFlightSecondDerivative()
-	    rifPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
+        rifAverage : Float() from  networkPartitionContext.getAverageRequestsInFlight()
+        rifGradient : Float() from  networkPartitionContext.getRequestsInFlightGradient()
+        rifSecondDerivative : Float() from  networkPartitionContext.getRequestsInFlightSecondDerivative()
+	    rifPredictedValue : Double() from delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
-        mcUpperLimit : Float() from  $loadThresholds.getMemoryConsumption().getUpperLimit()
-        mcLowerLimit : Float() from  $loadThresholds.getMemoryConsumption().getLowerLimit()
+        mcUpperLimit : Float() from  loadThresholds.getMemoryConsumption().getUpperLimit()
+        mcLowerLimit : Float() from  loadThresholds.getMemoryConsumption().getLowerLimit()
 
-        mcPredictedValue : Double() from $delegator.getMemoryConsumptionPredictedValue($networkPartitionContext)
+        mcPredictedValue : Double() from delegator.getMemoryConsumptionPredictedValue(networkPartitionContext)
 
-        laUpperLimit : Float() from  $loadThresholds.getLoadAverage().getUpperLimit()
-        laLowerLimit : Float() from  $loadThresholds.getLoadAverage().getLowerLimit()
+        laUpperLimit : Float() from  loadThresholds.getLoadAverage().getUpperLimit()
+        laLowerLimit : Float() from  loadThresholds.getLoadAverage().getLowerLimit()
 
-        laPredictedValue : Double() from $delegator.getLoadAveragePredictedValue($networkPartitionContext)
+        laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(networkPartitionContext)
 
-        activeInstancesCount : Integer() from $delegator.getMemberCount(clusterId , 0)
-        instancesCount : Integer() from $delegator.getMemberCount(clusterId , 1)
+        activeInstancesCount : Integer() from delegator.getMemberCount(clusterId , 0)
+        instancesCount : Integer() from delegator.getMemberCount(clusterId , 1)
 
-        requestsServedPerInstance : Float() from  $networkPartitionContext.getRequestsServedPerInstance()
-        averageRequestsServedPerInstance : Float() from  $networkPartitionContext.getAverageRequestsServedPerInstance()
+        requestsServedPerInstance : Float() from  networkPartitionContext.getRequestsServedPerInstance()
+        averageRequestsServedPerInstance : Float() from  networkPartitionContext.getAverageRequestsServedPerInstance()
 
-        numberOfInstancesReuquiredBasedOnRif : Integer() from $delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
-        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from $delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(mcUpperLimit ,  mcLowerLimit, mcPredictedValue ,activeInstancesCount )
-        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from $delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(laUpperLimit , laLowerLimit, laPredictedValue ,activeInstancesCount )
+        numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
+        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(mcUpperLimit ,  mcLowerLimit, mcPredictedValue ,activeInstancesCount )
+        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(laUpperLimit , laLowerLimit, laPredictedValue ,activeInstancesCount )
 
-        numberOfRequiredInstances : Integer() from $delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
+        numberOfRequiredInstances : Integer() from delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
 
 
 
@@ -127,38 +127,38 @@ dialect "mvel"
         if(scaleUp){
 
             int additionalInstances = numberOfRequiredInstances - instancesCount ;
-            $networkPartitionContext.resetScaleDownRequestsCount();
+            networkPartitionContext.resetScaleDownRequestsCount();
             int count = 0;
 
             //Calculating the factor scaling
-            float factor = numberOfRequiredInstances / $networkPartitionContext.getMinInstanceCount();
-            $delegator.delegateScalingDependencyNotification(clusterId, $networkPartitionContext.getId(), factor);
+            float factor = numberOfRequiredInstances / networkPartitionContext.getMinInstanceCount();
+            delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
 
             while(count != additionalInstances){
-            Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition($networkPartitionContext, clusterId);
+            Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition(networkPartitionContext, clusterId);
             if(partition != null){
                 log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                 log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
-                $delegator.delegateSpawn($networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, instanceId, lbRef, isPrimary);
+                delegator.delegateSpawn(networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, instanceId, lbRef, isPrimary);
 				count++;
             }
           }    
         } else if(scaleDown){
 
-            float factor = numberOfRequiredInstances / $networkPartitionContext.getMinInstanceCount();
-            $delegator.delegateScalingDependencyNotification(clusterId, $networkPartitionContext.getId(), factor);
+            float factor = numberOfRequiredInstances / networkPartitionContext.getMinInstanceCount();
+            delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
 
             log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
-            if($networkPartitionContext.getScaleDownRequestsCount() > 5 ){
-                log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId + " Count " + $networkPartitionContext.getScaleDownRequestsCount());
+            if(networkPartitionContext.getScaleDownRequestsCount() > 5 ){
+                log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId + " Count " + networkPartitionContext.getScaleDownRequestsCount());
                 MemberStatsContext selectedMemberStatsContext = null;
                 double lowestOverallLoad = 0.0;
                 boolean foundAValue = false;
-                Partition partition =  autoscaleAlgorithm.getNextScaleDownPartition($networkPartitionContext, clusterId);
+                Partition partition =  autoscaleAlgorithm.getNextScaleDownPartition(networkPartitionContext, clusterId);
                 if(partition != null){
                     log.info("[scale-down] Partition available to scale down ");
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
-                    partitionContext = $networkPartitionContext.getPartitionCtxt(partition.getId());
+                    partitionContext = networkPartitionContext.getPartitionCtxt(partition.getId());
 
 
 					// In partition context member stat context, all the primary members need to be
@@ -177,11 +177,11 @@ dialect "mvel"
                         log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                             + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption);
 
-                        double predictedCpu = $delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
+                        double predictedCpu = delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
                         log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                             + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted CPU: " + predictedCpu);
 
-                        double predictedMemoryConsumption = $delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
+                        double predictedMemoryConsumption = delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
                         log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                             + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted memory consumption: " + predictedMemoryConsumption);
 
@@ -207,12 +207,12 @@ dialect "mvel"
                         log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                             + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
 
-                        $delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
+                        delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
                     }
                 }
             } else{
-                 log.debug("[scale-down] Not reached scale down requests threshold. " + clusterId + " Count " + $networkPartitionContext.getScaleDownRequestsCount());
-                 $networkPartitionContext.increaseScaleDownRequestsCount();
+                 log.debug("[scale-down] Not reached scale down requests threshold. " + clusterId + " Count " + networkPartitionContext.getScaleDownRequestsCount());
+                 networkPartitionContext.increaseScaleDownRequestsCount();
 
              }
         }  else{
