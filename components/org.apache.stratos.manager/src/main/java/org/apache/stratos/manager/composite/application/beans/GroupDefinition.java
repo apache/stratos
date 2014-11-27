@@ -39,6 +39,8 @@ public class GroupDefinition {
 
     private String autoscalingPolicy;
 
+    private String deploymentPolicy;
+
     private List<SubscribableDefinition> subscribables;
 
     private List<GroupDefinition> subGroups;
@@ -97,6 +99,14 @@ public class GroupDefinition {
 
     public void setGroupMaxInstances(int groupMaxInstances) {
         this.groupMaxInstances = groupMaxInstances;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 
     /*public boolean isGroupScalingEnabled() {

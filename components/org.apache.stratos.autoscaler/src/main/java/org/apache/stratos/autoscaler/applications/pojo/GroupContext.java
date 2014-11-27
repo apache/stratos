@@ -33,6 +33,8 @@ public class GroupContext implements Serializable{
 
     private int groupMaxInstances;
 
+    private String deploymentPolicy;
+
     private boolean isGroupInstanceMonitoringEnabled;
 
     private boolean isGroupScalingEnabled;
@@ -114,5 +116,13 @@ public class GroupContext implements Serializable{
 
     public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
         this.isGroupScalingEnabled = isGroupScalingEnabled;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }

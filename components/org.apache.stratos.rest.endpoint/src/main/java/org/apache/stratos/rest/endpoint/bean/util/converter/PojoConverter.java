@@ -923,6 +923,7 @@ public class PojoConverter {
                 new org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
         applicationContext.setAlias(compositeAppDefinition.getAlias());
+        applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
 
         // convert and set components
         if (compositeAppDefinition.getComponents() != null) {
@@ -1003,6 +1004,7 @@ public class PojoConverter {
             GroupContext groupContext = new GroupContext();
             groupContext.setName(groupDefinition.getName());
             groupContext.setAlias(groupDefinition.getAlias());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled);
