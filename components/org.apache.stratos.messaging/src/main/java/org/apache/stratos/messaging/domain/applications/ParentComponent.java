@@ -43,6 +43,8 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
     private boolean isGroupScalingEnabled;
     //flag for group instance level monitoring
     private boolean isGroupInstanceMonitoringEnabled;
+    //deployment policy
+    private String deploymentPolicy;
 
     public ParentComponent () {
         this.isGroupScalingEnabled = false;
@@ -312,5 +314,13 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
 
     public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
         this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }

@@ -37,6 +37,8 @@ public class ApplicationContext implements Serializable {
 
     private String alias;
 
+    private String deploymentPolicy;
+
     private ComponentContext componentContext;
 
     private SubscribableInfoContext[] subscribableInfoContexts;
@@ -108,5 +110,13 @@ public class ApplicationContext implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }

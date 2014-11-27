@@ -37,6 +37,8 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
     protected LifeCycleStateManager<T> lifeCycleStateManager;
     //Parent instance id
     private String parentId;
+    //Network partition id
+    private String networkPartitionId;
 
     public InstanceContext (String alias, String instanceId) {
         this.alias = alias;
@@ -84,6 +86,14 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
     }
 }
 

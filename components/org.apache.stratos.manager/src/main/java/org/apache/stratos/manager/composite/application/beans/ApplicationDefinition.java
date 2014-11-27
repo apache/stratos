@@ -35,6 +35,7 @@ public class ApplicationDefinition {
 
     private List<PropertyBean> property;
 
+    private String deploymentPolicy;
 
     public String getApplicationId() {
         return applicationId;
@@ -74,5 +75,13 @@ public class ApplicationDefinition {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
     }
 }
