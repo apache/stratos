@@ -114,11 +114,6 @@
             <artifactId>jclouds-enterprise</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
-	<dependency>
-            <groupId>org.apache.jclouds.api</groupId>
-            <artifactId>cloudstack</artifactId>
-            <version>${jclouds.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>ec2</artifactId>

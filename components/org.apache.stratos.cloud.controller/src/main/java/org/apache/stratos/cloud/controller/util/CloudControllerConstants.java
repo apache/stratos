@@ -97,12 +97,6 @@ public final class CloudControllerConstants {
 	public static final String CLOUD_CONTROLLER_COL_FAMILY = CLOUD_CONTROLLER_EVENT_STREAM
 			.replaceAll("[/.]", "_");
 
-    //cloudstack specific
-    public static final String USER_NAME = "username";
-    public static final String DOMAIN_ID = "domainId";
-    public static final String DISK_OFFERING = "diskOffering";
-    public static final String NETWORK_IDS= "networkIds";
-
 	/**
 	 * column names
 	 */
