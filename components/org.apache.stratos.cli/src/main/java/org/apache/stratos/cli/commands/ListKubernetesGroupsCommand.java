@@ -52,7 +52,7 @@ public class ListKubernetesGroupsCommand implements Command<StratosCommandContex
 			logger.debug("Executing command: ", getName());
 		}
 		if ((args == null) || (args.length == 0)) {
-            RestCommandLineService.getInstance().listKubernetesGroups();
+            RestCommandLineService.getInstance().listKubernetesClusters();
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

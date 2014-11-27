@@ -58,7 +58,7 @@ public class ActivateTenantCommand implements Command<StratosCommandContext> {
 		if (args != null && args.length == 1) {
 			String id = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Getting deactivate tenant info {}", id);
+				logger.debug("Getting activate tenant info {}", id);
 			}
 			RestCommandLineService.getInstance().activateTenant(id);
 			return CliConstants.COMMAND_SUCCESSFULL;

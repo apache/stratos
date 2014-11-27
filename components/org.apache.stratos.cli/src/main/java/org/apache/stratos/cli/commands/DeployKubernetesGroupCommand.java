@@ -89,7 +89,7 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployKubernetesGroup(resourceFileContent);
+                RestCommandLineService.getInstance().deployKubernetesCluster(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");

@@ -80,56 +80,55 @@ public class RestCommandLineService {
     private static final String API_CONTEXT = "/api/v4.1";
     private static final String ENDPOINT_INIT = API_CONTEXT + "/init";
 
-    private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenant";
-    private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/user";
+    private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenants";
+    private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/users";
 
-    private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridge/definition";
-    private static final String ENDPOINT_DEPLOY_PARTITION = API_CONTEXT + "/policy/deployment/partition";
-    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
-    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
-    private static final String ENDPOINT_DEPLOY_SERVICE = API_CONTEXT + "/service/definition";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/deploy/group";
-    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/deploy/host";
-    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition";
-    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/application/definition";
+    private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges";
+    private static final String ENDPOINT_DEPLOY_PARTITION = API_CONTEXT + "/partitions";
+    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies";
+    private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_CLUSTER = API_CONTEXT + "/kubernetesCluster";
+    private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/minion";
+    private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications";
 
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
-    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/host/{id}";
-    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/group/definition/{id}";
-    private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/application/definition/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER= API_CONTEXT + "/kubernetesCluster/{id}";
+    private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts/{id}";
+    private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups/{id}";
+    private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/applications/{id}";
+    private static final String ENDPOINT_UNDEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges/{id}";
 
-    private static final String ENDPOINT_LIST_PARTITIONS = API_CONTEXT + "/partition";
-    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/policy/autoscale";
-    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/policy/deployment";
-    private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridge/available/list";
-    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/cartridge/list/subscribed";
-    private static final String ENDPOINT_LIST_SERVICES = API_CONTEXT + "/service";
-    private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenant/list";
-    private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/user/list";
-    private static final String ENDPOINT_LIST_KUBERNETES_GROUPS = API_CONTEXT + "/kubernetes/group";
-    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetes/hosts/{groupId}";
-    private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/group/definition/{groupDefinitionName}";
-    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/application";
+    private static final String ENDPOINT_LIST_PARTITIONS = API_CONTEXT + "/partitions";
+    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalePolicies";
+    private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
+    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/subscriptions/cartridges";
+    private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenants";
+    private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/users";
+    private static final String ENDPOINT_LIST_KUBERNETES_CLUSTERS = API_CONTEXT + "/kubernetesCluster";
+    private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
+    private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/groups/{groupDefinitionName}";
+    private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
 
-    private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/application/{appId}";
-    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/info/{id}";
-    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/cluster/";
-    private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetes/group/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/master/{id}";
-    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/hosts/{id}";
+    private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
+    private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies/{id}";
+    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{id}";
+    private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
+    private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/clusters/";
+    private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/master";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
 
-    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetes/update/master";
-    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetes/update/host";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/master";
+    private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/minion/{minionId}";
 
-    private static final String ENDPOINT_SUBSCRIBE_CARTRIDGE = API_CONTEXT + "/cartridge/subscribe";
-    private static final String ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT = API_CONTEXT + "/cartridge/unsubscribe";
-    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/cartridge/sync";
-    private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenant/activate";
-    private static final String ENDPOINT_DEACTIVATE_TENANT = API_CONTEXT + "/tenant/deactivate";
+    private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/repo/synchronize/{subscriptionAlias}";
+    private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenants/activate/{tenantDomain}";
+    private static final String ENDPOINT_DEACTIVATE_TENANT = API_CONTEXT + "/tenants/deactivate/{tenantDomain}";
 
-    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = API_CONTEXT + "/subscriptions/{alias}/properties";
-    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/policy/deployment";
-    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/policy/autoscale";
+    private static final String ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES = API_CONTEXT + "/subscriptions/{subscriptionAlias}/properties";
+    private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies";
 
 
     private static class SingletonHolder {
@@ -582,10 +581,10 @@ public class RestCommandLineService {
             System.out.println("==================================================");
             System.out.println("List of LB members for the [cluster]: " + alias);
 
-            // Invoke  cluster/{clusterId}
+            // Invoke  clusters/{clusterId}
             for (Member m : members) {
                 HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_GET_CLUSTER_OF_TENANT
-                        + "clusterId/" + m.getLbClusterId());
+                        + m.getLbClusterId());
 
                 String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
                 String resultStringCluster = CliUtils.getHttpResponseString(responseCluster);
@@ -618,7 +617,7 @@ public class RestCommandLineService {
     private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) throws Exception {
         try {
             HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_GET_CLUSTER_OF_TENANT + cartridgeType + "/" + alias);
+                    + ENDPOINT_GET_CLUSTER_OF_TENANT + alias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -701,234 +700,6 @@ public class RestCommandLineService {
             System.out.println("\tMemberFloatingIp : " + member.getMemberPublicIp());
             System.out.println("\t-----------------------");
         }
-    }
-
-    private String getAsPolicyFromServiceDefinition(String cartridgeType) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_LIST_SERVICES + "/" + cartridgeType);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return null;
-            }
-
-            String resultString = CliUtils.getHttpResponseString(response);
-            if (resultString == null) {
-                System.out.println("Response content is empty");
-                return null;
-            }
-
-            String serviceDefinitionString = resultString.substring(25, resultString.length() - 1);
-            ServiceDefinitionBean serviceDefinition = gson.fromJson(serviceDefinitionString, ServiceDefinitionBean.class);
-            if (serviceDefinition == null) {
-                System.out.println("Deploy service list is empty");
-                return null;
-            }
-
-            return serviceDefinition.getAutoscalingPolicyName();
-
-        } catch (Exception e) {
-            handleException("Exception in listing deploy services", e);
-            return null;
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    private String getDeploymentPolicyFromServiceDefinition(String cartridgeType) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_LIST_SERVICES + "/" + cartridgeType);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return null;
-            }
-
-            String resultString = CliUtils.getHttpResponseString(response);
-            if (resultString == null) {
-                System.out.println("Response content is empty");
-                return null;
-            }
-
-            String serviceDefinitionString = resultString.substring(25, resultString.length() - 1);
-            ServiceDefinitionBean serviceDefinition = gson.fromJson(serviceDefinitionString, ServiceDefinitionBean.class);
-            if (serviceDefinition == null) {
-                System.out.println("Deploy service list is empty");
-                return null;
-            }
-
-            return serviceDefinition.getDeploymentPolicyName();
-
-        } catch (Exception e) {
-            handleException("Exception in listing deploy services", e);
-            return null;
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    // This method does the cartridge subscription
-    public void subscribe(String cartridgeType, String alias, String externalRepoURL, boolean privateRepo, String username,
-                          String password, String asPolicy,
-                          String depPolicy, String size, boolean remoOnTermination, boolean persistanceMapping,
-                          boolean enableCommits, String volumeId)
-            throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-
-        CartridgeInfoBean cartridgeInfoBean = new CartridgeInfoBean();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
-
-        try {
-            Cartridge cartridge = getCartridge(cartridgeType);
-            if (cartridge == null) {
-                System.out.println("Cartridge not found: " + cartridgeType);
-                return;
-            }
-
-            if (cartridge.isMultiTenant()) {
-                asPolicy = getAsPolicyFromServiceDefinition(cartridgeType);
-                depPolicy = getDeploymentPolicyFromServiceDefinition(cartridgeType);
-            }
-
-            cartridgeInfoBean.setCartridgeType(cartridgeType);
-            cartridgeInfoBean.setAlias(alias);
-            cartridgeInfoBean.setRepoURL(externalRepoURL);
-            cartridgeInfoBean.setPrivateRepo(privateRepo);
-            cartridgeInfoBean.setRepoUsername(username);
-            cartridgeInfoBean.setRepoPassword(password);
-            cartridgeInfoBean.setAutoscalePolicy(asPolicy);
-            cartridgeInfoBean.setDeploymentPolicy(depPolicy);
-            cartridgeInfoBean.setSize(size);
-            cartridgeInfoBean.setRemoveOnTermination(remoOnTermination);
-            cartridgeInfoBean.setPersistanceRequired(persistanceMapping);
-            cartridgeInfoBean.setCommitsEnabled(enableCommits);
-            cartridgeInfoBean.setVolumeId(volumeId);
-
-            String jsonSubscribeString = gson.toJson(cartridgeInfoBean, CartridgeInfoBean.class);
-
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SUBSCRIBE_CARTRIDGE,
-                    jsonSubscribeString);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return;
-            }
-
-            String subscriptionOutput = CliUtils.getHttpResponseString(response);
-
-            if (subscriptionOutput == null) {
-                System.out.println("Error in response");
-                return;
-            }
-
-            String subscriptionOutputJSON = subscriptionOutput.substring(20, subscriptionOutput.length() - 1);
-            SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutputJSON, SubscriptionInfo.class);
-
-            System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
-
-            String repoURL;
-            String hostnames = null;
-            String hostnamesLabel = null;
-            if (subcriptionInfo != null) {
-                repoURL = subcriptionInfo.getRepositoryURL();
-                hostnames = subcriptionInfo.getHostname();
-                hostnamesLabel = "host name";
-
-                if (repoURL != null) {
-                    System.out.println("GIT Repository URL: " + repoURL);
-                }
-            }
-
-            if (externalRepoURL != null) {
-                String takeTimeMsg = "(this might take few minutes... depending on repo size)\n";
-                System.out.println(takeTimeMsg);
-            }
-
-            System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
-        } catch (Exception e) {
-            handleException("Exception in subscribing to cartridge", e);
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    // This method does the cartridge subscription
-    public void subscribe(String subscriptionJson)
-            throws CommandException {
-
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
-
-        try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SUBSCRIBE_CARTRIDGE,
-                    subscriptionJson);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return;
-            }
-
-            String subscriptionOutput = CliUtils.getHttpResponseString(response);
-
-            if (subscriptionOutput == null) {
-                System.out.println("Error in response");
-                return;
-            }
-
-            String subscriptionOutputJSON = subscriptionOutput.substring(20, subscriptionOutput.length() - 1);
-            SubscriptionInfo subcriptionInfo = gson.fromJson(subscriptionOutputJSON, SubscriptionInfo.class);
-
-            System.out.format("You have successfully subscribed. ");
-
-            String repoURL;
-            String hostnames = null;
-            String hostnamesLabel = null;
-            if (subcriptionInfo != null) {
-                repoURL = subcriptionInfo.getRepositoryURL();
-                hostnames = subcriptionInfo.getHostname();
-                hostnamesLabel = "host name";
-
-                if (repoURL != null) {
-                    System.out.println("GIT Repository URL: " + repoURL);
-                }
-            }
-
-            System.out.format("Please map the %s \"%s\" to LB IP%n", hostnamesLabel, hostnames);
-
-        } catch (Exception e) {
-            handleException("Exception in subscribing to cartridge", e);
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-
     }
 
     // This method helps to create the new tenant
@@ -1191,28 +962,6 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to unsubscribe cartridges
-    public void unsubscribe(String alias) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_UNSUBSCRIBE_CARTRIDGE_OF_TENANT, alias);
-            int responseCode = response.getStatusLine().getStatusCode();
-
-            if ((responseCode >= 200) || (responseCode < 300)) {
-                System.out.println("You have successfully unsubscribed from cartridge: " + alias);
-                return;
-            } else {
-                CliUtils.printError(response);
-            }
-        } catch (Exception e) {
-            String message = "Error in unsubscribing cartridge: " + alias;
-            System.out.println(message);
-            log.error(message, e);
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-    }
-
     // This method helps to deploy cartridge definitions
     public void deployCartridgeDefinition(String cartridgeDefinition) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
@@ -1220,7 +969,7 @@ public class RestCommandLineService {
 
     // This method helps to undeploy cartridge definitions
     public void undeployCartrigdeDefinition(String id) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_DEPLOY_CARTRIDGE, "cartridge", id);
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_CARTRIDGE, "cartridge", id);
     }
 
     // This method helps to deploy partitions
@@ -1233,62 +982,12 @@ public class RestCommandLineService {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
-    /**
-     * Update autoscaling policy
-     * @param autoScalingPolicy
-     * @throws CommandException
-     */
+   // This method helps to update an autoscaling policy
     public void updateAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
-    // This method helps to deploy multi-tenant service cluster
-    public void deployService(String serviceDefinition) throws CommandException {
-        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE, serviceDefinition, "service");
-    }
-
-    // This method helps to undeploy multi-tenant service cluster
-    public void undeployService(String id) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_DEPLOY_SERVICE, "service", id);
-    }
-
-    public void listServices() throws CommandException {
-        try {
-            ServiceDefinitionList list = (ServiceDefinitionList) restClient.listEntity(ENDPOINT_LIST_SERVICES,
-                    ServiceDefinitionList.class, "service");
-
-            if ((list == null) || (list.getServiceDefinition() == null) || (list.getServiceDefinition().size() == 0)) {
-                System.out.println("No services found");
-                return;
-            }
-
-            RowMapper<ServiceDefinitionBean> rowMapper = new RowMapper<ServiceDefinitionBean>() {
-
-                public String[] getData(ServiceDefinitionBean definition) {
-                    String[] data = new String[6];
-                    data[0] = definition.getCartridgeType();
-                    data[1] = definition.getDeploymentPolicyName();
-                    data[2] = definition.getAutoscalingPolicyName();
-                    data[3] = definition.getClusterDomain();
-                    data[4] = definition.getTenantRange();
-                    data[5] = definition.getIsPublic() ? "Public" : "Private";
-                    return data;
-                }
-            };
-
-            ServiceDefinitionBean[] array = new ServiceDefinitionBean[list.getServiceDefinition().size()];
-            array = list.getServiceDefinition().toArray(array);
-
-            System.out.println("Services found:");
-            CliUtils.printTable(array, rowMapper, "Cartridge Type", "Deployment Policy Name",
-                    "Autoscaling Policy Name", "Cluster Domain", "Tenant Range", "Accessibility");
-        } catch (Exception e) {
-            String message = "Error in listing services";
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
+    // This method helps to list applications
     public void listApplications() throws CommandException {
         try {
             ApplicationList list = (ApplicationList) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
@@ -1324,16 +1023,12 @@ public class RestCommandLineService {
         restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
     }
 
-    /**
-     * Update deployment policy
-     * @param deploymentPolicy
-     * @throws CommandException
-     */
+    // This method helps to update a deployment policy
     public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
     }
 
-    // This method list available partitons
+    // This method lists available partitions
     public void listPartitions() throws CommandException {
         try {
             PartitionList list = (PartitionList) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
@@ -1433,27 +1128,20 @@ public class RestCommandLineService {
 
     public void describeDeploymentPolicy(String id) throws CommandException {
         try {
-            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
-                    DeploymentPolicyList.class, "deployment policies");
-
-            if ((list == null) || (list.getDeploymentPolicy() == null) || (list.getDeploymentPolicy().size() == 0)) {
-                System.out.println("Deployment policy not found: " + id);
-                return;
-            }
-
-            for (DeploymentPolicy policy : list.getDeploymentPolicy()) {
-                if (policy.getId().equals(id)) {
-                    System.out.println("Deployment policy: " + id);
-                    System.out.println(getGson().toJson(policy));
-                    return;
-                }
-            }
-            System.out.println("Deployment policy not found: " + id);
-        } catch (Exception e) {
-            String message = "Error in describing deployment policy: " + id;
-            System.out.println(message);
-            log.error(message, e);
-        }
+            DeploymentPolicy policy = (DeploymentPolicy) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY, DeploymentPolicy.class, id, "deployment policy");
+	        
+	        if (policy == null) {
+	            System.out.println("Deployment policy not found: " + id);
+	            return;
+	        }
+	
+	        System.out.println("Deployment policy: " + id);
+	        System.out.println(getGson().toJson(policy));
+	    } catch (Exception e) {
+	        String message = "Error in describing deployment policy: " + id;
+	        System.out.println(message);
+	        log.error(message, e);
+	    }
     }
 
     public void describePartition(String id) throws CommandException {
@@ -1482,23 +1170,16 @@ public class RestCommandLineService {
     }
 
     public void describeAutoScalingPolicy(String id) throws CommandException {
-        try {
-            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
-                    AutoscalePolicyList.class, "autoscaling policies");
-
-            if ((list == null) || (list.getAutoscalePolicy() == null) || (list.getAutoscalePolicy().size() == 0)) {
+        try {           
+            AutoscalePolicy policy = (AutoscalePolicy) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY, AutoscalePolicy.class, id, "autoscaling policy");
+            
+            if (policy == null) {
                 System.out.println("Autoscaling policy not found: " + id);
                 return;
             }
 
-            for (AutoscalePolicy policy : list.getAutoscalePolicy()) {
-                if (policy.getId().equalsIgnoreCase(id)) {
-                    System.out.println("Autoscaling policy: " + id);
-                    System.out.println(getGson().toJson(policy));
-                    return;
-                }
-            }
-            System.out.println("Autoscaling policy not found: " + id);
+            System.out.println("Autoscaling policy: " + id);
+            System.out.println(getGson().toJson(policy));
         } catch (Exception e) {
             String message = "Error in describing autoscaling policy: " + id;
             System.out.println(message);
@@ -1506,13 +1187,13 @@ public class RestCommandLineService {
         }
     }
 
-    public void deployKubernetesGroup(String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_GROUP, entityBody, "kubernetes group");
+    public void deployKubernetesCluster(String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_CLUSTER, entityBody, "kubernetes cluster");
     }
 
-    public void listKubernetesGroups() {
+    public void listKubernetesClusters() {
         try {
-            KubernetesGroupList list = (KubernetesGroupList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_GROUPS, KubernetesGroupList.class, "kubernetes group");
+            KubernetesGroupList list = (KubernetesGroupList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, KubernetesGroupList.class, "kubernetes cluster");
             if ((list != null) && (list.getKubernetesGroup() != null) && (list.getKubernetesGroup().size() > 0)) {
                 RowMapper<KubernetesGroup> partitionMapper = new RowMapper<KubernetesGroup>() {
                     public String[] getData(KubernetesGroup kubernetesGroup) {
@@ -1538,17 +1219,40 @@ public class RestCommandLineService {
         }
     }
 
-    public void undeployKubernetesGroup(String groupId) {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_GROUP, "kubernetes group", groupId);
+    public void undeployKubernetesCluster(String clusterId) {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER, "kubernetes cluster", clusterId);
     }
 
-    public void deployKubernetesHost(String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_HOST, entityBody, "kubernetes host");
-    }
-
-    public void listKubernetesHosts(String groupId) {
+    public void deployKubernetesHost(String entityBody, String clusterId) throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            KubernetesHostList list = (KubernetesHostList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{groupId}", groupId),
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_DEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId), entityBody);
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("You have succesfully deployed host to Kubernetes cluster: " + clusterId);
+                return;
+            } else {
+                String resultString = CliUtils.getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+            }
+
+        } catch (Exception e) {
+            handleException("Error in deploying host to Kubernetes cluster: " + clusterId, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    public void listKubernetesHosts(String clusterId) {
+        try {
+            KubernetesHostList list = (KubernetesHostList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{kubernetesClusterId}", clusterId),
                     KubernetesHostList.class, "kubernetes host");
             if ((list != null) && (list.getKubernetesHost() != null) && (list.getKubernetesHost().size() > 0)) {
                 RowMapper<KubernetesHost> partitionMapper = new RowMapper<KubernetesHost>() {
@@ -1576,22 +1280,24 @@ public class RestCommandLineService {
         }
     }
 
-    public void undeployKubernetesHost(String hostId) {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST, "kubernetes host", hostId);
+    public void undeployKubernetesHost(String clusterId, String hostId) {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId), "kubernetes host", hostId);
     }
 
-    public void updateKubernetesMaster(String entityBody) {
-        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER, entityBody, "kubernetes master");
+    public void updateKubernetesMaster(String entityBody, String clusterId) {
+    	System.out.println(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId));
+        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId), entityBody, "kubernetes master");
     }
 
-    public void updateKubernetesHost(String entityBody) {
-        restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_HOST, entityBody, "kubernetes host");
+    public void updateKubernetesHost(String entityBody, String clusterId, String hostId) {
+    	System.out.println((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId));
+        restClient.updateEntity((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId), entityBody, "kubernetes host");
     }
 
     public void synchronizeArtifacts(String cartridgeAlias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SYNCHRONIZE_ARTIFACTS, cartridgeAlias);
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL() + ENDPOINT_SYNCHRONIZE_ARTIFACTS.replace("{subscriptionAlias}", cartridgeAlias), cartridgeAlias);
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -1611,6 +1317,72 @@ public class RestCommandLineService {
             log.error(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
+        }
+    }
+    
+    // This method helps to update cartridge subscription properties
+    public void updateSubscritptionProperties(String alias, String subscriptionJson) {
+        String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{subscriptionAlias}", alias);
+        restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
+    }
+
+    // This method helps to deploy service groups
+    public void deployServiceGroup (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
+    }
+
+    // This method helps to undeploy service groups
+    public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
+    }
+
+    // This method helps to describe service group definition
+    public void describeServiceGroup (String groupDefinitionName) {
+        try {
+            ServiceGroupBean bean = (ServiceGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    ServiceGroupBean.class, "serviceGroup");
+
+            if ((bean == null) || (bean.getServiceGroupDefinition() == null)) {
+                System.out.println("Service group not found: " + groupDefinitionName);
+                return;
+            }
+
+            System.out.println("Service Group : " + groupDefinitionName);
+            System.out.println(getGson().toJson(bean.getServiceGroupDefinition()));
+        } catch (Exception e) {
+            String message = "Error in describing service group: " + groupDefinitionName;
+            System.out.println(message);
+            log.error(message, e);
+        }
+    }
+
+    // This method helps to deploy applications
+    public void deployApplication (String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
+    }
+
+    // This method helps to undeploy applications
+    public void undeployApplication(String id) throws CommandException {
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "applicationId", id);
+    }
+
+    // This method helps to describe applications
+    public void describeApplication (String applicationID) {
+        try {
+            ApplicationBean bean = (ApplicationBean) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
+                    ApplicationBean.class, "applications");
+
+            if ((bean == null) || (bean.getApplication() == null)) {
+                System.out.println("Application not found: " + applicationID);
+                return;
+            }
+
+            System.out.println("Application : " + applicationID);
+            System.out.println(getGson().toJson(bean.getApplication()));
+        } catch (Exception e) {
+            String message = "Error in describing application: " + applicationID;
+            System.out.println(message);
+            log.error(message, e);
         }
     }
 
@@ -1854,71 +1626,6 @@ public class RestCommandLineService {
             return false;
         } finally {
             httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    public void updateSubscritptionProperties(String alias, String subscriptionJson) {
-        String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{alias}", alias);
-        restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
-    }
-
-    // This method helps to deploy service groups
-    public void deployServiceGroup (String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
-    }
-
-    // This method helps to undeploy service groups
-    public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
-    }
-
-    // This method helps to describe service group definition
-    public void describeServiceGroup (String groupDefinitionName) {
-        try {
-            ServiceGroupBean bean = (ServiceGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    ServiceGroupBean.class, "serviceGroup");
-
-            if ((bean == null) || (bean.getServiceGroupDefinition() == null)) {
-                System.out.println("Service group not found: " + groupDefinitionName);
-                return;
-            }
-
-            System.out.println("Service Group : " + groupDefinitionName);
-            System.out.println(getGson().toJson(bean.getServiceGroupDefinition()));
-        } catch (Exception e) {
-            String message = "Error in describing service group: " + groupDefinitionName;
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
-    // This method helps to deploy applications
-    public void deployApplication (String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
-    }
-
-    // This method helps to undeploy applications
-    public void undeployApplication(String id) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "application", id);
-    }
-
-    // This method helps to describe applications
-    public void describeApplication (String applicationID) {
-        try {
-            ApplicationBean bean = (ApplicationBean) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
-                    ApplicationBean.class, "applications");
-
-            if ((bean == null) || (bean.getApplication() == null)) {
-                System.out.println("Application not found: " + applicationID);
-                return;
-            }
-
-            System.out.println("Application : " + applicationID);
-            System.out.println(getGson().toJson(bean.getApplication()));
-        } catch (Exception e) {
-            String message = "Error in describing application: " + applicationID;
-            System.out.println(message);
-            log.error(message, e);
         }
     }
 }
