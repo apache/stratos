@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.commons.logging.Log;
@@ -54,7 +54,7 @@ import function org.apache.stratos.autoscaler.TestDelegator.addObsoleteMember;
 rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
-            $ctxt : PartitionContext ()
+            $ctxt : ClusterLevelPartitionContext ()
             eval($ctxt.getObsoletedMembers().keySet().size() > 0)
             memberId : String() from $ctxt.getObsoletedMembers().keySet()
             memCtxt : MemberContext() from $ctxt.getObsoletedMembers().get(memberId)

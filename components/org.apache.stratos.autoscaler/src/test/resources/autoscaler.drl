@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.commons.logging.Log;
@@ -57,7 +57,7 @@ import function org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator.deleg
 rule "Minimum Rule"
 dialect "mvel"
        when
-	       $ctxt : PartitionContext ()
+	       $ctxt : ClusterLevelPartitionContext ()
 	       eval($ctxt.getCurrentMemberCount() < $ctxt.getMinimumMemberCount())
 
        then

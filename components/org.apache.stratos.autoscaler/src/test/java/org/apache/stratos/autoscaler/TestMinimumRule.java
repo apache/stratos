@@ -78,7 +78,7 @@ public class TestMinimumRule {
         ksession = kbase.newStatefulKnowledgeSession();
         ksession.setGlobal("clusterId", "lb.cluster.1");
         ksession.setGlobal("lbRef", null);
-        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
+        ClusterLevelPartitionContext p = new ClusterLevelPartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setPendingMembers(new ArrayList<MemberContext>());
         p.setMinimumMemberCount(1);
         ksession.insert(p);

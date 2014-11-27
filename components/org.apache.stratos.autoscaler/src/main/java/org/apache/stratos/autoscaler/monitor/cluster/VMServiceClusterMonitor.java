@@ -35,7 +35,6 @@ import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +121,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                         // store primary members in the network partition context
                         List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
                         //minimum check per partition
-                        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                        for (ClusterLevelPartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                             // store primary members in the partition context
                             List<String> primaryMemberListInPartition = new ArrayList<String>();
                             // get active primary members in this partition context

@@ -21,8 +21,8 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.drools.KnowledgeBase;
@@ -214,8 +214,8 @@ public class AutoscalerRuleEvaluator {
         return ksession;
     }
 
-    public static String getLbClusterId(PartitionContext partitionContext, String nwpartitionId) {
-        Properties props = partitionContext.getProperties();
+    public static String getLbClusterId(ClusterLevelPartitionContext clusterMonitorPartitionContext, String nwpartitionId) {
+        Properties props = clusterMonitorPartitionContext.getProperties();
         String value =
                        (String) props.get(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
 
@@ -229,7 +229,7 @@ public class AutoscalerRuleEvaluator {
         if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
             lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
         } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-            String serviceName = partitionContext.getServiceName();
+            String serviceName = clusterMonitorPartitionContext.getServiceName();
             lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
         }
         return lbClusterId;

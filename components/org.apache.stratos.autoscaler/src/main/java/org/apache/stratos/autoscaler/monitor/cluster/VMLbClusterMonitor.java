@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
@@ -30,13 +29,11 @@ import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
 
 /**
@@ -92,7 +89,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
                     for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts(instanceIdToClusterCtxtEntry.getKey()).values()) {
 
                         // minimum check per partition
-                        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
+                        for (ClusterLevelPartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()
                                 .values()) {
 
                             if (partitionContext != null) {

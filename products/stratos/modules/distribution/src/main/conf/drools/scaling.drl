@@ -36,7 +36,7 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
@@ -158,14 +158,14 @@ dialect "mvel"
                 if(partition != null){
                     log.info("[scale-down] Partition available to scale down ");
                     log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
-                    partitionContext = networkPartitionContext.getPartitionCtxt(partition.getId());
+                    clusterMonitorPartitionContext = networkPartitionContext.getPartitionCtxt(partition.getId());
 
 
 					// In partition context member stat context, all the primary members need to be
 					// avoided being selected as the member to terminated
 					
 
-                    for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+                    for(MemberStatsContext memberStatsContext: clusterMonitorPartitionContext.getMemberStatsContexts().values()){
 					
 						if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
 						
@@ -207,7 +207,7 @@ dialect "mvel"
                         log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
                             + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
 
-                        delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
+                        delegator.delegateTerminate(clusterMonitorPartitionContext, selectedMemberStatsContext.getMemberId());
                     }
                 }
             } else{

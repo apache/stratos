@@ -34,9 +34,7 @@ import org.drools.runtime.rule.FactHandle;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -83,7 +81,7 @@ public class TestObsoletedMemberRule {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
         ksession = kbase.newStatefulKnowledgeSession();
-        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
+        ClusterLevelPartitionContext p = new ClusterLevelPartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         String memberId = "member1";
         MemberContext ctxt1 = new MemberContext();
@@ -115,7 +113,7 @@ public class TestObsoletedMemberRule {
         }
 
         ksession = kbase.newStatefulKnowledgeSession();
-        PartitionContext p = new PartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
+        ClusterLevelPartitionContext p = new ClusterLevelPartitionContext(conf.getLong("autoscaler.member.expiryTimeout", 900000));
         p.setObsoletedMembers(new ConcurrentHashMap<String, MemberContext>());
         String memberId1 = "member1";
         String memberId2 = "member2";

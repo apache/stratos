@@ -168,32 +168,32 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateSpawn(PartitionContext partitionContext, String clusterId, String instanceId, String lbRefType, boolean isPrimary) {
+    public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, String lbRefType, boolean isPrimary) {
 
         try {
 
-            String nwPartitionId = partitionContext.getNetworkPartitionId();
+            String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
             NetworkPartitionLbHolder lbHolder =
                     PartitionManager.getInstance()
                             .getNetworkPartitionLbHolder(nwPartitionId);
-            String lbClusterId = getLbClusterId(lbRefType, partitionContext, lbHolder);
+            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            for (PartitionContext partitionContextOfCurrentNetworkPartition : vmClusterMonitor.getNetworkPartitionCtxt(instanceId, nwPartitionId).
+            for (ClusterLevelPartitionContext partitionContextOfCurrentNetworkClusterMonitorPartition : vmClusterMonitor.getNetworkPartitionCtxt(instanceId, nwPartitionId).
                     getPartitionCtxts().values()) {
 
-                minimumCountOfNetworkPartition += partitionContextOfCurrentNetworkPartition.getMinimumMemberCount();
+                minimumCountOfNetworkPartition += partitionContextOfCurrentNetworkClusterMonitorPartition.getMinimumMemberCount();
             }
             MemberContext memberContext =
                     CloudControllerClient.getInstance()
-                            .spawnAnInstance(partitionContext.getPartition(),
+                            .spawnAnInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
-                                    lbClusterId, partitionContext.getNetworkPartitionId(),
+                                    lbClusterId, clusterMonitorPartitionContext.getNetworkPartitionId(),
                                     isPrimary,
                                     minimumCountOfNetworkPartition);
             if (memberContext != null) {
-                partitionContext.addPendingMember(memberContext);
+                clusterMonitorPartitionContext.addPendingMember(memberContext);
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
                             memberContext.getPartition().getId()));
@@ -260,7 +260,7 @@ public class RuleTasksDelegator {
    	}*/
 
 
-    public static String getLbClusterId(String lbRefType, PartitionContext partitionCtxt,
+    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
                                         NetworkPartitionLbHolder networkPartitionLbHolder) {
 
         String lbClusterId = null;
@@ -285,25 +285,25 @@ public class RuleTasksDelegator {
         return lbClusterId;
     }
 
-    public void delegateTerminate(PartitionContext partitionContext, String memberId) {
+    public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
 
         log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
-                partitionContext.getPartitionId() + " ], NW Partition [ " +
-                partitionContext.getNetworkPartitionId() + " ]");
+                clusterMonitorPartitionContext.getPartitionId() + " ], NW Partition [ " +
+                clusterMonitorPartitionContext.getNetworkPartitionId() + " ]");
 
         try {
             //Moving member to pending termination list
-            if (partitionContext.activeMemberAvailable(memberId)) {
-                partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-            } else if (partitionContext.pendingMemberAvailable(memberId)) {
-                partitionContext.movePendingMemberToObsoleteMembers(memberId);
+            if (clusterMonitorPartitionContext.activeMemberAvailable(memberId)) {
+                clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+            } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
+                clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
             }
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
         }
     }
 
-    public void delegateTerminateDependency(PartitionContext partitionContext, String memberId) {
+    public void delegateTerminateDependency(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
         try {
             //calling SM to send the instance notification event.
             if (log.isDebugEnabled()) {
@@ -449,8 +449,8 @@ public class RuleTasksDelegator {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
 
-        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
+        for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : clusterMonitorPartitionContext.getMemberStatsContexts().values()) {
 
                 float memberAverageLoadAverage = memberStatsContext.getLoadAverage().getAverage();
                 float memberGredientLoadAverage = memberStatsContext.getLoadAverage().getGradient();
@@ -477,8 +477,8 @@ public class RuleTasksDelegator {
         double memoryConsumptionPredicted = 0.0d;
         int totalMemberCount = 0;
 
-        for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
+        for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : clusterMonitorPartitionContext.getMemberStatsContexts().values()) {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();

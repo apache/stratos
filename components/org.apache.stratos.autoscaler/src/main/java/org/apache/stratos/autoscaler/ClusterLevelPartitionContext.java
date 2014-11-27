@@ -38,10 +38,10 @@ import org.apache.stratos.common.constants.StratosConstants;
  *
  */
 
-public class PartitionContext implements Serializable{
+public class ClusterLevelPartitionContext implements Serializable{
 
 	private static final long serialVersionUID = -2920388667345980487L;
-	private static final Log log = LogFactory.getLog(PartitionContext.class);
+	private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     private String partitionId;
     private String serviceName;
     private String networkPartitionId;
@@ -80,14 +80,14 @@ public class PartitionContext implements Serializable{
     private Map<String, MemberStatsContext> memberStatsContexts;
 
     // for the use of tests
-    public PartitionContext(long memberExpiryTime) {
+    public ClusterLevelPartitionContext(long memberExpiryTime) {
 
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
         pendingMemberExpiryTime = memberExpiryTime;
     }
     
-    public PartitionContext(Partition partition) {
+    public ClusterLevelPartitionContext(Partition partition) {
         this.setPartition(partition);
         this.minimumMemberCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
@@ -598,9 +598,9 @@ public class PartitionContext implements Serializable{
     }
     
     private class PendingMemberWatcher implements Runnable {
-        private PartitionContext ctxt;
+        private ClusterLevelPartitionContext ctxt;
 
-        public PendingMemberWatcher(PartitionContext ctxt) {
+        public PendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
         }
 
@@ -648,9 +648,9 @@ public class PartitionContext implements Serializable{
     } 
     
     private class ObsoletedMemberWatcher implements Runnable {
-        private PartitionContext ctxt;
+        private ClusterLevelPartitionContext ctxt;
 
-        public ObsoletedMemberWatcher(PartitionContext ctxt) {
+        public ObsoletedMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
         }
 
@@ -685,9 +685,9 @@ public class PartitionContext implements Serializable{
      * This thread is responsible for moving member to obsolete list if pending termination timeout happens
      */
     private class TerminationPendingMemberWatcher implements Runnable {
-        private PartitionContext ctxt;
+        private ClusterLevelPartitionContext ctxt;
 
-        public TerminationPendingMemberWatcher(PartitionContext ctxt) {
+        public TerminationPendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
         }
 

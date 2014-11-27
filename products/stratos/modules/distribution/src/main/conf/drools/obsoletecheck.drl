@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.commons.logging.Log;
@@ -54,7 +54,7 @@ global Integer primaryMemberCount;
 rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
-            $ctxt : PartitionContext ()
+            $ctxt : ClusterLevelPartitionContext ()
             eval(log.debug("Running obsolete instances rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
             eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Obsolete member count: " + $ctxt.getObsoletedMembers().size()))
             eval($ctxt.getObsoletedMembers().keySet().size() > 0)
@@ -67,7 +67,7 @@ end
 rule "Cleanup Instances which are pending termination"
 dialect "mvel"
         when
-            $ctxt : PartitionContext ()
+            $ctxt : ClusterLevelPartitionContext ()
             eval(log.debug("Running instances cleanup event sender rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
             eval(log.debug("[instance-cleanup-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Pending termination member count: " + $ctxt.getTerminationPendingMembers().size()))
             eval($ctxt.getTerminationPendingMembers().size() > 0)

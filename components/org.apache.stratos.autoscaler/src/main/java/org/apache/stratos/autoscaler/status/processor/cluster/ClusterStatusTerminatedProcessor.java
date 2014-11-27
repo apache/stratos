@@ -21,8 +21,8 @@ package org.apache.stratos.autoscaler.status.processor.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
@@ -122,8 +122,8 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
         boolean hasMember = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                if (partitionContext.getNonTerminatedMemberCount() > 0) {
+            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                if (clusterMonitorPartitionContext.getNonTerminatedMemberCount() > 0) {
                     hasMember = true;
                 } else {
                     hasMember = false;

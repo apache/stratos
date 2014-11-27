@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.rule;
 
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
@@ -29,7 +29,7 @@ rule "Terminate all Rule"
 
 dialect "mvel"
         when
-            $ctxt : PartitionContext ()
+            $ctxt : ClusterLevelPartitionContext ()
             eval(log.debug("Running terminate all rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
             eval(log.debug("[terminate all] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Member count: " + $ctxt.getMemberStatsContexts().size()))
             eval($ctxt.getMemberStatsContexts().size() > 0)

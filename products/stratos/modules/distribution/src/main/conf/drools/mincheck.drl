@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
-import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.commons.logging.Log;
@@ -55,7 +55,7 @@ global Integer primaryMemberCount;
 rule "Minimum Rule"
 dialect "mvel"
        when
-           $ctxt : PartitionContext ()
+           $ctxt : ClusterLevelPartitionContext ()
            eval(log.debug("Running minimum rule: [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId()))
 	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Non terminated member count: " + $ctxt.getNonTerminatedMemberCount()))
 	       eval(log.debug("[min-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Minimum member count: " + $ctxt.getMinimumMemberCount()))

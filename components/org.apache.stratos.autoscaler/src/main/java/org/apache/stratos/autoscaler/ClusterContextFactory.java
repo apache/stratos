@@ -37,7 +37,6 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.util.*;
 import org.apache.stratos.messaging.util.Constants;
 
 import java.util.HashMap;
@@ -96,10 +95,10 @@ public class ClusterContextFactory {
                     partitionGroup.getPartitions());
 
             for (Partition partition : partitionGroup.getPartitions()) {
-                PartitionContext partitionContext = new PartitionContext(partition);
-                partitionContext.setServiceName(cluster.getServiceName());
-                partitionContext.setProperties(cluster.getProperties());
-                partitionContext.setNetworkPartitionId(partitionGroup.getId());
+                ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
+                clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
+                clusterMonitorPartitionContext.setProperties(cluster.getProperties());
+                clusterMonitorPartitionContext.setNetworkPartitionId(partitionGroup.getId());
 
                 for (Member member : cluster.getMembers()) {
                     String memberId = member.getMemberId();
@@ -116,7 +115,7 @@ public class ClusterContextFactory {
                                 String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
                                 log.debug(msg);
                             }
-                            partitionContext.addActiveMember(memberContext);
+                            clusterMonitorPartitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
@@ -125,23 +124,23 @@ public class ClusterContextFactory {
                                 String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
                                 log.debug(msg);
                             }
-                            partitionContext.addPendingMember(memberContext);
+                            clusterMonitorPartitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                         } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                            partitionContext.addFaultyMember(memberId);
                         }
-                        partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                        clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Member stat context has been added: [member] %s", memberId));
                         }
                     }
 
                 }
-                networkPartitionContext.addPartitionContext(partitionContext);
+                networkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Partition context has been added: [partition] %s",
-                            partitionContext.getPartitionId()));
+                            clusterMonitorPartitionContext.getPartitionId()));
                 }
             }
 
@@ -201,11 +200,11 @@ public class ClusterContextFactory {
             // FIXME pick a random partition
             Partition partition =
                     partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
-            PartitionContext partitionContext = new PartitionContext(partition);
-            partitionContext.setServiceName(cluster.getServiceName());
-            partitionContext.setProperties(cluster.getProperties());
-            partitionContext.setNetworkPartitionId(networkPartitionId);
-            partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
+            ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
+            clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
+            clusterMonitorPartitionContext.setProperties(cluster.getProperties());
+            clusterMonitorPartitionContext.setNetworkPartitionId(networkPartitionId);
+            clusterMonitorPartitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
             NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(networkPartitionId,
                     partitionGroup.getPartitionAlgo(),
@@ -224,7 +223,7 @@ public class ClusterContextFactory {
                             String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
                             log.debug(msg);
                         }
-                        partitionContext.addActiveMember(memberContext);
+                        clusterMonitorPartitionContext.addActiveMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                        partitionContext.incrementCurrentActiveMemberCount(1);
                     } else if (MemberStatus.Created.equals(member.getStatus()) ||
@@ -233,20 +232,20 @@ public class ClusterContextFactory {
                             String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
                             log.debug(msg);
                         }
-                        partitionContext.addPendingMember(memberContext);
+                        clusterMonitorPartitionContext.addPendingMember(memberContext);
 //                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                     } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                        partitionContext.addFaultyMember(memberId);
                     }
 
-                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                    clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Member stat context has been added: [member] %s", memberId));
                     }
                 }
 
             }
-            networkPartitionContext.addPartitionContext(partitionContext);
+            networkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
 
             // populate lb cluster id in network partition context.
             java.util.Properties props = cluster.getProperties();

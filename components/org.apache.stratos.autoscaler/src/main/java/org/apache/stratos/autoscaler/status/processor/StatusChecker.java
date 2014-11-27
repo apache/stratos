@@ -21,8 +21,8 @@ package org.apache.stratos.autoscaler.status.processor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
-import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
@@ -174,10 +174,10 @@ public class StatusChecker {
         boolean clusterActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
+            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                if (clusterMonitorPartitionContext.getMinimumMemberCount() == clusterMonitorPartitionContext.getActiveMemberCount()) {
                     clusterActive = true;
-                } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
+                } else if (clusterMonitorPartitionContext.getActiveMemberCount() > clusterMonitorPartitionContext.getMinimumMemberCount()) {
                     log.info("cluster already activated...");
                     clusterActive = true;
                 } else {
@@ -198,8 +198,8 @@ public class StatusChecker {
         boolean hasMember = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                if (partitionContext.getNonTerminatedMemberCount() > 0) {
+            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+                if (clusterMonitorPartitionContext.getNonTerminatedMemberCount() > 0) {
                     hasMember = true;
                 } else {
                     hasMember = false;
@@ -262,7 +262,7 @@ public class StatusChecker {
     private boolean getClusterInactive(VMClusterMonitor monitor, String partitionId) {
         boolean clusterInActive = false;
         for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
-            for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
+            for (ClusterLevelPartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
                 if (partitionId.equals(partition.getPartitionId()) &&
                         partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
                     clusterInActive = true;

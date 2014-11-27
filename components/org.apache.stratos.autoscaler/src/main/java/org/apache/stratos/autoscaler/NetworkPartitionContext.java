@@ -72,7 +72,7 @@ public class NetworkPartitionContext implements Serializable{
     private int currentPartitionIndex;
 
     //partitions of this network partition
-    private final Map<String, PartitionContext> partitionCtxts;
+    private final Map<String, ClusterLevelPartitionContext> partitionCtxts;
 
     public NetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
 
@@ -84,7 +84,7 @@ public class NetworkPartitionContext implements Serializable{
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new HashMap<String, PartitionContext>();
+        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
@@ -359,16 +359,16 @@ public class NetworkPartitionContext implements Serializable{
         return id;
     }
 
-    public Map<String, PartitionContext> getPartitionCtxts() {
+    public Map<String, ClusterLevelPartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
 
-    public PartitionContext getPartitionCtxt(String partitionId) {
+    public ClusterLevelPartitionContext getPartitionCtxt(String partitionId) {
         return partitionCtxts.get(partitionId);
     }
 
-    public void addPartitionContext(PartitionContext partitionContext) {
-        partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
+    public void addPartitionContext(ClusterLevelPartitionContext clusterMonitorPartitionContext) {
+        partitionCtxts.put(clusterMonitorPartitionContext.getPartitionId(), clusterMonitorPartitionContext);
     }
 
     public String getPartitionAlgorithm() {
