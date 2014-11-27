@@ -23,7 +23,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
+
+
 
 /**
  * A thread for receiving topology information from message broker and
@@ -46,14 +48,16 @@ public class TopologyEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
-        try {
-            // Start topic subscriber thread
-            subscriber = new Subscriber(Constants.TOPOLOGY_TOPIC, messageListener);
-//            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
-            subscriberThread.start();
+	@Override
+	public void run() {
+		try {
+			// Start topic subscriber thread
+			subscriber = new Subscriber(Util.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
+			// subscriber.setMessageListener(messageListener);
+
+			Thread subscriberThread = new Thread(subscriber);
+			subscriberThread.start();
+
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message receiver thread started");
             }

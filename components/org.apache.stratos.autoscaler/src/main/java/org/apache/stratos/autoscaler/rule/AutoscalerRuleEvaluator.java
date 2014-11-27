@@ -214,6 +214,7 @@ public class AutoscalerRuleEvaluator {
         return ksession;
     }
 
+<<<<<<< HEAD
 //    public static String getLbClusterId(ClusterLevelPartitionContext clusterMonitorPartitionContext, String nwpartitionId) {
 //        Properties props = clusterMonitorPartitionContext.getProperties();
 //        String value =
@@ -234,6 +235,28 @@ public class AutoscalerRuleEvaluator {
 //        }
 //        return lbClusterId;
 //    }
+=======
+    public static String getLbClusterId(ClusterLevelPartitionContext clusterMonitorPartitionContext, String nwpartitionId) {
+        Properties props = clusterMonitorPartitionContext.getProperties();
+        String value =
+                       (String) props.get(StratosConstants.LOAD_BALANCER_REF);
+
+        if (value == null){
+            return null;
+        }
+
+        String lbClusterId = null;
+
+        NetworkPartitionLbHolder networkPartitionLbHolder = PartitionManager.getInstance().getNetworkPartitionLbHolder(nwpartitionId);
+        if (value.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
+            lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
+        } else if (value.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
+            String serviceName = clusterMonitorPartitionContext.getServiceName();
+            lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
+        }
+        return lbClusterId;
+    }
+>>>>>>> 684e52c... Rebase the master and merge changes of PR 121
 
     private static KnowledgeBase readKnowledgeBase(String drlFileName) {
         KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();

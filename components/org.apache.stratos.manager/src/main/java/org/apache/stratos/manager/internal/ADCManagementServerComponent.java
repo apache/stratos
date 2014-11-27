@@ -30,7 +30,7 @@ import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.broker.subscribe.Subscriber;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -89,7 +89,7 @@ public class ADCManagementServerComponent {
             if(log.isDebugEnabled()) {
                 log.debug("Starting instance status topic subscriber...");
             }
-            Subscriber subscriber = new Subscriber(Constants.INSTANCE_STATUS_TOPIC, new InstanceStatusListener());
+            Subscriber subscriber = new Subscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), new InstanceStatusListener());
             Thread tsubscriber = new Thread(subscriber);
 			tsubscriber.start();
 
@@ -198,8 +198,8 @@ public class ADCManagementServerComponent {
 
     protected void deactivate(ComponentContext context) {
         // Close event publisher connections to message broker
-        EventPublisherPool.close(Constants.INSTANCE_NOTIFIER_TOPIC);
-        EventPublisherPool.close(Constants.TENANT_TOPIC);
+        EventPublisherPool.close(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
+        EventPublisherPool.close(Util.Topics.TENANT_TOPIC.getTopicName());
 
         //terminate Stratos Manager Topology Receiver
         stratosManagerTopologyEventReceiver.terminate();

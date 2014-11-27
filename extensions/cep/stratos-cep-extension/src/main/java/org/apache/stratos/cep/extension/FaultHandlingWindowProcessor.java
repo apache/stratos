@@ -33,7 +33,7 @@ import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListen
 import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 import org.wso2.siddhi.core.config.SiddhiContext;
 import org.wso2.siddhi.core.event.StreamEvent;
 import org.wso2.siddhi.core.event.in.InEvent;
@@ -70,7 +70,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     private ThreadBarrier threadBarrier;
     private long timeToKeep;
     private ISchedulerSiddhiQueue<StreamEvent> window;
-    private EventPublisher healthStatPublisher = EventPublisherPool.getPublisher(Constants.HEALTH_STAT_TOPIC);
+    private EventPublisher healthStatPublisher = EventPublisherPool.getPublisher(Util.Topics.HEALTH_STAT_TOPIC.getTopicName());
     private Map<String, Object> MemberFaultEventMap = new HashMap<String, Object>();
     private Map<String, Object> memberFaultEventMessageMap = new HashMap<String, Object>();
 

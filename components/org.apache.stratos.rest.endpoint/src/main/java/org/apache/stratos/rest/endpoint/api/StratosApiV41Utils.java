@@ -62,7 +62,6 @@ import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
@@ -94,6 +93,7 @@ public class StratosApiV41Utils {
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
     public static final String VOLUME_ID = "volume.id";
+	public static final String TENANT_RANGE_ALL = "*";
 
     private static Log log = LogFactory.getLog(StratosApiV41Utils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
@@ -876,7 +876,7 @@ public class StratosApiV41Utils {
         //getting the services for the tenantId
         for (Service service : services) {
             String tenantRange = service.getTenantRange();
-            if (tenantRange.equals(Constants.TENANT_RANGE_ALL)) {
+            if (tenantRange.equals(TENANT_RANGE_ALL)) {
                 //check whether any active instances found for this service in the Topology
 
                 Cluster cluster = TopologyManager.getTopology().getService(service.getType()).

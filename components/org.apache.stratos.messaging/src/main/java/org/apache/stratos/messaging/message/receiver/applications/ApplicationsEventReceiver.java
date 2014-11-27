@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 
 public class ApplicationsEventReceiver implements Runnable {
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
@@ -46,7 +46,7 @@ public class ApplicationsEventReceiver implements Runnable {
     public void run() {
         try {
             // Start topic subscriber thread
-            subscriber = new Subscriber(Constants.APPLICATIONS_TOPIC, messageListener);
+            subscriber = new Subscriber(Util.Topics.APPLICATIONS_TOPIC.getTopicName(), messageListener);
 //            subscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(subscriber);
             subscriberThread.start();

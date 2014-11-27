@@ -26,7 +26,6 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
 public class InstanceNotificationPublisher {

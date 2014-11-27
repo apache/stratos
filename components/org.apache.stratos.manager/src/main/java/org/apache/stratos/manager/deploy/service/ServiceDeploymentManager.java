@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.multitenant.MultiTenantService;
 import org.apache.stratos.manager.deploy.service.multitenant.lb.DefaultLBService;
@@ -38,7 +39,6 @@ import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Collection;
 
@@ -343,24 +343,24 @@ public class ServiceDeploymentManager {
 
     private void deployLBCluster (String loadBalancedService, LBDataContext lbDataCtxt, String tenantRange) throws ADCException, UnregisteredCartridgeException {
 
-        if (lbDataCtxt.getLbCategory() == null || lbDataCtxt.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
+        if (lbDataCtxt.getLbCategory() == null || lbDataCtxt.getLbCategory().equals(StratosConstants.NO_LOAD_BALANCER)) {
             // no load balancer required
             return;
         }
 
         LBService lbService = null;
 
-        if (lbDataCtxt.getLbCategory().equals(Constants.EXISTING_LOAD_BALANCERS)) {
+        if (lbDataCtxt.getLbCategory().equals(StratosConstants.EXISTING_LOAD_BALANCERS)) {
             lbService = new ExistingLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
                     tenantRange, false);
 
-        } else if (lbDataCtxt.getLbCategory().equals(Constants.DEFAULT_LOAD_BALANCER)) {
+        } else if (lbDataCtxt.getLbCategory().equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
             lbService = new DefaultLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
                     tenantRange, false);
 
-        } else if (lbDataCtxt.getLbCategory().equals(Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+        } else if (lbDataCtxt.getLbCategory().equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
             lbService = new ServiceAwareLBService(lbDataCtxt.getLbCartridgeInfo().getType(), lbDataCtxt.getAutoscalePolicy(),
                     lbDataCtxt.getDeploymentPolicy(), -1234, lbDataCtxt.getLbCartridgeInfo(),
                     tenantRange, false);

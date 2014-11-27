@@ -24,8 +24,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.*;
 
@@ -35,6 +35,8 @@ import java.util.*;
 public class MessageFilter {
 
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
+	public static final String FILTER_VALUE_ASSIGN_OPERATOR = "=";
+	public static final String FILTER_KEY_VALUE_PAIR_SEPARATOR = "|";
 
     private String filterName;
     private Map<String, Map<String, Boolean>> filterMap;
@@ -47,9 +49,9 @@ public class MessageFilter {
 
     private Map<String, String> splitToMap(String filter) {
         HashMap<String, String> keyValuePairMap = new HashMap<String, String>();
-        List<String> keyValuePairList = splitUsingTokenizer(filter, Constants.FILTER_KEY_VALUE_PAIR_SEPARATOR);
+        List<String> keyValuePairList = splitUsingTokenizer(filter,FILTER_KEY_VALUE_PAIR_SEPARATOR);
         for (String keyValuePair : keyValuePairList) {
-            List<String> keyValueList = splitUsingTokenizer(keyValuePair, Constants.FILTER_VALUE_ASSIGN_OPERATOR);
+            List<String> keyValueList = splitUsingTokenizer(keyValuePair, FILTER_VALUE_ASSIGN_OPERATOR);
             if (keyValueList.size() == 2) {
                 keyValuePairMap.put(keyValueList.get(0).trim(), keyValueList.get(1).trim());
             } else {
@@ -86,7 +88,7 @@ public class MessageFilter {
             for (String propertyName : keyValuePairMap.keySet()) {
                 propertyValue = keyValuePairMap.get(propertyName);
                 propertyValueMap = new HashMap<String, Boolean>();
-                propertyValueArray = propertyValue.split(Constants.FILTER_VALUE_SEPARATOR);
+                propertyValueArray = propertyValue.split(StratosConstants.FILTER_VALUE_SEPARATOR);
                 for (String value : propertyValueArray) {
                     propertyValueMap.put(value, true);
                     if (log.isDebugEnabled()) {

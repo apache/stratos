@@ -171,5 +171,18 @@ public class StratosConstants {
     public static final String OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.vm.obsoletedMemberExpiryTimeout";
     public static final String PENDING_CONTAINER_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.container.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_CONTAINER_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.container.obsoletedMemberExpiryTimeout";
+
+	public static final String FILTER_VALUE_SEPARATOR = ",";
+	public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
+	public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
+	public static final String TOPOLOGY_MEMBER_FILTER = "stratos.topology.member.filter";
+
+	// to identify a lb cluster
+	public static final String LOAD_BALANCER_REF = "load.balancer.ref";
+	public static final String SERVICE_AWARE_LOAD_BALANCER = "service.aware.load.balancer";
+	public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
+	public static final String NO_LOAD_BALANCER = "no.load.balancer";
+	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
+	public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
 }
 

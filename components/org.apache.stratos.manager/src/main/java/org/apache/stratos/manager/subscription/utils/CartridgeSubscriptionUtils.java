@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
@@ -42,7 +43,6 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.Set;
@@ -264,7 +264,7 @@ public class CartridgeSubscriptionUtils {
         Properties lbReferenceProperties = lbConfig.getProperties();
 
         Property lbRefProperty = new Property();
-        lbRefProperty.setName(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+        lbRefProperty.setName(StratosConstants.LOAD_BALANCER_REF);
 
         for (Property prop : lbReferenceProperties.getProperties()) {
 
@@ -272,10 +272,10 @@ public class CartridgeSubscriptionUtils {
             String value = prop.getValue();
 
             // TODO make following a chain of responsibility pattern
-            if (Constants.NO_LOAD_BALANCER.equals(name)) {
+            if (StratosConstants.NO_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
-                    lbDataCtxt.setLbCategory(Constants.NO_LOAD_BALANCER);
+                    lbDataCtxt.setLbCategory(StratosConstants.NO_LOAD_BALANCER);
 
                     if (log.isDebugEnabled()) {
                         log.debug("This cartridge does not require a load balancer. " + "[Type] " + serviceType);
@@ -284,9 +284,9 @@ public class CartridgeSubscriptionUtils {
                     lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
                     break;
                 }
-            } else if (Constants.EXISTING_LOAD_BALANCERS.equals(name)) {
+            } else if (StratosConstants.EXISTING_LOAD_BALANCERS.equals(name)) {
 
-                lbDataCtxt.setLbCategory(Constants.EXISTING_LOAD_BALANCERS);
+                lbDataCtxt.setLbCategory(StratosConstants.EXISTING_LOAD_BALANCERS);
 
                 String clusterIdsVal = value;
                 if (log.isDebugEnabled()) {
@@ -308,11 +308,11 @@ public class CartridgeSubscriptionUtils {
                 lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
                 break;
 
-            } else if (Constants.DEFAULT_LOAD_BALANCER.equals(name)) {
+            } else if (StratosConstants.DEFAULT_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
 
-                    lbDataCtxt.setLbCategory(Constants.DEFAULT_LOAD_BALANCER);
+                    lbDataCtxt.setLbCategory(StratosConstants.DEFAULT_LOAD_BALANCER);
 
                     lbRefProperty.setValue(name);
 
@@ -329,7 +329,7 @@ public class CartridgeSubscriptionUtils {
 
                     if (lbCartridgeInfo == null) {
                         String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
-                                Constants.DEFAULT_LOAD_BALANCER;
+                                     StratosConstants.DEFAULT_LOAD_BALANCER;
                         log.error(msg);
                         throw new ADCException(msg);
                     }
@@ -385,11 +385,11 @@ public class CartridgeSubscriptionUtils {
                     break;
                 }
 
-            } else if (Constants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+            } else if (StratosConstants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
 
                 if ("true".equals(value)) {
 
-                    lbDataCtxt.setLbCategory(Constants.SERVICE_AWARE_LOAD_BALANCER);
+                    lbDataCtxt.setLbCategory(StratosConstants.SERVICE_AWARE_LOAD_BALANCER);
 
                     lbRefProperty.setValue(name);
 
@@ -406,7 +406,7 @@ public class CartridgeSubscriptionUtils {
 
                     if (lbCartridgeInfo == null) {
                         String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
-                                Constants.SERVICE_AWARE_LOAD_BALANCER;
+                                     StratosConstants.SERVICE_AWARE_LOAD_BALANCER;
                         log.error(msg);
                         throw new ADCException(msg);
                     }
@@ -415,7 +415,7 @@ public class CartridgeSubscriptionUtils {
 
                     // add a property for the service type
                     Property loadBalancedServiceTypeProperty = new Property();
-                    loadBalancedServiceTypeProperty.setName(Constants.LOAD_BALANCED_SERVICE_TYPE);
+                    loadBalancedServiceTypeProperty.setName(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
                     // set the load balanced service type
                     loadBalancedServiceTypeProperty.setValue(serviceType);
 

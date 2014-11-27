@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 
 import java.lang.reflect.Constructor;
 
@@ -44,7 +44,7 @@ public class Main {
                 public void run() {
                     try {
                         // Close event publisher connections to message broker
-                        EventPublisherPool.close(Constants.INSTANCE_STATUS_TOPIC);
+                        EventPublisherPool.close(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName());
                         mainThread.join();
                     } catch (Exception e) {
                         log.error(e);

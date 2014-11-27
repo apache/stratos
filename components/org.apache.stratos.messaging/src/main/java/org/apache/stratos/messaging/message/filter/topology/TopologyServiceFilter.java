@@ -21,8 +21,8 @@ package org.apache.stratos.messaging.message.filter.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Collection;
 
@@ -31,10 +31,12 @@ import java.util.Collection;
  */
 public class TopologyServiceFilter extends MessageFilter {
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
+	public static final String TOPOLOGY_SERVICE_FILTER_SERVICE_NAME = "service-name";
+
     private static volatile TopologyServiceFilter instance;
 
     public TopologyServiceFilter() {
-        super(Constants.TOPOLOGY_SERVICE_FILTER);
+        super(StratosConstants.TOPOLOGY_SERVICE_FILTER);
     }
 
     public static TopologyServiceFilter getInstance() {
@@ -52,14 +54,14 @@ public class TopologyServiceFilter extends MessageFilter {
     }
 
     public boolean serviceNameIncluded(String value) {
-        return included(Constants.TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
+        return included(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
     }
 
     public boolean serviceNameExcluded(String value) {
-        return excluded(Constants.TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
+        return excluded(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
     }
 
     public Collection<String> getIncludedServiceNames() {
-        return getIncludedPropertyValues(Constants.TOPOLOGY_SERVICE_FILTER_SERVICE_NAME);
+        return getIncludedPropertyValues(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME);
     }
 }

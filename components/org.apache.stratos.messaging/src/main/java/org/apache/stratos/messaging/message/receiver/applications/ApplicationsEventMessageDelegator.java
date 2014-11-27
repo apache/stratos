@@ -24,9 +24,6 @@ import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.applications.ApplicationsMessageProcessorChain;
-import org.apache.stratos.messaging.util.Constants;
-
-import javax.jms.TextMessage;
 
 public class ApplicationsEventMessageDelegator implements Runnable {
     private static final Log log = LogFactory.getLog(ApplicationsEventMessageDelegator.class);
