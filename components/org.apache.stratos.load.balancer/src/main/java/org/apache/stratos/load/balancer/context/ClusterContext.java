@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.context;
 
 import org.apache.stratos.load.balancer.context.AlgorithmContext;
 

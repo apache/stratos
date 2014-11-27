@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.exception;
 
 /**
  * Exception to be thrown from this component.

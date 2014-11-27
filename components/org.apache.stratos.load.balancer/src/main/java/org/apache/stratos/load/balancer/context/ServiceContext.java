@@ -17,7 +17,9 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.context;
+
+import org.apache.stratos.load.balancer.context.ClusterContext;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.endpoint;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.context.ConfigurationContext;
