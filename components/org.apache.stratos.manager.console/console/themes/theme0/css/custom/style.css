@@ -120,6 +120,7 @@
 .list-button{
     position: relative;
     z-index: 802;
+    float: right;
 }
 
 .list-group-item.border-right{
