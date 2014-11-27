@@ -61,7 +61,7 @@ global java.lang.Boolean arspiReset;
 rule "Scaling Rule"
 dialect "mvel"
 	when
-        $networkPartitionContext : ClusterLevelNetworkPartitionContext ()
+        networkPartitionContext : ClusterLevelNetworkPartitionContext ()
 
         loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
 	    algorithmName : String() from networkPartitionContext.getPartitionAlgorithm();
