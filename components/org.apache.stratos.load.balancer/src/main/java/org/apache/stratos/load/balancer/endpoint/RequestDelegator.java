@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer;
+package org.apache.stratos.load.balancer.endpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
+import org.apache.stratos.load.balancer.context.ClusterContext;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;

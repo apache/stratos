@@ -23,7 +23,6 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
-import org.apache.stratos.load.balancer.RequestDelegator;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;

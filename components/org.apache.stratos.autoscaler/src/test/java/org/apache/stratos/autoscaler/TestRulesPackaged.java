@@ -35,6 +35,7 @@ public class TestRulesPackaged {
     private String minCheckDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/mincheck.drl";
     private String scalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/scaling.drl";
     private String terminateAllDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/terminateall.drl";
+    private String dependentScalingDrlFilePath = "../../products/stratos/modules/distribution/src/main/conf/drools/dependent-scaling.drl";
     private KnowledgeBase kbase;
     private StatefulKnowledgeSession ksession;
 
@@ -46,6 +47,11 @@ public class TestRulesPackaged {
     @Test
     public void testScalingDroolsFile() {
         parseDroolsFile(scalingDrlFilePath);
+    }
+
+    @Test
+    public void testDependentScalingDroolsFile() {
+        parseDroolsFile(dependentScalingDrlFilePath);
     }
 
     @Test

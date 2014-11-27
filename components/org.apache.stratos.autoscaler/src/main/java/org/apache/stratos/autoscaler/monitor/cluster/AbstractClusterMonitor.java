@@ -57,6 +57,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle minCheckFactHandle;
     protected FactHandle obsoleteCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
+    protected FactHandle dependentScaleCheckFactHandle;
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
     private AtomicBoolean monitoringStarted;
@@ -68,6 +69,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private StatefulKnowledgeSession minCheckKnowledgeSession;
     private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
     private StatefulKnowledgeSession scaleCheckKnowledgeSession;
+    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
     private boolean isDestroyed;
     private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected String serviceType;
@@ -84,6 +86,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
+        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
         this.status = ClusterStatus.Created;
     }
 
@@ -396,5 +399,13 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setMonitoringStarted(boolean monitoringStarted) {
         this.monitoringStarted.set(monitoringStarted);
+    }
+
+    public StatefulKnowledgeSession getDependentScaleCheckKnowledgeSession() {
+        return dependentScaleCheckKnowledgeSession;
+    }
+
+    public void setDependentScaleCheckKnowledgeSession(StatefulKnowledgeSession dependentScaleCheckKnowledgeSession) {
+        this.dependentScaleCheckKnowledgeSession = dependentScaleCheckKnowledgeSession;
     }
 }

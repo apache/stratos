@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer.context.map;
 
-import org.apache.stratos.load.balancer.ClusterContext;
+import org.apache.stratos.load.balancer.context.ClusterContext;
 
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
