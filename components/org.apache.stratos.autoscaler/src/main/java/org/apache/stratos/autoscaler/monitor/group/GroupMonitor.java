@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.monitor.group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
@@ -33,6 +35,10 @@ import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
 import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
@@ -63,7 +69,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         super(group);
         this.appId = appId;
         //starting the minimum start able dependencies
-        startMinimumDependencies(group, parentInstanceId);
+        //startMinimumDependencies(group, parentInstanceId);
     }
 
     /**
@@ -225,7 +231,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         this.groupScalingEnabled = groupScalingEnabled;
     }
 
-    private void startMinimumDependencies(Group group, List<String> parentInstanceIds)
+    public void startMinimumDependencies(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         int min = group.getGroupMinInstances();
         if(group.getInstanceContextCount() >= min) {
@@ -257,10 +263,35 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     private void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         List<String> instanceIds = new ArrayList<String>();
+        String deploymentPolicyName = group.getDeploymentPolicy();
+
         String instanceId;
         for(String parentInstanceId : parentInstanceIds) {
+            InstanceContext parentInstanceContext = this.parent.getInstanceContext(parentInstanceId);
+            ParentComponentLevelNetworkPartitionContext clusterLevelNetworkPartitionContext;
+            if(this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
+                clusterLevelNetworkPartitionContext = this.networkPartitionCtxts.
+                                            get(parentInstanceContext.getNetworkPartitionId());
+            } else {
+                clusterLevelNetworkPartitionContext = new ParentComponentLevelNetworkPartitionContext(
+                                                        parentInstanceContext.getNetworkPartitionId(),
+                                                        null, null);
+                this.addNetworkPartitionContext(clusterLevelNetworkPartitionContext);
+            }
+
+            if(deploymentPolicyName != null) {
+                DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
+                        .getDeploymentPolicy(deploymentPolicyName);
+                PartitionGroup partitionGroup = deploymentPolicy.
+                        getPartitionGroup(parentInstanceContext.getNetworkPartitionId());
+
+                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(partitionGroup.getPartitionAlgo());
+                Partition partition = algorithm.getNextScaleUpPartition(clusterLevelNetworkPartitionContext, this.id);
+            }
             instanceId = createGroupInstance(group, parentInstanceId);
             instanceIds.add(instanceId);
+
+
 
         }
         startDependency(group, instanceIds);

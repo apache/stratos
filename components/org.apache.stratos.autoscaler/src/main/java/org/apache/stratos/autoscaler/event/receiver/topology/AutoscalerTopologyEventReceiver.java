@@ -546,7 +546,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                         log.debug("application monitor is going to be started for [application] " +
                                 appId);
                     }
-                    applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
+                    try {
+                        applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
+                    } catch (PolicyValidationException e) {
+                        String msg = "Application monitor creation failed for Application: ";
+                        log.warn(msg, e);
+                        retries--;
+                    }
                     long end = System.currentTimeMillis();
                     log.info("Time taken to start app monitor: " + (end - start) / 1000);
                     success = true;

@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
@@ -65,9 +65,9 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
                                     getClusterMonitor(clusterId);
         boolean clusterActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts(instanceId).values()) {
+        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts(instanceId).values()) {
             //minimum check per partition
-            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
+            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
                 if (clusterMonitorPartitionContext.getMinimumMemberCount() == clusterMonitorPartitionContext.getActiveMemberCount()) {
                     clusterActive = true;
                 } else if (clusterMonitorPartitionContext.getActiveMemberCount() > clusterMonitorPartitionContext.getMinimumMemberCount()) {

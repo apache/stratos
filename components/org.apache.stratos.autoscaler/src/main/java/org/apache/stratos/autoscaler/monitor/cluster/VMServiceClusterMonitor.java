@@ -116,7 +116,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
             Runnable monitoringRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    for (NetworkPartitionContext networkPartitionContext :
+                    for (ClusterLevelNetworkPartitionContext networkPartitionContext :
                             getNetworkPartitionCtxts(instanceIdToClusterCtxtEntry.getKey()).values()) {
                         // store primary members in the network partition context
                         List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
@@ -285,13 +285,13 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
         VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(scalingEvent.getInstanceId());
 
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(null, scalingEvent.getNetworkPartitionId());
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(null, scalingEvent.getNetworkPartitionId());
 
 
-        float requiredInstanceCount = networkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
+        float requiredInstanceCount = clusterLevelNetworkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
         int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
-        networkPartitionContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
+        clusterLevelNetworkPartitionContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
 
         getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         getDependentScaleCheckKnowledgeSession().setGlobal("scalingFactor", scalingFactorBasedOnDependencies);
@@ -299,7 +299,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
 
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
-                , scaleCheckFactHandle, networkPartitionContext);
+                , scaleCheckFactHandle, clusterLevelNetworkPartitionContext);
 
     }
 

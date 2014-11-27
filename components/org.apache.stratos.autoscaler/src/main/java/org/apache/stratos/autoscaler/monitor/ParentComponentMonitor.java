@@ -20,6 +20,12 @@ package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
@@ -27,7 +33,6 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.PartitionValidationException;
@@ -62,11 +67,15 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected List<String> inactiveMonitorsList;
     //terminating monitors list
     protected List<String> terminatingMonitorsList;
+    //network partition contexts
+    protected Map<String, ParentComponentLevelNetworkPartitionContext> networkPartitionCtxts;
+
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         inactiveMonitorsList = new ArrayList<String>();
         terminatingMonitorsList = new ArrayList<String>();
+        networkPartitionCtxts = new HashMap<String, ParentComponentLevelNetworkPartitionContext>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
@@ -496,6 +505,27 @@ public abstract class ParentComponentMonitor extends Monitor {
         this.terminatingMonitorsList = terminatingMonitorsList;
     }
 
+    public Map<String, ParentComponentLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+        return networkPartitionCtxts;
+    }
+
+    public void setNetworkPartitionCtxts(Map<String, ParentComponentLevelNetworkPartitionContext> networkPartitionCtxts) {
+        this.networkPartitionCtxts = networkPartitionCtxts;
+    }
+
+    public void addNetworkPartitionContext(ParentComponentLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+        this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+    }
+
+    public InstanceContext getInstanceContext(String instanceId) {
+        for(ParentComponentLevelNetworkPartitionContext context : this.networkPartitionCtxts.values()) {
+            if(context.getInstanceIdToInstanceContextMap().containsKey(instanceId)) {
+                return context.getInstanceIdToInstanceContextMap().get(instanceId);
+            }
+        }
+        return null;
+    }
+
     private class MonitorAdder implements Runnable {
         private ApplicationChildContext context;
         private ParentComponentMonitor parent;
@@ -565,5 +595,25 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
     }
+
+    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
+        AutoscaleAlgorithm autoscaleAlgorithm = null;
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
+        }
+        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+
+            autoscaleAlgorithm = new RoundRobin();
+        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+
+            autoscaleAlgorithm = new OneAfterAnother();
+        } else {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
+            }
+        }
+        return autoscaleAlgorithm;
+    }
+
 
 }

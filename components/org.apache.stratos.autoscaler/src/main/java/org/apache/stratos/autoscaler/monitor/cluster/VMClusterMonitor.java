@@ -71,9 +71,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                     clusterId, networkPartitionId, value));
         }
 
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId ,networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setAverageLoadAverage(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId ,networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setAverageLoadAverage(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -95,9 +95,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Grad of load avg event: [cluster] %s [network-partition] %s [value] %s",
                     clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setLoadAverageGradient(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setLoadAverageGradient(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -118,9 +118,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Second Derivation of load avg event: [cluster] %s "
                     + "[network-partition] %s [value] %s", clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setLoadAverageSecondDerivative(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setLoadAverageSecondDerivative(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -141,9 +141,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Avg Memory Consumption event: [cluster] %s [network-partition] %s "
                     + "[value] %s", clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setAverageMemoryConsumption(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setAverageMemoryConsumption(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String
@@ -165,9 +165,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Grad of Memory Consumption event: [cluster] %s "
                     + "[network-partition] %s [value] %s", clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setMemoryConsumptionGradient(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setMemoryConsumptionGradient(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -188,9 +188,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s "
                     + "[network-partition] %s [value] %s", clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setMemoryConsumptionSecondDerivative(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setMemoryConsumptionSecondDerivative(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -210,9 +210,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
                     clusterId, networkPartitionId, floatValue));
         }
 
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(null, networkPartitionId);
-        if(null != networkPartitionContext){
-            networkPartitionContext.setAverageRequestsServedPerInstance(floatValue);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(null, networkPartitionId);
+        if(null != clusterLevelNetworkPartitionContext){
+            clusterLevelNetworkPartitionContext.setAverageRequestsServedPerInstance(floatValue);
 
         } else {
             if (log.isDebugEnabled()) {
@@ -241,9 +241,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Average Rif event: [cluster] %s [network-partition] %s [value] %s",
                     clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setAverageRequestsInFlight(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setAverageRequestsInFlight(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -264,9 +264,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Gradient of Rif event: [cluster] %s [network-partition] %s [value] %s",
                     clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setRequestsInFlightGradient(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setRequestsInFlightGradient(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -287,9 +287,9 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             log.debug(String.format("Second derivative of Rif event: [cluster] %s "
                     + "[network-partition] %s [value] %s", clusterId, networkPartitionId, value));
         }
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        if (null != networkPartitionContext) {
-            networkPartitionContext.setRequestsInFlightSecondDerivative(value);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        if (null != clusterLevelNetworkPartitionContext) {
+            clusterLevelNetworkPartitionContext.setRequestsInFlightSecondDerivative(value);
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Network partition context is not available for :" +
@@ -306,7 +306,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberAverageMemoryConsumptionEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
         String networkPartitionId = getNetworkPartitionIdByMemberId(memberId);
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
         MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
         if (null == memberStatsContext) {
@@ -327,7 +327,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberGradientOfMemoryConsumptionEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
         String networkPartitionId = getNetworkPartitionIdByMemberId(memberId);
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
         MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
         if (null == memberStatsContext) {
@@ -354,7 +354,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberAverageLoadAverageEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
         String networkPartitionId = getNetworkPartitionIdByMemberId(memberId);
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
         MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
         if (null == memberStatsContext) {
@@ -375,7 +375,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberGradientOfLoadAverageEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
         String networkPartitionId = getNetworkPartitionIdByMemberId(memberId);
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
         MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
         if (null == memberStatsContext) {
@@ -396,7 +396,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberSecondDerivativeOfLoadAverageEvent.getMemberId();
         Member member = getMemberByMemberId(memberId);
         String networkPartitionId = getNetworkPartitionIdByMemberId(memberId);
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext partitionCtxt = networkPartitionCtxt.getPartitionCtxt(member.getPartitionId());
         MemberStatsContext memberStatsContext = partitionCtxt.getMemberStatsContext(memberId);
         if (null == memberStatsContext) {
@@ -429,7 +430,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
             return;
         }
 
-        NetworkPartitionContext nwPartitionCtxt;
+        ClusterLevelNetworkPartitionContext nwPartitionCtxt;
         nwPartitionCtxt = getNetworkPartitionCtxt(instanceId, member);
         String partitionId = getPartitionOfMember(memberId);
         ClusterLevelPartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
@@ -469,15 +470,15 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String networkPartitionId = memberActivatedEvent.getNetworkPartitionId();
         String partitionId = memberActivatedEvent.getPartitionId();
         String memberId = memberActivatedEvent.getMemberId();
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        ClusterLevelPartitionContext clusterMonitorPartitionContext;
-        clusterMonitorPartitionContext = networkPartitionCtxt.getPartitionCtxt(partitionId);
-        clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelPartitionContext clusterLevelPartitionContext;
+        clusterLevelPartitionContext = networkPartitionCtxt.getPartitionCtxt(partitionId);
+        clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
         if (log.isInfoEnabled()) {
             log.info(String.format("Member stat context has been added successfully: "
                     + "[member] %s", memberId));
         }
-        clusterMonitorPartitionContext.movePendingMemberToActiveMembers(memberId);
+        clusterLevelPartitionContext.movePendingMemberToActiveMembers(memberId);
         StatusChecker.getInstance().onMemberStatusChange(memberActivatedEvent.getClusterId());
     }
 
@@ -489,7 +490,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String partitionId = maintenanceModeEvent.getPartitionId();
         String memberId = maintenanceModeEvent.getMemberId();
         String instanceId = maintenanceModeEvent.getInstanceId();
-        NetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelNetworkPartitionContext networkPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
         ClusterLevelPartitionContext clusterMonitorPartitionContext = networkPartitionCtxt.getPartitionCtxt(partitionId);
         clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
         if (log.isDebugEnabled()) {
@@ -502,7 +503,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void handleMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
 
-        NetworkPartitionContext nwPartitionCtxt;
+        ClusterLevelNetworkPartitionContext nwPartitionCtxt;
         String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
         String instanceId = memberReadyToShutdownEvent.getInstanceId();
         nwPartitionCtxt = getNetworkPartitionCtxt(instanceId, networkPartitionId);
@@ -553,8 +554,8 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         String clusterId = memberTerminatedEvent.getClusterId();
         String instanceId = memberTerminatedEvent.getInstanceId();
         String partitionId = memberTerminatedEvent.getPartitionId();
-        NetworkPartitionContext networkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
-        ClusterLevelPartitionContext clusterMonitorPartitionContext = networkPartitionContext.getPartitionCtxt(partitionId);
+        ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(instanceId, networkPartitionId);
+        ClusterLevelPartitionContext clusterMonitorPartitionContext = clusterLevelNetworkPartitionContext.getPartitionCtxt(partitionId);
         clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
 
         if (clusterMonitorPartitionContext.removeTerminationPendingMember(memberId)) {
@@ -641,7 +642,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         Thread memberTerminator = new Thread(new Runnable() {
             public void run() {
 
-                for (NetworkPartitionContext networkPartitionContext : getAllNetworkPartitionCtxts().values()) {
+                for (ClusterLevelNetworkPartitionContext networkPartitionContext : getAllNetworkPartitionCtxts().values()) {
                     for (ClusterLevelPartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
                         //if (log.isDebugEnabled()) {
                         log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
@@ -678,15 +679,15 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         memberTerminator.start();
     }
 
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts(String instanceId) {
+    public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts(String instanceId) {
 
         VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxts();
     }
 
-    public Map<String, NetworkPartitionContext> getAllNetworkPartitionCtxts() {
+    public Map<String, ClusterLevelNetworkPartitionContext> getAllNetworkPartitionCtxts() {
 
-        Map<String, NetworkPartitionContext> nwPartitionIdToNwPartitionMap = new HashMap<String, NetworkPartitionContext>();
+        Map<String, ClusterLevelNetworkPartitionContext> nwPartitionIdToNwPartitionMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         for (AbstractClusterContext clusterContext : instanceIdToClusterContextMap.values()) {
             VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
@@ -695,13 +696,13 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
         return nwPartitionIdToNwPartitionMap;
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, String id) {
+    public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(String instanceId, String id) {
 
         VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxt(id);
     }
 
-    protected NetworkPartitionContext getNetworkPartitionCtxt(String instanceId, Member member) {
+    protected ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(String instanceId, Member member) {
 
         VMClusterContext vmClusterContext = (VMClusterContext) instanceIdToClusterContextMap.get(instanceId);
         return vmClusterContext.getNetworkPartitionCtxt(member);

@@ -85,12 +85,12 @@ public class ClusterContextFactory {
 
         CloudControllerClient.getInstance().validateDeploymentPolicy(cluster.getServiceName(), deploymentPolicy);
 
-        Map<String, NetworkPartitionContext> networkPartitionContextMap = new HashMap<String, NetworkPartitionContext>();
+        Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
 
             String networkPartitionId = partitionGroup.getId();
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(networkPartitionId,
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
                     partitionGroup.getPartitionAlgo(),
                     partitionGroup.getPartitions());
 
@@ -137,17 +137,17 @@ public class ClusterContextFactory {
                     }
 
                 }
-                networkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
+                clusterLevelNetworkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Partition context has been added: [partition] %s",
                             clusterMonitorPartitionContext.getPartitionId()));
                 }
             }
 
-            networkPartitionContextMap.put(networkPartitionId, networkPartitionContext);
+            networkPartitionContextMap.put(networkPartitionId, clusterLevelNetworkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition context has been added: [network partition] %s",
-                        networkPartitionContext.getId()));
+                        clusterLevelNetworkPartitionContext.getId()));
             }
         }
 
@@ -186,7 +186,7 @@ public class ClusterContextFactory {
 
         String clusterId = cluster.getClusterId();
 
-        Map<String, NetworkPartitionContext> networkPartitionContextMap = new HashMap<String, NetworkPartitionContext>();
+        Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         // partition group = network partition context
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
@@ -206,12 +206,12 @@ public class ClusterContextFactory {
             clusterMonitorPartitionContext.setNetworkPartitionId(networkPartitionId);
             clusterMonitorPartitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(networkPartitionId,
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
                     partitionGroup.getPartitionAlgo(),
                     partitionGroup.getPartitions());
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
-                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
+                if (member.getNetworkPartitionId().equalsIgnoreCase(clusterLevelNetworkPartitionContext.getId())) {
                     MemberContext memberContext = new MemberContext();
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);
@@ -245,7 +245,7 @@ public class ClusterContextFactory {
                 }
 
             }
-            networkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
+            clusterLevelNetworkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
 
             // populate lb cluster id in network partition context.
             java.util.Properties props = cluster.getProperties();
@@ -273,7 +273,7 @@ public class ClusterContextFactory {
                 }
             }
 
-            networkPartitionContextMap.put(networkPartitionId, networkPartitionContext);
+            networkPartitionContextMap.put(networkPartitionId, clusterLevelNetworkPartitionContext);
         }
 
         return new VMClusterContext(clusterId, cluster.getServiceName(), autoscalePolicy,

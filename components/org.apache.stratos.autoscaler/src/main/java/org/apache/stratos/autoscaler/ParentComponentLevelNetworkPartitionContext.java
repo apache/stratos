@@ -1,18 +1,18 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
+ * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
+ * regarding copyright ownership. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
+ * with the License. You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
+ * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
  */
@@ -20,17 +20,22 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.policy.model.LoadAverage;
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This will keep track of network partition level information.
+ * Holds runtime data of a network partition.
+ *
  */
-public abstract class NetworkPartitionContext {
+public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(ParentComponentLevelNetworkPartitionContext.class);
     private final String id;
     private int scaleDownRequestsCount = 0;
@@ -51,11 +56,11 @@ public abstract class NetworkPartitionContext {
     private int currentPartitionIndex;
 
     //partitions of this network partition
-    private final Map<String, ClusterLevelPartitionContext> partitionCtxts;
+    private final Map<String, PartitionContext> partitionCtxts;
 
-    public NetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
+    public ParentComponentLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
 
-        super();
+        super(id, partitionAlgo, partitions);
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
         if (partitions == null) {
@@ -63,7 +68,7 @@ public abstract class NetworkPartitionContext {
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
+        partitionCtxts = new HashMap<String, PartitionContext>();
         for (Partition partition : partitions) {
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
@@ -112,10 +117,10 @@ public abstract class NetworkPartitionContext {
         }
         final ParentComponentLevelNetworkPartitionContext other = (ParentComponentLevelNetworkPartitionContext) obj;
         if (this.id == null) {
-            if (this.id != null) {
+            if (other.id != null) {
                 return false;
             }
-        } else if (!this.id.equals(this.id)) {
+        } else if (!this.id.equals(other.id)) {
             return false;
         }
         return true;
@@ -139,16 +144,16 @@ public abstract class NetworkPartitionContext {
         return id;
     }
 
-    public Map<String, ClusterLevelPartitionContext> getPartitionCtxts() {
+    public Map<String, PartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
 
-    public ClusterLevelPartitionContext getPartitionCtxt(String partitionId) {
+    public PartitionContext getPartitionCtxt(String partitionId) {
         return partitionCtxts.get(partitionId);
     }
 
-    public void addPartitionContext(ClusterLevelPartitionContext clusterMonitorPartitionContext) {
-        partitionCtxts.put(clusterMonitorPartitionContext.getPartitionId(), clusterMonitorPartitionContext);
+    public void addPartitionContext(PartitionContext partitionContext) {
+        partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
     }
 
     public String getPartitionAlgorithm() {
@@ -213,4 +218,5 @@ public abstract class NetworkPartitionContext {
         this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
 
     }
+
 }

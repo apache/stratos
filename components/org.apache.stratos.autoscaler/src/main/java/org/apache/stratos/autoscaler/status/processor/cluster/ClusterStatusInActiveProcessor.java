@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
@@ -91,8 +91,8 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
 
     private boolean getClusterInactive(VMClusterMonitor monitor) {
         boolean clusterInActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
-            for (ClusterLevelPartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
+        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
+            for (ClusterLevelPartitionContext partition : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
                 if (partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
                     clusterInActive = true;
                     return clusterInActive;

@@ -78,7 +78,8 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
-    public static void handleApplicationInstanceCreatedEvent(String appId, String instanceId) {
+    public static void handleApplicationInstanceCreatedEvent(String appId, String instanceId,
+                                                             String networkPartitionId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application activation event: [application-id] " + appId);
         }
@@ -99,6 +100,7 @@ public class ApplicationBuilder {
             //setting the status, persist and publish
             ApplicationInstanceContext context = new ApplicationInstanceContext(appId, instanceId);
             context.setStatus(status);
+            context.setNetworkPartitionId(networkPartitionId);
             application.addInstanceContext(instanceId, context);
             //updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);

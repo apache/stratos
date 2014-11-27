@@ -445,12 +445,12 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(predictedValue);
     }
 
-    public double getLoadAveragePredictedValue(NetworkPartitionContext networkPartitionContext) {
+    public double getLoadAveragePredictedValue(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
 
-        for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-            for (MemberStatsContext memberStatsContext : clusterMonitorPartitionContext.getMemberStatsContexts().values()) {
+        for (ClusterLevelPartitionContext partitionContext : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberAverageLoadAverage = memberStatsContext.getLoadAverage().getAverage();
                 float memberGredientLoadAverage = memberStatsContext.getLoadAverage().getGradient();
@@ -473,12 +473,12 @@ public class RuleTasksDelegator {
         }
     }
 
-    public double getMemoryConsumptionPredictedValue(NetworkPartitionContext networkPartitionContext) {
+    public double getMemoryConsumptionPredictedValue(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         double memoryConsumptionPredicted = 0.0d;
         int totalMemberCount = 0;
 
-        for (ClusterLevelPartitionContext clusterMonitorPartitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-            for (MemberStatsContext memberStatsContext : clusterMonitorPartitionContext.getMemberStatsContexts().values()) {
+        for (ClusterLevelPartitionContext partitionContext : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
+            for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();

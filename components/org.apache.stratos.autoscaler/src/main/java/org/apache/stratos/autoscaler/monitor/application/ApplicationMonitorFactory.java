@@ -98,7 +98,7 @@ public class ApplicationMonitorFactory {
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
     public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor,
-                                          ApplicationChildContext context, String appId, List<String> instanceId)
+                                          ApplicationChildContext context, String appId, List<String> instanceIds)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
@@ -107,7 +107,7 @@ public class ApplicationMonitorFactory {
         try {
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
-            groupMonitor = new GroupMonitor(group, appId, instanceId);
+            groupMonitor = new GroupMonitor(group, appId, instanceIds);
             groupMonitor.setAppId(appId);
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
@@ -126,6 +126,9 @@ public class ApplicationMonitorFactory {
                         groupMonitor.setHasGroupScalingDependent(true);
                     }
                 }
+
+                //Starting the minimum dependencies
+                groupMonitor.startMinimumDependencies(group, instanceIds);
                 //TODO*********** make it sync with the topology in the restart
 
                 /*if (group.getStatus() != groupMonitor.getStatus()) {
@@ -154,7 +157,7 @@ public class ApplicationMonitorFactory {
      */
     public static ApplicationMonitor getApplicationMonitor(String appId)
             throws DependencyBuilderException,
-            TopologyInConsistentException {
+            TopologyInConsistentException, PolicyValidationException {
         ApplicationMonitor applicationMonitor;
         ApplicationHolder.acquireReadLock();
         try {
@@ -162,6 +165,7 @@ public class ApplicationMonitorFactory {
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasStartupDependents(false);
+                applicationMonitor.startMinimumDependencies(application);
 
             } else {
                 String msg = "[Application] " + appId + " cannot be found in the Topology";

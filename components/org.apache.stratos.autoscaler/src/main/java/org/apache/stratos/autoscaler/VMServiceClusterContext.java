@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
-import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.Map;
 
@@ -36,7 +35,7 @@ public class VMServiceClusterContext extends VMClusterContext {
     protected AutoscalePolicy autoscalePolicy;
 
     public VMServiceClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy, DeploymentPolicy deploymentPolicy,
-                                   Map<String, NetworkPartitionContext> networkPartitionCtxts) {
+                                   Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts) {
 
         super(clusterId, serviceId, autoscalePolicy, deploymentPolicy, networkPartitionCtxts);
         this.autoscalePolicy = autoscalePolicy;

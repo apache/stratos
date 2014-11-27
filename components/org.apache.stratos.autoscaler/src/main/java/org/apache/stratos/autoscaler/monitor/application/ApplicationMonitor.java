@@ -20,8 +20,10 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorStatusEventBuilder;
@@ -29,6 +31,9 @@ import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -51,7 +56,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         //starting the first set of dependencies from its children
-        startMinimumDependencies(application);
+        //TODO startMinimumDependencies(application);
 
     }
 
@@ -166,8 +171,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 
-    private void startMinimumDependencies(Application application)
-            throws TopologyInConsistentException {
+    public void startMinimumDependencies(Application application)
+            throws TopologyInConsistentException, PolicyValidationException {
         //There will be one application instance
         if (application.getInstanceContextCount() > 0) {
             startDependency(application);
@@ -178,16 +183,44 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     private void createInstanceAndStartDependency(Application application)
-            throws TopologyInConsistentException {
-        String instanceId = createApplicationInstance(application);
+            throws TopologyInConsistentException, PolicyValidationException {
         List<String> instanceIds = new ArrayList<String>();
-        instanceIds.add(instanceId);
+        String deploymentPolicyName = application.getDeploymentPolicy();
+        if (deploymentPolicyName == null) {
+            String msg = "Deployment Policy is not specified to the [Application]:" + appId;
+            log.error(msg);
+            throw new PolicyValidationException(msg);
+        }
+
+        DeploymentPolicy deploymentPolicy =
+                PolicyManager.getInstance()
+                        .getDeploymentPolicy(deploymentPolicyName);
+        if (deploymentPolicy == null) {
+            if (deploymentPolicy == null) {
+                String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
+                log.error(msg);
+                throw new PolicyValidationException(msg);
+            }
+        }
+        String instanceId;
+        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+            instanceId = createApplicationInstance(application, partitionGroup.getId());
+            ParentComponentLevelNetworkPartitionContext context = new ParentComponentLevelNetworkPartitionContext(partitionGroup.getId(),
+                    partitionGroup.getPartitionAlgo(),
+                    partitionGroup.getPartitions());
+            context.addInstanceContext(application.getInstanceContexts(instanceId));
+            this.addNetworkPartitionContext(context);
+
+            instanceIds.add(instanceId);
+        }
         startDependency(application, instanceIds);
+
+
     }
 
-    private String createApplicationInstance(Application application) {
+    private String createApplicationInstance(Application application, String networkPartitionId) {
         String instanceId = this.generateInstanceId(application);
-        ApplicationBuilder.handleApplicationInstanceCreatedEvent(appId, instanceId);
+        ApplicationBuilder.handleApplicationInstanceCreatedEvent(appId, instanceId, networkPartitionId);
         return instanceId;
     }
 

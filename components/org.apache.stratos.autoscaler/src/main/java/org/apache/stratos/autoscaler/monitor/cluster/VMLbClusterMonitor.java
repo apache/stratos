@@ -86,7 +86,7 @@ public class VMLbClusterMonitor extends VMClusterMonitor {
 
                 @Override
                 public void run() {
-                    for (NetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts(instanceIdToClusterCtxtEntry.getKey()).values()) {
+                    for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts(instanceIdToClusterCtxtEntry.getKey()).values()) {
 
                         // minimum check per partition
                         for (ClusterLevelPartitionContext partitionContext : networkPartitionContext.getPartitionCtxts()

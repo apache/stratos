@@ -33,12 +33,12 @@ public class VMClusterContext extends AbstractClusterContext {
     private static final Log log = LogFactory.getLog(VMClusterContext.class);
 
     // Map<NetworkpartitionId, Network Partition Context>
-    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
+    protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
     protected DeploymentPolicy deploymentPolicy;
     protected AutoscalePolicy autoscalePolicy;
 
     public VMClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy, DeploymentPolicy deploymentPolicy,
-                            Map<String, NetworkPartitionContext> networkPartitionCtxts) {
+                            Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts) {
 
         super(clusterId, serviceId);
         this.deploymentPolicy = deploymentPolicy;
@@ -47,7 +47,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
     }
 
-    public Map<String, NetworkPartitionContext> getNetworkPartitionCtxts(){
+    public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts(){
         return networkPartitionCtxts;
     }
 
@@ -67,11 +67,11 @@ public class VMClusterContext extends AbstractClusterContext {
         this.autoscalePolicy = autoscalePolicy;
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
+    public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(String networkPartitionId) {
         return networkPartitionCtxts.get(networkPartitionId);
     }
 
-    public void setPartitionCtxt(Map<String, NetworkPartitionContext> partitionCtxt) {
+    public void setPartitionCtxt(Map<String, ClusterLevelNetworkPartitionContext> partitionCtxt) {
         this.networkPartitionCtxts = partitionCtxt;
     }
 
@@ -79,15 +79,15 @@ public class VMClusterContext extends AbstractClusterContext {
         return networkPartitionCtxts.containsKey(partitionId);
     }
 
-    public void addNetworkPartitionCtxt(NetworkPartitionContext ctxt) {
+    public void addNetworkPartitionCtxt(ClusterLevelNetworkPartitionContext ctxt) {
         this.networkPartitionCtxts.put(ctxt.getId(), ctxt);
     }
 
-    public NetworkPartitionContext getPartitionCtxt(String id) {
+    public ClusterLevelNetworkPartitionContext getPartitionCtxt(String id) {
         return this.networkPartitionCtxts.get(id);
     }
 
-    public NetworkPartitionContext getNetworkPartitionCtxt(Member member) {
+    public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(Member member) {
         log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
         String networkPartitionId = member.getNetworkPartitionId();
         if (networkPartitionCtxts.containsKey(networkPartitionId)) {

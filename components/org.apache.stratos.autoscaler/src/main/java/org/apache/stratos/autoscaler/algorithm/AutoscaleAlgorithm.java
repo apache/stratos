@@ -46,18 +46,18 @@ public interface AutoscaleAlgorithm {
 
     /**
      * Returns a {@link Partition} to scale up from the given {@link PartitionGroup} according to algorithm
-     * @param networkPartitionContext {@link org.apache.stratos.autoscaler.NetworkPartitionContext} which need the {@link Partition}
+     * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale up
      */
-    public Partition getNextScaleUpPartition(NetworkPartitionContext networkPartitionContext, String clusterId);
+    public Partition getNextScaleUpPartition(NetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId);
 
 
     /**
      * Returns a {@link Partition} to scale down from the given {@link PartitionGroup} according to algorithm
-     * @param networkPartitionContext {@link org.apache.stratos.autoscaler.NetworkPartitionContext} which need the {@link Partition}
+     * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale down
      */
-    public Partition getNextScaleDownPartition(NetworkPartitionContext networkPartitionContext, String clusterId);
+    public Partition getNextScaleDownPartition(NetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId);
 }
