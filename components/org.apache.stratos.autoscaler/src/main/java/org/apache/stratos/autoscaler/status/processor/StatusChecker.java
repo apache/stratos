@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker;
+package org.apache.stratos.autoscaler.status.processor;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,11 +30,9 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
 import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
@@ -71,7 +69,7 @@ public class StatusChecker {
                     clusterActive = clusterActive(monitor);
 
                 }
-                log.info("Status checker running for [cluster] " + clusterId +
+                log.info("Status processor running for [cluster] " + clusterId +
                         " the status [clusterActive] " + clusterActive);
                 // if active then notify upper layer
                 if (clusterActive) {

@@ -157,7 +157,7 @@ public class CartridgeAgent implements Runnable {
             // Publish instance activated event
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         } else {
-            //Start periodical file checker task
+            //Start periodical file processor task
             /*if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
                 log.info(" Commits enabled. Starting File listener ");
                 ScheduledExecutorService scheduler = Executors

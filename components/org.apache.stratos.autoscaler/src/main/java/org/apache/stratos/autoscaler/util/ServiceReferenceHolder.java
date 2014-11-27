@@ -21,8 +21,8 @@ package org.apache.stratos.autoscaler.util;
 */
 
 
-import org.apache.stratos.autoscaler.status.checker.cluster.ClusterStatusProcessorChain;
-import org.apache.stratos.autoscaler.status.checker.group.GroupStatusProcessorChain;
+import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
+import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;

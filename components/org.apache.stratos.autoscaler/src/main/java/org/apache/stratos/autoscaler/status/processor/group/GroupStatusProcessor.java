@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker.group;
+package org.apache.stratos.autoscaler.status.processor.group;
 
-import org.apache.stratos.autoscaler.status.checker.StatusProcessor;
+import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by reka on 11/25/14.
+ * This will be used to process the group status
  */
 public abstract class GroupStatusProcessor extends StatusProcessor {
 

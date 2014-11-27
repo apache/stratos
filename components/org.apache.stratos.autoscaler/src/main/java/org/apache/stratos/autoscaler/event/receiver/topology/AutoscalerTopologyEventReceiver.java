@@ -34,7 +34,8 @@ import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
-import org.apache.stratos.autoscaler.status.checker.StatusChecker;
+import org.apache.stratos.autoscaler.status.processor.StatusChecker;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -292,7 +293,8 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 	monitor.setStatus(ClusterStatus.Terminating);
                 	monitor.terminateAllMembers();
                 }
-                StatusChecker.getInstance().onMemberTermination(clusterId, instanceId);
+                ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
+                        process("", clusterId, instanceId);
             }
         });
 

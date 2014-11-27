@@ -16,15 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker;
+package org.apache.stratos.autoscaler.status.processor.cluster;
+
+import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 
 /**
  * Created by reka on 11/25/14.
  */
-public abstract class StatusProcessor {
+public abstract class ClusterStatusProcessor extends StatusProcessor {
     /**
-     * Link a message processor and its successor, if there's any.
-     * @param nextProcessor
+     * Message processing and delegating logic.
+     * @param clusterId real message body.
+     * @param instanceId Object that will get updated.
+     * @return whether the processing was successful or not.
      */
-    public abstract void setNext(StatusProcessor nextProcessor);
+    public abstract boolean process(String type, String clusterId, String instanceId);
 }

@@ -16,15 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker;
-
-import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.message.processor.MessageProcessor;
+package org.apache.stratos.autoscaler.status.processor;
 
 import java.util.LinkedList;
 
 /**
- * This is the abstract class for the status checker
+ * This is the abstract class for the status processor
  */
 public abstract class StatusProcessorChain {
     protected LinkedList<StatusProcessor> list;

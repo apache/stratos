@@ -40,6 +40,8 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.List;
+
 /**
  * Factory class to get the Monitors.
  */
@@ -58,7 +60,7 @@ public class ApplicationMonitorFactory {
      * @throws PartitionValidationException  throws while validating the partition used in a cluster
      */
     public static Monitor getMonitor(ParentComponentMonitor parentMonitor,
-                                     ApplicationChildContext context, String appId, String instanceId)
+                                     ApplicationChildContext context, String appId, List<String> instanceId)
             throws TopologyInConsistentException,
             DependencyBuilderException, PolicyValidationException, PartitionValidationException {
     	
@@ -72,7 +74,7 @@ public class ApplicationMonitorFactory {
                 ClusterChildContext clusterChildCtxt = (ClusterChildContext) context;
                 AbstractClusterMonitor clusterMonitor = (AbstractClusterMonitor)monitor;
                 // FIXME: passing null as alias for cluster instance temporarily. should be removed.
-                createClusterInstance(clusterChildCtxt.getServiceName(), clusterMonitor.getClusterId(), null, instanceId);
+                createClusterInstance(clusterChildCtxt.getServiceName(), clusterMonitor.getClusterId(), null, instanceId.get(0));
             	AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor)monitor);
 			}
         } else {
@@ -96,7 +98,7 @@ public class ApplicationMonitorFactory {
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
     public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor,
-                                          ApplicationChildContext context, String appId, String instanceId)
+                                          ApplicationChildContext context, String appId, List<String> instanceId)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;

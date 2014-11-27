@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker.cluster;
+package org.apache.stratos.autoscaler.status.processor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,24 +25,23 @@ import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.PartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-import org.apache.stratos.autoscaler.status.checker.StatusProcessor;
+import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 
 /**
- * Cluster active status processor
+ * Cluster inActive checking processor
  */
-public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
-    private static final Log log = LogFactory.getLog(ClusterStatusActiveProcessor.class);
+public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
+    private static final Log log = LogFactory.getLog(ClusterStatusInActiveProcessor.class);
     private ClusterStatusProcessor nextProcessor;
 
     @Override
     public void setNext(StatusProcessor nextProcessor) {
         this.nextProcessor = (ClusterStatusProcessor) nextProcessor;
     }
-
     @Override
     public boolean process(String type, String clusterId, String instanceId) {
         boolean statusChanged;
-        if (type == null || (ClusterStatusActiveProcessor.class.getName().equals(type))) {
+        if (type == null || (ClusterStatusInActiveProcessor.class.getName().equals(type))) {
             statusChanged = doProcess(clusterId, instanceId);
             if (statusChanged) {
                 return statusChanged;
@@ -55,37 +54,52 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
             } else {
                 throw new RuntimeException(String.format("Failed to process message using " +
                                 "available message processors: [type] %s [cluster] %s [instance]",
-                                type, clusterId, instanceId));
+                        type, clusterId, instanceId));
             }
         }
-       return false;
+        return false;
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
-                                    getClusterMonitor(clusterId);
-        boolean clusterActive = false;
-        for (NetworkPartitionContext networkPartitionContext : monitor.getNetworkPartitionCtxts(instanceId).values()) {
-            //minimum check per partition
-            for (PartitionContext partitionContext : networkPartitionContext.getPartitionCtxts().values()) {
-                if (partitionContext.getMinimumMemberCount() == partitionContext.getActiveMemberCount()) {
-                    clusterActive = true;
-                } else if (partitionContext.getActiveMemberCount() > partitionContext.getMinimumMemberCount()) {
-                    log.info("cluster already activated...");
-                    clusterActive = true;
-                } else {
-                    return false;
-                }
+                getClusterMonitor(clusterId);
+
+        boolean clusterInActive;
+        clusterInActive = getClusterInactive(monitor);
+        if(clusterInActive) {
+            //if the monitor is dependent, temporarily pausing it
+            if (monitor.hasStartupDependents()) {
+                monitor.setHasFaultyMember(true);
             }
-        }
-        if(clusterActive) {
             if (log.isInfoEnabled()) {
-                log.info("Publishing Cluster activated event for [application]: "
+                log.info("Publishing Cluster in-activate event for [application]: "
+                        + monitor.getAppId() + " [cluster]: " + clusterId);
+            }
+            //send cluster In-Active event to cluster status topic
+            ClusterStatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
+                    monitor.getServiceId(), clusterId, instanceId);
+        } else {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing Cluster active event for [application]: "
                         + monitor.getAppId() + " [cluster]: " + clusterId);
             }
             ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
-                    monitor.getServiceId(), monitor.getClusterId());
+                                                        monitor.getServiceId(), clusterId);
         }
-        return clusterActive;
+        return clusterInActive;
+    }
+
+    private boolean getClusterInactive(VMClusterMonitor monitor) {
+        boolean clusterInActive = false;
+        for (NetworkPartitionContext networkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
+            for (PartitionContext partition : networkPartitionContext.getPartitionCtxts().values()) {
+                if (partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
+                    clusterInActive = true;
+                    return clusterInActive;
+                }
+            }
+
+        }
+        return clusterInActive;
     }
 }

@@ -16,10 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker.cluster;
+package org.apache.stratos.autoscaler.status.processor.cluster;
 
-import org.apache.stratos.autoscaler.status.checker.StatusProcessorChain;
-import org.apache.stratos.autoscaler.status.checker.group.GroupStatusProcessor;
+import org.apache.stratos.autoscaler.status.processor.StatusProcessorChain;
 
 /**
  * Cluster status tracking processor chain

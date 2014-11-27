@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker.group;
+package org.apache.stratos.autoscaler.status.processor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.status.checker.StatusProcessor;
+import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
@@ -31,8 +31,8 @@ import java.util.Map;
 /**
  * Cluster active status processor
  */
-public class GroupStatusActiveProcessor extends GroupStatusProcessor {
-    private static final Log log = LogFactory.getLog(GroupStatusActiveProcessor.class);
+public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
+    private static final Log log = LogFactory.getLog(GroupStatusTerminatingProcessor.class);
     private GroupStatusProcessor nextProcessor;
 
     @Override
@@ -87,21 +87,21 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
             if (component.isGroupScalingEnabled()) {
 
             } else {
-                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
-                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
-                        getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) &&
-                                getAllGroupInSameState(groups, GroupStatus.Active, instanceId)) {
-                    //send activation event
+                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) ||
+                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId) ||
+                        getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) &&
+                                getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId)) {
+                    //send the terminated event
                     if (component instanceof Application) {
-                        //send application activated event
-                        log.info("sending app activate: " + appId);
-                        ApplicationBuilder.handleApplicationActivatedEvent(appId, instanceId);
+                        log.info("sending app terminated: " + appId);
+                        ApplicationBuilder.handleApplicationTerminatedEvent(appId);
                     } else if (component instanceof Group) {
                         //send activation to the parent
-                        log.info("sending group activate: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
+                            log.info("sending group terminated : " + component.getUniqueIdentifier());
+                            ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        }
                     }
-
                 }
             }
 

@@ -16,23 +16,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.status.checker.group;
+package org.apache.stratos.autoscaler.status.processor.group;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.status.checker.StatusProcessor;
+import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Map;
 
 /**
  * Cluster active status processor
  */
-public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
-    private static final Log log = LogFactory.getLog(GroupStatusTerminatingProcessor.class);
+public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
+    private static final Log log = LogFactory.getLog(GroupStatusInActiveProcessor.class);
     private GroupStatusProcessor nextProcessor;
 
     @Override
@@ -84,23 +89,19 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (component.isGroupScalingEnabled()) {
-
-            } else {
-                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) ||
-                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId) ||
-                        getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) &&
-                                getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId)) {
-                    //send the terminated event
-                    if (component instanceof Application) {
-                        log.info("sending app terminated: " + appId);
-                        ApplicationBuilder.handleApplicationTerminatedEvent(appId);
-                    } else if (component instanceof Group) {
-                        //send activation to the parent
-                        if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
-                            log.info("sending group terminated : " + component.getUniqueIdentifier());
-                            ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
-                        }
+            if (groups.isEmpty() && getAllClusterInactive(clusterData, instanceId) ||
+                    clusterData.isEmpty() && getAllGroupInActive(groups, instanceId) ||
+                    getAllClusterInactive(clusterData, instanceId) || getAllGroupInActive(groups, instanceId)) {
+                //send the in activation event
+                if (component instanceof Application) {
+                    //send application activated event
+                    log.warn("Application can't be in in-active : " + appId);
+                    //ApplicationBuilder.handleApp(appId);
+                } else if (component instanceof Group) {
+                    //send activation to the parent
+                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
+                        log.info("sending group in-active: " + component.getUniqueIdentifier());
+                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
                     }
                 }
             }
@@ -113,6 +114,52 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
 
 
         return true;
+    }
+
+
+    /**
+     * Find out whether any of the clusters of a group in the InActive state
+     *
+     * @param clusterData clusters of the group
+     * @return whether inActive or not
+     */
+
+    private boolean getAllClusterInactive(Map<String, ClusterDataHolder> clusterData, String instanceId) {
+        boolean clusterStat = false;
+        for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
+            Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
+            Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
+            ClusterInstanceContext context = cluster.getInstanceContexts(instanceId);
+            if (context.getStatus() == ClusterStatus.Inactive) {
+                clusterStat = true;
+                return clusterStat;
+            } else {
+                clusterStat = false;
+
+            }
+        }
+        return clusterStat;
+    }
+
+
+    /**
+     * Find out whether all the any group is inActive
+     *
+     * @param groups groups of a group/application
+     * @return whether inActive or not
+     */
+    private boolean getAllGroupInActive(Map<String, Group> groups, String instanceId) {
+        boolean groupStat = false;
+        for (Group group : groups.values()) {
+            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            if (context.getStatus() == GroupStatus.Inactive) {
+                groupStat = true;
+                return groupStat;
+            } else {
+                groupStat = false;
+            }
+        }
+        return groupStat;
     }
 
 

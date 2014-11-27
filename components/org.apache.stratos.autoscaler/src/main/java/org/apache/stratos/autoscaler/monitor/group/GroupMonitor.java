@@ -35,8 +35,12 @@ import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -54,7 +58,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
      * @throws DependencyBuilderException    throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
-    public GroupMonitor(Group group, String appId, String parentInstanceId) throws DependencyBuilderException,
+    public GroupMonitor(Group group, String appId, List<String> parentInstanceId) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
@@ -221,42 +225,56 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         this.groupScalingEnabled = groupScalingEnabled;
     }
 
-    private void startMinimumDependencies(Group group, String parentInstanceId)
+    private void startMinimumDependencies(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         int min = group.getGroupMinInstances();
         if(group.getInstanceContextCount() >= min) {
             startDependency(group);
         } else {
             if(group.getInstanceContextCount() > 0) {
-                startDependency(group);
-                int remainingInstancesToBeStarted = min - group.getInstanceContextCount();
-                while (remainingInstancesToBeStarted > 0) {
-                    createInstanceAndStartDependency(group, parentInstanceId);
-                    remainingInstancesToBeStarted--;
-                }
+                List<String> instanceIds = new ArrayList<String>();
+                for(String parentInstanceId : parentInstanceIds) {
+                    List<InstanceContext> contexts1 =  group.getInstanceContextsWithParentId(parentInstanceId);
+                    //Finding the non startable instance ids
+                    if(group.getInstanceContexts(parentInstanceId) == null || contexts1.isEmpty() ||
+                            contexts1.size() == 0) {
+                        instanceIds.add(parentInstanceId);
 
+                    }
+                }
+                if(instanceIds.size() > 0) {
+                    createInstanceAndStartDependency(group, parentInstanceIds);
+                } else {
+                    startDependency(group);
+                }
             } else {
                 //No available instances in the Applications. Need to start them all
-                int instancesToBeStarted = min;
-                while(instancesToBeStarted > 0) {
-                    createInstanceAndStartDependency(group, parentInstanceId);
-                    instancesToBeStarted--;
-
-                }
+                createInstanceAndStartDependency(group, parentInstanceIds);
             }
         }
     }
 
-    private void createInstanceAndStartDependency(Group group, String parentInstanceId)
+    private void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
-        String instanceId  = createGroupInstance(group, parentInstanceId);
-        startDependency(group, instanceId);
+        List<String> instanceIds = new ArrayList<String>();
+        String instanceId;
+        for(String parentInstanceId : parentInstanceIds) {
+            instanceId = createGroupInstance(group, parentInstanceId);
+            instanceIds.add(instanceId);
+
+        }
+        startDependency(group, instanceIds);
     }
 
     private String createGroupInstance(Group group, String parentInstanceId) {
         String instanceId = parentInstanceId;
-        if (group.isGroupScalingEnabled()) {
-            this.groupScalingEnabled = true;
+        int minGroupInstances = group.getGroupMinInstances();
+        int maxGroupInstances = group.getGroupMaxInstances();
+        /*
+        * When min != 1 or max != 1, we need to generate
+        * instance ids as it is having more than one group instances
+        */
+        if (minGroupInstances > 1 || maxGroupInstances > 1) {
             instanceId = this.generateInstanceId(group);
         }
         ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(),

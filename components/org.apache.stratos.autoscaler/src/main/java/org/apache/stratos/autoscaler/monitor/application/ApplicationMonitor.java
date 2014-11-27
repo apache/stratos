@@ -35,7 +35,9 @@ import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -178,7 +180,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     private void createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException {
         String instanceId = createApplicationInstance(application);
-        startDependency(application, instanceId);
+        List<String> instanceIds = new ArrayList<String>();
+        instanceIds.add(instanceId);
+        startDependency(application, instanceIds);
     }
 
     private String createApplicationInstance(Application application) {

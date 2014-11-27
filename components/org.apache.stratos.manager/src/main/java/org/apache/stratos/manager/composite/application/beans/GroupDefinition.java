@@ -33,9 +33,9 @@ public class GroupDefinition {
 
     private int groupMaxInstances;
 
-    private boolean isGroupScalingEnabled;
+    public boolean isGroupScalingEnabled;
 
-    private boolean isGroupInstanceMonitoringEnabled;
+    public boolean isGroupInstanceMonitoringEnabled;
 
     private String autoscalingPolicy;
 
@@ -99,11 +99,11 @@ public class GroupDefinition {
         this.groupMaxInstances = groupMaxInstances;
     }
 
-    public boolean isGroupScalingEnabled() {
+    /*public boolean isGroupScalingEnabled() {
         return isGroupScalingEnabled;
     }
 
-    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+    public void setIsGroupScalingEnabled(boolean isGroupScalingEnabled) {
         this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 
@@ -111,7 +111,7 @@ public class GroupDefinition {
         return isGroupInstanceMonitoringEnabled;
     }
 
-    public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
+    public void setIsGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
         this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
-    }
+    }*/
 }

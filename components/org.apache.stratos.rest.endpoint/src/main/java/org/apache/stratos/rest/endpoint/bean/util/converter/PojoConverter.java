@@ -1005,8 +1005,8 @@ public class PojoConverter {
             groupContext.setAlias(groupDefinition.getAlias());
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
-            groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled());
-            groupContext.setGroupInstanceMonitoringEnabled(groupDefinition.isGroupInstanceMonitoringEnabled());
+            groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled);
+            groupContext.setGroupInstanceMonitoringEnabled(groupDefinition.isGroupInstanceMonitoringEnabled);
             groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
             // nested Subscribables
             if (groupDefinition.getSubscribables() != null) {
