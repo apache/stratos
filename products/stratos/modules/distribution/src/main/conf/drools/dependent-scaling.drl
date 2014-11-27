@@ -1,0 +1,153 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.autoscaler.rule;
+
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.autoscaler.AutoscalerContext;
+import org.apache.stratos.autoscaler.MemberStatsContext;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.PartitionContext;
+import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+
+import org.apache.stratos.autoscaler.policy.model.LoadAverage
+import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
+
+global org.apache.stratos.autoscaler.rule.RuleLog log;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
+global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
+global java.lang.String clusterId;
+global java.lang.String instanceId;
+global java.lang.Float laReset;
+global java.lang.Float numberOfRequiredInstances;
+global java.lang.Boolean isPrimary;
+global java.lang.String lbRef;
+global java.util.List primaryMembers;
+
+rule "Dependent Scaling Rule"
+dialect "mvel"
+	when
+
+        networkPartitionContext : NetworkPartitionContext ()
+	    algorithmName : String() from networkPartitionContext.getPartitionAlgorithm();
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm(algorithmName)
+
+        roundedRequiredInstanceCount : Integer() from networkPartitionContext.getRequiredInstanceCountBasedOnDependencies();
+        activeInstancesCount : Integer() from $delegator.getMemberCount(clusterId , 0);
+
+        scaleUp : Boolean() from (activeInstancesCount < roundedRequiredInstanceCount )
+        scaleDown : Boolean() from (activeInstancesCount > roundedRequiredInstanceCount )
+
+        eval(log.debug("[dependent-scaling] " + " [cluster] " + clusterId + " Scale-up action: " + scaleUp))
+        eval(log.debug("[dependent-scaling] " + " [cluster] " + clusterId + " Scale-down action: " + scaleDown))
+
+	then
+
+        if(scaleUp){
+
+            int additionalInstances = roundedRequiredInstanceCount - activeInstancesCount ;
+            int count = 0;
+            while(count != additionalInstances){
+                Partition partition =  autoscaleAlgorithm.getNextScaleUpPartition(networkPartitionContext, clusterId);
+                if(partition != null){
+                    log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                    log.debug("[scale-up] " + " [partition] " + partition.getId() + " [cluster] " + clusterId );
+                    $delegator.delegateSpawn(networkPartitionContext.getPartitionCtxt(partition.getId()), clusterId, instanceId, lbRef, isPrimary);
+                    count++;
+                }
+            }
+        } else if(scaleDown){
+
+            log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
+
+            MemberStatsContext selectedMemberStatsContext = null;
+            double lowestOverallLoad = 0.0;
+            boolean foundAValue = false;
+            Partition partition =  autoscaleAlgorithm.getNextScaleDownPartition(networkPartitionContext, clusterId);
+            if(partition != null){
+                log.info("[scale-down] Partition available to scale down ");
+                log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
+                partitionContext = networkPartitionContext.getPartitionCtxt(partition.getId());
+
+
+                // In partition context member stat context, all the primary members need to be
+                // avoided being selected as the member to terminated
+
+                for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
+
+                    if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
+
+                        LoadAverage loadAverage = memberStatsContext.getLoadAverage();
+                        log.debug("[scale-down] " + " [cluster] "
+                            + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
+
+                        MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
+                        log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
+                            + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption);
+
+                        double predictedCpu = $delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
+                        log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
+                            + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted CPU: " + predictedCpu);
+
+                        double predictedMemoryConsumption = $delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
+                        log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
+                            + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted memory consumption: " + predictedMemoryConsumption);
+
+                        double overallLoad = (predictedCpu + predictedMemoryConsumption) / 2;
+                        log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
+                            + clusterId + " [member] " + memberStatsContext.getMemberId() + " Overall load: " + overallLoad);
+
+                        if(!foundAValue){
+                            foundAValue = true;
+                            selectedMemberStatsContext = memberStatsContext;
+                            lowestOverallLoad = overallLoad;
+                        } else if(overallLoad < lowestOverallLoad){
+                            selectedMemberStatsContext = memberStatsContext;
+                            lowestOverallLoad = overallLoad;
+                        }
+                    }
+                }
+                if(selectedMemberStatsContext != null) {
+                    log.info("[scale-down] Trying to terminating an instance to scale down!" );
+                    log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] "
+                        + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
+
+                    $delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
+                }
+            }
+        }  else{
+
+        }
+
+end
+
+
+
+

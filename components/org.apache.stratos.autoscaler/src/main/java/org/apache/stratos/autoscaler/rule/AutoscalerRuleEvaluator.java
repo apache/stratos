@@ -138,6 +138,20 @@ public class AutoscalerRuleEvaluator {
         return handle;
     }
 
+    public static FactHandle evaluateDependentScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+        if (handle == null) {
+            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            handle = ksession.insert(obj);
+        } else {
+            ksession.update(handle, obj);
+        }
+        ksession.fireAllRules();
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Dependent scale check executed for : %s ", obj));
+        }
+        return handle;
+    }
+
     public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
         if (handle == null) {
             ksession.setGlobal("$delegator", new RuleTasksDelegator());
