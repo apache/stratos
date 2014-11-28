@@ -21,15 +21,25 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+<<<<<<< HEAD
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+=======
+import org.apache.stratos.autoscaler.exception.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.PolicyValidationException;
+import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.common.constants.StratosConstants;
+>>>>>>> 96c4da0... Rebase the master and merge changes of PR 121
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 96c4da0... Rebase the master and merge changes of PR 121
 /*
  * Factory class for creating cluster monitors.
  */
