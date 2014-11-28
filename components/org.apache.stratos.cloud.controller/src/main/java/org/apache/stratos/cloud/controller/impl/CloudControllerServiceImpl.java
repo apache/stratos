@@ -78,8 +78,7 @@ import java.util.concurrent.Future;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-    private static final Log LOG = LogFactory
-            .getLog(CloudControllerServiceImpl.class);
+	private static final Log LOG = LogFactory.getLog(CloudControllerServiceImpl.class);
 	public static final String IS_LOAD_BALANCER = "load.balancer";
 
     private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
