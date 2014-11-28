@@ -55,6 +55,8 @@
                     <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyAliases" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="maxMembers" type="xs:int"></xs:element>
+                    <xs:element minOccurs="0" name="minMembers" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax211:Properties"></xs:element>
                     <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"></xs:element>

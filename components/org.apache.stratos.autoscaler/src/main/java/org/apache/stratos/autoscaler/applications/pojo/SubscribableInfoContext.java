@@ -33,6 +33,10 @@ public class SubscribableInfoContext implements Serializable {
 
     private String autoscalingPolicy;
 
+    private int minMembers;
+
+    private int maxMembers;
+
     private String repoUrl;
 
     private boolean privateRepo;
@@ -115,5 +119,21 @@ public class SubscribableInfoContext implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public int getMinMembers() {
+        return minMembers;
+    }
+
+    public void setMinMembers(int minMembers) {
+        this.minMembers = minMembers;
+    }
+
+    public int getMaxMembers() {
+        return maxMembers;
+    }
+
+    public void setMaxMembers(int maxMembers) {
+        this.maxMembers = maxMembers;
     }
 }

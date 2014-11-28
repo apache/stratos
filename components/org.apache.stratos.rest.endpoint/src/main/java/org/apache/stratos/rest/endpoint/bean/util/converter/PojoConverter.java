@@ -962,6 +962,8 @@ public class PojoConverter {
             subscribableInfoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
             subscribableInfoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
             subscribableInfoContext.setRepoUrl(subscribableInfo.getRepoUrl());
+            subscribableInfoContext.setMinMembers(subscribableInfo.getMinMembers());
+            subscribableInfoContext.setMaxMembers(subscribableInfo.getMaxMembers());
             subscribableInfoContext.setPrivateRepo(subscribableInfo.isPrivateRepo());
             subscribableInfoContext.setRepoUsername(subscribableInfo.getRepoUsername());
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());

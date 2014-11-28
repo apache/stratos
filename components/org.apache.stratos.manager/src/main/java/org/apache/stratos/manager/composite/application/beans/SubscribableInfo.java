@@ -38,6 +38,10 @@ public class SubscribableInfo {
 
     private String repoUsername;
 
+    private int maxMembers;
+
+    private int minMembers;
+
     private String repoPassword;
 
     private String[] dependencyAliases;
@@ -114,5 +118,21 @@ public class SubscribableInfo {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public int getMaxMembers() {
+        return maxMembers;
+    }
+
+    public void setMaxMembers(int maxMembers) {
+        this.maxMembers = maxMembers;
+    }
+
+    public int getMinMembers() {
+        return minMembers;
+    }
+
+    public void setMinMembers(int minMembers) {
+        this.minMembers = minMembers;
     }
 }
