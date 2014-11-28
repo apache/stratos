@@ -137,6 +137,7 @@
             <xs:import namespace="http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="PartitionGroup">
                 <xs:sequence>
+                    <xs:element minOccurs="0" name="activeByDefault" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax215:Partition"></xs:element>

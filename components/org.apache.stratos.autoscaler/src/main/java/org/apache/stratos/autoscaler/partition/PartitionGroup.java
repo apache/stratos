@@ -31,6 +31,7 @@ public class PartitionGroup implements Serializable{
 
     private static final long serialVersionUID = -8043298009352097370L;
     private String id;
+    private boolean activeByDefault;
     private String partitionAlgo;
     private Partition[] partitions;
 
@@ -88,5 +89,13 @@ public class PartitionGroup implements Serializable{
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isActiveByDefault() {
+        return activeByDefault;
+    }
+
+    public void setActiveByDefault(boolean activeByDefault) {
+        this.activeByDefault = activeByDefault;
     }
 }

@@ -181,6 +181,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void startMinimumDependencies(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
         //There will be one application instance
+        //FIXME when having multiple network partitions
         if (application.getInstanceContextCount() > 0) {
             startDependency(application);
         } else {

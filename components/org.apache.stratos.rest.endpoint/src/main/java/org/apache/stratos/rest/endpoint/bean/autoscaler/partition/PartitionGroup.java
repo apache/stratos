@@ -29,6 +29,8 @@ public class PartitionGroup {
 
     public String partitionAlgo;
 
+    public boolean activeByDefault;
+
     //partition Ids
     public List<Partition> partition;
 }

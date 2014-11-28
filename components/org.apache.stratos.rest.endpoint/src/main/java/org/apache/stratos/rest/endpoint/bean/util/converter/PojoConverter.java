@@ -407,6 +407,7 @@ public class PojoConverter {
                     org.apache.stratos.autoscaler.stub.partition.PartitionGroup();
             partitionGroup.setId(partitionGroupBeans.get(i).id);
             partitionGroup.setPartitionAlgo(partitionGroupBeans.get(i).partitionAlgo);
+            partitionGroup.setActiveByDefault(partitionGroupBeans.get(i).activeByDefault);
 
             if (partitionGroupBeans.get(i).partition != null && !partitionGroupBeans.get(i).partition.isEmpty()) {
                 partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partition));

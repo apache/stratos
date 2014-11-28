@@ -66,8 +66,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     //terminating monitors list
     protected List<String> terminatingMonitorsList;
 
-
-
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         inactiveMonitorsList = new ArrayList<String>();
@@ -147,8 +145,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param applicationContexts the found applicationContexts to be started
      */
-    private boolean startDependency(List<ApplicationChildContext> applicationContexts, List<String> instanceIds)
-            throws TopologyInConsistentException {
+    private boolean startDependency(List<ApplicationChildContext> applicationContexts, List<String> instanceIds) {
         if (applicationContexts != null && applicationContexts.isEmpty()) {
             //all the groups/clusters have been started and waiting for activation
             log.info("There is no child found for the [group]: " + this.id);
