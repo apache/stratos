@@ -481,6 +481,19 @@ public class StratosApiV41 extends AbstractApi {
         return Response.created(url).build();
     }
 
+//    @POST
+//    @Path("/applications")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+//    @SuperTenantService(true)
+//    public Response createApplication (ApplicationDefinition applicationDefinitionBean)
+//            throws RestAPIException {
+//        StratosApiV41Utils.createApplication(applicationDefinitionBean);
+//        URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinitionBean.getApplicationId()).build();
+//        return Response.created(url).build();
+//    }
+
     @DELETE
     @Path("/applications/{applicationId}")
     @Produces("application/json")

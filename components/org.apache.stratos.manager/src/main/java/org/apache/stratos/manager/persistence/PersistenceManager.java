@@ -19,6 +19,7 @@
 
 package org.apache.stratos.manager.persistence;
 
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -73,4 +74,10 @@ public abstract class PersistenceManager {
     public abstract ServiceGroupDefinition getServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException;
 
     public abstract void removeServiceGroupDefinition (String serviceGroupDefinitionName) throws PersistenceManagerException;
+
+    public abstract void createApplication (ApplicationDefinition appDefinition) throws PersistenceManagerException;
+
+    public abstract ApplicationDefinition getApplication (String appId) throws PersistenceManagerException;
+
+    public abstract void removeApplication (String appId) throws PersistenceManagerException;
 }

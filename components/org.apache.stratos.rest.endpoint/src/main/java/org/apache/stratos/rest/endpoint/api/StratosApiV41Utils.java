@@ -44,6 +44,8 @@ import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.manager.ServiceGroupingManager;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
+import org.apache.stratos.manager.persistence.PersistenceManager;
+import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -97,6 +99,7 @@ public class StratosApiV41Utils {
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
     private static ServiceGroupingManager serviceGropingManager = new ServiceGroupingManager();
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
+    private static PersistenceManager persistenceManager = new RegistryBasedPersistenceManager();
 
     public static void deployCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
@@ -115,6 +118,34 @@ public class StratosApiV41Utils {
         log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
     }
 
+    public static void createApplication (ApplicationDefinition appDefinition) throws RestAPIException {
+
+        try {
+            if (persistenceManager.getApplication(appDefinition.getApplicationId()) != null) {
+                String errorMsg = "Application Definition with id " + appDefinition.getApplicationId() +
+                        " already exists";
+                log.error(errorMsg);
+                throw new RestAPIException(errorMsg);
+            }
+        } catch (PersistenceManagerException e) {
+            throw new RestAPIException(e);
+        }
+
+        try {
+            persistenceManager.createApplication(appDefinition);
+        } catch (PersistenceManagerException e) {
+            throw new RestAPIException(e);
+        }
+    }
+
+    public static void deleteApplication (String appId) throws RestAPIException {
+
+        try {
+            persistenceManager.removeApplication(appId);
+        } catch (PersistenceManagerException e) {
+            throw new RestAPIException(e);
+        }
+    }
 
     public static void deployApplicationDefinition(ApplicationDefinition appDefinition, ConfigurationContext ctxt,
                                                    String userName, String tenantDomain)

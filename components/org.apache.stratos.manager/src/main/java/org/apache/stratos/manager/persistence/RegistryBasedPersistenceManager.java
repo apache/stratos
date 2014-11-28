@@ -21,6 +21,7 @@ package org.apache.stratos.manager.persistence;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.PersistenceManagerException;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
@@ -51,6 +52,7 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
     private static final String CARTRIDGES = "/cartridges";
     private static final String GROUPS = "/groups";
     private static final String COMPOSITE_APPLICATIONS = "/composite_applications";
+    private static final String DEFINITIONS = "/definitions";
     private static final String SERVICE_GROUPING = "/service.grouping";
     private static final String SERVICE_GROUPING_DEFINITIONS = SERVICE_GROUPING + "/definitions";
 
@@ -825,6 +827,139 @@ public class RegistryBasedPersistenceManager extends PersistenceManager {
             RegistryManager.getInstance().delete(resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug("Deleted Service Group Definition on path " + resourcePath + " successfully");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public void createApplication(ApplicationDefinition appDefinition) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                persistApplication(appDefinition);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            persistApplication(appDefinition);
+        }
+    }
+
+    private void persistApplication (ApplicationDefinition appDefinition) throws PersistenceManagerException {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATIONS + "/" + appDefinition.getApplicationId();
+
+        try {
+            RegistryManager.getInstance().persist(resourcePath,
+                    Serializer.serializeApplicationDefinitionToByteArray(appDefinition), null);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Persisted Application Definition successfully: [ " + appDefinition.getApplicationId() + " ]");
+            }
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+
+        } catch (IOException e) {
+            throw new PersistenceManagerException(e);
+        }
+    }
+
+    @Override
+    public ApplicationDefinition getApplication(String appId) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                return retrieveApplication(appId);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            return retrieveApplication(appId);
+        }
+    }
+
+    private ApplicationDefinition retrieveApplication (String appId) throws PersistenceManagerException {
+
+        Object byteObj;
+
+        try {
+            byteObj = RegistryManager.getInstance().retrieve(STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATIONS + "/" +
+                    appId);
+
+        } catch (RegistryException e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (byteObj == null) {
+            return null;
+        }
+
+        Object appDefinitionObj;
+
+        try {
+            appDefinitionObj = Deserializer.deserializeFromByteArray((byte[]) byteObj);
+
+        } catch (Exception e) {
+            throw new PersistenceManagerException(e);
+        }
+
+        if (appDefinitionObj instanceof ApplicationDefinition) {
+            return (ApplicationDefinition) appDefinitionObj;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void removeApplication(String appId) throws PersistenceManagerException {
+
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+        if (tenantId != MultitenantConstants.SUPER_TENANT_ID) {
+            try {
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+                carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+                deleteApplication(appId);
+
+            } finally {
+                PrivilegedCarbonContext.endTenantFlow();
+            }
+
+        } else {
+            deleteApplication(appId);
+        }
+    }
+
+    private void deleteApplication (String appId) throws PersistenceManagerException  {
+
+        String resourcePath = STRATOS_MANAGER_REOSURCE + COMPOSITE_APPLICATIONS + "/" + appId;
+
+        try {
+            RegistryManager.getInstance().delete(resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug("Deleted Application Definition on path " + resourcePath + " successfully");
             }
 
         } catch (RegistryException e) {

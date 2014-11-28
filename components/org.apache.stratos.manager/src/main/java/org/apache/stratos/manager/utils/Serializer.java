@@ -138,4 +138,23 @@ public class Serializer {
             bos.close();
         }
     }
+
+    public static byte [] serializeApplicationDefinitionToByteArray (ApplicationDefinition applicationDefinition)
+            throws  IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(applicationDefinition);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
+    }
 }

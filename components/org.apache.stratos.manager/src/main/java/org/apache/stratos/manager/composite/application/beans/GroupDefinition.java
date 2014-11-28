@@ -20,10 +20,11 @@
 package org.apache.stratos.manager.composite.application.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement(name = "groups")
-public class GroupDefinition {
+public class GroupDefinition implements Serializable {
 
     private String name;
 

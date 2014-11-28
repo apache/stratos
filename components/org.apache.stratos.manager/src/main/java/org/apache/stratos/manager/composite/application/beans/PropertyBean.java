@@ -20,9 +20,10 @@
 package org.apache.stratos.manager.composite.application.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement(name = "property")
-public class PropertyBean {
+public class PropertyBean implements Serializable {
 
     private String name;
 

@@ -20,9 +20,10 @@
 package org.apache.stratos.manager.composite.application.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 @XmlRootElement (name = "subscribables")
-public class SubscribableDefinition {
+public class SubscribableDefinition implements Serializable {
 
     private String type;
 

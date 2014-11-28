@@ -19,12 +19,13 @@
 
 package org.apache.stratos.manager.composite.application.beans;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "subscribableInfo")
-public class SubscribableInfo {
+public class SubscribableInfo implements Serializable {
 
     private String alias;
 

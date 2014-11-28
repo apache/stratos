@@ -4,10 +4,11 @@ import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.StartupOrderDefinition;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 @XmlRootElement(name = "components")
-public class ComponentDefinition {
+public class ComponentDefinition implements Serializable {
 
     private List<GroupDefinition> groups;
 
