@@ -96,7 +96,8 @@
                             org.apache.stratos.autoscaler.stub.deployment.policy.*; version=${project.version},
                             org.apache.stratos.autoscaler.stub.policy.model.*; version=${project.version},
                             org.apache.stratos.autoscaler.exception.*; version=${project.version},
-                            org.apache.stratos.autoscaler.partition.*; version=${project.version},
+                            org.apache.stratos.autoscaler.pojo.policy.deployment.partition.*;
+                            version=${project.version},
                             org.apache.stratos.autoscaler.api.*; version=${project.version},
                             org.apache.stratos.autoscaler.kubernetes.*; version=${project.version},
                             org.apache.stratos.autoscaler.pojo.xsd.*; version=${project.version},

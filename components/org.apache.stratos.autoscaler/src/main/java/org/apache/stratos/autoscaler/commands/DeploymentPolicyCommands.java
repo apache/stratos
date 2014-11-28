@@ -20,8 +20,8 @@
 package org.apache.stratos.autoscaler.commands;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
  

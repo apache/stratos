@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.autoscale;
 
 import java.io.Serializable;
 

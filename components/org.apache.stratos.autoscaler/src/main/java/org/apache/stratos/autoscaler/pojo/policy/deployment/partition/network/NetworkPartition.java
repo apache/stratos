@@ -17,40 +17,16 @@
 * under the License.
 */
 
-package org.apache.stratos.autoscaler.partition.network;
-
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
 import java.io.Serializable;
-import java.util.Arrays;
-
 /**
 * The model class for NetworkPartition definition.
 */
-public class ApplicationLevelNetworkPartition implements Serializable{
+public abstract class NetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
     private String id;
-    private boolean activeByDefault;
-    private Partition[] partitions;
-
-    public void setPartitions(Partition[] partitions) {
-        if(partitions == null) {
-            this.partitions = partitions;
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
-    }
-
-    /**
-     * Gets the value of the partitions.
-     */
-    public Partition[] getPartitions() {
-        if (partitions == null) {
-            partitions = new Partition[0];
-        }
-        return this.partitions;
-    }
 
     /**
      * Gets the value of the id.
@@ -64,13 +40,5 @@ public class ApplicationLevelNetworkPartition implements Serializable{
      */
     public void setId(String id) {
         this.id = id;
-    }
-
-    public boolean isActiveByDefault() {
-        return activeByDefault;
-    }
-
-    public void setActiveByDefault(boolean activeByDefault) {
-        this.activeByDefault = activeByDefault;
     }
 }

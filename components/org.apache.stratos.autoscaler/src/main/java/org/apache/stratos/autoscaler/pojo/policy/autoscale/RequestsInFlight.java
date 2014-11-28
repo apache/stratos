@@ -17,21 +17,21 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.autoscale;
 
 import java.io.Serializable;
 
 /**
- * The model class for LoadAverage definition.
+ * The model class for RequestsInFlight definition.
  */
-public class LoadAverage implements Serializable{
+public class RequestsInFlight implements Serializable{
 
-	private static final long serialVersionUID = -2109860338694123343L;
-	private float average = 0.0f;
-    private float secondDerivative =  0.0f;
-    private float gradient =  0.0f;
-    private float scaleDownMarginOfGradient  =  0.0f;
-    private float scaleDownMarginOfSecondDerivative =  0.0f;
+	private static final long serialVersionUID = 8113964958155294290L;
+	private float average;
+    private float secondDerivative;
+    private float gradient;
+    private float scaleDownMarginOfGradient;
+    private float scaleDownMarginOfSecondDerivative;
 
     /**
      * Gets the value of the average property.   
@@ -106,9 +106,4 @@ public class LoadAverage implements Serializable{
         this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;
     }
 
-    @Override
-    public String toString() {
-        return String.format("[average] %f [second-derivative] %f [gradient] %f [scale-down-margin-of-gradient] %f [scale-down-margin-of-second-derivative] %f",
-                getAverage(), getSecondDerivative(), getGradient(), getScaleDownMarginOfGradient(), getScaleDownMarginOfSecondDerivative());
-    }
 }

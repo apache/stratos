@@ -23,15 +23,12 @@ package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.kubernetes.*;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
@@ -63,7 +60,7 @@ public interface AutoScalerServiceInterface {
 
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
 
-    public org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
+    public org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
 
 //    public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
 //

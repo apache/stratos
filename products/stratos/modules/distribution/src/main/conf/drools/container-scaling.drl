@@ -19,13 +19,13 @@
 
 package org.apache.stratos.autoscaler.rule;
 
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.policy.model.LoadThresholds;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadThresholds;
 import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
+global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.Boolean rifReset;
 global java.lang.Boolean mcReset;

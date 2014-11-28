@@ -29,7 +29,7 @@ global java.lang.String clusterId;
 global java.lang.String lbRef;
 global java.lang.String serviceId;
 
-global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
+global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
 
 rule "Terminate Dependency Rule"
 

@@ -19,8 +19,8 @@
 
 package org.apache.stratos.autoscaler.context.member;
 
-import org.apache.stratos.autoscaler.policy.model.LoadAverage;
-import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 
 /**
  * This class will keep additional parameters such as load average and memory consumption

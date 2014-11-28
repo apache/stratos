@@ -22,11 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.policy.model.LoadAverage;
-import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
-import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.io.Serializable;
 import java.util.Arrays;

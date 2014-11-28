@@ -17,37 +17,36 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.autoscale;
 
 import java.io.Serializable;
 
 /**
- * The model class for RequestsInFlight definition.
+ * The model class for LoadAverage definition.
  */
-public class RequestsInFlightThresholds implements Serializable{
+public class LoadAverageThresholds implements Serializable{
 
-	private static final long serialVersionUID = 8113964958155294290L;
+	private static final long serialVersionUID = -2109860338694123343L;
 	private float upperLimit = 80.0F;
 	private float lowerLimit = 20.0F;
 	
-	public float getLowerLimit() {
-		return lowerLimit;
-	}
-	public void setLowerLimit(float lowerLimit) {
-		this.lowerLimit = lowerLimit;
-	}
 	public float getUpperLimit() {
 		return upperLimit;
 	}
 	public void setUpperLimit(float upperLimit) {
 		this.upperLimit = upperLimit;
 	}
-	@Override
-	public String toString() {
-		return "RequestsInFlight [upperLimit=" + upperLimit + ", lowerLimit="
-				+ lowerLimit + "]";
+	public float getLowerLimit() {
+		return lowerLimit;
+	}
+	public void setLowerLimit(float lowerLimit) {
+		this.lowerLimit = lowerLimit;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "LoadAverage [upperLimit=" + upperLimit + ", lowerLimit="
+				+ lowerLimit + "]";
+	}
 
 }

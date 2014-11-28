@@ -17,7 +17,7 @@
 * under the License.
 */
 
-package org.apache.stratos.autoscaler.partition.network;
+package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 

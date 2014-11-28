@@ -30,7 +30,7 @@ import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.kubernetes.NonExistingKubernetesGroupException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;

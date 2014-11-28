@@ -25,24 +25,24 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
-import org.apache.stratos.autoscaler.policy.model.LoadAverage
-import org.apache.stratos.autoscaler.policy.model.MemoryConsumption
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.autoscaler.policy.model.AutoscalePolicy autoscalePolicy;
+global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.String instanceId;
 global java.lang.Float laReset;

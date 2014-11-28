@@ -17,14 +17,14 @@
 // * under the License.
 // */
 //
-//package org.apache.stratos.autoscaler.partition;
+//package org.apache.stratos.autoscaler.pojo.policy.deployment.partition;
 //
 //import org.apache.commons.lang.StringUtils;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 ////import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 //import org.apache.stratos.autoscaler.client.CloudControllerClient;
-//import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 //import org.apache.stratos.autoscaler.exception.AutoScalerException;
 //import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 //import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;

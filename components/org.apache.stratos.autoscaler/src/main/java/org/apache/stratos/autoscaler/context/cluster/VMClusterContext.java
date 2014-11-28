@@ -21,7 +21,8 @@ package org.apache.stratos.autoscaler.context.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.policy.model.*;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.*;

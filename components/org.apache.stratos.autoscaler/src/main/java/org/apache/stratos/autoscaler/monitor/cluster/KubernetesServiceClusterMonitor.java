@@ -30,7 +30,7 @@ import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;

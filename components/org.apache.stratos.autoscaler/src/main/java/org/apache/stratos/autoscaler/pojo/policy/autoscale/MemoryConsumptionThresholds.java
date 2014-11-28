@@ -17,16 +17,16 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.autoscale;
 
 import java.io.Serializable;
 
 /**
- * The model class for LoadAverage definition.
+ * The model class for MemoryConsumption definition.
  */
-public class LoadAverageThresholds implements Serializable{
+public class MemoryConsumptionThresholds implements Serializable {
 
-	private static final long serialVersionUID = -2109860338694123343L;
+	private static final long serialVersionUID = 5755634390464664663L;
 	private float upperLimit = 80.0F;
 	private float lowerLimit = 20.0F;
 	
@@ -45,7 +45,7 @@ public class LoadAverageThresholds implements Serializable{
 	
 	@Override
 	public String toString() {
-		return "LoadAverage [upperLimit=" + upperLimit + ", lowerLimit="
+		return "MemoryConsumption [upperLimit=" + upperLimit + ", lowerLimit="
 				+ lowerLimit + "]";
 	}
 

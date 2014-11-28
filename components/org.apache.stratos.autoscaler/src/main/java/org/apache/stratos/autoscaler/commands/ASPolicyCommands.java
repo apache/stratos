@@ -19,8 +19,8 @@
 
 package org.apache.stratos.autoscaler.commands;
 
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 

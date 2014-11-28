@@ -17,10 +17,10 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
-import org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition;
-import org.apache.stratos.autoscaler.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;

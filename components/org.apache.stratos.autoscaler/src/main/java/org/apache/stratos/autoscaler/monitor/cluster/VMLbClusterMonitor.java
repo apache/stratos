@@ -30,9 +30,9 @@
 //import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 //import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 //import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
-//import org.apache.stratos.autoscaler.partition.PartitionManager;
-//import org.apache.stratos.autoscaler.policy.PolicyManager;
-//import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 //import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 //import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 //import org.apache.stratos.autoscaler.util.ConfUtil;

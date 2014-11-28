@@ -20,7 +20,7 @@
 //package org.apache.stratos.autoscaler.commands;
 //
 //import org.apache.commons.lang.StringUtils;
-//import org.apache.stratos.autoscaler.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 //import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 //import org.eclipse.osgi.framework.console.CommandInterpreter;
 //import org.eclipse.osgi.framework.console.CommandProvider;

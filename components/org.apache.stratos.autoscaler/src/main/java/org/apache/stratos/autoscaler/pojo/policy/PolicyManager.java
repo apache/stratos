@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy;
+package org.apache.stratos.autoscaler.pojo.policy;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +25,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-//import org.apache.stratos.autoscaler.partition.PartitionManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 

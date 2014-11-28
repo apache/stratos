@@ -27,12 +27,11 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
-//import org.apache.stratos.autoscaler.partition.PartitionManager;
-import org.apache.stratos.autoscaler.policy.PolicyManager;
-import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;

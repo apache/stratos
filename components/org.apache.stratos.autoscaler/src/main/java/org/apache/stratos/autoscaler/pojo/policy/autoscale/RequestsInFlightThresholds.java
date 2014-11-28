@@ -17,36 +17,37 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.policy.model;
+package org.apache.stratos.autoscaler.pojo.policy.autoscale;
 
 import java.io.Serializable;
 
 /**
- * The model class for MemoryConsumption definition.
+ * The model class for RequestsInFlight definition.
  */
-public class MemoryConsumptionThresholds implements Serializable {
+public class RequestsInFlightThresholds implements Serializable{
 
-	private static final long serialVersionUID = 5755634390464664663L;
+	private static final long serialVersionUID = 8113964958155294290L;
 	private float upperLimit = 80.0F;
 	private float lowerLimit = 20.0F;
 	
-	public float getUpperLimit() {
-		return upperLimit;
-	}
-	public void setUpperLimit(float upperLimit) {
-		this.upperLimit = upperLimit;
-	}
 	public float getLowerLimit() {
 		return lowerLimit;
 	}
 	public void setLowerLimit(float lowerLimit) {
 		this.lowerLimit = lowerLimit;
 	}
-	
+	public float getUpperLimit() {
+		return upperLimit;
+	}
+	public void setUpperLimit(float upperLimit) {
+		this.upperLimit = upperLimit;
+	}
 	@Override
 	public String toString() {
-		return "MemoryConsumption [upperLimit=" + upperLimit + ", lowerLimit="
+		return "RequestsInFlight [upperLimit=" + upperLimit + ", lowerLimit="
 				+ lowerLimit + "]";
 	}
+	
+	
 
 }

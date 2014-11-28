@@ -27,7 +27,7 @@ import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import java.util.Arrays;
 import java.util.List;
 
-//import org.apache.stratos.autoscaler.partition.networkPartitionContext;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.networkPartitionContext;
 
 /**
  *
@@ -37,7 +37,7 @@ import java.util.List;
  * This class is used for selecting a {@link Partition} one after another and checking availability of
  * partitions of a {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext}
  * One after another means it completes partitions in the order defined in
- * {@link org.apache.stratos.autoscaler.policy.model.DeploymentPolicy}, and go to next  if current one
+ * {@link org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy}, and go to next  if current one
  * reached the max limit
  */
 public class OneAfterAnother implements AutoscaleAlgorithm {
