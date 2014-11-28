@@ -49,13 +49,13 @@ public class ClusterMonitorFactory {
 	public static final String IS_PRIMARY = "PRIMARY";
 
 	/**
-     * @param cluster the cluster to be monitored
-     * @return the created cluster monitor
-     * @throws PolicyValidationException    when deployment policy is not valid
-     * @throws PartitionValidationException when partition is not valid
-     */
-    public static AbstractClusterMonitor getMonitor(Cluster cluster)
-            throws PolicyValidationException, PartitionValidationException {
+	 * @param cluster the cluster to be monitored
+	 * @return the created cluster monitor
+	 * @throws PolicyValidationException    when deployment policy is not valid
+	 * @throws PartitionValidationException when partition is not valid
+	 */
+	public static AbstractClusterMonitor getMonitor(Cluster cluster)
+			throws PolicyValidationException, PartitionValidationException {
 
         AbstractClusterMonitor clusterMonitor;
         if (cluster.isKubernetesCluster()) {
