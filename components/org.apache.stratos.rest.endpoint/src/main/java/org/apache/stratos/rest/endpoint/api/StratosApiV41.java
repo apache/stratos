@@ -914,14 +914,14 @@ public class StratosApiV41 extends AbstractApi {
             throw new Exception(msg, e);
         }
     }
-
+    
     @GET
     @Path("/tenants/{tenantDomain}")
     @Consumes("application/json")
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean getTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public TenantInfoBean getTenantByDomain(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         try {
             return getTenantForDomain(tenantDomain);
@@ -1118,23 +1118,6 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         return Response.noContent().build();
-    }
-
-    @GET
-    @Path("/tenants/{tenantDomain}")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/modify/tenants")
-    @SuperTenantService(true)
-    public Response getTenantByDomain(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
-        boolean available;
-        try {
-            available = CommonUtil.isDomainNameAvailable(tenantDomain);
-        } catch (Exception e) {
-            String msg = "Error in checking domain " + tenantDomain + " is available";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        }
-        return Response.ok(available).build();
     }
 
     @POST
