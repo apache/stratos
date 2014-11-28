@@ -12,7 +12,7 @@ import org.apache.stratos.cloud.controller.interfaces.Iaas;
 import org.apache.stratos.cloud.controller.jcloud.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.pojo.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.validate.CloudStackPartitionValidator;
+import org.apache.stratos.cloud.controller.validate.CloudstackPartitionValidator;
 import org.apache.stratos.cloud.controller.validate.interfaces.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
@@ -35,9 +35,9 @@ import java.util.concurrent.TimeoutException;
 
 public class CloudstackIaas extends Iaas {
 
-    private static final Log log = LogFactory.getLog(CloudStackIaas.class);
+    private static final Log log = LogFactory.getLog(CloudstackIaas.class);
 
-    public CloudStackIaas(IaasProvider iaasProvider) {
+    public CloudstackIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
     }
 
@@ -317,14 +317,13 @@ public class CloudstackIaas extends Iaas {
 
     @Override
     public PartitionValidator getPartitionValidator() {
-        return new CloudStackPartitionValidator();
+        return new CloudstackPartitionValidator();
     }
 
     @Override
-    public String createVolume(int sizeGB) {
+    public String createVolume(int sizeGB, String snapshotId) {
 
         // Snapshot id is not there in IaaS.createVolume() method in stratos 4.0.0
-        String snapshotId = null;
         //todo return volume ID if volume is created
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService()
