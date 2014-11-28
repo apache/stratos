@@ -32,7 +32,7 @@ import org.apache.stratos.cloud.controller.publisher.TopologySynchronizerTaskSch
 import org.apache.stratos.cloud.controller.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.util.Constants;
+import org.apache.stratos.messaging.util.Util;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.caching.impl.DistributedMapProvider;
@@ -164,6 +164,6 @@ public class CloudControllerServiceComponent {
 	
 	protected void deactivate(ComponentContext ctx) {
         // Close event publisher connections to message broker
-        EventPublisherPool.close(Constants.TOPOLOGY_TOPIC);
+        EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
 	}
 }

@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.AlreadySubscribedException;
 import org.apache.stratos.manager.exception.DuplicateCartridgeAliasException;
@@ -51,7 +52,6 @@ import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.messaging.util.Constants;
 
 /**
  *	Responsible for making a subscription for a Load Balancer Cluster,
@@ -98,7 +98,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
                     List<Property> lbProperperties = lbDataCtxt.getLbProperperties();
                     lbCartridgeSubscriptionProperties.setProperties(lbProperperties.toArray(new Property[lbProperperties.size()]));
                     for (Property property : lbProperperties){
-                        if (org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF.equals(property.getName())) {
+                        if (StratosConstants.LOAD_BALANCER_REF.equals(property.getName())) {
                             filterProperties.addProperties(property);
                         }
                     }
@@ -140,7 +140,7 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
             RepositoryTransportException, AlreadySubscribedException, InvalidRepositoryException {
 
         
-        if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(Constants.NO_LOAD_BALANCER)) {
+        if (lbDataContext.getLbCategory() == null || lbDataContext.getLbCategory().equals(StratosConstants.NO_LOAD_BALANCER)) {
             // no load balancer subscription required generate SubscriptionKey
             log.info("No LB subscription required for the Subscription with alias: " + subscriptionData.getCartridgeAlias() + ", type: " +
                     subscriptionData.getCartridgeType());
@@ -151,13 +151,13 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
 
         String lbAlias = "lb" + lbDataContext.getLbCartridgeInfo().getType() + new Random().nextInt();
 
-        if (lbDataContext.getLbCategory().equals(Constants.EXISTING_LOAD_BALANCERS)) {
+        if (lbDataContext.getLbCategory().equals(StratosConstants.EXISTING_LOAD_BALANCERS)) {
             loadBalancerCategory = new ExistingLoadBalancerCategory();
 
-        } else if (lbDataContext.getLbCategory().equals(Constants.DEFAULT_LOAD_BALANCER)) {
+        } else if (lbDataContext.getLbCategory().equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
             loadBalancerCategory = new DefaultLoadBalancerCategory();
 
-        } else if (lbDataContext.getLbCategory().equals(Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+        } else if (lbDataContext.getLbCategory().equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
             loadBalancerCategory = new ServiceLevelLoadBalancerCategory();
         }
 

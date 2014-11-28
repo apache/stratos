@@ -19,16 +19,12 @@
 package org.apache.stratos.messaging.test;
 
 import org.apache.stratos.messaging.message.filter.MessageFilter;
-import org.apache.stratos.messaging.util.Constants;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.lang.RuntimeException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Message filter tests.

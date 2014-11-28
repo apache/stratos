@@ -78,6 +78,11 @@
             <artifactId>mqtt-client</artifactId>
             <version>0.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

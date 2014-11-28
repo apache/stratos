@@ -24,12 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.instance.notifier.InstanceNotifierMessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.instance.status.InstanceStatusMessageProcessorChain;
-import org.apache.stratos.messaging.util.Constants;
-
-import javax.jms.TextMessage;
-
 
 /**
  * Implements logic for processing instance notifier event messages based on a given

@@ -58,7 +58,6 @@ import org.apache.stratos.kubernetes.client.model.ReplicationController;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
-import org.apache.stratos.messaging.util.Constants;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
@@ -79,8 +78,9 @@ import java.util.concurrent.Future;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-    private static final Log LOG = LogFactory
-            .getLog(CloudControllerServiceImpl.class);
+	private static final Log LOG = LogFactory.getLog(CloudControllerServiceImpl.class);
+	public static final String IS_LOAD_BALANCER = "load.balancer";
+
     private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
             .getInstance();
 
@@ -1203,7 +1203,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-        String property = props.getProperty(Constants.IS_LOAD_BALANCER);
+        String property = props.getProperty(IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
         //TODO fix the properties issue

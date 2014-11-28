@@ -41,7 +41,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.util.Constants;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -255,15 +255,15 @@ public class ClusterContextFactory {
             java.util.Properties props = cluster.getProperties();
 
             // get service type of load balanced cluster
-            String loadBalancedServiceType = props.getProperty(org.apache.stratos.messaging.util.Constants.LOAD_BALANCED_SERVICE_TYPE);
+            String loadBalancedServiceType = props.getProperty(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
 
-            if (props.containsKey(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF)) {
-                String value = props.getProperty(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+            if (props.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
+                String value = props.getProperty(StratosConstants.LOAD_BALANCER_REF);
 
-                if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+                if (value.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
                     networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
 
-                } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+                } else if (value.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
                     String serviceName = cluster.getServiceName();
                     // TODO: check if this is correct
                     networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
@@ -365,8 +365,8 @@ public class ClusterContextFactory {
         }
 
         // find lb reference type
-        if (properties.containsKey(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF)) {
-            String value = properties.getProperty(Constants.LOAD_BALANCER_REF);
+        if (properties.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
+            String value = properties.getProperty(StratosConstants.LOAD_BALANCER_REF);
             //dockerClusterMonitor.setLbReferenceType(value);
             if (log.isDebugEnabled()) {
                 log.debug("Set the lb reference type: " + value);

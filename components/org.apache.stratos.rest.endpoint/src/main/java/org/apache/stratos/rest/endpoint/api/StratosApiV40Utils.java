@@ -49,7 +49,6 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.util.Constants;
 import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
@@ -79,6 +78,7 @@ public class StratosApiV40Utils {
     public static final String SHOULD_DELETE_VOLUME = "volume.delete.on.unsubscription";
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
+	public static final String TENANT_RANGE_ALL = "*";
 
     private static Log log = LogFactory.getLog(StratosApiV40Utils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
@@ -696,7 +696,7 @@ public class StratosApiV40Utils {
         //getting the services for the tenantId
         for(Service service : services) {
             String tenantRange = service.getTenantRange();
-            if(tenantRange.equals(Constants.TENANT_RANGE_ALL)) {
+            if(tenantRange.equals(TENANT_RANGE_ALL)) {
                 //check whether any active instances found for this service in the Topology
 
                 Cluster cluster = TopologyManager.getTopology().getService(service.getType()).

@@ -22,7 +22,6 @@ package org.apache.stratos.messaging.message.filter.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
-import org.apache.stratos.messaging.util.Constants;
 
 import java.util.Collection;
 
@@ -31,10 +30,13 @@ import java.util.Collection;
  */
 public class TopologyClusterFilter extends MessageFilter {
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
+	public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
+	public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
+
     private static volatile TopologyClusterFilter instance;
 
     public TopologyClusterFilter() {
-        super(Constants.TOPOLOGY_CLUSTER_FILTER);
+        super(TOPOLOGY_CLUSTER_FILTER);
     }
 
     public static TopologyClusterFilter getInstance() {
@@ -52,14 +54,14 @@ public class TopologyClusterFilter extends MessageFilter {
     }
 
     public boolean clusterIdIncluded(String value) {
-        return included(Constants.TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
+        return included(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
     }
 
     public boolean clusterIdExcluded(String value) {
-        return excluded(Constants.TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
+        return excluded(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
     }
 
     public Collection<String> getIncludedClusterIds() {
-        return getIncludedPropertyValues(Constants.TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID);
+        return getIncludedPropertyValues(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID);
     }
 }

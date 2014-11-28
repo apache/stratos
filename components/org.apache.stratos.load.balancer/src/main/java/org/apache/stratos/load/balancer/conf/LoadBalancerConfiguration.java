@@ -22,6 +22,7 @@ package org.apache.stratos.load.balancer.conf;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
@@ -399,9 +400,9 @@ public class LoadBalancerConfiguration {
                     throw new InvalidConfigurationException(String.format("Invalid tenant identifier regular expression: %s", tenantIdentifierRegex), e);
                 }
                 List<String> regexList = new ArrayList<String>();
-                if(tenantIdentifierRegex.contains(org.apache.stratos.messaging.util.Constants.FILTER_VALUE_SEPARATOR)) {
+                if(tenantIdentifierRegex.contains(StratosConstants.FILTER_VALUE_SEPARATOR)) {
                     String[] regexArray;
-                    regexArray = tenantIdentifierRegex.split(org.apache.stratos.messaging.util.Constants.FILTER_VALUE_SEPARATOR);
+                    regexArray = tenantIdentifierRegex.split(StratosConstants.FILTER_VALUE_SEPARATOR);
                     for(String regex: regexArray) {
                        regexList.add(regex);
                     }
