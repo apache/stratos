@@ -37,48 +37,12 @@ public class NetworkPartitionLbHolder implements Serializable{
 
     private Map<String, String> clusterIdToLBClusterIdMap;
 
-//    private final String partitionAlgorithm;
-//
-//    //boolean values to keep whether the requests in flight parameters are reset or not
-//    private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
-//    //boolean values to keep whether the memory consumption parameters are reset or not
-//    private boolean memoryConsumptionReset = false, averageMemoryConsumptionReset = false,
-//            gradientMemoryConsumptionReset = false, secondDerivativeMemoryConsumptionRest = false;
-//    //boolean values to keep whether the load average parameters are reset or not
-//    private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
-//            secondDerivativeLoadAverageRest = false;
-//
-//    //FIXME this should be populated via NetworkPartitions
-//    private int minInstanceCount = 1, maxInstanceCount = 1;
-//
-//    private final Partition[] partitions;
-
-    //Following information will keep events details
-//    private RequestsInFlight requestsInFlight;
-//    private MemoryConsumption memoryConsumption;
-//    private LoadAverage loadAverage;
-
-    //details required for partition selection algorithms
-//    private int currentPartitionIndex;
-////    private Map<String, Integer> partitionToMemberCountMap;
-//
-//    //partitions of this network partition
-//    private final Map<String, PartitionContext> partitionCtxts;
-
     public NetworkPartitionLbHolder(String networkPartitionId) {
 
         super();
         this.networkPartitionId = networkPartitionId;
-//        this.partitionAlgorithm = partitionAlgo;
-//        this.partitions = partitions;
         this.setServiceToLBClusterId(new HashMap<String, String>());
         this.setClusterIdToLBClusterIdMap(new HashMap<String, String>());
-//        partitionToMemberCountMap = new HashMap<String, Integer>();
-//        partitionCtxts = new HashMap<String, PartitionContext>();
-//        requestsInFlight = new RequestsInFlight();
-//        loadAverage = new LoadAverage();
-//        memoryConsumption = new MemoryConsumption();
-
     }
 
     public String getDefaultLbClusterId() {
