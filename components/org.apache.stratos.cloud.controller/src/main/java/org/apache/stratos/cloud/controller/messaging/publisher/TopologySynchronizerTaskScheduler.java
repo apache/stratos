@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.ntask.common.TaskException;
@@ -39,7 +39,7 @@ public class TopologySynchronizerTaskScheduler {
 
     private static final Log log = LogFactory.getLog(TopologySynchronizerTaskScheduler.class);
 
-    private static final FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+    private static final CloudControllerContext dataHolder = CloudControllerContext.getInstance();
 
     public static void schedule(TaskService taskService) {
         TaskManager taskManager = null;

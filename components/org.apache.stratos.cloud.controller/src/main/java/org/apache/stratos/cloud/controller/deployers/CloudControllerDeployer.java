@@ -25,10 +25,10 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +74,7 @@ public class CloudControllerDeployer extends AbstractDeployer {
             // update map
             fileToIaasProviderListMap.put(deploymentFileData.getAbsolutePath(),
                                           new ArrayList<IaasProvider>(
-                                                                      FasterLookUpDataHolder.getInstance()
+                                                                      CloudControllerContext.getInstance()
                                                                                             .getIaasProviders()));
 
             log.info("Successfully deployed the cloud-controller XML file located at " +
@@ -87,7 +87,7 @@ public class CloudControllerDeployer extends AbstractDeployer {
 
         if (file.contains(FILE_NAME)) {
             // reset
-            FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+            CloudControllerContext dataHolder = CloudControllerContext.getInstance();
             dataHolder.setSerializationDir("");
 
             // grab the entry from Map

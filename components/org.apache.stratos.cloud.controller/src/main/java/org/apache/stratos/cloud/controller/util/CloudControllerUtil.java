@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -28,7 +29,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.iaas.Iaas;
 import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
@@ -87,7 +87,7 @@ public class CloudControllerUtil {
         // populate LB config
         cartridge.setLbConfig(config.getLbConfig());
 
-        List<IaasProvider> iaases = FasterLookUpDataHolder.getInstance().getIaasProviders();
+        List<IaasProvider> iaases = CloudControllerContext.getInstance().getIaasProviders();
 
         // populate IaaSes
         IaasConfig[] iaasConfigs = config.getIaasConfigs();

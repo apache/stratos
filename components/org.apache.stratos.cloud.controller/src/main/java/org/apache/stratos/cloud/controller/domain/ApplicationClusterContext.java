@@ -22,7 +22,7 @@ package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.stratos.common.Properties;
 
-public class ApplicationClusterContextDTO {
+public class ApplicationClusterContext {
 
     // cluster id
     private String clusterId;
@@ -40,11 +40,11 @@ public class ApplicationClusterContextDTO {
     private String deploymentPolicyName;
     // tenant rance
     private String tenantRange;
-    // propertis
+    // properties
     private Properties properties;
 
 
-    public ApplicationClusterContextDTO () {
+    public ApplicationClusterContext() {
     }
 
 
@@ -114,7 +114,7 @@ public class ApplicationClusterContextDTO {
 
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof ApplicationClusterContextDTO)) {
+        if(other == null || !(other instanceof ApplicationClusterContext)) {
             return false;
         }
 
@@ -122,7 +122,7 @@ public class ApplicationClusterContextDTO {
             return true;
         }
 
-        ApplicationClusterContextDTO that = (ApplicationClusterContextDTO)other;
+        ApplicationClusterContext that = (ApplicationClusterContext)other;
 
         return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);

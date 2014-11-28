@@ -18,13 +18,13 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import junit.framework.TestCase;
 
-public class FasterLookupDataHolderTest extends TestCase {
+public class CloudControllerContextTest extends TestCase {
     
-    public FasterLookupDataHolderTest(String name) {
+    public CloudControllerContextTest(String name) {
         super(name);
     }
     
@@ -35,7 +35,7 @@ public class FasterLookupDataHolderTest extends TestCase {
     public final void testMemberContextOperations() throws Exception {
     	
     	
-    	FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+    	CloudControllerContext dataHolder = CloudControllerContext.getInstance();
     	Thread t1 = new Thread(new MemberAdder(dataHolder));
     	t1.start();
     	t1.join();
@@ -48,8 +48,8 @@ public class FasterLookupDataHolderTest extends TestCase {
     }
     class MemberAdder implements Runnable {
     	
-    	private FasterLookUpDataHolder dataHolder;
-    	public MemberAdder(FasterLookUpDataHolder data) {
+    	private CloudControllerContext dataHolder;
+    	public MemberAdder(CloudControllerContext data) {
     		this.dataHolder = data;
     	}
     	@Override
@@ -72,8 +72,8 @@ public class FasterLookupDataHolderTest extends TestCase {
     
     class MemberRemover implements Runnable {
     	
-    	private FasterLookUpDataHolder dataHolder;
-    	public MemberRemover(FasterLookUpDataHolder data) {
+    	private CloudControllerContext dataHolder;
+    	public MemberRemover(CloudControllerContext data) {
     		this.dataHolder = data;
     	}
     	@Override

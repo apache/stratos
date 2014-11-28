@@ -23,8 +23,8 @@ package org.apache.stratos.cloud.controller.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -77,7 +77,7 @@ public class RegistryManager {
      *
      * @param dataObj object to be persisted.
      */
-    public synchronized void persist(FasterLookUpDataHolder dataObj) throws RegistryException {
+    public synchronized void persist(CloudControllerContext dataObj) throws RegistryException {
         try {
         	
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();

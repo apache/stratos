@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.messaging.topology;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -28,7 +29,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeExcepti
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -183,7 +183,7 @@ public class TopologyBuilder {
         TopologyManager.acquireWriteLock();
 
         List<Cluster> removedClusters = new ArrayList<Cluster>();
-        FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
         try {
             Topology topology = TopologyManager.getTopology();
 
@@ -220,7 +220,7 @@ public class TopologyBuilder {
     /**
      * Persist data in registry.
      */
-    private static void persist(FasterLookUpDataHolder dataHolder) {
+    private static void persist(CloudControllerContext dataHolder) {
         try {
             RegistryManager.getInstance().persist(
                     dataHolder);
@@ -435,7 +435,7 @@ public class TopologyBuilder {
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
             try {
 
-                Cartridge cartridge = FasterLookUpDataHolder.getInstance().getCartridge(serviceName);
+                Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(serviceName);
                 List<PortMapping> portMappings = cartridge.getPortMappings();
                 Port port;
                 if(cluster.isKubernetesCluster()){
@@ -573,7 +573,7 @@ public class TopologyBuilder {
             }
             member.setStatus(MemberStatus.Activated);
             log.info("member started event adding status activated");
-            Cartridge cartridge = FasterLookUpDataHolder.getInstance().
+            Cartridge cartridge = CloudControllerContext.getInstance().
                     getCartridge(instanceActivatedEvent.getServiceName());
 
             List<PortMapping> portMappings = cartridge.getPortMappings();

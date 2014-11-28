@@ -37,13 +37,13 @@ import java.util.concurrent.ScheduledFuture;
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
  */
-public class FasterLookUpDataHolder implements Serializable{
+public class CloudControllerContext implements Serializable{
 
     private static final long serialVersionUID = -2662307358852779897L;
     
-    private static final Log log = LogFactory.getLog(FasterLookUpDataHolder.class);
+    private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
-	private static volatile FasterLookUpDataHolder ctxt;
+	private static volatile CloudControllerContext ctxt;
 
 	/* We keep following maps in order to make the look up time, small. */
 	
@@ -119,21 +119,21 @@ public class FasterLookUpDataHolder implements Serializable{
 	private boolean isTopologySyncRunning;
 
 
-	public static FasterLookUpDataHolder getInstance() {
+	public static CloudControllerContext getInstance() {
 
 		if (ctxt == null) {
-			synchronized (FasterLookUpDataHolder.class) {
+			synchronized (CloudControllerContext.class) {
 				if (ctxt == null && RegistryManager.getInstance() != null) {
 
 					Object obj = RegistryManager.getInstance().retrieve();
 					if (obj != null) {
-						if (obj instanceof FasterLookUpDataHolder) {
-							ctxt = (FasterLookUpDataHolder) obj;
+						if (obj instanceof CloudControllerContext) {
+							ctxt = (CloudControllerContext) obj;
 						}
 					} 
 				}
 				if(ctxt == null) {
-					ctxt = new FasterLookUpDataHolder();
+					ctxt = new CloudControllerContext();
 				}
 			}
 		}
@@ -141,7 +141,7 @@ public class FasterLookUpDataHolder implements Serializable{
 		return ctxt;
 	}
 
-	private FasterLookUpDataHolder() {
+	private CloudControllerContext() {
 
 		cartridges = new ArrayList<Cartridge>();
 		serviceGroups = new ArrayList<ServiceGroup>();

@@ -18,10 +18,10 @@
  */
 package org.apache.stratos.cloud.controller.functions;
 
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.domain.KubernetesClusterContext;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Selector;
@@ -35,7 +35,7 @@ import com.google.common.base.Function;
  */
 public class ContainerClusterContextToKubernetesService implements Function<ContainerClusterContext, Service> {
 
-    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+    private CloudControllerContext dataHolder = CloudControllerContext.getInstance();
 
     @Override
     public Service apply(ContainerClusterContext memberContext) {

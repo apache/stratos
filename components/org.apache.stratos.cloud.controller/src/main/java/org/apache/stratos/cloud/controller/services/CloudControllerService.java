@@ -214,7 +214,7 @@ public interface CloudControllerService {
      * @param appClustersContexts  cluster information holder object
      * @throws ApplicationClusterRegistrationException if the cluster information are null/empty
      */
-    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts) throws
+    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
             ApplicationClusterRegistrationException;
 
     /**

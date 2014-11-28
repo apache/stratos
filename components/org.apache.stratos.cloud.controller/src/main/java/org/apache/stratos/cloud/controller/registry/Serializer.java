@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.messaging.domain.topology.Topology;
 
 import java.io.*;
@@ -63,12 +63,12 @@ public class Serializer {
     }
     
     /**
-     * Serialize a {@link org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder} to a byte array.
+     * Serialize a {@link org.apache.stratos.cloud.controller.context.CloudControllerContext} to a byte array.
      * @param serializableObj
      * @return byte[] 
      * @throws IOException
      */
-    public static byte[] serializeToByteArray(FasterLookUpDataHolder serializableObj) throws IOException {
+    public static byte[] serializeToByteArray(CloudControllerContext serializableObj) throws IOException {
 
     	ByteArrayOutputStream bos = new ByteArrayOutputStream();
     	ObjectOutput out = null;
@@ -88,7 +88,7 @@ public class Serializer {
     }
 
      /**
-     * Serialize a {@link org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder} to a byte array.
+     * Serialize a {@link org.apache.stratos.cloud.controller.context.CloudControllerContext} to a byte array.
      * @param topology
      * @return byte[]
      * @throws IOException

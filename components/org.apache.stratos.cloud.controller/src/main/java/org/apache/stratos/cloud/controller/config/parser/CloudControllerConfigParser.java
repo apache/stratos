@@ -26,12 +26,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.domain.DataPublisherConfig;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.TopologyConfig;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 
 /**
@@ -61,10 +61,10 @@ public class CloudControllerConfigParser {
 
 
     private static void extractIaasProviders(OMElement elt, List<OMNode> nodeList) {
-        List<IaasProvider> iaasProviders = FasterLookUpDataHolder.getInstance().getIaasProviders();
+        List<IaasProvider> iaasProviders = CloudControllerContext.getInstance().getIaasProviders();
 
         if (iaasProviders == null) {
-            FasterLookUpDataHolder.getInstance()
+            CloudControllerContext.getInstance()
                     .setIaasProviders((iaasProviders = new ArrayList<IaasProvider>()));
         }
 
@@ -86,7 +86,7 @@ public class CloudControllerConfigParser {
             return;
         }
 
-        FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
         // get enable attribute
         boolean isEnable =
                 Boolean.parseBoolean(element.getAttributeValue(new QName(
@@ -179,7 +179,7 @@ public class CloudControllerConfigParser {
                 Boolean.parseBoolean(element.getAttributeValue(new QName(
                         CloudControllerConstants.ENABLE_ATTR)));
 
-        FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
 
         dataHolder.setEnableTopologySync(isEnable);
         if (!isEnable) {

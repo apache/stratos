@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.Dependencies;
@@ -39,7 +40,6 @@ import org.apache.stratos.cloud.controller.iaas.Iaas;
 import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
@@ -80,7 +80,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private static final Log LOG = LogFactory.getLog(CloudControllerServiceImpl.class);
 	public static final String IS_LOAD_BALANCER = "load.balancer";
 
-    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder
+    private CloudControllerContext dataHolder = CloudControllerContext
             .getInstance();
 
     public CloudControllerServiceImpl() {
@@ -95,9 +95,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             try {
                 Object dataObj = Deserializer
                         .deserializeFromByteArray((byte[]) obj);
-                if (dataObj instanceof FasterLookUpDataHolder) {
-                    FasterLookUpDataHolder serializedObj = (FasterLookUpDataHolder) dataObj;
-                    FasterLookUpDataHolder currentData = FasterLookUpDataHolder
+                if (dataObj instanceof CloudControllerContext) {
+                    CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
+                    CloudControllerContext currentData = CloudControllerContext
                             .getInstance();
 
                     // assign necessary data
@@ -1479,7 +1479,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Callable<IaasProvider> worker = new PartitionValidatorCallable(
                     partition, cartridge);
-            Future<IaasProvider> job = FasterLookUpDataHolder.getInstance()
+            Future<IaasProvider> job = CloudControllerContext.getInstance()
                     .getExecutor().submit(worker);
             jobList.put(partition.getId(), job);
         }
@@ -2049,7 +2049,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void createApplicationClusters(String appId, ApplicationClusterContextDTO[] appClustersContexts)  throws
+    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts)  throws
             ApplicationClusterRegistrationException {
 
         // Create a Cluster Context obj. for each of the Clusters in the Application
@@ -2061,7 +2061,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         List<Cluster> clusters = new ArrayList<Cluster>();
 
 
-        for (ApplicationClusterContextDTO appClusterCtxt : appClustersContexts) {
+        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
             dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
                     appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
                     appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));

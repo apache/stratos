@@ -23,11 +23,11 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.domain.PortMapping;
-import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -45,7 +45,7 @@ import com.google.common.base.Function;
 public class ContainerClusterContextToKubernetesContainer implements Function<ContainerClusterContext, Container> {
 
     private static final Log log = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
-    private FasterLookUpDataHolder dataHolder = FasterLookUpDataHolder.getInstance();
+    private CloudControllerContext dataHolder = CloudControllerContext.getInstance();
 
     @Override
     public Container apply(ContainerClusterContext memberContext) {
