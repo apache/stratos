@@ -36,15 +36,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * Holds information about a partition.
  */
 
-public class GroupLevelPartitionContext implements Serializable {
+public class GroupLevelPartitionContext extends PartitionContext implements Serializable {
 
     private static final long serialVersionUID = -2920388667345980487L;
     private static final Log log = LogFactory.getLog(GroupLevelPartitionContext.class);
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
     private String partitionId;
     private String serviceName;
-    private String networkPartitionId;
-    private Partition partition;
     private int minimumInstanceCount = 0;
     private int pendingInstancesFailureCount = 0;
     // properties
@@ -82,12 +80,14 @@ public class GroupLevelPartitionContext implements Serializable {
     // for the use of tests
     public GroupLevelPartitionContext(long instanceExpiryTime) {
 
+        super(instanceExpiryTime);
         this.activeInstances = new ArrayList<Instance>();
         this.terminationPendingInstances = new ArrayList<Instance>();
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
     public GroupLevelPartitionContext(Partition partition) {
+        super(partition);
         this.setPartition(partition);
         this.minimumInstanceCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
@@ -160,14 +160,6 @@ public class GroupLevelPartitionContext implements Serializable {
 
     public void setMinimumInstanceCount(int minimumInstanceCount) {
         this.minimumInstanceCount = minimumInstanceCount;
-    }
-
-    public Partition getPartition() {
-        return partition;
-    }
-
-    public void setPartition(Partition partition) {
-        this.partition = partition;
     }
 
     public void addPendingInstance(Instance ctxt) {
@@ -403,14 +395,6 @@ public class GroupLevelPartitionContext implements Serializable {
 
     public void setObsoletedInstances(Map<String, Instance> obsoletedInstances) {
         this.obsoletedInstances = obsoletedInstances;
-    }
-
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
     }
 
     public Map<String, MemberStatsContext> getInstanceStatsContexts() {

@@ -37,7 +37,7 @@ public class PartitionContext implements Serializable{
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     protected String partitionId;
     private Partition partition;
-
+    private String networkPartitionId;
     // properties
     private Properties properties;
 
@@ -62,8 +62,17 @@ public class PartitionContext implements Serializable{
     public String getPartitionId() {
         return partitionId;
     }
+
     public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
     }
 
     public int getCurrentElementCount() {
