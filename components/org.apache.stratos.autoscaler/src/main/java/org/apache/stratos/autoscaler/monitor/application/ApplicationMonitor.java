@@ -20,9 +20,7 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.ApplicationLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.GroupLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.GroupLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;

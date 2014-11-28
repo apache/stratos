@@ -21,8 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.util.Arrays;
@@ -36,7 +35,7 @@ import java.util.List;
 
 /**
  * This class is used for selecting a {@link Partition} one after another and checking availability of
- * partitions of a {@link org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext}
+ * partitions of a {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext}
  * One after another means it completes partitions in the order defined in
  * {@link org.apache.stratos.autoscaler.policy.model.DeploymentPolicy}, and go to next  if current one
  * reached the max limit

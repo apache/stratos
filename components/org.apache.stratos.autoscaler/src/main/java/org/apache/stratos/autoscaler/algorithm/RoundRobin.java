@@ -21,8 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.util.Arrays;
@@ -30,7 +29,7 @@ import java.util.List;
 
 /**
 * This class is used for selecting a {@link Partition} in round robin manner and checking availability of
- * {@link Partition}s of a {@link org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext}
+ * {@link Partition}s of a {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext}
  *
 */
 public class RoundRobin implements AutoscaleAlgorithm{

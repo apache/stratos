@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.rule;
 
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.autoscaler.ClusterLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;

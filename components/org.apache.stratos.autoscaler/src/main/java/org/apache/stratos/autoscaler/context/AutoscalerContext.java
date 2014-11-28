@@ -18,7 +18,7 @@
  * under the License.
  *
  */
-package org.apache.stratos.autoscaler;
+package org.apache.stratos.autoscaler.context;
 
 import java.util.HashMap;
 import java.util.Map;

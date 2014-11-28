@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
-import org.apache.stratos.autoscaler.KubernetesClusterContext;
+import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
