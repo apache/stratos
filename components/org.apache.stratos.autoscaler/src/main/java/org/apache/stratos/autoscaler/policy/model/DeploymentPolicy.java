@@ -19,7 +19,8 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
-import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;
@@ -35,7 +36,7 @@ public class DeploymentPolicy implements Serializable{
     private String id;
     private String description;
     private boolean isPublic;
-    private NetworkPartition[] networkPartitions;
+    private ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions;
     private int tenantId;
 
     /**
@@ -126,17 +127,17 @@ public class DeploymentPolicy implements Serializable{
 		this.tenantId = tenantId;
 	}
     
-    public void setNetworkPartitions(NetworkPartition[] networkPartitions) {
-        if(networkPartitions == null) {
-            this.networkPartitions = new NetworkPartition[0];
+    public void setApplicationLevelNetworkPartitions(ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions) {
+        if(applicationLevelNetworkPartitions == null) {
+            this.applicationLevelNetworkPartitions = new ApplicationLevelNetworkPartition[0];
         } else {
-            this.networkPartitions = Arrays.copyOf(networkPartitions, networkPartitions.length);
+            this.applicationLevelNetworkPartitions = Arrays.copyOf(applicationLevelNetworkPartitions, applicationLevelNetworkPartitions.length);
         }
     }
     
     public Partition[] getAllPartitions() {
     	ArrayList<Partition> partitionsList = new ArrayList<Partition>();
-    	for (NetworkPartition networkPartition : this.getNetworkPartitions()) {
+    	for (ApplicationLevelNetworkPartition networkPartition : this.getApplicationLevelNetworkPartitions()) {
             Partition[] partitions = networkPartition.getPartitions();
             if(partitions != null) {
             	partitionsList.addAll(Arrays.asList(partitions));
@@ -156,13 +157,13 @@ public class DeploymentPolicy implements Serializable{
     /**
      * Gets the value of the partition-groups.
      */
-    public NetworkPartition[] getNetworkPartitions() {
+    public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartitions() {
         
-        return this.networkPartitions;
+        return this.applicationLevelNetworkPartitions;
     }
     
-    public NetworkPartition getNetworkPartition(String partitionGrpId){
-    	for(NetworkPartition parGrp : this.getNetworkPartitions()){
+    public ApplicationLevelNetworkPartition getApplicationLevelNetworkPartition(String partitionGrpId){
+    	for(ApplicationLevelNetworkPartition parGrp : this.getApplicationLevelNetworkPartitions()){
     		if(parGrp.getId().equals(partitionGrpId))
     			return parGrp;
     		
@@ -176,4 +177,13 @@ public class DeploymentPolicy implements Serializable{
         		+" [partitions] " + Arrays.toString(this.getAllPartitions());
     }
 
+    public ChildLevelNetworkPartition getChildLevelNetworkPartition(String networkPartitionId) {
+        //TODO create a map of child level network partition context and return correct one
+        return null;
+    }
+
+    public ChildLevelNetworkPartition[] getChildLevelNetworkPartitions() {
+        //TODO create a map of child level network partition context and return correct one
+        return new ChildLevelNetworkPartition[0];
+    }
 }

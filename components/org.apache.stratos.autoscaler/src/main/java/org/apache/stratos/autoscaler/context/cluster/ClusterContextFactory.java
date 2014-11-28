@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 //import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -90,7 +91,7 @@ public class ClusterContextFactory {
 
         Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (ChildLevelNetworkPartition networkPartition : deploymentPolicy.getChildLevelNetworkPartitions()) {
 
             String networkPartitionId = networkPartition.getId();
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
@@ -192,7 +193,7 @@ public class ClusterContextFactory {
         Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         // partition group = network partition context
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (ChildLevelNetworkPartition networkPartition : deploymentPolicy.getChildLevelNetworkPartitions()) {
 
             String networkPartitionId = networkPartition.getId();
 //            NetworkPartitionLbHolder networkPartitionLbHolder =

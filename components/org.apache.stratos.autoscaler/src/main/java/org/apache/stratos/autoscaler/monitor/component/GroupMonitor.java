@@ -36,7 +36,7 @@ import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -307,8 +307,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             if (deploymentPolicyName != null) {
                 DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
                         .getDeploymentPolicy(deploymentPolicyName);
-                NetworkPartition networkPartition = deploymentPolicy.
-                        getNetworkPartition(parentInstanceContext.getNetworkPartitionId());
+                ChildLevelNetworkPartition networkPartition = deploymentPolicy.
+                        getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
                 AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
                 //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
@@ -349,8 +349,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         if (deploymentPolicyName != null) {
             DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
                     .getDeploymentPolicy(deploymentPolicyName);
-            NetworkPartition networkPartition = deploymentPolicy.
-                    getNetworkPartition(parentInstanceContext.getNetworkPartitionId());
+            ChildLevelNetworkPartition networkPartition = deploymentPolicy.
+                    getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
             AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
             //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);

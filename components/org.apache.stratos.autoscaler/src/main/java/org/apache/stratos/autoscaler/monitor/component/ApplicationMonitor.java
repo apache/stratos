@@ -32,6 +32,7 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
@@ -197,7 +198,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         List<String> instanceIds = new ArrayList<String>();
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
             if(networkPartition.isActiveByDefault()) {
                 ApplicationLevelNetworkPartitionContext context =
                         new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
@@ -228,7 +229,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         String instanceId = null;
         //Find out the inActive network partition
         boolean burstNPFound = false;
-        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+        for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
             if(!networkPartition.isActiveByDefault()) {
                 if(!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
                     ApplicationLevelNetworkPartitionContext context =
@@ -278,15 +279,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return instanceId;
     }
 
-    public Map<String, ApplicationLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+    public Map<String, ApplicationLevelNetworkPartitionContext> getApplicationLevelNetworkPartitionCtxts() {
         return networkPartitionCtxts;
     }
 
-    public void setNetworkPartitionCtxts(Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts) {
+    public void setApplicationLevelNetworkPartitionCtxts(Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts) {
         this.networkPartitionCtxts = networkPartitionCtxts;
     }
 
-    public void addNetworkPartitionContext(ApplicationLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
-        this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+    public void addApplicationLevelNetworkPartitionContext(ApplicationLevelNetworkPartitionContext applicationLevelNetworkPartitionContext) {
+        this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
     }
 }

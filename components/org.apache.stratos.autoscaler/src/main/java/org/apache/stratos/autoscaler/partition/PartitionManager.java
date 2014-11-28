@@ -125,7 +125,7 @@ public class PartitionManager {
 
 //    public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
 //        List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
-//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : depPolicy.getApplicationLevelNetworkPartitions()) {
 //            String id = networkPartition.getId();
 //            NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
 //            if (entry != null) {
@@ -136,7 +136,7 @@ public class PartitionManager {
 //    }
 
 //    public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
-//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : depPolicy.getApplicationLevelNetworkPartitions()) {
 //            String id = networkPartition.getId();
 //            if (!networkPartitionLbHolders.containsKey(id)) {
 //                NetworkPartitionLbHolder networkPartitionLbHolder =
@@ -149,7 +149,7 @@ public class PartitionManager {
 //    }
 
 //    public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
-//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : depPolicy.getApplicationLevelNetworkPartitions()) {
 //            String id = networkPartition.getId();
 //            if (networkPartitionLbHolders.containsKey(id)) {
 //                NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);

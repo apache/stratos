@@ -63,7 +63,7 @@ public interface AutoScalerServiceInterface {
 
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
 
-    public NetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
+    public org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
 
     public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
 

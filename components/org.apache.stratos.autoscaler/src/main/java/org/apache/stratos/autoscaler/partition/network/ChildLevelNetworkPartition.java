@@ -19,15 +19,15 @@
 
 package org.apache.stratos.autoscaler.partition.network;
 
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+
 import java.io.Serializable;
 import java.util.Arrays;
-
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 /**
 * The model class for NetworkPartition definition.
 */
-public class NetworkPartition implements Serializable {
+public class ChildLevelNetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
     private String id;
