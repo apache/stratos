@@ -77,4 +77,7 @@ public class ClusterInstanceContext {
         return null;
     }
 
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
 }

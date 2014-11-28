@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
@@ -49,7 +50,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
 
-    private Map<String, Instance> instanceIdToInstanceContextMap;
+    private Map<String, ClusterInstanceContext> instanceIdToClusterInstanceContextMap;
 
 
     private final String partitionAlgorithm;
@@ -98,7 +99,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
-        instanceIdToInstanceContextMap = new HashMap<String, Instance>();
+        instanceIdToClusterInstanceContextMap = new HashMap<String, ClusterInstanceContext>();
 
     }
 
@@ -428,17 +429,17 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
     }
 
-    public Map<String, Instance> getInstanceIdToInstanceContextMap() {
-        return instanceIdToInstanceContextMap;
+    public Map<String, ClusterInstanceContext> getClusterInstanceContextMap() {
+        return instanceIdToClusterInstanceContextMap;
     }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, Instance> instanceIdToInstanceContextMap) {
-        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    public void addClusterInstanceContext (ClusterInstanceContext clusterInstanceContext) {
+        instanceIdToClusterInstanceContextMap.put(clusterInstanceContext.getClusterInstanceId(),
+                clusterInstanceContext);
     }
 
-    public void addInstanceContext(Instance context) {
-        this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
-
+    public ClusterInstanceContext getClusterInstanceContext (String clusterInstanceId) {
+        return instanceIdToClusterInstanceContextMap.get(clusterInstanceId);
     }
 
 }
