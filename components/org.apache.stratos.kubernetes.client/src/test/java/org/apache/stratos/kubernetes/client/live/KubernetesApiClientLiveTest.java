@@ -20,6 +20,9 @@
  */
 package org.apache.stratos.kubernetes.client.live;
 
+import java.net.InetAddress;
+import java.net.URL;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
@@ -45,10 +48,11 @@ public class KubernetesApiClientLiveTest extends TestCase{
     private static final Log log = LogFactory.getLog(KubernetesApiClientLiveTest.class);
     private KubernetesApiClient client;
     private String dockerImage;
+    private String endpoint;
     
 	@Before
 	public void setUp() {
-	    String endpoint = System.getProperty("kubernetes.api.endpoint");
+	    endpoint = System.getProperty("kubernetes.api.endpoint");
 	    if (endpoint == null) {
 	        endpoint = "http://192.168.1.100:8080/api/v1beta1/";
 	    }
@@ -283,6 +287,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
 	    serv.setPort(5000);
 	    serv.setId(serviceId);
 	    serv.setKind("Service");
+	    InetAddress address = InetAddress.getByName(new URL(endpoint).getHost()); 
+	    String publicIp = address.getHostAddress();
+	    serv.setPublicIPs(new String[]{publicIp});
 	    
 	    Label l = new Label();
 	    l.setName("nirmal");
@@ -292,6 +299,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
 	    Selector selector = new Selector();
 	    selector.setName(l.getName());
 	    serv.setSelector(selector);
+	    
+	    // get the services count before creation
+	    int count = client.getAllServices().length;
 	    
 	    if (log.isDebugEnabled()) {
             log.debug("Creating a Service Proxy: "+serv);
@@ -303,7 +313,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         client.createService(serv);
         assertNotNull(client.getService(serviceId));
         
-        assertEquals(1, client.getAllServices().length);
+        assertEquals(count+1, client.getAllServices().length);
         
         client.deleteService(serviceId);
         try {
