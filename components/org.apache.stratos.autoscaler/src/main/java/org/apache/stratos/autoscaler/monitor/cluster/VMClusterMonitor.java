@@ -55,10 +55,19 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMClusterMonitor.class);
+    private Map<String, ClusterLevelNetworkPartitionContext> networkPartitionIdToClusterLevelNetworkPartitionCtxts;
 
     protected VMClusterMonitor(String serviceType, String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         super(serviceType, clusterId, autoscalerRuleEvaluator);
+        this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
+    }
 
+    public void addClusterLevelNWPartitionContext (ClusterLevelNetworkPartitionContext clusterLevelNWPartitionCtxt) {
+        networkPartitionIdToClusterLevelNetworkPartitionCtxts.put(clusterLevelNWPartitionCtxt.getId(), clusterLevelNWPartitionCtxt);
+    }
+
+    public ClusterLevelNetworkPartitionContext getClusterLevelNWPartitionContext (String nwPartitionId) {
+        return networkPartitionIdToClusterLevelNetworkPartitionCtxts.get(nwPartitionId);
     }
 
     @Override
