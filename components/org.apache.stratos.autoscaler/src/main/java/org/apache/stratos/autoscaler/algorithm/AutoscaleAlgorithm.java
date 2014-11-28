@@ -20,7 +20,6 @@
 package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 
@@ -45,7 +44,7 @@ public interface AutoscaleAlgorithm {
     public boolean scaleDownPartitionAvailable(String clusterId);
 
     /**
-     * Returns a {@link Partition} to scale up from the given {@link PartitionGroup} according to algorithm
+     * Returns a {@link Partition} to scale up from the given {@link org.apache.stratos.autoscaler.partition.NetworkPartition} according to algorithm
      * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale up
@@ -54,7 +53,7 @@ public interface AutoscaleAlgorithm {
 
 
     /**
-     * Returns a {@link Partition} to scale down from the given {@link PartitionGroup} according to algorithm
+     * Returns a {@link Partition} to scale down from the given {@link org.apache.stratos.autoscaler.partition.NetworkPartition} according to algorithm
      * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale down

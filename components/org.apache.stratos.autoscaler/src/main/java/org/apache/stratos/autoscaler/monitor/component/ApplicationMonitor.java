@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -192,11 +192,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         List<String> instanceIds = new ArrayList<String>();
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            if(partitionGroup.isActiveByDefault()) {
+        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+            if(networkPartition.isActiveByDefault()) {
                 ApplicationLevelNetworkPartitionContext context =
-                        new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
-                instanceId = createApplicationInstance(application, partitionGroup.getId());
+                        new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                instanceId = createApplicationInstance(application, networkPartition.getId());
                 context.addInstanceContext(application.getInstanceContexts(instanceId));
 
                 this.networkPartitionCtxts.put(context.getId(), context);
@@ -223,12 +223,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         String instanceId = null;
         //Find out the inActive network partition
         boolean burstNPFound = false;
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            if(!partitionGroup.isActiveByDefault()) {
+        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+            if(!networkPartition.isActiveByDefault()) {
                 ApplicationLevelNetworkPartitionContext context =
-                        new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
+                        new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
                 context.setCreatedOnBurst(true);
-                instanceId = createApplicationInstance(application, partitionGroup.getId());
+                instanceId = createApplicationInstance(application, networkPartition.getId());
                 context.addInstanceContext(application.getInstanceContexts(instanceId));
                 this.networkPartitionCtxts.put(context.getId(), context);
                 burstNPFound = true;

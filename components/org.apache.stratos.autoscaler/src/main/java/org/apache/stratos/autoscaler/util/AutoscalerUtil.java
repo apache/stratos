@@ -113,7 +113,7 @@ public class AutoscalerUtil {
                                                            deploymentPolicy, policy);
         clusterMonitor.setStatus(Status.Created);
         // partition group = network partition context
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+        for (NetworkPartition partitionGroup : deploymentPolicy.gNetworkPartitionups()) {
 
             NetworkPartitionLbHolder networkPartitionLbHolder =
                                                               PartitionManager.getInstance()
@@ -290,7 +290,7 @@ public class AutoscalerUtil {
 //                                           new LbClusterMonitor(cluster.getClusterId(),
 //                                                              cluster.getServiceName(),
 //                                                              deploymentPolicy, policy);
-//           for (PartitionGroup partitionGroup: deploymentPolicy.getPartitionGroups()){
+//           fNetworkPartitionroup partitionGroup: deploymentPoliNetworkPartitionnGroups()){
 //
 //               NetworkPartitionContext networkPartitionContext
 //                       = PartitionManager.getInstance().getNetworkPartitionLbHolder(partitionGroup.getNetworkPartitionId());

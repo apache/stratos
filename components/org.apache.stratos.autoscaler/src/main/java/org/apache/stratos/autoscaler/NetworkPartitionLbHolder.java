@@ -48,7 +48,7 @@ public class NetworkPartitionLbHolder implements Serializable{
 //    private boolean loadAverageReset = false, averageLoadAverageReset = false, gradientLoadAverageReset = false,
 //            secondDerivativeLoadAverageRest = false;
 //
-//    //FIXME this should be populated via PartitionGroups a.k.a. NetworkPartitions
+//    //FIXME this should be populated via NetworkPartitions
 //    private int minInstanceCount = 1, maxInstanceCount = 1;
 //
 //    private final Partition[] partitions;

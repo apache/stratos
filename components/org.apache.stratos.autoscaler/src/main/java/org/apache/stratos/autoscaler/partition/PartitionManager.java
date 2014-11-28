@@ -125,8 +125,8 @@ public class PartitionManager {
 
     public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
         List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
-        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
-            String id = partitionGroup.getId();
+        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+            String id = networkPartition.getId();
             NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
             if (entry != null) {
                 lbHolders.add(entry);
@@ -136,8 +136,8 @@ public class PartitionManager {
     }
 
     public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
-        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
-            String id = partitionGroup.getId();
+        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+            String id = networkPartition.getId();
             if (!networkPartitionLbHolders.containsKey(id)) {
                 NetworkPartitionLbHolder networkPartitionLbHolder =
                         new NetworkPartitionLbHolder(id);
@@ -149,8 +149,8 @@ public class PartitionManager {
     }
 
     public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
-        for (PartitionGroup partitionGroup : depPolicy.getPartitionGroups()) {
-            String id = partitionGroup.getId();
+        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+            String id = networkPartition.getId();
             if (networkPartitionLbHolders.containsKey(id)) {
                 NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);
                 // remove from information model

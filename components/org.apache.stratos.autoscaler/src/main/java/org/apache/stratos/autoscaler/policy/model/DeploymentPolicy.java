@@ -19,7 +19,7 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class DeploymentPolicy implements Serializable{
     private String id;
     private String description;
     private boolean isPublic;
-    private PartitionGroup[] partitionGroups;
+    private NetworkPartition[] networkPartitions;
     private int tenantId;
 
     /**
@@ -126,18 +126,18 @@ public class DeploymentPolicy implements Serializable{
 		this.tenantId = tenantId;
 	}
     
-    public void setPartitionGroups(PartitionGroup[] partitionGroups) {
-        if(partitionGroups == null) {
-            this.partitionGroups = new PartitionGroup[0];
+    public void setNetworkPartitions(NetworkPartition[] networkPartitions) {
+        if(networkPartitions == null) {
+            this.networkPartitions = new NetworkPartition[0];
         } else {
-            this.partitionGroups = Arrays.copyOf(partitionGroups, partitionGroups.length);
+            this.networkPartitions = Arrays.copyOf(networkPartitions, networkPartitions.length);
         }
     }
     
     public Partition[] getAllPartitions() {
     	ArrayList<Partition> partitionsList = new ArrayList<Partition>();
-    	for (PartitionGroup partitionGroup : this.getPartitionGroups()) {
-            Partition[] partitions = partitionGroup.getPartitions();
+    	for (NetworkPartition networkPartition : this.getNetworkPartitions()) {
+            Partition[] partitions = networkPartition.getPartitions();
             if(partitions != null) {
             	partitionsList.addAll(Arrays.asList(partitions));
             }
@@ -156,13 +156,13 @@ public class DeploymentPolicy implements Serializable{
     /**
      * Gets the value of the partition-groups.
      */
-    public PartitionGroup[] getPartitionGroups() {
+    public NetworkPartition[] getNetworkPartitions() {
         
-        return this.partitionGroups;
+        return this.networkPartitions;
     }
     
-    public PartitionGroup getPartitionGroup(String partitionGrpId){
-    	for(PartitionGroup parGrp : this.getPartitionGroups()){
+    public NetworkPartition getNetworkPartition(String partitionGrpId){
+    	for(NetworkPartition parGrp : this.getNetworkPartitions()){
     		if(parGrp.getId().equals(partitionGrpId))
     			return parGrp;
     		

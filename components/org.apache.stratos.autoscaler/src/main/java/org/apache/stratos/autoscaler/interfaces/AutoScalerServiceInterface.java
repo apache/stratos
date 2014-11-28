@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.exception.cartridge.NonExistingLBException;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
@@ -64,7 +64,7 @@ public interface AutoScalerServiceInterface {
 
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
 
-    public PartitionGroup[] getPartitionGroups(String deploymentPolicyId);
+    public NetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
 
     public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
 

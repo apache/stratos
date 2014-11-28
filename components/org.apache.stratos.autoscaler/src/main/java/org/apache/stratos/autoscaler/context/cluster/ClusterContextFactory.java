@@ -28,7 +28,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -91,18 +91,18 @@ public class ClusterContextFactory {
 
         Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
 
-            String networkPartitionId = partitionGroup.getId();
+            String networkPartitionId = networkPartition.getId();
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
-                    partitionGroup.getPartitionAlgo(),
-                    partitionGroup.getPartitions());
+                    networkPartition.getPartitionAlgo(),
+                    networkPartition.getPartitions());
 
-            for (Partition partition : partitionGroup.getPartitions()) {
+            for (Partition partition : networkPartition.getPartitions()) {
                 ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
                 clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
                 clusterMonitorPartitionContext.setProperties(cluster.getProperties());
-                clusterMonitorPartitionContext.setNetworkPartitionId(partitionGroup.getId());
+                clusterMonitorPartitionContext.setNetworkPartitionId(networkPartition.getId());
 
                 for (Member member : cluster.getMembers()) {
                     String memberId = member.getMemberId();
@@ -193,9 +193,9 @@ public class ClusterContextFactory {
         Map<String, ClusterLevelNetworkPartitionContext> networkPartitionContextMap = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         // partition group = network partition context
-        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+        for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
 
-            String networkPartitionId = partitionGroup.getId();
+            String networkPartitionId = networkPartition.getId();
             NetworkPartitionLbHolder networkPartitionLbHolder =
                     PartitionManager.getInstance()
                             .getNetworkPartitionLbHolder(networkPartitionId);
@@ -203,7 +203,7 @@ public class ClusterContextFactory {
 //                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
             // FIXME pick a random partition
             Partition partition =
-                    partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
+                    networkPartition.getPartitions()[new Random().nextInt(networkPartition.getPartitions().length)];
             ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
             clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
             clusterMonitorPartitionContext.setProperties(cluster.getProperties());
@@ -211,8 +211,8 @@ public class ClusterContextFactory {
             clusterMonitorPartitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
-                    partitionGroup.getPartitionAlgo(),
-                    partitionGroup.getPartitions());
+                    networkPartition.getPartitionAlgo(),
+                    networkPartition.getPartitions());
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
                 if (member.getNetworkPartitionId().equalsIgnoreCase(clusterLevelNetworkPartitionContext.getId())) {

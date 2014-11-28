@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.messaging.domain.policy.Partition;
-import org.apache.stratos.messaging.domain.policy.PartitionGroup;
+import org.apache.stratos.messaging.domain.policy.NetworkPartition;
 import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.autoscaler.policy.model.LoadThresholds;

@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.applications.*;
@@ -294,10 +294,10 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             if(deploymentPolicyName != null) {
                 DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
                         .getDeploymentPolicy(deploymentPolicyName);
-                PartitionGroup partitionGroup = deploymentPolicy.
-                        getPartitionGroup(parentInstanceContext.getNetworkPartitionId());
+                NetworkPartition networkPartition = deploymentPolicy.
+                        getNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
-                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(partitionGroup.getPartitionAlgo());
+                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
                 //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
             }
             instanceId = createGroupInstance(group, parentInstanceId);
