@@ -26,7 +26,8 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 import java.util.Stack;
 
 public class ClusterInstance extends Instance<ClusterStatus> implements LifeCycleStateTransitionBehavior<ClusterStatus> {
-
+    //partition id
+    private String partitionId;
 
     public ClusterInstance(String alias, String clusterId, String instanceId) {
         super(alias, instanceId);
@@ -52,5 +53,13 @@ public class ClusterInstance extends Instance<ClusterStatus> implements LifeCycl
     @Override
     public boolean setStatus(ClusterStatus newState) {
         return this.lifeCycleStateManager.changeState(newState);
+    }
+
+    public String getPartitionId() {
+        return partitionId;
+    }
+
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
     }
 }

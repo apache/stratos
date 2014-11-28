@@ -20,12 +20,18 @@ package org.apache.stratos.autoscaler.monitor.events;
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
+import java.util.List;
+
 /**
  * Monitor Status Event
  */
 public abstract class MonitorStatusEvent extends MonitorEvent {
 
     public MonitorStatusEvent(String id, String instanceId) {
+        super(id , instanceId);
+    }
+
+    public MonitorStatusEvent(List<String> id, String instanceId) {
         super(id , instanceId);
     }
 

@@ -20,23 +20,29 @@ package org.apache.stratos.autoscaler.monitor.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
-import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -89,16 +95,16 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         } else {
             // notify parent
             log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
-            if(this.isGroupScalingEnabled()) {
+            if (this.isGroupScalingEnabled()) {
                 ApplicationHolder.acquireReadLock();
                 try {
                     Application application = ApplicationHolder.getApplications().
-                                                                    getApplication(this.appId);
-                    if(application != null) {
+                            getApplication(this.appId);
+                    if (application != null) {
                         //Notifying the parent using parent's instance Id,
                         // as it has group scaling enabled.
                         Group group = application.getGroupRecursively(this.id);
-                        if(group != null) {
+                        if (group != null) {
                             GroupInstance context = group.getInstanceContexts(instanceId);
                             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                     status, this.id, context.getParentId());
@@ -114,7 +120,12 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             }
         }
         //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, getId(), null));
+        try {
+            MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, this.id, instanceId));
+        } catch (ParentMonitorNotFoundException e) {
+            log.error("Error while notifying the children from the [group] " + this.id, e);
+            //TODO revert siblings
+        }
     }
 
     @Override
@@ -134,7 +145,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             if (this.terminatingMonitorsList.contains(id)) {
                 this.terminatingMonitorsList.remove(id);
                 this.aliasToActiveMonitorsMap.remove(id);
-                if(AutoscalerContext.getInstance().getClusterMonitors().containsKey(id)) {
+                if (AutoscalerContext.getInstance().getClusterMonitors().containsKey(id)) {
                     AutoscalerContext.getInstance().removeClusterMonitor(id);
                 }
             }
@@ -167,31 +178,32 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     }
 
     @Override
-    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent)
+                                throws ParentMonitorNotFoundException {
         String instanceId = statusEvent.getInstanceId();
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
             ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
-        } else if(statusEvent.getStatus() == ClusterStatus.Created ||
-                                            statusEvent.getStatus() == GroupStatus.Created) {
+        } else if (statusEvent.getStatus() == ClusterStatus.Created ||
+                statusEvent.getStatus() == GroupStatus.Created) {
             Application application = ApplicationHolder.getApplications().getApplication(this.appId);
             Group group = application.getGroupRecursively(statusEvent.getId());
             //starting a new instance of this monitor
-            createGroupInstance(group, statusEvent.getInstanceId());
+            createInstanceAndStartDependency(group, statusEvent.getInstanceId());
         }
     }
 
     @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
-        if(hasGroupScalingDependent){
+        if (hasGroupScalingDependent) {
 
             //notify parent
             parent.onChildScalingEvent(scalingEvent);
         }
 
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug("Child scaling event received to [group]: " + this.getId()
                     + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
                     + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
@@ -202,13 +214,13 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                 (GroupChildContext) scalingDependencyTree.findApplicationContextWithIdInScalingDependencyTree(id);
 
         //Notifying children, if this group has scaling dependencies
-        if (currentChildContextInScalingTree.isGroupScalingEnabled()){
-            for (ApplicationChildContext applicationChildContext : currentChildContextInScalingTree.getApplicationChildContextList()){
+        if (currentChildContextInScalingTree.isGroupScalingEnabled()) {
+            for (ApplicationChildContext applicationChildContext : currentChildContextInScalingTree.getApplicationChildContextList()) {
 
                 //Get group monitor so that it can notify it's children
                 Monitor monitor = aliasToActiveMonitorsMap.get(applicationChildContext.getId());
 
-                if(monitor instanceof GroupMonitor || monitor instanceof ApplicationMonitor){
+                if (monitor instanceof GroupMonitor || monitor instanceof ApplicationMonitor) {
 
                     monitor.onParentScalingEvent(scalingEvent);
                 }
@@ -238,22 +250,22 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     public void startMinimumDependencies(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         int min = group.getGroupMinInstances();
-        if(group.getInstanceContextCount() >= min) {
+        if (group.getInstanceContextCount() >= min) {
             startDependency(group);
         } else {
-            if(group.getInstanceContextCount() > 0) {
+            if (group.getInstanceContextCount() > 0) {
                 List<String> instanceIds = new ArrayList<String>();
-                for(String parentInstanceId : parentInstanceIds) {
-                    List<Instance> contexts1 =  group.getInstanceContextsWithParentId(parentInstanceId);
+                for (String parentInstanceId : parentInstanceIds) {
+                    List<Instance> contexts1 = group.getInstanceContextsWithParentId(parentInstanceId);
                     //Finding the non startable instance ids
-                    if(group.getInstanceContexts(parentInstanceId) == null || contexts1.isEmpty() ||
+                    if (group.getInstanceContexts(parentInstanceId) == null || contexts1.isEmpty() ||
                             contexts1.size() == 0) {
                         instanceIds.add(parentInstanceId);
 
                     }
                 }
-                if(instanceIds.size() > 0) {
-                    createInstanceAndStartDependency(group, parentInstanceIds);
+                if (instanceIds.size() > 0) {
+                    createInstanceAndStartDependency(group, instanceIds);
                 } else {
                     startDependency(group);
                 }
@@ -264,34 +276,35 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         }
     }
 
-    private void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)
+    public void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         List<String> instanceIds = new ArrayList<String>();
         String deploymentPolicyName = group.getDeploymentPolicy();
 
         String instanceId;
-        for(String parentInstanceId : parentInstanceIds) {
+        for (String parentInstanceId : parentInstanceIds) {
             Application application = ApplicationHolder.getApplications().getApplication(this.appId);
             Instance parentInstanceContext;
-            if(this.id.equals(appId)) {
-               parentInstanceContext = application.getInstanceContexts(parentInstanceId);
+            if (this.id.equals(appId)) {
+                parentInstanceContext = application.getInstanceContexts(parentInstanceId);
             } else {
                 Group group1 = application.getGroupRecursively(this.parent.getId());
                 parentInstanceContext = group1.getInstanceContexts(parentInstanceId);
             }
 
             GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext;
-            if(this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
+            if (this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
                 groupLevelNetworkPartitionContext = this.networkPartitionCtxts.
-                                            get(parentInstanceContext.getNetworkPartitionId());
+                        get(parentInstanceContext.getNetworkPartitionId());
             } else {
                 groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
-                                                        parentInstanceContext.getNetworkPartitionId(),
-                                                        null, null);
+                        parentInstanceContext.getNetworkPartitionId(),
+                        null, null);
                 this.addNetworkPartitionContext(groupLevelNetworkPartitionContext);
             }
-
-            if(deploymentPolicyName != null) {
+            String partitionId = null;
+            String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
+            if (deploymentPolicyName != null) {
                 DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
                         .getDeploymentPolicy(deploymentPolicyName);
                 NetworkPartition networkPartition = deploymentPolicy.
@@ -299,14 +312,56 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
                 AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
                 //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
+                //TODO need to find the partition. partitionId=?
             }
-            instanceId = createGroupInstance(group, parentInstanceId);
+            instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
             instanceIds.add(instanceId);
         }
         startDependency(group, instanceIds);
     }
 
-    private String createGroupInstance(Group group, String parentInstanceId) {
+    public void createInstanceAndStartDependency(Group group, String parentInstanceId)
+            throws ParentMonitorNotFoundException {
+        String deploymentPolicyName = group.getDeploymentPolicy();
+
+        String instanceId;
+        Application application = ApplicationHolder.getApplications().getApplication(this.appId);
+        Instance parentInstanceContext;
+        if (this.id.equals(appId)) {
+            parentInstanceContext = application.getInstanceContexts(parentInstanceId);
+        } else {
+            Group group1 = application.getGroupRecursively(this.parent.getId());
+            parentInstanceContext = group1.getInstanceContexts(parentInstanceId);
+        }
+
+        GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext;
+        if (this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
+            groupLevelNetworkPartitionContext = this.networkPartitionCtxts.
+                    get(parentInstanceContext.getNetworkPartitionId());
+        } else {
+            groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
+                    parentInstanceContext.getNetworkPartitionId(),
+                    null, null);
+            this.addNetworkPartitionContext(groupLevelNetworkPartitionContext);
+        }
+        String partitionId = null;
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
+        if (deploymentPolicyName != null) {
+            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
+                    .getDeploymentPolicy(deploymentPolicyName);
+            NetworkPartition networkPartition = deploymentPolicy.
+                    getNetworkPartition(parentInstanceContext.getNetworkPartitionId());
+
+            AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
+            //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
+            //TODO need to find the partition. partitionId=?
+        }
+        instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
+        startDependency(group, instanceId);
+    }
+
+    private String createGroupInstance(Group group, String parentInstanceId, String partitionId,
+                                       String networkPartitionId) {
         String instanceId = parentInstanceId;
         int minGroupInstances = group.getGroupMinInstances();
         int maxGroupInstances = group.getGroupMaxInstances();
@@ -318,7 +373,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             instanceId = this.generateInstanceId(group);
         }
         ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(),
-                                                            instanceId, parentInstanceId);
+                instanceId, parentInstanceId,
+                networkPartitionId, partitionId);
         return instanceId;
     }
 

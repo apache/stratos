@@ -84,7 +84,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
      */
-    public void startDependency(ParentComponent component, List<String> instanceIds) throws TopologyInConsistentException {
+    public void startDependency(ParentComponent component, List<String> instanceIds) {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
@@ -96,9 +96,8 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
      */
-    public void startDependency(ParentComponent component, String instanceId)
-                                                            throws TopologyInConsistentException,
-            ParentMonitorNotFoundException {
+    public void startDependency(ParentComponent component, String instanceId) throws
+                                                                    ParentMonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
@@ -110,7 +109,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
      */
-    public void startDependency(ParentComponent component) throws TopologyInConsistentException {
+    public void startDependency(ParentComponent component) {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
@@ -128,7 +127,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param id alias/clusterId of which receive the activated event
      */
-    public boolean startDependency(String id, String instanceId) throws TopologyInConsistentException {
+    public boolean startDependency(String id, String instanceId) throws ParentMonitorNotFoundException {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
                 .getStarAbleDependencies(id);
         List<String> instanceIds = new ArrayList<String>();
@@ -136,7 +135,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         return startDependency(applicationContexts, instanceIds);
     }
 
-    public boolean startAllChildrenDependency(ParentComponent component, String instanceId) throws TopologyInConsistentException {
+    public boolean startAllChildrenDependency(ParentComponent component, String instanceId)
+            throws TopologyInConsistentException {
         /*List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
                 .findAllChildrenOfAppContext(id);*/
         return false;//startDependency(applicationContexts, instanceId);
@@ -162,7 +162,8 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param applicationContexts the found applicationContexts to be started
      */
-    private boolean startDependency(List<ApplicationChildContext> applicationContexts, List<String> instanceIds) {
+    private boolean startDependency(List<ApplicationChildContext> applicationContexts,
+                                    List<String> instanceIds) {
         if (applicationContexts != null && applicationContexts.isEmpty()) {
             //all the groups/clusters have been started and waiting for activation
             log.info("There is no child found for the [group]: " + this.id);
@@ -176,17 +177,6 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 //to avoid if it is already started
                 startMonitor(this, context, instanceIds);
-            } else {
-                //starting a new instance of the child
-                Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
-                for (String instanceId : instanceIds) {
-                    if (context instanceof ClusterChildContext) {
-                        MonitorStatusEventBuilder.notifyChildCluster(monitor, ClusterStatus.Created, instanceId);
-                    } else if (context instanceof GroupChildContext) {
-                        MonitorStatusEventBuilder.notifyChildGroup(monitor, GroupStatus.Created, instanceId);
-                    }
-                }
-
             }
         }
 
@@ -261,7 +251,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (!startDep) {
                 StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
             }
-        } catch (TopologyInConsistentException e) {
+        } catch (ParentMonitorNotFoundException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
             log.error(e);
         }

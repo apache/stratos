@@ -20,12 +20,16 @@ package org.apache.stratos.autoscaler.monitor.events.builder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+
+import java.util.List;
 
 /**
  * This will build the necessary monitor status events to be sent to the parent/child  monitor
@@ -62,18 +66,32 @@ public class MonitorStatusEventBuilder {
         parent.onChildStatusEvent(statusEvent);
     }
 
-    public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent) {
+    public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent)
+                                                            throws ParentMonitorNotFoundException {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
             activeChildMonitor.onParentStatusEvent(statusEvent);
         }
     }
 
-    public static void notifyChildGroup(Monitor child, GroupStatus state, String instanceId) {
+    public static void notifyChildGroup(Monitor child, GroupStatus state, String instanceId)
+                                                            throws ParentMonitorNotFoundException {
         MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceId);
         child.onParentStatusEvent(statusEvent);
     }
 
-    public static void notifyChildCluster(Monitor child, ClusterStatus state, String instanceId) {
+    /*public static void notifyChildCluster(Monitor child, ClusterStatus state, List<String> instanceId) {
+        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, instanceId, child.getId());
+        child.onParentStatusEvent(statusEvent);
+    }
+
+    public static void notifyChildGroup(Monitor child, GroupStatus state, List<String> instanceIds)
+            throws ParentMonitorNotFoundException {
+        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceIds);
+        child.onParentStatusEvent(statusEvent);
+    }*/
+
+    public static void notifyChildCluster(Monitor child, ClusterStatus state, String instanceId)
+            throws ParentMonitorNotFoundException {
         MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, child.getId(), instanceId);
         child.onParentStatusEvent(statusEvent);
     }

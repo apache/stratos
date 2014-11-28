@@ -107,7 +107,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
         //notify the children about the state change
-        MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId, null));
+        try {
+            MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId, instanceId));
+        } catch (ParentMonitorNotFoundException e) {
+            log.error("Error while notifying the children from [application] " + appId, e);
+            //TODO revert siblings
+        }
     }
 
     @Override
