@@ -49,8 +49,8 @@ public class ClusterMonitorFactory {
         AbstractClusterMonitor clusterMonitor;
         if (cluster.isKubernetesCluster()) {
             clusterMonitor = getDockerServiceClusterMonitor(cluster);
-        } else if (cluster.isLbCluster()) {
-            clusterMonitor = getVMLbClusterMonitor(cluster);
+//        } else if (cluster.isLbCluster()) {
+//            clusterMonitor = getVMLbClusterMonitor(cluster);
         } else {
             clusterMonitor = getVMServiceClusterMonitor(cluster);
         }
@@ -88,21 +88,21 @@ public class ClusterMonitorFactory {
         log.info("VMServiceClusterMonitor created: " + clusterMonitor.toString());
         return clusterMonitor;
     }
-
-    private static VMLbClusterMonitor getVMLbClusterMonitor(Cluster cluster)
-            throws PolicyValidationException, PartitionValidationException {
-
-        if (null == cluster) {
-            return null;
-        }
-
-        VMLbClusterMonitor clusterMonitor =
-                new VMLbClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
-        clusterMonitor.setStatus(ClusterStatus.Created);
-
-        log.info("VMLbClusterMonitor created: " + clusterMonitor.toString());
-        return clusterMonitor;
-    }
+//
+//    private static VMLbClusterMonitor getVMLbClusterMonitor(Cluster cluster)
+//            throws PolicyValidationException, PartitionValidationException {
+//
+//        if (null == cluster) {
+//            return null;
+//        }
+//
+//        VMLbClusterMonitor clusterMonitor =
+//                new VMLbClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
+//        clusterMonitor.setStatus(ClusterStatus.Created);
+//
+//        log.info("VMLbClusterMonitor created: " + clusterMonitor.toString());
+//        return clusterMonitor;
+//    }
 
     /**
      * @param cluster - the cluster which needs to be monitored

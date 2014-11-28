@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
@@ -70,10 +70,10 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
     PartitionManager partitionManager = PartitionManager.getInstance();
     KubernetesManager kubernetesManager = KubernetesManager.getInstance();
-
-    public Partition[] getAllAvailablePartitions() {
-        return partitionManager.getAllPartitions();
-    }
+//
+//    public Partition[] getAllAvailablePartitions() {
+//        return partitionManager.getAllPartitions();
+//    }
 
     public DeploymentPolicy[] getAllDeploymentPolicies() {
         return PolicyManager.getInstance().getDeploymentPolicyList();
@@ -228,71 +228,71 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return group.getPartitions();
     }
 
-    public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException {
+//    public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException {
+//
+//        boolean exist = false;
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (nwPartitionLbHolder.isLBExist(lbClusterId)) {
+//                exist = true;
+//                break;
+//            }
+//        }
+//
+//        if (!exist) {
+//            String msg = "LB with [cluster id] " + lbClusterId +
+//                    " does not exist in any network partition of [Deployment Policy] " + deploymentPolicyId;
+//            log.error(msg);
+//            throw new NonExistingLBException(msg);
+//        }
+//    }
 
-        boolean exist = false;
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
+//    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) {
+//
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (!nwPartitionLbHolder.isDefaultLBExist()) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Default LB does not exist in [network partition] " +
+//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+//                            deploymentPolicyId);
+//
+//                }
+//                return false;
+//            }
+//
+//        }
+//
+//        return true;
+//
+//    }
 
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (nwPartitionLbHolder.isLBExist(lbClusterId)) {
-                exist = true;
-                break;
-            }
-        }
-
-        if (!exist) {
-            String msg = "LB with [cluster id] " + lbClusterId +
-                    " does not exist in any network partition of [Deployment Policy] " + deploymentPolicyId;
-            log.error(msg);
-            throw new NonExistingLBException(msg);
-        }
-    }
-
-    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) {
-
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
-
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (!nwPartitionLbHolder.isDefaultLBExist()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Default LB does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyId);
-
-                }
-                return false;
-            }
-
-        }
-
-        return true;
-
-    }
-
-    public String getDefaultLBClusterId(String deploymentPolicyName) {
-        if (log.isDebugEnabled()) {
-            log.debug("Default LB Cluster Id for Deployment Policy [" + deploymentPolicyName + "] ");
-        }
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getNetworkPartitions()) {
-
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (nwPartitionLbHolder.isDefaultLBExist()) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Default LB does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyName);
-
-                }
-                return nwPartitionLbHolder.getDefaultLbClusterId();
-            }
-
-        }
-
-        return null;
-    }
+//    public String getDefaultLBClusterId(String deploymentPolicyName) {
+//        if (log.isDebugEnabled()) {
+//            log.debug("Default LB Cluster Id for Deployment Policy [" + deploymentPolicyName + "] ");
+//        }
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (nwPartitionLbHolder.isDefaultLBExist()) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Default LB does not exist in [network partition] " +
+//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+//                            deploymentPolicyName);
+//
+//                }
+//                return nwPartitionLbHolder.getDefaultLbClusterId();
+//            }
+//
+//        }
+//
+//        return null;
+//    }
 
     @Override
     public void deployApplicationDefinition(ApplicationContext applicationContext)
@@ -312,70 +312,70 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         ApplicationBuilder.handleApplicationUndeployed(applicationId);
     }
 
-    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
+//    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
+//
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (!nwPartitionLbHolder.isServiceLBExist(serviceName)) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Service LB [service name] " + serviceName + " does not exist in [network partition] " +
+//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+//                            deploymentPolicyId);
+//
+//                }
+//                return false;
+//            }
+//
+//        }
+//
+//        return true;
+//
+//    }
+//
+//    public String getServiceLBClusterId(String serviceType, String deploymentPolicyName) {
+//
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (nwPartitionLbHolder.isServiceLBExist(serviceType)) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Service LB [service name] " + serviceType + " does not exist in [network partition] " +
+//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+//                            deploymentPolicyName);
+//
+//                }
+//                return nwPartitionLbHolder.getLBClusterIdOfService(serviceType);
+//            }
+//
+//        }
+//
+//        return null;
+//    }
 
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
-
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (!nwPartitionLbHolder.isServiceLBExist(serviceName)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Service LB [service name] " + serviceName + " does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyId);
-
-                }
-                return false;
-            }
-
-        }
-
-        return true;
-
-    }
-
-    public String getServiceLBClusterId(String serviceType, String deploymentPolicyName) {
-
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getNetworkPartitions()) {
-
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (nwPartitionLbHolder.isServiceLBExist(serviceType)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Service LB [service name] " + serviceType + " does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyName);
-
-                }
-                return nwPartitionLbHolder.getLBClusterIdOfService(serviceType);
-            }
-
-        }
-
-        return null;
-    }
-
-    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
-
-        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
-
-            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-
-            if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cluster LB [cluster id] " + clusterId + " does not exist in [network partition] " +
-                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-                            deploymentPolicyId);
-
-                }
-                return false;
-            }
-
-        }
-
-        return true;
-
-    }
+//    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
+//
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getNetworkPartitions()) {
+//
+//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
+//
+//            if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Cluster LB [cluster id] " + clusterId + " does not exist in [network partition] " +
+//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
+//                            deploymentPolicyId);
+//
+//                }
+//                return false;
+//            }
+//
+//        }
+//
+//        return true;
+//
+//    }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
         if (log.isDebugEnabled()) {

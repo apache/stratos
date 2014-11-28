@@ -178,10 +178,10 @@ public class RuleTasksDelegator {
         try {
 
             String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
-            NetworkPartitionLbHolder lbHolder =
-                    PartitionManager.getInstance()
-                            .getNetworkPartitionLbHolder(nwPartitionId);
-            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
+//            NetworkPartitionLbHolder lbHolder =
+//                    PartitionManager.getInstance()
+//                            .getNetworkPartitionLbHolder(nwPartitionId);
+//            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
@@ -194,7 +194,8 @@ public class RuleTasksDelegator {
                     CloudControllerClient.getInstance()
                             .spawnAnInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
-                                    lbClusterId, clusterMonitorPartitionContext.getNetworkPartitionId(),
+//                                    lbClusterId,
+                                    clusterMonitorPartitionContext.getNetworkPartitionId(),
                                     isPrimary,
                                     minimumCountOfNetworkPartition);
             if (memberContext != null) {
@@ -264,31 +265,57 @@ public class RuleTasksDelegator {
         }
    	}*/
 
+//
+//    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
+//                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
+//
+//        String lbClusterId = null;
+//
+//        if (lbRefType != null) {
+//            if (lbRefType.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
+//                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
+////                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
+//            } else if (lbRefType.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
+//                String serviceName = partitionCtxt.getServiceName();
+//                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
+////                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
+//            } else {
+//                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
+//            }
+//        }
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
+//                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
+//                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
+//        }
+//        return lbClusterId;
+//    }
 
-    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
-                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
+//    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
+//                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
+//
+//        String lbClusterId = null;
+//
+//        if (lbRefType != null) {
+//            if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+//                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
+////                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
+//            } else if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+//                String serviceName = partitionCtxt.getServiceName();
+//                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
+////                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
+//            } else {
+//                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
+//            }
+//        }
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
+//                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
+//                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
+//        }
+//        return lbClusterId;
+//    }
 
-        String lbClusterId = null;
-
-        if (lbRefType != null) {
-            if (lbRefType.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
-                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
-//                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
-            } else if (lbRefType.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
-                String serviceName = partitionCtxt.getServiceName();
-                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
-//                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
-            } else {
-                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
-            }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
-                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
-                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
-        }
-        return lbClusterId;
-    }
 
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
 

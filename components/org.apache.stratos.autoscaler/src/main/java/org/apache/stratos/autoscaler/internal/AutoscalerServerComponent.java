@@ -20,7 +20,7 @@ package org.apache.stratos.autoscaler.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
@@ -91,12 +91,12 @@ public class AutoscalerServerComponent {
             }
             
             // Adding the network partitions stored in registry to the information model
-            List<NetworkPartitionLbHolder> nwPartitionHolders = RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
-            Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
-            while (nwPartitionIterator.hasNext()) {
-                NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
-                PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
-            }
+//            List<NetworkPartitionLbHolder> nwPartitionHolders = RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
+//            Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
+//            while (nwPartitionIterator.hasNext()) {
+//                NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
+//                PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
+//            }
             
             List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
             Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();

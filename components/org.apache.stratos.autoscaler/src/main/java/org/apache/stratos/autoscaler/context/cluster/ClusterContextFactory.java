@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.partition.NetworkPartition;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
@@ -196,9 +196,9 @@ public class ClusterContextFactory {
         for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
 
             String networkPartitionId = networkPartition.getId();
-            NetworkPartitionLbHolder networkPartitionLbHolder =
-                    PartitionManager.getInstance()
-                            .getNetworkPartitionLbHolder(networkPartitionId);
+//            NetworkPartitionLbHolder networkPartitionLbHolder =
+//                    PartitionManager.getInstance()
+//                            .getNetworkPartitionLbHolder(networkPartitionId);
 //                                                              PartitionManager.getInstance()
 //                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
             // FIXME pick a random partition
@@ -251,31 +251,59 @@ public class ClusterContextFactory {
             }
             clusterLevelNetworkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
 
-            // populate lb cluster id in network partition context.
-            java.util.Properties props = cluster.getProperties();
 
-            // get service type of load balanced cluster
-            String loadBalancedServiceType = props.getProperty(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
+//            // populate lb cluster id in network partition context.
+//            java.util.Properties props = cluster.getProperties();
+//
+//            // get service type of load balanced cluster
+//            String loadBalancedServiceType = props.getProperty(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
+//
+//            if (props.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
+//                String value = props.getProperty(StratosConstants.LOAD_BALANCER_REF);
+//
+//                if (value.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
+//                    networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
+//
+//                } else if (value.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
+//                    String serviceName = cluster.getServiceName();
+//                    // TODO: check if this is correct
+//                    networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
+//
+//                    if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
+//                        networkPartitionLbHolder.addServiceLB(loadBalancedServiceType, clusterId);
+//                        if (log.isDebugEnabled()) {
+//                            log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
+//                        }
+//                    }
+//                }
+//            }
 
-            if (props.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
-                String value = props.getProperty(StratosConstants.LOAD_BALANCER_REF);
+//            // populate lb cluster id in network partition context.
+//            java.util.Properties props = cluster.getProperties();
+//
+//            // get service type of load balanced cluster
+//            String loadBalancedServiceType = props.getProperty(org.apache.stratos.messaging.util.Constants.LOAD_BALANCED_SERVICE_TYPE);
+//
+//            if (props.containsKey(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF)) {
+//                String value = props.getProperty(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF);
+//
+//                if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
+//                    networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
+//
+//                } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
+//                    String serviceName = cluster.getServiceName();
+//                    // TODO: check if this is correct
+//                    networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
+//
+//                    if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
+//                        networkPartitionLbHolder.addServiceLB(loadBalancedServiceType, clusterId);
+//                        if (log.isDebugEnabled()) {
+//                            log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
+//                        }
+//                    }
+//                }
+//            }
 
-                if (value.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
-                    networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
-
-                } else if (value.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
-                    String serviceName = cluster.getServiceName();
-                    // TODO: check if this is correct
-                    networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
-
-                    if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
-                        networkPartitionLbHolder.addServiceLB(loadBalancedServiceType, clusterId);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
-                        }
-                    }
-                }
-            }
 
             networkPartitionContextMap.put(networkPartitionId, clusterLevelNetworkPartitionContext);
         }
@@ -365,13 +393,15 @@ public class ClusterContextFactory {
         }
 
         // find lb reference type
-        if (properties.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
-            String value = properties.getProperty(StratosConstants.LOAD_BALANCER_REF);
-            //dockerClusterMonitor.setLbReferenceType(value);
-            if (log.isDebugEnabled()) {
-                log.debug("Set the lb reference type: " + value);
-            }
-        }
+
+//        if (properties.containsKey(org.apache.stratos.messaging.util.Constants.LOAD_BALANCER_REF)) {
+//            String value = properties.getProperty(Constants.LOAD_BALANCER_REF);
+//            //dockerClusterMonitor.setLbReferenceType(value);
+//            if (log.isDebugEnabled()) {
+//                log.debug("Set the lb reference type: " + value);
+//            }
+//        }
+
 
         return kubernetesClusterCtxt;
     }

@@ -22,7 +22,7 @@ package org.apache.stratos.autoscaler.partition;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
@@ -50,7 +50,7 @@ public class PartitionManager {
      * Key - network partition id
      * Value - reference to NetworkPartition
      */
-    private Map<String, NetworkPartitionLbHolder> networkPartitionLbHolders;
+//    private Map<String, NetworkPartitionLbHolder> networkPartitionLbHolders;
 
     private static class Holder {
         static final PartitionManager INSTANCE = new PartitionManager();
@@ -61,7 +61,7 @@ public class PartitionManager {
     }
 
     private PartitionManager() {
-        networkPartitionLbHolders = new HashMap<String, NetworkPartitionLbHolder>();
+//        networkPartitionLbHolders = new HashMap<String, NetworkPartitionLbHolder>();
     }
 
 
@@ -100,9 +100,9 @@ public class PartitionManager {
         partitions.put(partition.getId(), partition);
     }
 
-    public NetworkPartitionLbHolder getNetworkPartitionLbHolder(String networkPartitionId) {
-        return this.networkPartitionLbHolders.get(networkPartitionId);
-    }
+//    public NetworkPartitionLbHolder getNetworkPartitionLbHolder(String networkPartitionId) {
+//        return this.networkPartitionLbHolders.get(networkPartitionId);
+//    }
 
     public Partition getPartitionById(String partitionId) {
         if (partitionExist(partitionId))
@@ -123,55 +123,55 @@ public class PartitionManager {
         return CloudControllerClient.getInstance().validatePartition(partition);
     }
 
-    public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
-        List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
-        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
-            String id = networkPartition.getId();
-            NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
-            if (entry != null) {
-                lbHolders.add(entry);
-            }
-        }
-        return lbHolders;
-    }
+//    public List<NetworkPartitionLbHolder> getNetworkPartitionLbHolders(DeploymentPolicy depPolicy) {
+//        List<NetworkPartitionLbHolder> lbHolders = new ArrayList<NetworkPartitionLbHolder>();
+//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//            String id = networkPartition.getId();
+//            NetworkPartitionLbHolder entry = networkPartitionLbHolders.get(id);
+//            if (entry != null) {
+//                lbHolders.add(entry);
+//            }
+//        }
+//        return lbHolders;
+//    }
 
-    public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
-        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
-            String id = networkPartition.getId();
-            if (!networkPartitionLbHolders.containsKey(id)) {
-                NetworkPartitionLbHolder networkPartitionLbHolder =
-                        new NetworkPartitionLbHolder(id);
-                addNetworkPartitionLbHolder(networkPartitionLbHolder);
-                RegistryManager.getInstance().persistNetworkPartitionIbHolder(networkPartitionLbHolder);
-            }
+//    public void deployNewNetworkPartitions(DeploymentPolicy depPolicy) {
+//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//            String id = networkPartition.getId();
+//            if (!networkPartitionLbHolders.containsKey(id)) {
+//                NetworkPartitionLbHolder networkPartitionLbHolder =
+//                        new NetworkPartitionLbHolder(id);
+//                addNetworkPartitionLbHolder(networkPartitionLbHolder);
+//                RegistryManager.getInstance().persistNetworkPartitionIbHolder(networkPartitionLbHolder);
+//            }
 
-        }
-    }
+//        }
+//    }
 
-    public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
-        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
-            String id = networkPartition.getId();
-            if (networkPartitionLbHolders.containsKey(id)) {
-                NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);
-                // remove from information model
-                this.removeNetworkPartitionLbHolder(netPartCtx);
-                //remove from the registry
-                RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartitionLbHolder(id).getNetworkPartitionId());
-            } else {
-                String errMsg = "Network partition context not found for policy " + depPolicy;
-                log.error(errMsg);
-                throw new AutoScalerException(errMsg);
-            }
-
-        }
-    }
-
-    private void removeNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
-        networkPartitionLbHolders.remove(nwPartLbHolder.getNetworkPartitionId());
-    }
-
-    public void addNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
-        networkPartitionLbHolders.put(nwPartLbHolder.getNetworkPartitionId(), nwPartLbHolder);
-    }
+//    public void undeployNetworkPartitions(DeploymentPolicy depPolicy) {
+//        for (NetworkPartition networkPartition : depPolicy.getNetworkPartitions()) {
+//            String id = networkPartition.getId();
+//            if (networkPartitionLbHolders.containsKey(id)) {
+//                NetworkPartitionLbHolder netPartCtx = this.getNetworkPartitionLbHolder(id);
+//                // remove from information model
+//                this.removeNetworkPartitionLbHolder(netPartCtx);
+//                //remove from the registry
+//                RegistryManager.getInstance().removeNetworkPartition(this.getNetworkPartitionLbHolder(id).getNetworkPartitionId());
+//            } else {
+//                String errMsg = "Network partition context not found for policy " + depPolicy;
+//                log.error(errMsg);
+//                throw new AutoScalerException(errMsg);
+//            }
+//
+//        }
+//    }
+//
+//    private void removeNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+//        networkPartitionLbHolders.remove(nwPartLbHolder.getNetworkPartitionId());
+//    }
+//
+//    public void addNetworkPartitionLbHolder(NetworkPartitionLbHolder nwPartLbHolder) {
+//        networkPartitionLbHolders.put(nwPartLbHolder.getNetworkPartitionId(), nwPartLbHolder);
+//    }
 
 }

@@ -138,11 +138,13 @@ public class CloudControllerClient {
     }
 
     public synchronized MemberContext spawnAnInstance(Partition partition,
-                                                      String clusterId, String lbClusterId, String networkPartitionId, boolean isPrimary, int minMemberCount) throws SpawningException {
+                                                      String clusterId,
+                                                      String networkPartitionId, boolean isPrimary,
+                                                      int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Trying to spawn an instance via cloud controller: [cluster] %s [partition] %s [lb-cluster] %s [network-partition-id] %s",
-                        clusterId, partition.getId(), lbClusterId, networkPartitionId));
+                        clusterId, partition.getId(), networkPartitionId));
             }
 
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
@@ -154,7 +156,7 @@ public class CloudControllerClient {
             MemberContext member = new MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
-            member.setLbClusterId(lbClusterId);
+//            member.setLbClusterId(lbClusterId);
             member.setObsoleteExpiryTime(expiryTime);
             member.setInitTime(System.currentTimeMillis());
             member.setNetworkPartitionId(networkPartitionId);

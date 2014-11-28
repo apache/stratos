@@ -227,7 +227,7 @@ public class PolicyManager {
             if (log.isDebugEnabled()) {
                 log.debug("Adding deployment policy: " + policy.getId());
             }
-            PartitionManager.getInstance().deployNewNetworkPartitions(policy);
+//            PartitionManager.getInstance().deployNewNetworkPartitions(policy);
             deploymentPolicyListMap.put(policy.getId(), policy);
         } else {
         	String errMsg = "Specified deployment policy [" + policy.getId()+ "] already exists";
@@ -256,7 +256,7 @@ public class PolicyManager {
             }
             DeploymentPolicy depPolicy = this.getDeploymentPolicy(policy);
             // undeploy network partitions this deployment policy.
-            PartitionManager.getInstance().undeployNetworkPartitions(depPolicy);
+//            PartitionManager.getInstance().undeployNetworkPartitions(depPolicy);
             // undeploy the deployment policy.
             RegistryManager.getInstance().removeDeploymentPolicy(depPolicy);
             // remove from the infromation model.
