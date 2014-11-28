@@ -79,7 +79,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
 
     public ClusterLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
 
-        super(id, partitionAlgo, partitions);
+        //super(id, partitionAlgo, partitions);
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
         if (partitions == null) {

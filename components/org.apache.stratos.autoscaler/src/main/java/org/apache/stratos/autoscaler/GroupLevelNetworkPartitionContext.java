@@ -20,11 +20,7 @@ package org.apache.stratos.autoscaler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.policy.model.LoadAverage;
-import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
-import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -35,8 +31,8 @@ import java.util.Map;
  * Holds runtime data of a network partition.
  *
  */
-public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
-    private static final Log log = LogFactory.getLog(ParentComponentLevelNetworkPartitionContext.class);
+public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
+    private static final Log log = LogFactory.getLog(GroupLevelNetworkPartitionContext.class);
     private final String id;
     private int scaleDownRequestsCount = 0;
     private float averageRequestsServedPerInstance;
@@ -44,9 +40,6 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
     private int minInstanceCount = 0, maxInstanceCount = 0;
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
-
-    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
-
 
     private final String partitionAlgorithm;
 
@@ -56,11 +49,9 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
     private int currentPartitionIndex;
 
     //partitions of this network partition
-    private final Map<String, ClusterLevelPartitionContext> partitionCtxts;
+    private final Map<String, GroupLevelPartitionContext> partitionCtxts;
 
-    public ParentComponentLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
-
-        super(id, partitionAlgo, partitions);
+    public GroupLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
         if (partitions == null) {
@@ -68,14 +59,13 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
+        partitionCtxts = new HashMap<String, GroupLevelPartitionContext>();
         for (Partition partition : partitions) {
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
         }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
-        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
 
     }
 
@@ -112,10 +102,10 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof ParentComponentLevelNetworkPartitionContext)) {
+        if (!(obj instanceof GroupLevelNetworkPartitionContext)) {
             return false;
         }
-        final ParentComponentLevelNetworkPartitionContext other = (ParentComponentLevelNetworkPartitionContext) obj;
+        final GroupLevelNetworkPartitionContext other = (GroupLevelNetworkPartitionContext) obj;
         if (this.id == null) {
             if (other.id != null) {
                 return false;
@@ -144,15 +134,15 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         return id;
     }
 
-    public Map<String, ClusterLevelPartitionContext> getPartitionCtxts() {
+    public Map<String, GroupLevelPartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
 
-    public ClusterLevelPartitionContext getPartitionCtxt(String partitionId) {
+    public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
         return partitionCtxts.get(partitionId);
     }
 
-    public void addPartitionContext(ClusterLevelPartitionContext partitionContext) {
+    public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
         partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
     }
 
@@ -166,14 +156,14 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
 
     public int getNonTerminatedMemberCountOfPartition(String partitionId) {
         if (partitionCtxts.containsKey(partitionId)) {
-            return getPartitionCtxt(partitionId).getNonTerminatedMemberCount();
+            return getPartitionCtxt(partitionId).getNonTerminatedInstanceCount();
         }
         return 0;
     }
 
     public int getActiveMemberCount(String currentPartitionId) {
         if (partitionCtxts.containsKey(currentPartitionId)) {
-            return getPartitionCtxt(currentPartitionId).getActiveMemberCount();
+            return getPartitionCtxt(currentPartitionId).getActiveInstanceCount();
         }
         return 0;
     }
@@ -206,17 +196,6 @@ public class ParentComponentLevelNetworkPartitionContext extends NetworkPartitio
         this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
     }
 
-    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
-        return instanceIdToInstanceContextMap;
-    }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
-        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
-    }
-
-    public void addInstanceContext(InstanceContext context) {
-        this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
-
-    }
 
 }

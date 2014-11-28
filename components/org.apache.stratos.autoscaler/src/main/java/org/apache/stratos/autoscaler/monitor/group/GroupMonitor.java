@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.monitor.group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.AutoscalerContext;
-import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
@@ -46,7 +46,9 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -56,6 +58,9 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
     //whether groupScaling enabled or not
     private boolean groupScalingEnabled;
+    //network partition contexts
+    private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
+
 
     /**
      * Constructor of GroupMonitor
@@ -68,6 +73,8 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
+        networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
+
         //starting the minimum start able dependencies
         //startMinimumDependencies(group, parentInstanceId);
     }
@@ -267,16 +274,24 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
         String instanceId;
         for(String parentInstanceId : parentInstanceIds) {
-            InstanceContext parentInstanceContext = this.parent.getInstanceContext(parentInstanceId);
-            ParentComponentLevelNetworkPartitionContext clusterLevelNetworkPartitionContext;
+            Application application = ApplicationHolder.getApplications().getApplication(this.appId);
+            InstanceContext parentInstanceContext;
+            if(this.id.equals(appId)) {
+               parentInstanceContext = application.getInstanceContexts(parentInstanceId);
+            } else {
+                Group group1 = application.getGroupRecursively(this.parent.getId());
+                parentInstanceContext = group1.getInstanceContexts(parentInstanceId);
+            }
+
+            GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext;
             if(this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
-                clusterLevelNetworkPartitionContext = this.networkPartitionCtxts.
+                groupLevelNetworkPartitionContext = this.networkPartitionCtxts.
                                             get(parentInstanceContext.getNetworkPartitionId());
             } else {
-                clusterLevelNetworkPartitionContext = new ParentComponentLevelNetworkPartitionContext(
+                groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
                                                         parentInstanceContext.getNetworkPartitionId(),
                                                         null, null);
-                this.addNetworkPartitionContext(clusterLevelNetworkPartitionContext);
+                this.addNetworkPartitionContext(groupLevelNetworkPartitionContext);
             }
 
             if(deploymentPolicyName != null) {
@@ -286,7 +301,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                         getPartitionGroup(parentInstanceContext.getNetworkPartitionId());
 
                 AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(partitionGroup.getPartitionAlgo());
-                Partition partition = algorithm.getNextScaleUpPartition(clusterLevelNetworkPartitionContext, this.id);
+                //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
             }
             instanceId = createGroupInstance(group, parentInstanceId);
             instanceIds.add(instanceId);
@@ -311,5 +326,17 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(),
                                                             instanceId, parentInstanceId);
         return instanceId;
+    }
+
+    public Map<String, GroupLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+        return networkPartitionCtxts;
+    }
+
+    public void setNetworkPartitionCtxts(Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts) {
+        this.networkPartitionCtxts = networkPartitionCtxts;
+    }
+
+    public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+        this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
     }
 }

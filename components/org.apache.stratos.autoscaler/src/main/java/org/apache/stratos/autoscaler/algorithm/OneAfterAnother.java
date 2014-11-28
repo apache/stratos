@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.NetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
@@ -44,7 +45,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
     private static final Log log = LogFactory.getLog(OneAfterAnother.class);
 
-    public Partition getNextScaleUpPartition(NetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
+    public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
 
         try {
             if (log.isDebugEnabled())
@@ -88,7 +89,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
         return null;
     }
 
-    public Partition getNextScaleDownPartition(NetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
+    public Partition getNextScaleDownPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
 
         try {
 

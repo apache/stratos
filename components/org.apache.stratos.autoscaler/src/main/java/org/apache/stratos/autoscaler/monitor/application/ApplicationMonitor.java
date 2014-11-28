@@ -20,7 +20,9 @@ package org.apache.stratos.autoscaler.monitor.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.ParentComponentLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.ApplicationLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.GroupLevelPartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
@@ -35,15 +37,14 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -51,11 +52,16 @@ import java.util.List;
 public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
+    //network partition contexts
+    private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
+
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(application);
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
+        networkPartitionCtxts = new HashMap<String, ApplicationLevelNetworkPartitionContext>();
+
         //starting the first set of dependencies from its children
         //TODO startMinimumDependencies(application);
 
@@ -189,12 +195,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+            ApplicationLevelNetworkPartitionContext context =
+                            new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
             instanceId = createApplicationInstance(application, partitionGroup.getId());
-            ParentComponentLevelNetworkPartitionContext context = new ParentComponentLevelNetworkPartitionContext(partitionGroup.getId(),
-                    partitionGroup.getPartitionAlgo(),
-                    partitionGroup.getPartitions());
             context.addInstanceContext(application.getInstanceContexts(instanceId));
-            this.addNetworkPartitionContext(context);
+
+            this.networkPartitionCtxts.put(context.getId(), context);
 
             instanceIds.add(instanceId);
         }
@@ -239,4 +245,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return instanceId;
     }
 
+    public Map<String, ApplicationLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
+        return networkPartitionCtxts;
+    }
+
+    public void setNetworkPartitionCtxts(Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts) {
+        this.networkPartitionCtxts = networkPartitionCtxts;
+    }
+
+    public void addNetworkPartitionContext(ApplicationLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+        this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+    }
 }

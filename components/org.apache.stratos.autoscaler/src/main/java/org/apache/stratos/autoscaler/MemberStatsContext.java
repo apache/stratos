@@ -30,6 +30,7 @@ public class MemberStatsContext {
     private LoadAverage loadAverage;
     private MemoryConsumption memoryConsumption;
     private String memberId;
+    private String instanceId;
 
     public MemberStatsContext(String memberId) {
         this.memberId = memberId;
@@ -99,5 +100,13 @@ public class MemberStatsContext {
 
     public float getSecondDerivativeOfMemoryConsumption() {
         return memoryConsumption.getSecondDerivative();
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 }
