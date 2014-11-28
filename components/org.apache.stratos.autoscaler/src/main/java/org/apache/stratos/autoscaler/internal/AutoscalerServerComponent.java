@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -87,7 +87,7 @@ public class AutoscalerServerComponent {
             Iterator<Partition> partitionIterator = partitions.iterator();
             while (partitionIterator.hasNext()) {
                 Partition partition = partitionIterator.next();
-                PartitionManager.getInstance().addPartitionToInformationModel(partition);
+//                PartitionManager.getInstance().addPartitionToInformationModel(partition);
             }
             
             // Adding the network partitions stored in registry to the information model

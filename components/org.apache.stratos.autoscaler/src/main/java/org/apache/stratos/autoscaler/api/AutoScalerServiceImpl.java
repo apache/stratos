@@ -39,7 +39,7 @@ import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
@@ -68,7 +68,7 @@ import java.util.Map;
 public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
-    PartitionManager partitionManager = PartitionManager.getInstance();
+//    PartitionManager partitionManager = PartitionManager.getInstance();
     KubernetesManager kubernetesManager = KubernetesManager.getInstance();
 //
 //    public Partition[] getAllAvailablePartitions() {
@@ -104,10 +104,10 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return validPolicies.toArray(new DeploymentPolicy[0]);
     }
 
-    @Override
-    public boolean addPartition(Partition partition) throws InvalidPartitionException {
-        return partitionManager.addNewPartition(partition);
-    }
+//    @Override
+//    public boolean addPartition(Partition partition) throws InvalidPartitionException {
+//        return partitionManager.addNewPartition(partition);
+//    }
 
     @Override
     public boolean addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
@@ -129,10 +129,10 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return PolicyManager.getInstance().updateAutoscalePolicy(autoscalePolicy);
     }
 
-    @Override
-    public Partition getPartition(String partitionId) {
-        return partitionManager.getPartitionById(partitionId);
-    }
+//    @Override
+//    public Partition getPartition(String partitionId) {
+//        return partitionManager.getPartitionById(partitionId);
+//    }
 
     @Override
     public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
@@ -212,7 +212,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return kubernetesManager.updateKubernetesHost(kubernetesHost);
     }
 
-    @Override
+//    @Override
     public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String groupId) {
         DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
         if (null == depPol) {

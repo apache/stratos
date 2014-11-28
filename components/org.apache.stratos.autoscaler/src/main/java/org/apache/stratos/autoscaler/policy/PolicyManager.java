@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-import org.apache.stratos.autoscaler.partition.PartitionManager;
+//import org.apache.stratos.autoscaler.partition.PartitionManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
@@ -134,17 +134,18 @@ public class PolicyManager {
     }
 
     private void fillPartitions(DeploymentPolicy deploymentPolicy) throws InvalidPartitionException {
-        PartitionManager partitionMgr = PartitionManager.getInstance();
-        for (Partition partition : deploymentPolicy.getAllPartitions()) {
-            String partitionId = partition.getId();
-            if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
-                String msg = "Could not find partition: [id] " + partitionId + ". " +
-                        "Please deploy the partitions before deploying the deployment policies.";                
-                throw new InvalidPartitionException(msg);
-            }
-            
-            fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
-        }
+        //TODO fill partition by extracting the partitions from policy
+//        PartitionManager partitionMgr = PartitionManager.getInstance();
+//        for (Partition partition : deploymentPolicy.getAllPartitions()) {
+//            String partitionId = partition.getId();
+//            if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
+//                String msg = "Could not find partition: [id] " + partitionId + ". " +
+//                        "Please deploy the partitions before deploying the deployment policies.";
+//                throw new InvalidPartitionException(msg);
+//            }
+//
+//            fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
+//        }
     }
 
     private static void fillPartition(Partition destPartition, Partition srcPartition) {

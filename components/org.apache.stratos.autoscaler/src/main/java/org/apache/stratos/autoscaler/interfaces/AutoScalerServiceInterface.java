@@ -41,7 +41,7 @@ public interface AutoScalerServiceInterface {
 
 //    public Partition[] getAllAvailablePartitions();
 
-    public boolean addPartition(Partition partition) throws InvalidPartitionException;
+//    public boolean addPartition(Partition partition) throws InvalidPartitionException;
 
     public DeploymentPolicy[] getAllDeploymentPolicies();
 
@@ -57,7 +57,7 @@ public interface AutoScalerServiceInterface {
 
     public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType);
 
-    public Partition getPartition(String partitionId);
+//    public Partition getPartition(String partitionId);
 
     public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId);
 
@@ -65,9 +65,9 @@ public interface AutoScalerServiceInterface {
 
     public org.apache.stratos.autoscaler.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
 
-    public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
-
-    public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId);
+//    public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String partitionGroup);
+//
+//    public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId);
 
     /**
      * Retrieves registered Kubernetes Groups.
