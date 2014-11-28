@@ -304,9 +304,6 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             }
             instanceId = createGroupInstance(group, parentInstanceId);
             instanceIds.add(instanceId);
-
-
-
         }
         startDependency(group, instanceIds);
     }

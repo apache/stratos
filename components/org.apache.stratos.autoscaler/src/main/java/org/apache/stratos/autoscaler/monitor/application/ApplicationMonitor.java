@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelN
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.ParentMonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -194,26 +195,54 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
         for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
-            ApplicationLevelNetworkPartitionContext context =
-                            new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
-            instanceId = createApplicationInstance(application, partitionGroup.getId());
-            context.addInstanceContext(application.getInstanceContexts(instanceId));
+            if(partitionGroup.isActiveByDefault()) {
+                ApplicationLevelNetworkPartitionContext context =
+                        new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
+                instanceId = createApplicationInstance(application, partitionGroup.getId());
+                context.addInstanceContext(application.getInstanceContexts(instanceId));
 
-            this.networkPartitionCtxts.put(context.getId(), context);
+                this.networkPartitionCtxts.put(context.getId(), context);
 
-            instanceIds.add(instanceId);
+                instanceIds.add(instanceId);
+            }
+
         }
         startDependency(application, instanceIds);
 
 
     }
 
-    public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException {
+    public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
+                                                                PolicyValidationException,
+                                                                ParentMonitorNotFoundException {
         //TODO get lock
         Application application = ApplicationHolder.getApplications().getApplication(appId);
         if(application == null) {
             String msg = "Application cannot be found in the Topology.";
+            throw new TopologyInConsistentException(msg);
         }
+        DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
+        String instanceId = null;
+        //Find out the inActive network partition
+        boolean burstNPFound = false;
+        for (PartitionGroup partitionGroup : deploymentPolicy.getPartitionGroups()) {
+            if(!partitionGroup.isActiveByDefault()) {
+                ApplicationLevelNetworkPartitionContext context =
+                        new ApplicationLevelNetworkPartitionContext(partitionGroup.getId());
+                context.setCreatedOnBurst(true);
+                instanceId = createApplicationInstance(application, partitionGroup.getId());
+                context.addInstanceContext(application.getInstanceContexts(instanceId));
+                this.networkPartitionCtxts.put(context.getId(), context);
+                burstNPFound = true;
+            }
+        }
+
+        if(!burstNPFound) {
+            log.warn("[Application] " + appId + " cannot be burst as no available resources found");
+        } else {
+            startDependency(application, instanceId);
+        }
+
     }
 
     private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {

@@ -32,6 +32,7 @@ import java.util.Map;
 public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(ApplicationLevelNetworkPartitionContext.class);
     private final String id;
+    private boolean createdOnBurst;
 
     //group instances kept inside a partition
     private Map<String, ApplicationInstance> instanceIdToInstanceContextMap;
@@ -94,4 +95,11 @@ public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionCon
         return id;
     }
 
+    public boolean isCreatedOnBurst() {
+        return createdOnBurst;
+    }
+
+    public void setCreatedOnBurst(boolean createdOnBurst) {
+        this.createdOnBurst = createdOnBurst;
+    }
 }

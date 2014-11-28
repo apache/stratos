@@ -32,10 +32,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChil
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
-import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
@@ -94,6 +91,20 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
      */
+    public void startDependency(ParentComponent component, String instanceId)
+                                                            throws TopologyInConsistentException,
+                                                                    ParentMonitorNotFoundException {
+        //start the first dependency
+        List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
+                getStarAbleDependencies();
+        startDependency(applicationContexts, instanceId);
+
+    }
+
+    /**
+     * This will start the parallel dependencies at once from the top level.
+     * it will get invoked when the monitor starts up only.
+     */
     public void startDependency(ParentComponent component) throws TopologyInConsistentException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
@@ -101,7 +112,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         Collection<Instance> contexts = component.getInstanceIdToInstanceContextMap().values();
         //traversing through all the Instance context and start them
         List<String> instanceIds = new ArrayList<String>();
-        for(Instance context : contexts) {
+        for (Instance context : contexts) {
             instanceIds.add(context.getInstanceId());
         }
         startDependency(applicationContexts, instanceIds);
@@ -135,7 +146,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination();
-        startDependency(applicationContexts, null);
+        //FIXME to create new instanceIds
+        //startDependency(applicationContexts, null);
 
     }
 
@@ -162,12 +174,49 @@ public abstract class ParentComponentMonitor extends Monitor {
             } else {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
-                for(String instanceId : instanceIds) {
-                    if(context instanceof ClusterChildContext) {
+                for (String instanceId : instanceIds) {
+                    if (context instanceof ClusterChildContext) {
                         MonitorStatusEventBuilder.notifyChildCluster(monitor, ClusterStatus.Created, instanceId);
-                    } else if(context instanceof GroupChildContext) {
+                    } else if (context instanceof GroupChildContext) {
                         MonitorStatusEventBuilder.notifyChildGroup(monitor, GroupStatus.Created, instanceId);
                     }
+                }
+
+            }
+        }
+
+        return true;
+
+    }
+
+    /**
+     * To start the dependency of the given application contexts
+     *
+     * @param applicationContexts the found applicationContexts to be started
+     */
+    private boolean startDependency(List<ApplicationChildContext> applicationContexts, String instanceId)
+            throws ParentMonitorNotFoundException {
+        if (applicationContexts != null && applicationContexts.isEmpty()) {
+            //all the groups/clusters have been started and waiting for activation
+            log.info("There is no child found for the [group]: " + this.id);
+            return false;
+
+        }
+        for (ApplicationChildContext context : applicationContexts) {
+            if (log.isDebugEnabled()) {
+                log.debug("Dependency check for the Group " + context.getId() + " started");
+            }
+            //FIXME whether to start new monitor or throw exception
+            if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+                String msg = "Required Monitor cannot be fount in the hierarchy";
+                throw new ParentMonitorNotFoundException(msg);
+            } else {
+                //starting a new instance of the child
+                Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
+                if (context instanceof ClusterChildContext) {
+                    MonitorStatusEventBuilder.notifyChildCluster(monitor, ClusterStatus.Created, instanceId);
+                } else if (context instanceof GroupChildContext) {
+                    MonitorStatusEventBuilder.notifyChildGroup(monitor, GroupStatus.Created, instanceId);
                 }
 
             }
@@ -498,6 +547,25 @@ public abstract class ParentComponentMonitor extends Monitor {
         this.terminatingMonitorsList = terminatingMonitorsList;
     }
 
+    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
+        AutoscaleAlgorithm autoscaleAlgorithm = null;
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
+        }
+        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+
+            autoscaleAlgorithm = new RoundRobin();
+        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+
+            autoscaleAlgorithm = new OneAfterAnother();
+        } else {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
+            }
+        }
+        return autoscaleAlgorithm;
+    }
+
     private class MonitorAdder implements Runnable {
         private ApplicationChildContext context;
         private ParentComponentMonitor parent;
@@ -566,25 +634,6 @@ public abstract class ParentComponentMonitor extends Monitor {
                         context.getId()));
             }
         }
-    }
-
-    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
-        AutoscaleAlgorithm autoscaleAlgorithm = null;
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
-        }
-        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
-
-            autoscaleAlgorithm = new RoundRobin();
-        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
-
-            autoscaleAlgorithm = new OneAfterAnother();
-        } else {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Partition algorithm %s could not be identified !", partitionAlgorithm));
-            }
-        }
-        return autoscaleAlgorithm;
     }
 
 
