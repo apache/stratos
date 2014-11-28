@@ -117,23 +117,23 @@ public class AutoscalerUtil {
 
             NetworkPartitionLbHolder networkPartitionLbHolder =
                                                               PartitionManager.getInstance()
-                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
+                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
 //                                                              PartitionManager.getInstance()
-//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
+//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
             // FIXME pick a random partition
             Partition partition =
                                   partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
             PartitionContext partitionContext = new PartitionContext(partition);
             partitionContext.setServiceName(cluster.getServiceName());
             partitionContext.setProperties(cluster.getProperties());
-            partitionContext.setNetworkPartitionId(partitionGroup.getId());
+            partitionContext.setNetworkPartitionId(partitionGroup.getPartitionId());
             partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
 
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getId(),
+            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getPartitionId(),
                     partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions()) ;
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
-                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getId())) {
+                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getPartitionId())) {
                     MemberContext memberContext = new MemberContext();
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);

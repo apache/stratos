@@ -246,7 +246,7 @@ public class RuleTasksDelegator {
                 partitionContext.addPendingMember(memberContext);
                 if(log.isDebugEnabled()){
                     log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
-                            memberContext.getPartition().getId()));
+                            memberContext.getPartition().getPartitionId()));
                 }
             } else if(log.isDebugEnabled()){
                 log.debug("Returned member context is null, did not add to pending members");

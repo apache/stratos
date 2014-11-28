@@ -21,165 +21,53 @@ package org.apache.stratos.autoscaler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.io.Serializable;
+import java.util.*;
 /**
- * This will keep track of partition level information.
+ * This is an object that inserted to the rules engine.
+ * Holds information about a partition.
+ *
+ *
  */
-public abstract class PartitionContext {
-    private static final Log log = LogFactory.getLog(PartitionContext.class);
-    private final String id;
-    private int scaleDownRequestsCount = 0;
-    private float averageRequestsServedPerInstance;
 
-    private int minInstanceCount = 0, maxInstanceCount = 0;
+public class PartitionContext implements Serializable{
 
+    private static final long serialVersionUID = -2920388667345980487L;
+    private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
+    protected String partitionId;
+    private Partition partition;
 
+    // properties
+    private Properties properties;
 
-    int requiredInstanceCountBasedOnStats;
-    private int requiredInstanceCountBasedOnDependencies;
-
-    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
-
-    private final Partition[] partitions;
-
-    //details required for partition selection algorithms
-    private int currentPartitionIndex;
-
-    public PartitionContext(String id, Partition[] partitions) {
-
-        super();
-        this.id = id;
-        if (partitions == null) {
-            this.partitions = new Partition[0];
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
-        for (Partition partition : partitions) {
-            minInstanceCount += partition.getPartitionMin();
-            maxInstanceCount += partition.getPartitionMax();
-        }
-        requiredInstanceCountBasedOnStats = minInstanceCount;
-        requiredInstanceCountBasedOnDependencies = minInstanceCount;
-        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+    // for the use of tests
+    public PartitionContext(long memberExpiryTime) {
 
     }
 
+    public PartitionContext(Partition partition) {
 
-
-    public int getMinInstanceCount() {
-        return minInstanceCount;
+        this.partition = partition;
     }
 
-    public void setMinInstanceCount(int minInstanceCount) {
-        this.minInstanceCount = minInstanceCount;
+    public Partition getPartition() {
+        return partition;
     }
 
-    public int getMaxInstanceCount() {
-        return maxInstanceCount;
+    public void setPartition(Partition partition) {
+        this.partition = partition;
     }
 
-    public void setMaxInstanceCount(int maxInstanceCount) {
-        this.maxInstanceCount = maxInstanceCount;
+    public String getPartitionId() {
+        return partitionId;
+    }
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
     }
 
-    public int hashCode() {
-
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-        return result;
-
+    public int getCurrentElementCount() {
+        //TODO find and return correct member instance count
+        return 0;
     }
-
-    public boolean equals(final Object obj) {
-
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof PartitionContext)) {
-            return false;
-        }
-        final PartitionContext other = (PartitionContext) obj;
-        if (this.id == null) {
-            if (this.id != null) {
-                return false;
-            }
-        } else if (!this.id.equals(this.id)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "NetworkPartitionContext [id=" + id + ", minInstanceCount=" +
-                minInstanceCount + ", maxInstanceCount=" + maxInstanceCount + "]";
-    }
-
-    public int getCurrentPartitionIndex() {
-        return currentPartitionIndex;
-    }
-
-    public void setCurrentPartitionIndex(int currentPartitionIndex) {
-        this.currentPartitionIndex = currentPartitionIndex;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public Partition[] getPartitions() {
-        return partitions;
-    }
-
-    public int getScaleDownRequestsCount() {
-        return scaleDownRequestsCount;
-    }
-
-    public void resetScaleDownRequestsCount() {
-        this.scaleDownRequestsCount = 0;
-    }
-
-    public void increaseScaleDownRequestsCount() {
-        this.scaleDownRequestsCount += 1;
-    }
-
-    public float getRequiredInstanceCountBasedOnStats() {
-        return requiredInstanceCountBasedOnStats;
-    }
-
-    public void setRequiredInstanceCountBasedOnStats(int requiredInstanceCountBasedOnStats) {
-        this.requiredInstanceCountBasedOnStats = requiredInstanceCountBasedOnStats;
-    }
-
-    public int getRequiredInstanceCountBasedOnDependencies() {
-        return requiredInstanceCountBasedOnDependencies;
-    }
-
-    public void setRequiredInstanceCountBasedOnDependencies(int requiredInstanceCountBasedOnDependencies) {
-        this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
-    }
-
-    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
-        return instanceIdToInstanceContextMap;
-    }
-
-    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
-        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
-    }
-
-    public void addInstanceContext(InstanceContext context) {
-        this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
-
-    }
-
-    public abstract int getCurrentElementCount();
 }

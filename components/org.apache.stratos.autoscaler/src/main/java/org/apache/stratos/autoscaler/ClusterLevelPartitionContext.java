@@ -38,11 +38,10 @@ import org.apache.stratos.common.constants.StratosConstants;
  *
  */
 
-public class ClusterLevelPartitionContext implements Serializable{
+public class ClusterLevelPartitionContext extends PartitionContext implements Serializable{
 
 	private static final long serialVersionUID = -2920388667345980487L;
 	private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
-    private String partitionId;
     private String serviceName;
     private String networkPartitionId;
     private Partition partition;
@@ -81,16 +80,15 @@ public class ClusterLevelPartitionContext implements Serializable{
 
     // for the use of tests
     public ClusterLevelPartitionContext(long memberExpiryTime) {
-
+        super(memberExpiryTime);
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
-        pendingMemberExpiryTime = memberExpiryTime;
     }
     
     public ClusterLevelPartitionContext(Partition partition) {
-        this.setPartition(partition);
+
+        super(partition);
         this.minimumMemberCount = partition.getPartitionMin();
-        this.partitionId = partition.getId();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
@@ -133,13 +131,6 @@ public class ClusterLevelPartitionContext implements Serializable{
     
     public void setActiveMembers(List<MemberContext> activeMembers) {
         this.activeMembers = activeMembers;
-    }
-    
-    public String getPartitionId() {
-        return partitionId;
-    }
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
     }
 
     public int getMinimumMemberCount() {
@@ -596,7 +587,13 @@ public class ClusterLevelPartitionContext implements Serializable{
         }
 
     }
-    
+
+    @Override
+    public int getCurrentElementCount() {
+        //TODO find and return correct member instance count
+        return 0;
+    }
+
     private class PendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
 

@@ -196,7 +196,7 @@ public class ClusterContextFactory {
                     PartitionManager.getInstance()
                             .getNetworkPartitionLbHolder(networkPartitionId);
 //                                                              PartitionManager.getInstance()
-//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getId());
+//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
             // FIXME pick a random partition
             Partition partition =
                     partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
