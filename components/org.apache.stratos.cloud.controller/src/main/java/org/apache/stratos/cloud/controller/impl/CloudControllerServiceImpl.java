@@ -1991,6 +1991,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
+    public void updateClusterStatus(String clusterId, String instanceId, ClusterStatus status) {
+        //TODO
+    }
+
+    @Override
     public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
 
         handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [Member id] " + memberId);

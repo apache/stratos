@@ -1,6 +1,4 @@
-package org.apache.stratos.autoscaler.exception;
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -9,7 +7,7 @@ package org.apache.stratos.autoscaler.exception;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,29 +15,34 @@ package org.apache.stratos.autoscaler.exception;
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
+ */
+package org.apache.stratos.autoscaler.exception.application;
 
+/**
+ * This will use to throw any exception when building dependencies
+ */
+public class DependencyBuilderException extends Exception {
 
-public class TerminationException extends Throwable {
+    private static final long serialVersionUID = -7521673271244696906L;
+    private String message;
 
-	private static final long serialVersionUID = -6038793010380236971L;
-	private String message;
-	
-	public TerminationException(String s, Exception e) {
-        super(s, e);
-        this.setMessage(s);
-    }
-    
-    public TerminationException(Exception e) {
-        super(e);
+    public DependencyBuilderException(String message, Exception exception){
+        super(message, exception);
+        this.message = message;
     }
 
-	public String getMessage() {
-		return message;
-	}
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public DependencyBuilderException(Exception exception){
+        super(exception);
+    }
+
+    public DependencyBuilderException(String msg){
+        super(msg);
+        this.message = msg;
+    }
+
+    @Override
+    public String getMessage() {
+        return this.message;
+    }
 }

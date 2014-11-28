@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor.application;
+package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -24,15 +24,15 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
-import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.ParentComponentMonitor;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
-import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * Factory class to get the Monitors.
  */
-public class ApplicationMonitorFactory {
+public class MonitorFactory {
 
     /**
      * Factor method used to create relevant monitors based on the given context
@@ -186,8 +186,8 @@ public class ApplicationMonitorFactory {
      * @param parentMonitor parent of the monitor
      * @param context
      * @return ClusterMonitor - Updated ClusterContext
-     * @throws org.apache.stratos.autoscaler.exception.PolicyValidationException
-     * @throws org.apache.stratos.autoscaler.exception.PartitionValidationException
+     * @throws org.apache.stratos.autoscaler.exception.policy.PolicyValidationException
+     * @throws org.apache.stratos.autoscaler.exception.partition.PartitionValidationException
      */
     public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
                                                             ClusterChildContext context)

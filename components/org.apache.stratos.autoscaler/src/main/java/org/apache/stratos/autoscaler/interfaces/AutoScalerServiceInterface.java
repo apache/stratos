@@ -22,12 +22,13 @@
 package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.exception.kubernetes.*;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
-import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.InvalidPartitionException;
-import org.apache.stratos.autoscaler.exception.InvalidPolicyException;
-import org.apache.stratos.autoscaler.exception.NonExistingLBException;
+import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
+import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.cartridge.NonExistingLBException;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
@@ -99,7 +100,7 @@ public interface AutoScalerServiceInterface {
      * Register a Kubernetes cluster.
      *
      * @param kubernetesGroup
-     * @throws InvalidKubernetesGroupException
+     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesGroupException
      */
     public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException;
 
@@ -108,7 +109,7 @@ public interface AutoScalerServiceInterface {
      *
      * @param groupId
      * @param kubernetesHost
-     * @throws InvalidKubernetesHostException
+     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesHostException
      */
     public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesGroupException;

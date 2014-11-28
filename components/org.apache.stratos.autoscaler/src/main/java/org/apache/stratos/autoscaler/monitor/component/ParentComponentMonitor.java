@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.monitor;
+package org.apache.stratos.autoscaler.monitor.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,10 +32,15 @@ import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChil
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.exception.*;
-import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
+import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.status.processor.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
@@ -93,7 +98,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      */
     public void startDependency(ParentComponent component, String instanceId)
                                                             throws TopologyInConsistentException,
-                                                                    ParentMonitorNotFoundException {
+            ParentMonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
@@ -595,7 +600,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                             + context.getId());
                 }
                 try {
-                    monitor = ApplicationMonitorFactory.getMonitor(parent, context, appId, instanceId);
+                    monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
                 } catch (DependencyBuilderException e) {
                     String msg = "Monitor creation failed for: " + context.getId();
                     log.warn(msg, e);

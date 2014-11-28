@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
-import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.messaging.domain.applications.StartupOrder;
 
 import java.util.*;

@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContextFactory;
-import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.messaging.domain.applications.*;
 
 import java.util.Collection;

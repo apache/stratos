@@ -26,12 +26,12 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.autoscaler.exception.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.PartitionValidationException;
-import org.apache.stratos.autoscaler.exception.PolicyValidationException;
-import org.apache.stratos.autoscaler.exception.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitorFactory;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
@@ -546,7 +546,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 appId);
                     }
                     try {
-                        applicationMonitor = ApplicationMonitorFactory.getApplicationMonitor(appId);
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
                     } catch (PolicyValidationException e) {
                         String msg = "Application monitor creation failed for Application: ";
                         log.warn(msg, e);

@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
+
 /**
  * Abstract class for the monitoring functionality in autoscaler.
  */

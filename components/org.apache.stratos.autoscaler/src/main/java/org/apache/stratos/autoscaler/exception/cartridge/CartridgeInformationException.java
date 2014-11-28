@@ -16,32 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.exception;
 
-/**
- * This will use to throw when Topology in consistency found.
- */
-public class TopologyInConsistentException extends Exception {
-    private static final long serialVersionUID = -7521673271244696906L;
+package org.apache.stratos.autoscaler.exception.cartridge;
+
+public class CartridgeInformationException extends Exception {
+
     private String message;
 
-    public TopologyInConsistentException(String message, Exception exception){
-        super(message, exception);
+    public CartridgeInformationException () {
+        super();
+    }
+
+    public CartridgeInformationException (String message, Throwable cause) {
+        super(message, cause);
         this.message = message;
     }
 
-
-    public TopologyInConsistentException(Exception exception){
-        super(exception);
+    public CartridgeInformationException (String message) {
+        super(message);
+        this.message = message;
     }
 
-    public TopologyInConsistentException(String msg){
-        super(msg);
-        this.message = msg;
+    public CartridgeInformationException (Throwable cause) {
+        super(cause);
     }
 
-    @Override
     public String getMessage() {
-        return this.message;
+        return message;
     }
 }

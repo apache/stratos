@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.interfaces;
 import org.apache.stratos.cloud.controller.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.pojo.*;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
  * This API provides a way to communicate with underline
@@ -155,6 +156,14 @@ public interface CloudControllerService {
      * @throws InvalidClusterException
      */
     MemberContext[] updateContainers(String clusterId, int replicas) throws UnregisteredCartridgeException;
+
+    /**
+     * Update the topology with current cluster status.
+     * @param clusterId id of the subjected cluster.
+     * @param instanceId id of the cluster instance
+     * @param status total number of replicas to be set to the controller.
+     */
+    void updateClusterStatus(String clusterId, String instanceId, ClusterStatus status);
     
     /**
      * Unregister a docker service identified by the given cluster id.

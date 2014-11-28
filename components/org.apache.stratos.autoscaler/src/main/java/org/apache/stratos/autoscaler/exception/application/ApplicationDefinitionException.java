@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,34 +15,34 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
-package org.apache.stratos.autoscaler.exception;
-
-/**
- * Exception class for handling invalid Kubernetes Host
  */
-public class InvalidKubernetesHostException extends Exception {
+
+package org.apache.stratos.autoscaler.exception.application;
+
+public class ApplicationDefinitionException extends Exception {
 
     private String message;
 
-    public InvalidKubernetesHostException(String message, Exception exception){
-        super(message, exception);
+    public ApplicationDefinitionException () {
+        super();
+    }
+
+    public ApplicationDefinitionException (String message, Throwable cause) {
+        super(message, cause);
         this.message = message;
     }
 
-    public InvalidKubernetesHostException(Exception exception){
-        super(exception);
+    public ApplicationDefinitionException (String message) {
+        super(message);
+        this.message = message;
     }
 
-    public InvalidKubernetesHostException(String msg){
-        super(msg);
-        this.message = msg;
+    public ApplicationDefinitionException (Throwable cause) {
+        super(cause);
     }
 
-    @Override
     public String getMessage() {
-        return this.message;
+        return message;
     }
 }
+

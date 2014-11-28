@@ -19,24 +19,25 @@
  *
 */
 
-package org.apache.stratos.autoscaler.exception;
+package org.apache.stratos.autoscaler.exception.kubernetes;
 
 /**
- * Exception class for handling non-existing Kubernetes Master
+ * Exception class for handling invalid Kubernetes Group
  */
-public class NonExistingKubernetesMasterException extends Exception {
+public class InvalidKubernetesGroupException extends Exception {
+
     private String message;
 
-    public NonExistingKubernetesMasterException(String message, Exception exception){
+    public InvalidKubernetesGroupException(String message, Exception exception){
         super(message, exception);
         this.message = message;
     }
 
-    public NonExistingKubernetesMasterException(Exception exception){
+    public InvalidKubernetesGroupException(Exception exception){
         super(exception);
     }
 
-    public NonExistingKubernetesMasterException(String msg){
+    public InvalidKubernetesGroupException(String msg){
         super(msg);
         this.message = msg;
     }

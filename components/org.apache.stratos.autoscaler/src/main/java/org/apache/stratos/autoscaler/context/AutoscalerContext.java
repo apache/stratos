@@ -23,7 +23,7 @@ package org.apache.stratos.autoscaler.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 
 /**

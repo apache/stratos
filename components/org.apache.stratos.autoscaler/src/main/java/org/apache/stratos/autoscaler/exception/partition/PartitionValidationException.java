@@ -1,4 +1,6 @@
+package org.apache.stratos.autoscaler.exception.partition;
 /*
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,33 +17,38 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+*/
+
+
+/**
+ *
  */
+public class PartitionValidationException extends Exception {
 
-package org.apache.stratos.autoscaler.exception;
+	private static final long serialVersionUID = -3904452358279522141L;
+	private String message;
 
-public class CartridgeInformationException extends Exception {
-
-    private String message;
-
-    public CartridgeInformationException () {
-        super();
+	public PartitionValidationException(String message, Exception exception){
+        super(message, exception);
+        this.setMessage(message);
     }
 
-    public CartridgeInformationException (String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
+	public PartitionValidationException(String msg) {
+		super(msg);
+		this.message = msg;
+	}
+    public PartitionValidationException(Exception exception){
+        super(exception);
     }
 
-    public CartridgeInformationException (String message) {
-        super(message);
-        this.message = message;
-    }
 
-    public CartridgeInformationException (Throwable cause) {
-        super(cause);
-    }
+	public String getMessage() {
+		return message;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }

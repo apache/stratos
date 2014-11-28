@@ -19,34 +19,31 @@
  *
 */
 
-package org.apache.stratos.autoscaler.exception;
+package org.apache.stratos.autoscaler.exception.kubernetes;
 
 /**
- * Exception class for handling Kubernetes endpoint validation
+ * Exception class for handling invalid Kubernetes Host
  */
-public class KubernetesEndpointValidationException extends Exception {
+public class InvalidKubernetesHostException extends Exception {
+
     private String message;
 
-    public KubernetesEndpointValidationException(String message, Exception exception){
+    public InvalidKubernetesHostException(String message, Exception exception){
         super(message, exception);
-        this.setMessage(message);
+        this.message = message;
     }
 
-    public KubernetesEndpointValidationException(String msg) {
-        super(msg);
-        this.message = msg;
-    }
-    public KubernetesEndpointValidationException(Exception exception){
+    public InvalidKubernetesHostException(Exception exception){
         super(exception);
     }
 
-
-    public String getMessage() {
-        return message;
+    public InvalidKubernetesHostException(String msg){
+        super(msg);
+        this.message = msg;
     }
 
-
-    public void setMessage(String message) {
-        this.message = message;
+    @Override
+    public String getMessage() {
+        return this.message;
     }
 }

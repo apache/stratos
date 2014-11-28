@@ -16,33 +16,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.exception.application;
 
-package org.apache.stratos.autoscaler.exception;
-
-public class ApplicationDefinitionException extends Exception {
-
+/**
+ * This will throw when required monitor not found
+ */
+public class ParentMonitorNotFoundException extends Exception{
+    private static final long serialVersionUID = -9163807860189126883L;
     private String message;
 
-    public ApplicationDefinitionException () {
-        super();
+    public ParentMonitorNotFoundException(final String message, final Exception exception) {
+
+        super(message, exception);
+        this.setMessage(message);
+
     }
 
-    public ApplicationDefinitionException (String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
+    public ParentMonitorNotFoundException(final Exception exception) {
+
+        super(exception);
+
     }
 
-    public ApplicationDefinitionException (String message) {
-        super(message);
-        this.message = message;
-    }
+    public ParentMonitorNotFoundException(final String msg) {
 
-    public ApplicationDefinitionException (Throwable cause) {
-        super(cause);
+        super(msg);
+        this.setMessage(msg);
+
     }
 
     public String getMessage() {
         return message;
     }
-}
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+}

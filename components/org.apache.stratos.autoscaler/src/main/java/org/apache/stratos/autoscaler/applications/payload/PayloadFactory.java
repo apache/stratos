@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications.payload;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 
 
 public class PayloadFactory {

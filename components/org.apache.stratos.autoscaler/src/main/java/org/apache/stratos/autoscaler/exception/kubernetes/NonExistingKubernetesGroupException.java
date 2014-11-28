@@ -1,4 +1,3 @@
-package org.apache.stratos.autoscaler.exception;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,30 +19,29 @@ package org.apache.stratos.autoscaler.exception;
  *
 */
 
+package org.apache.stratos.autoscaler.exception.kubernetes;
 
 /**
- *
+ * Exception class for handling non-existing Kubernetes Group
  */
-public class InvalidPartitionException extends Exception {
+public class NonExistingKubernetesGroupException extends Exception {
 
-    private static final long serialVersionUID = -7521673271244696906L;
     private String message;
 
-    public InvalidPartitionException(String message, Exception exception){
+    public NonExistingKubernetesGroupException(String message, Exception exception){
         super(message, exception);
         this.message = message;
     }
 
-
-    public InvalidPartitionException(Exception exception){
+    public NonExistingKubernetesGroupException(Exception exception){
         super(exception);
     }
-    
-    public InvalidPartitionException(String msg){
+
+    public NonExistingKubernetesGroupException(String msg){
         super(msg);
         this.message = msg;
     }
-    
+
     @Override
     public String getMessage() {
         return this.message;

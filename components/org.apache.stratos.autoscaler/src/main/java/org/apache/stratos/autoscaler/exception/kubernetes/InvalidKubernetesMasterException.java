@@ -1,4 +1,4 @@
-package org.apache.stratos.autoscaler.exception;
+package org.apache.stratos.autoscaler.exception.kubernetes;
 
 /**
  * Exception class for handling invalid Kubernetes Master

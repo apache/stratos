@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.exception.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.messaging.domain.applications.Application;
 
