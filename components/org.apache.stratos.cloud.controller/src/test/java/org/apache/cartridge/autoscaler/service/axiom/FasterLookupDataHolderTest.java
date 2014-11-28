@@ -18,8 +18,8 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 import junit.framework.TestCase;
 
 public class FasterLookupDataHolderTest extends TestCase {

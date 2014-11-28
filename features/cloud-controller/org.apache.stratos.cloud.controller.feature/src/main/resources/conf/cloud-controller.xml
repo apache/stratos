@@ -50,7 +50,7 @@
 		same property over and over again. -->
 	<iaasProviders>
 		<!-- iaasProvider type="openstack" name="openstack specific details">
-            		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+            		<className>org.apache.stratos.cloud.controller.iaas.OpenstackNovaIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
@@ -61,7 +61,7 @@
 			<property name="Y" value="y" />
 		</iaasProvider -->
         <iaasProvider type="docker" name="Docker">
-            <className>org.apache.stratos.cloud.controller.iaases.DockerIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaas.DockerIaas</className>
             <provider>docker</provider>
             <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>

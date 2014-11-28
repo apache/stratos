@@ -21,7 +21,7 @@ package org.apache.cartridge.autoscaler.service.axiom;
 import java.io.File;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;

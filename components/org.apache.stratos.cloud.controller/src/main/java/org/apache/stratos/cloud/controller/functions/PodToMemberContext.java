@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.functions;
 
-import org.apache.stratos.cloud.controller.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import com.google.common.base.Function;
 

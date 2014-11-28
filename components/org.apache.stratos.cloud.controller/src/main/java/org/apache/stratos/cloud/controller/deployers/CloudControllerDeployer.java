@@ -25,10 +25,10 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
-import org.apache.stratos.cloud.controller.axiom.parser.CloudControllerConfigParser;
-import org.apache.stratos.cloud.controller.pojo.IaasProvider;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;

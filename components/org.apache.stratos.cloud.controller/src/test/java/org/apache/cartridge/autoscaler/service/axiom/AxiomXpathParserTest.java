@@ -22,9 +22,9 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
-import org.apache.stratos.cloud.controller.axiom.AxiomXpathParserUtil;
-import org.apache.stratos.cloud.controller.axiom.parser.CloudControllerConfigParser;
-import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
+import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
+import org.apache.stratos.cloud.controller.context.FasterLookUpDataHolder;
 
 import java.io.File;
 import java.util.List;
