@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.AutoscalerContext;
 import org.apache.stratos.autoscaler.MemberStatsContext;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.NetworkPartitionContext;
+import org.apache.stratos.autoscaler.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
@@ -55,7 +55,7 @@ rule "Dependent Scaling Rule"
 dialect "mvel"
 	when
 
-        networkPartitionContext : NetworkPartitionContext ()
+        networkPartitionContext : ClusterLevelNetworkPartitionContext ()
 	    algorithmName : String() from networkPartitionContext.getPartitionAlgorithm();
         autoscaleAlgorithm : AutoscaleAlgorithm() from  $delegator.getAutoscaleAlgorithm(algorithmName)
 
