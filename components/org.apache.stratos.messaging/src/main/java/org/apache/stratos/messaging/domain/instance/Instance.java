@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.instance.context;
+package org.apache.stratos.messaging.domain.instance;
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 import java.io.Serializable;
 import java.util.Properties;
 
-public abstract class InstanceContext<T extends LifeCycleState> implements Serializable {
+public abstract class Instance<T extends LifeCycleState> implements Serializable {
 
     // group/cluster level alias
     protected String alias;
@@ -40,7 +40,7 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
     //Network partition id
     private String networkPartitionId;
 
-    public InstanceContext (String alias, String instanceId) {
+    public Instance(String alias, String instanceId) {
         this.alias = alias;
         this.instanceId = instanceId;
         this.instanceProperties = new Properties();
@@ -63,7 +63,7 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
     }
 
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof InstanceContext)) {
+        if(other == null || !(other instanceof Instance)) {
             return false;
         }
 
@@ -71,7 +71,7 @@ public abstract class InstanceContext<T extends LifeCycleState> implements Seria
             return true;
         }
 
-        InstanceContext that = (InstanceContext)other;
+        Instance that = (Instance)other;
         return this.alias.equals(that.alias) &&
                 this.instanceId.equals(that.instanceId);
     }

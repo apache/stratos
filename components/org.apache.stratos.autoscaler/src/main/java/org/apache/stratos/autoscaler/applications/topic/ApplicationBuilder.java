@@ -27,8 +27,8 @@ import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.monitor.application.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -98,7 +98,7 @@ public class ApplicationBuilder {
 
         if (!application.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            ApplicationInstanceContext context = new ApplicationInstanceContext(appId, instanceId);
+            ApplicationInstance context = new ApplicationInstance(appId, instanceId);
             context.setStatus(status);
             context.setNetworkPartitionId(networkPartitionId);
             application.addInstanceContext(instanceId, context);
@@ -126,7 +126,7 @@ public class ApplicationBuilder {
         }
 
         ApplicationStatus status = ApplicationStatus.Active;
-        ApplicationInstanceContext context = application.getInstanceContexts(instanceId);
+        ApplicationInstance context = application.getInstanceContexts(instanceId);
         if (context.isStateTransitionValid(status)) {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
@@ -156,10 +156,10 @@ public class ApplicationBuilder {
                 return;
             }
             clusterData = application.getClusterDataRecursively();
-            Collection<ApplicationInstanceContext> context = application.
+            Collection<ApplicationInstance> context = application.
                     getInstanceIdToInstanceContextMap().values();
             ApplicationStatus status = ApplicationStatus.Terminating;
-            for (ApplicationInstanceContext context1 : context) {
+            for (ApplicationInstance context1 : context) {
                 if (context1.isStateTransitionValid(status)) {
                     //setting the status, persist and publish
                     application.setStatus(status, context1.getInstanceId());
@@ -258,7 +258,7 @@ public class ApplicationBuilder {
             return;
         }
 
-        GroupInstanceContext context = group.getInstanceContexts(instanceId);
+        GroupInstance context = group.getInstanceContexts(instanceId);
         GroupStatus status = GroupStatus.Terminated;
         if (context != null) {
             if (context.isStateTransitionValid(status)) {
@@ -301,7 +301,7 @@ public class ApplicationBuilder {
             return;
         }
 
-        GroupInstanceContext context = group.getInstanceContexts(instanceId);
+        GroupInstance context = group.getInstanceContexts(instanceId);
         GroupStatus status = GroupStatus.Active;
         if (context != null) {
             if (context.isStateTransitionValid(status)) {
@@ -382,7 +382,7 @@ public class ApplicationBuilder {
 
         if (!group.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            GroupInstanceContext context = new GroupInstanceContext(groupId, instanceId);
+            GroupInstance context = new GroupInstance(groupId, instanceId);
             context.setParentId(parentId);
             context.setStatus(status);
             group.addInstanceContext(instanceId, context);
@@ -418,7 +418,7 @@ public class ApplicationBuilder {
             return;
         }
 
-        GroupInstanceContext context = group.getInstanceContexts(instanceId);
+        GroupInstance context = group.getInstanceContexts(instanceId);
         GroupStatus status = GroupStatus.Inactive;
         if (context != null) {
             if (context.isStateTransitionValid(status)) {
@@ -462,7 +462,7 @@ public class ApplicationBuilder {
 
         try {
             ApplicationHolder.acquireWriteLock();
-            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            GroupInstance context = group.getInstanceContexts(instanceId);
             GroupStatus status = GroupStatus.Terminating;
             if (context != null) {
                 if (context.isStateTransitionValid(status)) {

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.io.Serializable;
 import java.util.*;
@@ -52,7 +52,7 @@ public class GroupLevelPartitionContext implements Serializable {
     // 15 mints as the default
     private long pendingInstanceExpiryTime = 900000;
     // pending instances
-    private List<InstanceContext> pendingInstances;
+    private List<Instance> pendingInstances;
 
     // 1 day as default
     private long obsoltedInstanceExpiryTime = 1 * 24 * 60 * 60 * 1000;
@@ -61,13 +61,13 @@ public class GroupLevelPartitionContext implements Serializable {
     private long terminationPendingInstanceExpiryTime = 1800000;
 
     // instances to be terminated
-    private Map<String, InstanceContext> obsoletedInstances;
+    private Map<String, Instance> obsoletedInstances;
 
     // active instances
-    private List<InstanceContext> activeInstances;
+    private List<Instance> activeInstances;
 
     // termination pending instances, instance is added to this when Autoscaler send grace fully shut down event
-    private List<InstanceContext> terminationPendingInstances;
+    private List<Instance> terminationPendingInstances;
 
     //instance id: time that instance is moved to termination pending status
     private Map<String, Long> terminationPendingStartedTime;
@@ -76,13 +76,13 @@ public class GroupLevelPartitionContext implements Serializable {
     private Map<String, MemberStatsContext> instanceStatsContexts;
 
     //group instances kept inside a partition
-    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
+    private Map<String, Instance> instanceIdToInstanceContextMap;
 
     // for the use of tests
     public GroupLevelPartitionContext(long instanceExpiryTime) {
 
-        this.activeInstances = new ArrayList<InstanceContext>();
-        this.terminationPendingInstances = new ArrayList<InstanceContext>();
+        this.activeInstances = new ArrayList<Instance>();
+        this.terminationPendingInstances = new ArrayList<Instance>();
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
@@ -90,12 +90,12 @@ public class GroupLevelPartitionContext implements Serializable {
         this.setPartition(partition);
         this.minimumInstanceCount = partition.getPartitionMin();
         this.partitionId = partition.getId();
-        this.pendingInstances = new ArrayList<InstanceContext>();
-        this.activeInstances = new ArrayList<InstanceContext>();
-        this.terminationPendingInstances = new ArrayList<InstanceContext>();
-        this.obsoletedInstances = new ConcurrentHashMap<String, InstanceContext>();
+        this.pendingInstances = new ArrayList<Instance>();
+        this.activeInstances = new ArrayList<Instance>();
+        this.terminationPendingInstances = new ArrayList<Instance>();
+        this.obsoletedInstances = new ConcurrentHashMap<String, Instance>();
         instanceStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
-        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+        instanceIdToInstanceContextMap = new HashMap<String, Instance>();
 
 
         terminationPendingStartedTime = new HashMap<String, Long>();
@@ -120,24 +120,24 @@ public class GroupLevelPartitionContext implements Serializable {
         return terminationPendingStartedTime.get(instanceId);
     }
 
-    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
+    public Map<String, Instance> getInstanceIdToInstanceContextMap() {
         return instanceIdToInstanceContextMap;
     }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
+    public void setInstanceIdToInstanceContextMap(Map<String, Instance> instanceIdToInstanceContextMap) {
         this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
     }
 
-    public void addInstanceContext(InstanceContext context) {
+    public void addInstanceContext(Instance context) {
         this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
 
     }
 
-    public List<InstanceContext> getPendingInstances() {
+    public List<Instance> getPendingInstances() {
         return pendingInstances;
     }
 
-    public void setPendingInstances(List<InstanceContext> pendingInstances) {
+    public void setPendingInstances(List<Instance> pendingInstances) {
         this.pendingInstances = pendingInstances;
     }
 
@@ -169,7 +169,7 @@ public class GroupLevelPartitionContext implements Serializable {
         this.partition = partition;
     }
 
-    public void addPendingInstance(InstanceContext ctxt) {
+    public void addPendingInstance(Instance ctxt) {
         this.pendingInstances.add(ctxt);
     }
 
@@ -178,8 +178,8 @@ public class GroupLevelPartitionContext implements Serializable {
             return false;
         }
         synchronized (pendingInstances) {
-            for (Iterator<InstanceContext> iterator = pendingInstances.iterator(); iterator.hasNext(); ) {
-                InstanceContext pendingInstance = (InstanceContext) iterator.next();
+            for (Iterator<Instance> iterator = pendingInstances.iterator(); iterator.hasNext(); ) {
+                Instance pendingInstance = (Instance) iterator.next();
                 if (id.equals(pendingInstance.getInstanceId())) {
                     iterator.remove();
                     return true;
@@ -196,9 +196,9 @@ public class GroupLevelPartitionContext implements Serializable {
             return;
         }
         synchronized (pendingInstances) {
-            Iterator<InstanceContext> iterator = pendingInstances.listIterator();
+            Iterator<Instance> iterator = pendingInstances.listIterator();
             while (iterator.hasNext()) {
-                InstanceContext pendingInstance = iterator.next();
+                Instance pendingInstance = iterator.next();
                 if (pendingInstance == null) {
                     iterator.remove();
                     continue;
@@ -221,7 +221,7 @@ public class GroupLevelPartitionContext implements Serializable {
     }
 
     public boolean activeInstanceAvailable(String instanceId) {
-        for (InstanceContext activeInstance : activeInstances) {
+        for (Instance activeInstance : activeInstances) {
             if (instanceId.equals(activeInstance.getInstanceId())) {
                 return true;
             }
@@ -231,7 +231,7 @@ public class GroupLevelPartitionContext implements Serializable {
 
     public boolean pendingInstanceAvailable(String instanceId) {
 
-        for (InstanceContext pendingInstance : pendingInstances) {
+        for (Instance pendingInstance : pendingInstances) {
             if (instanceId.equals(pendingInstance.getInstanceId())) {
                 return true;
             }
@@ -244,9 +244,9 @@ public class GroupLevelPartitionContext implements Serializable {
             return;
         }
         synchronized (activeInstances) {
-            Iterator<InstanceContext> iterator = activeInstances.listIterator();
+            Iterator<Instance> iterator = activeInstances.listIterator();
             while (iterator.hasNext()) {
-                InstanceContext activeInstance = iterator.next();
+                Instance activeInstance = iterator.next();
                 if (activeInstance == null) {
                     iterator.remove();
                     continue;
@@ -268,21 +268,21 @@ public class GroupLevelPartitionContext implements Serializable {
     }
 
     /**
-     * Removes the {@link org.apache.stratos.messaging.domain.instance.context.InstanceContext} object mapping
+     * Removes the {@link org.apache.stratos.messaging.domain.instance.Instance} object mapping
      * to the specified instance id from the specified InstanceContext collection
      *
      * @param iterator   The {@link java.util.Iterator} for the collection containing
-     *                   {@link org.apache.stratos.messaging.domain.instance.context.InstanceContext}
+     *                   {@link org.apache.stratos.messaging.domain.instance.Instance}
      *                   objects
      * @param instanceId Instance Id {@link String} for the
-     *                   {@link org.apache.stratos.messaging.domain.instance.context.InstanceContext}
+     *                   {@link org.apache.stratos.messaging.domain.instance.Instance}
      *                   to be removed
-     * @return {@link org.apache.stratos.messaging.domain.instance.context.InstanceContext} object if
+     * @return {@link org.apache.stratos.messaging.domain.instance.Instance} object if
      * object found and removed, null if otherwise.
      */
-    private InstanceContext removeInstanceFrom(Iterator<InstanceContext> iterator, String instanceId) {
+    private Instance removeInstanceFrom(Iterator<Instance> iterator, String instanceId) {
         while (iterator.hasNext()) {
-            InstanceContext activeInstance = iterator.next();
+            Instance activeInstance = iterator.next();
             if (activeInstance == null) {
                 iterator.remove();
                 continue;
@@ -347,18 +347,18 @@ public class GroupLevelPartitionContext implements Serializable {
         }
     }
 */
-    public void addActiveInstance(InstanceContext ctxt) {
+    public void addActiveInstance(Instance ctxt) {
         this.activeInstances.add(ctxt);
     }
 
-    public void removeActiveInstance(InstanceContext ctxt) {
+    public void removeActiveInstance(Instance ctxt) {
         this.activeInstances.remove(ctxt);
     }
 
     public boolean removeTerminationPendingInstance(String instanceId) {
         boolean terminationPendingInstanceAvailable = false;
         synchronized (terminationPendingInstances) {
-            for (InstanceContext instanceContext : terminationPendingInstances) {
+            for (Instance instanceContext : terminationPendingInstances) {
                 if (instanceContext.getInstanceId().equals(instanceId)) {
                     terminationPendingInstanceAvailable = true;
                     terminationPendingInstances.remove(instanceContext);
@@ -377,7 +377,7 @@ public class GroupLevelPartitionContext implements Serializable {
         this.obsoltedInstanceExpiryTime = obsoltedInstanceExpiryTime;
     }
 
-    public void addObsoleteInstance(InstanceContext ctxt) {
+    public void addObsoleteInstance(Instance ctxt) {
         this.obsoletedInstances.put(ctxt.getInstanceId(), ctxt);
     }
 
@@ -396,11 +396,11 @@ public class GroupLevelPartitionContext implements Serializable {
         this.pendingInstanceExpiryTime = pendingInstanceExpiryTime;
     }
 
-    public Map<String, InstanceContext> getObsoletedInstances() {
+    public Map<String, Instance> getObsoletedInstances() {
         return obsoletedInstances;
     }
 
-    public void setObsoletedInstances(Map<String, InstanceContext> obsoletedInstances) {
+    public void setObsoletedInstances(Map<String, Instance> obsoletedInstances) {
         this.obsoletedInstances = obsoletedInstances;
     }
 
@@ -452,11 +452,11 @@ public class GroupLevelPartitionContext implements Serializable {
         this.serviceName = serviceName;
     }
 
-    public List<InstanceContext> getTerminationPendingInstances() {
+    public List<Instance> getTerminationPendingInstances() {
         return terminationPendingInstances;
     }
 
-    public void setTerminationPendingInstances(List<InstanceContext> terminationPendingInstances) {
+    public void setTerminationPendingInstances(List<Instance> terminationPendingInstances) {
         this.terminationPendingInstances = terminationPendingInstances;
     }
 
@@ -469,20 +469,20 @@ public class GroupLevelPartitionContext implements Serializable {
         return activeInstances.size() + pendingInstances.size();
     }
 
-    public List<InstanceContext> getActiveInstances() {
+    public List<Instance> getActiveInstances() {
         return activeInstances;
     }
 
-    public void setActiveInstances(List<InstanceContext> activeInstances) {
+    public void setActiveInstances(List<Instance> activeInstances) {
         this.activeInstances = activeInstances;
     }
 
     public boolean removeActiveInstanceById(String instanceId) {
         boolean removeActiveInstance = false;
         synchronized (activeInstances) {
-            Iterator<InstanceContext> iterator = activeInstances.listIterator();
+            Iterator<Instance> iterator = activeInstances.listIterator();
             while (iterator.hasNext()) {
-                InstanceContext instanceContext = iterator.next();
+                Instance instanceContext = iterator.next();
                 if (instanceId.equals(instanceContext.getInstanceId())) {
                     iterator.remove();
                     removeActiveInstance = true;
@@ -496,7 +496,7 @@ public class GroupLevelPartitionContext implements Serializable {
 
     public boolean activeInstanceExist(String instanceId) {
 
-        for (InstanceContext instanceContext : activeInstances) {
+        for (Instance instanceContext : activeInstances) {
             if (instanceId.equals(instanceContext.getInstanceId())) {
                 return true;
             }
@@ -515,7 +515,7 @@ public class GroupLevelPartitionContext implements Serializable {
     // Map<String, InstanceStatsContext> getInstanceStatsContexts().keySet()
     public Set<String> getAllInstanceForTermination() {
 
-        List<InstanceContext> merged = new ArrayList<InstanceContext>();
+        List<Instance> merged = new ArrayList<Instance>();
 
 
         merged.addAll(activeInstances);
@@ -524,7 +524,7 @@ public class GroupLevelPartitionContext implements Serializable {
 
         Set<String> results = new HashSet<String>(merged.size());
 
-        for (InstanceContext ctx : merged) {
+        for (Instance ctx : merged) {
             results.add(ctx.getInstanceId());
         }
 
@@ -545,9 +545,9 @@ public class GroupLevelPartitionContext implements Serializable {
         if (instanceId == null) {
             return;
         }
-        Iterator<InstanceContext> iterator = terminationPendingInstances.listIterator();
+        Iterator<Instance> iterator = terminationPendingInstances.listIterator();
         while (iterator.hasNext()) {
-            InstanceContext terminationPendingInstance = iterator.next();
+            Instance terminationPendingInstance = iterator.next();
             if (terminationPendingInstance == null) {
                 iterator.remove();
                 continue;
@@ -572,8 +572,8 @@ public class GroupLevelPartitionContext implements Serializable {
         }
     }
 
-    public InstanceContext getPendingTerminationInstance(String instanceId) {
-        for (InstanceContext instanceContext : terminationPendingInstances) {
+    public Instance getPendingTerminationInstance(String instanceId) {
+        for (Instance instanceContext : terminationPendingInstances) {
             if (instanceId.equals(instanceContext.getInstanceId())) {
                 return instanceContext;
             }
@@ -589,9 +589,9 @@ public class GroupLevelPartitionContext implements Serializable {
         if (instanceId == null) {
             return;
         }
-        Iterator<InstanceContext> iterator = pendingInstances.listIterator();
+        Iterator<Instance> iterator = pendingInstances.listIterator();
         while (iterator.hasNext()) {
-            InstanceContext pendingInstance = iterator.next();
+            Instance pendingInstance = iterator.next();
             if (pendingInstance == null) {
                 iterator.remove();
                 continue;
@@ -712,10 +712,10 @@ public class GroupLevelPartitionContext implements Serializable {
             while (true) {
                 long terminationPendingInstanceExpiryTime = ctxt.getTerminationPendingInstanceExpiryTime();
 
-                Iterator<InstanceContext> iterator = ctxt.getTerminationPendingInstances().listIterator();
+                Iterator<Instance> iterator = ctxt.getTerminationPendingInstances().listIterator();
                 while (iterator.hasNext()) {
 
-                    InstanceContext terminationPendingInstance = iterator.next();
+                    Instance terminationPendingInstance = iterator.next();
                     if (terminationPendingInstance == null) {
                         continue;
                     }

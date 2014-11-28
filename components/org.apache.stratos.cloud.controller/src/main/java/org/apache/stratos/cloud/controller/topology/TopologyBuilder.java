@@ -32,7 +32,7 @@ import org.apache.stratos.cloud.controller.runtime.FasterLookUpDataHolder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
@@ -252,7 +252,7 @@ public class TopologyBuilder {
                 return;
             }
 
-            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
@@ -308,7 +308,7 @@ public class TopologyBuilder {
             }
 
             //context.setStatus(ClusterStatus.Created);
-            cluster.addInstanceContext(instanceId, new ClusterInstanceContext(alias, clusterId, instanceId));
+            cluster.addInstanceContext(instanceId, new ClusterInstance(alias, clusterId, instanceId));
             TopologyManager.updateTopology(topology);
 
             ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
@@ -789,7 +789,7 @@ public class TopologyBuilder {
                         clusterActivatedEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            ClusterInstanceContext context = cluster.getInstanceContexts(clusterActivatedEvent.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(clusterActivatedEvent.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         clusterActivatedEvent.getClusterId() + " [instance-id] " +
@@ -841,7 +841,7 @@ public class TopologyBuilder {
                         clusterInActivateEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            ClusterInstanceContext context = cluster.getInstanceContexts(clusterInActivateEvent.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(clusterInActivateEvent.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         clusterInActivateEvent.getClusterId() + " [instance-id] " +
@@ -889,7 +889,7 @@ public class TopologyBuilder {
                 log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
                         ClusterStatus.Terminated);
             }
-            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
@@ -932,7 +932,7 @@ public class TopologyBuilder {
                 log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
                         ClusterStatus.Terminating);
             }
-            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +

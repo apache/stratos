@@ -20,7 +20,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -116,7 +116,7 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            ClusterInstanceContext context = cluster.getInstanceContexts(event.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if(context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +

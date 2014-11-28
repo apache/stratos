@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.event.applications.ApplicationTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -89,7 +89,7 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
             return false;
         } else {
             // Apply changes to the applications
-            ApplicationInstanceContext context = application.getInstanceContexts(event.getInstanceId());
+            ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
             if(context == null) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +

@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.io.Serializable;
 import java.util.*;
@@ -29,7 +29,7 @@ import java.util.*;
  * in an Application within the Topology
  */
 
-public abstract class ParentComponent<T extends InstanceContext> implements Serializable {
+public abstract class ParentComponent<T extends Instance> implements Serializable {
 
     // Dependency Order
     private DependencyOrder dependencyOrder;
@@ -255,16 +255,16 @@ public abstract class ParentComponent<T extends InstanceContext> implements Seri
      * @param parentInstanceId parent instance id
      * @return InstanceContext obj. if exists, else null
      */
-    public List<InstanceContext> getInstanceContextsWithParentId (String parentInstanceId) {
+    public List<Instance> getInstanceContextsWithParentId (String parentInstanceId) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
         }
-        List<InstanceContext> contexts = new ArrayList<InstanceContext>();
+        List<Instance> contexts = new ArrayList<Instance>();
 
         // if instanceId is null, just get the first InstanceContext
         if (parentInstanceId == null) {
-            for(InstanceContext context : instanceIdToInstanceContextMap.values()) {
+            for(Instance context : instanceIdToInstanceContextMap.values()) {
                 if(parentInstanceId.equals(context.getParentId())) {
                     contexts.add(context);
                 }

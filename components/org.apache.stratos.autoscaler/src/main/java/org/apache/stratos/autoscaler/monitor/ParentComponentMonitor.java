@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.monitor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
-import org.apache.stratos.autoscaler.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
@@ -43,7 +42,7 @@ import org.apache.stratos.autoscaler.monitor.group.GroupMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusChecker;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -101,10 +100,10 @@ public abstract class ParentComponentMonitor extends Monitor {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
-        Collection<InstanceContext> contexts = component.getInstanceIdToInstanceContextMap().values();
+        Collection<Instance> contexts = component.getInstanceIdToInstanceContextMap().values();
         //traversing through all the Instance context and start them
         List<String> instanceIds = new ArrayList<String>();
-        for(InstanceContext context : contexts) {
+        for(Instance context : contexts) {
             instanceIds.add(context.getInstanceId());
         }
         startDependency(applicationContexts, instanceIds);

@@ -28,8 +28,8 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -404,7 +404,7 @@ public class StatusChecker {
 
     private boolean getAllInstancesOfGroupActive(Group group) {
         int activeGroupInstances = 0;
-        for(GroupInstanceContext context : group.getInstanceIdToInstanceContextMap().values()) {
+        for(GroupInstance context : group.getInstanceIdToInstanceContextMap().values()) {
             if(context.getStatus() == GroupStatus.Active) {
                 activeGroupInstances++;
             }
@@ -442,7 +442,7 @@ public class StatusChecker {
     private boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status, String instanceId) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            GroupInstance context = group.getInstanceContexts(instanceId);
             if(context != null) {
                 if(context.getStatus() == status) {
                     groupStat = true;
@@ -498,7 +498,7 @@ public class StatusChecker {
             try {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
-                ClusterInstanceContext context = cluster.getInstanceContexts(instanceId);
+                ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context.getStatus() == status) {
                     clusterStat = true;
                 } else {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.instance.context;
+package org.apache.stratos.messaging.domain.instance;
 
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
@@ -25,9 +25,9 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 
 import java.util.Stack;
 
-public class ApplicationInstanceContext extends InstanceContext<ApplicationStatus> implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
+public class ApplicationInstance extends Instance<ApplicationStatus> implements LifeCycleStateTransitionBehavior<ApplicationStatus> {
 
-    public ApplicationInstanceContext(String alias, String instanceId) {
+    public ApplicationInstance(String alias, String instanceId) {
         super(alias, instanceId);
         this.lifeCycleStateManager = new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created,
                 alias + "_" + instanceId);

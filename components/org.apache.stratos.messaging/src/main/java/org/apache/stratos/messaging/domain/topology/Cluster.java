@@ -20,8 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.util.Util;
 import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
 
@@ -59,7 +58,7 @@ public class Cluster implements Serializable {
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
-    protected Map<String, ClusterInstanceContext> instanceIdToInstanceContextMap;
+    protected Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
@@ -71,7 +70,7 @@ public class Cluster implements Serializable {
         this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
-        this.instanceIdToInstanceContextMap = new HashMap<String, ClusterInstanceContext>();
+        this.instanceIdToInstanceContextMap = new HashMap<String, ClusterInstance>();
         //this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
         // temporary; should be removed
         //this.status = ClusterStatus.Created;
@@ -230,12 +229,12 @@ public class Cluster implements Serializable {
         return instanceIdToInstanceContextMap.get(applicationInstanceId).setStatus(newStatus);
     }
 
-    public void addInstanceContext (String instanceId, ClusterInstanceContext instanceContext) {
+    public void addInstanceContext (String instanceId, ClusterInstance instanceContext) {
 
         instanceIdToInstanceContextMap.put(instanceId, instanceContext);
     }
 
-    public ClusterInstanceContext getInstanceContexts (String instanceId) {
+    public ClusterInstance getInstanceContexts (String instanceId) {
         // if map is empty, return null
         if (instanceIdToInstanceContextMap.isEmpty()) {
             return null;

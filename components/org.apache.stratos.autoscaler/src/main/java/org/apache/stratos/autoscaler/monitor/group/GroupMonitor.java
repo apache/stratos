@@ -38,10 +38,9 @@ import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.partition.PartitionGroup;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -102,7 +101,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                         // as it has group scaling enabled.
                         Group group = application.getGroupRecursively(this.id);
                         if(group != null) {
-                            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+                            GroupInstance context = group.getInstanceContexts(instanceId);
                             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                     status, this.id, context.getParentId());
 
@@ -247,7 +246,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             if(group.getInstanceContextCount() > 0) {
                 List<String> instanceIds = new ArrayList<String>();
                 for(String parentInstanceId : parentInstanceIds) {
-                    List<InstanceContext> contexts1 =  group.getInstanceContextsWithParentId(parentInstanceId);
+                    List<Instance> contexts1 =  group.getInstanceContextsWithParentId(parentInstanceId);
                     //Finding the non startable instance ids
                     if(group.getInstanceContexts(parentInstanceId) == null || contexts1.isEmpty() ||
                             contexts1.size() == 0) {
@@ -275,7 +274,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         String instanceId;
         for(String parentInstanceId : parentInstanceIds) {
             Application application = ApplicationHolder.getApplications().getApplication(this.appId);
-            InstanceContext parentInstanceContext;
+            Instance parentInstanceContext;
             if(this.id.equals(appId)) {
                parentInstanceContext = application.getInstanceContexts(parentInstanceId);
             } else {

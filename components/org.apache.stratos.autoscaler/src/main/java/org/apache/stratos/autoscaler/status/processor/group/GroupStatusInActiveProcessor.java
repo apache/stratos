@@ -24,8 +24,8 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.*;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -129,7 +129,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
-            ClusterInstanceContext context = cluster.getInstanceContexts(instanceId);
+            ClusterInstance context = cluster.getInstanceContexts(instanceId);
             if (context.getStatus() == ClusterStatus.Inactive) {
                 clusterStat = true;
                 return clusterStat;
@@ -151,7 +151,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
     private boolean getAllGroupInActive(Map<String, Group> groups, String instanceId) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            GroupInstance context = group.getInstanceContexts(instanceId);
             if (context.getStatus() == GroupStatus.Inactive) {
                 groupStat = true;
                 return groupStat;

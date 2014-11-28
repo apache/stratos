@@ -20,13 +20,11 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
-import org.apache.stratos.messaging.event.topology.ClusterResetEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -117,7 +115,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            ClusterInstanceContext context = new ClusterInstanceContext(event.getAlias(),
+            ClusterInstance context = new ClusterInstance(event.getAlias(),
                                                                         event.getClusterId(),
                                                                         event.getInstanceId());
             //context.setStatus(ClusterStatus.Created);

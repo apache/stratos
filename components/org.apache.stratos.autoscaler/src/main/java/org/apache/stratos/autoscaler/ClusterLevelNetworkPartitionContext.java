@@ -24,7 +24,7 @@ import org.apache.stratos.autoscaler.policy.model.LoadAverage;
 import org.apache.stratos.autoscaler.policy.model.MemoryConsumption;
 import org.apache.stratos.autoscaler.policy.model.RequestsInFlight;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -48,7 +48,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
 
-    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
+    private Map<String, Instance> instanceIdToInstanceContextMap;
 
 
     private final String partitionAlgorithm;
@@ -97,7 +97,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
-        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+        instanceIdToInstanceContextMap = new HashMap<String, Instance>();
 
     }
 
@@ -427,15 +427,15 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
     }
 
-    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
+    public Map<String, Instance> getInstanceIdToInstanceContextMap() {
         return instanceIdToInstanceContextMap;
     }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
+    public void setInstanceIdToInstanceContextMap(Map<String, Instance> instanceIdToInstanceContextMap) {
         this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
     }
 
-    public void addInstanceContext(InstanceContext context) {
+    public void addInstanceContext(Instance context) {
         this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
 
     }

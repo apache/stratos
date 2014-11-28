@@ -20,7 +20,7 @@
 package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.stratos.messaging.domain.instance.context.ApplicationInstanceContext;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 
 import java.util.*;
 
@@ -28,7 +28,7 @@ import java.util.*;
  * Represents an Application in the Topology
  */
 
-public class Application extends ParentComponent<ApplicationInstanceContext> {
+public class Application extends ParentComponent<ApplicationInstance> {
 
     private static final long serialVersionUID = -5092959597171649688L;
     // Unique id for the Application, defined in Application Definition
@@ -48,7 +48,7 @@ public class Application extends ParentComponent<ApplicationInstanceContext> {
         super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
-        this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstanceContext>();
+        this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstance>();
         //this.applicationStateManager =
                 //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }

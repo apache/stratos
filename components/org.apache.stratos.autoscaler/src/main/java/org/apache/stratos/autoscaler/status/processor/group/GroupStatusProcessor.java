@@ -22,9 +22,9 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.instance.context.ClusterInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
-import org.apache.stratos.messaging.domain.instance.context.InstanceContext;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -57,7 +57,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
     protected boolean getAllGroupInSameState(Map<String, Group> groups, GroupStatus status, String instanceId) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
-            GroupInstanceContext context = group.getInstanceContexts(instanceId);
+            GroupInstance context = group.getInstanceContexts(instanceId);
             if(context != null) {
                 if(context.getStatus() == status) {
                     groupStat = true;
@@ -67,11 +67,11 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 }
             } else {
                 //Checking the minimum of the group instances to be satisfied
-                List<InstanceContext> contexts = group.getInstanceContextsWithParentId(instanceId);
+                List<Instance> contexts = group.getInstanceContextsWithParentId(instanceId);
                 int minGroupInstances = group.getGroupMinInstances();
                 int sameStateInstances = 0;
-                for(InstanceContext context1 : contexts) {
-                   if(((GroupInstanceContext)context1).getStatus().equals(status)) {
+                for(Instance context1 : contexts) {
+                   if(((GroupInstance)context1).getStatus().equals(status)) {
                        sameStateInstances++;
                    }
                 }
@@ -104,7 +104,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
             try {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
-                ClusterInstanceContext context = cluster.getInstanceContexts(instanceId);
+                ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context.getStatus() == status) {
                     clusterStat = true;
                 } else {

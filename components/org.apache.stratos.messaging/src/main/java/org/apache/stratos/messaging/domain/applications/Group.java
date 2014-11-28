@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.applications;
 
-import org.apache.stratos.messaging.domain.instance.context.GroupInstanceContext;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 
 import java.util.*;
 
@@ -27,7 +27,7 @@ import java.util.*;
  * Represents a Group/nested Group in an Application/Group
  */
 
-public class Group extends ParentComponent<GroupInstanceContext> {
+public class Group extends ParentComponent<GroupInstance> {
 
     private static final long serialVersionUID = 8347096598203655846L;
     // Name of the Group, specified in Group Definition
@@ -53,7 +53,7 @@ public class Group extends ParentComponent<GroupInstanceContext> {
         this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
-        this.instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
+        this.instanceIdToInstanceContextMap = new HashMap<String, GroupInstance>();
         //instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
         //this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
