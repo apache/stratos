@@ -68,8 +68,8 @@ public class CloudControllerServiceComponent {
     protected void activate(ComponentContext context) {
         try {
             applicationTopicReceiver = new ApplicationTopicReceiver();
-         ;
-            applicationTopicReceiver.run();
+            Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
+            tApplicationTopicReceiver.start();
 
             if (log.isInfoEnabled()) {
                 log.info("Application Receiver thread started");
