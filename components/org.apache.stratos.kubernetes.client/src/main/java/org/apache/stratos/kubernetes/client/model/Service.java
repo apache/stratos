@@ -20,6 +20,8 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import java.util.Arrays;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -40,6 +42,7 @@ public class Service {
 	private Selector selector;
 	private String apiVersion;
 	private Label labels;
+	private String[] publicIPs;
 	
 	public String getKind() {
 		return kind;
@@ -101,13 +104,18 @@ public class Service {
 	public void setSelector(Selector selector) {
 		this.selector = selector;
 	}
-	@Override
-	public String toString() {
-		return "Service [kind=" + kind + ", id=" + id + ", creationTimestamp="
-				+ creationTimestamp + ", selfLink=" + selfLink + ", name="
-				+ name + ", port=" + port + ", containerPort=" + containerPort
-				+ ", selector=" + selector + ", apiVersion=" + apiVersion
-				+ ", labels=" + labels + "]";
+	public String[] getPublicIPs() {
+	    return publicIPs;
 	}
-	
+	public void setPublicIPs(String[] publicIPs) {
+	    this.publicIPs = publicIPs;
+	}
+    @Override
+    public String toString() {
+        return "Service [kind=" + kind + ", id=" + id + ", creationTimestamp=" + creationTimestamp + ", selfLink="
+                + selfLink + ", name=" + name + ", port=" + port + ", containerPort=" + containerPort + ", selector="
+                + selector + ", apiVersion=" + apiVersion + ", labels=" + labels + ", publicIPs="
+                + Arrays.toString(publicIPs) + "]";
+    }
+
 }
