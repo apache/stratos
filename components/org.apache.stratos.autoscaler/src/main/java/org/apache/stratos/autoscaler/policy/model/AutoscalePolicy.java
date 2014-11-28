@@ -145,7 +145,7 @@ public class AutoscalePolicy implements Serializable {
 	 /**
      * Sets the value of the isPublic property.
      * 
-     * @param description
+     * @param isPublic
      *     allowed object is boolean
      *     
      */
