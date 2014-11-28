@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.partition.NetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.policy.PolicyManager;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
 import org.apache.stratos.messaging.domain.applications.Application;

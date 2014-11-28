@@ -17,7 +17,7 @@
 * under the License.
 */
 
-package org.apache.stratos.autoscaler.partition;
+package org.apache.stratos.autoscaler.partition.network;
 
 import java.io.Serializable;
 import java.util.Arrays;

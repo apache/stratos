@@ -19,7 +19,7 @@
 
 package org.apache.stratos.autoscaler.policy.model;
 
-import org.apache.stratos.autoscaler.partition.NetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 
 import java.io.Serializable;

@@ -36,7 +36,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.commons.logging.Log;
 import org.apache.stratos.autoscaler.policy.model.DeploymentPolicy;
-import org.apache.stratos.autoscaler.partition.NetworkPartition;
+import org.apache.stratos.autoscaler.partition.network.NetworkPartition;
 import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
 
