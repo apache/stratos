@@ -1991,7 +1991,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void updateClusterStatus(String clusterId, String instanceId, ClusterStatus status) {
+    public void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status) {
         //TODO
     }
 

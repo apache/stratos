@@ -159,11 +159,12 @@ public interface CloudControllerService {
 
     /**
      * Update the topology with current cluster status.
+     * @param serviceName id of service which the cluster belongs to.
      * @param clusterId id of the subjected cluster.
-     * @param instanceId id of the cluster instance
+     * @param instanceId id of the cluster instance.
      * @param status total number of replicas to be set to the controller.
      */
-    void updateClusterStatus(String clusterId, String instanceId, ClusterStatus status);
+    void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status);
     
     /**
      * Unregister a docker service identified by the given cluster id.

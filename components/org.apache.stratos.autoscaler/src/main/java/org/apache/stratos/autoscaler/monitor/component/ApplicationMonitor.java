@@ -225,13 +225,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         boolean burstNPFound = false;
         for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
             if(!networkPartition.isActiveByDefault()) {
-                ApplicationLevelNetworkPartitionContext context =
-                        new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
-                context.setCreatedOnBurst(true);
-                instanceId = createApplicationInstance(application, networkPartition.getId());
-                context.addInstanceContext(application.getInstanceContexts(instanceId));
-                this.networkPartitionCtxts.put(context.getId(), context);
-                burstNPFound = true;
+                if(!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
+                    ApplicationLevelNetworkPartitionContext context =
+                            new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                    context.setCreatedOnBurst(true);
+                    instanceId = createApplicationInstance(application, networkPartition.getId());
+                    context.addInstanceContext(application.getInstanceContexts(instanceId));
+                    this.networkPartitionCtxts.put(context.getId(), context);
+                    burstNPFound = true;
+                }
             }
         }
 
