@@ -35,6 +35,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Constants;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
+import org.wso2.carbon.caching.impl.DistributedMapProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -45,6 +46,8 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * Registering Cloud Controller Service.
  *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
+ * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
+ *                cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
  * @scr.reference name="ntask.component"
  *                interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
@@ -64,19 +67,6 @@ public class CloudControllerServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
-               	
-            /*// Start instance status event message listener
-            TopicSubscriber subscriber = new TopicSubscriber(CloudControllerConstants.INSTANCE_TOPIC);
-            subscriber.setMessageListener(new InstanceStatusEventMessageListener());
-            Thread tsubscriber = new Thread(subscriber);
-            tsubscriber.start();
-
-            // Start instance status message delegator
-            InstanceStatusEventMessageDelegator delegator = new InstanceStatusEventMessageDelegator();
-            Thread tdelegator = new Thread(delegator);
-            tdelegator.start();*/
-
-
             applicationTopicReceiver = new ApplicationTopicReceiver();
             Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
             tApplicationTopicReceiver.start();
@@ -163,10 +153,17 @@ public class CloudControllerServiceComponent {
     protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
     }
+
+    protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedMapProvider(mapProvider);
+    }
+
+    protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedMapProvider(null);
+    }
 	
 	protected void deactivate(ComponentContext ctx) {
         // Close event publisher connections to message broker
         EventPublisherPool.close(Constants.TOPOLOGY_TOPIC);
 	}
-	
 }
