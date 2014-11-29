@@ -46,17 +46,17 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
     }
 
     @Override
-    public boolean process(String idOfChild, String idOfComponent, String appId,
+    public boolean process(String idOfComponent, String appId,
                            String instanceId) {
         boolean statusChanged;
-        statusChanged = doProcess(idOfChild, idOfComponent, appId, instanceId);
+        statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
             return statusChanged;
         }
 
         if (nextProcessor != null) {
             // ask the next processor to take care of the message.
-            return nextProcessor.process(idOfChild, idOfComponent, appId, instanceId);
+            return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
             throw new RuntimeException(String.format("Failed to process message using " +
                             "available message processors: [component] %s [instance]",
@@ -65,13 +65,13 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
     }
 
 
-    private boolean doProcess(String idOfChild, String idOfComponent, String appId, String instanceId) {
+    private boolean doProcess(String idOfComponent, String appId, String instanceId) {
         ParentComponent component;
         Map<String, Group> groups;
         Map<String, ClusterDataHolder> clusterData;
 
         if (log.isInfoEnabled()) {
-            log.info("StatusChecker calculating the status for the group [ " + idOfChild + " ]");
+            log.info("StatusChecker calculating the status for the group [ " + idOfComponent + " ]");
         }
 
         try {

@@ -180,8 +180,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     }
 
-    public void startMinimumDependencies(Application application)
+    public boolean startMinimumDependencies(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
+        boolean initialStartup = false;
         //There will be one application instance
         //FIXME when having multiple network partitions
         if (application.getInstanceContextCount() > 0) {
@@ -189,7 +190,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         } else {
             //No available instances in the Applications. Need to start them all
             createInstanceAndStartDependency(application);
+            initialStartup = true;
         }
+        return initialStartup;
     }
 
     private void createInstanceAndStartDependency(Application application)
@@ -207,6 +210,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 this.networkPartitionCtxts.put(context.getId(), context);
 
                 instanceIds.add(instanceId);
+                log.info("Application instance has been added for the [network partition] " +
+                        networkPartition.getId() + " [appInstanceId] " + instanceId);
             }
 
         }

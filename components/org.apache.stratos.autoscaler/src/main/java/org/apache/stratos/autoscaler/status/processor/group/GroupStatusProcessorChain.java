@@ -45,13 +45,13 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
 
     }
 
-    public boolean process(String idOfChild, String idOfComponent, String appId,
+    public boolean process(String idOfComponent, String appId,
                            String instanceId) {
         GroupStatusProcessor root = (GroupStatusProcessor) list.getFirst();
         if (root == null) {
             throw new RuntimeException("Message processor chain is not initialized");
         }
-        return root.process(idOfChild, idOfComponent, appId, instanceId);
+        return root.process(idOfComponent, appId, instanceId);
     }
 
 }

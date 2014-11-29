@@ -247,8 +247,9 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         this.groupScalingEnabled = groupScalingEnabled;
     }
 
-    public void startMinimumDependencies(Group group, List<String> parentInstanceIds)
+    public boolean startMinimumDependencies(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
+        boolean initialStartup = false;
         int min = group.getGroupMinInstances();
         if (group.getInstanceContextCount() >= min) {
             startDependency(group);
@@ -272,8 +273,10 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
             } else {
                 //No available instances in the Applications. Need to start them all
                 createInstanceAndStartDependency(group, parentInstanceIds);
+                initialStartup = true;
             }
         }
+        return initialStartup;
     }
 
     public void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)

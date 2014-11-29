@@ -40,12 +40,10 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
 
     /**
      * Message processing and delegating logic.
-     * @param idOfChild real message body.
      * @param instanceId Object that will get updated.
      * @return whether the processing was successful or not.
      */
-    public abstract boolean process(String idOfChild, String idOfComponent, String appId,
-                                                                                String instanceId);
+    public abstract boolean process(String idOfComponent, String appId, String instanceId);
 
     /**
      * Find out whether all the groups of a group in the same state or not
