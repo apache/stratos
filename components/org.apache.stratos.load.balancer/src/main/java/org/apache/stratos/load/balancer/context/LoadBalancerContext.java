@@ -19,17 +19,9 @@
 
 package org.apache.stratos.load.balancer.context;
 
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.context.map.*;
-import org.apache.synapse.config.SynapseConfiguration;
-import org.wso2.carbon.caching.impl.DistributedMapProvider;
-import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
-import org.wso2.carbon.registry.core.session.UserRegistry;
-import org.wso2.carbon.user.core.service.RealmService;
 
 /**
  * Defines load balancer context information.
@@ -38,13 +30,6 @@ public class LoadBalancerContext {
 
     private static final Log log = LogFactory.getLog(LoadBalancerContext.class);
     private static volatile LoadBalancerContext instance;
-
-    private SynapseConfiguration synapseConfiguration;
-    private ConfigurationContext configCtxt;
-    private AxisConfiguration axisConfiguration;
-    private UserRegistry configRegistry;
-    private UserRegistry governanceRegistry;
-    private DependencyManagementService dependencyManager;
 
     // Following map is updated by the service component.
     // Map<TenantId, SynapseEnvironmentService>
@@ -71,7 +56,7 @@ public class LoadBalancerContext {
     // Map<MemberIp, Hostname>
     // Keep track of cluster hostnames of of all members  against their ip addresses
     private MemberIpHostnameMap memberIpHostnameMap;
-    private DistributedMapProvider distributedMapProvider;
+    private boolean clustered;
 
     private LoadBalancerContext() {
         tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
@@ -102,77 +87,8 @@ public class LoadBalancerContext {
         multiTenantClusterMap.clear();
     }
 
-    public RealmService getRealmService() {
-        return realmService;
-    }
-
-    public void setRealmService(RealmService realmService) {
-        this.realmService = realmService;
-    }
-
-    private RealmService realmService;
-
-    public SynapseConfiguration getSynapseConfiguration() throws TenantAwareLoadBalanceEndpointException {
-        assertNull("SynapseConfiguration", synapseConfiguration);
-        return synapseConfiguration;
-    }
-
-    public void setSynapseConfiguration(SynapseConfiguration synapseConfiguration) {
-        this.synapseConfiguration = synapseConfiguration;
-    }
-
-    public AxisConfiguration getAxisConfiguration() throws TenantAwareLoadBalanceEndpointException {
-        assertNull("AxisConfiguration", axisConfiguration);
-        return axisConfiguration;
-    }
-
-    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
-        this.axisConfiguration = axisConfiguration;
-    }
-
-    public UserRegistry getConfigRegistry() throws TenantAwareLoadBalanceEndpointException {
-        assertNull("Registry", configRegistry);
-        return configRegistry;
-    }
-
-    public void setConfigRegistry(UserRegistry configRegistry) {
-        this.configRegistry = configRegistry;
-    }
-
-    public DependencyManagementService getDependencyManager() {
-        return dependencyManager;
-    }
-
-    public void setDependencyManager(DependencyManagementService dependencyManager) {
-        this.dependencyManager = dependencyManager;
-    }
-
-    private void assertNull(String name, Object object) throws TenantAwareLoadBalanceEndpointException {
-        if (object == null) {
-            String message = name + " reference in the proxy admin config holder is null";
-            log.error(message);
-            throw new TenantAwareLoadBalanceEndpointException(message);
-        }
-    }
-
-    public UserRegistry getGovernanceRegistry() {
-        return governanceRegistry;
-    }
-
-    public void setGovernanceRegistry(UserRegistry governanceRegistry) {
-        this.governanceRegistry = governanceRegistry;
-    }
-
     public TenantIdSynapseEnvironmentServiceMap getTenantIdSynapseEnvironmentServiceMap() {
         return tenantIdSynapseEnvironmentServiceMap;
-    }
-
-    public ConfigurationContext getConfigCtxt() {
-        return configCtxt;
-    }
-
-    public void setConfigCtxt(ConfigurationContext configCtxt) {
-        this.configCtxt = configCtxt;
     }
 
     public ServiceNameServiceContextMap getServiceNameServiceContextMap() {
@@ -203,11 +119,11 @@ public class LoadBalancerContext {
         return memberIpHostnameMap;
     }
 
-    public void setDistributedMapProvider(DistributedMapProvider distributedMapProvider) {
-        this.distributedMapProvider = distributedMapProvider;
+    public boolean isClustered() {
+        return clustered;
     }
 
-    public DistributedMapProvider getDistributedMapProvider() {
-        return distributedMapProvider;
+    public void setClustered(boolean clustered) {
+        this.clustered = clustered;
     }
 }

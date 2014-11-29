@@ -19,6 +19,8 @@
 
 package org.apache.stratos.load.balancer.internal;
 
+import com.hazelcast.core.HazelcastInstance;
+import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
@@ -27,7 +29,6 @@ import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTenantEventReceiver;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
@@ -63,8 +64,10 @@ import java.util.Set;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
+ * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
+ *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
  * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
- *                cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ *                cardinality="0..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
  * @scr.reference name="configuration.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  * @scr.reference name="synapse.config.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
@@ -91,10 +94,20 @@ public class LoadBalancerServiceComponent {
 
     protected void activate(ComponentContext ctxt) {
         try {
+            HazelcastInstance hazelcastInstance = ServiceReferenceHolder.getInstance().getHazelcastInstance();
+
+            ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
+            boolean clusteringEnabled = (clusteringAgent != null);
+            LoadBalancerContext.getInstance().setClustered(clusteringEnabled);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Load balancer clustering is %s", (clusteringEnabled ? "enabled" : "disabled")));
+            }
+
             // Register endpoint deployer
             SynapseEnvironmentService synEnvService = LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
                     .getSynapseEnvironmentService(MultitenantConstants.SUPER_TENANT_ID);
-            registerDeployer(LoadBalancerContext.getInstance().getAxisConfiguration(),
+            registerDeployer(ServiceReferenceHolder.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
 
             // Configure synapse settings
@@ -108,70 +121,18 @@ public class LoadBalancerServiceComponent {
             TopologyFilterConfigurator.configure(configuration);
 
             if (configuration.isMultiTenancyEnabled()) {
-
-                tenantReceiver = new LoadBalancerTenantEventReceiver();
-                Thread tenantReceiverThread = new Thread(tenantReceiver);
-                tenantReceiverThread.start();
-                if (log.isInfoEnabled()) {
-                    log.info("Tenant receiver thread started");
-                }
+                // Start tenant event receiver
+                startTenantEventReceiver();
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
-
                 // Start topology receiver
-                topologyReceiver = new LoadBalancerTopologyEventReceiver();
-                Thread topologyReceiverThread = new Thread(topologyReceiver);
-                topologyReceiverThread.start();
-                if (log.isInfoEnabled()) {
-                    log.info("Topology receiver thread started");
-                }
-
-                if (log.isInfoEnabled()) {
-                    if (TopologyServiceFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(serviceName);
-                        }
-                        log.info(String.format("Service filter activated: [services] %s", sb.toString()));
-                    }
-                    if (TopologyClusterFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(clusterId);
-                        }
-                        log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
-                    }
-                    if (TopologyMemberFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(clusterId);
-                        }
-                        log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
-                    }
-                }
+                startTopologyEventReceiver();
             }
 
             if(configuration.isCepStatsPublisherEnabled()) {
-                // Get stats reader
-                LoadBalancerStatisticsReader statsReader = LoadBalancerStatisticsCollector.getInstance();
-
-                // Start stats notifier thread
-                statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
-                Thread statsNotifierThread = new Thread(statisticsNotifier);
-                statsNotifierThread.start();
-                if (log.isInfoEnabled()) {
-                    log.info("Load balancer statistics notifier thread started");
-                }
+                // Start statistics notifier
+                startStatisticsNotifier();
             }
 
             activated = true;
@@ -182,6 +143,67 @@ public class LoadBalancerServiceComponent {
             if (log.isFatalEnabled()) {
                 log.fatal("Failed to activate load balancer service component", e);
             }
+        }
+    }
+
+    private void startTenantEventReceiver() {
+        tenantReceiver = new LoadBalancerTenantEventReceiver();
+        Thread tenantReceiverThread = new Thread(tenantReceiver);
+        tenantReceiverThread.start();
+        if (log.isInfoEnabled()) {
+            log.info("Tenant receiver thread started");
+        }
+    }
+
+    private void startTopologyEventReceiver() {
+        topologyReceiver = new LoadBalancerTopologyEventReceiver();
+        Thread topologyReceiverThread = new Thread(topologyReceiver);
+        topologyReceiverThread.start();
+        if (log.isInfoEnabled()) {
+            log.info("Topology receiver thread started");
+        }
+
+        if (log.isInfoEnabled()) {
+            if (TopologyServiceFilter.getInstance().isActive()) {
+                StringBuilder sb = new StringBuilder();
+                for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(serviceName);
+                }
+                log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+            }
+            if (TopologyClusterFilter.getInstance().isActive()) {
+                StringBuilder sb = new StringBuilder();
+                for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(clusterId);
+                }
+                log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+            }
+            if (TopologyMemberFilter.getInstance().isActive()) {
+                StringBuilder sb = new StringBuilder();
+                for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
+                    if (sb.length() > 0) {
+                        sb.append(", ");
+                    }
+                    sb.append(clusterId);
+                }
+                log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
+            }
+        }
+    }
+
+    private void startStatisticsNotifier() {
+        // Start stats notifier thread
+        statisticsNotifier = new LoadBalancerStatisticsNotifier(LoadBalancerStatisticsCollector.getInstance());
+        Thread statsNotifierThread = new Thread(statisticsNotifier);
+        statsNotifierThread.start();
+        if (log.isInfoEnabled()) {
+            log.info("Load balancer statistics notifier thread started");
         }
     }
 
@@ -260,21 +282,21 @@ public class LoadBalancerServiceComponent {
     }
 
     protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
-        LoadBalancerContext.getInstance().setAxisConfiguration(cfgCtxService.getServerConfigContext().getAxisConfiguration());
-        LoadBalancerContext.getInstance().setConfigCtxt(cfgCtxService.getServerConfigContext());
+        ServiceReferenceHolder.getInstance().setAxisConfiguration(cfgCtxService.getServerConfigContext().getAxisConfiguration());
+        ServiceReferenceHolder.getInstance().setConfigCtxt(cfgCtxService.getServerConfigContext());
     }
 
     protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
-        LoadBalancerContext.getInstance().setAxisConfiguration(null);
-        LoadBalancerContext.getInstance().setConfigCtxt(null);
+        ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
+        ServiceReferenceHolder.getInstance().setConfigCtxt(null);
     }
 
     protected void setSynapseConfigurationService(SynapseConfigurationService synapseConfigurationService) {
-        LoadBalancerContext.getInstance().setSynapseConfiguration(synapseConfigurationService.getSynapseConfiguration());
+        ServiceReferenceHolder.getInstance().setSynapseConfiguration(synapseConfigurationService.getSynapseConfiguration());
     }
 
     protected void unsetSynapseConfigurationService(SynapseConfigurationService synapseConfigurationService) {
-        LoadBalancerContext.getInstance().setSynapseConfiguration(null);
+        ServiceReferenceHolder.getInstance().setSynapseConfiguration(null);
     }
 
     /**
@@ -327,9 +349,9 @@ public class LoadBalancerServiceComponent {
             log.debug("RegistryService bound to the endpoint component");
         }
         try {
-            LoadBalancerContext.getInstance().setConfigRegistry(
+            ServiceReferenceHolder.getInstance().setConfigRegistry(
                     regService.getConfigSystemRegistry());
-            LoadBalancerContext.getInstance().setGovernanceRegistry(
+            ServiceReferenceHolder.getInstance().setGovernanceRegistry(
                     regService.getGovernanceSystemRegistry());
         } catch (RegistryException e) {
             log.error("Couldn't retrieve the registry from the registry service");
@@ -340,7 +362,7 @@ public class LoadBalancerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("RegistryService unbound from the endpoint component");
         }
-        LoadBalancerContext.getInstance().setConfigRegistry(null);
+        ServiceReferenceHolder.getInstance().setConfigRegistry(null);
     }
 
     protected void setDependencyManager(
@@ -348,7 +370,7 @@ public class LoadBalancerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Dependency management service bound to the endpoint component");
         }
-        LoadBalancerContext.getInstance().setDependencyManager(dependencyMgr);
+        ServiceReferenceHolder.getInstance().setDependencyManager(dependencyMgr);
     }
 
     protected void unsetDependencyManager(
@@ -356,12 +378,11 @@ public class LoadBalancerServiceComponent {
         if (log.isDebugEnabled()) {
             log.debug("Dependency management service unbound from the endpoint component");
         }
-        LoadBalancerContext.getInstance().setDependencyManager(null);
+        ServiceReferenceHolder.getInstance().setDependencyManager(null);
     }
 
     protected void setSynapseRegistrationsService(
             SynapseRegistrationsService synapseRegistrationsService) {
-
     }
 
     protected void unsetSynapseRegistrationsService(
@@ -391,18 +412,26 @@ public class LoadBalancerServiceComponent {
     }
 
     protected void setRealmService(RealmService realmService) {
-        LoadBalancerContext.getInstance().setRealmService(realmService);
+        ServiceReferenceHolder.getInstance().setRealmService(realmService);
     }
 
     protected void unsetRealmService(RealmService realmService) {
-        LoadBalancerContext.getInstance().setRealmService(null);
+        ServiceReferenceHolder.getInstance().setRealmService(null);
+    }
+
+    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+    }
+
+    public void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
     }
 
     protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
-        LoadBalancerContext.getInstance().setDistributedMapProvider(mapProvider);
+        ServiceReferenceHolder.getInstance().setDistributedMapProvider(mapProvider);
     }
 
     protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
-        LoadBalancerContext.getInstance().setDistributedMapProvider(null);
+        ServiceReferenceHolder.getInstance().setDistributedMapProvider(null);
     }
 }
