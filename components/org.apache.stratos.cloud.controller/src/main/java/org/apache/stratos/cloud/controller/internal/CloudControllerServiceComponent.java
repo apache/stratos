@@ -21,8 +21,11 @@ package org.apache.stratos.cloud.controller.internal;
 */
 
 
+import com.hazelcast.core.HazelcastInstance;
+import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -45,16 +48,15 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * Registering Cloud Controller Service.
  *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
+ * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
+ *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
  * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
- *                cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
- * @scr.reference name="ntask.component"
- *                interface="org.wso2.carbon.ntask.core.service.TaskService"
+ *                cardinality="0..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
- * @scr.reference name="registry.service"
- *                interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
- * @scr.reference name="config.context.service"
- *                interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 public class CloudControllerServiceComponent {
@@ -66,6 +68,14 @@ public class CloudControllerServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
+            ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
+            boolean clusteringEnabled = (clusteringAgent != null);
+            CloudControllerContext.getInstance().setClustered(clusteringEnabled);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Cloud controller clustering is %s", (clusteringEnabled ? "enabled" : "disabled")));
+            }
+
             applicationTopicReceiver = new ApplicationTopicReceiver();
             Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
             tApplicationTopicReceiver.start();
@@ -139,7 +149,7 @@ public class CloudControllerServiceComponent {
 
 	protected void unsetRegistryService(RegistryService registryService) {
 		if (log.isDebugEnabled()) {
-            log.debug("Unsetting the Registry Service");
+            log.debug("Un-setting the Registry Service");
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
@@ -151,6 +161,14 @@ public class CloudControllerServiceComponent {
 
     protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
+    }
+
+    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+    }
+
+    public void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
     }
 
     protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {

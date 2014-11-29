@@ -40,10 +40,9 @@ import java.util.concurrent.ScheduledFuture;
 public class CloudControllerContext implements Serializable{
 
     private static final long serialVersionUID = -2662307358852779897L;
-    
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
-	private static volatile CloudControllerContext ctxt;
+	private static volatile CloudControllerContext instance;
 
 	/* We keep following maps in order to make the look up time, small. */
 	
@@ -51,33 +50,31 @@ public class CloudControllerContext implements Serializable{
      * Key - cluster id
      * Value - list of {@link MemberContext}
      */
-    private Map<String, List<MemberContext>> clusterIdToMemberContext = new ConcurrentHashMap<String, List<MemberContext>>();
-    
+    private Map<String, List<MemberContext>> clusterIdToMemberContext;
 
     /**
 	 * Key - member id
 	 * Value - {@link MemberContext}
 	 */
-	private Map<String, MemberContext> memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
+	private Map<String, MemberContext> memberIdToContext;
 	
 	/**
      * Key - member id
      * Value - ScheduledFuture task
      */
-    private transient Map<String, ScheduledFuture<?>> memberIdToScheduledTask = new ConcurrentHashMap<String, ScheduledFuture<?>>();
+    private transient Map<String, ScheduledFuture<?>> memberIdToScheduledTask;
 	
 	/**
 	 * Key - Kubernetes cluster id
 	 * Value - {@link org.apache.stratos.cloud.controller.domain.KubernetesClusterContext}
 	 */
-	private Map<String, KubernetesClusterContext> kubClusterIdToKubClusterContext =
-			new ConcurrentHashMap<String, KubernetesClusterContext>();
+	private Map<String, KubernetesClusterContext> kubClusterIdToKubClusterContext;
 	
 	/**
 	 * Key - cluster id
 	 * Value - {@link org.apache.stratos.cloud.controller.domain.ClusterContext}
 	 */
-	private Map<String, ClusterContext> clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
+	private Map<String, ClusterContext> clusterIdToContext;
 	
 	/**
 	 * This works as a cache to hold already validated partitions against a cartridge type.
@@ -106,45 +103,46 @@ public class CloudControllerContext implements Serializable{
 	 */
 	private List<IaasProvider> iaasProviders;
 
-
 	private String serializationDir;
 	private boolean enableBAMDataPublisher;
 	private transient DataPublisherConfig dataPubConfig;
 	private boolean enableTopologySync;
 	private transient TopologyConfig topologyConfig;
-
 	private transient AsyncDataPublisher dataPublisher;
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
+    private boolean clustered;
 
+    private CloudControllerContext() {
+        clusterIdToMemberContext = new ConcurrentHashMap<String, List<MemberContext>>();
+        memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
+        memberIdToScheduledTask = new ConcurrentHashMap<String, ScheduledFuture<?>>();
+        kubClusterIdToKubClusterContext = new ConcurrentHashMap<String, KubernetesClusterContext>();
+        clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
+        cartridgeTypeToPartitionIds = new ConcurrentHashMap<String, List<String>>();
+
+        cartridges = new ArrayList<Cartridge>();
+        serviceGroups = new ArrayList<ServiceGroup>();
+    }
 
 	public static CloudControllerContext getInstance() {
-
-		if (ctxt == null) {
+		if (instance == null) {
 			synchronized (CloudControllerContext.class) {
-				if (ctxt == null && RegistryManager.getInstance() != null) {
-
+				if (instance == null && RegistryManager.getInstance() != null) {
 					Object obj = RegistryManager.getInstance().retrieve();
 					if (obj != null) {
 						if (obj instanceof CloudControllerContext) {
-							ctxt = (CloudControllerContext) obj;
+							instance = (CloudControllerContext) obj;
 						}
 					} 
 				}
-				if(ctxt == null) {
-					ctxt = new CloudControllerContext();
+				if(instance == null) {
+					instance = new CloudControllerContext();
 				}
 			}
 		}
-
-		return ctxt;
-	}
-
-	private CloudControllerContext() {
-
-		cartridges = new ArrayList<Cartridge>();
-		serviceGroups = new ArrayList<ServiceGroup>();
+		return instance;
 	}
 
 	public List<Cartridge> getCartridges() {
@@ -334,7 +332,7 @@ public class CloudControllerContext implements Serializable{
         }
         if(log.isDebugEnabled()) {
         	
-        	log.debug("Removed Member Context from the information model. "+ctxt);
+        	log.debug("Removed Member Context from the information model. "+ instance);
         }
         return ctxts;
     }
@@ -475,5 +473,12 @@ public class CloudControllerContext implements Serializable{
     public void setMemberIdToScheduledTask(Map<String, ScheduledFuture<?>> memberIdToScheduledTask) {
         this.memberIdToScheduledTask = memberIdToScheduledTask;
     }
-	
+
+    public void setClustered(boolean clustered) {
+        this.clustered = clustered;
+    }
+
+    public boolean isClustered() {
+        return clustered;
+    }
 }
