@@ -137,8 +137,34 @@
                 <include>**/patch0004/*.*</include>
             </includes>
         </fileSet>
-
-
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0005</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0005/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0006</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0006/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0007</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0007/*.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../p2-profile/target/WSO2-CARBON-PATCH-4.2.0-0008</directory>
+            <outputDirectory>apache-stratos-load-balancer-${pom.version}/repository/components/patches</outputDirectory>
+            <includes>
+                <include>**/patch0008/*.*</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>
