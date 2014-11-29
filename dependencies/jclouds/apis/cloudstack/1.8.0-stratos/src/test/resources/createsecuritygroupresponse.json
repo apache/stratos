@@ -1,3 +1,0 @@
-{ "listsecuritygroupsresponse" : { "securitygroup" : 
-{"id":30,"name":"jclouds-test","account":"adrian","domainid":1,"domain":"ROOT"}
- } }
