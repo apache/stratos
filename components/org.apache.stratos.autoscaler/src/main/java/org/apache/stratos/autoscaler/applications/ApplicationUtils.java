@@ -25,8 +25,8 @@ import org.apache.stratos.autoscaler.applications.payload.BasicPayloadData;
 import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.payload.PayloadFactory;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.PortMapping;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.util.*;

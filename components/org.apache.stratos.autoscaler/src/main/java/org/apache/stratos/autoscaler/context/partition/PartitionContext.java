@@ -20,7 +20,7 @@ package org.apache.stratos.autoscaler.context.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.domain.xsd.Partition;
 
 import java.io.Serializable;
 import java.util.*;

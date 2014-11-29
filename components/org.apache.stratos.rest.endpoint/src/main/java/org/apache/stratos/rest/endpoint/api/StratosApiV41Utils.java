@@ -323,7 +323,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition =
+            org.apache.stratos.cloud.controller.domain.xsd.Partition partition =
                     PojoConverter.convertToCCPartitionPojo(partitionBean);
 
             try {
@@ -455,7 +455,7 @@ public class StratosApiV41Utils {
 
     public static Partition[] getAvailablePartitions() throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
+        org.apache.straorg.apache.stratos.cloud.controller.domain.xsd.Partition null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -474,8 +474,7 @@ public class StratosApiV41Utils {
     public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId)
             throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        org.apache.stratos.cloud.controrg.apache.stratos.cloud.controller.domain.xsd.PartitionAutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
                 partitions =
@@ -495,8 +494,7 @@ public class StratosApiV41Utils {
     public static Partition[]
     getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        org.apache.stratos.cloud.controller.stub.deplorg.apache.stratos.cloud.controller.domain.xsd.PartitionceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
                 partitions =

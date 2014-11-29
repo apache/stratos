@@ -23,8 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
 
 import java.io.Serializable;
 import java.util.*;
@@ -300,14 +300,14 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     }
 
     /**
-     * Removes the {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext} object mapping
+     * Removes the {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext} object mapping
      * to the specified member id from the specified MemberContext collection
      *
-     * @param iterator The {@link java.util.Iterator} for the collection containing {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext}
+     * @param iterator The {@link java.util.Iterator} for the collection containing {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext}
      *                 objects
-     * @param memberId Member Id {@link String} for the {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext}
+     * @param memberId Member Id {@link String} for the {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext}
      *                 to be removed
-     * @return {@link org.apache.stratos.cloud.controller.stub.pojo.MemberContext} object if
+     * @return {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext} object if
      * object found and removed, null if otherwise.
      */
     private MemberContext removeMemberFrom(Iterator<MemberContext> iterator, String memberId) {

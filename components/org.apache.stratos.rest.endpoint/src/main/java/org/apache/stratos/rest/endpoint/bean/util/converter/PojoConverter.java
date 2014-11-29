@@ -306,13 +306,11 @@ public class PojoConverter {
         return networkInterfaces;
     }
 
-    public static org.apache.stratos.cloud.controller.stub.deployment.partition.Partition convertToCCPartitionPojo
+    public static org.apache.stratos.cloud.controller.domain.xsd.Partition convertToCCPartitionPojo
             (Partition partitionBean) {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition = new
-                org.apache.stratos.cloud.controller.stub.deployment.partition.Partition();
-
-        partition.setId(partitionBean.id);
+        org.apache.straorg.apache.stratos.cloud.controller.domain.xsd.Partitionw
+                org.apache.stratos.cloud.controrg.apache.stratos.cloud.controller.domain.xsd.PartitionartitionBean.id);
         partition.setDescription(partitionBean.description);
         partition.setIsPublic(partitionBean.isPublic);
         partition.setProvider(partitionBean.provider);
@@ -462,12 +460,9 @@ public class PojoConverter {
         return cluster1;
     }
 
-    private static org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] convertToCCPartitionPojos
-            (List<Partition> partitionList) {
+    private static org.apache.stratos.cloud.controller.stub.deplorg.apache.stratos.cloud.controller.domain.xsd.Partitiont<Partition> partitionList) {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions =
-                new org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[partitionList.size()];
-        for (int i = 0; i < partitionList.size(); i++) {
+        org.apache.stratos.cloud.controller.stub.deployment.partitioorg.apache.stratos.cloud.controller.domain.xsd.Partition.controller.stub.deployment.partition.Partition[parorg.apache.stratos.cloud.controller.domain.xsd.Partition++) {
             partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
         }
 
@@ -475,9 +470,7 @@ public class PojoConverter {
     }
 
     public static Partition[] populatePartitionPojos(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[]
-                                                             partitions) {
-
-        Partition[] partitionBeans;
+                org.apache.stratos.cloud.controller.domain.xsd.Partitiontition[] partitionBeans;
         if (partitions == null) {
             partitionBeans = new Partition[0];
             return partitionBeans;
@@ -491,9 +484,7 @@ public class PojoConverter {
     }
 
     public static Partition populatePartitionPojo(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition
-                                                          partition) {
-
-        Partition partitionBeans = new Partition();
+                                 org.apache.stratos.cloud.controller.domain.xsd.Partition = new Partition();
         if (partition == null) {
             return partitionBeans;
         }

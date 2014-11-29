@@ -29,7 +29,7 @@
 //import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 //import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 //import org.apache.stratos.autoscaler.registry.RegistryManager;
-//import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+//import org.apache.stratos.cloud.controller.domain.xsd.Partition;
 //
 //import java.util.ArrayList;
 //import java.util.HashMap;

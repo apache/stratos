@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
 import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.domain.xsd.Partition;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;

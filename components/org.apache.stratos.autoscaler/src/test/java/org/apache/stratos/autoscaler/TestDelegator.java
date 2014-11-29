@@ -22,7 +22,7 @@ package org.apache.stratos.autoscaler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.stratos.cloud.controller.stub.pojo.MemberContext;
+import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
 
 /**
  * Helper class to keep the state of the consequence of a rule.

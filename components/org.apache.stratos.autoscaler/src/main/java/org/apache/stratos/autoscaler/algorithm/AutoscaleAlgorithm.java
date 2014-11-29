@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.cloud.controller.stub.deployment.partition.Partition;
+import org.apache.stratos.cloud.controller.domain.xsd.Partition;
 
 
 /**

@@ -88,6 +88,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
+                            org.apache.stratos.cloud.controller.domain.xsd.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.exception.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.deployment.partition.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.pojo.*; version=${project.version},
