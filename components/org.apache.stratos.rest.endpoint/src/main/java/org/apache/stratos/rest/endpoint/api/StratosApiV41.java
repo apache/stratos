@@ -280,37 +280,37 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.undeployServiceGroupDefinition(groupDefinitionName);
         return Response.noContent().build();
     }
-    
-    @GET
-    @Path("/partitions")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartitions() throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getAvailablePartitions()).build();
-    }
 
-    @POST
-    @Path("/partitions")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/partition")
-    public Response deployPartition(Partition partition)
-            throws RestAPIException {
+//    @GET
+//    @Path("/partitions")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/view/partition")
+//    public Response getPartitions() throws RestAPIException {
+//        return Response.ok().entity(StratosApiV41Utils.getAvailablePartitions()).build();
+//    }
 
-        StratosApiV41Utils.deployPartition(partition);
-        URI url = uriInfo.getAbsolutePathBuilder().path(partition.id).build();
-        return Response.created(url).build();
-    }
-
-    @GET
-    @Path("/partitions/{partitionId}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartition(@PathParam("partitionId") String partitionId) throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getPartition(partitionId)).build();
-    }
+//    @POST
+//    @Path("/partitions")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/add/partition")
+//    public Response deployPartition(Partition partition)
+//            throws RestAPIException {
+//
+//        StratosApiV41Utils.deployPartition(partition);
+//        URI url = uriInfo.getAbsolutePathBuilder().path(partition.id).build();
+//        return Response.created(url).build();
+//    }
+//
+//    @GET
+//    @Path("/partitions/{partitionId}")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/view/partition")
+//    public Response getPartition(@PathParam("partitionId") String partitionId) throws RestAPIException {
+//        return Response.ok().entity(StratosApiV41Utils.getPartition(partitionId)).build();
+//    }
 
     @POST
     @Path("/deploymentPolicies")
@@ -366,26 +366,26 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(StratosApiV41Utils.getPartitionGroups(deploymentPolicyId)).build();
     }
 
-    @GET
-    @Path("/deploymentPolicies/{deploymentPolicyId}/partitionGroup/{partitionGroupId}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartitionGroup(@PathParam("deploymentPolicyId") String deploymentPolicyId,
-                                      @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId)).build();
-    }
+//    @GET
+//    @Path("/deploymentPolicies/{deploymentPolicyId}/partitionGroup/{partitionGroupId}")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/view/partition")
+//    public Response getPartitionGroup(@PathParam("deploymentPolicyId") String deploymentPolicyId,
+//                                      @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
+//        return Response.ok().entity(StratosApiV41Utils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId)).build();
+//    }
 
-    @GET
-    @Path("/deploymentPolicies/{deploymentPolicyId}/partition")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartitionsOfPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
-            throws RestAPIException {
-
-        return Response.ok().entity(StratosApiV41Utils.getPartitionsOfDeploymentPolicy(deploymentPolicyId)).build();
-    }
+//    @GET
+//    @Path("/deploymentPolicies/{deploymentPolicyId}/partition")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/admin/manage/view/partition")
+//    public Response getPartitionsOfPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
+//            throws RestAPIException {
+//
+//        return Response.ok().entity(StratosApiV41Utils.getPartitionsOfDeploymentPolicy(deploymentPolicyId)).build();
+//    }
 
     @GET
     @Path("/autoscalePolicies")

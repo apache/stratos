@@ -32,18 +32,9 @@ import org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoContext;
 import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
 import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.pojo.Container;
-import org.apache.stratos.cloud.controller.stub.pojo.IaasConfig;
-import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
-import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterface;
-import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterfaces;
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
+import org.apache.stratos.cloud.controller.domain.xsd.*;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
-import org.apache.stratos.cloud.controller.stub.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.pojo.Volume;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -101,7 +92,7 @@ public class PojoConverter {
         cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
         cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
 
-        
+
         //deployment information
         if (cartridgeDefinitionBean.deployment != null) {
             cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
@@ -137,20 +128,20 @@ public class PojoConverter {
         {
             cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
         }
-        
+
         if (cartridgeDefinitionBean.container != null) {
             cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
         }
 
         return cartridgeConfig;
     }
-    
+
     public static ServiceGroup populateServiceGroupPojo (ServiceGroupDefinition serviceGroupDefinition ) {
-    	ServiceGroup servicegroup = new ServiceGroup();
-    	
-    	// implement conversion (mostly List -> Array)
-    	
-    	return servicegroup;
+        ServiceGroup servicegroup = new ServiceGroup();
+
+        // implement conversion (mostly List -> Array)
+
+        return servicegroup;
     }
 
 
@@ -309,8 +300,10 @@ public class PojoConverter {
     public static org.apache.stratos.cloud.controller.domain.xsd.Partition convertToCCPartitionPojo
             (Partition partitionBean) {
 
-        org.apache.straorg.apache.stratos.cloud.controller.domain.xsd.Partitionw
-                org.apache.stratos.cloud.controrg.apache.stratos.cloud.controller.domain.xsd.PartitionartitionBean.id);
+        org.apache.stratos.cloud.controller.domain.xsd.Partition partition = new
+                org.apache.stratos.cloud.controller.domain.xsd.Partition();
+
+        partition.setId(partitionBean.id);
         partition.setDescription(partitionBean.description);
         partition.setIsPublic(partitionBean.isPublic);
         partition.setProvider(partitionBean.provider);
@@ -380,7 +373,7 @@ public class PojoConverter {
     }
 
     public static org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
-                                                                                                                               deploymentPolicyBean) {
+                                                                                                                          deploymentPolicyBean) {
 
         org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy = new
                 org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy();
@@ -407,9 +400,10 @@ public class PojoConverter {
             partitionGroup.setPartitionAlgo(partitionGroupBeans.get(i).partitionAlgo);
             partitionGroup.setActiveByDefault(partitionGroupBeans.get(i).activeByDefault);
 
-            if (partitionGroupBeans.get(i).partition != null && !partitionGroupBeans.get(i).partition.isEmpty()) {
-                partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partition));
-            }
+            //TODO populate partitions according to new policy structure
+//            if (partitionGroupBeans.get(i).partition != null && !partitionGroupBeans.get(i).partition.isEmpty()) {
+//                partitionGroup.setPartitions(convertToCCPartitionPojos(partitionGroupBeans.get(i).partition));
+//            }
 
             partitionGroups[i] = partitionGroup;
         }
@@ -460,17 +454,22 @@ public class PojoConverter {
         return cluster1;
     }
 
-    private static org.apache.stratos.cloud.controller.stub.deplorg.apache.stratos.cloud.controller.domain.xsd.Partitiont<Partition> partitionList) {
+    private static org.apache.stratos.cloud.controller.domain.xsd.Partition[] convertToCCPartitionPojos
+            (List<Partition> partitionList) {
 
-        org.apache.stratos.cloud.controller.stub.deployment.partitioorg.apache.stratos.cloud.controller.domain.xsd.Partition.controller.stub.deployment.partition.Partition[parorg.apache.stratos.cloud.controller.domain.xsd.Partition++) {
+        org.apache.stratos.cloud.controller.domain.xsd.Partition[] partitions =
+                new org.apache.stratos.cloud.controller.domain.xsd.Partition[partitionList.size()];
+        for (int i = 0; i < partitionList.size(); i++) {
             partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
         }
 
         return partitions;
     }
 
-    public static Partition[] populatePartitionPojos(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[]
-                org.apache.stratos.cloud.controller.domain.xsd.Partitiontition[] partitionBeans;
+    public static Partition[] populatePartitionPojos(org.apache.stratos.cloud.controller.domain.xsd.Partition[]
+                                                             partitions) {
+
+        Partition[] partitionBeans;
         if (partitions == null) {
             partitionBeans = new Partition[0];
             return partitionBeans;
@@ -483,8 +482,10 @@ public class PojoConverter {
         return partitionBeans;
     }
 
-    public static Partition populatePartitionPojo(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition
-                                 org.apache.stratos.cloud.controller.domain.xsd.Partition = new Partition();
+    public static Partition populatePartitionPojo(org.apache.stratos.cloud.controller.domain.xsd.Partition
+                                                          partition) {
+
+        Partition partitionBeans = new Partition();
         if (partition == null) {
             return partitionBeans;
         }
@@ -503,7 +504,7 @@ public class PojoConverter {
 
         return partitionBeans;
     }
-    
+
     public static List<SubscriptionDomainBean> populateSubscriptionDomainPojos(List<SubscriptionDomain> subscriptionDomains) {
 
         List<SubscriptionDomainBean> subscriptionDomainBeans = new ArrayList<SubscriptionDomainBean>();
@@ -547,7 +548,7 @@ public class PojoConverter {
         }
         return propertyBeans;
     }
-    
+
     private static List<PropertyBean> getPropertyBeans(java.util.Properties properties) {
 
         List<PropertyBean> propertyBeans = null;
@@ -656,10 +657,10 @@ public class PojoConverter {
         deploymentPolicyBean.setId(deploymentPolicy.getId());
         deploymentPolicyBean.setDescription(deploymentPolicy.getDescription());
         deploymentPolicyBean.setPublic(deploymentPolicy.getIsPublic());
-
-        if (deploymentPolicy.getPartitionGroups() != null && deploymentPolicy.getPartitionGroups().length > 0) {
-            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups())));
-        }
+//TODO populate the Network partition based on new policy structure
+//        if (deploymentPolicy.getPartitionGroups() != null && deploymentPolicy.getPartitionGroups().length > 0) {
+//            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups())));
+//        }
 
         /*if (deploymentPolicy.getAllPartitions() != null && deploymentPolicy.getAllPartitions().length > 0) {
             deploymentPolicyBean.partition = Arrays.asList(populatePartitionPojos(deploymentPolicy.getAllPartitions()));
@@ -678,9 +679,9 @@ public class PojoConverter {
 
         partitionGroupBean.id = partitionGroup.getId();
         partitionGroupBean.partitionAlgo = partitionGroup.getPartitionAlgo();
-        if (partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
-            partitionGroupBean.partition = getPartitionList(partitionGroup.getPartitions());
-        }
+//        if (partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
+//            partitionGroupBean.partition = getPartitionList(partitionGroup.getPartitions());
+//        }
 
         return partitionGroupBean;
     }
@@ -702,7 +703,7 @@ public class PojoConverter {
         return partitionGroupsBeans;
     }
 
-    private static List<Partition> getPartitionList(org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[]
+    private static List<Partition> getPartitionList(org.apache.stratos.cloud.controller.domain.xsd.Partition[]
                                                             partitions) {
 
         List<Partition> partitionList = new ArrayList<Partition>();
@@ -908,7 +909,7 @@ public class PojoConverter {
         portRangeBean.setLower(portRange.getLower());
         return portRangeBean;
     }
-    
+
     public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
         org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext applicationContext =
@@ -961,14 +962,14 @@ public class PojoConverter {
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
             subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
             if (subscribableInfo.getProperty() != null) {
-            	org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
-            	for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
-            		Property property = new Property();
-            		property.setName(propertyBean.getName());
-            		property.setValue(propertyBean.getValue());
-            		properties.addProperties(property);
-            	}
-            	subscribableInfoContext.setProperties(properties);
+                org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
+                for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
+                    Property property = new Property();
+                    property.setName(propertyBean.getName());
+                    property.setValue(propertyBean.getValue());
+                    properties.addProperties(property);
+                }
+                subscribableInfoContext.setProperties(properties);
             }
             subscribableInfoContexts[i++] =  subscribableInfoContext;
         }
@@ -979,18 +980,18 @@ public class PojoConverter {
 
         DependencyContext dependencyContext = new DependencyContext();
         dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
-        
+
         if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
-        	String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
-        	startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
-        	dependencyContext.setStartupOrdersContexts(startupOrders);
+            String [] startupOrders = new String [dependencyDefinitions.getStartupOrders().size()];
+            startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
+            dependencyContext.setStartupOrdersContexts(startupOrders);
         }
 
         return dependencyContext;
     }
 
     private static org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext[]
-        getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
+    getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
 
         GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
         int i = 0;
@@ -1020,7 +1021,7 @@ public class PojoConverter {
     }
 
     private static org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext []
-        getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
+    getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
         org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[] subscribableContexts =
                 new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[subscribableDefinitions.size()];
@@ -1062,5 +1063,5 @@ public class PojoConverter {
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
         return groupBean;
     }
-	
+
 }

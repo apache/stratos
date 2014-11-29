@@ -26,10 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeConfig;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
@@ -93,7 +93,7 @@ public class StratosApiV41Utils {
     public static final String VOLUME_SIZE = "volume.size.gb";
     public static final String DEVICE_NAME = "volume.device.name";
     public static final String VOLUME_ID = "volume.id";
-	public static final String TENANT_RANGE_ALL = "*";
+    public static final String TENANT_RANGE_ALL = "*";
 
     private static Log log = LogFactory.getLog(StratosApiV41Utils.class);
     private static CartridgeSubscriptionManager cartridgeSubsciptionManager = new CartridgeSubscriptionManager();
@@ -316,29 +316,29 @@ public class StratosApiV41Utils {
     }
 
 
-    public static void deployPartition(Partition partitionBean) throws RestAPIException {
-
-        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
-
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-
-            org.apache.stratos.cloud.controller.domain.xsd.Partition partition =
-                    PojoConverter.convertToCCPartitionPojo(partitionBean);
-
-            try {
-                autoscalerServiceClient.deployPartition(partition);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPartitionExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPartitionException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-        }
-    }
+//    public static void deployPartition(Partition partitionBean) throws RestAPIException {
+//
+//        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+//
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//
+//            org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition =
+//                    PojoConverter.convertToCCPartitionPojo(partitionBean);
+//
+//            try {
+//                autoscalerServiceClient.deployPartition(partition);
+//            } catch (RemoteException e) {
+//                log.error(e.getMessage(), e);
+//                throw new RestAPIException(e.getMessage(), e);
+//            } catch (AutoScalerServiceInvalidPartitionExceptionException e) {
+//                String message = e.getFaultMessage().getInvalidPartitionException().getMessage();
+//                log.error(message, e);
+//                throw new RestAPIException(message, e);
+//            }
+//
+//        }
+//    }
 
     public static void deployAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
@@ -453,81 +453,83 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static Partition[] getAvailablePartitions() throws RestAPIException {
-
-        org.apache.straorg.apache.stratos.cloud.controller.domain.xsd.Partition null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                partitions = autoscalerServiceClient.getAvailablePartitions();
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting available partitions. Cause : " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return PojoConverter.populatePartitionPojos(partitions);
-    }
-
-    public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId)
-            throws RestAPIException {
-
-        org.apache.stratos.cloud.controrg.apache.stratos.cloud.controller.domain.xsd.PartitionAutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                partitions =
-                        autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting available partitions for deployment policy id " +
-                        deploymentPolicyId + ". Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return PojoConverter.populatePartitionPojos(partitions);
-    }
-
-    public static Partition[]
-    getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
-
-        org.apache.stratos.cloud.controller.stub.deplorg.apache.stratos.cloud.controller.domain.xsd.PartitionceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                partitions =
-                        autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting available partitions for deployment policy id " + deploymentPolicyId +
-                        ", group id " + groupId + ". Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return PojoConverter.populatePartitionPojos(partitions);
-    }
-
-    public static Partition getPartition(String partitionId) throws RestAPIException {
-
-        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                partition = autoscalerServiceClient.getPartition(partitionId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting partition for id " + partitionId + ". Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return PojoConverter.populatePartitionPojo(partition);
-    }
+//    public static Partition[] getAvailablePartitions() throws RestAPIException {
+//
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//            try {
+//                partitions = autoscalerServiceClient.getAvailablePartitions();
+//
+//            } catch (RemoteException e) {
+//                String errorMsg = "Error while getting available partitions. Cause : " + e.getMessage();
+//                log.error(errorMsg, e);
+//                throw new RestAPIException(errorMsg, e);
+//            }
+//        }
+//
+//        return PojoConverter.populatePartitionPojos(partitions);
+//    }
+//
+//    public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId)
+//            throws RestAPIException {
+//
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//            try {
+//                partitions =
+//                        autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+//
+//            } catch (RemoteException e) {
+//                String errorMsg = "Error while getting available partitions for deployment policy id " +
+//                        deploymentPolicyId + ". Cause: " + e.getMessage();
+//                log.error(errorMsg, e);
+//                throw new RestAPIException(errorMsg, e);
+//            }
+//        }
+//
+//        return PojoConverter.populatePartitionPojos(partitions);
+//    }
+//
+//    public static Partition[]
+//    getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
+//
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//            try {
+//                partitions =
+//                        autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
+//
+//            } catch (RemoteException e) {
+//                String errorMsg = "Error while getting available partitions for deployment policy id " + deploymentPolicyId +
+//                        ", group id " + groupId + ". Cause: " + e.getMessage();
+//                log.error(errorMsg, e);
+//                throw new RestAPIException(errorMsg, e);
+//            }
+//        }
+//
+//        return PojoConverter.populatePartitionPojos(partitions);
+//    }
+//
+//    public static Partition getPartition(String partitionId) throws RestAPIException {
+//
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition partition = null;
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//            try {
+//                partition = autoscalerServiceClient.getPartition(partitionId);
+//
+//            } catch (RemoteException e) {
+//                String errorMsg = "Error while getting partition for id " + partitionId + ". Cause: " + e.getMessage();
+//                log.error(errorMsg, e);
+//                throw new RestAPIException(errorMsg, e);
+//            }
+//        }
+//
+//        return PojoConverter.populatePartitionPojo(partition);
+//    }
 
     private static AutoscalerServiceClient getAutoscalerServiceClient() throws RestAPIException {
 
