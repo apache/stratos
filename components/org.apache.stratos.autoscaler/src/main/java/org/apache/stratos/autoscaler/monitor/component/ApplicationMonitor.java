@@ -20,21 +20,21 @@ package org.apache.stratos.autoscaler.monitor.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
-import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -201,7 +201,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
         for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-            if(networkPartition.isActiveByDefault()) {
+            if (networkPartition.isActiveByDefault()) {
                 ApplicationLevelNetworkPartitionContext context =
                         new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
                 instanceId = createApplicationInstance(application, networkPartition.getId());
@@ -221,11 +221,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
-                                                                PolicyValidationException,
-                                                                ParentMonitorNotFoundException {
+            PolicyValidationException,
+            ParentMonitorNotFoundException {
         //TODO get lock
         Application application = ApplicationHolder.getApplications().getApplication(appId);
-        if(application == null) {
+        if (application == null) {
             String msg = "Application cannot be found in the Topology.";
             throw new TopologyInConsistentException(msg);
         }
@@ -234,8 +234,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //Find out the inActive network partition
         boolean burstNPFound = false;
         for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-            if(!networkPartition.isActiveByDefault()) {
-                if(!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
+            if (!networkPartition.isActiveByDefault()) {
+                if (!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
                     ApplicationLevelNetworkPartitionContext context =
                             new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
                     context.setCreatedOnBurst(true);
@@ -247,7 +247,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         }
 
-        if(!burstNPFound) {
+        if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
         } else {
             startDependency(application, instanceId);

@@ -53,9 +53,10 @@ public class MonitorFactory {
     /**
      * Factor method used to create relevant monitors based on the given context
      *
-     * @param context       Application/Group/Cluster context
-     * @param appId         appId of the application which requires to create app monitor
-     * @param parentMonitor parent of the monitor
+     * @param context           Application/Group/Cluster context
+     * @param appId             appId of the application which requires to create app monitor
+     * @param parentMonitor     parent of the monitor
+     * @param parentInstanceIds instance ids of the parent instances
      * @return Monitor which can be ApplicationMonitor/GroupMonitor/ClusterMonitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      * @throws DependencyBuilderException    throws while building dependency for app monitor
@@ -63,13 +64,13 @@ public class MonitorFactory {
      * @throws PartitionValidationException  throws while validating the partition used in a cluster
      */
     public static Monitor getMonitor(ParentComponentMonitor parentMonitor,
-                                     ApplicationChildContext context, String appId, List<String> instanceIds)
-            throws TopologyInConsistentException,
-            DependencyBuilderException, PolicyValidationException, PartitionValidationException {
-
+                                     ApplicationChildContext context, String appId,
+                                     List<String> parentInstanceIds)
+            throws TopologyInConsistentException, DependencyBuilderException,
+            PolicyValidationException, PartitionValidationException {
         Monitor monitor;
         if (context instanceof GroupChildContext) {
-            monitor = getGroupMonitor(parentMonitor, context, appId, instanceIds);
+            monitor = getGroupMonitor(parentMonitor, context, appId, parentInstanceIds);
         } else if (context instanceof ClusterChildContext) {
             monitor = getClusterMonitor(parentMonitor, (ClusterChildContext) context);
             if (monitor != null) {
@@ -77,7 +78,7 @@ public class MonitorFactory {
                 ClusterChildContext clusterChildCtxt = (ClusterChildContext) context;
                 AbstractClusterMonitor clusterMonitor = (AbstractClusterMonitor) monitor;
                 // FIXME: passing null as alias for cluster instance temporarily. should be removed.
-                createClusterInstance(clusterChildCtxt.getServiceName(), clusterMonitor.getClusterId(), null, instanceIds.get(0));
+                createClusterInstance(clusterChildCtxt.getServiceName(), clusterMonitor.getClusterId(), null, parentInstanceIds.get(0));
                 AutoscalerContext.getInstance().addClusterMonitor((AbstractClusterMonitor) monitor);
             }
         } else {
@@ -86,7 +87,8 @@ public class MonitorFactory {
         return monitor;
     }
 
-    private static void createClusterInstance(String serviceType, String clusterId, String alias, String instanceId) {
+    private static void createClusterInstance(String serviceType, String clusterId, String alias,
+                                              String instanceId) {
         CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias, instanceId);
     }
 
@@ -101,7 +103,8 @@ public class MonitorFactory {
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
     public static Monitor getGroupMonitor(ParentComponentMonitor parentMonitor,
-                                          ApplicationChildContext context, String appId, List<String> instanceIds)
+                                          ApplicationChildContext context, String appId,
+                                          List<String> instanceIds)
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
@@ -116,7 +119,8 @@ public class MonitorFactory {
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
-                if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+                if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
+                                                            context.hasChild())) {
                     groupMonitor.setHasStartupDependents(true);
                 } else {
                     groupMonitor.setHasStartupDependents(false);
@@ -150,7 +154,7 @@ public class MonitorFactory {
          * If not first app deployment, acquiring read lock to check current the status of the group,
          * when the stratos got to restarted
          */
-        if(!initialStartup) {
+        if (!initialStartup) {
             ApplicationHolder.acquireReadLock();
             try {
                 Group group = ApplicationHolder.getApplications().
@@ -212,11 +216,12 @@ public class MonitorFactory {
         }
 
         //If not first app deployment, then calculate the current status of the app instance.
-        if(!initialStartup) {
+        if (!initialStartup) {
             ApplicationHolder.acquireReadLock();
             try {
                 Application application = ApplicationHolder.getApplications().getApplication(appId);
-                for(ApplicationInstance instance : application.getInstanceIdToInstanceContextMap().values()) {
+                for (ApplicationInstance instance :
+                                        application.getInstanceIdToInstanceContextMap().values()) {
                     //Starting statusChecking to make it sync with the Topology in the restart of stratos.
                     ServiceReferenceHolder.getInstance().
                             getGroupStatusProcessorChain().
@@ -274,7 +279,8 @@ public class MonitorFactory {
             clusterMonitor.setId(clusterId);
 
             //setting the startup dependent behaviour of the cluster monitor
-            if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() && context.hasChild())) {
+            if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
+                                                        context.hasChild())) {
                 clusterMonitor.setHasStartupDependents(true);
             } else {
                 clusterMonitor.setHasStartupDependents(false);

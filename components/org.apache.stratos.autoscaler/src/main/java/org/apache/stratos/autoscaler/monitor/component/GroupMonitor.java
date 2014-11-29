@@ -36,9 +36,9 @@ import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -179,7 +179,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent)
-                                throws ParentMonitorNotFoundException {
+            throws ParentMonitorNotFoundException {
         String instanceId = statusEvent.getInstanceId();
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
@@ -247,6 +247,15 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         this.groupScalingEnabled = groupScalingEnabled;
     }
 
+    /**
+     * This will start the minimum required dependency instances
+     * based on the given parent instance ids
+     *
+     * @param group             blue print of the instance to be started
+     * @param parentInstanceIds parent instanceIds used to start the child instance
+     * @return whether first app startup or not
+     * @throws TopologyInConsistentException
+     */
     public boolean startMinimumDependencies(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
         boolean initialStartup = false;
@@ -278,6 +287,14 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         }
         return initialStartup;
     }
+
+    /**
+     * This will create the required instance and start the dependency
+     *
+     * @param group             blue print of the instance to be started
+     * @param parentInstanceIds parent instanceIds used to start the child instance
+     * @throws TopologyInConsistentException
+     */
 
     public void createInstanceAndStartDependency(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
@@ -323,6 +340,13 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         startDependency(group, instanceIds);
     }
 
+    /**
+     * This will start the group instance based on the given parent instanceId
+     *
+     * @param group
+     * @param parentInstanceId
+     * @throws ParentMonitorNotFoundException
+     */
     public void createInstanceAndStartDependency(Group group, String parentInstanceId)
             throws ParentMonitorNotFoundException {
         String deploymentPolicyName = group.getDeploymentPolicy();
@@ -363,6 +387,15 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         startDependency(group, instanceId);
     }
 
+    /**
+     * This will create the group instance in the applications Topology
+     *
+     * @param group
+     * @param parentInstanceId
+     * @param partitionId
+     * @param networkPartitionId
+     * @return
+     */
     private String createGroupInstance(Group group, String parentInstanceId, String partitionId,
                                        String networkPartitionId) {
         String instanceId = parentInstanceId;
