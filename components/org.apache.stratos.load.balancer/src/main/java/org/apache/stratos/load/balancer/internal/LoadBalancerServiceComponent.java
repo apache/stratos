@@ -94,8 +94,6 @@ public class LoadBalancerServiceComponent {
 
     protected void activate(ComponentContext ctxt) {
         try {
-            HazelcastInstance hazelcastInstance = ServiceReferenceHolder.getInstance().getHazelcastInstance();
-
             ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
             boolean clusteringEnabled = (clusteringAgent != null);
             LoadBalancerContext.getInstance().setClustered(clusteringEnabled);
