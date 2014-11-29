@@ -20,8 +20,9 @@
 package org.apache.stratos.manager.dto;
 
 
-import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
+
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.PortMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;

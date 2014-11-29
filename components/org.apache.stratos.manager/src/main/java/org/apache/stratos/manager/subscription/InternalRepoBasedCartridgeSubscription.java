@@ -21,7 +21,7 @@ package org.apache.stratos.manager.subscription;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidRepositoryException;
 import org.apache.stratos.manager.exception.RepositoryCredentialsRequiredException;

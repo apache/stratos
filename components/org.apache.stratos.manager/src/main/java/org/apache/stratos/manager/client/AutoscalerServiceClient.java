@@ -78,48 +78,48 @@ public class AutoscalerServiceClient {
         return serviceClient;
     }
 
-    public Partition[] getAvailablePartitions() throws RemoteException {
-
-        Partition[] partitions;
-        partitions = stub.getAllAvailablePartitions();
-
-        return partitions;
-    }
+//    public Partition[] getAvailablePartitions() throws RemoteException {
+//
+//        Partition[] partitions;
+//        partitions = stub.getAllAvailablePartitions();
+//
+//        return partitions;
+//    }
 
     public void undeployServiceGroupDefinition(String serviceGroupName)
             throws RemoteException, AutoScalerServiceAutoScalerExceptionException {
         stub.undeployServiceGroup(serviceGroupName);
     }
 
-    public Partition getPartition(
-            String partitionId) throws RemoteException {
+//    public Partition getPartition(
+//            String partitionId) throws RemoteException {
+//
+//        Partition partition;
+//        partition = stub.getPartition(partitionId);
+//
+//        return partition;
+//    }
 
-        Partition partition;
-        partition = stub.getPartition(partitionId);
+//    public Partition[] getPartitionsOfGroup(
+//            String deploymentPolicyId, String partitionGroupId)
+//            throws RemoteException {
+//
+//        Partition[] partitions;
+//        partitions = stub.getPartitionsOfGroup(deploymentPolicyId,
+//                partitionGroupId);
+//
+//        return partitions;
+//    }
 
-        return partition;
-    }
-
-    public Partition[] getPartitionsOfGroup(
-            String deploymentPolicyId, String partitionGroupId)
-            throws RemoteException {
-
-        Partition[] partitions;
-        partitions = stub.getPartitionsOfGroup(deploymentPolicyId,
-                partitionGroupId);
-
-        return partitions;
-    }
-
-    public Partition[]
-    getPartitionsOfDeploymentPolicy(
-            String deploymentPolicyId) throws RemoteException {
-
-        Partition[] partitions;
-        partitions = stub.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
-
-        return partitions;
-    }
+//    public Partition[]
+//    getPartitionsOfDeploymentPolicy(
+//            String deploymentPolicyId) throws RemoteException {
+//
+//        Partition[] partitions;
+//        partitions = stub.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
+//
+//        return partitions;
+//    }
 
     public org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] getPartitionGroups(
             String deploymentPolicyId) throws RemoteException {
@@ -215,12 +215,12 @@ public class AutoscalerServiceClient {
         return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
-    public boolean deployPartition(Partition partition) throws RemoteException,
-            AutoScalerServiceInvalidPartitionExceptionException {
-
-        return stub.addPartition(partition);
-
-    }
+//    public boolean deployPartition(Partition partition) throws RemoteException,
+//            AutoScalerServiceInvalidPartitionExceptionException {
+//
+//        return stub.addPartition(partition);
+//
+//    }
 
     public String getDefaultLBClusterId(String deploymentPolicy) throws RemoteException {
         return stub.getDefaultLBClusterId(deploymentPolicy);

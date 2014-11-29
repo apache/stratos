@@ -21,6 +21,8 @@ package org.apache.stratos.manager.manager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;

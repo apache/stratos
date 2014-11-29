@@ -20,8 +20,8 @@ package org.apache.stratos.manager.behaviour;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
@@ -38,6 +38,7 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
 
 import java.io.Serializable;
 import java.util.Map;

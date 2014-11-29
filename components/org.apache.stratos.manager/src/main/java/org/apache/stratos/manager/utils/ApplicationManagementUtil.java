@@ -35,8 +35,8 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
@@ -107,7 +107,7 @@ public class ApplicationManagementUtil {
         List<PortMapping> portMappings = new ArrayList<PortMapping>();
 
         if (cartridgeInfo.getPortMappings() != null) {
-            for (org.apache.stratos.cloud.controller.stub.pojo.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
+            for (org.apache.stratos.cloud.controller.domain.xsd.PortMapping portMapping : cartridgeInfo.getPortMappings()) {
                 PortMapping portMap = new PortMapping();
                 portMap.setPrimaryPort(portMapping.getPort());
                 portMap.setProxyPort(portMapping.getProxyPort());

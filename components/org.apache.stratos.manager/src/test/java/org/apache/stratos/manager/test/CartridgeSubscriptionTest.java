@@ -20,7 +20,7 @@
 package org.apache.stratos.manager.test;
 
 import junit.framework.TestCase;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.factory.CartridgeSubscriptionFactory;

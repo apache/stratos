@@ -38,7 +38,7 @@ import org.apache.stratos.cloud.controller.stub.pojo.IaasConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.LoadbalancerConfig;
 import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterface;
 import org.apache.stratos.cloud.controller.stub.pojo.NetworkInterfaces;
-import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.PortMapping;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;

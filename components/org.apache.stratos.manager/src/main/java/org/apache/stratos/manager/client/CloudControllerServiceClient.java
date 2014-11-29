@@ -26,6 +26,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.ClusterContext;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeConfig;
+import org.apache.stratos.cloud.controller.domain.xsd.Registrant;
+import org.apache.stratos.cloud.controller.domain.xsd.ServiceGroup;
+import org.apache.stratos.cloud.controller.domain.xsd.Dependencies;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 

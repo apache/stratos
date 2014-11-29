@@ -19,7 +19,7 @@
 
 package org.apache.stratos.manager.subscription;
 
-import org.apache.stratos.cloud.controller.stub.pojo.Persistence;
+import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
 import org.apache.stratos.cloud.controller.stub.pojo.Properties;
 import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
 import org.apache.stratos.manager.dao.DataCartridge;
@@ -28,7 +28,7 @@ import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
 import org.apache.stratos.manager.repository.Repository;
 import org.apache.stratos.manager.subscription.tenancy.SubscriptionTenancyBehaviour;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeInfo;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
 
 import java.util.HashMap;
 import java.util.Map;

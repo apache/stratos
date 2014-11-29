@@ -20,7 +20,7 @@ package org.apache.stratos.manager.deploy.cartridge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.pojo.CartridgeConfig;
+import org.apache.stratos.cloud.controller.domain.xsd.CartridgeConfig;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
 
