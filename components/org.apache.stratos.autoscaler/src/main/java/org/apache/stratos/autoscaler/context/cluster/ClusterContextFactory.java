@@ -32,10 +32,10 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ch
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
-import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -412,7 +412,7 @@ public class ClusterContextFactory {
             Property property = new Property();
             property.setName((String) e.getKey());
             property.setValue((String) e.getValue());
-            props.addProperties(property);
+            props.addProperty(property);
         }
         return props;
     }

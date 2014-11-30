@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 /**
  * Manager class for the purpose of managing Autoscale/Deployment policy definitions.

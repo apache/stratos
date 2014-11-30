@@ -34,8 +34,8 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 

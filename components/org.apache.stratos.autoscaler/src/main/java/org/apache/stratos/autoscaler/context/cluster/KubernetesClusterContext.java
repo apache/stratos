@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
 
 /*
@@ -369,14 +369,14 @@ public class KubernetesClusterContext extends AbstractClusterContext {
     }
 
     /**
-     * Removes the {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext} object mapping
+     * Removes the {@link org.apache.stratos.cloud.controller.stub.domain.MemberContext} object mapping
      * to the specified member id from the specified MemberContext collection
      *
-     * @param iterator The {@link java.util.Iterator} for the collection containing {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext}
+     * @param iterator The {@link java.util.Iterator} for the collection containing {@link org.apache.stratos.cloud.controller.stub.domain.MemberContext}
      *                 objects
-     * @param memberId Member Id {@link String} for the {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext}
+     * @param memberId Member Id {@link String} for the {@link org.apache.stratos.cloud.controller.stub.domain.MemberContext}
      *                 to be removed
-     * @return {@link org.apache.stratos.cloud.controller.domain.xsd.MemberContext} object if
+     * @return {@link org.apache.stratos.cloud.controller.stub.domain.MemberContext} object if
      * object found and removed, null if otherwise.
      */
     private MemberContext removeMemberFrom(Iterator<MemberContext> iterator, String memberId) {

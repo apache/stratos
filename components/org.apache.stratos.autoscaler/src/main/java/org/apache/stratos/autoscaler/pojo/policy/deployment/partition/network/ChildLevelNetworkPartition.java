@@ -19,7 +19,7 @@
 
 package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
 import java.util.Arrays;

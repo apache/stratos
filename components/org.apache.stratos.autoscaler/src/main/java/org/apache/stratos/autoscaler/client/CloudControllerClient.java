@@ -33,17 +33,13 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.domain.xsd.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
-import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -172,8 +168,8 @@ public class CloudControllerClient {
             minCountProp.setName("MIN_COUNT");
             minCountProp.setValue(String.valueOf(minMemberCount));
 
-            memberContextProps.addProperties(isPrimaryProp);
-            memberContextProps.addProperties(minCountProp);
+            memberContextProps.addProperty(isPrimaryProp);
+            memberContextProps.addProperty(minCountProp);
             member.setProperties(memberContextProps);
 
 
@@ -223,10 +219,10 @@ public class CloudControllerClient {
 
     public synchronized void createApplicationClusters(String appId,
                                                        Set<ApplicationClusterContext> appClusterContexts) {
-        List<org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext> contextDTOs =
-                                        new ArrayList<org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext>();
+        List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
+                                        new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
         for(ApplicationClusterContext context : appClusterContexts) {
-           org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext();
+            org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
             dto.setClusterId(context.getClusterId());
             dto.setAutoscalePolicyName(context.getAutoscalePolicyName());
             dto.setDeploymentPolicyName(context.getDeploymentPolicyName());
@@ -239,8 +235,8 @@ public class CloudControllerClient {
             contextDTOs.add(dto);
         }
 
-        org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext[] applicationClusterContextDTOs =
-                new org.apache.stratos.cloud.controller.domain.xsd.ApplicationClusterContext[contextDTOs.size()];
+        org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[] applicationClusterContextDTOs =
+                new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[contextDTOs.size()];
         contextDTOs.toArray(applicationClusterContextDTOs);
         try {
             stub.createApplicationClusters(appId, applicationClusterContextDTOs);
@@ -342,11 +338,11 @@ public class CloudControllerClient {
             Property kubernetesClusterMasterIPProps = new Property();
             kubernetesClusterMasterIPProps.setName(StratosConstants.KUBERNETES_MASTER_IP);
             kubernetesClusterMasterIPProps.setValue(kubernetesMasterIP);
-            memberContextProps.addProperties(kubernetesClusterMasterIPProps);
+            memberContextProps.addProperty(kubernetesClusterMasterIPProps);
             Property kubernetesClusterPortRangeProps = new Property();
             kubernetesClusterPortRangeProps.setName(StratosConstants.KUBERNETES_PORT_RANGE);
             kubernetesClusterPortRangeProps.setValue(portRange);
-            memberContextProps.addProperties(kubernetesClusterPortRangeProps);
+            memberContextProps.addProperty(kubernetesClusterPortRangeProps);
             context.setProperties(memberContextProps);
             long startTime = System.currentTimeMillis();
             MemberContext[] memberContexts = stub.startContainers(context);

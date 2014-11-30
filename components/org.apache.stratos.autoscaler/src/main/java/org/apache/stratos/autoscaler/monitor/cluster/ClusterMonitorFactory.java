@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;

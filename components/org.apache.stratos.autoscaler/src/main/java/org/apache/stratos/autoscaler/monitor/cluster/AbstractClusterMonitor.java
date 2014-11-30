@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;

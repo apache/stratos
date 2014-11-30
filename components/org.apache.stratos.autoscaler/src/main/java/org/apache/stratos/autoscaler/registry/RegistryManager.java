@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.wso2.carbon.context.PrivilegedCarbonContext;

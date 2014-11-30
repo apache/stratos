@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;

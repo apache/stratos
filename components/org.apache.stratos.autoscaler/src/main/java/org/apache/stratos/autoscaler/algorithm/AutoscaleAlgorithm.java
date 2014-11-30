@@ -20,7 +20,7 @@
 package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 
 /**
@@ -50,7 +50,6 @@ public interface AutoscaleAlgorithm {
      * @return {@link Partition} to scale up
      */
     public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId);
-
 
     /**
      * Returns a {@link Partition} to scale down from the given {@link org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition} according to algorithm

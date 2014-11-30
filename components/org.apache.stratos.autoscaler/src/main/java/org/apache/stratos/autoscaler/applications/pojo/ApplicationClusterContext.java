@@ -19,7 +19,7 @@
 
 package org.apache.stratos.autoscaler.applications.pojo;
 
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.Properties;
 
 public class ApplicationClusterContext {
 

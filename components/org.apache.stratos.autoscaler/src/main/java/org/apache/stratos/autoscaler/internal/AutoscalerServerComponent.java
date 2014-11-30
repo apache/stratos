@@ -34,7 +34,7 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;

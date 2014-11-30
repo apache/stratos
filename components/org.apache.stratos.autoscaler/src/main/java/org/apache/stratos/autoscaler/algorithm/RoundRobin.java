@@ -22,7 +22,7 @@ package org.apache.stratos.autoscaler.algorithm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.util.Arrays;
 import java.util.List;
