@@ -31,12 +31,13 @@ import java.util.*;
  *
  */
 
-public class PartitionContext implements Serializable{
+public abstract class PartitionContext implements Serializable{
 
     private static final long serialVersionUID = -2920388667345980487L;
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     protected String partitionId;
     private Partition partition;
+    private int max;
     private ChildLevelPartition childLevelPartition;
     private String networkPartitionId;
     // properties
@@ -47,10 +48,11 @@ public class PartitionContext implements Serializable{
 
     }
 
-    public PartitionContext(Partition partition, ChildLevelPartition childLevelPartition) {
+    public PartitionContext(Partition partition, ChildLevelPartition childLevelPartition, int max) {
 
         this.partition = partition;
         this.childLevelPartition = childLevelPartition;
+        this.max = max;
     }
 
     public Partition getPartition() {
@@ -77,10 +79,7 @@ public class PartitionContext implements Serializable{
         this.networkPartitionId = networkPartitionId;
     }
 
-    public int getCurrentElementCount() {
-        //TODO find and return correct member instance count
-        return 0;
-    }
+    public abstract int getActiveInstanceCount();
 
     public ChildLevelPartition getChildLevelPartition() {
         return childLevelPartition;

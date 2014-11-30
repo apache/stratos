@@ -87,8 +87,8 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(Partition partition, ChildLevelPartition childLevelPartition) {
-        super(partition, childLevelPartition);
+    public GroupLevelPartitionContext(Partition partition, ChildLevelPartition childLevelPartition, int max) {
+        super(partition, childLevelPartition, max);
         this.setPartition(partition);
         this.minimumInstanceCount = partition.getPartitionMin();
         this.partitionId = partition.getId();

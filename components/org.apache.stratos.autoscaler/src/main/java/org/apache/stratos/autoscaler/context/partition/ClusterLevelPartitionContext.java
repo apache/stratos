@@ -86,9 +86,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.terminationPendingMembers = new ArrayList<MemberContext>();
     }
     
-    public ClusterLevelPartitionContext(ChildLevelPartition childLevelPartition, Partition partition) {
+    public ClusterLevelPartitionContext(ChildLevelPartition childLevelPartition, Partition partition, int max) {
 
-        super(partition, childLevelPartition);
+        super(partition, childLevelPartition, max);
         this.minimumMemberCount = partition.getPartitionMin();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
@@ -383,7 +383,13 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.networkPartitionId = networkPartitionId;
     }
 
-    
+    @Override
+    public int getActiveInstanceCount() {
+        //return active cluster member count
+        return 0;
+    }
+
+
     public Map<String, MemberStatsContext> getMemberStatsContexts() {
         return memberStatsContexts;
     }
@@ -581,11 +587,11 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     }
 
-    @Override
-    public int getCurrentElementCount() {
-        //TODO find and return correct member instance count
-        return 0;
-    }
+//    @Override
+//    public int getCurrentElementCount() {
+//        //TODO find and return correct member instance count
+//        return 0;
+//    }
 
     private class PendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
