@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -93,24 +94,28 @@ public class ClusterContextFactory {
         for (ChildLevelNetworkPartition networkPartition : deploymentPolicy.getChildLevelNetworkPartitions()) {
 
             String networkPartitionId = networkPartition.getId();
-            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext
+                    = new ClusterLevelNetworkPartitionContext(networkPartitionId,
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getPartitions());
+                    networkPartition.getChildLevelPartitions());
 
-            for (Partition partition : networkPartition.getPartitions()) {
-                ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
-                clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
-                clusterMonitorPartitionContext.setProperties(cluster.getProperties());
-                clusterMonitorPartitionContext.setNetworkPartitionId(networkPartition.getId());
+            for (ChildLevelPartition childLevelPartition : networkPartition.getChildLevelPartitions()) {
+                Partition applicationLevelPartition = deploymentPolicy.getApplicationLevelNetworkPartition(networkPartitionId)
+                        .getPartition(childLevelPartition.getPartitionId());
+                ClusterLevelPartitionContext clusterLevelPartitionContext
+                        = new ClusterLevelPartitionContext(childLevelPartition, applicationLevelPartition);
+                clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
+                clusterLevelPartitionContext.setProperties(cluster.getProperties());
+                clusterLevelPartitionContext.setNetworkPartitionId(networkPartition.getId());
 
                 for (Member member : cluster.getMembers()) {
                     String memberId = member.getMemberId();
-                    if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
+                    if (member.getPartitionId().equalsIgnoreCase(childLevelPartition.getPartitionId())) {
                         MemberContext memberContext = new MemberContext();
                         memberContext.setClusterId(member.getClusterId());
                         memberContext.setMemberId(memberId);
                         memberContext.setInitTime(member.getInitTime());
-                        memberContext.setPartition(partition);
+                        memberContext.setPartition(applicationLevelPartition);
                         memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
                         if (MemberStatus.Activated.equals(member.getStatus())) {
@@ -118,7 +123,7 @@ public class ClusterContextFactory {
                                 String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
                                 log.debug(msg);
                             }
-                            clusterMonitorPartitionContext.addActiveMember(memberContext);
+                            clusterLevelPartitionContext.addActiveMember(memberContext);
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
 //                            partitionContext.incrementCurrentActiveMemberCount(1);
 
@@ -127,23 +132,23 @@ public class ClusterContextFactory {
                                 String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
                                 log.debug(msg);
                             }
-                            clusterMonitorPartitionContext.addPendingMember(memberContext);
+                            clusterLevelPartitionContext.addPendingMember(memberContext);
 
 //                            networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
                         } else if (MemberStatus.Suspended.equals(member.getStatus())) {
 //                            partitionContext.addFaultyMember(memberId);
                         }
-                        clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
+                        clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Member stat context has been added: [member] %s", memberId));
                         }
                     }
 
                 }
-                clusterLevelNetworkPartitionContext.addPartitionContext(clusterMonitorPartitionContext);
+                clusterLevelNetworkPartitionContext.addPartitionContext(clusterLevelPartitionContext);
                 if (log.isInfoEnabled()) {
                     log.info(String.format("Partition context has been added: [partition] %s",
-                            clusterMonitorPartitionContext.getPartitionId()));
+                            clusterLevelPartitionContext.getPartitionId()));
                 }
             }
 
@@ -201,9 +206,12 @@ public class ClusterContextFactory {
 //                                                              PartitionManager.getInstance()
 //                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
             // FIXME pick a random partition
-            Partition partition =
-                    networkPartition.getPartitions()[new Random().nextInt(networkPartition.getPartitions().length)];
-            ClusterLevelPartitionContext clusterMonitorPartitionContext = new ClusterLevelPartitionContext(partition);
+            ChildLevelPartition partition =
+                    networkPartition.getChildLevelPartitions()[new Random().nextInt(networkPartition.getChildLevelPartitions().length)];
+            Partition applicationLevelPartition = deploymentPolicy.getApplicationLevelNetworkPartition(networkPartitionId)
+                    .getPartition(partition.getPartitionId());
+            ClusterLevelPartitionContext clusterMonitorPartitionContext
+                    = new ClusterLevelPartitionContext(partition, applicationLevelPartition);
             clusterMonitorPartitionContext.setServiceName(cluster.getServiceName());
             clusterMonitorPartitionContext.setProperties(cluster.getProperties());
             clusterMonitorPartitionContext.setNetworkPartitionId(networkPartitionId);
@@ -211,14 +219,14 @@ public class ClusterContextFactory {
 
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionId,
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getPartitions());
+                    networkPartition.getChildLevelPartitions());
             for (Member member : cluster.getMembers()) {
                 String memberId = member.getMemberId();
                 if (member.getNetworkPartitionId().equalsIgnoreCase(clusterLevelNetworkPartitionContext.getId())) {
                     MemberContext memberContext = new MemberContext();
                     memberContext.setClusterId(member.getClusterId());
                     memberContext.setMemberId(memberId);
-                    memberContext.setPartition(partition);
+                    memberContext.setPartition(applicationLevelPartition);
                     memberContext.setInitTime(member.getInitTime());
 
                     if (MemberStatus.Activated.equals(member.getStatus())) {

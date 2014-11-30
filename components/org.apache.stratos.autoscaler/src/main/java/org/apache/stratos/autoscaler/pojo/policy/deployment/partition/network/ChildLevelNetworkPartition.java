@@ -19,20 +19,19 @@
 
 package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
-
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Map;
 
 /**
-* The model class for NetworkPartition definition.
+* The model class for NetworkPartition definition at child level.
 */
 public class ChildLevelNetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
     private String id;
     private String partitionAlgo;
-    private Partition[] partitions;
+    private ChildLevelPartition[] childLevelPartitions;
 
     /**
      * Gets the value of the partitionAlgo property.
@@ -54,23 +53,23 @@ public class ChildLevelNetworkPartition implements Serializable {
         this.partitionAlgo = value;
     }
 
-    public void setPartitions(Partition[] partitions) {
-        if (partitions == null) {
-            this.partitions = partitions;
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
-    }
-
-    /**
-     * Gets the value of the partitions.
-     */
-    public Partition[] getPartitions() {
-        if (partitions == null) {
-            partitions = new Partition[0];
-        }
-        return this.partitions;
-    }
+//    public void setPartitions(Partition[] partitions) {
+//        if (partitions == null) {
+//            this.partitions = partitions;
+//        } else {
+//            this.partitions = Arrays.copyOf(partitions, partitions.length);
+//        }
+//    }
+//
+//    /**
+//     * Gets the value of the partitions.
+//     */
+//    public Partition[] getPartitions() {
+//        if (partitions == null) {
+//            partitions = new Partition[0];
+//        }
+//        return this.partitions;
+//    }
 
     /**
      * Gets the value of the id.
@@ -84,5 +83,13 @@ public class ChildLevelNetworkPartition implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ChildLevelPartition[] getChildLevelPartitions() {
+        return childLevelPartitions;
+    }
+
+    public void setChildLevelPartitions(ChildLevelPartition[] childLevelPartitions) {
+        this.childLevelPartitions = childLevelPartitions;
     }
 }

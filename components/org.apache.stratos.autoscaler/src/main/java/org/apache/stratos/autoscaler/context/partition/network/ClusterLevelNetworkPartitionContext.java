@@ -25,6 +25,8 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
@@ -65,7 +67,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     //boolean values to keep whether average requests served per instance parameters are reset or not
     private boolean averageRequestServedPerInstanceReset = false;
 
-    private final Partition[] partitions;
+    private final ChildLevelPartition[] partitions;
 
     //Following information will keep events details
     private RequestsInFlight requestsInFlight;
@@ -78,13 +80,13 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     //partitions of this network partition
     private final Map<String, ClusterLevelPartitionContext> partitionCtxts;
 
-    public ClusterLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
+    public ClusterLevelNetworkPartitionContext(String id, String partitionAlgo, ChildLevelPartition[] partitions) {
 
         //super(id, partitionAlgo, partitions);
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
         if (partitions == null) {
-            this.partitions = new Partition[0];
+            this.partitions = new ChildLevelPartition[0];
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
@@ -92,12 +94,12 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
-        for (Partition partition : partitions) {
-            minInstanceCount += partition.getPartitionMin();
-            maxInstanceCount += partition.getPartitionMax();
-        }
-        requiredInstanceCountBasedOnStats = minInstanceCount;
-        requiredInstanceCountBasedOnDependencies = minInstanceCount;
+//        for (ChildLevelPartition partition : partitions) {
+//            minInstanceCount += partition.get();
+//            maxInstanceCount += partition.getPartitionMax();
+//        }
+//        requiredInstanceCountBasedOnStats = minInstanceCount;
+//        requiredInstanceCountBasedOnDependencies = minInstanceCount;
         instanceIdToClusterInstanceContextMap = new HashMap<String, ClusterInstanceContext>();
 
     }
@@ -109,14 +111,14 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     public void setMinInstanceCount(int minInstanceCount) {
         this.minInstanceCount = minInstanceCount;
     }
-
-    public int getMaxInstanceCount() {
-        return maxInstanceCount;
-    }
-
-    public void setMaxInstanceCount(int maxInstanceCount) {
-        this.maxInstanceCount = maxInstanceCount;
-    }
+//
+//    public int getMaxInstanceCount() {
+//        return maxInstanceCount;
+//    }
+//
+//    public void setMaxInstanceCount(int maxInstanceCount) {
+//        this.maxInstanceCount = maxInstanceCount;
+//    }
 
     public int hashCode() {
 
@@ -151,8 +153,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
 
     @Override
     public String toString() {
-        return "NetworkPartitionContext [id=" + id + "partitionAlgorithm=" + partitionAlgorithm + ", minInstanceCount=" +
-                minInstanceCount + ", maxInstanceCount=" + maxInstanceCount + "]";
+        return "NetworkPartitionContext [id=" + id + "partitionAlgorithm=" + partitionAlgorithm + "]";
     }
 
     public int getCurrentPartitionIndex() {
@@ -382,7 +383,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         return partitionAlgorithm;
     }
 
-    public Partition[] getPartitions() {
+    public ChildLevelPartition[] getPartitions() {
         return partitions;
     }
 

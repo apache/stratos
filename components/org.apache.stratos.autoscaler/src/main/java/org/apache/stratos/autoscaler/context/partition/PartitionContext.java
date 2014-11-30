@@ -20,8 +20,8 @@ package org.apache.stratos.autoscaler.context.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
-
 import java.io.Serializable;
 import java.util.*;
 /**
@@ -37,6 +37,7 @@ public class PartitionContext implements Serializable{
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     protected String partitionId;
     private Partition partition;
+    private ChildLevelPartition childLevelPartition;
     private String networkPartitionId;
     // properties
     private Properties properties;
@@ -46,9 +47,10 @@ public class PartitionContext implements Serializable{
 
     }
 
-    public PartitionContext(Partition partition) {
+    public PartitionContext(Partition partition, ChildLevelPartition childLevelPartition) {
 
         this.partition = partition;
+        this.childLevelPartition = childLevelPartition;
     }
 
     public Partition getPartition() {
@@ -78,5 +80,9 @@ public class PartitionContext implements Serializable{
     public int getCurrentElementCount() {
         //TODO find and return correct member instance count
         return 0;
+    }
+
+    public ChildLevelPartition getChildLevelPartition() {
+        return childLevelPartition;
     }
 }

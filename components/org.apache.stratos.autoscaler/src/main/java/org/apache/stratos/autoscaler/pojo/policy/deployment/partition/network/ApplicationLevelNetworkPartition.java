@@ -53,6 +53,18 @@ public class ApplicationLevelNetworkPartition implements Serializable{
     }
 
     /**
+     * Gets the value of the partitions.
+     */
+    public Partition getPartition(String partitionId) {
+        for(Partition partition : partitions){
+            if(partitionId.equals(partition.getId())){
+                return partition;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the value of the id.
      */
     public String getId() {

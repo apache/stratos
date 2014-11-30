@@ -291,7 +291,8 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
         ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = getNetworkPartitionCtxt(null, scalingEvent.getNetworkPartitionId());
 
 
-        float requiredInstanceCount = clusterLevelNetworkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
+        //TODO get min instance count from instance context
+        float requiredInstanceCount = 0 ;/* = clusterLevelNetworkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;*/
         int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
         clusterLevelNetworkPartitionContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);

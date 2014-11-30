@@ -22,6 +22,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -86,8 +87,8 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(Partition partition) {
-        super(partition);
+    public GroupLevelPartitionContext(Partition partition, ChildLevelPartition childLevelPartition) {
+        super(partition, childLevelPartition);
         this.setPartition(partition);
         this.minimumInstanceCount = partition.getPartitionMin();
         this.partitionId = partition.getId();

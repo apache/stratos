@@ -22,6 +22,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
@@ -45,7 +46,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 	private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     private String serviceName;
     private String networkPartitionId;
-    private Partition partition;
     private int minimumMemberCount = 0;
     private int pendingMembersFailureCount = 0;
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
@@ -86,9 +86,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.terminationPendingMembers = new ArrayList<MemberContext>();
     }
     
-    public ClusterLevelPartitionContext(Partition partition) {
+    public ClusterLevelPartitionContext(ChildLevelPartition childLevelPartition, Partition partition) {
 
-        super(partition);
+        super(partition, childLevelPartition);
         this.minimumMemberCount = partition.getPartitionMin();
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
@@ -142,14 +142,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.minimumMemberCount = minimumMemberCount;
     }
 
-    public Partition getPartition() {
-        return partition;
-    }
-
-    public void setPartition(Partition partition) {
-        this.partition = partition;
-    }
-    
     public void addPendingMember(MemberContext ctxt) {
         this.pendingMembers.add(ctxt);
     }
