@@ -229,7 +229,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 //    public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException {
 //
 //        boolean exist = false;
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //
@@ -249,7 +249,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
 //    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) {
 //
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //
@@ -273,7 +273,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 //        if (log.isDebugEnabled()) {
 //            log.debug("Default LB Cluster Id for Deployment Policy [" + deploymentPolicyName + "] ");
 //        }
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //
@@ -312,7 +312,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
 //    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
 //
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //
@@ -334,7 +334,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 //
 //    public String getServiceLBClusterId(String serviceType, String deploymentPolicyName) {
 //
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //
@@ -355,7 +355,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
 //    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
 //
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions()) {
+//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
 //
 //            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
 //

@@ -331,7 +331,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                         getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
                 AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
-                //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
+                //Partition partition = algorithm.getNextScaleUpPartitionContext(groupLevelNetworkPartitionContext, this.id);
                 //TODO need to find the partition. partitionId=?
             }
             instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
@@ -380,7 +380,7 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
                     getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
             AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
-            //Partition partition = algorithm.getNextScaleUpPartition(groupLevelNetworkPartitionContext, this.id);
+            //Partition partition = algorithm.getNextScaleUpPartitionContext(groupLevelNetworkPartitionContext, this.id);
             //TODO need to find the partition. partitionId=?
         }
         instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
