@@ -38,9 +38,7 @@ import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKu
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
 import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.iaas.Iaas;
-import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyEventPublisher;
@@ -82,51 +80,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	private static final Log LOG = LogFactory.getLog(CloudControllerServiceImpl.class);
 	public static final String IS_LOAD_BALANCER = "load.balancer";
 
-    private CloudControllerContext dataHolder = CloudControllerContext
+    private CloudControllerContext cloudControllerContext = CloudControllerContext
             .getInstance();
 
     public CloudControllerServiceImpl() {
-        // acquire serialized data from registry
-        acquireData();
-    }
-
-    private void acquireData() {
-
-        Object obj = RegistryManager.getInstance().retrieve();
-        if (obj != null) {
-            try {
-                Object dataObj = Deserializer
-                        .deserializeFromByteArray((byte[]) obj);
-                if (dataObj instanceof CloudControllerContext) {
-                    CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
-                    CloudControllerContext currentData = CloudControllerContext
-                            .getInstance();
-
-                    // assign necessary data
-                    currentData.setClusterIdToContext(serializedObj.getClusterIdToContext());
-                    currentData.setMemberIdToContext(serializedObj.getMemberIdToContext());
-                    currentData.setClusterIdToMemberContext(serializedObj.getClusterIdToMemberContext());
-                    currentData.setCartridges(serializedObj.getCartridges());
-                    currentData.setKubClusterIdToKubClusterContext(serializedObj.getKubClusterIdToKubClusterContext());
-                    currentData.setServiceGroups(serializedObj.getServiceGroups());
-
-                    if (LOG.isDebugEnabled()) {
-
-                        LOG.debug("Cloud Controller Data is retrieved from registry.");
-                    }
-                } else {
-                    if (LOG.isDebugEnabled()) {
-
-                        LOG.debug("Cloud Controller Data cannot be found in registry.");
-                    }
-                }
-            } catch (Exception e) {
-
-                String msg = "Unable to acquire data from Registry. Hence, any historical data will not get reflected.";
-                LOG.warn(msg, e);
-            }
-
-        }
     }
 
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
@@ -177,8 +134,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
-        if (dataHolder.getCartridge(cartridgeType) != null) {
-            Cartridge cartridgeToBeRemoved = dataHolder.getCartridge(cartridgeType);
+        if (cloudControllerContext.getCartridge(cartridgeType) != null) {
+            Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
             // undeploy
             try {
                 undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
@@ -188,7 +145,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             populateNewCartridge(cartridge, cartridgeToBeRemoved);
         }
 
-        dataHolder.addCartridge(cartridge);
+        cloudControllerContext.addCartridge(cartridge);
 
         // persist
         persist();
@@ -228,10 +185,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
 
         Cartridge cartridge = null;
-        if ((cartridge = dataHolder.getCartridge(cartridgeType)) != null) {
-            if (dataHolder.getCartridges().remove(cartridge)) {
+        if ((cartridge = cloudControllerContext.getCartridge(cartridgeType)) != null) {
+            if (cloudControllerContext.getCartridges().remove(cartridge)) {
                 // invalidate partition validation cache
-                dataHolder.removeFromCartridgeTypeToPartitionIds(cartridgeType);
+                cloudControllerContext.removeFromCartridgeTypeToPartitionIds(cartridgeType);
 
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Partition cache invalidated for cartridge " + cartridgeType);
@@ -301,7 +258,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
 
-        dataHolder.addServiceGroup(servicegroup);
+        cloudControllerContext.addServiceGroup(servicegroup);
 
         this.persist();
 
@@ -314,10 +271,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         ServiceGroup serviceGroup = null;
 
-        serviceGroup = dataHolder.getServiceGroup(name);
+        serviceGroup = cloudControllerContext.getServiceGroup(name);
 
         if (serviceGroup != null) {
-            if (dataHolder.getServiceGroups().remove(serviceGroup)) {
+            if (cloudControllerContext.getServiceGroups().remove(serviceGroup)) {
                 persist();
                 if (LOG.isInfoEnabled()) {
                     LOG.info("Successfully undeployed the Service Group definition: " + serviceGroup);
@@ -339,7 +296,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.debug("getServiceGroupDefinition:" + name);
         }
 
-        ServiceGroup serviceGroup = this.dataHolder.getServiceGroup(name);
+        ServiceGroup serviceGroup = this.cloudControllerContext.getServiceGroup(name);
 
         if (serviceGroup == null) {
             if (LOG.isDebugEnabled()) {
@@ -405,13 +362,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 memberContext);
 
         String partitionId = partition.getId();
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
 
         handleNullObject(ctxt, "Instance start-up failed. Invalid cluster id. " + memberContext);
 
         String cartridgeType = ctxt.getCartridgeType();
 
-        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+        Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg =
@@ -591,11 +548,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      */
     private void persist() {
         try {
-            RegistryManager.getInstance().persist(
-                    dataHolder);
+            cloudControllerContext.persist();
         } catch (RegistryException e) {
-
-            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
+            String msg = "Failed to persist the cloud controller context in registry.";
             LOG.fatal(msg);
             throw new CloudControllerException(msg, e);
         }
@@ -611,7 +566,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(memberId, "Termination failed. Null member id.");
 
-        MemberContext ctxt = dataHolder.getMemberContextOfMemberId(memberId);
+        MemberContext ctxt = cloudControllerContext.getMemberContextOfMemberId(memberId);
 
         if (ctxt == null) {
             String msg = "Termination failed. Invalid Member Id: " + memberId;
@@ -767,7 +722,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             try {
                 // these will never be null, since we do not add null values for these.
-                Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+                Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
                 LOG.info("Starting to terminate an instance with member id : " + memberId +
                         " in partition id: " + partitionId + " of cluster id: " + clusterId +
@@ -832,7 +787,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = memberContext.getClusterId();
             Partition partition = memberContext.getPartition();
-            ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+            ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
             Iaas iaas = iaasProvider.getIaas();
             String publicIp = null;
 
@@ -1015,7 +970,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                 }
 
-                dataHolder.addMemberContext(memberContext);
+                cloudControllerContext.addMemberContext(memberContext);
 
                 // persist in registry
                 persist();
@@ -1067,7 +1022,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(clusterId, "Instance termination failed. Cluster id is null.");
 
-        List<MemberContext> ctxts = dataHolder.getMemberContextsOfClusterId(clusterId);
+        List<MemberContext> ctxts = cloudControllerContext.getMemberContextsOfClusterId(clusterId);
 
         if (ctxts == null) {
             String msg = "Instance termination failed. No members found for cluster id: " + clusterId;
@@ -1129,7 +1084,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     private void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
         String clusterId = ctxt.getClusterId();
-        ClusterContext clusterCtxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext clusterCtxt = cloudControllerContext.getClusterContext(clusterId);
         if (clusterCtxt.getVolumes() != null) {
             for (Volume volume : clusterCtxt.getVolumes()) {
                 try {
@@ -1171,7 +1126,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 null);
 
         // update data holders
-        dataHolder.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
+        cloudControllerContext.removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
 
         // persist
         persist();
@@ -1195,7 +1150,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(hostName, "Service registration failed. Hostname is null.");
 
         Cartridge cartridge = null;
-        if ((cartridge = dataHolder.getCartridge(cartridgeType)) == null) {
+        if ((cartridge = cloudControllerContext.getCartridge(cartridgeType)) == null) {
 
             String msg = "Registration of cluster: " + clusterId +
                     " failed. - Unregistered Cartridge type: " + cartridgeType;
@@ -1212,7 +1167,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         payload, hostName, props, isLb, registrant.getPersistence());
 
 
-        dataHolder.addClusterContext(ctxt);*/
+        cloudControllerContext.addClusterContext(ctxt);*/
         TopologyBuilder.handleClusterCreated(registrant, isLb);
 
         persist();
@@ -1254,7 +1209,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public String[] getRegisteredCartridges() {
         // get the list of cartridges registered
-        List<Cartridge> cartridges = dataHolder
+        List<Cartridge> cartridges = cloudControllerContext
                 .getCartridges();
 
         if (cartridges == null) {
@@ -1282,7 +1237,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public CartridgeInfo getCartridgeInfo(String cartridgeType)
             throws UnregisteredCartridgeException {
-        Cartridge cartridge = dataHolder
+        Cartridge cartridge = cloudControllerContext
                 .getCartridge(cartridgeType);
 
         if (cartridge != null) {
@@ -1301,13 +1256,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public void unregisterService(String clusterId) throws UnregisteredClusterException {
         final String clusterId_ = clusterId;
 
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId_);
 
         handleNullObject(ctxt, "Service unregistration failed. Invalid cluster id: " + clusterId);
 
         String cartridgeType = ctxt.getCartridgeType();
 
-        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+        Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg =
@@ -1322,12 +1277,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         } else {
 
-//	        TopologyBuilder.handleClusterMaintenanceMode(dataHolder.getClusterContext(clusterId_));
+//	        TopologyBuilder.handleClusterMaintenanceMode(cloudControllerContext.getClusterContext(clusterId_));
 
             Runnable terminateInTimeout = new Runnable() {
                 @Override
                 public void run() {
-                    ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                    ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId_);
                     if (ctxt == null) {
                         String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
                         LOG.error(msg);
@@ -1366,7 +1321,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             };
             Runnable unregister = new Runnable() {
                 public void run() {
-                    ClusterContext ctxt = dataHolder.getClusterContext(clusterId_);
+                    ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId_);
                     if (ctxt == null) {
                         String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
                         LOG.error(msg);
@@ -1389,12 +1344,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 private void deleteVolumes(ClusterContext ctxt) {
                     if (ctxt.isVolumeRequired()) {
-                        Cartridge cartridge = dataHolder.getCartridge(ctxt.getCartridgeType());
+                        Cartridge cartridge = cloudControllerContext.getCartridge(ctxt.getCartridgeType());
                         if (cartridge != null && cartridge.getIaases() != null && ctxt.getVolumes() != null) {
                             for (Volume volume : ctxt.getVolumes()) {
                                 if (volume.getId() != null) {
                                     String iaasType = volume.getIaasType();
-                                    //Iaas iaas = dataHolder.getIaasProvider(iaasType).getIaas();
+                                    //Iaas iaas = cloudControllerContext.getIaasProvider(iaasType).getIaas();
                                     Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                     if (iaas != null) {
                                         try {
@@ -1442,17 +1397,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions)
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
-        Map<String, List<String>> validatedCache = dataHolder.getCartridgeTypeToPartitionIds();
-        List<String> validatedPartitions = new ArrayList<String>();
-
-        if (validatedCache.containsKey(cartridgeType)) {
+        List<String> validatedPartitions = CloudControllerContext.getInstance().getPartitionIds(cartridgeType);
+        if (validatedPartitions != null) {
             // cache hit for this cartridge
             // get list of partitions
-            validatedPartitions = validatedCache.get(cartridgeType);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Partition validation cache hit for cartridge type: " + cartridgeType);
             }
-
         }
 
         Map<String, IaasProvider> partitionToIaasProviders =
@@ -1462,7 +1413,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.debug("Deployment policy validation started for cartridge type: " + cartridgeType);
         }
 
-        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+        Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg = "Invalid Cartridge Type: " + cartridgeType;
@@ -1482,7 +1433,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Callable<IaasProvider> worker = new PartitionValidatorCallable(
                     partition, cartridge);
             Future<IaasProvider> job = CloudControllerContext.getInstance()
-                    .getExecutor().submit(worker);
+                    .getExecutorService().submit(worker);
             jobList.put(partition.getId(), job);
         }
 
@@ -1498,7 +1449,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 partitionToIaasProviders.put(partitionId, job.get());
 
                 // add to cache
-                this.dataHolder.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
+                this.cloudControllerContext.addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
 
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Partition " + partitionId + " added to the cache against cartridge type: " + cartridgeType);
@@ -1522,10 +1473,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private void onClusterRemoval(final String clusterId) {
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
         TopologyBuilder.handleClusterRemoved(ctxt);
-        dataHolder.removeClusterContext(clusterId);
-        dataHolder.removeMemberContextsOfCluster(clusterId);
+        cloudControllerContext.removeClusterContext(clusterId);
+        cloudControllerContext.removeMemberContextsOfCluster(clusterId);
         persist();
     }
 
@@ -1570,7 +1521,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     public ClusterContext getClusterContext(String clusterId) {
 
-        return dataHolder.getClusterContext(clusterId);
+        return cloudControllerContext.getClusterContext(clusterId);
     }
 
     @Override
@@ -1590,12 +1541,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.debug("Received a container spawn request : " + containerClusterContext.toString());
         }
 
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
         handleNullObject(ctxt, "Container start-up failed. Invalid cluster id. " + containerClusterContext.toString());
 
         String cartridgeType = ctxt.getCartridgeType();
 
-        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+        Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg =
@@ -1647,7 +1598,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             allocatedServiceHostPortProp.setName(StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
             allocatedServiceHostPortProp.setValue(String.valueOf(service.getPort()));
             ctxt.getProperties().addProperty(allocatedServiceHostPortProp);
-            dataHolder.addClusterContext(ctxt);
+            cloudControllerContext.addClusterContext(ctxt);
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Cloud Controller successfully started the service "
@@ -1700,14 +1651,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
                         String.valueOf(service.getPort())));
 
-                dataHolder.addMemberContext(context);
+                cloudControllerContext.addMemberContext(context);
 
                 // wait till Pod status turns to running and send member spawned.
                 ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Cloud Controller is starting the instance start up thread.");
                 }
-                dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
+                cloudControllerContext.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
 
                 memberContexts.add(context);
             }
@@ -1745,18 +1696,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             String kubernetesClusterId, String kubernetesMasterIp,
             String kubernetesPortRange) {
 
-        KubernetesClusterContext origCtxt = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        KubernetesClusterContext origCtxt = cloudControllerContext.getKubernetesClusterContext(kubernetesClusterId);
         KubernetesClusterContext newCtxt = new KubernetesClusterContext(kubernetesClusterId, kubernetesPortRange, kubernetesMasterIp);
 
         if (origCtxt == null) {
-            dataHolder.addKubernetesClusterContext(newCtxt);
+            cloudControllerContext.addKubernetesClusterContext(newCtxt);
             return newCtxt;
         }
 
         if (!origCtxt.equals(newCtxt)) {
             // if for some reason master IP etc. have changed
             newCtxt.setAvailableHostPorts(origCtxt.getAvailableHostPorts());
-            dataHolder.addKubernetesClusterContext(newCtxt);
+            cloudControllerContext.addKubernetesClusterContext(newCtxt);
             return newCtxt;
         } else {
             return origCtxt;
@@ -1767,7 +1718,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public MemberContext[] terminateAllContainers(String clusterId)
             throws InvalidClusterException {
 
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
         handleNullObject(ctxt, "Kubernetes units temrination failed. Invalid cluster id. " + clusterId);
 
         String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
@@ -1775,7 +1726,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(kubernetesClusterId, "Kubernetes units termination failed. Cannot find '" +
                 StratosConstants.KUBERNETES_CLUSTER_ID + "'. " + ctxt);
 
-        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        KubernetesClusterContext kubClusterContext = cloudControllerContext.getKubernetesClusterContext(kubernetesClusterId);
         handleNullObject(kubClusterContext, "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: "
                 + kubernetesClusterId);
 
@@ -1838,7 +1789,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     + StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
         }
 
-        List<MemberContext> membersToBeRemoved = dataHolder.getMemberContextsOfClusterId(clusterId);
+        List<MemberContext> membersToBeRemoved = cloudControllerContext.getMemberContextsOfClusterId(clusterId);
 
         for (MemberContext memberContext : membersToBeRemoved) {
             logTermination(memberContext);
@@ -1858,12 +1809,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.debug("CloudControllerServiceImpl:updateContainers for cluster : " + clusterId);
         }
 
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
         handleNullObject(ctxt, "Container update failed. Invalid cluster id. " + clusterId);
 
         String cartridgeType = ctxt.getCartridgeType();
 
-        Cartridge cartridge = dataHolder.getCartridge(cartridgeType);
+        Cartridge cartridge = cloudControllerContext.getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg =
@@ -1876,7 +1827,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
 
-            KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+            KubernetesClusterContext kubClusterContext = cloudControllerContext.getKubernetesClusterContext(kubernetesClusterId);
 
             if (kubClusterContext == null) {
                 String msg =
@@ -1936,7 +1887,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             for (Pod pod : allPods) {
                 MemberContext context;
                 // if member context does not exist -> a new member (scale up)
-                if ((context = dataHolder.getMemberContextOfMemberId(pod.getId())) == null) {
+                if ((context = cloudControllerContext.getMemberContextOfMemberId(pod.getId())) == null) {
 
                     context = podToMemberContextFunc.apply(pod);
                     context.setCartridgeType(cartridgeType);
@@ -1952,7 +1903,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Cloud Controller is starting the instance start up thread.");
                     }
-                    dataHolder.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
+                    cloudControllerContext.addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
 
                     memberContexts.add(context);
 
@@ -1969,7 +1920,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 List<Pod> difference = ListUtils.subtract(Arrays.asList(previousStatePods), Arrays.asList(allPods));
                 for (Pod pod : difference) {
                     if (pod != null) {
-                        MemberContext context = dataHolder.getMemberContextOfMemberId(pod.getId());
+                        MemberContext context = cloudControllerContext.getMemberContextOfMemberId(pod.getId());
                         logTermination(context);
                         memberContexts.add(context);
                     }
@@ -2001,7 +1952,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [Member id] " + memberId);
 
-        MemberContext memberContext = dataHolder.getMemberContextOfMemberId(memberId);
+        MemberContext memberContext = cloudControllerContext.getMemberContextOfMemberId(memberId);
 
         handleNullObject(memberContext, "Failed to terminate member. Member id not found. [Member id] " + memberId);
 
@@ -2009,7 +1960,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(clusterId, "Failed to terminate member. Cluster id is null. [Member id] " + memberId);
 
-        ClusterContext ctxt = dataHolder.getClusterContext(clusterId);
+        ClusterContext ctxt = cloudControllerContext.getClusterContext(clusterId);
 
         handleNullObject(ctxt,
                 String.format("Failed to terminate member [Member id] %s. Invalid cluster id %s ", memberId, clusterId));
@@ -2020,7 +1971,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(kubernetesClusterId, String.format("Failed to terminate member [Member id] %s. Cannot find '" +
                 StratosConstants.KUBERNETES_CLUSTER_ID + "' in [cluster context] %s ", memberId, ctxt));
 
-        KubernetesClusterContext kubClusterContext = dataHolder.getKubernetesClusterContext(kubernetesClusterId);
+        KubernetesClusterContext kubClusterContext = cloudControllerContext.getKubernetesClusterContext(kubernetesClusterId);
 
         handleNullObject(kubClusterContext, String.format("Failed to terminate member [Member id] %s. Cannot find a matching Kubernetes Cluster in [cluster context] %s ", memberId, ctxt));
 
@@ -2030,7 +1981,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // member id = pod id
             kubApi.deletePod(memberId);
 
-            MemberContext memberToBeRemoved = dataHolder.getMemberContextOfMemberId(memberId);
+            MemberContext memberToBeRemoved = cloudControllerContext.getMemberContextOfMemberId(memberId);
 
             logTermination(memberToBeRemoved);
 
@@ -2064,7 +2015,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 
         for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
-            dataHolder.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
+            cloudControllerContext.addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
                     appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
                     appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
             // create Cluster objects
@@ -2074,7 +2025,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             newCluster.setTenantRange(appClusterCtxt.getTenantRange());
             //newCluster.setStatus(ClusterStatus.Created, null);
             newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-            Cartridge cartridge = dataHolder.getCartridge(appClusterCtxt.getCartridgeType());
+            Cartridge cartridge = cloudControllerContext.getCartridge(appClusterCtxt.getCartridgeType());
             if(cartridge.getDeployerType() != null &&
                     cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
                 newCluster.setKubernetesCluster(true);
@@ -2107,7 +2058,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //
 //        // Create a Cluster Context obj. for each of the Clusters in the Application
 //        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
-//            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+//            cloudControllerContext.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
 //                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
 //                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
 //        }
@@ -2129,7 +2080,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //
 //        // Create a Cluster Context obj. for each of the Clusters in the Application
 //        for (ApplicationClusterContext applicationClusterContext : applicationParser.getApplicationClusterContexts()) {
-//            dataHolder.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
+//            cloudControllerContext.addClusterContext(new ClusterContext(applicationClusterContext.getClusterId(),
 //                    applicationClusterContext.getCartridgeType(), applicationClusterContext.getTextPayload(),
 //                    applicationClusterContext.getHostName(), applicationClusterContext.isLbCluster()));
 //        }

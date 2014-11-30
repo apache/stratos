@@ -23,7 +23,6 @@ package org.apache.stratos.cloud.controller.internal;
 
 import com.hazelcast.core.HazelcastInstance;
 
-import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -74,7 +73,7 @@ public class CloudControllerServiceComponent {
             tApplicationTopicReceiver.start();
 
             if (log.isInfoEnabled()) {
-                log.info("Application Receiver thread started");
+                log.info("Application event receiver thread started");
             }
 
             clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
@@ -82,7 +81,7 @@ public class CloudControllerServiceComponent {
             tClusterStatusTopicReceiver.start();
 
             if (log.isInfoEnabled()) {
-                log.info("Cluster status Receiver thread started");
+                log.info("Cluster status receiver thread started");
             }
 
             instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
@@ -100,13 +99,16 @@ public class CloudControllerServiceComponent {
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");
             }
-            
-			TopologySynchronizerTaskScheduler
-						.schedule(ServiceReferenceHolder.getInstance()
-								.getTaskService());
-			
+
+            if ((!CloudControllerContext.getInstance().isClustered()) ||
+                    (CloudControllerContext.getInstance().isCoordinator())) {
+                TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
+                if(log.isInfoEnabled()) {
+                    log.info("Topology synchronizer task scheduled");
+                }
+            }
         } catch (Throwable e) {
-            log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
+            log.error("**** Cloud controller service bundle is failed to activate ****", e);
         }
     }
     

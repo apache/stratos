@@ -64,17 +64,17 @@ public class Serializer {
     
     /**
      * Serialize a {@link org.apache.stratos.cloud.controller.context.CloudControllerContext} to a byte array.
-     * @param serializableObj
+     * @param serializableObject
      * @return byte[] 
      * @throws IOException
      */
-    public static byte[] serializeToByteArray(CloudControllerContext serializableObj) throws IOException {
+    public static byte[]  serializeToByteArray(Serializable serializableObject) throws IOException {
 
     	ByteArrayOutputStream bos = new ByteArrayOutputStream();
     	ObjectOutput out = null;
     	try {
     	  out = new ObjectOutputStream(bos);   
-    	  out.writeObject(serializableObj);
+    	  out.writeObject(serializableObject);
     	  
     	  return bos.toByteArray();
     	  

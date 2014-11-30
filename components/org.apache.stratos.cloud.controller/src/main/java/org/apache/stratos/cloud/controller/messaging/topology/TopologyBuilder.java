@@ -222,18 +222,15 @@ public class TopologyBuilder {
      */
     private static void persist(CloudControllerContext context) {
         try {
-            RegistryManager.getInstance().persist(
-                    context);
+            context.persist();
         } catch (RegistryException e) {
-
-            String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";
-            log.fatal(msg);
+            String msg = "Failed to persist the cloud controller context in registry.";
+            log.error(msg);
             throw new CloudControllerException(msg, e);
         }
     }
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {
-
         TopologyManager.acquireWriteLock();
 
         try {

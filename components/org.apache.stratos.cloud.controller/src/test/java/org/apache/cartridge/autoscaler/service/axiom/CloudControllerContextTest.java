@@ -18,12 +18,14 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import junit.framework.TestCase;
+import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 
 public class CloudControllerContextTest extends TestCase {
-    
+
     public CloudControllerContextTest(String name) {
         super(name);
     }
@@ -33,17 +35,19 @@ public class CloudControllerContextTest extends TestCase {
     }
 
     public final void testMemberContextOperations() throws Exception {
-    	
-    	
-    	CloudControllerContext dataHolder = CloudControllerContext.getInstance();
-    	Thread t1 = new Thread(new MemberAdder(dataHolder));
+        AxisConfiguration axisConfiguration = new AxisConfiguration();
+        axisConfiguration.setClusteringAgent(null);
+        ServiceReferenceHolder.getInstance().setAxisConfiguration(axisConfiguration);
+
+    	CloudControllerContext context = CloudControllerContext.getInstance();
+    	Thread t1 = new Thread(new MemberAdder(context));
     	t1.start();
     	t1.join();
-    	assertEquals(2, dataHolder.getMemberContextsOfClusterId("123").size());
-    	Thread t2 = new Thread(new MemberRemover(dataHolder));
+    	assertEquals(2, context.getMemberContextsOfClusterId("123").size());
+    	Thread t2 = new Thread(new MemberRemover(context));
     	t2.start();
     	t2.join();
-    	assertEquals(1, dataHolder.getMemberContextsOfClusterId("123").size());
+    	assertEquals(1, context.getMemberContextsOfClusterId("123").size());
     	
     }
     class MemberAdder implements Runnable {

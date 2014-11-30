@@ -35,37 +35,30 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import java.io.Serializable;
+
 /**
- *
+ * Registry manager provides functionality for persisting resources in the registry and reading them back.
  */
 public class RegistryManager {
     private final static Log log = LogFactory.getLog(RegistryManager.class);
-    private static Registry registryService;
 
     private static class Holder {
-        static final RegistryManager INSTANCE = new RegistryManager();
+        static final RegistryManager instance = new RegistryManager();
     }
 
     public static RegistryManager getInstance() {
-        registryService = ServiceReferenceHolder.getInstance().getRegistry();
-        if (registryService == null) {
-            log.warn("Registry Service is null. Hence unable to fetch data from registry.");
-            return null;
-        }
-
-        return Holder.INSTANCE;
+        return Holder.instance;
     }
     
     private RegistryManager() {
         try {
-
-            if (!registryService.resourceExists(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE)) {
-                registryService.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE,
-                        registryService.newCollection());
+            Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
+            if ((registry != null) && (!registry.resourceExists(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE))) {
+                registry.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE, registry.newCollection());
             }
         } catch (RegistryException e) {
-            String msg =
-                    "Failed to create the registry resource " +
+            String msg = "Failed to create the registry resource " +
                             CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE;
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
@@ -73,108 +66,62 @@ public class RegistryManager {
     }
 
     /**
-     * Persist an object in the local registry.
+     * Persist an object in the registry.
      *
-     * @param dataObj object to be persisted.
+     * @param serializableObject object to be persisted.
      */
-    public synchronized void persist(CloudControllerContext dataObj) throws RegistryException {
+    public synchronized void persist(String resourcePath, Serializable serializableObject) throws RegistryException {
+        String absoluteResourcePath = CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath;
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Persisting resource in registry: [resource-path] %s", absoluteResourcePath));
+        }
+        Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
+
         try {
-        	
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        	
-            registryService.beginTransaction();
 
-            Resource nodeResource = registryService.newResource();
+            registry.beginTransaction();
 
-            nodeResource.setContent(Serializer.serializeToByteArray(dataObj));
+            Resource nodeResource = registry.newResource();
+            nodeResource.setContent(Serializer.serializeToByteArray(serializableObject));
+            registry.put(absoluteResourcePath, nodeResource);
 
-            registryService.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + CloudControllerConstants.DATA_RESOURCE, nodeResource);
+            registry.commitTransaction();
 
-            registryService.commitTransaction();
-
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Resource persisted successfully in registry: [resource-path] %s",
+                        absoluteResourcePath));
+            }
         } catch (Exception e) {
-            String msg = "Failed to persist the cloud controller data in registry.";
-            registryService.rollbackTransaction();
+            String msg = "Failed to persist resource in registry: " + absoluteResourcePath;
+            registry.rollbackTransaction();
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
-
         }
     }
 
-    public synchronized void persistTopology(Topology topology) throws RegistryException {
+    public synchronized Object read(String resourcePath) {
         try {
-        	
-        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
+            if(registry == null) {
+                return null;
+            }
+
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-        	
-            registryService.beginTransaction();
-
-            Resource nodeResource = registryService.newResource();
-
-            nodeResource.setContent(Serializer.serializeToByteArray(topology));
-
-            registryService.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + CloudControllerConstants.TOPOLOGY_RESOURCE, nodeResource);
-
-            registryService.commitTransaction();
-
-        } catch (Exception e) {
-            String msg = "Failed to persist the cloud controller data in registry.";
-            registryService.rollbackTransaction();
-            log.error(msg, e);
-            throw new CloudControllerException(msg, e);
-
-        }
-    }
-
-
-    public synchronized Object retrieve() {
-
-        try {
-        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
-        	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-        	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-            Resource resource = registryService.get(
-            		CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + CloudControllerConstants.DATA_RESOURCE);
-
+            Resource resource = registry.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath);
             return resource.getContent();
-
         } catch (ResourceNotFoundException ignore) {
             // this means, we've never persisted CC info in registry
             return null;
         } catch (RegistryException e) {
-            String msg = "Failed to retrieve cloud controller data from registry.";
+            String msg = "Failed to read resource from registry: " +
+                    CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath;
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         }
-
     }
-
-    public synchronized Object retrieveTopology() {
-
-        try {
-			PrivilegedCarbonContext ctx = PrivilegedCarbonContext
-					.getThreadLocalCarbonContext();
-			ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-			ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-
-			Resource resource = registryService
-					.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE
-							+ CloudControllerConstants.TOPOLOGY_RESOURCE);
-
-            return resource.getContent();
-
-        } catch (ResourceNotFoundException ignore) {
-            // this means, we've never persisted CC info in registry
-            return null;
-        } catch (RegistryException e) {
-            String msg = "Failed to retrieve cloud controller data from registry.";
-            log.error(msg, e);
-            throw new CloudControllerException(msg, e);
-        } 
-
-    }
-
 }

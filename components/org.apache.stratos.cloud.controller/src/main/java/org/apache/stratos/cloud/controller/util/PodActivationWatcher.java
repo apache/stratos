@@ -48,7 +48,7 @@ public class PodActivationWatcher implements Runnable {
     @Override
     public void run() {
         try {
-            CloudControllerContext dataHolder = CloudControllerContext.getInstance();
+            CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
             Pod pod = kubApi.getPod(podId);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("PodActivationWatcher running : "+pod.getCurrentState().getStatus());
@@ -57,13 +57,12 @@ public class PodActivationWatcher implements Runnable {
                 String hostIP = pod.getCurrentState().getHost();
                 ctxt.setPublicIpAddress(hostIP);
                 ctxt.setPrivateIpAddress(hostIP);
-                dataHolder.addMemberContext(ctxt);
+                cloudControllerContext.addMemberContext(ctxt);
                 // trigger topology
                 TopologyBuilder.handleMemberSpawned(ctxt.getCartridgeType(), ctxt.getClusterId(), 
                         null, hostIP, hostIP, ctxt);
                 
-                RegistryManager.getInstance().persist(dataHolder);
-                
+                cloudControllerContext.persist();
             }
             
         } catch (Exception e) {

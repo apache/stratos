@@ -85,18 +85,12 @@ public class CloudControllerDeployer extends AbstractDeployer {
     }
 
     public void undeploy(String file) throws DeploymentException {
-
         if (file.contains(FILE_NAME)) {
-            // reset
-            CloudControllerContext context = CloudControllerContext.getInstance();
-            context.setSerializationDir("");
-
             // grab the entry from Map
             if (fileToIaasProviderListMap.containsKey(file)) {
                 // remove 'em
                 CloudControllerConfig.getInstance().getIaasProviders().removeAll(fileToIaasProviderListMap.get(file));
-
-                log.info("Successfully undeployed the cloud-controller XML file specified at " +
+                log.info("Successfully un-deployed the cloud-controller XML file specified at " +
                          file);
             }
 
