@@ -50,7 +50,7 @@
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
                                     <arg line="-uri src/main/resources/AutoScalerService.wsdl -u -uw -o target/generated-code
                                     -p org.apache.stratos.autoscaler.stub
-				    -ns2p http://policy.deployment.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.deployment.policy,http://model.policy.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.policy.model,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.exception,http://partition.deployment.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.deployment.partition,http://pojo.stub.controller.cloud.stratos.apache.org/xsd=org.apache.stratos.cloud.controller.stub.pojo,http://partition.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.partition,http://kubernetes.common.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.kubernetes,http://api.autoscaler.stratos.apache.org=org.apache.stratos.autoscaler.stub.api,http://common.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.pojo"/>
+				    -ns2p http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.autoscale.policy,http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.deployment.policy,http://exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.exception,http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.deployment.partition,http://pojo.applications.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.pojo,http://pojo.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.pojo,http://kubernetes.exception.autoscaler.stratos.apache.org/xsd=org.apache.stratos.autoscaler.stub.exception,http://api.autoscaler.stratos.apache.org=org.apache.stratos.autoscaler.stub.api,http://common.stratos.apache.org/xsd=org.apache.stratos.common,http://kubernetes.common.stratos.apache.org/xsd=org.apache.stratos.common.kubernetes"/>
 				    <classpath refid="maven.dependency.classpath"/>
                                     <classpath refid="maven.compile.classpath"/>
                                     <classpath refid="maven.runtime.classpath"/>
@@ -90,17 +90,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-                            org.apache.stratos.autoscaler.stub.*; version=${project.version},
                             org.apache.stratos.autoscaler.stub.pojo.*; version=${project.version},
-                            org.apache.stratos.autoscaler.applications.pojo.xsd.*; version=${project.version},
                             org.apache.stratos.autoscaler.stub.deployment.policy.*; version=${project.version},
-                            org.apache.stratos.autoscaler.stub.policy.model.*; version=${project.version},
-                            org.apache.stratos.autoscaler.exception.*; version=${project.version},
-                            org.apache.stratos.autoscaler.pojo.policy.deployment.partition.*;
-                            version=${project.version},
-                            org.apache.stratos.autoscaler.api.*; version=${project.version},
-                            org.apache.stratos.autoscaler.kubernetes.*; version=${project.version},
-                            org.apache.stratos.autoscaler.pojo.xsd.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.autoscale.policy.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.deployment.partition.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.exception.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.api.*; version=${project.version},
                         </Export-Package>
                         <Private-Package>
                         </Private-Package>
