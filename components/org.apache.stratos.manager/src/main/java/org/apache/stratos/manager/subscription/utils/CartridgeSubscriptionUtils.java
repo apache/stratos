@@ -260,221 +260,222 @@ public class CartridgeSubscriptionUtils {
 
     public static LBDataContext getLoadBalancerDataContext(int tenantId, String serviceType, String deploymentPolicyName, LoadbalancerConfig lbConfig) throws UnregisteredCartridgeException, ADCException {
 
-        String lbCartridgeType = lbConfig.getType();
+//        String lbCartridgeType = lbConfig.getType();
+//
+//        LBDataContext lbDataCtxt = new LBDataContext();
+//        // set tenant Id
+//        lbDataCtxt.setTenantId(tenantId);
+//
+//        Properties lbReferenceProperties = lbConfig.getProperties();
+//
+//        Property lbRefProperty = new Property();
+//        lbRefProperty.setName(StratosConstants.LOAD_BALANCER_REF);
+//
+//        for (Property prop : lbReferenceProperties.getProperties()) {
+//
+//            String name = prop.getName();
+//            String value = prop.getValue();
+//
+//            // TODO make following a chain of responsibility pattern
+//            if (StratosConstants.NO_LOAD_BALANCER.equals(name)) {
+//
+//                if ("true".equals(value)) {
+//                    lbDataCtxt.setLbCategory(StratosConstants.NO_LOAD_BALANCER);
+//
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("This cartridge does not require a load balancer. " + "[Type] " + serviceType);
+//                    }
+//                    lbRefProperty.setValue(name);
+//                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
+//                    break;
+//                }
+//            } else if (StratosConstants.EXISTING_LOAD_BALANCERS.equals(name)) {
+//
+//                lbDataCtxt.setLbCategory(StratosConstants.EXISTING_LOAD_BALANCERS);
+//
+//                String clusterIdsVal = value;
+//                if (log.isDebugEnabled()) {
+//                    log.debug("This cartridge refers to existing load balancers. " + "[Type] " + serviceType + "[Referenced Cluster Ids] " + clusterIdsVal);
+//                }
+//
+//                String[] clusterIds = clusterIdsVal.split(",");
+//
+////                for (String clusterId : clusterIds) {
+////                    try {
+////                        AutoscalerServiceClient.getServiceClient().checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyName);
+////                    } catch (Exception ex) {
+////                        // we don't need to throw the error here.
+////                        log.error(ex.getMessage(), ex);
+////                    }
+////                }
+//
+//                lbRefProperty.setValue(name);
+//                lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
+//                break;
+//
+//            } else if (StratosConstants.DEFAULT_LOAD_BALANCER.equals(name)) {
+//
+//                if ("true".equals(value)) {
+//
+//                    lbDataCtxt.setLbCategory(StratosConstants.DEFAULT_LOAD_BALANCER);
+//
+//                    lbRefProperty.setValue(name);
+//
+//                    CartridgeInfo lbCartridgeInfo;
+//
+//                    try {
+//                        lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
+//
+//                    } catch (Exception e) {
+//                        String message = "Error getting info for " + lbCartridgeType;
+//                        log.error(message, e);
+//                        throw new ADCException(message, e);
+//                    }
+//
+//                    if (lbCartridgeInfo == null) {
+//                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
+//                                     StratosConstants.DEFAULT_LOAD_BALANCER;
+//                        log.error(msg);
+//                        throw new ADCException(msg);
+//                    }
+//
+//                    lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
+//
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("This cartridge uses default load balancer. " + "[Type] " + serviceType);
+//                    }
+//
+//                    try {
+//                        // get the valid policies for lb cartridge
+//                        DeploymentPolicy[] lbCartridgeDepPolicies =
+//                                getAutoscalerServiceClient().getDeploymentPolicies(lbCartridgeType);
+//                        // traverse deployment policies of lb cartridge
+//                        for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+//
+//                            // check existence of the subscribed policy
+//                            if (deploymentPolicyName.equals(policy.getId())) {
+//
+//                                if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
+//                                    if (log.isDebugEnabled()) {
+//                                        log.debug(" Default LB doesn't exist for deployment policy [" + deploymentPolicyName + "] ");
+//                                    }
+//
+//                                    Properties lbProperties = new Properties();
+//
+//                                    // if LB cartridge definition has properties as well, combine
+//                                    if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
+//                                        if (log.isDebugEnabled()) {
+//                                            log.debug(" Combining LB properties ");
+//                                        }
+//                                        lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty}));
+//                                    } else {
+//                                        lbProperties.setProperties(new Property[]{lbRefProperty});
+//                                    }
+//
+//                                    lbDataCtxt.addLBProperties(lbProperties);
+//                                }
+//                            }
+//                        }
+//
+//                    } catch (Exception ex) {
+//                        // we don't need to throw the error here.
+//                        log.error(ex.getMessage(), ex);
+//                    }
+//
+//                    // set deployment and autoscaling policies
+//                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
+//                    lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
+//
+//                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
+//                    break;
+//                }
+//
+//            } else if (StratosConstants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
+//
+//                if ("true".equals(value)) {
+//
+//                    lbDataCtxt.setLbCategory(StratosConstants.SERVICE_AWARE_LOAD_BALANCER);
+//
+//                    lbRefProperty.setValue(name);
+//
+//                    CartridgeInfo lbCartridgeInfo;
+//
+//                    try {
+//                        lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
+//
+//                    } catch (Exception e) {
+//                        String message = "Error getting info for " + lbCartridgeType;
+//                        log.error(message, e);
+//                        throw new ADCException(message, e);
+//                    }
+//
+//                    if (lbCartridgeInfo == null) {
+//                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
+//                                     StratosConstants.SERVICE_AWARE_LOAD_BALANCER;
+//                        log.error(msg);
+//                        throw new ADCException(msg);
+//                    }
+//
+//                    lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
+//
+//                    // add a property for the service type
+//                    Property loadBalancedServiceTypeProperty = new Property();
+//                    loadBalancedServiceTypeProperty.setName(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
+//                    // set the load balanced service type
+//                    loadBalancedServiceTypeProperty.setValue(serviceType);
+//
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("This cartridge uses a service aware load balancer. [Type] " + serviceType);
+//                    }
+//
+//                    try {
+//
+//                        // get the valid policies for lb cartridge
+//                        DeploymentPolicy[] lbCartridgeDepPolicies = getAutoscalerServiceClient().getDeploymentPolicies(lbCartridgeType);
+//                        // traverse deployment policies of lb cartridge
+//                        for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
+//                            // check existence of the subscribed policy
+//                            if (deploymentPolicyName.equals(policy.getId())) {
+//
+//                                if (!getAutoscalerServiceClient().checkServiceLBExistenceAgainstPolicy(serviceType, deploymentPolicyName)) {
+//
+//                                    Properties lbProperties = new Properties();
+//
+//                                    // if LB cartridge definition has properties as well, combine
+//                                    if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
+//                                        lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty, loadBalancedServiceTypeProperty}));
+//
+//                                    } else {
+//                                        lbProperties.setProperties(new Property[]{lbRefProperty, loadBalancedServiceTypeProperty});
+//                                    }
+//
+//                                    // set a payload property for load balanced service type
+//                                    Property payloadProperty = new Property();
+//                                    payloadProperty.setName("LOAD_BALANCED_SERVICE_TYPE");  //TODO: refactor hardcoded name
+//                                    payloadProperty.setValue(serviceType);
+//
+//                                    lbDataCtxt.addLBProperties(lbProperties);
+//                                }
+//                            }
+//                        }
+//
+//                    } catch (Exception ex) {
+//                        // we don't need to throw the error here.
+//                        log.error(ex.getMessage(), ex);
+//                    }
+//
+//                    // set deployment and autoscaling policies
+//                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
+//                    lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
+//
+//                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
+//                    break;
+//                }
+//            }
+//        }
 
-        LBDataContext lbDataCtxt = new LBDataContext();
-        // set tenant Id
-        lbDataCtxt.setTenantId(tenantId);
-
-        Properties lbReferenceProperties = lbConfig.getProperties();
-
-        Property lbRefProperty = new Property();
-        lbRefProperty.setName(StratosConstants.LOAD_BALANCER_REF);
-
-        for (Property prop : lbReferenceProperties.getProperties()) {
-
-            String name = prop.getName();
-            String value = prop.getValue();
-
-            // TODO make following a chain of responsibility pattern
-            if (StratosConstants.NO_LOAD_BALANCER.equals(name)) {
-
-                if ("true".equals(value)) {
-                    lbDataCtxt.setLbCategory(StratosConstants.NO_LOAD_BALANCER);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("This cartridge does not require a load balancer. " + "[Type] " + serviceType);
-                    }
-                    lbRefProperty.setValue(name);
-                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
-                    break;
-                }
-            } else if (StratosConstants.EXISTING_LOAD_BALANCERS.equals(name)) {
-
-                lbDataCtxt.setLbCategory(StratosConstants.EXISTING_LOAD_BALANCERS);
-
-                String clusterIdsVal = value;
-                if (log.isDebugEnabled()) {
-                    log.debug("This cartridge refers to existing load balancers. " + "[Type] " + serviceType + "[Referenced Cluster Ids] " + clusterIdsVal);
-                }
-
-                String[] clusterIds = clusterIdsVal.split(",");
-
-                for (String clusterId : clusterIds) {
-                    try {
-                        AutoscalerServiceClient.getServiceClient().checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyName);
-                    } catch (Exception ex) {
-                        // we don't need to throw the error here.
-                        log.error(ex.getMessage(), ex);
-                    }
-                }
-
-                lbRefProperty.setValue(name);
-                lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
-                break;
-
-            } else if (StratosConstants.DEFAULT_LOAD_BALANCER.equals(name)) {
-
-                if ("true".equals(value)) {
-
-                    lbDataCtxt.setLbCategory(StratosConstants.DEFAULT_LOAD_BALANCER);
-
-                    lbRefProperty.setValue(name);
-
-                    CartridgeInfo lbCartridgeInfo;
-
-                    try {
-                        lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
-
-                    } catch (Exception e) {
-                        String message = "Error getting info for " + lbCartridgeType;
-                        log.error(message, e);
-                        throw new ADCException(message, e);
-                    }
-
-                    if (lbCartridgeInfo == null) {
-                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
-                                     StratosConstants.DEFAULT_LOAD_BALANCER;
-                        log.error(msg);
-                        throw new ADCException(msg);
-                    }
-
-                    lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("This cartridge uses default load balancer. " + "[Type] " + serviceType);
-                    }
-
-                    try {
-                        // get the valid policies for lb cartridge
-                        DeploymentPolicy[] lbCartridgeDepPolicies =
-                                getAutoscalerServiceClient().getDeploymentPolicies(lbCartridgeType);
-                        // traverse deployment policies of lb cartridge
-                        for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
-
-                            // check existence of the subscribed policy
-                            if (deploymentPolicyName.equals(policy.getId())) {
-
-                                if (!getAutoscalerServiceClient().checkDefaultLBExistenceAgainstPolicy(deploymentPolicyName)) {
-                                    if (log.isDebugEnabled()) {
-                                        log.debug(" Default LB doesn't exist for deployment policy [" + deploymentPolicyName + "] ");
-                                    }
-
-                                    Properties lbProperties = new Properties();
-
-                                    // if LB cartridge definition has properties as well, combine
-                                    if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
-                                        if (log.isDebugEnabled()) {
-                                            log.debug(" Combining LB properties ");
-                                        }
-                                        lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty}));
-                                    } else {
-                                        lbProperties.setProperties(new Property[]{lbRefProperty});
-                                    }
-
-                                    lbDataCtxt.addLBProperties(lbProperties);
-                                }
-                            }
-                        }
-
-                    } catch (Exception ex) {
-                        // we don't need to throw the error here.
-                        log.error(ex.getMessage(), ex);
-                    }
-
-                    // set deployment and autoscaling policies
-                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
-                    lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
-
-                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
-                    break;
-                }
-
-            } else if (StratosConstants.SERVICE_AWARE_LOAD_BALANCER.equals(name)) {
-
-                if ("true".equals(value)) {
-
-                    lbDataCtxt.setLbCategory(StratosConstants.SERVICE_AWARE_LOAD_BALANCER);
-
-                    lbRefProperty.setValue(name);
-
-                    CartridgeInfo lbCartridgeInfo;
-
-                    try {
-                        lbCartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(lbCartridgeType);
-
-                    } catch (Exception e) {
-                        String message = "Error getting info for " + lbCartridgeType;
-                        log.error(message, e);
-                        throw new ADCException(message, e);
-                    }
-
-                    if (lbCartridgeInfo == null) {
-                        String msg = "Please specify a LB cartridge type for the cartridge: " + serviceType + " as category: " +
-                                     StratosConstants.SERVICE_AWARE_LOAD_BALANCER;
-                        log.error(msg);
-                        throw new ADCException(msg);
-                    }
-
-                    lbDataCtxt.setLbCartridgeInfo(lbCartridgeInfo);
-
-                    // add a property for the service type
-                    Property loadBalancedServiceTypeProperty = new Property();
-                    loadBalancedServiceTypeProperty.setName(StratosConstants.LOAD_BALANCED_SERVICE_TYPE);
-                    // set the load balanced service type
-                    loadBalancedServiceTypeProperty.setValue(serviceType);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("This cartridge uses a service aware load balancer. [Type] " + serviceType);
-                    }
-
-                    try {
-
-                        // get the valid policies for lb cartridge
-                        DeploymentPolicy[] lbCartridgeDepPolicies = getAutoscalerServiceClient().getDeploymentPolicies(lbCartridgeType);
-                        // traverse deployment policies of lb cartridge
-                        for (DeploymentPolicy policy : lbCartridgeDepPolicies) {
-                            // check existence of the subscribed policy
-                            if (deploymentPolicyName.equals(policy.getId())) {
-
-                                if (!getAutoscalerServiceClient().checkServiceLBExistenceAgainstPolicy(serviceType, deploymentPolicyName)) {
-
-                                    Properties lbProperties = new Properties();
-
-                                    // if LB cartridge definition has properties as well, combine
-                                    if (lbCartridgeInfo.getProperties() != null && lbCartridgeInfo.getProperties().length > 0) {
-                                        lbProperties.setProperties(combine(lbCartridgeInfo.getProperties(), new Property[]{lbRefProperty, loadBalancedServiceTypeProperty}));
-
-                                    } else {
-                                        lbProperties.setProperties(new Property[]{lbRefProperty, loadBalancedServiceTypeProperty});
-                                    }
-
-                                    // set a payload property for load balanced service type
-                                    Property payloadProperty = new Property();
-                                    payloadProperty.setName("LOAD_BALANCED_SERVICE_TYPE");  //TODO: refactor hardcoded name
-                                    payloadProperty.setValue(serviceType);
-
-                                    lbDataCtxt.addLBProperties(lbProperties);
-                                }
-                            }
-                        }
-
-                    } catch (Exception ex) {
-                        // we don't need to throw the error here.
-                        log.error(ex.getMessage(), ex);
-                    }
-
-                    // set deployment and autoscaling policies
-                    lbDataCtxt.setDeploymentPolicy(deploymentPolicyName);
-                    lbDataCtxt.setAutoscalePolicy(lbCartridgeInfo.getDefaultAutoscalingPolicy());
-
-                    lbDataCtxt.addLoadBalancedServiceProperty(lbRefProperty);
-                    break;
-                }
-            }
-        }
-
-        return lbDataCtxt;
+//        return lbDataCtxt;
+    return null;
     }
 
     private static AutoscalerServiceClient getAutoscalerServiceClient() throws ADCException {

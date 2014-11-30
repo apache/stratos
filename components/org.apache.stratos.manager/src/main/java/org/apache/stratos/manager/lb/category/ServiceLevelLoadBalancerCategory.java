@@ -51,13 +51,13 @@ public class ServiceLevelLoadBalancerCategory extends LoadBalancerCategory {
         // call the relevant method to get the cluster id, using deployment policy and type
         String clusterId = null;
 
-        try {
-            clusterId = AutoscalerServiceClient.getServiceClient().getServiceLBClusterId(getLoadBalancedServiceType(), getDeploymentPolicyName());
-
-        } catch (Exception e) {
-            log.error("Error occurred in retrieving Service LB cluster id" + e.getMessage());
-            throw new ADCException(e);
-        }
+//        try {
+//            clusterId = AutoscalerServiceClient.getServiceClient().getServiceLBClusterId(getLoadBalancedServiceType(), getDeploymentPolicyName());
+//
+//        } catch (Exception e) {
+//            log.error("Error occurred in retrieving Service LB cluster id" + e.getMessage());
+//            throw new ADCException(e);
+//        }
 
         if (clusterId != null) {
 

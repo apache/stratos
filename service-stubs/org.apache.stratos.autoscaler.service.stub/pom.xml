@@ -96,6 +96,7 @@
                             org.apache.stratos.autoscaler.stub.deployment.partition.*; version=${project.version},
                             org.apache.stratos.autoscaler.stub.exception.*; version=${project.version},
                             org.apache.stratos.autoscaler.stub.api.*; version=${project.version},
+                            org.apache.stratos.autoscaler.stub.*; version=${project.version},
                         </Export-Package>
                         <Private-Package>
                         </Private-Package>

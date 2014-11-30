@@ -50,12 +50,12 @@ public class DefaultLoadBalancerCategory extends LoadBalancerCategory {
 
         // call the relevant method to get the cluster id, using deployment policy
         String clusterId = null;
-		try {
-			clusterId = AutoscalerServiceClient.getServiceClient().getDefaultLBClusterId(getDeploymentPolicyName());
-		} catch (Exception e) {			
-			log.error("Error occurred in retrieving default LB cluster id" + e.getMessage());
-			throw new ADCException(e);
-		}
+//		try {
+//			clusterId = AutoscalerServiceClient.getServiceClient().getDefaultLBClusterId(getDeploymentPolicyName());
+//		} catch (Exception e) {
+//			log.error("Error occurred in retrieving default LB cluster id" + e.getMessage());
+//			throw new ADCException(e);
+//		}
 
         if (clusterId != null) {
             //set the cluster id to Cluster object

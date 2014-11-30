@@ -24,6 +24,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.*;
@@ -121,13 +122,15 @@ public class AutoscalerServiceClient {
 //        return partitions;
 //    }
 
-    public org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] getPartitionGroups(
+    public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartition(
             String deploymentPolicyId) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups;
-        partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
+        ApplicationLevelNetworkPartition[] partitionGroups;
+//        partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
 
-        return partitionGroups;
+//        return partitionGroups;
+        //FIXME add a method to autoscaler to return Application Level NetworkPartitions
+        return null;
     }
 
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()
@@ -167,19 +170,19 @@ public class AutoscalerServiceClient {
         return deploymentPolicies;
     }
 
-    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws RemoteException,
-            AutoScalerServiceNonExistingLBExceptionException {
-        stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
-    }
-
-    public boolean checkDefaultLBExistenceAgainstPolicy(
-            String deploymentPolicyId) throws RemoteException {
-        return stub.checkDefaultLBExistenceAgainstPolicy(deploymentPolicyId);
-    }
-
-    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) throws RemoteException {
-        return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
-    }
+//    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws RemoteException,
+//            AutoScalerServiceNonExistingLBExceptionException {
+//        stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
+//    }
+//
+//    public boolean checkDefaultLBExistenceAgainstPolicy(
+//            String deploymentPolicyId) throws RemoteException {
+//        return stub.checkDefaultLBExistenceAgainstPolicy(deploymentPolicyId);
+//    }
+//
+//    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) throws RemoteException {
+//        return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
+//    }
 
     public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
 
@@ -222,9 +225,9 @@ public class AutoscalerServiceClient {
 //
 //    }
 
-    public String getDefaultLBClusterId(String deploymentPolicy) throws RemoteException {
-        return stub.getDefaultLBClusterId(deploymentPolicy);
-    }
+//    public String getDefaultLBClusterId(String deploymentPolicy) throws RemoteException {
+//        return stub.getDefaultLBClusterId(deploymentPolicy);
+//    }
 
 
     public ServiceGroup getServiceGroup(String serviceGroupDefinitionName) throws RemoteException {
@@ -250,9 +253,9 @@ public class AutoscalerServiceClient {
     }
 
 
-    public String getServiceLBClusterId(String serviceType, String deploymentPolicy) throws RemoteException {
-        return stub.getServiceLBClusterId(serviceType, deploymentPolicy);
-    }
+//    public String getServiceLBClusterId(String serviceType, String deploymentPolicy) throws RemoteException {
+//        return stub.getServiceLBClusterId(serviceType, deploymentPolicy);
+//    }
 
     public boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RemoteException,
             AutoScalerServiceInvalidKubernetesGroupExceptionException {

@@ -657,8 +657,8 @@ public class PojoConverter {
         deploymentPolicyBean.setDescription(deploymentPolicy.getDescription());
         deploymentPolicyBean.setPublic(deploymentPolicy.getIsPublic());
 //TODO populate the Network partition based on new policy structure
-//        if (deploymentPolicy.getPartitionGroups() != null && deploymentPolicy.getPartitionGroups().length > 0) {
-//            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getPartitionGroups())));
+//        if (deploymentPolicy.getApplicationLevelNetworkPartition() != null && deploymentPolicy.getApplicationLevelNetworkPartition().length > 0) {
+//            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getApplicationLevelNetworkPartition())));
 //        }
 
         /*if (deploymentPolicy.getAllPartitions() != null && deploymentPolicy.getAllPartitions().length > 0) {

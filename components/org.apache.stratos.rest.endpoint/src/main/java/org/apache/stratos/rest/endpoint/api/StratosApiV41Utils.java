@@ -657,7 +657,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                partitionGroups = autoscalerServiceClient.getPartitionGroups(deploymentPolicyId);
+                partitionGroups = autoscalerServiceClient.getApplicationLevelNetworkPartition(deploymentPolicyId);
 
             } catch (RemoteException e) {
                 String errorMsg = "Error getting available partition groups for deployment policy id "
