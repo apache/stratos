@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildPolicyHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ public class DeploymentPolicy implements Serializable{
     private String description;
     private boolean isPublic;
     private ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions;
+    private ChildPolicyHolder childPolicyHolder;
     private int tenantId;
 
     /**
@@ -178,12 +180,21 @@ public class DeploymentPolicy implements Serializable{
     }
 
     public ChildLevelNetworkPartition getChildLevelNetworkPartition(String networkPartitionId) {
-        //TODO create a map of child level network partition context and return correct one
+
+        childPolicyHolder.getChildLevelNetworkPartitionById(networkPartitionId);
         return null;
     }
 
     public ChildLevelNetworkPartition[] getChildLevelNetworkPartitions() {
         //TODO create a map of child level network partition context and return correct one
         return new ChildLevelNetworkPartition[0];
+    }
+
+    public ChildPolicyHolder getChildPolicyHolder() {
+        return childPolicyHolder;
+    }
+
+    public void setChildPolicyHolder(ChildPolicyHolder childPolicyHolder) {
+        this.childPolicyHolder = childPolicyHolder;
     }
 }
