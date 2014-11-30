@@ -25,6 +25,7 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
@@ -74,7 +75,7 @@ public class CloudControllerDeployer extends AbstractDeployer {
             // update map
             fileToIaasProviderListMap.put(deploymentFileData.getAbsolutePath(),
                                           new ArrayList<IaasProvider>(
-                                                                      CloudControllerContext.getInstance()
+                                                                      CloudControllerConfig.getInstance()
                                                                                             .getIaasProviders()));
 
             log.info("Successfully deployed the cloud-controller XML file located at " +
@@ -87,23 +88,21 @@ public class CloudControllerDeployer extends AbstractDeployer {
 
         if (file.contains(FILE_NAME)) {
             // reset
-            CloudControllerContext dataHolder = CloudControllerContext.getInstance();
-            dataHolder.setSerializationDir("");
+            CloudControllerContext context = CloudControllerContext.getInstance();
+            context.setSerializationDir("");
 
             // grab the entry from Map
             if (fileToIaasProviderListMap.containsKey(file)) {
                 // remove 'em
-                dataHolder.getIaasProviders().removeAll(fileToIaasProviderListMap.get(file));
+                CloudControllerConfig.getInstance().getIaasProviders().removeAll(fileToIaasProviderListMap.get(file));
 
                 log.info("Successfully undeployed the cloud-controller XML file specified at " +
                          file);
             }
 
-            dataHolder.setDataPubConfig(null);
-            dataHolder.setTopologyConfig(null);
-
+            CloudControllerConfig.getInstance().setDataPubConfig(null);
+            CloudControllerConfig.getInstance().setTopologyConfig(null);
         }
-
     }
 
 }

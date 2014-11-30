@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -39,8 +40,6 @@ public class TopologySynchronizerTaskScheduler {
 
     private static final Log log = LogFactory.getLog(TopologySynchronizerTaskScheduler.class);
 
-    private static final CloudControllerContext dataHolder = CloudControllerContext.getInstance();
-
     public static void schedule(TaskService taskService) {
         TaskManager taskManager = null;
         try {
@@ -51,7 +50,8 @@ public class TopologySynchronizerTaskScheduler {
 
                 // Register task
                 taskManager = taskService.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
-                String cronProp = dataHolder.getTopologyConfig().getProperty(CloudControllerConstants.CRON_PROPERTY);
+                String cronProp = CloudControllerConfig.getInstance().
+                        getTopologyConfig().getProperty(CloudControllerConstants.CRON_PROPERTY);
 				String cron = cronProp != null ?  cronProp :CloudControllerConstants.TOPOLOGY_SYNC_CRON ;
                 TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(cron);
                 TaskInfo taskInfo = new TaskInfo(CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,

@@ -42,7 +42,7 @@ public class CloudControllerContext implements Serializable{
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
-	private static volatile CloudControllerContext instance;
+    private static volatile CloudControllerContext instance;
 
 	/* We keep following maps in order to make the look up time, small. */
 	
@@ -98,32 +98,28 @@ public class CloudControllerContext implements Serializable{
 	 */
 	private List<ServiceGroup> serviceGroups;
 
-	/**
-	 * List of IaaS Providers.
-	 */
-	private List<IaasProvider> iaasProviders;
-
 	private String serializationDir;
-	private boolean enableBAMDataPublisher;
-	private transient DataPublisherConfig dataPubConfig;
-	private boolean enableTopologySync;
-	private transient TopologyConfig topologyConfig;
-	private transient AsyncDataPublisher dataPublisher;
 	private String streamId;
 	private boolean isPublisherRunning;
 	private boolean isTopologySyncRunning;
     private boolean clustered;
 
+    private transient AsyncDataPublisher dataPublisher;
+
     private CloudControllerContext() {
+        // Initialize cloud controller context
         clusterIdToMemberContext = new ConcurrentHashMap<String, List<MemberContext>>();
         memberIdToContext = new ConcurrentHashMap<String, MemberContext>();
         memberIdToScheduledTask = new ConcurrentHashMap<String, ScheduledFuture<?>>();
         kubClusterIdToKubClusterContext = new ConcurrentHashMap<String, KubernetesClusterContext>();
         clusterIdToContext = new ConcurrentHashMap<String, ClusterContext>();
         cartridgeTypeToPartitionIds = new ConcurrentHashMap<String, List<String>>();
-
         cartridges = new ArrayList<Cartridge>();
         serviceGroups = new ArrayList<ServiceGroup>();
+
+        if (log.isInfoEnabled()) {
+            log.info("Cloud controller context initialized locally");
+        }
     }
 
 	public static CloudControllerContext getInstance() {
@@ -135,7 +131,7 @@ public class CloudControllerContext implements Serializable{
 						if (obj instanceof CloudControllerContext) {
 							instance = (CloudControllerContext) obj;
 						}
-					} 
+					}
 				}
 				if(instance == null) {
 					instance = new CloudControllerContext();
@@ -168,12 +164,10 @@ public class CloudControllerContext implements Serializable{
 				return cartridge;
 			}
 		}
-
 		return null;
 	}
 	
 	public void addCartridge(Cartridge newCartridges) {
-	
 		cartridges.add(newCartridges);
 	}
 
@@ -203,27 +197,6 @@ public class CloudControllerContext implements Serializable{
 			this.serviceGroups.removeAll(serviceGroup);
 		}
 	}
-	
-	public IaasProvider getIaasProvider(String type) {
-	    if(type == null) {
-	        return null;
-	    }
-	    
-	    for (IaasProvider iaasProvider : iaasProviders) {
-            if(type.equals(iaasProvider.getType())) {
-                return iaasProvider;
-            }
-        }
-	    return null;
-	}
-
-	public List<IaasProvider> getIaasProviders() {
-		return iaasProviders;
-	}
-
-	public void setIaasProviders(List<IaasProvider> iaasProviders) {
-		this.iaasProviders = iaasProviders;
-	}
 
 	public String getSerializationDir() {
 		return serializationDir;
@@ -249,28 +222,12 @@ public class CloudControllerContext implements Serializable{
 		this.streamId = streamId;
 	}
 
-	public boolean getEnableBAMDataPublisher() {
-		return enableBAMDataPublisher;
-	}
-
-	public void setEnableBAMDataPublisher(boolean enableBAMDataPublisher) {
-		this.enableBAMDataPublisher = enableBAMDataPublisher;
-	}
-
 	public boolean isPublisherRunning() {
 		return isPublisherRunning;
 	}
 
 	public void setPublisherRunning(boolean isPublisherRunning) {
 		this.isPublisherRunning = isPublisherRunning;
-	}
-
-	public boolean getEnableTopologySync() {
-		return enableTopologySync;
-	}
-
-	public void setEnableTopologySync(boolean enableTopologySync) {
-		this.enableTopologySync = enableTopologySync;
 	}
 
 	public boolean isTopologySyncRunning() {
@@ -281,22 +238,6 @@ public class CloudControllerContext implements Serializable{
 	    this.isTopologySyncRunning = isTopologySyncRunning;
     }
 
-	public TopologyConfig getTopologyConfig() {
-		return topologyConfig;
-	}
-
-	public void setTopologyConfig(TopologyConfig topologyConfig) {
-		this.topologyConfig = topologyConfig;
-	}
-
-    public DataPublisherConfig getDataPubConfig() {
-        return dataPubConfig;
-    }
-
-    public void setDataPubConfig(DataPublisherConfig dataPubConfig) {
-        this.dataPubConfig = dataPubConfig;
-    }
-    
     public void addMemberContext(MemberContext ctxt) {
         memberIdToContext.put(ctxt.getMemberId(), ctxt);
         
@@ -362,7 +303,6 @@ public class CloudControllerContext implements Serializable{
         stopTask(memberIdToScheduledTask.remove(memberId));
         
         return returnedCtxt;
-        
     }
     
     private void stopTask(ScheduledFuture<?> task) {
@@ -472,10 +412,6 @@ public class CloudControllerContext implements Serializable{
 
     public void setMemberIdToScheduledTask(Map<String, ScheduledFuture<?>> memberIdToScheduledTask) {
         this.memberIdToScheduledTask = memberIdToScheduledTask;
-    }
-
-    public void setClustered(boolean clustered) {
-        this.clustered = clustered;
     }
 
     public boolean isClustered() {

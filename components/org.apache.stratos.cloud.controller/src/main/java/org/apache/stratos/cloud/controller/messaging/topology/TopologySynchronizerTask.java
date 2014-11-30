@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.wso2.carbon.ntask.core.Task;
 
@@ -36,7 +37,7 @@ public class TopologySynchronizerTask implements Task{
         
         if(CloudControllerContext.getInstance().isTopologySyncRunning() ||
         		// this is a temporary fix to avoid task execution - limitation with ntask
-                (!CloudControllerContext.getInstance().getEnableTopologySync())){
+                (!CloudControllerConfig.getInstance().isTopologySyncEnabled())){
             if(log.isWarnEnabled()) {
                 log.warn("Topology synchronization is disabled.");
             }
@@ -53,7 +54,7 @@ public class TopologySynchronizerTask implements Task{
     public void init() {
 
     	// this is a temporary fix to avoid task execution - limitation with ntask
-		if(!CloudControllerContext.getInstance().getEnableTopologySync()){
+		if(!CloudControllerConfig.getInstance().isTopologySyncEnabled()){
             if(log.isWarnEnabled()) {
                 log.warn("Topology synchronization is disabled.");
             }

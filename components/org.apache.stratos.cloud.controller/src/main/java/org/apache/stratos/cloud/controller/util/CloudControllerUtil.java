@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.util;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Partition;
@@ -87,7 +88,7 @@ public class CloudControllerUtil {
         // populate LB config
         cartridge.setLbConfig(config.getLbConfig());
 
-        List<IaasProvider> iaases = CloudControllerContext.getInstance().getIaasProviders();
+        List<IaasProvider> iaases = CloudControllerConfig.getInstance().getIaasProviders();
 
         // populate IaaSes
         IaasConfig[] iaasConfigs = config.getIaasConfigs();

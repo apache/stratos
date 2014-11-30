@@ -29,6 +29,7 @@ import org.apache.stratos.load.balancer.context.map.*;
 public class LoadBalancerContext {
 
     private static final Log log = LogFactory.getLog(LoadBalancerContext.class);
+
     private static volatile LoadBalancerContext instance;
 
     // Following map is updated by the service component.

@@ -35,17 +35,15 @@ import com.google.common.base.Function;
  */
 public class ContainerClusterContextToKubernetesService implements Function<ContainerClusterContext, Service> {
 
-    private CloudControllerContext dataHolder = CloudControllerContext.getInstance();
-
     @Override
     public Service apply(ContainerClusterContext memberContext) {
 
         String clusterId = memberContext.getClusterId();
-        ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
+        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
         String kubernetesClusterId = CloudControllerUtil.getProperty(
                 clusterContext.getProperties(), StratosConstants.KUBERNETES_CLUSTER_ID);
-        KubernetesClusterContext kubClusterContext = dataHolder
+        KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance()
                 .getKubernetesClusterContext(kubernetesClusterId);
 
         Service service = new Service();

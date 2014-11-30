@@ -45,17 +45,16 @@ import com.google.common.base.Function;
 public class ContainerClusterContextToKubernetesContainer implements Function<ContainerClusterContext, Container> {
 
     private static final Log log = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
-    private CloudControllerContext dataHolder = CloudControllerContext.getInstance();
 
     @Override
     public Container apply(ContainerClusterContext memberContext) {
         String clusterId = memberContext.getClusterId();
-        ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
+        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
         Container container = new Container();
         container.setName(getCompatibleName(clusterContext.getHostName()));
 
-        Cartridge cartridge = dataHolder.getCartridge(clusterContext.getCartridgeType());
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
 
         if (cartridge == null) {
             log.error("Cannot find a Cartridge of type : " + clusterContext.getCartridgeType());

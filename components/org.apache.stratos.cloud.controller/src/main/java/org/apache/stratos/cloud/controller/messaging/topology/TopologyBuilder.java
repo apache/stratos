@@ -183,7 +183,7 @@ public class TopologyBuilder {
         TopologyManager.acquireWriteLock();
 
         List<Cluster> removedClusters = new ArrayList<Cluster>();
-        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
+        CloudControllerContext context = CloudControllerContext.getInstance();
         try {
             Topology topology = TopologyManager.getTopology();
 
@@ -197,12 +197,12 @@ public class TopologyBuilder {
                         log.warn("Service " + aClusterData.getServiceType() + " not found, unable to remove Cluster " + aClusterData.getClusterId());
                     }
                     // remove runtime data
-                    dataHolder.removeClusterContext(aClusterData.getClusterId());
+                    context.removeClusterContext(aClusterData.getClusterId());
 
                     log.info("Removed application [ " + appId + " ]'s Cluster [ " + aClusterData.getClusterId() + " ] from the topology");
                 }
                 // persist runtime data changes
-                persist(dataHolder);
+                persist(context);
             } else {
                 log.info("No cluster data found for application " + appId + " to remove");
             }
@@ -220,10 +220,10 @@ public class TopologyBuilder {
     /**
      * Persist data in registry.
      */
-    private static void persist(CloudControllerContext dataHolder) {
+    private static void persist(CloudControllerContext context) {
         try {
             RegistryManager.getInstance().persist(
-                    dataHolder);
+                    context);
         } catch (RegistryException e) {
 
             String msg = "Failed to persist the Cloud Controller data in registry. Further, transaction roll back also failed.";

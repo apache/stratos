@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.messaging.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
@@ -56,7 +57,7 @@ public class CartridgeInstanceDataPublisher {
                                String serviceName,
                                String status,
                                NodeMetadata metadata) {
-        if(!CloudControllerContext.getInstance().getEnableBAMDataPublisher()){
+        if(!CloudControllerConfig.getInstance().isBAMDataPublisherEnabled()){
             return;
         }
         log.debug(CloudControllerConstants.DATA_PUB_TASK_NAME+" cycle started.");
@@ -182,8 +183,8 @@ public class CartridgeInstanceDataPublisher {
         String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
         String trustStorePassword = serverConfig.getFirstProperty("Security.TrustStore.Password");
         String bamServerUrl = serverConfig.getFirstProperty("BamServerURL");
-        String adminUsername = CloudControllerContext.getInstance().getDataPubConfig().getBamUsername();
-        String adminPassword = CloudControllerContext.getInstance().getDataPubConfig().getBamPassword();
+        String adminUsername = CloudControllerConfig.getInstance().getDataPubConfig().getBamUsername();
+        String adminPassword = CloudControllerConfig.getInstance().getDataPubConfig().getBamPassword();
 
         System.setProperty("javax.net.ssl.trustStore", trustStorePath);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);

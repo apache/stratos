@@ -69,14 +69,6 @@ public class CloudControllerServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
-            ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
-            boolean clusteringEnabled = (clusteringAgent != null);
-            CloudControllerContext.getInstance().setClustered(clusteringEnabled);
-
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Cloud controller clustering is %s", (clusteringEnabled ? "enabled" : "disabled")));
-            }
-
             applicationTopicReceiver = new ApplicationTopicReceiver();
             Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
             tApplicationTopicReceiver.start();

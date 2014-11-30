@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
@@ -1533,7 +1534,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(partition, "Partition validation failed. Partition is null.");
         String provider = partition.getProvider();
         handleNullObject(provider, "Partition [" + partition.getId() + "] validation failed. Partition provider is null.");
-        IaasProvider iaasProvider = dataHolder.getIaasProvider(provider);
+        IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
 
         if (iaasProvider == null) {
             String msg =

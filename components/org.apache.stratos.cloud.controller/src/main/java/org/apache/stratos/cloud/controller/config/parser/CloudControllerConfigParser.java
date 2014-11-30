@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.cloud.controller.config.parser;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.domain.DataPublisherConfig;
@@ -61,10 +62,10 @@ public class CloudControllerConfigParser {
 
 
     private static void extractIaasProviders(OMElement elt, List<OMNode> nodeList) {
-        List<IaasProvider> iaasProviders = CloudControllerContext.getInstance().getIaasProviders();
+        List<IaasProvider> iaasProviders = CloudControllerConfig.getInstance().getIaasProviders();
 
         if (iaasProviders == null) {
-            CloudControllerContext.getInstance()
+            CloudControllerConfig.getInstance()
                     .setIaasProviders((iaasProviders = new ArrayList<IaasProvider>()));
         }
 
@@ -86,12 +87,12 @@ public class CloudControllerConfigParser {
             return;
         }
 
-        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
+        CloudControllerConfig config = CloudControllerConfig.getInstance();
         // get enable attribute
         boolean isEnable =
                 Boolean.parseBoolean(element.getAttributeValue(new QName(
                         CloudControllerConstants.ENABLE_ATTR)));
-        dataHolder.setEnableBAMDataPublisher(isEnable);
+        config.setEnableBAMDataPublisher(isEnable);
 
         if (isEnable) {
             // get bam server info
@@ -100,8 +101,8 @@ public class CloudControllerConfigParser {
                             CloudControllerConstants.BAM_SERVER_ELEMENT);
             OMElement elt;
 
-            DataPublisherConfig config = new DataPublisherConfig();
-            dataHolder.setDataPubConfig(config);
+            DataPublisherConfig dataPublisherConfig = new DataPublisherConfig();
+            config.setDataPubConfig(dataPublisherConfig);
             
             if (childElement != null) {
                 // set bam user name
@@ -109,7 +110,7 @@ public class CloudControllerConfigParser {
                         AxiomXpathParserUtil.getFirstChildElement(childElement,
                                 CloudControllerConstants.BAM_SERVER_ADMIN_USERNAME_ELEMENT);
                 if (elt != null) {
-                    config.setBamUsername(elt.getText());
+                    dataPublisherConfig.setBamUsername(elt.getText());
                 }
                 // set bam password
                 elt =
@@ -123,7 +124,7 @@ public class CloudControllerConfigParser {
                     }
 
                     if (password != null) {
-                        config.setBamPassword(password);
+                        dataPublisherConfig.setBamPassword(password);
                     }
                 }
             }
@@ -131,7 +132,7 @@ public class CloudControllerConfigParser {
             // set cron
             childElement = AxiomXpathParserUtil.getFirstChildElement(element, CloudControllerConstants.CRON_ELEMENT);
             if (childElement != null) {
-                config.setDataPublisherCron(childElement.getText());
+                dataPublisherConfig.setDataPublisherCron(childElement.getText());
             }
 
             // set cassandra info
@@ -141,13 +142,13 @@ public class CloudControllerConfigParser {
                 // set connection url
                 elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.CONNECTION_URL_ELEMENT);
                 if (elt != null) {
-                    config.setCassandraConnUrl(elt.getText());
+                    dataPublisherConfig.setCassandraConnUrl(elt.getText());
                 }
 
                 // set user name
                 elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.USER_NAME_ELEMENT);
                 if (elt != null) {
-                    config.setCassandraUser(elt.getText());
+                    dataPublisherConfig.setCassandraUser(elt.getText());
                 }
                 // set password
                 elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.PASSWORD_ELEMENT);
@@ -159,7 +160,7 @@ public class CloudControllerConfigParser {
                     }
 
                     if (password != null) {
-                        config.setCassandraPassword(password);
+                        dataPublisherConfig.setCassandraPassword(password);
                     }
                 }
             }
@@ -179,9 +180,9 @@ public class CloudControllerConfigParser {
                 Boolean.parseBoolean(element.getAttributeValue(new QName(
                         CloudControllerConstants.ENABLE_ATTR)));
 
-        CloudControllerContext dataHolder = CloudControllerContext.getInstance();
+        CloudControllerConfig config = CloudControllerConfig.getInstance();
 
-        dataHolder.setEnableTopologySync(isEnable);
+        config.setEnableTopologySync(isEnable);
         if (!isEnable) {
             if (log.isWarnEnabled()) {
                 log.warn("Topology synchronization is disabled!");
@@ -193,7 +194,7 @@ public class CloudControllerConfigParser {
             // load properties
             IaasProviderConfigParser.loadProperties(FILE_NAME, element, topologyConfig.getProperties());
 
-            dataHolder.setTopologyConfig(topologyConfig);
+            config.setTopologyConfig(topologyConfig);
         }
     }
     

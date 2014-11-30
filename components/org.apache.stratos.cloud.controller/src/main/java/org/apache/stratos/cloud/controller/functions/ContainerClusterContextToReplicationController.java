@@ -40,13 +40,11 @@ import com.google.common.base.Function;
 public class ContainerClusterContextToReplicationController implements
         Function<ContainerClusterContext, ReplicationController> {
 
-    private CloudControllerContext dataHolder = CloudControllerContext.getInstance();
-
     @Override
     public ReplicationController apply(ContainerClusterContext memberContext) {
 
         String clusterId = memberContext.getClusterId();
-        ClusterContext clusterContext = dataHolder.getClusterContext(clusterId);
+        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
         ReplicationController contr = new ReplicationController();
         contr.setId(clusterContext.getClusterId());

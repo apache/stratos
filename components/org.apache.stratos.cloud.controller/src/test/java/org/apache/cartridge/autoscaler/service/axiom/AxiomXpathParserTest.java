@@ -19,12 +19,11 @@
 package org.apache.cartridge.autoscaler.service.axiom;
 
 import junit.framework.TestCase;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
+import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 
 import java.io.File;
 import java.util.List;
@@ -47,18 +46,18 @@ public class AxiomXpathParserTest extends TestCase {
     public void testGetMatchingNodes(){
         List<OMNode> list = AxiomXpathParserUtil.getMatchingNodes("/cloudController/iaasProviders/iaasProvider/provider", docElt);
         assertEquals(1, list.size());
-        assertEquals(1, CloudControllerContext.getInstance().getIaasProviders().size());
+        assertEquals(1, CloudControllerConfig.getInstance().getIaasProviders().size());
     }
     
     public void testDataPublisherConfig() {
-		assertEquals(true, CloudControllerContext.getInstance().getEnableBAMDataPublisher());
-		assertEquals("nirmal", CloudControllerContext.getInstance().getDataPubConfig().getBamUsername());
-		assertEquals("nirmal", CloudControllerContext.getInstance().getDataPubConfig().getBamPassword());
+		assertEquals(true, CloudControllerConfig.getInstance().isBAMDataPublisherEnabled());
+		assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamUsername());
+		assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamPassword());
 	}
     
     public void testTopologySynchParser() {
-		assertNotNull(CloudControllerContext.getInstance().getTopologyConfig());
-		assertEquals("1 * * * * ? *", CloudControllerContext.getInstance().getTopologyConfig().getProperty("cron"));
+		assertNotNull(CloudControllerConfig.getInstance().getTopologyConfig());
+		assertEquals("1 * * * * ? *", CloudControllerConfig.getInstance().getTopologyConfig().getProperty("cron"));
 	}
 
 }
