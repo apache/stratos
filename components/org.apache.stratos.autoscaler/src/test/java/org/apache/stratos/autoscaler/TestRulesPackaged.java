@@ -44,16 +44,16 @@ public class TestRulesPackaged {
         parseDroolsFile(minCheckDrlFilePath);
     }
 
-   /* FIXME********@Test
+    @Test
     public void testScalingDroolsFile() {
         parseDroolsFile(scalingDrlFilePath);
     }
+//FIXME add this when dependent scaling file is completed
+//    @Test
+//    public void testDependentScalingDroolsFile() {
+//        parseDroolsFile(dependentScalingDrlFilePath);
+//    }
 
-    @Test
-    public void testDependentScalingDroolsFile() {
-        parseDroolsFile(dependentScalingDrlFilePath);
-    }
-*/
     @Test
     public void testTerminateAllDroolsFile() {
         parseDroolsFile(terminateAllDrlFilePath);
@@ -66,8 +66,10 @@ public class TestRulesPackaged {
         KnowledgeBuilderErrors errors = kbuilder.getErrors();
         if (errors.size() > 0) {
             StringBuilder sb = new StringBuilder();
+
             for (KnowledgeBuilderError error : errors) {
                 sb.append(error.getMessage());
+                log.error(error.getMessage());
             }
             if(sb.length() > 0) {
                 log.error(sb.toString());
