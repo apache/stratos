@@ -20,7 +20,7 @@ package org.apache.stratos.cli.beans.autoscaler.partition;
 
 import java.util.List;
 
-public class PartitionGroup {
+public class NetworkPartition {
     private String id;
 
     private String partitionAlgo;
