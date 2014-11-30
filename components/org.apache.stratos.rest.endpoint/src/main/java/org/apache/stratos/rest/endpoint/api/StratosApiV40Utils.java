@@ -24,8 +24,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeConfig;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.pojo.Property;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPartitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
@@ -176,7 +176,7 @@ public class StratosApiV40Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.cloud.controller.domain.xsd.Partition partition =
+            org.apache.stratos.cloud.controller.stub.domain.Partition partition =
                     PojoConverter.convertToCCPartitionPojo(partitionBean);
 
 //            try {
@@ -274,7 +274,7 @@ public class StratosApiV40Utils {
 
     public static Partition[] getAvailablePartitions () throws RestAPIException {
 
-       org.apache.stratos.cloud.controller.domain.xsd.Partition[] partitions = null;
+       org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 //            try {
@@ -293,7 +293,7 @@ public class StratosApiV40Utils {
     public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId)
             throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.domain.xsd.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
@@ -314,7 +314,7 @@ public class StratosApiV40Utils {
     public static Partition[]
     getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.domain.xsd.Partition[] partitions = null;
+        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
@@ -334,7 +334,7 @@ public class StratosApiV40Utils {
 
     public static Partition getPartition (String partitionId) throws RestAPIException {
 
-        org.apache.stratos.cloud.controller.domain.xsd.Partition partition = null;
+        org.apache.stratos.cloud.controller.stub.domain.Partition partition = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
