@@ -32,6 +32,7 @@ public class ChildLevelNetworkPartition implements Serializable {
     private String id;
     private String partitionAlgo;
     private ChildLevelPartition[] childLevelPartitions;
+    private int min;
 
     /**
      * Gets the value of the partitionAlgo property.
@@ -102,4 +103,11 @@ public class ChildLevelNetworkPartition implements Serializable {
         return null;
     }
 
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
+    }
 }

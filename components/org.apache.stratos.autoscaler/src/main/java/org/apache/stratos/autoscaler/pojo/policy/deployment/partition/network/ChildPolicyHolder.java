@@ -5,12 +5,12 @@ import java.util.Map;
 
 public class ChildPolicyHolder {
 
-    // Key: networkPartitinID, value: ApplicationLevelNetworkPartition
-    private Map<String, ApplicationLevelNetworkPartition> applicationLevelNetworkPartitions;
+    // Key: networkPartitinID, value: ChildLevelNetworkPartition
+    private Map<String, ChildLevelNetworkPartition> childLevelNetworkPartitions;
     private String deploymentPolicyId;
 
-    public ChildPolicyHolder(Map<String, ApplicationLevelNetworkPartition> applicationLevelNetworkPartitions, String deploymentPolicyId) {
-        this.applicationLevelNetworkPartitions = applicationLevelNetworkPartitions;
+    public ChildPolicyHolder(Map<String, ChildLevelNetworkPartition> childLevelNetworkPartitions, String deploymentPolicyId) {
+        this.childLevelNetworkPartitions = childLevelNetworkPartitions;
         this.deploymentPolicyId = deploymentPolicyId;
     }
 
@@ -18,7 +18,11 @@ public class ChildPolicyHolder {
         return deploymentPolicyId;
     }
 
-    public Map<String, ApplicationLevelNetworkPartition> getApplicationLevelNetworkPartitions() {
-        return applicationLevelNetworkPartitions;
+    public Map<String, ChildLevelNetworkPartition> getChildLevelNetworkPartitions() {
+        return childLevelNetworkPartitions;
+    }
+
+    public ChildLevelNetworkPartition getChildLevelNetworkPartitionById(String networkPartitionId) {
+        return childLevelNetworkPartitions.get(networkPartitionId);
     }
 }
