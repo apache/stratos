@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.DependencyContext;
 import org.apache.stratos.autoscaler.stub.pojo.GroupContext;
@@ -379,22 +380,22 @@ public class PojoConverter {
         deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic());
         if(deploymentPolicyBean.getNetworkPartition() != null && !deploymentPolicyBean.getNetworkPartition().isEmpty()) {
-            deploymentPolicy.setPartitionGroups(convertToCCPartitionGroup(deploymentPolicyBean.getNetworkPartition()));
+            deploymentPolicy.setApplicationLevelNetworkPartitions(convertToCCPartitionGroup(deploymentPolicyBean.getNetworkPartition()));
         }
 
         return deploymentPolicy;
     }
 
-    private static org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] convertToCCPartitionGroup(List<NetworkPartition> networkPartitionBeans) {
+    private static ApplicationLevelNetworkPartition[] convertToCCPartitionGroup(List<NetworkPartition> networkPartitionBeans) {
 
-        org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups = new
-                org.apache.stratos.autoscaler.stub.partition.PartitionGroup[networkPartitionBeans.size()];
+        ApplicationLevelNetworkPartition[] partitionGroups = new
+                ApplicationLevelNetworkPartition[networkPartitionBeans.size()];
 
         for (int i = 0; i < networkPartitionBeans.size(); i++) {
-            org.apache.stratos.autoscaler.stub.partition.PartitionGroup partitionGroup = new
-                    org.apache.stratos.autoscaler.stub.partition.PartitionGroup();
+            ApplicationLevelNetworkPartition partitionGroup = new
+                    ApplicationLevelNetworkPartition();
             partitionGroup.setId(networkPartitionBeans.get(i).id);
-            partitionGroup.setPartitionAlgo(networkPartitionBeans.get(i).partitionAlgo);
+//            partitionGroup.setPartitionAlgo(networkPartitionBeans.get(i).partitionAlgo);
             partitionGroup.setActiveByDefault(networkPartitionBeans.get(i).activeByDefault);
 
             //TODO populate partitions according to new policy structure
@@ -666,7 +667,7 @@ public class PojoConverter {
         return deploymentPolicyBean;
     }
 
-    public static NetworkPartition populatePartitionGroupPojo(org.apache.stratos.autoscaler.stub.partition.PartitionGroup
+    public static NetworkPartition populatePartitionGroupPojo(ApplicationLevelNetworkPartition
                                                                     partitionGroup) {
 
         NetworkPartition networkPartitionBean = new NetworkPartition();
@@ -675,7 +676,8 @@ public class PojoConverter {
         }
 
         networkPartitionBean.id = partitionGroup.getId();
-        networkPartitionBean.partitionAlgo = partitionGroup.getPartitionAlgo();
+        //FIXME update with new deployment policy pattern
+//        networkPartitionBean.partitionAlgo = partitionGroup.getPartitionAlgo();
 //        if (partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
 //            partitionGroupBean.partition = getPartitionList(partitionGroup.getPartitions());
 //        }
@@ -683,7 +685,7 @@ public class PojoConverter {
         return networkPartitionBean;
     }
 
-    public static NetworkPartition[] populatePartitionGroupPojos(org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups) {
+    public static NetworkPartition[] populatePartitionGroupPojos(ApplicationLevelNetworkPartition[] partitionGroups) {
 
         NetworkPartition[] networkPartitionGroupsBeans;
         if (partitionGroups == null) {

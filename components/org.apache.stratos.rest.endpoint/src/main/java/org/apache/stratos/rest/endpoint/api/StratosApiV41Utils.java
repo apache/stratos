@@ -23,6 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
@@ -172,12 +173,12 @@ public class StratosApiV41Utils {
         applicationContext.setTeantAdminUsername(userName);
 
         if (appDefinition.getProperty() != null) {
-            org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
+            org.apache.stratos.common.Properties properties = new org.apache.stratos.common.Properties();
             for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
                 Property property = new Property();
                 property.setName(propertyBean.getName());
                 property.setValue(propertyBean.getValue());
-                properties.addProperties(property);
+                properties.addProperty(property);
             }
             applicationContext.setProperties(properties);
         }
@@ -653,7 +654,7 @@ public class StratosApiV41Utils {
     public static NetworkPartition[] getPartitionGroups(String deploymentPolicyId)
             throws RestAPIException {
 
-        org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups = null;
+        ApplicationLevelNetworkPartition[] partitionGroups = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
