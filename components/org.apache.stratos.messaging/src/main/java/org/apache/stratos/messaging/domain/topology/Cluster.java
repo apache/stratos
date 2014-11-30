@@ -55,10 +55,12 @@ public class Cluster implements Serializable {
 
     private String appId;
 
+    private String parentId;
+
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
-    protected Map<String, ClusterInstance> instanceIdToInstanceContextMap;
+    private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
@@ -70,7 +72,7 @@ public class Cluster implements Serializable {
         this.setHostNames(new ArrayList<String>());
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
-        this.instanceIdToInstanceContextMap = new HashMap<String, ClusterInstance>();
+        this.setInstanceIdToInstanceContextMap(new HashMap<String, ClusterInstance>());
         //this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
         // temporary; should be removed
         //this.status = ClusterStatus.Created;
@@ -213,44 +215,44 @@ public class Cluster implements Serializable {
     }
 
     public boolean isStateTransitionValid(ClusterStatus newState, String clusterInstanceId) {
-        return instanceIdToInstanceContextMap.get(clusterInstanceId).isStateTransitionValid(newState);
+        return getInstanceIdToInstanceContextMap().get(clusterInstanceId).isStateTransitionValid(newState);
     }
 
     public Stack<ClusterStatus> getTransitionedStates(String clusterInstanceId) {
-        return instanceIdToInstanceContextMap.get(clusterInstanceId).getTransitionedStates();
+        return getInstanceIdToInstanceContextMap().get(clusterInstanceId).getTransitionedStates();
     }
 
     public ClusterStatus getStatus(String applicationInstanceId) {
         //return status;
-        return instanceIdToInstanceContextMap.get(applicationInstanceId).getStatus();
+        return getInstanceIdToInstanceContextMap().get(applicationInstanceId).getStatus();
     }
 
     public boolean setStatus(ClusterStatus newStatus, String applicationInstanceId) {
-        return instanceIdToInstanceContextMap.get(applicationInstanceId).setStatus(newStatus);
+        return getInstanceIdToInstanceContextMap().get(applicationInstanceId).setStatus(newStatus);
     }
 
     public void addInstanceContext (String instanceId, ClusterInstance instanceContext) {
 
-        instanceIdToInstanceContextMap.put(instanceId, instanceContext);
+        getInstanceIdToInstanceContextMap().put(instanceId, instanceContext);
     }
 
     public ClusterInstance getInstanceContexts (String instanceId) {
         // if map is empty, return null
-        if (instanceIdToInstanceContextMap.isEmpty()) {
+        if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
         }
 
         // if instanceId is null, just get the first InstanceContext
         if (instanceId == null) {
-            return instanceIdToInstanceContextMap.entrySet().iterator().next().getValue();
+            return getInstanceIdToInstanceContextMap().entrySet().iterator().next().getValue();
         }
 
-        return instanceIdToInstanceContextMap.get(instanceId);
+        return getInstanceIdToInstanceContextMap().get(instanceId);
     }
 
     public int getInstanceContextCount () {
 
-        return instanceIdToInstanceContextMap.keySet().size();
+        return getInstanceIdToInstanceContextMap().keySet().size();
     }
 
     public boolean equals(Object other) {
@@ -278,6 +280,25 @@ public class Cluster implements Serializable {
         this.hostNames = hostNames;
     }
 
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public Map<String, ClusterInstance> getInstanceIdToInstanceContextMap() {
+        return instanceIdToInstanceContextMap;
+    }
+
+    public void setInstanceIdToInstanceContextMap(Map<String, ClusterInstance> instanceIdToInstanceContextMap) {
+        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    }
+
+    public Collection<ClusterInstance> getClusterInstances() {
+        return this.instanceIdToInstanceContextMap.values();
+    }
 //    public ClusterStatus getTempStatus() {
 //        return status;
 //    }

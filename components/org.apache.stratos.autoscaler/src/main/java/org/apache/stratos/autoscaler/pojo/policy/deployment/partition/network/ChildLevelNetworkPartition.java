@@ -92,4 +92,5 @@ public class ChildLevelNetworkPartition implements Serializable {
     public void setChildLevelPartitions(ChildLevelPartition[] childLevelPartitions) {
         this.childLevelPartitions = childLevelPartitions;
     }
+
 }

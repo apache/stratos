@@ -46,6 +46,8 @@ public class KubernetesClusterContext extends AbstractClusterContext {
     private static final long serialVersionUID = 808741789615481596L;
     private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
 
+    private String instanceId;
+
     private String kubernetesClusterId;
     private String serviceName;
 
@@ -393,6 +395,14 @@ public class KubernetesClusterContext extends AbstractClusterContext {
         }
 
         return null;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
     }
 
     private class PendingMemberWatcher implements Runnable {

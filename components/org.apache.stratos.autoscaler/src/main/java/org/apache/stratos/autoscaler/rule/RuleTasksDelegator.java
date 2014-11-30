@@ -28,7 +28,9 @@ import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.InstanceNotificationClient;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
+import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
@@ -185,11 +187,10 @@ public class RuleTasksDelegator {
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            for (ClusterLevelPartitionContext partitionContextOfCurrentNetworkClusterMonitorPartition : vmClusterMonitor.getNetworkPartitionCtxt(instanceId, nwPartitionId).
-                    getPartitionCtxts().values()) {
-
-                minimumCountOfNetworkPartition += partitionContextOfCurrentNetworkClusterMonitorPartition.getMinimumMemberCount();
-            }
+            VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
+            ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
+            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+            minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
             MemberContext memberContext =
                     CloudControllerClient.getInstance()
                             .spawnAnInstance(clusterMonitorPartitionContext.getPartition(),
@@ -477,11 +478,11 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(predictedValue);
     }
 
-    public double getLoadAveragePredictedValue(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+    public double getLoadAveragePredictedValue(String instanceId, ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
-
-        for (ClusterLevelPartitionContext partitionContext : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
+        ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberAverageLoadAverage = memberStatsContext.getLoadAverage().getAverage();
@@ -505,11 +506,11 @@ public class RuleTasksDelegator {
         }
     }
 
-    public double getMemoryConsumptionPredictedValue(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+    public double getMemoryConsumptionPredictedValue(String instanceId, ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         double memoryConsumptionPredicted = 0.0d;
         int totalMemberCount = 0;
-
-        for (ClusterLevelPartitionContext partitionContext : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
+        ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();

@@ -61,8 +61,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
     private AtomicBoolean monitoringStarted;
-    //protected AbstractClusterContext clusterContext;
-    protected final Map<String, AbstractClusterContext> instanceIdToClusterContextMap;
+    protected AbstractClusterContext clusterContext;
     private String clusterId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
@@ -82,7 +81,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
         this.monitoringStarted = new AtomicBoolean(false);
         //this.clusterContext = abstractClusterContext;
-        this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
+        //this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
@@ -349,7 +348,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.hasFaultyMember = hasFaultyMember;
     }
 
-    public void addClusterContextForInstance (String instanceId, AbstractClusterContext clusterContext) {
+    /*public void addClusterContextForInstance (String instanceId, AbstractClusterContext clusterContext) {
 
         if (instanceIdToClusterContextMap.get(instanceId) == null) {
             synchronized (instanceIdToClusterContextMap) {
@@ -371,7 +370,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         // if instanceId is null, assume that map contains only one element and return that
 
         return instanceIdToClusterContextMap.get(instanceId);
-    }
+    }*/
 
     public abstract void terminateAllMembers();
 
@@ -407,5 +406,13 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setDependentScaleCheckKnowledgeSession(StatefulKnowledgeSession dependentScaleCheckKnowledgeSession) {
         this.dependentScaleCheckKnowledgeSession = dependentScaleCheckKnowledgeSession;
+    }
+
+    public AbstractClusterContext getClusterContext() {
+        return clusterContext;
+    }
+
+    public void setClusterContext(AbstractClusterContext clusterContext) {
+        this.clusterContext = clusterContext;
     }
 }

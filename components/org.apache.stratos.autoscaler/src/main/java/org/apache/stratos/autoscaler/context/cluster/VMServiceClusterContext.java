@@ -35,10 +35,10 @@ public class VMServiceClusterContext extends VMClusterContext {
 
     protected AutoscalePolicy autoscalePolicy;
 
-    public VMServiceClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy, DeploymentPolicy deploymentPolicy,
-                                   Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts) {
+    public VMServiceClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
+                                   DeploymentPolicy deploymentPolicy) {
 
-        super(clusterId, serviceId, autoscalePolicy, deploymentPolicy, networkPartitionCtxts);
+        super(clusterId, serviceId, autoscalePolicy, deploymentPolicy);
         this.autoscalePolicy = autoscalePolicy;
 
     }

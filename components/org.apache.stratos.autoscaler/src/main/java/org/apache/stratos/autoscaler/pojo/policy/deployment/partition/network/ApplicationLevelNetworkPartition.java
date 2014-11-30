@@ -85,4 +85,13 @@ public class ApplicationLevelNetworkPartition implements Serializable{
     public void setActiveByDefault(boolean activeByDefault) {
         this.activeByDefault = activeByDefault;
     }
+
+    public Partition getPartition(String partitionId) {
+        for(Partition partition : partitions) {
+            if(partition.getId().equals(partitionId)) {
+                return partition;
+            }
+        }
+        return null;
+    }
 }
