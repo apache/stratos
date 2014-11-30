@@ -21,8 +21,8 @@ package org.apache.stratos.manager.dto;
 
 
 
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
-import org.apache.stratos.cloud.controller.domain.xsd.PortMapping;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;

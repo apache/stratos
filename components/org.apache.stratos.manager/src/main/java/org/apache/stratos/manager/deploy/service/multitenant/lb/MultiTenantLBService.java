@@ -19,8 +19,8 @@
 
 package org.apache.stratos.manager.deploy.service.multitenant.lb;
 
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;

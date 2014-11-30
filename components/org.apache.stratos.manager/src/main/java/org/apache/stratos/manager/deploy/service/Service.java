@@ -19,8 +19,8 @@
 
 package org.apache.stratos.manager.deploy.service;
 
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.behaviour.CartridgeMgtBehaviour;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;

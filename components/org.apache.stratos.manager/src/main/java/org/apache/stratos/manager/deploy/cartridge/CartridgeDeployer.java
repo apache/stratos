@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.manager.deploy.cartridge;
 
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.manager.exception.ADCException;
 
 public abstract class CartridgeDeployer {

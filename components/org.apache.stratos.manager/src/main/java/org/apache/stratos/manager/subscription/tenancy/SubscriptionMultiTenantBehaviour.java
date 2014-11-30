@@ -21,8 +21,8 @@ package org.apache.stratos.manager.subscription.tenancy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.deploy.service.Service;

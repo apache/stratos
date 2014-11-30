@@ -20,9 +20,9 @@ package org.apache.stratos.manager.behaviour;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;
 import org.apache.stratos.manager.exception.ADCException;
@@ -38,7 +38,7 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -92,7 +92,7 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
         // get the payload parameters defined in the cartridge definition file for this cartridge type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
-            for (org.apache.stratos.cloud.controller.stub.pojo.Property property : cartridgeInfo.getProperties()) {
+            for (org.apache.stratos.common.Property property : cartridgeInfo.getProperties()) {
                 // check if a property is related to the payload. Currently this is done by checking if the
                 // property name starts with 'payload_parameter.' suffix. If so the payload param name will
                 // be taken as the substring from the index of '.' to the end of the property name.

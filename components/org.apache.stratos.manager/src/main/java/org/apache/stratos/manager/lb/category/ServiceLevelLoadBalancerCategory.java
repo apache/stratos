@@ -21,10 +21,10 @@ package org.apache.stratos.manager.lb.category;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.domain.xsd.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.ClusterContext;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.dao.Cluster;

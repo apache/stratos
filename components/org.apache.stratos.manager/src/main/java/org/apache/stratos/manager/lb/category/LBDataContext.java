@@ -20,9 +20,9 @@
 package org.apache.stratos.manager.lb.category;
 
 
-import org.apache.stratos.cloud.controller.domain.xsd.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 
 import java.util.ArrayList;
 import java.util.List;

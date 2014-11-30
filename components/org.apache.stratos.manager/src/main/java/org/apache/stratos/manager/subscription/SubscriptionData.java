@@ -19,8 +19,8 @@
 package org.apache.stratos.manager.subscription;
 
 
-import org.apache.stratos.cloud.controller.domain.xsd.Persistence;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.common.Properties;
 
 import java.util.Collections;
 import java.util.HashSet;

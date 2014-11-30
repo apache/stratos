@@ -24,16 +24,16 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
-import org.apache.stratos.autoscaler.pojo.xsd.ServiceGroup;
+import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
-import org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy;
-import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
+import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
@@ -130,37 +130,37 @@ public class AutoscalerServiceClient {
         return partitionGroups;
     }
 
-    public org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy[] getAutoScalePolicies()
+    public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()
             throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy[] autoscalePolicies;
+        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies;
         autoscalePolicies = stub.getAllAutoScalingPolicy();
 
         return autoscalePolicies;
     }
 
-    public org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy getAutoScalePolicy(
+    public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy getAutoScalePolicy(
             String autoscalingPolicyId) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy;
+        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy;
         autoscalePolicy = stub.getAutoscalingPolicy(autoscalingPolicyId);
 
         return autoscalePolicy;
     }
 
-    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] getDeploymentPolicies()
+    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies()
             throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] deploymentPolicies;
+        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
         deploymentPolicies = stub.getAllDeploymentPolicies();
 
         return deploymentPolicies;
     }
 
-    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] getDeploymentPolicies(
+    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies(
             String cartridgeType) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[] deploymentPolicies;
+        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
         deploymentPolicies = stub
                 .getValidDeploymentPoliciesforCartridge(cartridgeType);
 
@@ -181,9 +181,9 @@ public class AutoscalerServiceClient {
         return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
     }
 
-    public org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
+    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy;
+        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy;
         deploymentPolicy = stub.getDeploymentPolicy(deploymentPolicyId);
 
         return deploymentPolicy;
