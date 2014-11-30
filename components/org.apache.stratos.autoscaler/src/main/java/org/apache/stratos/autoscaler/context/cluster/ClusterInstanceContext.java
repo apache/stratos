@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.context.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
@@ -69,15 +70,19 @@ public class ClusterInstanceContext {
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
 
+    private int min;
+
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
 
     // Map<PartitionId, Partition Context>
     protected Map<String, ClusterLevelPartitionContext> partitionCtxts;
-    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions) {
+    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions,
+                                  int min) {
 
         this.id = clusterInstanceId;
+        this.min = min;
         partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         this.partitionAlgorithm = partitionAlgo;
         //partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
@@ -95,6 +100,10 @@ public class ClusterInstanceContext {
 
     public Map<String, ClusterLevelPartitionContext> getPartitionCtxts(){
         return partitionCtxts;
+    }
+    public PartitionContext[] getPartitionCtxtsAsAnArray(){
+
+        return (PartitionContext[])getPartitionCtxts().values().toArray();
     }
 
     public ClusterLevelPartitionContext getNetworkPartitionCtxt(String PartitionId) {
@@ -421,4 +430,7 @@ public class ClusterInstanceContext {
     }
 
 
+    public int getMin() {
+        return min;
+    }
 }

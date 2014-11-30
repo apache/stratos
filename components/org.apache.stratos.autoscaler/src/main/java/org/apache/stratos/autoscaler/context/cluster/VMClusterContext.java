@@ -175,14 +175,14 @@ public class VMClusterContext extends AbstractClusterContext {
 
         if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(
-                    networkPartitionId);
+                    networkPartitionId, networkPartition.getPartitionAlgo(), networkPartition.getMin());
         }
         ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
                 getClusterInstanceContext(instance.getInstanceId());
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(instance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions());
+                    networkPartition.getChildLevelPartitions(), networkPartition.getMin());
         }
 
         for (ChildLevelPartition partition : networkPartition.getChildLevelPartitions()) {
@@ -243,7 +243,8 @@ public class VMClusterContext extends AbstractClusterContext {
         CloudControllerClient.getInstance().validatePartition(partition1);
         if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext =
-                    new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
+                    new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId()
+                            , networkPartition.getPartitionAlgo(), networkPartition.getMin());
         }
         //FIXME to have correct member expiry time
         ClusterLevelPartitionContext clusterLevelPartitionContext =
@@ -259,7 +260,7 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions());
+                    networkPartition.getChildLevelPartitions(), networkPartition.getMin());
         }
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
