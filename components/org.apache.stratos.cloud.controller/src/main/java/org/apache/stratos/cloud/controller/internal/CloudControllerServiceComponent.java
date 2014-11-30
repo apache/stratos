@@ -22,6 +22,7 @@ package org.apache.stratos.cloud.controller.internal;
 
 
 import com.hazelcast.core.HazelcastInstance;
+
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +30,8 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.services.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
+import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
@@ -163,11 +164,11 @@ public class CloudControllerServiceComponent {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
     }
 
-    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+    protected void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
     }
 
-    public void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
+    protected void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
     }
 

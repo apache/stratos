@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.services;
+package org.apache.stratos.cloud.controller.services.impl;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InetAddresses;
+
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -31,7 +32,6 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.Dependencies;
-import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
@@ -40,6 +40,7 @@ import org.apache.stratos.cloud.controller.iaas.Iaas;
 import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
