@@ -23,15 +23,14 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
+import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
@@ -82,6 +81,7 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -346,7 +346,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = PojoConverter.
+            org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = PojoConverter.
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
@@ -371,7 +371,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = PojoConverter.
+            org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = PojoConverter.
                     convertToCCAutoscalerPojo(autoscalePolicyBean);
 
             try {
@@ -396,7 +396,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy =
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
@@ -422,7 +422,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy =
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                     PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
 
 
@@ -545,7 +545,7 @@ public class StratosApiV41Utils {
 
     public static AutoscalePolicy[] getAutoScalePolicies() throws RestAPIException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy[] autoscalePolicies = null;
+        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -562,7 +562,7 @@ public class StratosApiV41Utils {
 
     public static AutoscalePolicy getAutoScalePolicy(String autoscalePolicyId) throws RestAPIException {
 
-        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = null;
+        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
@@ -1620,7 +1620,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup =
+            org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup =
                     PojoConverter.convertToASKubernetesGroupPojo(kubernetesGroupBean);
 
             try {
@@ -1642,7 +1642,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost =
                     PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
 
             try {
@@ -1667,7 +1667,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster =
+            org.apache.stratos.common.kubernetes.KubernetesMaster kubernetesMaster =
                     PojoConverter.convertToASKubernetesMasterPojo(kubernetesMasterBean);
 
             try {
@@ -1693,7 +1693,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[]
+                org.apache.stratos.common.kubernetes.KubernetesGroup[]
                         kubernetesGroups = autoscalerServiceClient.getAvailableKubernetesGroups();
                 return PojoConverter.populateKubernetesGroupsPojo(kubernetesGroups);
 
@@ -1710,7 +1710,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup
+                org.apache.stratos.common.kubernetes.KubernetesGroup
                         kubernetesGroup = autoscalerServiceClient.getKubernetesGroup(kubernetesGroupId);
                 return PojoConverter.populateKubernetesGroupPojo(kubernetesGroup);
 
@@ -1769,7 +1769,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
+                org.apache.stratos.common.kubernetes.KubernetesHost[]
                         kubernetesHosts = autoscalerServiceClient.getKubernetesHosts(kubernetesGroupId);
 
                 List<KubernetesHost> arrayList = PojoConverter.populateKubernetesHostsPojo(kubernetesHosts);
@@ -1792,7 +1792,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
+                org.apache.stratos.common.kubernetes.KubernetesMaster
                         kubernetesMaster = autoscalerServiceClient.getKubernetesMaster(kubernetesGroupId);
                 return PojoConverter.populateKubernetesMasterPojo(kubernetesMaster);
 
@@ -1811,7 +1811,7 @@ public class StratosApiV41Utils {
     public static boolean updateKubernetesHost(KubernetesHost kubernetesHostBean) throws RestAPIException {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost =
                     PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
             try {
                 return autoscalerServiceClient.updateKubernetesHost(kubernetesHost);
