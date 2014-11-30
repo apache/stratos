@@ -44,7 +44,7 @@ public class TestRulesPackaged {
         parseDroolsFile(minCheckDrlFilePath);
     }
 
-    @Test
+   /* FIXME********@Test
     public void testScalingDroolsFile() {
         parseDroolsFile(scalingDrlFilePath);
     }
@@ -53,7 +53,7 @@ public class TestRulesPackaged {
     public void testDependentScalingDroolsFile() {
         parseDroolsFile(dependentScalingDrlFilePath);
     }
-
+*/
     @Test
     public void testTerminateAllDroolsFile() {
         parseDroolsFile(terminateAllDrlFilePath);

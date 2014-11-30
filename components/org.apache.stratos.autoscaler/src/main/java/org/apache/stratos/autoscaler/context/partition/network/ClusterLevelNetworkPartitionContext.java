@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.context.partition.network;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         //super(id, partitionAlgo, partitions);
         this.id = id;
 
-        instanceIdToClusterInstanceContextMap = new HashMap<String, ClusterInstanceContext>();
+        setInstanceIdToClusterInstanceContextMap(new HashMap<String, ClusterInstanceContext>());
 
     }
 
@@ -84,5 +83,22 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
 
     public String getId() {
         return id;
+    }
+
+    public ClusterInstanceContext getClusterInstanceContext(String instanceId) {
+        return this.getClusterInstanceContextMap().get(instanceId);
+    }
+
+    public void addClusterInstanceContext(ClusterInstanceContext clusterInstanceContext) {
+        this.getClusterInstanceContextMap().put(clusterInstanceContext.getId(),
+                clusterInstanceContext);
+    }
+
+    public Map<String, ClusterInstanceContext> getClusterInstanceContextMap() {
+        return instanceIdToClusterInstanceContextMap;
+    }
+
+    public void setInstanceIdToClusterInstanceContextMap(Map<String, ClusterInstanceContext> instanceIdToClusterInstanceContextMap) {
+        this.instanceIdToClusterInstanceContextMap = instanceIdToClusterInstanceContextMap;
     }
 }

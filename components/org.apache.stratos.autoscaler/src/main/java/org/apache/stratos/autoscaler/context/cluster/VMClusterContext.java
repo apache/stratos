@@ -20,28 +20,24 @@ package org.apache.stratos.autoscaler.context.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.cloud.controller.domain.xsd.MemberContext;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
-import org.apache.stratos.cloud.controller.stub.pojo.*;
-import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
-import java.util.*;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * It holds the runtime data of a VM cluster
@@ -65,7 +61,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
     }
 
-    public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts(){
+    public Map<String, ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
         return networkPartitionCtxts;
     }
 
@@ -121,22 +117,22 @@ public class VMClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-        if(networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
+        if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
                     clusterInstance.getNetworkPartitionId());
         }
         if (clusterInstance.getPartitionId() != null) {
             //Need to add partition Context based on the given one from the parent
             networkPartitionContext = addPartition(clusterInstance, cluster,
-                    this.deploymentPolicy, networkPartitionContext );
+                    this.deploymentPolicy, networkPartitionContext);
 
         } else {
             networkPartitionContext = parseDeploymentPolicy(clusterInstance, cluster,
-                                        this.deploymentPolicy, networkPartitionContext);
+                    this.deploymentPolicy, networkPartitionContext);
         }
-        if(!networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
+        if (!networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
-                                            networkPartitionContext);
+                    networkPartitionContext);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Network partition context has been added: " +
                         "[network partition] %s", clusterInstance.getNetworkPartitionId()));
@@ -177,7 +173,7 @@ public class VMClusterContext extends AbstractClusterContext {
         networkPartition = deploymentPolicy.getChildLevelNetworkPartition(instance.getNetworkPartitionId());
         String networkPartitionId = networkPartition.getId();
 
-        if(clusterLevelNetworkPartitionContext == null) {
+        if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext = new ClusterLevelNetworkPartitionContext(
                     networkPartitionId);
         }
@@ -186,18 +182,21 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(instance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getPartitions());
+                    networkPartition.getChildLevelPartitions());
         }
 
-
-        for (Partition partition : networkPartition.getPartitions()) {
+        for (ChildLevelPartition partition : networkPartition.getChildLevelPartitions()) {
+            //FIXME to have correct member expirery time
             ClusterLevelPartitionContext clusterLevelPartitionContext =
-                    new ClusterLevelPartitionContext(partition);
+                    new ClusterLevelPartitionContext(0);
             clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
             clusterLevelPartitionContext.setProperties(cluster.getProperties());
             clusterLevelPartitionContext.setNetworkPartitionId(networkPartition.getId());
             //add members to partition Context
-            addMembersFromTopology(cluster, partition, clusterLevelPartitionContext);
+            Partition partition1 = deploymentPolicy.
+                    getApplicationLevelNetworkPartition(networkPartitionId).getPartition(partition.getPartitionId());
+
+            addMembersFromTopology(cluster, partition1, clusterLevelPartitionContext);
 
             clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
             if (log.isInfoEnabled()) {
@@ -229,7 +228,7 @@ public class VMClusterContext extends AbstractClusterContext {
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
-        Partition partition = networkPartition.getPartition(clusterInstance.getPartitionId());
+        ChildLevelPartition partition = networkPartition.getChildLevelPartition(clusterInstance.getPartitionId());
         if (partition == null) {
             String msg =
                     "[Partition] " + clusterInstance.getPartitionId() + " for [networkPartition] " +
@@ -238,26 +237,29 @@ public class VMClusterContext extends AbstractClusterContext {
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
-        CloudControllerClient.getInstance().validatePartition(partition);
-        if(clusterLevelNetworkPartitionContext == null) {
+
+        Partition partition1 = deploymentPolicy.getApplicationLevelNetworkPartition(networkPartition.getId()).
+                getPartition(partition.getPartitionId());
+        CloudControllerClient.getInstance().validatePartition(partition1);
+        if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext =
                     new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
         }
-
+        //FIXME to have correct member expiry time
         ClusterLevelPartitionContext clusterLevelPartitionContext =
-                new ClusterLevelPartitionContext(partition);
+                new ClusterLevelPartitionContext(0);
         clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
         clusterLevelPartitionContext.setNetworkPartitionId(networkPartition.getId());
         //add members to partition Context
-        addMembersFromTopology(cluster, partition, clusterLevelPartitionContext);
+        addMembersFromTopology(cluster, partition1, clusterLevelPartitionContext);
 
         ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
                 getClusterInstanceContext(clusterInstance.getInstanceId());
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getPartitions());
+                    networkPartition.getChildLevelPartitions());
         }
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
@@ -272,7 +274,7 @@ public class VMClusterContext extends AbstractClusterContext {
     }
 
     private void addMembersFromTopology(Cluster cluster, Partition partition,
-                                               ClusterLevelPartitionContext clusterLevelPartitionContext) {
+                                        ClusterLevelPartitionContext clusterLevelPartitionContext) {
         for (Member member : cluster.getMembers()) {
             String memberId = member.getMemberId();
             if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
@@ -281,7 +283,7 @@ public class VMClusterContext extends AbstractClusterContext {
                 memberContext.setMemberId(memberId);
                 memberContext.setInitTime(member.getInitTime());
                 memberContext.setPartition(partition);
-                memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
+                //FIXME********memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
                 if (MemberStatus.Activated.equals(member.getStatus())) {
                     if (log.isDebugEnabled()) {
@@ -312,7 +314,8 @@ public class VMClusterContext extends AbstractClusterContext {
         }
     }
 
-    private org.apache.stratos.cloud.controller.stub.pojo.Properties convertMemberPropsToMemberContextProps(
+    //FIXME**********
+    /*private org.apache.stratos.cloud.controller.stub.pojo.Properties convertMemberPropsToMemberContextProps(
             java.util.Properties properties) {
         org.apache.stratos.cloud.controller.stub.pojo.Properties props = new org.apache.stratos.cloud.controller.stub.pojo.Properties();
         for (Map.Entry<Object, Object> e : properties.entrySet()) {
@@ -322,7 +325,7 @@ public class VMClusterContext extends AbstractClusterContext {
             props.addProperties(property);
         }
         return props;
-    }
+    }*/
 
 
 }

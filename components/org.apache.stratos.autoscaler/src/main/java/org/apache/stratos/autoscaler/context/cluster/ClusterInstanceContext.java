@@ -24,7 +24,8 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
-import org.apache.stratos.cloud.controller.domain.xsd.Partition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.HashMap;
@@ -74,7 +75,7 @@ public class ClusterInstanceContext {
 
     // Map<PartitionId, Partition Context>
     protected Map<String, ClusterLevelPartitionContext> partitionCtxts;
-    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, Partition[] partitions) {
+    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions) {
 
         this.id = clusterInstanceId;
         partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
@@ -83,9 +84,8 @@ public class ClusterInstanceContext {
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
-        for (Partition partition : partitions) {
-            minInstanceCount += partition.getPartitionMin();
-            maxInstanceCount += partition.getPartitionMax();
+        for (ChildLevelPartition partition : partitions) {
+            maxInstanceCount += partition.getMax();
         }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
